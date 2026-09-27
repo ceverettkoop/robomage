@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -263,14 +260,10 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress
   PB: Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn
@@ -282,14 +275,17 @@
   Opp:   17 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Swamp (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Rift Bolt
   Opp GY:  Thoughtseize, Marsh Flats
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Thoughtseize, Swamp, Marsh Flats
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -301,6 +297,7 @@
   Opp:   17 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Swamp (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Rift Bolt
   Opp GY:  Thoughtseize, Marsh Flats
@@ -476,9 +473,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 4 (Player B) ---
@@ -809,9 +803,6 @@
 --- Narrative ---
   Player B discards Lotus Petal
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Mountain, Mountain
@@ -922,9 +913,6 @@
   Resolving ability (category: DealDamage, amount: 4)
   Dealt 4 damage to player (now at 6 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Dark Ritual
 --- Turn 6 (Player B) ---
@@ -1004,49 +992,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 44 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 45 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1064,7 +1011,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1082,7 +1029,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1105,7 +1052,7 @@
   PA: Mountain
   PB: Dark Ritual
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  17 life | mana: empty | hand(1): Mountain | lib 51
@@ -1121,7 +1068,7 @@
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1141,7 +1088,7 @@
 --- Narrative ---
   Player A draws Mountain
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
@@ -1158,7 +1105,7 @@
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1177,7 +1124,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
@@ -1198,7 +1145,7 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(1): Mountain | lib 50
@@ -1220,7 +1167,7 @@
   Player A sacrifices Fiery Islet
   Player A's Fiery Islet ability is on the stack
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1243,7 +1190,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Eidolon of the Great Revel
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
@@ -1265,7 +1212,7 @@
   Player A activated Mountain for 1(R)
   Player A casts Eidolon of the Great Revel
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1287,7 +1234,7 @@
 --- Narrative ---
   Eidolon of the Great Revel enters the battlefield
 
---- Decision 57 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1306,7 +1253,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 58 ---
+--- Decision 56 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1327,7 +1274,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 59 ---
+--- Decision 57 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1345,51 +1292,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 60 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 61 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1408,7 +1312,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1427,7 +1331,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1451,7 +1355,7 @@
   PA: Eidolon of the Great Revel, Mountain
   PB: Dark Ritual
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1470,7 +1374,7 @@
 --- Narrative ---
   Player B draws Polluted Delta
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  6 life | mana: empty | hand(2): Dark Ritual, Polluted Delta | lib 43
@@ -1488,7 +1392,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  6 life | mana: empty | hand(2): Dark Ritual, Polluted Delta | lib 43
@@ -1509,7 +1413,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 43
@@ -1533,7 +1437,7 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 43
@@ -1556,7 +1460,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 43
@@ -1586,7 +1490,7 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1610,7 +1514,7 @@
   Player B surveils 1.
   Surveil: looking at Griselbrand
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1633,7 +1537,7 @@
 --- Narrative ---
   Player B puts Griselbrand into their graveyard.
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1652,7 +1556,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1673,7 +1577,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 75 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1691,51 +1595,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 76 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1754,7 +1615,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1773,7 +1634,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1797,7 +1658,7 @@
   PA: Eidolon of the Great Revel, Mountain
   PB: Dark Ritual
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1817,7 +1678,7 @@
 --- Narrative ---
   Player A draws Chain Lightning
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1836,7 +1697,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
@@ -1856,7 +1717,7 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
@@ -1881,7 +1742,7 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1904,7 +1765,7 @@
   Resolving ability (category: DealDamage, amount: 2)
   Dealt 2 damage to player (now at 15 life)
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1929,7 +1790,7 @@
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 41
@@ -1953,7 +1814,7 @@
 --- Narrative ---
   Player B tapped Island for {U}
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: 1U | hand(1): Dark Ritual | lib 41
@@ -1976,7 +1837,7 @@
 --- Narrative ---
   Player B tapped Swamp for {B}
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: 1U, 1B | hand(1): Dark Ritual | lib 41
@@ -1996,7 +1857,7 @@
    0: Don't pay (Chain Lightning is not copied)  [#0]
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  15 life | mana: empty | hand(1): Mountain | lib 48
@@ -2015,7 +1876,7 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: 1U, 1B | hand(1): Dark Ritual | lib 41
@@ -2035,7 +1896,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  15 life | mana: empty | hand(0): (empty) | lib 48
@@ -2057,7 +1918,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Eidolon of the Great Revel [2/2] -> Player B
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  15 life | mana: empty | hand(0): (empty) | lib 48

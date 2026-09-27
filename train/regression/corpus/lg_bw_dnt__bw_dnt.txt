@@ -131,9 +131,6 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Shadowy Backstreet
 --- Turn 2 (Player B) ---
@@ -206,9 +203,6 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Aether Vial triggered
 --- Turn 3 (Player A) ---
@@ -413,47 +407,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 7 | lib 71
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Plains
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 22 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 7 | lib 71
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Plains
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 23 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -470,7 +425,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -487,7 +442,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -509,7 +464,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Lion Sash, Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -527,7 +482,7 @@
 --- Narrative ---
   Player B draws Plains
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -544,7 +499,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(8): Lion Sash, Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 70
@@ -563,7 +518,7 @@
 --- Narrative ---
   Player B played Plains
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Lion Sash, Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 70
@@ -585,7 +540,7 @@
   Player B activated Plains for 1(W)
   Player B casts Lion Sash
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -605,7 +560,7 @@
 --- Narrative ---
   Player A's Aether Vial ability is on the stack
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -625,7 +580,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -644,7 +599,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -663,7 +618,7 @@
 --- Narrative ---
   Lion Sash enters the battlefield
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -679,7 +634,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -697,7 +652,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -712,45 +667,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 37 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 6 | lib 70
-  Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Lion Sash [1/1] (SICK,NEW) | Plains (T,NEW) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 38 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 6 | lib 70
-  Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Lion Sash [1/1] (SICK,NEW) | Plains (T,NEW) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -766,7 +684,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -782,7 +700,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -804,7 +722,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Lion Sash, Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -823,7 +741,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -846,7 +764,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -866,7 +784,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -889,7 +807,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -911,7 +829,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -928,7 +846,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -949,7 +867,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -966,7 +884,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -987,7 +905,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1005,7 +923,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1021,7 +939,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1041,7 +959,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1059,7 +977,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1079,7 +997,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1096,49 +1014,8 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 57 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 6 | lib 70
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Lion Sash [1/1] (SICK) | Plains (T) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Lion Sash, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 58 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 6 | lib 70
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Lion Sash [1/1] (SICK) | Plains (T) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Lion Sash, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 59 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1156,7 +1033,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1174,7 +1051,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 61 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1197,7 +1074,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom
 
---- Decision 62 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  18 life | mana: empty | hand(6): Overlord of the Balemurk, Phelia, Exuberant Shepherd, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 70
@@ -1216,7 +1093,7 @@
   Player B activated Plains for 1(W)
   Player B casts Phelia, Exuberant Shepherd
 
---- Decision 63 ---
+--- Decision 57 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1237,7 +1114,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1257,7 +1134,7 @@
 --- Narrative ---
   Player B draws Aether Vial
 
---- Decision 65 ---
+--- Decision 59 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1275,7 +1152,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 66 ---
+--- Decision 60 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(6): Aether Vial, Overlord of the Balemurk, Plains, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1293,7 +1170,7 @@
 --- Narrative ---
   Player B played Plains
 
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(5): Aether Vial, Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1313,7 +1190,7 @@
   Player B activated Plains for 1(W)
   Player B casts Aether Vial
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1334,7 +1211,7 @@
 --- Narrative ---
   Aether Vial enters the battlefield
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1352,7 +1229,7 @@
 --- Narrative ---
   Player B's Aether Vial ability is on the stack
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1374,7 +1251,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 71 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1393,7 +1270,7 @@
 --- Narrative ---
   Player B fails to find
 
---- Decision 72 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1411,7 +1288,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 73 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1431,7 +1308,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 74 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1451,7 +1328,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Lion Sash [1/1] -> Player A
 
---- Decision 75 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -1469,7 +1346,7 @@
   Attackers declared:
     Lion Sash -> Player A
 
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1492,7 +1369,7 @@
     0: Lion Sash [1/1]
   Your creatures:
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1512,7 +1389,7 @@
   Blockers declared:
     (none)
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1534,7 +1411,7 @@
     Lion Sash deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 6)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1552,7 +1429,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1570,7 +1447,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1588,7 +1465,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1612,7 +1489,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1631,7 +1508,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1654,7 +1531,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1674,7 +1551,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1692,7 +1569,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1713,7 +1590,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1731,7 +1608,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1752,7 +1629,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1771,7 +1648,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  19 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1788,7 +1665,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1808,7 +1685,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1828,7 +1705,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1846,7 +1723,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1866,7 +1743,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1886,7 +1763,7 @@
   Attackers declared:
     (none)
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1903,49 +1780,8 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 98 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 99 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
-  Opp GY:  Marsh Flats
-  Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 100 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1963,7 +1799,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1981,7 +1817,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 102 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2005,7 +1841,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom
 
---- Decision 103 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -2021,7 +1857,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 96 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2039,7 +1875,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 105 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -2059,7 +1895,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 106 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
@@ -2074,7 +1910,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 99 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2093,7 +1929,7 @@
 --- Narrative ---
   Player B draws Overlord of the Balemurk
 
---- Decision 108 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  18 life | mana: empty | hand(5): Overlord of the Balemurk, Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2109,7 +1945,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 101 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2127,7 +1963,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 110 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(5): Overlord of the Balemurk, Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2153,7 +1989,7 @@
   Player B activated Plains for 1(W)
   Player B casts Recruiter of the Guard
 
---- Decision 111 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2171,7 +2007,7 @@
 --- Narrative ---
   Player B's Aether Vial ability is on the stack
 
---- Decision 112 ---
+--- Decision 104 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2193,7 +2029,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 113 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2212,7 +2048,7 @@
 --- Narrative ---
   Player B fails to find
 
---- Decision 114 ---
+--- Decision 106 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2234,7 +2070,7 @@
   Recruiter of the Guard enters the battlefield
   Recruiter of the Guard triggered
 
---- Decision 115 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2253,7 +2089,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 116 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2273,7 +2109,7 @@
 --- Narrative ---
   Player B declines the optional triggered ability.
 
---- Decision 117 ---
+--- Decision 109 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
@@ -2292,7 +2128,7 @@
   Shadowy Backstreet enters tapped.
   Shadowy Backstreet triggered
 
---- Decision 118 ---
+--- Decision 110 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2313,7 +2149,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 119 ---
+--- Decision 111 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2338,7 +2174,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Shadowy Backstreet is on the stack
 
---- Decision 120 ---
+--- Decision 112 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2360,7 +2196,7 @@
   Resolving ability (category: Destroy)
   Shadowy Backstreet is destroyed
 
---- Decision 121 ---
+--- Decision 113 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2383,7 +2219,7 @@
   Player B surveils 1.
   Surveil: looking at Swords to Plowshares
 
---- Decision 122 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 68
@@ -2404,7 +2240,7 @@
 --- Narrative ---
   Player B puts Swords to Plowshares into their graveyard.
 
---- Decision 123 ---
+--- Decision 115 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2422,7 +2258,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 116 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2442,7 +2278,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 125 ---
+--- Decision 117 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -2464,7 +2300,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
 
---- Decision 126 ---
+--- Decision 118 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -2485,7 +2321,7 @@
     Phelia, Exuberant Shepherd -> Player A
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 127 ---
+--- Decision 119 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -2513,7 +2349,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 128 ---
+--- Decision 120 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2535,7 +2371,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 129 ---
+--- Decision 121 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2558,7 +2394,7 @@
     0: Phelia, Exuberant Shepherd [2/2]
   Your creatures:
 
---- Decision 130 ---
+--- Decision 122 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2580,7 +2416,7 @@
   Blockers declared:
     (none)
 
---- Decision 131 ---
+--- Decision 123 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2602,7 +2438,7 @@
     Phelia, Exuberant Shepherd deals 2 damage to Player A
   --- End Combat Damage ---
 
---- Decision 132 ---
+--- Decision 124 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2620,7 +2456,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 125 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2638,7 +2474,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 134 ---
+--- Decision 126 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2656,7 +2492,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 135 ---
+--- Decision 127 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2680,7 +2516,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom
 
---- Decision 136 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2700,7 +2536,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 137 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2718,7 +2554,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 138 ---
+--- Decision 130 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2739,7 +2575,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 139 ---
+--- Decision 131 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2757,7 +2593,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 140 ---
+--- Decision 132 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2778,7 +2614,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 141 ---
+--- Decision 133 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2797,7 +2633,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 142 ---
+--- Decision 134 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2815,7 +2651,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 143 ---
+--- Decision 135 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2842,7 +2678,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts Pre-War Formalwear
 
---- Decision 144 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2863,7 +2699,7 @@
   Pre-War Formalwear enters the battlefield
   Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
 
---- Decision 145 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2880,7 +2716,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 146 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2899,7 +2735,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 147 ---
+--- Decision 139 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2922,7 +2758,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 148 ---
+--- Decision 140 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2945,7 +2781,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 149 ---
+--- Decision 141 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2968,7 +2804,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 150 ---
+--- Decision 142 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2990,7 +2826,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 151 ---
+--- Decision 143 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3019,7 +2855,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 152 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3040,7 +2876,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 153 ---
+--- Decision 145 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3064,7 +2900,7 @@
     2: Orc Army token [1/1]
   Your creatures:
 
---- Decision 154 ---
+--- Decision 146 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -3085,7 +2921,7 @@
   Blockers declared:
     (none)
 
---- Decision 155 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3108,7 +2944,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 156 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3125,7 +2961,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 157 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3142,7 +2978,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 158 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3159,7 +2995,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 159 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3182,7 +3018,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom
 
---- Decision 160 ---
+--- Decision 152 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  14 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -3199,7 +3035,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 161 ---
+--- Decision 153 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3217,7 +3053,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 162 ---
+--- Decision 154 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  14 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -3238,7 +3074,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 163 ---
+--- Decision 155 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  14 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
@@ -3254,7 +3090,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 164 ---
+--- Decision 156 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3273,7 +3109,7 @@
 --- Narrative ---
   Player B draws Solitude
 
---- Decision 165 ---
+--- Decision 157 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Solitude, White Orchid Phantom | lib 66
@@ -3291,7 +3127,7 @@
    3: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 1 (Cast Solitude (alternate cost))
 
---- Decision 166 ---
+--- Decision 158 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Solitude, White Orchid Phantom | lib 66
@@ -3311,7 +3147,7 @@
   Player B exiles White Orchid Phantom
   Player B casts Solitude
 
---- Decision 167 ---
+--- Decision 159 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3330,7 +3166,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 168 ---
+--- Decision 160 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3353,7 +3189,7 @@
   Solitude enters the battlefield
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 169 ---
+--- Decision 161 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3374,7 +3210,7 @@
 --- Narrative ---
   Choose target for Solitude:
 
---- Decision 170 ---
+--- Decision 162 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3402,7 +3238,7 @@
   Solitude triggered
   Solitude triggered
 
---- Decision 171 ---
+--- Decision 163 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3421,7 +3257,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 164 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3444,7 +3280,7 @@
   Resolving ability (category: ChangeZone)
   Solitude is moved to graveyard
 
---- Decision 173 ---
+--- Decision 165 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3464,7 +3300,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 174 ---
+--- Decision 166 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  17 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3489,7 +3325,7 @@
   Resolving ability (category: GainLife, amount: 2)
   Player A gains 2 life (now at 19)
 
---- Decision 175 ---
+--- Decision 167 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3509,7 +3345,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 176 ---
+--- Decision 168 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3529,7 +3365,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 177 ---
+--- Decision 169 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3553,7 +3389,7 @@
 --- Narrative ---
   Player B's Aether Vial ability is on the stack
 
---- Decision 178 ---
+--- Decision 170 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3575,7 +3411,7 @@
 --- Narrative ---
   Choose target for Lion Sash:
 
---- Decision 179 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3603,7 +3439,7 @@
   Player B activated Plains for 1(W)
   Player B's Lion Sash ability targeting Wasteland is on the stack
 
---- Decision 180 ---
+--- Decision 172 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3625,7 +3461,7 @@
 --- Narrative ---
   Choose target for Lion Sash:
 
---- Decision 181 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3653,7 +3489,7 @@
   Player B activated Plains for 1(W)
   Player B's Lion Sash ability targeting Wasteland is on the stack
 
---- Decision 182 ---
+--- Decision 174 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3675,7 +3511,7 @@
 --- Narrative ---
   Choose target for Lion Sash:
 
---- Decision 183 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3703,7 +3539,7 @@
   Player B activated Plains for 1(W)
   Player B's Lion Sash ability targeting Wasteland is on the stack
 
---- Decision 184 ---
+--- Decision 176 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3730,7 +3566,7 @@
   Put 1 +1/+1 counter(s) on creature (now 2/2).
   Resolving ability (category: Cleanup)
 
---- Decision 185 ---
+--- Decision 177 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3752,7 +3588,7 @@
 --- Narrative ---
   ChangeZone fizzles
 
---- Decision 186 ---
+--- Decision 178 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3774,7 +3610,7 @@
 --- Narrative ---
   ChangeZone fizzles
 
---- Decision 187 ---
+--- Decision 179 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3797,7 +3633,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 188 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3818,7 +3654,7 @@
 --- Narrative ---
   Player B fails to find
 
---- Decision 189 ---
+--- Decision 181 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3837,7 +3673,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 190 ---
+--- Decision 182 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3858,7 +3694,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 191 ---
+--- Decision 183 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3882,7 +3718,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Lion Sash [2/2] -> Player A
 
---- Decision 192 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3906,7 +3742,7 @@
     [attacking] Lion Sash [2/2] -> Player A
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
 
---- Decision 193 ---
+--- Decision 185 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3930,7 +3766,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player A
     [attacking] Recruiter of the Guard [1/1] -> Player A
 
---- Decision 194 ---
+--- Decision 186 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3953,7 +3789,7 @@
     Recruiter of the Guard -> Player A
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 195 ---
+--- Decision 187 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  14 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -3982,7 +3818,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 196 ---
+--- Decision 188 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4005,7 +3841,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 197 ---
+--- Decision 189 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4026,7 +3862,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 198 ---
+--- Decision 190 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4051,7 +3887,7 @@
     Recruiter of the Guard deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 199 ---
+--- Decision 191 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4070,7 +3906,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 200 ---
+--- Decision 192 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4089,7 +3925,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 193 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4108,7 +3944,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 202 ---
+--- Decision 194 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4133,7 +3969,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 203 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4154,7 +3990,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 204 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4173,7 +4009,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 205 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4195,7 +4031,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 206 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4214,7 +4050,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 207 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4236,7 +4072,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 208 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4256,7 +4092,7 @@
 --- Narrative ---
   Player A draws Prismatic Vista
 
---- Decision 209 ---
+--- Decision 201 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  14 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -4275,7 +4111,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 210 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -4303,7 +4139,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 211 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4326,7 +4162,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 212 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4350,7 +4186,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 213 ---
+--- Decision 205 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4374,7 +4210,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 214 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4396,7 +4232,7 @@
 --- Narrative ---
   Player A played Prismatic Vista
 
---- Decision 215 ---
+--- Decision 207 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4421,7 +4257,7 @@
   Player A sacrifices Prismatic Vista
   Player A's Prismatic Vista ability is on the stack
 
---- Decision 216 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4446,7 +4282,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 217 ---
+--- Decision 209 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4475,7 +4311,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 218 ---
+--- Decision 210 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4496,7 +4332,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 219 ---
+--- Decision 211 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4519,7 +4355,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 220 ---
+--- Decision 212 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4543,7 +4379,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 221 ---
+--- Decision 213 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4567,7 +4403,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 222 ---
+--- Decision 214 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4589,7 +4425,7 @@
     Orcish Bowmasters -> Player B
     Orc Army token -> Player B
 
---- Decision 223 ---
+--- Decision 215 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4612,7 +4448,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 224 ---
+--- Decision 216 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4638,7 +4474,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 225 ---
+--- Decision 217 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4659,7 +4495,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 226 ---
+--- Decision 218 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4680,7 +4516,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 227 ---
+--- Decision 219 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4701,7 +4537,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 228 ---
+--- Decision 220 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4728,7 +4564,7 @@
   PA: White Orchid Phantom
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 229 ---
+--- Decision 221 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -4747,7 +4583,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 230 ---
+--- Decision 222 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4768,7 +4604,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 231 ---
+--- Decision 223 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -4791,7 +4627,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 232 ---
+--- Decision 224 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 66
@@ -4809,7 +4645,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 225 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4831,7 +4667,7 @@
 --- Narrative ---
   Player B draws Windswept Heath
 
---- Decision 234 ---
+--- Decision 226 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  12 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Windswept Heath | lib 65
@@ -4850,7 +4686,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 235 ---
+--- Decision 227 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4871,7 +4707,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 236 ---
+--- Decision 228 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Windswept Heath | lib 65
@@ -4895,7 +4731,7 @@
 --- Narrative ---
   Player B played Windswept Heath
 
---- Decision 237 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
@@ -4918,16 +4754,14 @@
    5: Activate Windswept Heath (ChangeZone)  [#0]
   >> B/B: 3 (Reconfigure Lion Sash)
 --- Narrative ---
-  Player B activated Plains for 1(W)
-  Player B activated Plains for 1(W)
-  Choose creature to equip:
+  Choose target for Lion Sash:
 
---- Decision 238 ---
+--- Decision 230 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -4938,20 +4772,23 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Phelia, Exuberant Shepherd [2/2]
-   1: Recruiter of the Guard [1/1]
-  >> B/B: 0 (Phelia, Exuberant Shepherd [2/2])
+   0: Phelia, Exuberant Shepherd
+   1: Recruiter of the Guard
+  >> B/B: 0 (Phelia, Exuberant Shepherd)
 --- Narrative ---
-  Lion Sash equipped to Phelia, Exuberant Shepherd.
-  Phelia, Exuberant Shepherd gains (always)
+  Targeting choice 0
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B's Lion Sash ability targeting Phelia, Exuberant Shepherd is on the stack
 
---- Decision 239 ---
+--- Decision 231 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
   Self exile: White Orchid Phantom
@@ -4968,13 +4805,14 @@
 --- Narrative ---
   Choose target for Lion Sash:
 
---- Decision 240 ---
+--- Decision 232 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -4995,14 +4833,14 @@
   Player B activated Plains for 1(W)
   Player B's Lion Sash ability targeting Prismatic Vista is on the stack
 
---- Decision 241 ---
+--- Decision 233 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
   Self exile: White Orchid Phantom
@@ -5020,14 +4858,14 @@
   Player B sacrifices Windswept Heath
   Player B's Windswept Heath ability is on the stack
 
---- Decision 242 ---
+--- Decision 234 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Windswept Heath (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Windswept Heath (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
   Self exile: White Orchid Phantom
@@ -5040,14 +4878,14 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 243 ---
+--- Decision 235 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
   Opp:   11 life | mana: empty | hand count: 2 | lib 65
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Stack: Windswept Heath (ability, opponent) -> Lion Sash (ability, opponent) -> Prismatic Vista (self)
+  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Stack: Windswept Heath (ability, opponent) -> Lion Sash (ability, opponent) -> Prismatic Vista (self) -> Lion Sash (ability, opponent) -> Phelia, Exuberant Shepherd (opponent, slot 50)
   Self GY: Prismatic Vista
   Opp GY:  Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Self exile: Wasteland, Phelia, Exuberant Shepherd
@@ -5065,14 +4903,14 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 244 ---
+--- Decision 236 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 65
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Windswept Heath (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Windswept Heath (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -5094,14 +4932,14 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
 
---- Decision 245 ---
+--- Decision 237 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (NEW) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (NEW) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
   Self exile: White Orchid Phantom
@@ -5117,14 +4955,14 @@
 --- Narrative ---
   Choose target for Lion Sash:
 
---- Decision 246 ---
+--- Decision 238 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (NEW) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (NEW) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Pending: Lion Sash (self)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -5146,14 +4984,14 @@
   Player B activated Plains for 1(W)
   Player B's Lion Sash ability targeting Prismatic Vista is on the stack
 
---- Decision 247 ---
+--- Decision 239 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
   Self exile: White Orchid Phantom
@@ -5166,14 +5004,14 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 248 ---
+--- Decision 240 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
   Opp:   11 life | mana: empty | hand count: 2 | lib 64
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:1] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [3/3] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
-  Stack: Lion Sash (ability, opponent) -> Prismatic Vista (self) -> Lion Sash (ability, opponent) -> Prismatic Vista (self)
+  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Stack: Lion Sash (ability, opponent) -> Prismatic Vista (self) -> Lion Sash (ability, opponent) -> Prismatic Vista (self) -> Lion Sash (ability, opponent) -> Phelia, Exuberant Shepherd (opponent, slot 50)
   Self GY: Prismatic Vista
   Opp GY:  Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Self exile: Wasteland, Phelia, Exuberant Shepherd
@@ -5191,17 +5029,17 @@
   Resolving ability (category: ChangeZone)
   Prismatic Vista is moved to exile
   Resolving ability (category: PutCounter, amount: 1)
-  Put 1 P1P1 counter(s) on Lion Sash (now 2).
+  Put 1 +1/+1 counter(s) on creature (now 3/3).
   Resolving ability (category: Cleanup)
 
---- Decision 249 ---
+--- Decision 241 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Self exile: White Orchid Phantom
   Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
@@ -5213,14 +5051,14 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 250 ---
+--- Decision 242 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
   Opp:   11 life | mana: empty | hand count: 2 | lib 64
   Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
-  Stack: Lion Sash (ability, opponent) -> Prismatic Vista (self)
+  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Stack: Lion Sash (ability, opponent) -> Prismatic Vista (self) -> Lion Sash (ability, opponent) -> Phelia, Exuberant Shepherd (opponent, slot 50)
   Opp GY:  Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
   Opp exile:  White Orchid Phantom
@@ -5236,7 +5074,51 @@
 --- Narrative ---
   ChangeZone fizzles
 
---- Decision 251 ---
+--- Decision 243 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
+  Opp:   13 life | mana: empty | hand count: 1 | lib 67
+  Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
+  Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: White Orchid Phantom
+  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 244 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 12)
+  Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
+  Opp:   11 life | mana: empty | hand count: 2 | lib 64
+  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (T,NEW) | Recruiter of the Guard [1/1]
+  Stack: Lion Sash (ability, opponent) -> Phelia, Exuberant Shepherd (opponent, slot 50)
+  Opp GY:  Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp exile:  White Orchid Phantom
+  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+   3: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
+  Phelia, Exuberant Shepherd gains (always)
+
+--- Decision 245 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5254,7 +5136,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 252 ---
+--- Decision 246 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5274,7 +5156,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 253 ---
+--- Decision 247 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5292,7 +5174,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 254 ---
+--- Decision 248 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5314,7 +5196,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 255 ---
+--- Decision 249 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5337,7 +5219,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Phelia, Exuberant Shepherd [4/4] -> Player A
 
---- Decision 256 ---
+--- Decision 250 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5359,7 +5241,7 @@
     Phelia, Exuberant Shepherd -> Player A
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 257 ---
+--- Decision 251 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5389,7 +5271,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 258 ---
+--- Decision 252 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5408,7 +5290,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 259 ---
+--- Decision 253 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5432,7 +5314,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 260 ---
+--- Decision 254 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5450,7 +5332,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 261 ---
+--- Decision 255 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5475,7 +5357,7 @@
     0: Phelia, Exuberant Shepherd [4/4]
   Your creatures:
 
---- Decision 262 ---
+--- Decision 256 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5496,7 +5378,7 @@
   Blockers declared:
     (none)
 
---- Decision 263 ---
+--- Decision 257 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5514,7 +5396,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 264 ---
+--- Decision 258 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5538,7 +5420,7 @@
     Phelia, Exuberant Shepherd deals 4 damage to Player A
   --- End Combat Damage ---
 
---- Decision 265 ---
+--- Decision 259 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5556,7 +5438,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 266 ---
+--- Decision 260 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 12)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5576,7 +5458,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 267 ---
+--- Decision 261 ---
   Priority: Player B (active)
   Step: End Combat (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5594,7 +5476,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 268 ---
+--- Decision 262 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 12)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5614,7 +5496,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 269 ---
+--- Decision 263 ---
   Priority: Player B (active)
   Step: Second Main (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5632,7 +5514,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 270 ---
+--- Decision 264 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 12)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5652,7 +5534,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 271 ---
+--- Decision 265 ---
   Priority: Player B (active)
   Step: End Step (turn 12)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5670,7 +5552,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 272 ---
+--- Decision 266 ---
   Priority: Player A (non-active)
   Step: End Step (turn 12)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5696,7 +5578,7 @@
   PA: White Orchid Phantom
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 273 ---
+--- Decision 267 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5717,7 +5599,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 274 ---
+--- Decision 268 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5736,7 +5618,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 275 ---
+--- Decision 269 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5754,7 +5636,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 276 ---
+--- Decision 270 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5776,7 +5658,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 277 ---
+--- Decision 271 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5795,7 +5677,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 278 ---
+--- Decision 272 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5813,7 +5695,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 279 ---
+--- Decision 273 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5835,7 +5717,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 280 ---
+--- Decision 274 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5853,7 +5735,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 281 ---
+--- Decision 275 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5872,7 +5754,7 @@
 --- Narrative ---
   Player A draws Overlord of the Balemurk
 
---- Decision 282 ---
+--- Decision 276 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  9 life | mana: empty | hand(2): Overlord of the Balemurk, White Orchid Phantom | lib 66
@@ -5891,7 +5773,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 283 ---
+--- Decision 277 ---
   Priority: Player B (non-active)
   Step: Draw (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5909,7 +5791,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 284 ---
+--- Decision 278 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(2): Overlord of the Balemurk, White Orchid Phantom | lib 66
@@ -5936,7 +5818,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Overlord of the Balemurk
 
---- Decision 285 ---
+--- Decision 279 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 66
@@ -5955,7 +5837,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 286 ---
+--- Decision 280 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -5978,7 +5860,7 @@
   Overlord of the Balemurk enters with 5 time counter(s) (impending).
   Overlord of the Balemurk triggered
 
---- Decision 287 ---
+--- Decision 281 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 66
@@ -5997,7 +5879,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 288 ---
+--- Decision 282 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6024,7 +5906,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A graveyard:
 
---- Decision 289 ---
+--- Decision 283 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 62
@@ -6046,7 +5928,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 290 ---
+--- Decision 284 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 62
@@ -6070,7 +5952,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 291 ---
+--- Decision 285 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6090,7 +5972,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 292 ---
+--- Decision 286 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6113,7 +5995,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 293 ---
+--- Decision 287 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6138,7 +6020,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 294 ---
+--- Decision 288 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6158,7 +6040,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 295 ---
+--- Decision 289 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6182,7 +6064,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 296 ---
+--- Decision 290 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6201,7 +6083,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 297 ---
+--- Decision 291 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6220,7 +6102,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 298 ---
+--- Decision 292 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6239,7 +6121,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 299 ---
+--- Decision 293 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6260,7 +6142,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 300 ---
+--- Decision 294 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6285,7 +6167,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 301 ---
+--- Decision 295 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6310,7 +6192,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 302 ---
+--- Decision 296 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6335,7 +6217,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 303 ---
+--- Decision 297 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6358,7 +6240,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 304 ---
+--- Decision 298 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6377,7 +6259,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 305 ---
+--- Decision 299 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6403,7 +6285,7 @@
     2: Orc Army token [1/1]
   Your creatures:
 
---- Decision 306 ---
+--- Decision 300 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6425,7 +6307,7 @@
   Blockers declared:
     (none)
 
---- Decision 307 ---
+--- Decision 301 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6444,7 +6326,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 308 ---
+--- Decision 302 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  11 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6467,7 +6349,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 309 ---
+--- Decision 303 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6486,7 +6368,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 310 ---
+--- Decision 304 ---
   Priority: Player B (non-active)
   Step: First Strike Dmg (turn 13)
   Self:  9 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6510,7 +6392,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 311 ---
+--- Decision 305 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6529,7 +6411,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 312 ---
+--- Decision 306 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 13)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6548,7 +6430,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 313 ---
+--- Decision 307 ---
   Priority: Player A (active)
   Step: End Combat (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6567,7 +6449,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 314 ---
+--- Decision 308 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 13)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6586,7 +6468,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 315 ---
+--- Decision 309 ---
   Priority: Player A (active)
   Step: Second Main (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6605,7 +6487,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 316 ---
+--- Decision 310 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 13)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6626,7 +6508,7 @@
 --- Narrative ---
   Overlord of the Balemurk triggers: remove a time counter (impending).
 
---- Decision 317 ---
+--- Decision 311 ---
   Priority: Player A (active)
   Step: End Step (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6646,7 +6528,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 318 ---
+--- Decision 312 ---
   Priority: Player B (non-active)
   Step: End Step (turn 13)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6669,7 +6551,7 @@
   Resolving ability (category: RemoveCounter, amount: 1)
   Removed 1 TIME counter(s) from Overlord of the Balemurk.
 
---- Decision 319 ---
+--- Decision 313 ---
   Priority: Player A (active)
   Step: End Step (turn 13)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6688,7 +6570,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 320 ---
+--- Decision 314 ---
   Priority: Player B (non-active)
   Step: End Step (turn 13)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6713,7 +6595,7 @@
   PA: (empty)
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 321 ---
+--- Decision 315 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6732,7 +6614,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 322 ---
+--- Decision 316 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6752,7 +6634,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 323 ---
+--- Decision 317 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6775,7 +6657,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 324 ---
+--- Decision 318 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 64
@@ -6793,7 +6675,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 325 ---
+--- Decision 319 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6814,7 +6696,7 @@
 --- Narrative ---
   Player B draws Phelia, Exuberant Shepherd
 
---- Decision 326 ---
+--- Decision 320 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -6838,7 +6720,7 @@
   Player B activated Plains for 1(W)
   Player B casts Phelia, Exuberant Shepherd
 
---- Decision 327 ---
+--- Decision 321 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -6858,7 +6740,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 328 ---
+--- Decision 322 ---
   Priority: Player A (non-active)
   Step: Draw (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6882,7 +6764,7 @@
   Phelia, Exuberant Shepherd enters the battlefield
   Legend rule: Player B controls 2 copies of Phelia, Exuberant Shepherd; choose one to keep.
 
---- Decision 329 ---
+--- Decision 323 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -6903,7 +6785,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd is put into the graveyard (legend rule)
 
---- Decision 330 ---
+--- Decision 324 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -6923,7 +6805,7 @@
    2: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 331 ---
+--- Decision 325 ---
   Priority: Player A (non-active)
   Step: Draw (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -6943,7 +6825,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 332 ---
+--- Decision 326 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -6964,16 +6846,14 @@
    3: Activate Lion Sash (ChangeZone)  [#0]
   >> B/B: 2 (Reconfigure Lion Sash)
 --- Narrative ---
-  Player B activated Plains for 1(W)
-  Player B activated Plains for 1(W)
-  Choose creature to equip:
+  Choose target for Lion Sash:
 
---- Decision 333 ---
+--- Decision 327 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
   Opp:   9 life | mana: empty | hand count: 0 | lib 62
-  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [1/1] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [1/1] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Lion Sash (self)
   Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -6984,14 +6864,61 @@
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
-   0: Phelia, Exuberant Shepherd [2/2]
-   1: Recruiter of the Guard [1/1]
-  >> B/B: 0 (Phelia, Exuberant Shepherd [2/2])
+   0: Phelia, Exuberant Shepherd
+   1: Recruiter of the Guard
+  >> B/B: 0 (Phelia, Exuberant Shepherd)
 --- Narrative ---
-  Lion Sash equipped to Phelia, Exuberant Shepherd.
+  Targeting choice 0
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B's Lion Sash ability targeting Phelia, Exuberant Shepherd is on the stack
+
+--- Decision 328 ---
+  Priority: Player B (active)
+  Step: First Main (turn 14)
+  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
+  Opp:   9 life | mana: empty | hand count: 0 | lib 62
+  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [1/1] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self) -> Phelia, Exuberant Shepherd (self, slot 2)
+  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Self exile: White Orchid Phantom
+  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 329 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 14)
+  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
+  Opp:   7 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [1/1] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Stack: Lion Sash (ability, opponent) -> Phelia, Exuberant Shepherd (opponent, slot 50)
+  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp exile:  White Orchid Phantom
+  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
   Phelia, Exuberant Shepherd gains (always)
 
---- Decision 334 ---
+--- Decision 330 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7010,7 +6937,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 335 ---
+--- Decision 331 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7030,7 +6957,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 336 ---
+--- Decision 332 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7049,7 +6976,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 337 ---
+--- Decision 333 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7071,7 +6998,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 338 ---
+--- Decision 334 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7093,9 +7020,87 @@
   Attackers declared:
     (none)
 
---- Decision 339 ---
+--- Decision 335 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
+  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
+  Opp:   9 life | mana: empty | hand count: 0 | lib 62
+  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Self exile: White Orchid Phantom
+  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 336 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 14)
+  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
+  Opp:   7 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp exile:  White Orchid Phantom
+  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 337 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 14)
+  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
+  Opp:   9 life | mana: empty | hand count: 0 | lib 62
+  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Self exile: White Orchid Phantom
+  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
+  This turn: self spells=1 drawn=1 colors=W
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 338 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 14)
+  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
+  Opp:   7 life | mana: empty | hand count: 2 | lib 63
+  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp exile:  White Orchid Phantom
+  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
+  This turn: opp spells=1 drawn=1 colors=W
+  Extras: opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 339 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
   Opp:   9 life | mana: empty | hand count: 0 | lib 62
   Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
@@ -7114,7 +7119,7 @@
 
 --- Decision 340 ---
   Priority: Player A (non-active)
-  Step: Declare Atk (turn 14)
+  Step: Second Main (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
   Opp:   7 life | mana: empty | hand count: 2 | lib 63
   Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
@@ -7131,169 +7136,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 341 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 14)
-  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
-  Opp:   9 life | mana: empty | hand count: 0 | lib 62
-  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 342 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
-  Opp:   7 life | mana: empty | hand count: 2 | lib 63
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 343 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 14)
-  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
-  Opp:   9 life | mana: empty | hand count: 0 | lib 62
-  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 344 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 14)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
-  Opp:   7 life | mana: empty | hand count: 2 | lib 63
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 345 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 14)
-  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
-  Opp:   9 life | mana: empty | hand count: 0 | lib 62
-  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 346 ---
-  Priority: Player A (non-active)
-  Step: End Combat (turn 14)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
-  Opp:   7 life | mana: empty | hand count: 2 | lib 63
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 347 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 14)
-  Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
-  Opp:   9 life | mana: empty | hand count: 0 | lib 62
-  Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 348 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 14)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 62
-  Opp:   7 life | mana: empty | hand count: 2 | lib 63
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:4] (res 1) | Lion Sash [+1/+1:2] (->Phelia, Exuberant Shepherd) | Phelia, Exuberant Shepherd [4/4] [Flash] (eq:Lion Sash) (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 349 ---
   Priority: Player B (active)
   Step: End Step (turn 14)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7312,7 +7156,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 350 ---
+--- Decision 342 ---
   Priority: Player A (non-active)
   Step: End Step (turn 14)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7338,7 +7182,7 @@
   PA: (empty)
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 351 ---
+--- Decision 343 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7360,7 +7204,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 352 ---
+--- Decision 344 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7380,7 +7224,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 353 ---
+--- Decision 345 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7399,7 +7243,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 354 ---
+--- Decision 346 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7422,7 +7266,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 355 ---
+--- Decision 347 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7442,7 +7286,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 356 ---
+--- Decision 348 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7461,7 +7305,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 357 ---
+--- Decision 349 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7484,7 +7328,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 358 ---
+--- Decision 350 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 62
@@ -7503,7 +7347,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 359 ---
+--- Decision 351 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7523,7 +7367,7 @@
 --- Narrative ---
   Player A draws Karakas
 
---- Decision 360 ---
+--- Decision 352 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  9 life | mana: empty | hand(1): Karakas | lib 61
@@ -7543,7 +7387,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 361 ---
+--- Decision 353 ---
   Priority: Player B (non-active)
   Step: Draw (turn 15)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7562,7 +7406,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 362 ---
+--- Decision 354 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(1): Karakas | lib 61
@@ -7587,7 +7431,7 @@
 --- Narrative ---
   Player A played Karakas
 
---- Decision 363 ---
+--- Decision 355 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7613,7 +7457,7 @@
 --- Narrative ---
   Choose target for Karakas:
 
---- Decision 364 ---
+--- Decision 356 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7635,7 +7479,7 @@
   Targeting choice 0
   Player A's Karakas ability targeting Phelia, Exuberant Shepherd is on the stack
 
---- Decision 365 ---
+--- Decision 357 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7657,7 +7501,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 366 ---
+--- Decision 358 ---
   Priority: Player B (non-active)
   Step: First Main (turn 15)
   Self:  7 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -7680,7 +7524,7 @@
   Resolving ability (category: ChangeZone)
   Phelia, Exuberant Shepherd is moved to hand
 
---- Decision 367 ---
+--- Decision 359 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7704,17 +7548,14 @@
    5: Activate Wasteland (Destroy)  [#1]
   >> A/A: 4 (Equip Pre-War Formalwear)
 --- Narrative ---
-  Player A activated Plains for 1(W)
-  Player A activated Scrubland for 1(W)
-  Player A activated Witch-Blessed Meadow for 1(W)
-  Choose creature to equip:
+  Choose target for Pre-War Formalwear:
 
---- Decision 368 ---
+--- Decision 360 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
   Opp:   7 life | mana: empty | hand count: 3 | lib 63
-  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (T,NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (T,NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains | Pre-War Formalwear | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:4] | Lion Sash [+1/+1:2] | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
   Pending: Pre-War Formalwear (self)
   Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
@@ -7726,16 +7567,66 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Orcish Bowmasters [1/1]
-   1: White Orchid Phantom [2/2]
-   2: White Orchid Phantom [2/2]
-   3: Orc Army [1/1]
-  >> A/A: 0 (Orcish Bowmasters [1/1])
+   0: Orcish Bowmasters
+   1: White Orchid Phantom
+   2: White Orchid Phantom
+   3: Orc Army token
+  >> A/A: 0 (Orcish Bowmasters)
 --- Narrative ---
-  Pre-War Formalwear equipped to Orcish Bowmasters.
+  Targeting choice 0
+  Player A activated Plains for 1(W)
+  Player A activated Scrubland for 1(W)
+  Player A activated Witch-Blessed Meadow for 1(W)
+  Player A's Pre-War Formalwear ability targeting Orcish Bowmasters is on the stack
+
+--- Decision 361 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  9 life | mana: empty | hand(0): (empty) | lib 61
+  Opp:   7 life | mana: empty | hand count: 3 | lib 63
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (T,NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:4] | Lion Sash [1/1] [+1/+1:2] | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 3)
+  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp exile:  White Orchid Phantom
+  Known opp hand: Phelia, Exuberant Shepherd
+  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+   3: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 362 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 15)
+  Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
+  Opp:   9 life | mana: empty | hand count: 0 | lib 61
+  Self BF:  Aether Vial [charge:4] | Lion Sash [1/1] [+1/+1:2] | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (T,NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
+  Stack: Pre-War Formalwear (ability, opponent) -> Orcish Bowmasters (opponent, slot 51)
+  Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
+  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
+  Self exile: White Orchid Phantom
+  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
+  Opp revealed: Wasteland, Karakas, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, self_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
   Orcish Bowmasters gains 2/2 Vigilance (always)
 
---- Decision 369 ---
+--- Decision 363 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7757,7 +7648,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 370 ---
+--- Decision 364 ---
   Priority: Player B (non-active)
   Step: First Main (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -7776,7 +7667,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 371 ---
+--- Decision 365 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7798,7 +7689,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 372 ---
+--- Decision 366 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -7819,7 +7710,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 373 ---
+--- Decision 367 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7846,7 +7737,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [3/3] -> Player B
 
---- Decision 374 ---
+--- Decision 368 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7873,7 +7764,7 @@
     [attacking] Orcish Bowmasters [3/3] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 375 ---
+--- Decision 369 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7900,7 +7791,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 376 ---
+--- Decision 370 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7927,7 +7818,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 377 ---
+--- Decision 371 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7952,7 +7843,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 378 ---
+--- Decision 372 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -7974,7 +7865,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 379 ---
+--- Decision 373 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8001,7 +7892,7 @@
     3: Orc Army token [1/1]
   Your creatures:
 
---- Decision 380 ---
+--- Decision 374 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8023,7 +7914,7 @@
 --- Narrative ---
   Select attacker for Lion Sash to block:
 
---- Decision 381 ---
+--- Decision 375 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8053,7 +7944,7 @@
   Your creatures:
     (assigned) Lion Sash [1/1] blocking Orcish Bowmasters
 
---- Decision 382 ---
+--- Decision 376 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8075,7 +7966,7 @@
   Blockers declared:
     Lion Sash blocking Orcish Bowmasters
 
---- Decision 383 ---
+--- Decision 377 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8097,7 +7988,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 384 ---
+--- Decision 378 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  7 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8121,7 +8012,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 385 ---
+--- Decision 379 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8143,7 +8034,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 386 ---
+--- Decision 380 ---
   Priority: Player B (non-active)
   Step: First Strike Dmg (turn 15)
   Self:  3 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8169,7 +8060,7 @@
   --- End Combat Damage ---
   Lion Sash is destroyed (lethal damage)
 
---- Decision 387 ---
+--- Decision 381 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8191,7 +8082,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 388 ---
+--- Decision 382 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 15)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8210,7 +8101,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 389 ---
+--- Decision 383 ---
   Priority: Player A (active)
   Step: End Combat (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8232,7 +8123,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 390 ---
+--- Decision 384 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 15)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8251,7 +8142,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 391 ---
+--- Decision 385 ---
   Priority: Player A (active)
   Step: Second Main (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8273,7 +8164,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 392 ---
+--- Decision 386 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 15)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8294,7 +8185,7 @@
 --- Narrative ---
   Overlord of the Balemurk triggers: remove a time counter (impending).
 
---- Decision 393 ---
+--- Decision 387 ---
   Priority: Player A (active)
   Step: End Step (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8317,7 +8208,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 394 ---
+--- Decision 388 ---
   Priority: Player B (non-active)
   Step: End Step (turn 15)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8340,7 +8231,7 @@
   Resolving ability (category: RemoveCounter, amount: 1)
   Removed 1 TIME counter(s) from Overlord of the Balemurk.
 
---- Decision 395 ---
+--- Decision 389 ---
   Priority: Player A (active)
   Step: End Step (turn 15)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8362,7 +8253,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 396 ---
+--- Decision 390 ---
   Priority: Player B (non-active)
   Step: End Step (turn 15)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8387,7 +8278,7 @@
   PA: (empty)
   PB: Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd
 
---- Decision 397 ---
+--- Decision 391 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 63
@@ -8410,7 +8301,7 @@
   Player B activated Plains for 1(W)
   Player B casts Phelia, Exuberant Shepherd
 
---- Decision 398 ---
+--- Decision 392 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -8429,7 +8320,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 399 ---
+--- Decision 393 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8453,7 +8344,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 400 ---
+--- Decision 394 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -8472,7 +8363,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 401 ---
+--- Decision 395 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8494,7 +8385,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 402 ---
+--- Decision 396 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -8518,7 +8409,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 403 ---
+--- Decision 397 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 63
@@ -8536,7 +8427,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 404 ---
+--- Decision 398 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8559,7 +8450,7 @@
 --- Narrative ---
   Player B draws Prismatic Vista
 
---- Decision 405 ---
+--- Decision 399 ---
   Priority: Player B (active)
   Step: Draw (turn 16)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Prismatic Vista | lib 62
@@ -8577,7 +8468,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 406 ---
+--- Decision 400 ---
   Priority: Player A (non-active)
   Step: Draw (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8598,7 +8489,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 407 ---
+--- Decision 401 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Prismatic Vista | lib 62
@@ -8619,7 +8510,7 @@
 --- Narrative ---
   Player B played Prismatic Vista
 
---- Decision 408 ---
+--- Decision 402 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 62
@@ -8643,7 +8534,7 @@
   Player B sacrifices Prismatic Vista
   Player B's Prismatic Vista ability is on the stack
 
---- Decision 409 ---
+--- Decision 403 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 62
@@ -8663,7 +8554,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 410 ---
+--- Decision 404 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8688,7 +8579,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 411 ---
+--- Decision 405 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 62
@@ -8713,7 +8604,7 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
 
---- Decision 412 ---
+--- Decision 406 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -8733,7 +8624,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 413 ---
+--- Decision 407 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8754,7 +8645,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 414 ---
+--- Decision 408 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -8773,7 +8664,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 415 ---
+--- Decision 409 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8796,7 +8687,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 416 ---
+--- Decision 410 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -8818,7 +8709,7 @@
   Attackers declared:
     (none)
 
---- Decision 417 ---
+--- Decision 411 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -8837,7 +8728,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 418 ---
+--- Decision 412 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8857,93 +8748,8 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 419 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 16)
-  Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
-  Opp:   9 life | mana: empty | hand count: 0 | lib 61
-  Self BF:  Aether Vial [charge:5] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Plains (NEW) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Prismatic Vista, Lion Sash, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Karakas, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 420 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 16)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 61
-  Opp:   1 life | mana: empty | hand count: 2 | lib 61
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:5] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Plains (NEW) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Prismatic Vista, Lion Sash, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Prismatic Vista, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 421 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 16)
-  Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
-  Opp:   9 life | mana: empty | hand count: 0 | lib 61
-  Self BF:  Aether Vial [charge:5] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Plains (NEW) | Recruiter of the Guard [1/1]
-  Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Prismatic Vista, Lion Sash, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Self exile: White Orchid Phantom
-  Opp exile:  Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Karakas, Plains, Swords to Plowshares, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad, Overlord of the Balemurk
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 422 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 16)
-  Self:  9 life | mana: empty | hand(0): (empty) | lib 61
-  Opp:   1 life | mana: empty | hand count: 2 | lib 61
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Aether Vial [charge:5] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Plains (NEW) | Recruiter of the Guard [1/1]
-  Self GY: Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
-  Opp GY:  Prismatic Vista, Lion Sash, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
-  Self exile: Prismatic Vista, Wasteland, Phelia, Exuberant Shepherd
-  Opp exile:  White Orchid Phantom
-  Opp revealed: Plains, Swords to Plowshares, Windswept Heath, Shadowy Backstreet, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Recruiter of the Guard, Phelia, Exuberant Shepherd, Prismatic Vista, Lion Sash, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-   3: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 423 ---
+--- Decision 413 ---
   Priority: Player B (active)
   Step: End Combat (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -8962,7 +8768,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 424 ---
+--- Decision 414 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -8983,7 +8789,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 425 ---
+--- Decision 415 ---
   Priority: Player B (active)
   Step: Second Main (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9003,7 +8809,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 426 ---
+--- Decision 416 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9024,7 +8830,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 427 ---
+--- Decision 417 ---
   Priority: Player B (active)
   Step: End Step (turn 16)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9043,7 +8849,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 428 ---
+--- Decision 418 ---
   Priority: Player A (non-active)
   Step: End Step (turn 16)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9070,7 +8876,7 @@
   PA: (empty)
   PB: Overlord of the Balemurk, Overlord of the Balemurk
 
---- Decision 429 ---
+--- Decision 419 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9092,7 +8898,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 430 ---
+--- Decision 420 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9113,7 +8919,7 @@
    4: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 431 ---
+--- Decision 421 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9132,7 +8938,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 432 ---
+--- Decision 422 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9155,7 +8961,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 433 ---
+--- Decision 423 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9176,7 +8982,7 @@
    4: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 434 ---
+--- Decision 424 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9195,7 +9001,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 435 ---
+--- Decision 425 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9218,7 +9024,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 8).
 
---- Decision 436 ---
+--- Decision 426 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 61
@@ -9238,7 +9044,7 @@
    4: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 437 ---
+--- Decision 427 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9258,7 +9064,7 @@
 --- Narrative ---
   Player A draws Overlord of the Balemurk
 
---- Decision 438 ---
+--- Decision 428 ---
   Priority: Player A (active)
   Step: Draw (turn 17)
   Self:  9 life | mana: empty | hand(1): Overlord of the Balemurk | lib 60
@@ -9279,7 +9085,7 @@
    4: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 439 ---
+--- Decision 429 ---
   Priority: Player B (non-active)
   Step: Draw (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9298,7 +9104,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 440 ---
+--- Decision 430 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(1): Overlord of the Balemurk | lib 60
@@ -9326,7 +9132,7 @@
   Player A activated Plains for 1(W)
   Player A casts Overlord of the Balemurk
 
---- Decision 441 ---
+--- Decision 431 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9350,7 +9156,7 @@
 --- Narrative ---
   Choose target for Karakas:
 
---- Decision 442 ---
+--- Decision 432 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9373,7 +9179,7 @@
   Targeting choice 0
   Player A's Karakas ability targeting Phelia, Exuberant Shepherd is on the stack
 
---- Decision 443 ---
+--- Decision 433 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9394,7 +9200,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 444 ---
+--- Decision 434 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9417,7 +9223,7 @@
   Resolving ability (category: ChangeZone)
   Phelia, Exuberant Shepherd is moved to hand
 
---- Decision 445 ---
+--- Decision 435 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9440,7 +9246,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 446 ---
+--- Decision 436 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, Phelia, Exuberant Shepherd | lib 61
@@ -9465,7 +9271,7 @@
   Player B activated Plains for 1(W)
   Player B casts Phelia, Exuberant Shepherd
 
---- Decision 447 ---
+--- Decision 437 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9485,7 +9291,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 448 ---
+--- Decision 438 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9509,7 +9315,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 449 ---
+--- Decision 439 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9529,7 +9335,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 450 ---
+--- Decision 440 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9555,7 +9361,7 @@
   Overlord of the Balemurk enters with 5 time counter(s) (impending).
   Overlord of the Balemurk triggered
 
---- Decision 451 ---
+--- Decision 441 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9575,7 +9381,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 452 ---
+--- Decision 442 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 60
@@ -9605,7 +9411,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A graveyard:
 
---- Decision 453 ---
+--- Decision 443 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(0): (empty) | lib 56
@@ -9629,7 +9435,7 @@
 --- Narrative ---
   Player A puts Solitude to hand
 
---- Decision 454 ---
+--- Decision 444 ---
   Priority: Player B (non-active)
   Step: First Main (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9649,7 +9455,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 455 ---
+--- Decision 445 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9670,7 +9476,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 456 ---
+--- Decision 446 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9691,7 +9497,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 457 ---
+--- Decision 447 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9713,7 +9519,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 458 ---
+--- Decision 448 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9739,7 +9545,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [3/3] -> Player B
 
---- Decision 459 ---
+--- Decision 449 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9765,7 +9571,7 @@
     [attacking] Orcish Bowmasters [3/3] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 460 ---
+--- Decision 450 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9791,7 +9597,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 461 ---
+--- Decision 451 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9817,7 +9623,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 462 ---
+--- Decision 452 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9841,7 +9647,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 463 ---
+--- Decision 453 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -9862,7 +9668,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 464 ---
+--- Decision 454 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9890,7 +9696,7 @@
     3: Orc Army token [1/1]
   Your creatures:
 
---- Decision 465 ---
+--- Decision 455 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9913,7 +9719,7 @@
 --- Narrative ---
   Select attacker for Phelia, Exuberant Shepherd to block:
 
---- Decision 466 ---
+--- Decision 456 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9944,7 +9750,7 @@
   Your creatures:
     (assigned) Phelia, Exuberant Shepherd [2/2] blocking Orcish Bowmasters
 
---- Decision 467 ---
+--- Decision 457 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9966,7 +9772,7 @@
 --- Narrative ---
   Select attacker for Recruiter of the Guard to block:
 
---- Decision 468 ---
+--- Decision 458 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -9998,7 +9804,7 @@
     (assigned) Phelia, Exuberant Shepherd [2/2] blocking Orcish Bowmasters
     (assigned) Recruiter of the Guard [1/1] blocking Orcish Bowmasters
 
---- Decision 469 ---
+--- Decision 459 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61
@@ -10021,7 +9827,7 @@
     Phelia, Exuberant Shepherd blocking Orcish Bowmasters
     Recruiter of the Guard blocking Orcish Bowmasters
 
---- Decision 470 ---
+--- Decision 460 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 17)
   Self:  9 life | mana: empty | hand(1): Solitude | lib 56
@@ -10042,7 +9848,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 471 ---
+--- Decision 461 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  1 life | mana: empty | hand(2): Overlord of the Balemurk, Overlord of the Balemurk | lib 61

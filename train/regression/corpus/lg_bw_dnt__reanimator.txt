@@ -149,9 +149,6 @@
   Resolving ability (category: Counter)
   Aether Vial is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Atraxa, Grand Unifier
 --- Turn 2 (Player B) ---
@@ -346,9 +343,6 @@
   Player B shuffles their library
   Player B puts Swamp to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Wasteland
 --- Turn 3 (Player A) ---
@@ -518,49 +512,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Swamp
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Swamp, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 25 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Swamp
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Swamp, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 26 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -578,7 +531,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -596,7 +549,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -619,7 +572,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -638,7 +591,7 @@
 --- Narrative ---
   Player B draws Careful Study
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -656,7 +609,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Flooded Strand, Scalding Tarn | lib 49
@@ -676,7 +629,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 49
@@ -698,7 +651,7 @@
   Player B sacrifices Flooded Strand
   Player B's Flooded Strand ability is on the stack
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -720,7 +673,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 49
@@ -749,7 +702,7 @@
   Player B shuffles their library
   Player B puts Island to the battlefield
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 48
@@ -770,7 +723,7 @@
   Player B activated Island for 1(U)
   Player B casts Careful Study
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -795,7 +748,7 @@
   Resolving ability (category: Discard)
   Player B chooses a card to discard:
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Brainstorm, Scalding Tarn, Underground Sea | lib 46
@@ -821,7 +774,7 @@
   Player B discards Archon of Cruelty
   Player B chooses a card to discard:
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Atraxa, Grand Unifier, Brainstorm, Scalding Tarn, Underground Sea | lib 46
@@ -845,7 +798,7 @@
 --- Narrative ---
   Player B discards Atraxa, Grand Unifier
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -863,7 +816,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -883,7 +836,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -900,49 +853,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 42 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T,NEW) | Swamp
-  Self GY: Aether Vial
-  Opp GY:  Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flooded Strand, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 43 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T,NEW) | Swamp
-  Self GY: Aether Vial
-  Opp GY:  Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flooded Strand, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -960,7 +872,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -978,7 +890,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1002,7 +914,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Atraxa, Grand Unifier, Brainstorm, Scalding Tarn, Underground Sea
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1026,7 +938,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1047,7 +959,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1071,7 +983,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1094,7 +1006,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1112,7 +1024,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1135,7 +1047,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1154,7 +1066,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1171,7 +1083,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1192,7 +1104,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1213,7 +1125,7 @@
 --- Narrative ---
   Player A's Aether Vial ability is on the stack
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1235,7 +1147,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1256,7 +1168,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1274,7 +1186,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1294,7 +1206,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1311,49 +1223,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 62 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Swamp
-  Self GY: Aether Vial
-  Opp GY:  Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flooded Strand, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 63 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Swamp
-  Self GY: Aether Vial
-  Opp GY:  Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flooded Strand, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Lotus Petal, Swamp, Bloodstained Mire, Careful Study, Archon of Cruelty, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1371,7 +1242,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 65 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1389,7 +1260,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 66 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1412,7 +1283,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Brainstorm, Scalding Tarn, Underground Sea
 
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  16 life | mana: empty | hand(3): Brainstorm, Scalding Tarn, Underground Sea | lib 46
@@ -1431,7 +1302,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1457,7 +1328,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  16 life | mana: empty | hand(5): Force of Will, Griselbrand, Ponder, Scalding Tarn, Underground Sea | lib 43
@@ -1483,7 +1354,7 @@
   Player B puts Ponder to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  16 life | mana: empty | hand(4): Force of Will, Griselbrand, Scalding Tarn, Underground Sea | lib 44
@@ -1509,7 +1380,7 @@
   Player B puts Force of Will to top of library
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 71 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1531,7 +1402,7 @@
 --- Narrative ---
   Choose target for Orcish Bowmasters:
 
---- Decision 72 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1556,7 +1427,7 @@
   Orcish Bowmasters triggered
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 73 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1578,7 +1449,7 @@
 --- Narrative ---
   Choose target for Orcish Bowmasters:
 
---- Decision 74 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1604,7 +1475,7 @@
   Orcish Bowmasters triggered
   Choose target for Orcish Bowmasters:
 
---- Decision 75 ---
+--- Decision 69 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1629,7 +1500,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1653,7 +1524,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1677,7 +1548,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1701,7 +1572,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 4/4.
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1721,7 +1592,7 @@
 --- Narrative ---
   Player B draws Force of Will
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1739,7 +1610,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(4): Force of Will, Griselbrand, Scalding Tarn, Underground Sea | lib 44
@@ -1760,7 +1631,7 @@
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Griselbrand, Underground Sea | lib 44
@@ -1783,7 +1654,7 @@
   Player B sacrifices Scalding Tarn
   Player B's Scalding Tarn ability is on the stack
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1805,7 +1676,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  12 life | mana: empty | hand(3): Force of Will, Griselbrand, Underground Sea | lib 44
@@ -1835,7 +1706,7 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1856,7 +1727,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1887,7 +1758,7 @@
   Player B surveils 1.
   Surveil: looking at Thoughtseize
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  12 life | mana: empty | hand(3): Force of Will, Griselbrand, Underground Sea | lib 43
@@ -1909,16 +1780,13 @@
 --- Narrative ---
   Player B puts Thoughtseize into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Aether Vial triggered
 --- Turn 7 (Player A) ---
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Force of Will, Griselbrand, Underground Sea
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1941,7 +1809,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1961,7 +1829,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1979,7 +1847,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -2002,7 +1870,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -2021,7 +1889,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -2038,7 +1906,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -2058,7 +1926,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2080,7 +1948,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2102,7 +1970,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2125,7 +1993,7 @@
   Player A puts White Orchid Phantom to the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
@@ -2153,7 +2021,7 @@
   Resolving ability (category: ChangeZone)
   --- Declare Attackers (Player A) ---
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
@@ -2176,7 +2044,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
@@ -2199,7 +2067,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [4/4] -> Player B
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
@@ -2230,7 +2098,7 @@
   PA: Pre-War Formalwear
   PB: Force of Will, Griselbrand, Reanimate, Underground Sea
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  7 life | mana: empty | hand(4): Force of Will, Griselbrand, Reanimate, Underground Sea | lib 41
@@ -2250,7 +2118,7 @@
 --- Narrative ---
   Choose target for Reanimate:
 
---- Decision 103 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  7 life | mana: empty | hand(4): Force of Will, Griselbrand, Reanimate, Underground Sea | lib 41

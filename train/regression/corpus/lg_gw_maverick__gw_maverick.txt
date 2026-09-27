@@ -162,9 +162,6 @@
 --- Narrative ---
   Player A played Forest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Keen-Eyed Curator
 --- Turn 2 (Player B) ---
@@ -190,9 +187,6 @@
 --- Narrative ---
   Player B played Dryad Arbor
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Swords to Plowshares
 --- Turn 3 (Player A) ---
@@ -268,9 +262,6 @@
   Resolving ability (category: Earthbend)
   Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thalia, Guardian of Thraben
 --- Turn 4 (Player B) ---
@@ -419,9 +410,6 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
@@ -989,51 +977,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 44 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Badgermole Cub [2/2] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Wasteland
-  Opp BF:   Forest (T) | Noble Hierarch [0/1] (SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 45 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Badgermole Cub [2/2] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Wasteland
-  Opp BF:   Forest (T) | Noble Hierarch [0/1] (SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 46 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1052,7 +997,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1071,7 +1016,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1095,7 +1040,7 @@
   PA: Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1114,7 +1059,7 @@
 --- Narrative ---
   Player A draws Gaea's Cradle
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1132,7 +1077,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1155,7 +1100,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1180,7 +1125,7 @@
   Player A activated Forest for 1(G)
   Player A casts Green Sun's Zenith
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(4): Gaea's Cradle, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1202,7 +1147,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(4): Gaea's Cradle, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1227,7 +1172,7 @@
   Player A puts Dryad Arbor to the battlefield
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(4): Gaea's Cradle, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1249,7 +1194,7 @@
 --- Narrative ---
   Player A played Gaea's Cradle
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1268,7 +1213,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 57 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1289,7 +1234,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 58 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1312,7 +1257,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 59 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1333,7 +1278,7 @@
   Attackers declared:
     Badgermole Cub -> Player B
 
---- Decision 60 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1357,7 +1302,7 @@
     0: Badgermole Cub [2/2]
   Your creatures:
 
---- Decision 61 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  18 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
@@ -1379,7 +1324,7 @@
   Blockers declared:
     (none)
 
---- Decision 62 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1402,7 +1347,7 @@
     Badgermole Cub deals 2 damage to Player B
   --- End Combat Damage ---
 
---- Decision 63 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1421,7 +1366,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 62 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1440,7 +1385,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 65 ---
+--- Decision 63 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1459,7 +1404,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 66 ---
+--- Decision 64 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1483,7 +1428,7 @@
   PA: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 67 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  16 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
@@ -1502,7 +1447,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 68 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  16 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
@@ -1527,7 +1472,7 @@
   Player B activated Noble Hierarch for 1(W)
   Player B casts Swords to Plowshares targeting Badgermole Cub
 
---- Decision 69 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1552,7 +1497,7 @@
   Resolving ability (category: GainLife, amount: 2)
   Player A gains 2 life (now at 22)
 
---- Decision 70 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  22 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1574,7 +1519,7 @@
 --- Narrative ---
   Player B draws Talon Gates of Madara
 
---- Decision 71 ---
+--- Decision 69 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  22 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1594,7 +1539,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 72 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
@@ -1617,7 +1562,7 @@
   Player B played Talon Gates of Madara
   Choose target for Talon Gates of Madara:
 
---- Decision 73 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(4): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
@@ -1643,7 +1588,7 @@
   Targeting choice 0
   Talon Gates of Madara triggered
 
---- Decision 74 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  22 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1666,7 +1611,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 75 ---
+--- Decision 73 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  22 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1694,7 +1639,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Talon Gates of Madara is on the stack
 
---- Decision 76 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(4): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
@@ -1724,16 +1669,13 @@
   Talon Gates of Madara is destroyed
   Resolving ability (category: Phases)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Knight of the Reliquary
 --- Turn 9 (Player A) ---
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 77 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -1754,7 +1696,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 78 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1774,7 +1716,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 79 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1796,7 +1738,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 80 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1821,7 +1763,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Dryad Arbor [1/1] -> Player B
 
---- Decision 81 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1846,7 +1788,7 @@
     [attacking] Dryad Arbor [1/1] -> Player B
     [attacking] Forest [1/1] -> Player B
 
---- Decision 82 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1869,7 +1811,7 @@
     Dryad Arbor -> Player B
     Forest -> Player B
 
---- Decision 83 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1891,7 +1833,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 84 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1916,7 +1858,7 @@
     Forest deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 85 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1936,7 +1878,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1956,7 +1898,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 87 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -1976,7 +1918,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2001,7 +1943,7 @@
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 89 ---
+--- Decision 87 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2022,7 +1964,7 @@
 --- Narrative ---
   Player B draws Wasteland
 
---- Decision 90 ---
+--- Decision 88 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2042,7 +1984,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -2069,7 +2011,7 @@
   Player B activated Noble Hierarch for 1(G)
   Player B casts Keen-Eyed Curator
 
---- Decision 92 ---
+--- Decision 90 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2092,7 +2034,7 @@
 --- Narrative ---
   Keen-Eyed Curator enters the battlefield
 
---- Decision 93 ---
+--- Decision 91 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(4): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -2113,7 +2055,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 94 ---
+--- Decision 92 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2136,7 +2078,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 95 ---
+--- Decision 93 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2169,7 +2111,7 @@
   Player B activated Wasteland for 1(C)
   Player B's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
 
---- Decision 96 ---
+--- Decision 94 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2192,7 +2134,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 97 ---
+--- Decision 95 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2224,9 +2166,6 @@
   Resolving ability (category: ChangeZone)
   Once Upon a Time is moved to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Knight of the Reliquary
   --- Declare Attackers (Player A) ---
@@ -2234,7 +2173,7 @@
   PA: Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 98 ---
+--- Decision 96 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2257,15 +2196,12 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
   PA: Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 99 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2285,7 +2221,7 @@
 --- Narrative ---
   Player B draws Green Sun's Zenith
 
---- Decision 100 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  14 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2304,7 +2240,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2329,7 +2265,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 102 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2354,7 +2290,7 @@
   Player B activated Forest for 1(G)
   Player B casts Green Sun's Zenith
 
---- Decision 103 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2377,7 +2313,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 104 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2402,7 +2338,7 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 105 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2423,7 +2359,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 106 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2460,7 +2396,7 @@
   Once Upon a Time is moved to exile
   --- Declare Attackers (Player B) ---
 
---- Decision 107 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2484,7 +2420,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
---- Decision 108 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2513,7 +2449,7 @@
     0: Keen-Eyed Curator [4/4]
   Your creatures:
 
---- Decision 109 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2546,7 +2482,7 @@
   PA: Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 110 ---
+--- Decision 108 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2571,7 +2507,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Dryad Arbor [1/1] -> Player B
 
---- Decision 111 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2596,7 +2532,7 @@
     [attacking] Dryad Arbor [1/1] -> Player B
     [attacking] Forest [1/1] -> Player B
 
---- Decision 112 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2628,7 +2564,7 @@
   PA: Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 113 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  12 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
@@ -2648,7 +2584,7 @@
 --- Narrative ---
   Player B draws Once Upon a Time
 
---- Decision 114 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  12 life | mana: empty | hand(4): Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2674,7 +2610,7 @@
   Resolving ability (category: Dig)
   Player B looks at the top 5 card(s) of their library.
 
---- Decision 115 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  12 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
@@ -2704,7 +2640,7 @@
   Player B puts 4 card(s) on the bottom of their library.
   --- Declare Attackers (Player B) ---
 
---- Decision 116 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Birds of Paradise, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2728,7 +2664,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
---- Decision 117 ---
+--- Decision 115 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Birds of Paradise, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2762,7 +2698,7 @@
   PA: Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Verdant Catacombs
   PB: Birds of Paradise, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 118 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  14 life | mana: empty | hand(6): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Verdant Catacombs | lib 44
@@ -2783,7 +2719,7 @@
 --- Narrative ---
   Player A played Verdant Catacombs
 
---- Decision 119 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  14 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2809,7 +2745,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 120 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  13 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2835,7 +2771,7 @@
   Player A shuffles their library
   Player A puts Savannah to the battlefield
 
---- Decision 121 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  13 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -2866,15 +2802,12 @@
   Knight of the Reliquary enters the battlefield
   Knight of the Reliquary gains (always)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
 --- Turn 16 (Player B) ---
   PA: Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Birds of Paradise, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 122 ---
+--- Decision 120 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  12 life | mana: empty | hand(4): Birds of Paradise, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
@@ -2894,7 +2827,7 @@
 --- Narrative ---
   Player B draws Green Sun's Zenith
 
---- Decision 123 ---
+--- Decision 121 ---
   Priority: Player B (active)
   Step: Draw (turn 16)
   Self:  12 life | mana: empty | hand(5): Birds of Paradise, Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2913,7 +2846,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 122 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  12 life | mana: empty | hand(5): Birds of Paradise, Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2940,7 +2873,7 @@
   Player B activated Forest for 1(G)
   Player B casts Birds of Paradise
 
---- Decision 125 ---
+--- Decision 123 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2962,7 +2895,7 @@
 --- Narrative ---
   Birds of Paradise enters the battlefield
 
---- Decision 126 ---
+--- Decision 124 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -2984,7 +2917,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 127 ---
+--- Decision 125 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -3022,7 +2955,7 @@
   Savannah is moved to exile
   --- Declare Attackers (Player B) ---
 
---- Decision 128 ---
+--- Decision 126 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 16)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -3044,15 +2977,12 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
 --- Turn 17 (Player A) ---
   PA: Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 129 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3072,7 +3002,7 @@
 --- Narrative ---
   Player A draws Windswept Heath
 
---- Decision 130 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: Draw (turn 17)
   Self:  13 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
@@ -3091,7 +3021,7 @@
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 131 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
@@ -3120,7 +3050,7 @@
   Player A activated Forest for 1(G)
   Player A casts Knight of the Reliquary
 
---- Decision 132 ---
+--- Decision 130 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
@@ -3140,7 +3070,7 @@
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 133 ---
+--- Decision 131 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
@@ -3168,7 +3098,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 134 ---
+--- Decision 132 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
@@ -3207,7 +3137,7 @@
   Bojuka Bog enters tapped.
   Choose target for Bojuka Bog:
 
---- Decision 135 ---
+--- Decision 133 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 41
@@ -3243,7 +3173,7 @@
   Knight of the Reliquary enters the battlefield
   Knight of the Reliquary gains (always)
 
---- Decision 136 ---
+--- Decision 134 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 41
@@ -3264,7 +3194,7 @@
 --- Narrative ---
   Player A played Windswept Heath
 
---- Decision 137 ---
+--- Decision 135 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 41
@@ -3289,7 +3219,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 138 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 41
@@ -3314,7 +3244,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 139 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 40
@@ -3341,15 +3271,12 @@
   Knight of the Reliquary enters the battlefield
   Knight of the Reliquary gains (always)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 140 ---
+--- Decision 138 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -3368,7 +3295,7 @@
 --- Narrative ---
   Player B draws Badgermole Cub
 
---- Decision 141 ---
+--- Decision 139 ---
   Priority: Player B (active)
   Step: Draw (turn 18)
   Self:  12 life | mana: empty | hand(5): Badgermole Cub, Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3386,7 +3313,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 142 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  12 life | mana: empty | hand(5): Badgermole Cub, Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3413,7 +3340,7 @@
   Player B activated Birds of Paradise for 1(W)
   Player B casts Badgermole Cub
 
---- Decision 143 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3435,7 +3362,7 @@
   Badgermole Cub enters the battlefield
   Choose target for Badgermole Cub:
 
---- Decision 144 ---
+--- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3457,7 +3384,7 @@
   Targeting choice 0
   Badgermole Cub triggered
 
---- Decision 145 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3479,7 +3406,7 @@
   Resolving ability (category: Earthbend)
   Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
 
---- Decision 146 ---
+--- Decision 144 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3507,7 +3434,7 @@
   Scythecat Cub enters the battlefield
   --- Declare Attackers (Player B) ---
 
---- Decision 147 ---
+--- Decision 145 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -3528,15 +3455,12 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
 --- Turn 19 (Player A) ---
   PA: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 148 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 40
@@ -3557,7 +3481,7 @@
 --- Narrative ---
   Player A draws Windswept Heath
 
---- Decision 149 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: Draw (turn 19)
   Self:  12 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3577,7 +3501,7 @@
    3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 150 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3604,7 +3528,7 @@
   Player A activated Bojuka Bog for 1(B)
   Player A casts Thalia, Guardian of Thraben
 
---- Decision 151 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3625,7 +3549,7 @@
    3: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 152 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3651,7 +3575,7 @@
   Player A's Knight of the Reliquary ability is on the stack
   Delayed trigger fires.
 
---- Decision 153 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3672,7 +3596,7 @@
    2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 154 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3696,7 +3620,7 @@
   Player A sacrifices Plains
   Player A's Knight of the Reliquary ability is on the stack
 
---- Decision 155 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3716,7 +3640,7 @@
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 156 ---
+--- Decision 154 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3741,7 +3665,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 157 ---
+--- Decision 155 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
@@ -3774,7 +3698,7 @@
   Player A shuffles their library
   Player A puts Horizon Canopy to the battlefield
 
---- Decision 158 ---
+--- Decision 156 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 38
@@ -3802,7 +3726,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 159 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: 2G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 37
@@ -3839,7 +3763,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 160 ---
+--- Decision 158 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: 2G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 36
@@ -3870,7 +3794,7 @@
   Player A shuffles their library
   Player A puts Misty Rainforest to the battlefield
 
---- Decision 161 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: 2G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 35
@@ -3896,7 +3820,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 162 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: 2G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 35
@@ -3921,7 +3845,7 @@
   Player A puts Savannah to the battlefield
   Thalia, Guardian of Thraben enters the battlefield
 
---- Decision 163 ---
+--- Decision 161 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: 2G | hand(3): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 34
@@ -3948,7 +3872,7 @@
   Thalia, Guardian of Thraben enters the battlefield
   Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
 
---- Decision 164 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: 1G | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 34
@@ -3969,7 +3893,7 @@
 --- Narrative ---
   Thalia, Guardian of Thraben is put into the graveyard (legend rule)
 
---- Decision 165 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: 1G | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 34
@@ -3994,7 +3918,7 @@
   Thalia, Guardian of Thraben enters the battlefield
   Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
 
---- Decision 166 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: empty | hand(1): Windswept Heath | lib 34
@@ -4015,7 +3939,7 @@
 --- Narrative ---
   Thalia, Guardian of Thraben is put into the graveyard (legend rule)
 
---- Decision 167 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: empty | hand(1): Windswept Heath | lib 34
@@ -4036,7 +3960,7 @@
 --- Narrative ---
   Player A played Windswept Heath
 
---- Decision 168 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  11 life | mana: empty | hand(0): (empty) | lib 34
@@ -4061,7 +3985,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 169 ---
+--- Decision 167 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 34
@@ -4084,15 +4008,12 @@
   Player A shuffles their library
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
 --- Turn 20 (Player B) ---
   PA: (empty)
   PB: Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
---- Decision 170 ---
+--- Decision 168 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -4111,7 +4032,7 @@
 --- Narrative ---
   Player B draws Green Sun's Zenith
 
---- Decision 171 ---
+--- Decision 169 ---
   Priority: Player B (active)
   Step: Draw (turn 20)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
@@ -4129,7 +4050,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 170 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
@@ -4153,7 +4074,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 173 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
@@ -4178,7 +4099,7 @@
   Player B activated Forest for 1(G)
   Player B casts Green Sun's Zenith
 
---- Decision 174 ---
+--- Decision 172 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
@@ -4200,7 +4121,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 175 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
@@ -4224,7 +4145,7 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 176 ---
+--- Decision 174 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -4247,7 +4168,7 @@
 --- Narrative ---
   Choose X value (0-0):
 
---- Decision 177 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -4271,7 +4192,7 @@
   Player B activated Birds of Paradise for 1(G)
   Player B casts Green Sun's Zenith
 
---- Decision 178 ---
+--- Decision 176 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -4293,7 +4214,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 179 ---
+--- Decision 177 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
@@ -4317,7 +4238,7 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 180 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
@@ -4343,7 +4264,7 @@
   Thalia, Guardian of Thraben enters the battlefield
   --- Declare Attackers (Player B) ---
 
---- Decision 181 ---
+--- Decision 179 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  12 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 44
@@ -4368,7 +4289,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Badgermole Cub [2/2] -> Player A
 
---- Decision 182 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  12 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 44
@@ -4393,7 +4314,7 @@
     [attacking] Badgermole Cub [2/2] -> Player A
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
---- Decision 183 ---
+--- Decision 181 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  12 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 44
@@ -4418,7 +4339,7 @@
     [attacking] Keen-Eyed Curator [3/3] -> Player A
     [attacking] Scythecat Cub [2/2] -> Player A
 
---- Decision 184 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  12 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 44
@@ -4447,7 +4368,7 @@
     2: Scythecat Cub [2/2]
   Your creatures:
 
---- Decision 185 ---
+--- Decision 183 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 20)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 34
@@ -4478,7 +4399,7 @@
   PA: (empty)
   PB: Thalia, Guardian of Thraben
 
---- Decision 186 ---
+--- Decision 184 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 34
@@ -4500,7 +4421,7 @@
 --- Narrative ---
   Player A draws Once Upon a Time
 
---- Decision 187 ---
+--- Decision 185 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: empty | hand(1): Once Upon a Time | lib 33
@@ -4527,7 +4448,7 @@
   Player A activated Gaea's Cradle for 4(G)
   Player A casts Once Upon a Time
 
---- Decision 188 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: 2G | hand(0): (empty) | lib 33
@@ -4552,7 +4473,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 5 card(s) of their library.
 
---- Decision 189 ---
+--- Decision 187 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: 2G | hand(0): (empty) | lib 33
@@ -4579,7 +4500,7 @@
   Player A puts Scryb Ranger into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
---- Decision 190 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: 2G | hand(1): Scryb Ranger | lib 32
@@ -4603,7 +4524,7 @@
 --- Narrative ---
   Player A casts Scryb Ranger
 
---- Decision 191 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4627,7 +4548,7 @@
 --- Narrative ---
   Scryb Ranger enters the battlefield
 
---- Decision 192 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4649,7 +4570,7 @@
    5: Activate Scryb Ranger (Untap)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 193 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4673,7 +4594,7 @@
 --- Narrative ---
   Choose target for Karakas:
 
---- Decision 194 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4696,7 +4617,7 @@
   Targeting choice 0
   Player A's Karakas ability targeting Thalia, Guardian of Thraben is on the stack
 
---- Decision 195 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4718,7 +4639,7 @@
    4: Activate Scryb Ranger (Untap)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 196 ---
+--- Decision 194 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4742,7 +4663,7 @@
   Player A sacrifices Forest
   Player A's Knight of the Reliquary ability is on the stack
 
---- Decision 197 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4764,7 +4685,7 @@
    3: Activate Scryb Ranger (Untap)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 198 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4789,7 +4710,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 199 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
@@ -4818,7 +4739,7 @@
   Player A shuffles their library
   Player A puts Misty Rainforest to the battlefield
 
---- Decision 200 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 31
@@ -4844,7 +4765,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 201 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 31
@@ -4869,7 +4790,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 202 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 31
@@ -4898,7 +4819,7 @@
   Player A puts Talon Gates of Madara to the battlefield
   Choose target for Talon Gates of Madara:
 
---- Decision 203 ---
+--- Decision 201 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 30
@@ -4937,7 +4858,7 @@
   Thalia, Guardian of Thraben is moved to hand
   --- Declare Attackers (Player A) ---
 
---- Decision 204 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 30
@@ -4962,7 +4883,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Knight of the Reliquary [15/15] -> Player B
 
---- Decision 205 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 30
@@ -4987,7 +4908,7 @@
     [attacking] Knight of the Reliquary [15/15] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 206 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  2 life | mana: empty | hand(0): (empty) | lib 30

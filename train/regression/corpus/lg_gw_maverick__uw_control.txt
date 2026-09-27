@@ -132,9 +132,6 @@
 --- Narrative ---
   Player A played Forest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws The One Ring
 --- Turn 2 (Player B) ---
@@ -317,9 +314,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Tamiyo, Inquisitive Student
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Swords to Plowshares
 --- Turn 3 (Player A) ---
@@ -438,9 +432,6 @@
   Resolving ability (category: Counter)
   Badgermole Cub is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
@@ -567,9 +558,6 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
@@ -701,49 +689,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 47
-  Self BF:  Forest (T) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 32 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 47
-  Self BF:  Forest (T) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Island, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 33 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -761,7 +708,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -779,7 +726,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -802,7 +749,7 @@
   PA: Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Misty Rainforest, Polluted Delta, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -821,7 +768,7 @@
 --- Narrative ---
   Player B draws Teferi, Time Raveler
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -839,7 +786,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(5): Misty Rainforest, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 46
@@ -859,7 +806,7 @@
 --- Narrative ---
   Player B played Misty Rainforest
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 46
@@ -881,7 +828,7 @@
   Player B sacrifices Misty Rainforest
   Player B's Misty Rainforest ability is on the stack
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -903,7 +850,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 46
@@ -932,7 +879,7 @@
   Meticulous Archive enters tapped.
   Meticulous Archive triggered
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -953,7 +900,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -983,7 +930,7 @@
   Player B surveils 1.
   Surveil: looking at Force of Negation
 
---- Decision 44 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 45
@@ -1006,7 +953,7 @@
   Player B puts Force of Negation into their graveyard.
   --- Declare Attackers (Player B) ---
 
---- Decision 45 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1028,7 +975,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1051,7 +998,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1071,7 +1018,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1092,7 +1039,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1110,7 +1057,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1128,7 +1075,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 44
@@ -1158,7 +1105,7 @@
   PA: Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1176,7 +1123,7 @@
 --- Narrative ---
   Player A draws Gaea's Cradle
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(6): Gaea's Cradle, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1193,7 +1140,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(6): Gaea's Cradle, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1217,7 +1164,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(6): Gaea's Cradle, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1240,7 +1187,7 @@
   Player A activated Forest for 1(G)
   Player A casts Green Sun's Zenith
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1258,7 +1205,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 57 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  16 life | mana: empty | energy 2 | hand(5): Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
@@ -1279,7 +1226,7 @@
 --- Narrative ---
   Choose target for Force of Negation:
 
---- Decision 58 ---
+--- Decision 56 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  16 life | mana: empty | energy 2 | hand(5): Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
@@ -1300,7 +1247,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 59 ---
+--- Decision 57 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  16 life | mana: empty | energy 2 | hand(5): Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
@@ -1322,7 +1269,7 @@
   Player B exiles Teferi, Time Raveler
   Player B casts Force of Negation targeting Green Sun's Zenith
 
---- Decision 60 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1344,7 +1291,7 @@
   Resolving ability (category: Counter)
   Green Sun's Zenith is countered
 
---- Decision 61 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1367,7 +1314,7 @@
 --- Narrative ---
   Player A played Gaea's Cradle
 
---- Decision 62 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1386,7 +1333,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1407,7 +1354,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 64 ---
+--- Decision 62 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1425,51 +1372,8 @@
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 65 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   16 life | mana: empty | energy 2 | hand count: 3 | lib 43
-  Self BF:  Forest (T) | Gaea's Cradle (NEW) | Savannah
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Green Sun's Zenith
-  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 66 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   16 life | mana: empty | energy 2 | hand count: 3 | lib 43
-  Self BF:  Forest (T) | Gaea's Cradle (NEW) | Savannah
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Green Sun's Zenith
-  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1488,7 +1392,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1507,7 +1411,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1531,7 +1435,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1551,7 +1455,7 @@
 --- Narrative ---
   Player B draws Swords to Plowshares
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1570,7 +1474,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Swords to Plowshares, The One Ring | lib 42
@@ -1590,7 +1494,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 42
@@ -1613,7 +1517,7 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1636,7 +1540,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 75 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 42
@@ -1664,7 +1568,7 @@
   Player B puts Mystic Sanctuary to the battlefield
   Mystic Sanctuary enters tapped.
 
---- Decision 76 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1683,7 +1587,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 77 ---
+--- Decision 73 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1704,7 +1608,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 78 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1727,7 +1631,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 79 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1749,7 +1653,7 @@
     Tamiyo, Inquisitive Student -> Player A
   Tamiyo, Inquisitive Student triggered
 
---- Decision 80 ---
+--- Decision 76 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1772,7 +1676,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 81 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1791,7 +1695,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 82 ---
+--- Decision 78 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1812,7 +1716,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 83 ---
+--- Decision 79 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1831,7 +1735,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 80 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1853,83 +1757,83 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Combat Dmg (turn 8)
+  Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
+  Opp BF:   Forest (T) | Gaea's Cradle | Savannah
+  Self GY: Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 82 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg (turn 8)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
+  Self BF:  Forest (T) | Gaea's Cradle | Savannah
+  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
+  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Self exile: Green Sun's Zenith
+  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
+  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 8)
+  Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
+  Opp:   20 life | mana: empty | hand count: 4 | lib 48
+  Self BF:  Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
+  Opp BF:   Forest (T) | Gaea's Cradle | Savannah
+  Self GY: Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
+  Opp exile:  Green Sun's Zenith
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 84 ---
+  Priority: Player A (non-active)
+  Step: End Combat (turn 8)
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
+  Self BF:  Forest (T) | Gaea's Cradle | Savannah
+  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
+  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
+  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Self exile: Green Sun's Zenith
+  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
+  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
+  This turn: opp drawn=1 life_lost=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
 --- Decision 85 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
-  Opp:   20 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Forest (T) | Gaea's Cradle | Savannah
-  Self GY: Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Clue token (Draw)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 86 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 8)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
-  Self BF:  Forest (T) | Gaea's Cradle | Savannah
-  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Green Sun's Zenith
-  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 87 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 8)
-  Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
-  Opp:   20 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Forest (T) | Gaea's Cradle | Savannah
-  Self GY: Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Clue token (Draw)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 88 ---
-  Priority: Player A (non-active)
-  Step: End Combat (turn 8)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | energy 2 | hand count: 3 | lib 41
-  Self BF:  Forest (T) | Gaea's Cradle | Savannah
-  Opp BF:   Island | Island | Mystic Sanctuary (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Green Sun's Zenith
-  Opp exile:  Teferi, Time Raveler, Tamiyo, Inquisitive Student
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Island, Force of Negation, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
-  This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 89 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(3): Swords to Plowshares, Swords to Plowshares, The One Ring | lib 41
@@ -1954,7 +1858,7 @@
   Player B's Clue ability is on the stack
   Clue (token) is put into the graveyard and ceases to exist.
 
---- Decision 90 ---
+--- Decision 86 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1977,7 +1881,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Ponder
 
---- Decision 91 ---
+--- Decision 87 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -1996,7 +1900,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 92 ---
+--- Decision 88 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2020,7 +1924,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Swords to Plowshares, Swords to Plowshares, The One Ring
 
---- Decision 93 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2039,7 +1943,7 @@
 --- Narrative ---
   Player A draws Knight of the Reliquary
 
---- Decision 94 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -2057,7 +1961,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(5): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -2083,7 +1987,7 @@
   Player A casts Thalia, Guardian of Thraben
   Thalia, Guardian of Thraben enters the battlefield
 
---- Decision 96 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 47
@@ -2103,7 +2007,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 97 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
@@ -2124,7 +2028,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 98 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
@@ -2152,16 +2056,13 @@
   Resolving ability (category: Destroy)
   Mystic Sanctuary is destroyed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Wasteland
 --- Turn 10 (Player B) ---
   PA: Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Ponder, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 99 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(5): Ponder, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 39
@@ -2187,7 +2088,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 100 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 39
@@ -2211,7 +2112,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 101 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 39
@@ -2233,7 +2134,7 @@
    1: Wasteland  [#1]
   >> B/B: 0 (Wasteland)
 
---- Decision 102 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 39
@@ -2258,7 +2159,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Wasteland
 
---- Decision 103 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(5): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland, Wasteland | lib 38
@@ -2280,7 +2181,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 104 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 38
@@ -2302,7 +2203,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 105 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 38
@@ -2328,7 +2229,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Gaea's Cradle is on the stack
 
---- Decision 106 ---
+--- Decision 102 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
@@ -2352,7 +2253,7 @@
   Gaea's Cradle is destroyed
   --- Declare Attackers (Player B) ---
 
---- Decision 107 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 38
@@ -2376,7 +2277,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 108 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 38
@@ -2408,7 +2309,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 109 ---
+--- Decision 105 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
@@ -2427,7 +2328,7 @@
 --- Narrative ---
   Player A draws Badgermole Cub
 
---- Decision 110 ---
+--- Decision 106 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  20 life | mana: empty | hand(4): Badgermole Cub, Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
@@ -2445,7 +2346,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 107 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(4): Badgermole Cub, Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
@@ -2471,7 +2372,7 @@
   Badgermole Cub enters the battlefield
   Choose target for Badgermole Cub:
 
---- Decision 112 ---
+--- Decision 108 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
@@ -2497,7 +2398,7 @@
   Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
   --- Declare Attackers (Player A) ---
 
---- Decision 113 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
@@ -2521,7 +2422,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 114 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
@@ -2553,7 +2454,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 115 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 38
@@ -2574,7 +2475,7 @@
 --- Narrative ---
   Player B draws Wasteland
 
---- Decision 116 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(5): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland, Wasteland | lib 37
@@ -2594,7 +2495,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 117 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(5): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland, Wasteland | lib 37
@@ -2618,7 +2519,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 118 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 37
@@ -2642,7 +2543,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 119 ---
+--- Decision 115 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 37
@@ -2668,7 +2569,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Savannah is on the stack
 
---- Decision 120 ---
+--- Decision 116 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(4): Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 37
@@ -2701,7 +2602,7 @@
   Savannah is destroyed
   --- Declare Attackers (Player B) ---
 
---- Decision 121 ---
+--- Decision 117 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(5): Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 36
@@ -2725,7 +2626,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 122 ---
+--- Decision 118 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | energy 2 | hand(5): Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 36
@@ -2759,7 +2660,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 123 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
@@ -2785,7 +2686,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 124 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
@@ -2811,7 +2712,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Forest [1/1] -> Player B
 
---- Decision 125 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
@@ -2837,7 +2738,7 @@
     [attacking] Forest [1/1] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 126 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
@@ -2873,7 +2774,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 127 ---
+--- Decision 123 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(5): Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 36
@@ -2893,7 +2794,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 128 ---
+--- Decision 124 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(6): Brainstorm, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 35
@@ -2923,7 +2824,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 129 ---
+--- Decision 125 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(8): Force of Will, Misty Rainforest, Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Tundra, Wasteland | lib 32
@@ -2954,7 +2855,7 @@
   Player B puts Misty Rainforest to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 130 ---
+--- Decision 126 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(7): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Tundra, Wasteland | lib 33
@@ -2991,7 +2892,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 131 ---
+--- Decision 127 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(6): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Tundra, Wasteland | lib 34
@@ -3016,7 +2917,7 @@
 --- Narrative ---
   Player B played Tundra
 
---- Decision 132 ---
+--- Decision 128 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
@@ -3042,16 +2943,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Bojuka Bog
 --- Turn 15 (Player A) ---
   PA: Bojuka Bog, Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 133 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(5): Bojuka Bog, Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3075,7 +2973,7 @@
   Bojuka Bog enters tapped.
   Choose target for Bojuka Bog:
 
---- Decision 134 ---
+--- Decision 130 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3118,7 +3016,7 @@
   Player B moves 15 card(s) to exile
   --- Declare Attackers (Player A) ---
 
---- Decision 135 ---
+--- Decision 131 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3142,7 +3040,7 @@
 --- Narrative ---
   Select target for Badgermole Cub:
 
---- Decision 136 ---
+--- Decision 132 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3167,7 +3065,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 137 ---
+--- Decision 133 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3190,7 +3088,7 @@
 --- Narrative ---
   Select target for Forest:
 
---- Decision 138 ---
+--- Decision 134 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3216,7 +3114,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Forest [1/1] -> Player B
 
---- Decision 139 ---
+--- Decision 135 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3238,7 +3136,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 140 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3265,7 +3163,7 @@
     [attacking] Forest [1/1] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 141 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
@@ -3290,7 +3188,7 @@
     Thalia, Guardian of Thraben -> Player B
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 142 ---
+--- Decision 138 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
@@ -3316,7 +3214,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 143 ---
+--- Decision 139 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
@@ -3358,7 +3256,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland
 
---- Decision 144 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
@@ -3380,7 +3278,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 145 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
@@ -3411,7 +3309,7 @@
   Player A gains 2 life (now at 22)
   Player B draws Force of Will
 
---- Decision 146 ---
+--- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring, Wasteland | lib 33
@@ -3436,7 +3334,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 147 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3463,7 +3361,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 148 ---
+--- Decision 144 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3488,7 +3386,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 149 ---
+--- Decision 145 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3520,16 +3418,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
   Player A draws Misty Rainforest
 --- Turn 17 (Player A) ---
   PA: Knight of the Reliquary, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Force of Will, Murktide Regent, Swords to Plowshares, The One Ring
 
---- Decision 150 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  22 life | mana: empty | hand(5): Knight of the Reliquary, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
@@ -3551,7 +3446,7 @@
 --- Narrative ---
   Player A played Misty Rainforest
 
---- Decision 151 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
@@ -3578,7 +3473,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 152 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
@@ -3607,7 +3502,7 @@
   Player A puts Dryad Arbor to the battlefield
   --- Declare Attackers (Player A) ---
 
---- Decision 153 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
@@ -3631,7 +3526,7 @@
 --- Narrative ---
   Select target for Forest:
 
---- Decision 154 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
@@ -3657,7 +3552,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Forest [1/1] -> Player B
 
---- Decision 155 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
@@ -3680,7 +3575,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 156 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
@@ -3707,7 +3602,7 @@
     [attacking] Forest [1/1] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 157 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
@@ -3732,7 +3627,7 @@
     Thalia, Guardian of Thraben -> Player B
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 158 ---
+--- Decision 154 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3772,7 +3667,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Force of Will, Murktide Regent, Swords to Plowshares, The One Ring
 
---- Decision 159 ---
+--- Decision 155 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3794,7 +3689,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 160 ---
+--- Decision 156 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
@@ -3821,7 +3716,7 @@
   Player B activated Island for 1(U)
   Player B casts Swords to Plowshares targeting Dryad Arbor
 
---- Decision 161 ---
+--- Decision 157 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 33
@@ -3848,7 +3743,7 @@
   Player A gains 1 life (now at 22)
   Player B draws Misty Rainforest
 
---- Decision 162 ---
+--- Decision 158 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Misty Rainforest, Murktide Regent, The One Ring | lib 32
@@ -3872,7 +3767,7 @@
 --- Narrative ---
   Player B played Misty Rainforest
 
---- Decision 163 ---
+--- Decision 159 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 32
@@ -3900,7 +3795,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 164 ---
+--- Decision 160 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 32
@@ -3926,7 +3821,7 @@
   Player B shuffles their library
   Player B puts Tundra to the battlefield
 
---- Decision 165 ---
+--- Decision 161 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 31
@@ -3951,7 +3846,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 166 ---
+--- Decision 162 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 31
@@ -3982,16 +3877,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Player A draws Savannah
 --- Turn 19 (Player A) ---
   PA: Knight of the Reliquary, Savannah, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Force of Will, Murktide Regent, The One Ring
 
---- Decision 167 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  22 life | mana: empty | hand(5): Knight of the Reliquary, Savannah, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 41
@@ -4013,7 +3905,7 @@
 --- Narrative ---
   Player A played Savannah
 
---- Decision 168 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 41
@@ -4042,7 +3934,7 @@
   Thalia, Guardian of Thraben enters the battlefield
   Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
 
---- Decision 169 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4066,7 +3958,7 @@
   Thalia, Guardian of Thraben is put into the graveyard (legend rule)
   --- Declare Attackers (Player A) ---
 
---- Decision 170 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4089,7 +3981,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 171 ---
+--- Decision 167 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4115,7 +4007,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 172 ---
+--- Decision 168 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4151,7 +4043,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares
   PB: Brainstorm, Force of Will, Murktide Regent, The One Ring
 
---- Decision 173 ---
+--- Decision 169 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(4): Brainstorm, Force of Will, Murktide Regent, The One Ring | lib 30
@@ -4173,7 +4065,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 174 ---
+--- Decision 170 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 30
@@ -4200,7 +4092,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 175 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(6): Flooded Strand, Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
@@ -4229,7 +4121,7 @@
   Player B puts Flooded Strand to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 176 ---
+--- Decision 172 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
@@ -4258,7 +4150,7 @@
   Player B puts Force of Will to top of library
   Player B draws Force of Will
 
---- Decision 177 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
@@ -4292,7 +4184,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
 
---- Decision 178 ---
+--- Decision 174 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
@@ -4317,15 +4209,12 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
 --- Turn 21 (Player A) ---
   PA: Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares
   PB: Force of Will, Spell Pierce, The One Ring, Wrath of the Skies
 
---- Decision 179 ---
+--- Decision 175 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4346,7 +4235,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 180 ---
+--- Decision 176 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
@@ -4378,7 +4267,7 @@
   Player A draws Knight of the Reliquary
   --- Declare Attackers (Player A) ---
 
---- Decision 181 ---
+--- Decision 177 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
@@ -4400,7 +4289,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 182 ---
+--- Decision 178 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
@@ -4425,7 +4314,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 183 ---
+--- Decision 179 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
@@ -4461,7 +4350,7 @@
   PA: Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares
   PB: Flooded Strand, Force of Will, Spell Pierce, The One Ring, Wrath of the Skies
 
---- Decision 184 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 2 | hand(5): Flooded Strand, Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
@@ -4484,7 +4373,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 185 ---
+--- Decision 181 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
@@ -4512,7 +4401,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 186 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
@@ -4538,7 +4427,7 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
 
---- Decision 187 ---
+--- Decision 183 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 26
@@ -4570,7 +4459,7 @@
   The One Ring enters the battlefield
   The One Ring triggered
 
---- Decision 188 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(3): Force of Will, Spell Pierce, Wrath of the Skies | lib 26
@@ -4599,7 +4488,7 @@
   Resolving ability (category: Pump)
   Player B gains protection from everything until their next turn.
 
---- Decision 189 ---
+--- Decision 185 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 25
@@ -4626,15 +4515,12 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 23 (Player A) --------
 --- Turn 23 (Player A) ---
   PA: Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares
   PB: Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies
 
---- Decision 190 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
@@ -4655,7 +4541,7 @@
 --- Narrative ---
   Player A draws Savannah
 
---- Decision 191 ---
+--- Decision 187 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Savannah, Swords to Plowshares | lib 39
@@ -4675,7 +4561,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 192 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Savannah, Swords to Plowshares | lib 39
@@ -4698,7 +4584,7 @@
 --- Narrative ---
   Player A played Savannah
 
---- Decision 193 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -4729,7 +4615,7 @@
   Knight of the Reliquary gains (always)
   --- Declare Attackers (Player A) ---
 
---- Decision 194 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -4752,7 +4638,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 195 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -4778,7 +4664,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 196 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -4815,7 +4701,7 @@
   PA: Knight of the Reliquary, Swords to Plowshares
   PB: Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies
 
---- Decision 197 ---
+--- Decision 193 ---
   Priority: Player B (active)
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 25
@@ -4841,7 +4727,7 @@
   Player B draws Geist of Saint Traft
   Player B draws Tune the Narrative
 
---- Decision 198 ---
+--- Decision 194 ---
   Priority: Player B (active)
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(6): Force of Will, Geist of Saint Traft, Spell Pierce, Tamiyo, Inquisitive Student, Tune the Narrative, Wrath of the Skies | lib 23
@@ -4865,7 +4751,7 @@
   Player B activated Plains for 1(W)
   Player B casts Tune the Narrative
 
---- Decision 199 ---
+--- Decision 195 ---
   Priority: Player B (active)
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(5): Force of Will, Geist of Saint Traft, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 23
@@ -4894,7 +4780,7 @@
   Player B loses 2 life (now at 5)
   Player B draws Spell Snare
 
---- Decision 200 ---
+--- Decision 196 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(7): Flooded Strand, Force of Will, Geist of Saint Traft, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
@@ -4925,7 +4811,7 @@
   Player B casts Geist of Saint Traft
   Geist of Saint Traft enters the battlefield
 
---- Decision 201 ---
+--- Decision 197 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(6): Flooded Strand, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
@@ -4949,7 +4835,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 202 ---
+--- Decision 198 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
@@ -4978,7 +4864,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 203 ---
+--- Decision 199 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
@@ -5003,7 +4889,7 @@
   Player B shuffles their library
   Player B puts Tundra to the battlefield
 
---- Decision 204 ---
+--- Decision 200 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 20
@@ -5030,7 +4916,7 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 205 ---
+--- Decision 201 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
@@ -5057,15 +4943,12 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 25 (Player A) --------
 --- Turn 25 (Player A) ---
   PA: Knight of the Reliquary, Swords to Plowshares
   PB: Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies
 
---- Decision 206 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -5087,7 +4970,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 207 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
@@ -5115,7 +4998,7 @@
   Player A activated Forest for 1(G)
   Player A casts Swords to Plowshares targeting Tamiyo, Inquisitive Student
 
---- Decision 208 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 39
@@ -5141,7 +5024,7 @@
   Resolving ability (category: GainLife, amount: 0)
   Player B gains 0 life (now at 4)
 
---- Decision 209 ---
+--- Decision 205 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 39
@@ -5164,7 +5047,7 @@
 --- Narrative ---
   Player A draws Windswept Heath
 
---- Decision 210 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: Draw (turn 25)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 38
@@ -5185,7 +5068,7 @@
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 211 ---
+--- Decision 207 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 38
@@ -5209,7 +5092,7 @@
 --- Narrative ---
   Player A played Windswept Heath
 
---- Decision 212 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
@@ -5231,7 +5114,7 @@
    2: Activate Windswept Heath (ChangeZone)  [#0]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 213 ---
+--- Decision 209 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
@@ -5258,7 +5141,7 @@
   Player A's Knight of the Reliquary ability is on the stack
   Delayed trigger fires.
 
---- Decision 214 ---
+--- Decision 210 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
@@ -5286,7 +5169,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 215 ---
+--- Decision 211 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
@@ -5317,7 +5200,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 216 ---
+--- Decision 212 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 37
@@ -5351,7 +5234,7 @@
   Player A shuffles their library
   Player A puts Horizon Canopy to the battlefield
 
---- Decision 217 ---
+--- Decision 213 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 36
@@ -5381,7 +5264,7 @@
   Knight of the Reliquary gains (always)
   --- Declare Attackers (Player A) ---
 
---- Decision 218 ---
+--- Decision 214 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
@@ -5403,7 +5286,7 @@
 --- Narrative ---
   Select target for Thalia, Guardian of Thraben:
 
---- Decision 219 ---
+--- Decision 215 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
@@ -5428,7 +5311,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 220 ---
+--- Decision 216 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
@@ -5457,7 +5340,7 @@
     0: Thalia, Guardian of Thraben [1/1]
   Your creatures:
 
---- Decision 221 ---
+--- Decision 217 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
@@ -5479,7 +5362,7 @@
 --- Narrative ---
   Select attacker for Geist of Saint Traft to block:
 
---- Decision 222 ---
+--- Decision 218 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
@@ -5506,7 +5389,7 @@
   Your creatures:
     (assigned) Geist of Saint Traft [2/2] blocking Thalia, Guardian of Thraben
 
---- Decision 223 ---
+--- Decision 219 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
@@ -5540,7 +5423,7 @@
   PA: (empty)
   PB: Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies
 
---- Decision 224 ---
+--- Decision 220 ---
   Priority: Player B (active)
   Step: Upkeep (turn 26)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
@@ -5569,7 +5452,7 @@
   Player B loses 3 life (now at 1)
   Player B draws Brainstorm
 
---- Decision 225 ---
+--- Decision 221 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Brainstorm, Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 16
@@ -5590,7 +5473,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 226 ---
+--- Decision 222 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 16
@@ -5620,7 +5503,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 227 ---
+--- Decision 223 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(10): Flow State, Force of Will, Force of Will, Ponder, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 13
@@ -5652,7 +5535,7 @@
   Player B puts Ponder to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 228 ---
+--- Decision 224 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(9): Flow State, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 14
@@ -5683,7 +5566,7 @@
 --- Narrative ---
   Player B puts Flow State to top of library
 
---- Decision 229 ---
+--- Decision 225 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
@@ -5704,7 +5587,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 230 ---
+--- Decision 226 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
@@ -5730,7 +5613,7 @@
   Player B activated Plains for 1(W)
   Player B casts Swords to Plowshares targeting Knight of the Reliquary
 
---- Decision 231 ---
+--- Decision 227 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
@@ -5757,7 +5640,7 @@
   Resolving ability (category: GainLife, amount: 9)
   Player A gains 9 life (now at 29)
 
---- Decision 232 ---
+--- Decision 228 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
@@ -5785,7 +5668,7 @@
   Player B activated Island for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 233 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -5809,7 +5692,7 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 234 ---
+--- Decision 230 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -5837,7 +5720,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 235 ---
+--- Decision 231 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -5860,7 +5743,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 236 ---
+--- Decision 232 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -5883,11 +5766,8 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
---- Decision 237 ---
+--- Decision 233 ---
   Priority: Player B (active)
   Step: Second Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -5913,7 +5793,7 @@
   PA: (empty)
   PB: Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies
 
---- Decision 238 ---
+--- Decision 234 ---
   Priority: Player A (active)
   Step: Upkeep (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 36
@@ -5934,7 +5814,7 @@
 --- Narrative ---
   Player A draws Wasteland
 
---- Decision 239 ---
+--- Decision 235 ---
   Priority: Player A (active)
   Step: Draw (turn 27)
   Self:  29 life | mana: empty | hand(1): Wasteland | lib 35
@@ -5954,7 +5834,7 @@
    2: Activate Knight of the Reliquary (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 240 ---
+--- Decision 236 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(1): Wasteland | lib 35
@@ -5977,7 +5857,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 241 ---
+--- Decision 237 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6003,7 +5883,7 @@
   Player A sacrifices Horizon Canopy
   Player A's Horizon Canopy ability is on the stack
 
---- Decision 242 ---
+--- Decision 238 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6025,7 +5905,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
 
---- Decision 243 ---
+--- Decision 239 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6052,7 +5932,7 @@
   Player A sacrifices Forest
   Player A's Knight of the Reliquary ability is on the stack
 
---- Decision 244 ---
+--- Decision 240 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6075,7 +5955,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 245 ---
+--- Decision 241 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6105,7 +5985,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Tundra is on the stack
 
---- Decision 246 ---
+--- Decision 242 ---
   Priority: Player B (non-active)
   Step: First Main (turn 27)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
@@ -6133,7 +6013,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 247 ---
+--- Decision 243 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
@@ -6165,7 +6045,7 @@
   Player A shuffles their library
   Player A puts Karakas to the battlefield
 
---- Decision 248 ---
+--- Decision 244 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 34
@@ -6188,7 +6068,7 @@
 --- Narrative ---
   Choose target for Karakas:
 
---- Decision 249 ---
+--- Decision 245 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 34
@@ -6216,16 +6096,13 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Verdant Catacombs
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 28 (Player B) --------
   The One Ring triggered
 --- Turn 28 (Player B) ---
   PA: (empty)
   PB: Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
 
---- Decision 250 ---
+--- Decision 246 ---
   Priority: Player B (active)
   Step: Upkeep (turn 28)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15

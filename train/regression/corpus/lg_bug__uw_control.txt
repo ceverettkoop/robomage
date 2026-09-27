@@ -123,9 +123,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws The One Ring
 --- Turn 2 (Player B) ---
@@ -301,15 +298,9 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Flow State
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island
@@ -462,9 +453,6 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
 --- Turn 5 (Player A) ---
@@ -551,9 +539,6 @@
   Resolving ability (category: Counter)
   Tamiyo, Inquisitive Student is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Tune the Narrative
 --- Turn 6 (Player B) ---
@@ -721,9 +706,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island
@@ -843,9 +825,6 @@
   -------- TURN 9 (Player A) --------
   Player A draws Baleful Strix
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island
@@ -1090,9 +1069,6 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Swamp
 --- Turn 11 (Player A) ---
@@ -1150,9 +1126,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Misty Rainforest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
   PA: Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
@@ -1394,9 +1367,6 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Lórien Revealed
 --- Turn 13 (Player A) ---
@@ -1755,9 +1725,6 @@
   Player A shuffles their library
   Player A puts Bayou to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Teferi, Time Raveler
 --- Turn 14 (Player B) ---
@@ -1950,9 +1917,6 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Underground Sea
 --- Turn 15 (Player A) ---
@@ -2045,9 +2009,6 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Swords to Plowshares
 --- Turn 16 (Player B) ---
@@ -2161,9 +2122,6 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
   Player A draws Misty Rainforest
 --- Turn 17 (Player A) ---
@@ -2455,9 +2413,6 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Player A draws Orcish Bowmasters
 --- Turn 19 (Player A) ---
@@ -2721,9 +2676,6 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
   Player A draws Brainstorm
 --- Turn 21 (Player A) ---
@@ -3552,9 +3504,6 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 23 (Player A) --------
   Player A draws Fatal Push
 --- Turn 23 (Player A) ---

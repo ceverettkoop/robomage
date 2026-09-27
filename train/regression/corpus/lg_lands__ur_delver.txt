@@ -198,9 +198,6 @@
   Skateboard triggered
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -391,9 +388,6 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
@@ -512,15 +506,14 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Wasteland for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 23 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 52
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Mox Diamond (T,NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Wasteland (T,NEW) | Fish [1/1] | Construct [4/4] (SICK,NEW)
+  Self BF:  Mox Diamond (T,NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Wasteland (NEW) | Fish [1/1] | Construct [4/4] (SICK,NEW)
   Opp BF:   Island (T)
   Pending: Skateboard (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -529,11 +522,15 @@
   This turn: self spells=1 noncreature=1 drawn=1 | opp drawn=1
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Fish [1/1]
-   1: Construct [4/4]
-  >> A/A: 0 (Fish [1/1])
+   0: Fish token
+   1: Construct token
+  >> A/A: 0 (Fish token)
 --- Narrative ---
-  Skateboard equipped to Fish.
+  Targeting choice 0
+  Player A activated Wasteland for 1(C)
+  Player A's Skateboard ability targeting Fish token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Fish token gains 1/0 Haste (always)
   --- Declare Attackers (Player A) ---
 
@@ -747,9 +744,6 @@
   Player B puts Mystic Sanctuary to the battlefield
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: (empty)
@@ -1152,9 +1146,6 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: (empty)
@@ -1258,12 +1249,12 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 56 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 49
+  Self:  18 life | mana: 1C | hand(0): (empty) | lib 49
   Opp:   8 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Ancient Tomb (T,NEW) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
@@ -1274,12 +1265,15 @@
   This turn: self drawn=1 life_lost=2
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Fish [2/1]
-   1: Construct [6/6]
-   2: Construct [6/6]
-  >> A/A: 0 (Fish [2/1])
+   0: Fish token
+   1: Construct token
+   2: Construct token
+  >> A/A: 0 (Fish token)
 --- Narrative ---
-  Skateboard equipped to Fish.
+  Targeting choice 0
+  Player A's Skateboard ability targeting Fish token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   --- Declare Attackers (Player A) ---
 
 --- Decision 57 ---

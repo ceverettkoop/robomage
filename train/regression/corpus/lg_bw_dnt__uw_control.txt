@@ -127,9 +127,6 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Flooded Strand
 --- Turn 2 (Player B) ---
@@ -281,9 +278,6 @@
 --- Narrative ---
   Player B puts Brainstorm to top of library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Aether Vial triggered
 --- Turn 3 (Player A) ---
@@ -558,49 +552,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Island (T)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 28 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Island (T)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 29 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -618,7 +571,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -636,7 +589,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -659,7 +612,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -678,7 +631,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  18 life | mana: empty | hand(6): Brainstorm, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 49
@@ -699,7 +652,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -725,7 +678,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  18 life | mana: empty | hand(8): Flooded Strand, Force of Negation, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 46
@@ -754,7 +707,7 @@
   Player B puts Flooded Strand to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  18 life | mana: empty | hand(7): Force of Negation, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 47
@@ -782,7 +735,7 @@
 --- Narrative ---
   Player B puts Meticulous Archive to top of library
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -800,7 +753,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(6): Force of Negation, Polluted Delta, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 48
@@ -821,7 +774,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 48
@@ -844,7 +797,7 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -866,7 +819,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 48
@@ -894,7 +847,7 @@
   Player B shuffles their library
   Player B puts Island to the battlefield
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -912,7 +865,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -932,7 +885,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 44 ---
+--- Decision 42 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -949,49 +902,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 45 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Island (NEW)
-  Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 46 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Aether Vial [charge:1] (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Island (NEW)
-  Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1009,7 +921,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1027,7 +939,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1051,7 +963,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1075,7 +987,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1096,7 +1008,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1120,7 +1032,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1143,7 +1055,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1161,7 +1073,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1184,7 +1096,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -1203,7 +1115,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1220,7 +1132,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1241,7 +1153,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1262,7 +1174,7 @@
 --- Narrative ---
   Player A's Aether Vial ability is on the stack
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1284,7 +1196,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1306,7 +1218,7 @@
 --- Narrative ---
   Player A puts Phelia, Exuberant Shepherd to the battlefield
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1324,7 +1236,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1344,7 +1256,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1361,49 +1273,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 65 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Island
-  Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 66 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Island
-  Self GY: Aether Vial
-  Opp GY:  Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Geist of Saint Traft
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1421,7 +1292,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1439,7 +1310,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1462,7 +1333,7 @@
   PA: Pre-War Formalwear, Witch Enchanter
   PB: Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1481,7 +1352,7 @@
 --- Narrative ---
   Player B draws Flow State
 
---- Decision 71 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1499,7 +1370,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 72 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(6): Flow State, Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 46
@@ -1521,7 +1392,7 @@
   Player B activated Island for 1(U)
   Player B casts Flow State
 
---- Decision 73 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1543,7 +1414,7 @@
   Resolving ability (category: Dig)
   Player B looks at the top 3 card(s) of their library.
 
---- Decision 74 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(5): Force of Negation, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 46
@@ -1567,7 +1438,7 @@
   Player B puts Murktide Regent into hand.
   Player B puts 2 card(s) on the bottom of their library.
 
---- Decision 75 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(6): Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Tundra, Wrath of the Skies | lib 45
@@ -1586,7 +1457,7 @@
 --- Narrative ---
   Player B played Tundra
 
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 45
@@ -1606,7 +1477,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 45
@@ -1630,7 +1501,7 @@
   Player B activated Tundra for 1(W)
   Player B casts Swords to Plowshares targeting Orcish Bowmasters
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1651,7 +1522,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1683,16 +1554,13 @@
   Resolving ability (category: GainLife, amount: 1)
   Player A gains 1 life (now at 21)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Aether Vial triggered
 --- Turn 7 (Player A) ---
   PA: Pre-War Formalwear, Witch Enchanter
   PB: Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1711,7 +1579,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1734,7 +1602,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1754,7 +1622,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  21 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1773,7 +1641,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1795,7 +1663,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1818,7 +1686,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1840,7 +1708,7 @@
 --- Narrative ---
   Player A's Aether Vial ability is on the stack
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1863,7 +1731,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1885,7 +1753,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1904,7 +1772,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1925,7 +1793,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1949,7 +1817,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1973,7 +1841,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1996,7 +1864,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2020,7 +1888,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2043,7 +1911,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2064,7 +1932,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2088,7 +1956,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2107,7 +1975,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2126,7 +1994,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2145,7 +2013,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2169,7 +2037,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2189,7 +2057,7 @@
 --- Narrative ---
   Player B draws Tamiyo, Inquisitive Student
 
---- Decision 103 ---
+--- Decision 97 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2208,7 +2076,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2229,7 +2097,7 @@
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
 
---- Decision 105 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2258,7 +2126,7 @@
   Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
---- Decision 106 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2286,7 +2154,7 @@
   Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
---- Decision 107 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2313,7 +2181,7 @@
   Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (4 of 5):
 
---- Decision 108 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2339,7 +2207,7 @@
   Player B exiles Flow State via Delve.
   Choose a card to exile via Delve (5 of 5):
 
---- Decision 109 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2366,7 +2234,7 @@
   Player B activated Island for 1(U)
   Player B casts Murktide Regent
 
---- Decision 110 ---
+--- Decision 104 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2389,7 +2257,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 4 +1/+1 counter(s) (7/7).
 
---- Decision 111 ---
+--- Decision 105 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2408,7 +2276,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 112 ---
+--- Decision 106 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2429,7 +2297,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 113 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2447,51 +2315,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 114 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
-  Self exile: Orcish Bowmasters
-  Opp exile:  Force of Will, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Flow State, Geist of Saint Traft
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 115 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 8)
-  Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
-  Self exile: Orcish Bowmasters
-  Opp exile:  Force of Will, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Flow State, Geist of Saint Traft
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 116 ---
+--- Decision 108 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2510,7 +2335,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 117 ---
+--- Decision 109 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2529,7 +2354,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 118 ---
+--- Decision 110 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2554,7 +2379,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
 
---- Decision 119 ---
+--- Decision 111 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2573,7 +2398,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 120 ---
+--- Decision 112 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2596,7 +2421,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 121 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2616,7 +2441,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 122 ---
+--- Decision 114 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  21 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2635,7 +2460,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 123 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2663,7 +2488,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts Pre-War Formalwear
 
---- Decision 124 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2682,7 +2507,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 117 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2704,7 +2529,7 @@
 --- Narrative ---
   Choose target for Force of Negation:
 
---- Decision 126 ---
+--- Decision 118 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2726,7 +2551,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 127 ---
+--- Decision 119 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
@@ -2749,7 +2574,7 @@
   Player B exiles Tamiyo, Inquisitive Student
   Player B casts Force of Negation targeting Pre-War Formalwear
 
---- Decision 128 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2772,7 +2597,7 @@
   Resolving ability (category: Counter)
   Pre-War Formalwear is countered
 
---- Decision 129 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2791,7 +2616,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 130 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2811,7 +2636,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 131 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2834,7 +2659,7 @@
   Attackers declared:
     (none)
 
---- Decision 132 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2851,49 +2676,8 @@
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 133 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Force of Negation, Swords to Plowshares, Tundra, Polluted Delta
-  Self exile: Pre-War Formalwear, Orcish Bowmasters
-  Opp exile:  Tamiyo, Inquisitive Student, Force of Will, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Geist of Saint Traft
-  This turn: self spells=1 noncreature=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 134 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Force of Negation, Swords to Plowshares, Tundra, Polluted Delta
-  Self exile: Pre-War Formalwear, Orcish Bowmasters
-  Opp exile:  Tamiyo, Inquisitive Student, Force of Will, Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Swords to Plowshares, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Geist of Saint Traft
-  This turn: self spells=1 noncreature=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 135 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2911,7 +2695,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 136 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2929,7 +2713,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 137 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2952,7 +2736,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
 
---- Decision 138 ---
+--- Decision 128 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2972,7 +2756,7 @@
 --- Narrative ---
   Player B draws The One Ring
 
---- Decision 139 ---
+--- Decision 129 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2991,7 +2775,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 140 ---
+--- Decision 130 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3010,7 +2794,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 141 ---
+--- Decision 131 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3031,7 +2815,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 142 ---
+--- Decision 132 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  13 life | mana: empty | hand(3): The One Ring, The One Ring, Wrath of the Skies | lib 43
@@ -3054,7 +2838,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [7/7] -> Player A
 
---- Decision 143 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  13 life | mana: empty | hand(3): The One Ring, The One Ring, Wrath of the Skies | lib 43
@@ -3075,7 +2859,7 @@
   Attackers declared:
     Murktide Regent -> Player A
 
---- Decision 144 ---
+--- Decision 134 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3096,7 +2880,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 145 ---
+--- Decision 135 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3119,7 +2903,7 @@
     Murktide Regent deals 7 damage to Player A
   --- End Combat Damage ---
 
---- Decision 146 ---
+--- Decision 136 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3138,7 +2922,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 147 ---
+--- Decision 137 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3157,7 +2941,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 148 ---
+--- Decision 138 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3176,7 +2960,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 149 ---
+--- Decision 139 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3201,7 +2985,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: The One Ring, The One Ring, Wrath of the Skies
 
---- Decision 150 ---
+--- Decision 140 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3220,7 +3004,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 151 ---
+--- Decision 141 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3243,7 +3027,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 152 ---
+--- Decision 142 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  14 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3263,7 +3047,7 @@
 --- Narrative ---
   Player A draws Prismatic Vista
 
---- Decision 153 ---
+--- Decision 143 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  14 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3282,7 +3066,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 154 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3309,7 +3093,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 155 ---
+--- Decision 145 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -3332,7 +3116,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 156 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -3357,7 +3141,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 157 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -3381,7 +3165,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 158 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -3403,7 +3187,7 @@
 --- Narrative ---
   Player A played Prismatic Vista
 
---- Decision 159 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  14 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -3428,7 +3212,7 @@
   Player A sacrifices Prismatic Vista
   Player A's Prismatic Vista ability is on the stack
 
---- Decision 160 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -3452,7 +3236,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 161 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -3481,7 +3265,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 162 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3501,7 +3285,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 163 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3523,7 +3307,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 164 ---
+--- Decision 154 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3547,7 +3331,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 165 ---
+--- Decision 155 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3571,7 +3355,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 166 ---
+--- Decision 156 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3594,7 +3378,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 167 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3620,7 +3404,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 168 ---
+--- Decision 158 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3644,7 +3428,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 169 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3666,7 +3450,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 170 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3691,7 +3475,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 171 ---
+--- Decision 161 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3711,7 +3495,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3731,7 +3515,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 173 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3751,7 +3535,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 174 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3776,7 +3560,7 @@
   PA: White Orchid Phantom
   PB: The One Ring, The One Ring, Wrath of the Skies
 
---- Decision 175 ---
+--- Decision 165 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3797,7 +3581,7 @@
 --- Narrative ---
   Player B draws Tamiyo, Inquisitive Student
 
---- Decision 176 ---
+--- Decision 166 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3817,7 +3601,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 177 ---
+--- Decision 167 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  10 life | mana: empty | hand(4): Tamiyo, Inquisitive Student, The One Ring, The One Ring, Wrath of the Skies | lib 42
@@ -3838,7 +3622,7 @@
   Player B activated Island for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 178 ---
+--- Decision 168 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3861,7 +3645,7 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 179 ---
+--- Decision 169 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3881,7 +3665,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 180 ---
+--- Decision 170 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3903,7 +3687,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 181 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  10 life | mana: empty | hand(3): The One Ring, The One Ring, Wrath of the Skies | lib 42
@@ -3926,7 +3710,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [7/7] -> Player A
 
---- Decision 182 ---
+--- Decision 172 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  10 life | mana: empty | hand(3): The One Ring, The One Ring, Wrath of the Skies | lib 42
@@ -3947,7 +3731,7 @@
   Attackers declared:
     Murktide Regent -> Player A
 
---- Decision 183 ---
+--- Decision 173 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3972,7 +3756,7 @@
     0: Murktide Regent [7/7]
   Your creatures:
 
---- Decision 184 ---
+--- Decision 174 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3994,7 +3778,7 @@
   Blockers declared:
     (none)
 
---- Decision 185 ---
+--- Decision 175 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  13 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4018,7 +3802,7 @@
     Murktide Regent deals 7 damage to Player A
   --- End Combat Damage ---
 
---- Decision 186 ---
+--- Decision 176 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 12)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4038,7 +3822,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 187 ---
+--- Decision 177 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 12)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4058,7 +3842,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 188 ---
+--- Decision 178 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 12)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4078,7 +3862,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 189 ---
+--- Decision 179 ---
   Priority: Player A (non-active)
   Step: End Step (turn 12)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4104,7 +3888,7 @@
   PA: White Orchid Phantom
   PB: The One Ring, The One Ring, Wrath of the Skies
 
---- Decision 190 ---
+--- Decision 180 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4123,7 +3907,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 191 ---
+--- Decision 181 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4146,7 +3930,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 192 ---
+--- Decision 182 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4166,7 +3950,7 @@
 --- Narrative ---
   Player A draws Thoughtseize
 
---- Decision 193 ---
+--- Decision 183 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  6 life | mana: empty | hand(2): Thoughtseize, White Orchid Phantom | lib 66
@@ -4185,7 +3969,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 194 ---
+--- Decision 184 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  6 life | mana: empty | hand(2): Thoughtseize, White Orchid Phantom | lib 66
@@ -4209,7 +3993,7 @@
 --- Narrative ---
   Choose target for Thoughtseize:
 
---- Decision 195 ---
+--- Decision 185 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  6 life | mana: empty | hand(2): Thoughtseize, White Orchid Phantom | lib 66
@@ -4233,7 +4017,7 @@
   Player A activated Scrubland for 1(B)
   Player A casts Thoughtseize targeting Player B
 
---- Decision 196 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 66
@@ -4260,7 +4044,7 @@
     Wrath of the Skies
   Player A chooses a card to discard:
 
---- Decision 197 ---
+--- Decision 187 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 66
@@ -4287,7 +4071,7 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 4)
 
---- Decision 198 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  4 life | mana: empty | hand(1): White Orchid Phantom | lib 66
@@ -4313,7 +4097,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 199 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4337,7 +4121,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 200 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4363,7 +4147,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 201 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4388,7 +4172,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 202 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4408,7 +4192,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 203 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4430,7 +4214,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 204 ---
+--- Decision 194 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4456,7 +4240,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 205 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4482,7 +4266,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 206 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4508,7 +4292,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 207 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4533,7 +4317,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 208 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4562,7 +4346,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 209 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4586,7 +4370,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 210 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4613,7 +4397,7 @@
     2: Orc Army token [1/1]
   Your creatures:
 
---- Decision 211 ---
+--- Decision 201 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  10 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 42
@@ -4635,7 +4419,7 @@
   Blockers declared:
     (none)
 
---- Decision 212 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4659,7 +4443,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 213 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4684,7 +4468,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 214 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4704,7 +4488,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 215 ---
+--- Decision 205 ---
   Priority: Player A (active)
   Step: End Combat (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4724,7 +4508,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 216 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: Second Main (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4744,7 +4528,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 217 ---
+--- Decision 207 ---
   Priority: Player A (active)
   Step: End Step (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4769,7 +4553,7 @@
   PA: (empty)
   PB: The One Ring, Wrath of the Skies
 
---- Decision 218 ---
+--- Decision 208 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4791,7 +4575,7 @@
 --- Narrative ---
   Player B draws Lórien Revealed
 
---- Decision 219 ---
+--- Decision 209 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  5 life | mana: empty | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 41
@@ -4809,7 +4593,7 @@
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 220 ---
+--- Decision 210 ---
   Priority: Player A (non-active)
   Step: Draw (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4830,7 +4614,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 221 ---
+--- Decision 211 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  5 life | mana: empty | hand(3): Lorien Revealed, The One Ring, Wrath of the Skies | lib 41
@@ -4851,7 +4635,7 @@
   Player B activated Island for 1(U)
   Player B activates Lórien Revealed from hand
 
---- Decision 222 ---
+--- Decision 212 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4876,7 +4660,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 223 ---
+--- Decision 213 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  5 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 41
@@ -4903,7 +4687,7 @@
   Player B shuffles their library
   Player B reveals Meticulous Archive and puts it to hand
 
---- Decision 224 ---
+--- Decision 214 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  5 life | mana: empty | hand(3): Meticulous Archive, The One Ring, Wrath of the Skies | lib 40
@@ -4925,7 +4709,7 @@
   Meticulous Archive enters tapped.
   Meticulous Archive triggered
 
---- Decision 225 ---
+--- Decision 215 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4949,7 +4733,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 226 ---
+--- Decision 216 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4977,7 +4761,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Meticulous Archive is on the stack
 
---- Decision 227 ---
+--- Decision 217 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5001,7 +4785,7 @@
   Resolving ability (category: Destroy)
   Meticulous Archive is destroyed
 
---- Decision 228 ---
+--- Decision 218 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5026,7 +4810,7 @@
   Player B surveils 1.
   Surveil: looking at Misty Rainforest
 
---- Decision 229 ---
+--- Decision 219 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  5 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 40
@@ -5049,7 +4833,7 @@
 --- Narrative ---
   Player B puts Misty Rainforest into their graveyard.
 
---- Decision 230 ---
+--- Decision 220 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5069,7 +4853,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 231 ---
+--- Decision 221 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5091,7 +4875,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 232 ---
+--- Decision 222 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  5 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 39
@@ -5115,7 +4899,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [7/7] -> Player A
 
---- Decision 233 ---
+--- Decision 223 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  5 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 39
@@ -5139,7 +4923,7 @@
     [attacking] Murktide Regent [7/7] -> Player A
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 234 ---
+--- Decision 224 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  5 life | mana: empty | hand(2): The One Ring, Wrath of the Skies | lib 39
@@ -5162,7 +4946,7 @@
     Tamiyo, Inquisitive Student -> Player A
   Tamiyo, Inquisitive Student triggered
 
---- Decision 235 ---
+--- Decision 225 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5186,7 +4970,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 236 ---
+--- Decision 226 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5212,7 +4996,7 @@
     1: Tamiyo, Inquisitive Student [0/3]
   Your creatures:
 
---- Decision 237 ---
+--- Decision 227 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5234,7 +5018,7 @@
 --- Narrative ---
   Select attacker for White Orchid Phantom to block:
 
---- Decision 238 ---
+--- Decision 228 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5263,7 +5047,7 @@
   Your creatures:
     (assigned) White Orchid Phantom [2/2] blocking Murktide Regent
 
---- Decision 239 ---
+--- Decision 229 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5285,7 +5069,7 @@
   Blockers declared:
     White Orchid Phantom blocking Murktide Regent
 
---- Decision 240 ---
+--- Decision 230 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5309,7 +5093,7 @@
     White Orchid Phantom deals 2 damage to Murktide Regent
   --- End First Strike Combat Damage ---
 
---- Decision 241 ---
+--- Decision 231 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5334,7 +5118,7 @@
   --- End Combat Damage ---
   White Orchid Phantom is destroyed (lethal damage)
 
---- Decision 242 ---
+--- Decision 232 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5354,7 +5138,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 243 ---
+--- Decision 233 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5374,7 +5158,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 244 ---
+--- Decision 234 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5394,7 +5178,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 245 ---
+--- Decision 235 ---
   Priority: Player A (non-active)
   Step: End Step (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5420,7 +5204,7 @@
   PA: (empty)
   PB: The One Ring, Wrath of the Skies
 
---- Decision 246 ---
+--- Decision 236 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5439,7 +5223,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 247 ---
+--- Decision 237 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5463,7 +5247,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 248 ---
+--- Decision 238 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -5483,7 +5267,7 @@
 --- Narrative ---
   Player A draws Orcish Bowmasters
 
---- Decision 249 ---
+--- Decision 239 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  4 life | mana: empty | hand(1): Orcish Bowmasters | lib 65
@@ -5507,7 +5291,7 @@
   Player A activated Plains for 1(W)
   Player A casts Orcish Bowmasters
 
---- Decision 250 ---
+--- Decision 240 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5530,7 +5314,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 251 ---
+--- Decision 241 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5560,7 +5344,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 252 ---
+--- Decision 242 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5585,7 +5369,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
---- Decision 253 ---
+--- Decision 243 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5604,7 +5388,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 254 ---
+--- Decision 244 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5623,7 +5407,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 255 ---
+--- Decision 245 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5644,7 +5428,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 256 ---
+--- Decision 246 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5670,7 +5454,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 257 ---
+--- Decision 247 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5696,7 +5480,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 258 ---
+--- Decision 248 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5722,7 +5506,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [2/2] -> Player B
 
---- Decision 259 ---
+--- Decision 249 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5747,7 +5531,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 260 ---
+--- Decision 250 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5777,7 +5561,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 261 ---
+--- Decision 251 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5800,7 +5584,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 262 ---
+--- Decision 252 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5821,7 +5605,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 263 ---
+--- Decision 253 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65
@@ -5844,7 +5628,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 264 ---
+--- Decision 254 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 15)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 65

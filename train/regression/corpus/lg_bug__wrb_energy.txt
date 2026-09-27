@@ -123,9 +123,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
@@ -290,15 +287,9 @@
     Thoughtseize
   No matching cards to discard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Wasteland
 --- Turn 4 (Player B) ---
@@ -546,9 +537,6 @@
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
 --- Turn 5 (Player A) ---
@@ -577,9 +565,6 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize
@@ -791,9 +776,6 @@
   Resolving ability (category: Destroy)
   Tropical Island is destroyed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Tropical Island
 --- Turn 7 (Player A) ---

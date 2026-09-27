@@ -207,9 +207,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Teferi, Time Raveler
 --- Turn 2 (Player B) ---
@@ -325,47 +322,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Badlands (T)
-  Self GY: Quantum Riddler
-  Opp GY:  Thoughtseize, Arid Mesa
-  Opp revealed: Thoughtseize, Arid Mesa, Badlands
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 17 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Badlands (T)
-  Self GY: Quantum Riddler
-  Opp GY:  Thoughtseize, Arid Mesa
-  Opp revealed: Thoughtseize, Arid Mesa, Badlands
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 18 ---
   Priority: Player B (active)
   Step: End Combat (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -382,7 +340,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 19 ---
+--- Decision 17 ---
   Priority: Player B (active)
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -400,7 +358,7 @@
    2: Cast Tamiyo, Inquisitive Student  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 20 ---
+--- Decision 18 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -422,7 +380,7 @@
   PA: Ocelot Pride, Ocelot Pride, Plateau, Voice of Victory, Voice of Victory
   PB: Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 21 ---
+--- Decision 19 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -440,7 +398,7 @@
 --- Narrative ---
   Player A draws Orcish Bowmasters
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -457,7 +415,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  17 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Orcish Bowmasters, Plateau, Voice of Victory, Voice of Victory | lib 51
@@ -476,7 +434,7 @@
 --- Narrative ---
   Player A played Plateau
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  17 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Orcish Bowmasters, Voice of Victory, Voice of Victory | lib 51
@@ -501,7 +459,7 @@
   Player A activated Plateau for 1(W)
   Player A casts Ocelot Pride
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -522,7 +480,7 @@
 --- Narrative ---
   Ocelot Pride enters the battlefield
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -539,7 +497,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -558,7 +516,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -574,47 +532,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 29 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
-  Self GY: Quantum Riddler
-  Opp GY:  Thoughtseize, Arid Mesa
-  Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 30 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   17 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plateau (T,NEW)
-  Self GY: Quantum Riddler
-  Opp GY:  Thoughtseize, Arid Mesa
-  Opp revealed: Thoughtseize, Arid Mesa, Ocelot Pride, Plateau, Badlands
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 31 ---
+--- Decision 27 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -631,7 +550,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -648,7 +567,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 33 ---
+--- Decision 29 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -670,7 +589,7 @@
   PA: Ocelot Pride, Ocelot Pride, Orcish Bowmasters, Voice of Victory, Voice of Victory
   PB: Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 34 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -687,7 +606,7 @@
 --- Narrative ---
   Player B draws Flooded Strand
 
---- Decision 35 ---
+--- Decision 31 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -703,7 +622,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 36 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -723,7 +642,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 37 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -746,7 +665,7 @@
   Player B activated Lotus Petal for 1(B)
   Player B casts Dark Ritual
 
---- Decision 38 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -769,7 +688,7 @@
   Player B sacrifices Flooded Strand
   Player B's Flooded Strand ability is on the stack
 
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -790,7 +709,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -818,7 +737,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -839,7 +758,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: 3B | hand(4): Doomsday, Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -859,7 +778,7 @@
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -880,7 +799,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -954,7 +873,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1028,7 +947,7 @@
   Player B puts Island to top of library
   Searching Player B's graveyard and library:
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1101,7 +1020,7 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1173,7 +1092,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1297,7 +1216,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1322,7 +1241,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1346,7 +1265,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1369,7 +1288,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1393,7 +1312,7 @@
   Player B loses 10 life (now at 9)
   Resolving ability (category: Cleanup)
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1415,7 +1334,7 @@
   Player B activated Tropical Island for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
@@ -1437,15 +1356,12 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Ocelot Pride, Orcish Bowmasters, Voice of Victory, Voice of Victory
   PB: Force of Will, Teferi, Time Raveler
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  17 life | mana: empty | hand(4): Ocelot Pride, Orcish Bowmasters, Voice of Victory, Voice of Victory | lib 51
@@ -1466,7 +1382,7 @@
   Player A activated Plateau for 1(R)
   Player A casts Orcish Bowmasters
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  9 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
@@ -1489,7 +1405,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  17 life | mana: empty | hand(3): Ocelot Pride, Voice of Victory, Voice of Victory | lib 51
@@ -1521,7 +1437,7 @@
   Player A draws Amped Raptor
   --- Declare Attackers (Player A) ---
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory | lib 50
@@ -1544,7 +1460,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Ocelot Pride [1/1] -> Player B
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory | lib 50
@@ -1569,7 +1485,7 @@
     0: Ocelot Pride [1/1]
   Your creatures:
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 5)
   Self:  8 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
@@ -1606,7 +1522,7 @@
   PA: Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory
   PB: Force of Will, Island, Teferi, Time Raveler
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  7 life | mana: empty | hand(3): Force of Will, Island, Teferi, Time Raveler | lib 4
@@ -1627,7 +1543,7 @@
   Player B played Island
   --- Declare Attackers (Player B) ---
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1650,7 +1566,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1674,7 +1590,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1695,7 +1611,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1717,7 +1633,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1736,7 +1652,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1755,7 +1671,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1774,7 +1690,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1798,7 +1714,7 @@
   PA: Amped Raptor, Ocelot Pride, Voice of Victory, Voice of Victory
   PB: Force of Will, Teferi, Time Raveler
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1818,7 +1734,7 @@
 --- Narrative ---
   Player A draws Cabal Therapy
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1837,7 +1753,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  18 life | mana: empty | hand(5): Amped Raptor, Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 49
@@ -1863,7 +1779,7 @@
   Player A activated Plateau for 1(R)
   Player A casts Amped Raptor
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1887,7 +1803,7 @@
   Amped Raptor enters the battlefield
   Amped Raptor triggered
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1916,7 +1832,7 @@
   Player A may cast Ajani, Nacatl Pariah this turn by paying 2 energy rather than its mana cost.
   Resolving ability (category: Cleanup)
 
---- Decision 75 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  18 life | mana: empty | energy 2 | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -1938,7 +1854,7 @@
   Player A pays 2 energy
   Player A casts Ajani, Nacatl Pariah
 
---- Decision 76 ---
+--- Decision 72 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1962,7 +1878,7 @@
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
 
---- Decision 77 ---
+--- Decision 73 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -1985,7 +1901,7 @@
   Resolving ability (category: Token)
   Token created: 2/1 Cat Warrior
 
---- Decision 78 ---
+--- Decision 74 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2004,7 +1920,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 79 ---
+--- Decision 75 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2025,7 +1941,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 80 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2051,7 +1967,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Ocelot Pride [1/1] -> Player B
 
---- Decision 81 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2077,7 +1993,7 @@
     [attacking] Ocelot Pride [1/1] -> Player B
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 82 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2103,7 +2019,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 83 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2129,7 +2045,7 @@
     [attacking] Orc Army token [1/1] -> Player B
     [attacking] Cat token [1/1] -> Player B
 
---- Decision 84 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  18 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2153,7 +2069,7 @@
     Orc Army token -> Player B
     Cat token -> Player B
 
---- Decision 85 ---
+--- Decision 81 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2174,7 +2090,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 86 ---
+--- Decision 82 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  7 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2198,7 +2114,7 @@
     Player A gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 87 ---
+--- Decision 83 ---
   Priority: Player B (non-active)
   Step: First Strike Dmg (turn 7)
   Self:  6 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2223,7 +2139,7 @@
     Cat token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 88 ---
+--- Decision 84 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 7)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2242,7 +2158,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 85 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2261,7 +2177,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 90 ---
+--- Decision 86 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2282,7 +2198,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 91 ---
+--- Decision 87 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2309,7 +2225,7 @@
   Token copy created: 2/1 Cat Warrior
   Token copy created: 1/1 Cat
 
---- Decision 92 ---
+--- Decision 88 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2333,7 +2249,7 @@
   PA: Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory
   PB: Force of Will, Teferi, Time Raveler
 
---- Decision 93 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 4
@@ -2353,7 +2269,7 @@
 --- Narrative ---
   Player B draws Edge of Autumn
 
---- Decision 94 ---
+--- Decision 90 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  3 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2373,7 +2289,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 91 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  3 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2394,7 +2310,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 3 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 96 ---
+--- Decision 92 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  3 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2418,7 +2334,7 @@
   Player B sacrifices Island
   Player B activates Edge of Autumn from hand
 
---- Decision 97 ---
+--- Decision 93 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  3 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 3
@@ -2442,7 +2358,7 @@
   Player B draws Street Wraith
   Choose target for Orcish Bowmasters:
 
---- Decision 98 ---
+--- Decision 94 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory | lib 48
@@ -2476,7 +2392,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 99 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  3 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2502,7 +2418,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
---- Decision 100 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2522,7 +2438,7 @@
    2: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2544,7 +2460,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 102 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2567,7 +2483,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 103 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2589,7 +2505,7 @@
     Tamiyo, Inquisitive Student -> Player A
   Tamiyo, Inquisitive Student triggered
 
---- Decision 104 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2613,7 +2529,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 105 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2636,7 +2552,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 106 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2660,7 +2576,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 107 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2681,7 +2597,7 @@
    3: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 108 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2702,7 +2618,7 @@
    3: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2723,7 +2639,7 @@
    3: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 110 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2749,7 +2665,7 @@
   PA: Cabal Therapy, Ocelot Pride, Voice of Victory, Voice of Victory
   PB: Force of Will, Street Wraith, Teferi, Time Raveler
 
---- Decision 111 ---
+--- Decision 107 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2771,7 +2687,7 @@
 --- Narrative ---
   Player A draws Goblin Bombardment
 
---- Decision 112 ---
+--- Decision 108 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2792,7 +2708,7 @@
    3: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 113 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(5): Cabal Therapy, Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
@@ -2817,7 +2733,7 @@
 --- Narrative ---
   Choose target for Cabal Therapy:
 
---- Decision 114 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(5): Cabal Therapy, Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
@@ -2841,7 +2757,7 @@
   Player A activated Badlands for 1(B)
   Player A casts Cabal Therapy
 
---- Decision 115 ---
+--- Decision 111 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2867,7 +2783,7 @@
   Resolving ability (category: NameCard)
   Player A names a card:
 
---- Decision 116 ---
+--- Decision 112 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(4): Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
@@ -2916,7 +2832,7 @@
     Teferi, Time Raveler
   No matching cards to discard.
 
---- Decision 117 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(4): Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
@@ -2939,7 +2855,7 @@
   Player A activated Plateau for 1(W)
   Player A casts Ocelot Pride
 
---- Decision 118 ---
+--- Decision 114 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2964,7 +2880,7 @@
 --- Narrative ---
   Ocelot Pride enters the battlefield
 
---- Decision 119 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -2985,7 +2901,7 @@
 --- Narrative ---
   Choose target for Cabal Therapy:
 
---- Decision 120 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3007,7 +2923,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 121 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3039,7 +2955,7 @@
   Player A sacrifices Ajani, Nacatl Pariah
   Player A casts Cabal Therapy
 
---- Decision 122 ---
+--- Decision 118 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -3065,7 +2981,7 @@
   Resolving ability (category: NameCard)
   Player A names a card:
 
---- Decision 123 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3115,7 +3031,7 @@
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
 
---- Decision 124 ---
+--- Decision 120 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -3137,7 +3053,7 @@
    3: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 121 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -3161,7 +3077,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 126 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3193,7 +3109,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Amped Raptor [2/1] -> Player B
 
---- Decision 127 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3225,7 +3141,7 @@
     [attacking] Amped Raptor [2/1] -> Player B
     [attacking] Ocelot Pride [1/1] -> Player B
 
---- Decision 128 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3257,7 +3173,7 @@
     [attacking] Ocelot Pride [1/1] -> Player B
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 129 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3289,7 +3205,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [2/2] -> Player B
 
---- Decision 130 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3321,7 +3237,7 @@
     [attacking] Orc Army token [2/2] -> Player B
     [attacking] Cat token [1/1] -> Player B
 
---- Decision 131 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3353,7 +3269,7 @@
     [attacking] Cat token [1/1] -> Player B
     [attacking] Cat Warrior token [2/1] -> Player B
 
---- Decision 132 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3385,7 +3301,7 @@
     [attacking] Cat Warrior token [2/1] -> Player B
     [attacking] Cat token [1/1] -> Player B
 
---- Decision 133 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3417,7 +3333,7 @@
     [attacking] Cat token [1/1] -> Player B
     [attacking] Cat Warrior token [2/1] -> Player B
 
---- Decision 134 ---
+--- Decision 130 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3449,7 +3365,7 @@
     [attacking] Cat Warrior token [2/1] -> Player B
     [attacking] Cat token [1/1] -> Player B
 
---- Decision 135 ---
+--- Decision 131 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(3): Goblin Bombardment, Voice of Victory, Voice of Victory | lib 47
@@ -3479,7 +3395,7 @@
     Cat Warrior token -> Player B
     Cat token -> Player B
 
---- Decision 136 ---
+--- Decision 132 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -3503,7 +3419,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 137 ---
+--- Decision 133 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Street Wraith, Teferi, Time Raveler | lib 2

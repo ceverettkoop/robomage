@@ -186,9 +186,6 @@
   Talon Gates of Madara triggered
   Resolving ability (category: Phases)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Dark Ritual
 --- Turn 2 (Player B) ---
@@ -421,53 +418,8 @@
    2: Cast Dark Ritual  [#0]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 20 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 4 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 21 ---
   Priority: Player B (active)
   Step: End Combat (turn 2)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -487,7 +439,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (active)
   Step: Second Main (turn 2)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -507,7 +459,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -532,7 +484,7 @@
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -553,7 +505,7 @@
 --- Narrative ---
   Player A draws Once Upon a Time
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player A (active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub | lib 53
@@ -573,7 +525,7 @@
   Player A casts for free (alternate cost)
   Player A casts Once Upon a Time
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -597,7 +549,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 5 card(s) of their library.
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub | lib 53
@@ -621,7 +573,7 @@
   Player A puts Thalia, Guardian of Thraben into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -641,7 +593,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -661,7 +613,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -683,7 +635,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -702,53 +654,8 @@
    2: Cast Dark Ritual  [#0]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 32 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Talon Gates of Madara
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 33 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Underground Sea
-  Opp BF:   Talon Gates of Madara
-  Self GY: Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 34 ---
+--- Decision 30 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -768,7 +675,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 31 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -788,7 +695,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 36 ---
+--- Decision 32 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -813,7 +720,7 @@
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
---- Decision 37 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 52
@@ -834,7 +741,7 @@
 --- Narrative ---
   Player B draws Ponder
 
---- Decision 38 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Ponder, Island | lib 51
@@ -854,7 +761,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Ponder, Island | lib 51
@@ -879,7 +786,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Ponder
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
@@ -902,7 +809,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
@@ -925,7 +832,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
@@ -946,7 +853,7 @@
    1: Undercity Sewers  [#1]
   >> B/B: 0 (Doomsday)
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 51
@@ -970,7 +877,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Undercity Sewers
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Undercity Sewers, Island | lib 50
@@ -995,7 +902,7 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1019,7 +926,7 @@
   Player B surveils 1.
   Surveil: looking at Doomsday
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1040,7 +947,7 @@
    1: Put Doomsday into graveyard
   >> B/B: 0 (Put Doomsday on top of library)
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1059,7 +966,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1080,7 +987,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1098,51 +1005,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 50 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 51 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 52 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: End Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1161,7 +1025,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 53 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: Second Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1180,7 +1044,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 54 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: End Step (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1204,7 +1068,7 @@
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
---- Decision 55 ---
+--- Decision 49 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1224,7 +1088,7 @@
 --- Narrative ---
   Player A draws Noble Hierarch
 
---- Decision 56 ---
+--- Decision 50 ---
   Priority: Player B (non-active)
   Step: Draw (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1243,7 +1107,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 57 ---
+--- Decision 51 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1262,7 +1126,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 58 ---
+--- Decision 52 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1283,7 +1147,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 59 ---
+--- Decision 53 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1301,51 +1165,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 60 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 61 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 62 ---
+--- Decision 54 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1364,7 +1185,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1383,7 +1204,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 56 ---
   Priority: Player B (non-active)
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1407,7 +1228,7 @@
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   PB: Dark Ritual, Dark Ritual, Edge of Autumn, Island
 
---- Decision 65 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 50
@@ -1429,7 +1250,7 @@
 --- Narrative ---
   Player B draws Doomsday
 
---- Decision 66 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 49
@@ -1450,7 +1271,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(5): Doomsday, Dark Ritual, Dark Ritual, Edge of Autumn, Island | lib 49
@@ -1475,7 +1296,7 @@
   Player B activated Undercity Sewers for 1(B)
   Player B casts Dark Ritual
 
---- Decision 68 ---
+--- Decision 60 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Dark Ritual, Edge of Autumn, Island | lib 49
@@ -1499,7 +1320,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Dark Ritual
 
---- Decision 69 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(3): Doomsday, Edge of Autumn, Island | lib 49
@@ -1522,7 +1343,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 70 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(3): Doomsday, Edge of Autumn, Island | lib 49
@@ -1545,7 +1366,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 71 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 6B | hand(3): Doomsday, Edge of Autumn, Island | lib 49
@@ -1568,7 +1389,7 @@
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 72 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -1591,7 +1412,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 73 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -1668,7 +1489,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 74 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -1744,7 +1565,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 75 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -1819,7 +1640,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 76 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -1893,7 +1714,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 77 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 49
@@ -2020,7 +1841,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 78 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
@@ -2046,7 +1867,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 79 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
@@ -2071,7 +1892,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 80 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
@@ -2095,7 +1916,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 81 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
@@ -2120,7 +1941,7 @@
   Player B loses 9 life (now at 8)
   Resolving ability (category: Cleanup)
 
---- Decision 82 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: 3B | hand(2): Edge of Autumn, Island | lib 5
@@ -2143,7 +1964,7 @@
 --- Narrative ---
   Player B played Island
 
---- Decision 83 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: 3B | hand(1): Edge of Autumn | lib 5
@@ -2163,7 +1984,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2185,7 +2006,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 85 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2204,53 +2025,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 86 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 87 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island (NEW)
-  Opp BF:   Talon Gates of Madara
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 88 ---
+--- Decision 78 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2270,7 +2046,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 79 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2290,7 +2066,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 90 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2315,7 +2091,7 @@
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
   PB: Edge of Autumn
 
---- Decision 91 ---
+--- Decision 81 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2336,7 +2112,7 @@
 --- Narrative ---
   Player A draws Karakas
 
---- Decision 92 ---
+--- Decision 82 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2356,7 +2132,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 93 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
@@ -2376,7 +2152,7 @@
 --- Narrative ---
   Player A played Karakas
 
---- Decision 94 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
@@ -2399,7 +2175,7 @@
 --- Narrative ---
   Choose X value (0-0):
 
---- Decision 95 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
@@ -2422,7 +2198,7 @@
   Player A activated Talon Gates of Madara for 1(G)
   Player A casts Green Sun's Zenith
 
---- Decision 96 ---
+--- Decision 86 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2446,7 +2222,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 97 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
@@ -2470,7 +2246,7 @@
   Player A puts Dryad Arbor to the battlefield
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 98 ---
+--- Decision 88 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2490,7 +2266,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2512,7 +2288,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 100 ---
+--- Decision 90 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2531,53 +2307,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 101 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Karakas (T,NEW) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 102 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Island
-  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Karakas (T,NEW) | Talon Gates of Madara (T)
-  Self GY: Doomsday
-  Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 103 ---
+--- Decision 91 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2597,7 +2328,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 92 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2617,7 +2348,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 105 ---
+--- Decision 93 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2642,7 +2373,7 @@
   PA: Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben
   PB: Edge of Autumn
 
---- Decision 106 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  8 life | mana: empty | hand(1): Edge of Autumn | lib 5
@@ -2663,7 +2394,7 @@
 --- Narrative ---
   Player B draws Street Wraith
 
---- Decision 107 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  8 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 4
@@ -2684,7 +2415,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 108 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 4
@@ -2708,7 +2439,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 109 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  6 life | mana: empty | hand(1): Edge of Autumn | lib 4
@@ -2732,7 +2463,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 110 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  6 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 3
@@ -2756,7 +2487,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 111 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(1): Edge of Autumn | lib 3
@@ -2780,7 +2511,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 112 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 2
@@ -2804,7 +2535,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 113 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(1): Edge of Autumn | lib 2
@@ -2828,7 +2559,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 114 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
@@ -2849,7 +2580,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 2 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 115 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
@@ -2874,7 +2605,7 @@
   Player B sacrifices Island
   Player B activates Edge of Autumn from hand
 
---- Decision 116 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(1): Street Wraith | lib 1
@@ -2898,7 +2629,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thassa's Oracle
 
---- Decision 117 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(2): Thassa's Oracle, Street Wraith | lib 0
@@ -2922,7 +2653,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Thassa's Oracle
 
---- Decision 118 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(1): Street Wraith | lib 0
@@ -2945,7 +2676,7 @@
   Thassa's Oracle enters the battlefield
   Thassa's Oracle triggered
 
---- Decision 119 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(1): Street Wraith | lib 0
@@ -2968,7 +2699,7 @@
   Resolving ability (category: Dig)
   Player B looks at the top 0 card(s) of their library.
 
---- Decision 120 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(1): Street Wraith | lib 0

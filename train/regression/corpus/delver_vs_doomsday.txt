@@ -228,9 +228,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Cori-Steel Cutter
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Underground Sea
 --- Turn 2 (Player B) ---
@@ -504,47 +501,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 2)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Ponder, Misty Rainforest
-  Known opp hand: Island
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 26 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Ponder, Misty Rainforest
-  Known opp hand: Island
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 27 ---
   Priority: Player B (active)
   Step: End Combat (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -561,7 +519,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (active)
   Step: Second Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -578,7 +536,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -600,7 +558,7 @@
   PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -618,7 +576,7 @@
 --- Narrative ---
   Player A draws Dragon's Rage Channeler
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -635,7 +593,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Scalding Tarn, Wasteland | lib 50
@@ -655,7 +613,7 @@
 --- Narrative ---
   Player A played Island
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -672,7 +630,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -691,7 +649,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -707,47 +665,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 36 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Underground Sea (T)
-  Opp BF:   Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Ponder, Misty Rainforest
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 37 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Underground Sea (T)
-  Opp BF:   Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Ponder, Misty Rainforest
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 38 ---
+--- Decision 34 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -764,7 +683,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -781,7 +700,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -803,7 +722,7 @@
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Scalding Tarn, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -821,7 +740,7 @@
 --- Narrative ---
   Player B draws Thoughtseize
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  19 life | mana: empty | hand(7): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -838,7 +757,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -861,7 +780,7 @@
 --- Narrative ---
   Choose target for Thoughtseize:
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -883,7 +802,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Thoughtseize targeting Player A
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -901,7 +820,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
@@ -922,7 +841,7 @@
 --- Narrative ---
   Choose target for Daze:
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
@@ -943,7 +862,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
@@ -965,7 +884,7 @@
   Player A returns Island to hand
   Player A casts Daze targeting Thoughtseize
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -987,7 +906,7 @@
   Resolving ability (category: Counter)
   Thoughtseize's controller may pay {1} to save it:
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -1007,7 +926,7 @@
 --- Narrative ---
   Thoughtseize is countered
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -1028,7 +947,7 @@
 --- Narrative ---
   Player B played Underground Sea
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs | lib 50
@@ -1050,7 +969,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Ponder
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 50
@@ -1072,7 +991,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 50
@@ -1094,7 +1013,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 50
@@ -1114,7 +1033,7 @@
    1: Thoughtseize  [#1]
   >> B/B: 0 (Undercity Sewers)
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 50
@@ -1137,7 +1056,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thoughtseize
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1155,7 +1074,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1175,7 +1094,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1192,49 +1111,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 60 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 4)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
-  Self GY: Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest
-  Known top: Undercity Sewers, Doomsday, ?, ?, ?
-  Known opp hand: Island
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 61 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 4)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
-  Self GY: Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest
-  Known top: Undercity Sewers, Doomsday, ?, ?, ?
-  Known opp hand: Island
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: self_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 62 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: End Combat (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1252,7 +1130,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: Second Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1270,7 +1148,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: End Step (turn 4)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1293,7 +1171,7 @@
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland
   PB: Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs
 
---- Decision 65 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1312,7 +1190,7 @@
 --- Narrative ---
   Player A draws Unholy Heat
 
---- Decision 66 ---
+--- Decision 60 ---
   Priority: Player B (non-active)
   Step: Draw (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1330,7 +1208,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Scalding Tarn, Wasteland | lib 49
@@ -1349,7 +1227,7 @@
 --- Narrative ---
   Player A played Island
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1367,7 +1245,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1387,7 +1265,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1404,49 +1282,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 71 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 5)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Island (NEW)
-  Self GY: Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest
-  Known top: Undercity Sewers, Doomsday, ?, ?, ?
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 72 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 5)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Island (NEW)
-  Self GY: Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Daze, Daze, Ponder, Misty Rainforest
-  Known top: Undercity Sewers, Doomsday, ?, ?, ?
-  Opp revealed: Misty Rainforest, Ponder, Daze, Island
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 73 ---
+--- Decision 65 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1464,7 +1301,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 74 ---
+--- Decision 66 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1482,7 +1319,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 75 ---
+--- Decision 67 ---
   Priority: Player B (non-active)
   Step: End Step (turn 5)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1505,7 +1342,7 @@
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Scalding Tarn, Wasteland
   PB: Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs
 
---- Decision 76 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1524,7 +1361,7 @@
 --- Narrative ---
   Player B draws Undercity Sewers
 
---- Decision 77 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  19 life | mana: empty | hand(6): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1542,7 +1379,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 78 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(6): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1565,7 +1402,7 @@
 --- Narrative ---
   Choose target for Thoughtseize:
 
---- Decision 79 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(6): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1588,7 +1425,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Thoughtseize targeting Player A
 
---- Decision 80 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1617,7 +1454,7 @@
     Wasteland
   Player B chooses a card to discard:
 
---- Decision 81 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1644,7 +1481,7 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 17)
 
---- Decision 82 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(5): Force of Will, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
@@ -1669,7 +1506,7 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 83 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1694,7 +1531,7 @@
   Player B surveils 1.
   Surveil: looking at Doomsday
 
---- Decision 84 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1715,7 +1552,7 @@
    1: Put Doomsday into graveyard
   >> B/B: 0 (Put Doomsday on top of library)
 
---- Decision 85 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1735,7 +1572,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 78 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1757,7 +1594,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 87 ---
+--- Decision 79 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1776,53 +1613,8 @@
    1: Cast Dark Ritual  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 88 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
-  Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T) | Underground Sea
-  Opp BF:   Island
-  Self GY: Thoughtseize, Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Known top: Doomsday, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Wasteland
-  Opp revealed: Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 89 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
-  Opp:   19 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Undercity Sewers (T,NEW,res 1) | Underground Sea (T) | Underground Sea
-  Opp BF:   Island
-  Self GY: Thoughtseize, Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Known top: Doomsday, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Wasteland
-  Opp revealed: Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 90 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1842,7 +1634,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1862,7 +1654,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 92 ---
+--- Decision 82 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1887,7 +1679,7 @@
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat, Island, Scalding Tarn, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs
 
---- Decision 93 ---
+--- Decision 83 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1908,7 +1700,7 @@
 --- Narrative ---
   Player A draws Delver of Secrets
 
---- Decision 94 ---
+--- Decision 84 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1928,7 +1720,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(6): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Wasteland | lib 48
@@ -1949,7 +1741,7 @@
   Player A activated Island for 1(U)
   Player A casts Delver of Secrets
 
---- Decision 96 ---
+--- Decision 86 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -1972,7 +1764,7 @@
 --- Narrative ---
   Delver of Secrets enters the battlefield
 
---- Decision 97 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Wasteland | lib 48
@@ -1991,7 +1783,7 @@
 --- Narrative ---
   Player A played Scalding Tarn
 
---- Decision 98 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 48
@@ -2012,7 +1804,7 @@
   Player A sacrifices Scalding Tarn
   Player A's Scalding Tarn ability is on the stack
 
---- Decision 99 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2036,7 +1828,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 100 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 48
@@ -2063,7 +1855,7 @@
   Player A shuffles their library
   Player A puts Mountain to the battlefield
 
---- Decision 101 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 47
@@ -2085,7 +1877,7 @@
   Player A activated Mountain for 1(R)
   Player A casts Dragon's Rage Channeler
 
---- Decision 102 ---
+--- Decision 92 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2109,7 +1901,7 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 103 ---
+--- Decision 93 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2129,7 +1921,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 94 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2151,7 +1943,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 105 ---
+--- Decision 95 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2170,53 +1962,8 @@
    1: Cast Dark Ritual  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 106 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
-  Opp:   18 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Delver of Secrets [1/1] (SICK,NEW) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Mountain (T,NEW)
-  Self GY: Thoughtseize, Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Known top: Doomsday, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: opp spells=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 107 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
-  Opp:   18 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Delver of Secrets [1/1] (SICK,NEW) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Mountain (T,NEW)
-  Self GY: Thoughtseize, Ponder, Thoughtseize, Personal Tutor, Polluted Delta
-  Opp GY:  Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Known top: Doomsday, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: opp spells=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 108 ---
+--- Decision 96 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2236,7 +1983,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 97 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2256,7 +2003,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 110 ---
+--- Decision 98 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2281,7 +2028,7 @@
   PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Unholy Heat, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs
 
---- Decision 111 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2301,7 +2048,7 @@
 --- Narrative ---
   Player B draws Doomsday
 
---- Decision 112 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2319,7 +2066,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 113 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2344,7 +2091,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Doomsday
 
---- Decision 114 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2365,7 +2112,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 115 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2438,7 +2185,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 116 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2511,7 +2258,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 117 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2583,7 +2330,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 118 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2654,7 +2401,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 119 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 47
@@ -2775,7 +2522,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 120 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 5
@@ -2801,7 +2548,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 121 ---
+--- Decision 109 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 5
@@ -2826,7 +2573,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 122 ---
+--- Decision 110 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 5
@@ -2850,7 +2597,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 123 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 5
@@ -2875,7 +2622,7 @@
   Player B loses 9 life (now at 8)
   Resolving ability (category: Cleanup)
 
---- Decision 124 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(4): Force of Will, Dark Ritual, Edge of Autumn, Verdant Catacombs | lib 5
@@ -2897,7 +2644,7 @@
 --- Narrative ---
   Player B played Verdant Catacombs
 
---- Decision 125 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -2918,7 +2665,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 126 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -2941,7 +2688,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 127 ---
+--- Decision 115 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -2961,55 +2708,8 @@
    1: Activate Verdant Catacombs (ChangeZone)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 128 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
-  Opp:   18 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T) | Verdant Catacombs (NEW)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T)
-  Self GY: Doomsday
-  Opp GY:  Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Personal Tutor, Thoughtseize, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Verdant Catacombs (ChangeZone)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 129 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
-  Opp:   18 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T) | Verdant Catacombs (NEW)
-  Opp BF:   Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mountain (T)
-  Self GY: Doomsday
-  Opp GY:  Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Personal Tutor, Thoughtseize, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Dragon's Rage Channeler, Unholy Heat, Wasteland
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Cori-Steel Cutter, Unholy Heat
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=9 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Verdant Catacombs (ChangeZone)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 130 ---
+--- Decision 116 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3030,7 +2730,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 131 ---
+--- Decision 117 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3051,7 +2751,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 118 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3078,7 +2778,7 @@
   PA: Dragon's Rage Channeler, Unholy Heat, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn
 
---- Decision 133 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 47
@@ -3097,7 +2797,7 @@
 --- Narrative ---
   Choose target for Unholy Heat:
 
---- Decision 134 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 47
@@ -3121,7 +2821,7 @@
   Player A casts Unholy Heat targeting Delver of Secrets
   Dragon's Rage Channeler triggered
 
---- Decision 135 ---
+--- Decision 121 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3147,7 +2847,7 @@
   Player A surveils 1.
   Surveil: looking at Mishra's Bauble
 
---- Decision 136 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Wasteland | lib 47
@@ -3169,7 +2869,7 @@
 --- Narrative ---
   Player A puts Mishra's Bauble into their graveyard.
 
---- Decision 137 ---
+--- Decision 123 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3195,7 +2895,7 @@
   Dealt 6 damage to creature
   Delver of Secrets is destroyed (lethal damage)
 
---- Decision 138 ---
+--- Decision 124 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3220,7 +2920,7 @@
   Resolving ability (category: PeekAndReveal)
   PeekAndReveal fizzles
 
---- Decision 139 ---
+--- Decision 125 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3243,7 +2943,7 @@
 --- Narrative ---
   Player A draws Force of Will
 
---- Decision 140 ---
+--- Decision 126 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3264,7 +2964,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 141 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Force of Will, Wasteland | lib 45
@@ -3284,7 +2984,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 142 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Force of Will | lib 45
@@ -3304,7 +3004,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 143 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Force of Will | lib 45
@@ -3330,7 +3030,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Undercity Sewers is on the stack
 
---- Decision 144 ---
+--- Decision 130 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3355,7 +3055,7 @@
   Resolving ability (category: Destroy)
   Undercity Sewers is destroyed
 
---- Decision 145 ---
+--- Decision 131 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3376,7 +3076,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 146 ---
+--- Decision 132 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3401,7 +3101,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player B
 
---- Decision 147 ---
+--- Decision 133 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Force of Will | lib 45
@@ -3421,7 +3121,7 @@
   Attackers declared:
     Dragon's Rage Channeler -> Player B
 
---- Decision 148 ---
+--- Decision 134 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3444,7 +3144,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 149 ---
+--- Decision 135 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3469,7 +3169,7 @@
     Dragon's Rage Channeler deals 3 damage to Player B
   --- End Combat Damage ---
 
---- Decision 150 ---
+--- Decision 136 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 9)
   Self:  5 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3490,7 +3190,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 151 ---
+--- Decision 137 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 9)
   Self:  5 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3511,7 +3211,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 152 ---
+--- Decision 138 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 9)
   Self:  5 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3532,7 +3232,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 153 ---
+--- Decision 139 ---
   Priority: Player B (non-active)
   Step: End Step (turn 9)
   Self:  5 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3558,7 +3258,7 @@
   PA: Dragon's Rage Channeler, Force of Will
   PB: Force of Will, Dark Ritual, Edge of Autumn
 
---- Decision 154 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  5 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 5
@@ -3580,7 +3280,7 @@
 --- Narrative ---
   Player B draws Street Wraith
 
---- Decision 155 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  5 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Edge of Autumn | lib 4
@@ -3602,7 +3302,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 156 ---
+--- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  5 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Edge of Autumn | lib 4
@@ -3627,7 +3327,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 157 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 4
@@ -3652,7 +3352,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 158 ---
+--- Decision 144 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Edge of Autumn | lib 3
@@ -3677,7 +3377,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 159 ---
+--- Decision 145 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  1 life | mana: empty | hand(3): Force of Will, Dark Ritual, Edge of Autumn | lib 3
@@ -3702,7 +3402,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 160 ---
+--- Decision 146 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Edge of Autumn | lib 2
@@ -3723,7 +3423,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 3 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 161 ---
+--- Decision 147 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Edge of Autumn | lib 2
@@ -3748,7 +3448,7 @@
   Player B sacrifices Verdant Catacombs
   Player B activates Edge of Autumn from hand
 
---- Decision 162 ---
+--- Decision 148 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  1 life | mana: empty | hand(3): Force of Will, Dark Ritual, Street Wraith | lib 2
@@ -3772,7 +3472,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 163 ---
+--- Decision 149 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3792,7 +3492,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 164 ---
+--- Decision 150 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3814,7 +3514,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 165 ---
+--- Decision 151 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3833,53 +3533,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 166 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 10)
-  Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
-  Opp:   18 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
-  Self GY: Edge of Autumn, Verdant Catacombs, Street Wraith, Street Wraith, Undercity Sewers, Doomsday
-  Opp GY:  Wasteland, Delver of Secrets, Unholy Heat, Mishra's Bauble, Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Personal Tutor, Thoughtseize, Thoughtseize
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  This turn: self drawn=4 life_lost=4
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 167 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 10)
-  Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
-  Opp:   18 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Underground Sea | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
-  Self GY: Edge of Autumn, Verdant Catacombs, Street Wraith, Street Wraith, Undercity Sewers, Doomsday
-  Opp GY:  Wasteland, Delver of Secrets, Unholy Heat, Mishra's Bauble, Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Personal Tutor, Thoughtseize, Thoughtseize
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler
-  Opp revealed: Mountain, Scalding Tarn, Misty Rainforest, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
-  This turn: self drawn=4 life_lost=4
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 168 ---
+--- Decision 152 ---
   Priority: Player B (active)
   Step: End Combat (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3899,7 +3554,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 169 ---
+--- Decision 153 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3919,7 +3574,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 170 ---
+--- Decision 154 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3944,7 +3599,7 @@
   PA: Dragon's Rage Channeler, Force of Will
   PB: Force of Will, Dark Ritual, Street Wraith, Street Wraith
 
---- Decision 171 ---
+--- Decision 155 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3965,7 +3620,7 @@
 --- Narrative ---
   Player A draws Delver of Secrets
 
---- Decision 172 ---
+--- Decision 156 ---
   Priority: Player B (non-active)
   Step: Draw (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -3985,7 +3640,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 173 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  18 life | mana: empty | hand(3): Delver of Secrets, Dragon's Rage Channeler, Force of Will | lib 44
@@ -4006,7 +3661,7 @@
   Player A activated Island for 1(U)
   Player A casts Delver of Secrets
 
---- Decision 174 ---
+--- Decision 158 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -4029,7 +3684,7 @@
 --- Narrative ---
   Delver of Secrets enters the battlefield
 
---- Decision 175 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Force of Will | lib 44
@@ -4049,7 +3704,7 @@
   Player A activated Mountain for 1(R)
   Player A casts Dragon's Rage Channeler
 
---- Decision 176 ---
+--- Decision 160 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -4072,7 +3727,7 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 177 ---
+--- Decision 161 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -4091,7 +3746,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 178 ---
+--- Decision 162 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -4114,7 +3769,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player B
 
---- Decision 179 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 44
@@ -4134,7 +3789,7 @@
   Attackers declared:
     Dragon's Rage Channeler -> Player B
 
---- Decision 180 ---
+--- Decision 164 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1
@@ -4155,7 +3810,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 181 ---
+--- Decision 165 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 11)
   Self:  1 life | mana: empty | hand(4): Force of Will, Dark Ritual, Street Wraith, Street Wraith | lib 1

@@ -278,9 +278,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -358,9 +355,6 @@
   Player B shuffles their library
   Player B puts Swamp to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Otherworldly Gaze
 --- Turn 3 (Player A) ---
@@ -603,9 +597,6 @@
 --- Narrative ---
   Player A puts Flow State to top of library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Bloodstained Mire
 --- Turn 4 (Player B) ---
@@ -711,9 +702,6 @@
 --- Narrative ---
   Player B puts Thoughtseize into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Force of Will, Otherworldly Gaze, Undercity Sewers
@@ -871,9 +859,6 @@
 --- Narrative ---
   Player A puts Scalding Tarn into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Archon of Cruelty
 --- Turn 6 (Player B) ---
@@ -1239,9 +1224,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Animate Dead
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: (empty)
@@ -1554,9 +1536,6 @@
 --- Narrative ---
   Player A puts Force of Will into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Dark Ritual
 --- Turn 8 (Player B) ---
@@ -1640,51 +1619,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
-  Opp:   7 life | mana: empty | hand count: 0 | lib 37
-  Self BF:  Island | Swamp | Undercity Sewers
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
-  Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Atraxa, Grand Unifier
-  Opp exile:  Otherworldly Gaze, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 67 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
-  Opp:   7 life | mana: empty | hand count: 0 | lib 37
-  Self BF:  Island | Swamp | Undercity Sewers
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying] (SICK)
-  Self GY: Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
-  Opp GY:  Force of Will, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Atraxa, Grand Unifier
-  Opp exile:  Otherworldly Gaze, Careful Study
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Force of Will, Island, Brainstorm, Thoughtseize, Dark Ritual, Lotus Petal, Swamp, Undercity Sewers, Bloodstained Mire, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Animate Dead
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 68 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1703,7 +1639,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1722,7 +1658,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 70 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1746,7 +1682,7 @@
   PA: (empty)
   PB: Dark Ritual
 
---- Decision 71 ---
+--- Decision 69 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1767,7 +1703,7 @@
 --- Narrative ---
   Player A draws Reanimate
 
---- Decision 72 ---
+--- Decision 70 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1787,7 +1723,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 73 ---
+--- Decision 71 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1807,7 +1743,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 74 ---
+--- Decision 72 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1829,7 +1765,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 75 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Reanimate | lib 36
@@ -1852,7 +1788,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Archon of Cruelty [6/6] -> Player B
 
---- Decision 76 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Reanimate | lib 36
@@ -1874,7 +1810,7 @@
     Archon of Cruelty -> Player B
   Choose target for Archon of Cruelty:
 
---- Decision 77 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(1): Reanimate | lib 36
@@ -1896,7 +1832,7 @@
   Targeting choice 0
   Archon of Cruelty triggered
 
---- Decision 78 ---
+--- Decision 76 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1921,7 +1857,7 @@
   Resolving ability (category: Discard)
   Player B chooses a card to discard:
 
---- Decision 79 ---
+--- Decision 77 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  13 life | mana: empty | hand(1): Dark Ritual | lib 42
@@ -1954,7 +1890,7 @@
     Archon of Cruelty deals 6 damage to Player B
   --- End Combat Damage ---
 
---- Decision 80 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  10 life | mana: empty | hand(2): Lotus Petal, Reanimate | lib 35
@@ -1980,7 +1916,7 @@
   PA: Lotus Petal, Reanimate
   PB: Brainstorm
 
---- Decision 81 ---
+--- Decision 79 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  4 life | mana: empty | hand(1): Brainstorm | lib 41
@@ -2007,7 +1943,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 82 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  4 life | mana: empty | hand(3): Flow State, Otherworldly Gaze, Polluted Delta | lib 38
@@ -2032,7 +1968,7 @@
   Player B puts Flow State to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 83 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  4 life | mana: empty | hand(2): Otherworldly Gaze, Polluted Delta | lib 39
@@ -2056,7 +1992,7 @@
 --- Narrative ---
   Player B puts Otherworldly Gaze to top of library
 
---- Decision 84 ---
+--- Decision 82 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  4 life | mana: empty | hand(1): Polluted Delta | lib 40
@@ -2077,7 +2013,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 85 ---
+--- Decision 83 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 40
@@ -2103,7 +2039,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 86 ---
+--- Decision 84 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 40
@@ -2137,7 +2073,7 @@
   Player B surveils 1.
   Surveil: looking at Archon of Cruelty
 
---- Decision 87 ---
+--- Decision 85 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 39
@@ -2160,16 +2096,13 @@
 --- Narrative ---
   Player B puts Archon of Cruelty into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Flow State
 --- Turn 11 (Player A) ---
   PA: Flow State, Reanimate
   PB: (empty)
 
---- Decision 88 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(2): Flow State, Reanimate | lib 34
@@ -2194,7 +2127,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 3 card(s) of their library.
 
---- Decision 89 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(1): Reanimate | lib 34
@@ -2216,7 +2149,7 @@
    2: Otherworldly Gaze
   >> A/A: 1 (Brainstorm)
 
---- Decision 90 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(1): Reanimate | lib 34
@@ -2241,7 +2174,7 @@
   Player A puts Otherworldly Gaze into hand.
   Player A puts 1 card(s) on the bottom of their library.
 
---- Decision 91 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(3): Brainstorm, Otherworldly Gaze, Reanimate | lib 32
@@ -2264,7 +2197,7 @@
   Player A activated Undercity Sewers for 1(U)
   Player A casts Brainstorm
 
---- Decision 92 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(2): Otherworldly Gaze, Reanimate | lib 32
@@ -2291,7 +2224,7 @@
   Surveil: looking at Atraxa, Grand Unifier
   Surveil: looking at Otherworldly Gaze
 
---- Decision 93 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(1): Reanimate | lib 32
@@ -2318,7 +2251,7 @@
 --- Narrative ---
   Player A puts Flow State into their graveyard.
 
---- Decision 94 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(1): Reanimate | lib 31
@@ -2343,7 +2276,7 @@
 --- Narrative ---
   Player A puts Atraxa, Grand Unifier into their graveyard.
 
---- Decision 95 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(1): Reanimate | lib 30
@@ -2372,7 +2305,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 96 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(4): Brainstorm, Ponder, Reanimate, Thoughtseize | lib 26
@@ -2398,7 +2331,7 @@
   Player A puts Brainstorm to top of library
   Player A chooses a card from Player A hand:
 
---- Decision 97 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(3): Ponder, Reanimate, Thoughtseize | lib 27
@@ -2423,7 +2356,7 @@
 --- Narrative ---
   Player A puts Ponder to top of library
 
---- Decision 98 ---
+--- Decision 96 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 28
@@ -2445,7 +2378,7 @@
 --- Narrative ---
   Choose target for Reanimate:
 
---- Decision 99 ---
+--- Decision 97 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 28
@@ -2477,7 +2410,7 @@
   Resolving ability (category: Cleanup)
   Choose target for Archon of Cruelty:
 
---- Decision 100 ---
+--- Decision 98 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(1): Thoughtseize | lib 28

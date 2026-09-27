@@ -174,9 +174,6 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Teferi, Time Raveler
 --- Turn 2 (Player B) ---
@@ -244,9 +241,6 @@
 --- Narrative ---
   Player B played Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Aether Vial triggered
 --- Turn 3 (Player A) ---
@@ -457,47 +451,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   20 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Opp GY:  Lotus Petal
-  Opp revealed: Island, Lotus Petal, Tamiyo, Inquisitive Student
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 24 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   20 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Opp GY:  Lotus Petal
-  Opp revealed: Island, Lotus Petal, Tamiyo, Inquisitive Student
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Wasteland (Destroy)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 25 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -514,7 +469,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -531,7 +486,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -553,7 +508,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Island, Teferi, Time Raveler, Teferi, Time Raveler, Tropical Island, Veil of Summer
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -571,7 +526,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(5): Brainstorm, Teferi, Time Raveler, Teferi, Time Raveler, Tropical Island, Veil of Summer | lib 52
@@ -590,7 +545,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -615,7 +570,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(7): Polluted Delta, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle, Tropical Island, Undercity Sewers, Veil of Summer | lib 49
@@ -641,7 +596,7 @@
   Player B puts Polluted Delta to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(6): Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle, Tropical Island, Undercity Sewers, Veil of Summer | lib 50
@@ -667,7 +622,7 @@
   Player B puts Teferi, Time Raveler to top of library
   Tamiyo, Inquisitive Student triggered
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -692,7 +647,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -709,7 +664,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Teferi, Time Raveler, Thassa's Oracle, Tropical Island, Undercity Sewers, Veil of Summer | lib 51
@@ -730,7 +685,7 @@
 --- Narrative ---
   Player B played Tropical Island
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers, Veil of Summer | lib 51
@@ -751,7 +706,7 @@
   Player B activated Tropical Island for 1(G)
   Player B casts Veil of Summer
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -771,7 +726,7 @@
 --- Narrative ---
   Player A's Aether Vial ability is on the stack
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -790,7 +745,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -817,7 +772,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -842,7 +797,7 @@
   Resolving ability (category: Pump)
   Player B and the permanents they control gain hexproof from the chosen color(s) until end of turn.
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(3): Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers | lib 51
@@ -866,16 +821,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 5 (Player A) ---
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -896,7 +848,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -915,7 +867,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 44 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -937,7 +889,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 45 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -956,7 +908,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -978,7 +930,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -998,7 +950,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1017,7 +969,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -1040,7 +992,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1066,7 +1018,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1089,7 +1041,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1113,7 +1065,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1138,7 +1090,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1157,7 +1109,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1178,7 +1130,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1196,51 +1148,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 57 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK)
-  Self GY: Wasteland
-  Opp GY:  Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 58 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 3 | lib 51
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK)
-  Self GY: Wasteland
-  Opp GY:  Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1259,7 +1168,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1278,7 +1187,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1302,7 +1211,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1321,7 +1230,7 @@
 --- Narrative ---
   Player B draws Teferi, Time Raveler
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1339,7 +1248,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers | lib 50
@@ -1363,7 +1272,7 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1386,7 +1295,7 @@
   Player B surveils 1.
   Surveil: looking at Polluted Delta
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(3): Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 50
@@ -1408,7 +1317,7 @@
 --- Narrative ---
   Player B puts Polluted Delta into their graveyard.
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(3): Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 49
@@ -1429,7 +1338,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1451,7 +1360,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1470,7 +1379,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1491,7 +1400,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1509,51 +1418,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 72 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Undercity Sewers (T,NEW,res 1)
-  Self GY: Wasteland
-  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 73 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 3 | lib 49
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Undercity Sewers (T,NEW,res 1)
-  Self GY: Wasteland
-  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 74 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1572,7 +1438,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 75 ---
+--- Decision 69 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1591,7 +1457,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1616,7 +1482,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1637,7 +1503,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1662,7 +1528,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1684,7 +1550,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1704,7 +1570,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1727,7 +1593,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1747,7 +1613,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1770,7 +1636,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1791,7 +1657,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1810,7 +1676,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1832,7 +1698,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1854,7 +1720,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1873,7 +1739,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1894,7 +1760,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1915,7 +1781,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1938,7 +1804,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1958,7 +1824,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1982,7 +1848,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2004,7 +1870,7 @@
     Orc Army token -> Player B
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  19 life | mana: empty | hand(3): Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 49
@@ -2026,7 +1892,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2048,7 +1914,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 0/1)
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2070,7 +1936,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 0/1)
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2091,7 +1957,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2113,7 +1979,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2132,7 +1998,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2151,7 +2017,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2170,7 +2036,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 103 ---
+--- Decision 97 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2194,7 +2060,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 104 ---
+--- Decision 98 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2213,7 +2079,7 @@
 --- Narrative ---
   Player B draws Dark Ritual
 
---- Decision 105 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2230,7 +2096,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 106 ---
+--- Decision 100 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2248,7 +2114,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2271,7 +2137,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 108 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2289,7 +2155,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 103 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2311,7 +2177,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 110 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2330,7 +2196,7 @@
    2: Cast Thassa's Oracle  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 105 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2349,7 +2215,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 112 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2367,7 +2233,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 113 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2388,7 +2254,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 114 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2406,7 +2272,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 109 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2424,87 +2290,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 116 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
-  Opp:   20 life | mana: empty | hand count: 2 | lib 70
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 117 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 118 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
-  Opp:   20 life | mana: empty | hand count: 2 | lib 70
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 119 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 8)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   19 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 120 ---
+--- Decision 110 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2522,7 +2309,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 121 ---
+--- Decision 111 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2541,7 +2328,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 122 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2560,7 +2347,7 @@
    2: Cast Thassa's Oracle  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 123 ---
+--- Decision 113 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2579,7 +2366,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2597,7 +2384,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 115 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2622,7 +2409,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 126 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2643,7 +2430,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 127 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2663,7 +2450,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 128 ---
+--- Decision 118 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2681,7 +2468,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 129 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2703,7 +2490,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 130 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2723,7 +2510,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 131 ---
+--- Decision 121 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2741,7 +2528,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2763,7 +2550,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 133 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2782,7 +2569,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 134 ---
+--- Decision 124 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2801,7 +2588,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 135 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2821,7 +2608,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 136 ---
+--- Decision 126 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2839,7 +2626,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 137 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2868,7 +2655,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts Pre-War Formalwear
 
---- Decision 138 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2888,7 +2675,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 139 ---
+--- Decision 129 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2910,7 +2697,7 @@
   Pre-War Formalwear enters the battlefield
   Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
 
---- Decision 140 ---
+--- Decision 130 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2929,7 +2716,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 141 ---
+--- Decision 131 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2947,7 +2734,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 142 ---
+--- Decision 132 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2966,7 +2753,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 143 ---
+--- Decision 133 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -2986,7 +2773,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 144 ---
+--- Decision 134 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3008,7 +2795,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 145 ---
+--- Decision 135 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3031,7 +2818,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 146 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3052,7 +2839,7 @@
 --- Narrative ---
   Select target for Phelia, Exuberant Shepherd:
 
---- Decision 147 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3076,7 +2863,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 148 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3096,7 +2883,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 149 ---
+--- Decision 139 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3121,7 +2908,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 150 ---
+--- Decision 140 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3144,7 +2931,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 151 ---
+--- Decision 141 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3172,7 +2959,7 @@
   Phelia, Exuberant Shepherd triggered
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 152 ---
+--- Decision 142 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3196,7 +2983,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 153 ---
+--- Decision 143 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3219,7 +3006,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 154 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3239,7 +3026,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 155 ---
+--- Decision 145 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3261,7 +3048,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 0/1)
 
---- Decision 156 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3281,7 +3068,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 157 ---
+--- Decision 147 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3303,7 +3090,7 @@
   Resolving ability (category: Pump, -1/+0)
   Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
 
---- Decision 158 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3323,7 +3110,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 159 ---
+--- Decision 149 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3345,7 +3132,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 0/1)
 
---- Decision 160 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3365,7 +3152,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 161 ---
+--- Decision 151 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3387,7 +3174,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 162 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3406,7 +3193,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 163 ---
+--- Decision 153 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3426,7 +3213,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 164 ---
+--- Decision 154 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3445,7 +3232,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 165 ---
+--- Decision 155 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3467,7 +3254,7 @@
     Phelia, Exuberant Shepherd deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 166 ---
+--- Decision 156 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3486,7 +3273,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 167 ---
+--- Decision 157 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 9)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3504,7 +3291,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 168 ---
+--- Decision 158 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3523,7 +3310,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 169 ---
+--- Decision 159 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 9)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3541,7 +3328,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 170 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3560,7 +3347,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 171 ---
+--- Decision 161 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 9)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3578,7 +3365,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3597,7 +3384,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 173 ---
+--- Decision 163 ---
   Priority: Player B (non-active)
   Step: End Step (turn 9)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3620,7 +3407,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 174 ---
+--- Decision 164 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 48
@@ -3636,7 +3423,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 175 ---
+--- Decision 165 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3655,7 +3442,7 @@
 --- Narrative ---
   Player B draws Ponder
 
---- Decision 176 ---
+--- Decision 166 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(5): Dark Ritual, Ponder, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3672,7 +3459,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 177 ---
+--- Decision 167 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3690,7 +3477,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 178 ---
+--- Decision 168 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(5): Dark Ritual, Ponder, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3715,7 +3502,7 @@
   Player B activated Island for 1(U)
   Player B casts Ponder
 
---- Decision 179 ---
+--- Decision 169 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3733,7 +3520,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 180 ---
+--- Decision 170 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3756,7 +3543,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 181 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3778,7 +3565,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 182 ---
+--- Decision 172 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3798,7 +3585,7 @@
    1: Edge of Autumn  [#1]
   >> B/B: 0 (Ponder)
 
---- Decision 183 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(4): Dark Ritual, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 47
@@ -3822,7 +3609,7 @@
   Player B draws Edge of Autumn
   Choose target for Orcish Bowmasters:
 
---- Decision 184 ---
+--- Decision 174 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3847,7 +3634,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 185 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -3867,7 +3654,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 186 ---
+--- Decision 176 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3891,7 +3678,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
---- Decision 187 ---
+--- Decision 177 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -3916,7 +3703,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 10)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 188 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -3936,7 +3723,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 189 ---
+--- Decision 179 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3958,7 +3745,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 190 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -3978,7 +3765,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 191 ---
+--- Decision 181 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3997,7 +3784,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 192 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4017,7 +3804,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 193 ---
+--- Decision 183 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4038,7 +3825,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 194 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4058,7 +3845,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 195 ---
+--- Decision 185 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4076,91 +3863,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 196 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 10)
-  Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
-  Opp:   20 life | mana: empty | hand count: 2 | lib 69
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
-  Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Self GY: Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland
-  Known top: Ponder, Polluted Delta, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 197 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   17 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 198 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 10)
-  Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
-  Opp:   20 life | mana: empty | hand count: 2 | lib 69
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
-  Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Self GY: Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Wasteland
-  Known top: Ponder, Polluted Delta, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 199 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 10)
-  Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   17 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Undercity Sewers
-  Self GY: Wasteland
-  Opp GY:  Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 200 ---
+--- Decision 186 ---
   Priority: Player B (active)
   Step: End Combat (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4180,7 +3884,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 187 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4199,7 +3903,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 202 ---
+--- Decision 188 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4219,7 +3923,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 203 ---
+--- Decision 189 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4238,7 +3942,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 204 ---
+--- Decision 190 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4258,7 +3962,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 205 ---
+--- Decision 191 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4283,7 +3987,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 206 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4304,7 +4008,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 207 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4324,7 +4028,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 208 ---
+--- Decision 194 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4344,7 +4048,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 209 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4366,7 +4070,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 210 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4386,7 +4090,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 211 ---
+--- Decision 197 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4406,7 +4110,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 212 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4428,7 +4132,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 213 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -4447,7 +4151,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 214 ---
+--- Decision 200 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4468,7 +4172,7 @@
 --- Narrative ---
   Player A draws Prismatic Vista
 
---- Decision 215 ---
+--- Decision 201 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  20 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -4488,7 +4192,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 216 ---
+--- Decision 202 ---
   Priority: Player B (non-active)
   Step: Draw (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4508,7 +4212,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 217 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -4537,7 +4241,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 218 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4560,7 +4264,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 219 ---
+--- Decision 205 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4586,7 +4290,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Undercity Sewers is on the stack
 
---- Decision 220 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4606,7 +4310,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 221 ---
+--- Decision 207 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4632,7 +4336,7 @@
   Resolving ability (category: Destroy)
   Undercity Sewers is destroyed
 
---- Decision 222 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4652,7 +4356,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 223 ---
+--- Decision 209 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4675,7 +4379,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 224 ---
+--- Decision 210 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4698,7 +4402,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 225 ---
+--- Decision 211 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4718,7 +4422,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 226 ---
+--- Decision 212 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4742,7 +4446,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 227 ---
+--- Decision 213 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
@@ -4764,7 +4468,7 @@
 --- Narrative ---
   Player A played Prismatic Vista
 
---- Decision 228 ---
+--- Decision 214 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4788,7 +4492,7 @@
   Player A sacrifices Prismatic Vista
   Player A's Prismatic Vista ability is on the stack
 
---- Decision 229 ---
+--- Decision 215 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4808,7 +4512,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 230 ---
+--- Decision 216 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4831,7 +4535,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 231 ---
+--- Decision 217 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 68
@@ -4859,7 +4563,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 232 ---
+--- Decision 218 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4878,7 +4582,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 219 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4897,7 +4601,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 234 ---
+--- Decision 220 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4916,7 +4620,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 235 ---
+--- Decision 221 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -4937,7 +4641,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 236 ---
+--- Decision 222 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4959,7 +4663,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 237 ---
+--- Decision 223 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -4982,7 +4686,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 238 ---
+--- Decision 224 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5003,7 +4707,7 @@
 --- Narrative ---
   Select target for Phelia, Exuberant Shepherd:
 
---- Decision 239 ---
+--- Decision 225 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5027,7 +4731,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 240 ---
+--- Decision 226 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5047,7 +4751,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 241 ---
+--- Decision 227 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5072,7 +4776,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [2/2] -> Player B
 
---- Decision 242 ---
+--- Decision 228 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5095,7 +4799,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 243 ---
+--- Decision 229 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5124,7 +4828,7 @@
   Phelia, Exuberant Shepherd triggered
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 244 ---
+--- Decision 230 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5149,7 +4853,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 245 ---
+--- Decision 231 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5173,7 +4877,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 246 ---
+--- Decision 232 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5193,7 +4897,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 247 ---
+--- Decision 233 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5216,7 +4920,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 1/2)
 
---- Decision 248 ---
+--- Decision 234 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5236,7 +4940,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 249 ---
+--- Decision 235 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5259,7 +4963,7 @@
   Resolving ability (category: Pump, -1/+0)
   Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
 
---- Decision 250 ---
+--- Decision 236 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5279,7 +4983,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 251 ---
+--- Decision 237 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5302,7 +5006,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 0/1)
 
---- Decision 252 ---
+--- Decision 238 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5322,7 +5026,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 253 ---
+--- Decision 239 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5345,7 +5049,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 254 ---
+--- Decision 240 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5364,7 +5068,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 255 ---
+--- Decision 241 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5385,7 +5089,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 256 ---
+--- Decision 242 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5404,7 +5108,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 257 ---
+--- Decision 243 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 11)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5428,7 +5132,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 258 ---
+--- Decision 244 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5447,7 +5151,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 259 ---
+--- Decision 245 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 11)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5466,7 +5170,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 260 ---
+--- Decision 246 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5485,7 +5189,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 261 ---
+--- Decision 247 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 11)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5504,7 +5208,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 262 ---
+--- Decision 248 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5523,7 +5227,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 263 ---
+--- Decision 249 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 11)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5542,7 +5246,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 264 ---
+--- Decision 250 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5561,7 +5265,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 265 ---
+--- Decision 251 ---
   Priority: Player B (non-active)
   Step: End Step (turn 11)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5585,7 +5289,7 @@
   PA: White Orchid Phantom
   PB: Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 266 ---
+--- Decision 252 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 46
@@ -5602,7 +5306,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 267 ---
+--- Decision 253 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5621,7 +5325,7 @@
 --- Narrative ---
   Player B draws Ponder
 
---- Decision 268 ---
+--- Decision 254 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  15 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5639,7 +5343,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 269 ---
+--- Decision 255 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5657,7 +5361,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 270 ---
+--- Decision 256 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Ponder, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5682,7 +5386,7 @@
   Player B activated Island for 1(U)
   Player B casts Ponder
 
---- Decision 271 ---
+--- Decision 257 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5701,7 +5405,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 272 ---
+--- Decision 258 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5724,7 +5428,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 273 ---
+--- Decision 259 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5747,7 +5451,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 274 ---
+--- Decision 260 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5767,7 +5471,7 @@
    1: Flooded Strand  [#1]
   >> B/B: 0 (Tundra)
 
---- Decision 275 ---
+--- Decision 261 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 45
@@ -5791,7 +5495,7 @@
   Player B draws Flooded Strand
   Choose target for Orcish Bowmasters:
 
---- Decision 276 ---
+--- Decision 262 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5817,7 +5521,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 277 ---
+--- Decision 263 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  15 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Flooded Strand, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 44
@@ -5836,7 +5540,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 278 ---
+--- Decision 264 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5860,7 +5564,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
 
---- Decision 279 ---
+--- Decision 265 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Flooded Strand, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 44
@@ -5884,7 +5588,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 280 ---
+--- Decision 266 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  14 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 44
@@ -5910,7 +5614,7 @@
   Player B sacrifices Flooded Strand
   Player B's Flooded Strand ability is on the stack
 
---- Decision 281 ---
+--- Decision 267 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 44
@@ -5929,7 +5633,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 282 ---
+--- Decision 268 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -5951,7 +5655,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 283 ---
+--- Decision 269 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 44
@@ -5978,7 +5682,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 284 ---
+--- Decision 270 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6002,7 +5706,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 12)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 285 ---
+--- Decision 271 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6021,7 +5725,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 286 ---
+--- Decision 272 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6043,7 +5747,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 287 ---
+--- Decision 273 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6062,7 +5766,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 288 ---
+--- Decision 274 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6081,7 +5785,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 289 ---
+--- Decision 275 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6100,7 +5804,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 290 ---
+--- Decision 276 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6121,7 +5825,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 291 ---
+--- Decision 277 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6140,7 +5844,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 292 ---
+--- Decision 278 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6158,89 +5862,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 293 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 12)
-  Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
-  Opp:   19 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
-  Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 294 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
-  Opp:   13 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 295 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 12)
-  Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
-  Opp:   19 life | mana: empty | hand count: 1 | lib 67
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
-  Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 296 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 12)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
-  Opp:   13 life | mana: empty | hand count: 5 | lib 43
-  Self BF:  Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] (act 1) | Underground Sea (NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=U
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 297 ---
+--- Decision 279 ---
   Priority: Player B (active)
   Step: End Combat (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6259,7 +5882,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 298 ---
+--- Decision 280 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6278,7 +5901,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 299 ---
+--- Decision 281 ---
   Priority: Player B (active)
   Step: Second Main (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6297,7 +5920,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 300 ---
+--- Decision 282 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6316,7 +5939,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 301 ---
+--- Decision 283 ---
   Priority: Player B (active)
   Step: End Step (turn 12)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6335,7 +5958,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 302 ---
+--- Decision 284 ---
   Priority: Player A (non-active)
   Step: End Step (turn 12)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6360,7 +5983,7 @@
   PA: White Orchid Phantom
   PB: Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 303 ---
+--- Decision 285 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6381,7 +6004,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 304 ---
+--- Decision 286 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6400,7 +6023,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 305 ---
+--- Decision 287 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6419,7 +6042,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 306 ---
+--- Decision 288 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6441,7 +6064,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 307 ---
+--- Decision 289 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6460,7 +6083,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 308 ---
+--- Decision 290 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6479,7 +6102,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 309 ---
+--- Decision 291 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6501,7 +6124,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 310 ---
+--- Decision 292 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -6519,7 +6142,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 311 ---
+--- Decision 293 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6539,7 +6162,7 @@
 --- Narrative ---
   Player A draws Arid Mesa
 
---- Decision 312 ---
+--- Decision 294 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  19 life | mana: empty | hand(2): Arid Mesa, White Orchid Phantom | lib 66
@@ -6558,7 +6181,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 313 ---
+--- Decision 295 ---
   Priority: Player B (non-active)
   Step: Draw (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6577,7 +6200,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 314 ---
+--- Decision 296 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(2): Arid Mesa, White Orchid Phantom | lib 66
@@ -6604,7 +6227,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 315 ---
+--- Decision 297 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(1): Arid Mesa | lib 66
@@ -6624,7 +6247,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 316 ---
+--- Decision 298 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6647,7 +6270,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 317 ---
+--- Decision 299 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(1): Arid Mesa | lib 66
@@ -6671,7 +6294,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 318 ---
+--- Decision 300 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(1): Arid Mesa | lib 66
@@ -6691,7 +6314,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 319 ---
+--- Decision 301 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6715,7 +6338,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 320 ---
+--- Decision 302 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(1): Arid Mesa | lib 66
@@ -6737,7 +6360,7 @@
 --- Narrative ---
   Player A played Arid Mesa
 
---- Decision 321 ---
+--- Decision 303 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 66
@@ -6761,7 +6384,7 @@
   Player A sacrifices Arid Mesa
   Player A's Arid Mesa ability is on the stack
 
---- Decision 322 ---
+--- Decision 304 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 66
@@ -6781,7 +6404,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 323 ---
+--- Decision 305 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6804,7 +6427,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 324 ---
+--- Decision 306 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 66
@@ -6834,7 +6457,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 325 ---
+--- Decision 307 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -6853,7 +6476,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 326 ---
+--- Decision 308 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6872,7 +6495,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 327 ---
+--- Decision 309 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -6891,7 +6514,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 328 ---
+--- Decision 310 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -6912,7 +6535,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 329 ---
+--- Decision 311 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -6935,7 +6558,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 330 ---
+--- Decision 312 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -6958,7 +6581,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
---- Decision 331 ---
+--- Decision 313 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -6980,7 +6603,7 @@
 --- Narrative ---
   Select target for Phelia, Exuberant Shepherd:
 
---- Decision 332 ---
+--- Decision 314 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7004,7 +6627,7 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 333 ---
+--- Decision 315 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7025,7 +6648,7 @@
 --- Narrative ---
   Select target for White Orchid Phantom:
 
---- Decision 334 ---
+--- Decision 316 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7050,7 +6673,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 335 ---
+--- Decision 317 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7070,7 +6693,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 336 ---
+--- Decision 318 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7096,7 +6719,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [3/3] -> Player B
 
---- Decision 337 ---
+--- Decision 319 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7120,7 +6743,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 338 ---
+--- Decision 320 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7150,7 +6773,7 @@
   Phelia, Exuberant Shepherd triggered
   Player B orders 4 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 339 ---
+--- Decision 321 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7175,7 +6798,7 @@
   A floating triggered ability triggers.
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 340 ---
+--- Decision 322 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7199,7 +6822,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 341 ---
+--- Decision 323 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7222,7 +6845,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 342 ---
+--- Decision 324 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7242,7 +6865,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 343 ---
+--- Decision 325 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7265,7 +6888,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 2/3)
 
---- Decision 344 ---
+--- Decision 326 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7285,7 +6908,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 345 ---
+--- Decision 327 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7308,7 +6931,7 @@
   Resolving ability (category: Pump, -1/+0)
   White Orchid Phantom gets -1/+0 (now 1/2)
 
---- Decision 346 ---
+--- Decision 328 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7328,7 +6951,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 347 ---
+--- Decision 329 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7351,7 +6974,7 @@
   Resolving ability (category: Pump, -1/+0)
   Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
 
---- Decision 348 ---
+--- Decision 330 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7371,7 +6994,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 349 ---
+--- Decision 331 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7394,7 +7017,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 0/1)
 
---- Decision 350 ---
+--- Decision 332 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7414,7 +7037,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 351 ---
+--- Decision 333 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7437,7 +7060,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 352 ---
+--- Decision 334 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7456,7 +7079,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 353 ---
+--- Decision 335 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7477,7 +7100,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 354 ---
+--- Decision 336 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7496,7 +7119,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 355 ---
+--- Decision 337 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7519,7 +7142,7 @@
     White Orchid Phantom deals 1 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 356 ---
+--- Decision 338 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7538,7 +7161,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 357 ---
+--- Decision 339 ---
   Priority: Player B (non-active)
   Step: First Strike Dmg (turn 13)
   Self:  12 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7562,7 +7185,7 @@
     Orc Army token deals 2 damage to Player B
   --- End Combat Damage ---
 
---- Decision 358 ---
+--- Decision 340 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7581,7 +7204,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 359 ---
+--- Decision 341 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 13)
   Self:  9 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7600,7 +7223,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 360 ---
+--- Decision 342 ---
   Priority: Player A (active)
   Step: End Combat (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7619,7 +7242,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 361 ---
+--- Decision 343 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 13)
   Self:  9 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7638,7 +7261,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 362 ---
+--- Decision 344 ---
   Priority: Player A (active)
   Step: Second Main (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7657,7 +7280,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 363 ---
+--- Decision 345 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 13)
   Self:  9 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7676,7 +7299,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 364 ---
+--- Decision 346 ---
   Priority: Player A (active)
   Step: End Step (turn 13)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7695,7 +7318,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 365 ---
+--- Decision 347 ---
   Priority: Player B (non-active)
   Step: End Step (turn 13)
   Self:  9 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7719,7 +7342,7 @@
   PA: (empty)
   PB: Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 366 ---
+--- Decision 348 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  9 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 43
@@ -7736,7 +7359,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 367 ---
+--- Decision 349 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7755,7 +7378,7 @@
 --- Narrative ---
   Player B draws Daze
 
---- Decision 368 ---
+--- Decision 350 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7773,7 +7396,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 369 ---
+--- Decision 351 ---
   Priority: Player A (non-active)
   Step: Draw (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7791,7 +7414,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 370 ---
+--- Decision 352 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7816,7 +7439,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 14)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 371 ---
+--- Decision 353 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7835,7 +7458,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 372 ---
+--- Decision 354 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7857,7 +7480,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 373 ---
+--- Decision 355 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7877,7 +7500,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 374 ---
+--- Decision 356 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7896,7 +7519,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 375 ---
+--- Decision 357 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7915,7 +7538,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 376 ---
+--- Decision 358 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7936,7 +7559,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 377 ---
+--- Decision 359 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -7955,7 +7578,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 378 ---
+--- Decision 360 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -7973,89 +7596,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 379 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 14)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 65
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 380 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 381 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 14)
-  Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 65
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
-  Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp GY:  Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Self effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 382 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 14)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] (act 1) | Underground Sea
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp drawn=1
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 383 ---
+--- Decision 361 ---
   Priority: Player B (active)
   Step: End Combat (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8074,7 +7616,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 384 ---
+--- Decision 362 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8093,7 +7635,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 385 ---
+--- Decision 363 ---
   Priority: Player B (active)
   Step: Second Main (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8113,7 +7655,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 386 ---
+--- Decision 364 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8132,7 +7674,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 387 ---
+--- Decision 365 ---
   Priority: Player B (active)
   Step: End Step (turn 14)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8151,7 +7693,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 388 ---
+--- Decision 366 ---
   Priority: Player A (non-active)
   Step: End Step (turn 14)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8176,7 +7718,7 @@
   PA: (empty)
   PB: Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 389 ---
+--- Decision 367 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8197,7 +7739,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 390 ---
+--- Decision 368 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8216,7 +7758,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 391 ---
+--- Decision 369 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8235,7 +7777,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 392 ---
+--- Decision 370 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8257,7 +7799,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 393 ---
+--- Decision 371 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8276,7 +7818,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 394 ---
+--- Decision 372 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8295,7 +7837,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 395 ---
+--- Decision 373 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8317,7 +7859,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 396 ---
+--- Decision 374 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 65
@@ -8335,7 +7877,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 397 ---
+--- Decision 375 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8355,7 +7897,7 @@
 --- Narrative ---
   Player A draws Wasteland
 
---- Decision 398 ---
+--- Decision 376 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  18 life | mana: empty | hand(1): Wasteland | lib 64
@@ -8374,7 +7916,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 399 ---
+--- Decision 377 ---
   Priority: Player B (non-active)
   Step: Draw (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8393,7 +7935,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 400 ---
+--- Decision 378 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(1): Wasteland | lib 64
@@ -8417,7 +7959,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 401 ---
+--- Decision 379 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8439,17 +7981,14 @@
    5: Activate Wasteland (Destroy)  [#1]
   >> A/A: 4 (Equip Pre-War Formalwear)
 --- Narrative ---
-  Player A activated Plains for 1(W)
-  Player A activated Plains for 1(W)
-  Player A activated Scrubland for 1(W)
-  Choose creature to equip:
+  Choose target for Pre-War Formalwear:
 
---- Decision 402 ---
+--- Decision 380 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Pre-War Formalwear | Scrubland | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Underground Sea
   Pending: Pre-War Formalwear (self)
   Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
@@ -8459,23 +7998,27 @@
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
-   0: Orcish Bowmasters [1/1]
-   1: Phelia, Exuberant Shepherd [2/2]
-   2: White Orchid Phantom [2/2]
-   3: White Orchid Phantom [2/2]
-   4: Orc Army [3/3]
-  >> A/A: 0 (Orcish Bowmasters [1/1])
+   0: Orcish Bowmasters
+   1: Phelia, Exuberant Shepherd
+   2: White Orchid Phantom
+   3: White Orchid Phantom
+   4: Orc Army token
+  >> A/A: 0 (Orcish Bowmasters)
 --- Narrative ---
-  Pre-War Formalwear equipped to Orcish Bowmasters.
-  Orcish Bowmasters gains 2/2 Vigilance (always)
+  Targeting choice 0
+  Player A activated Plains for 1(W)
+  Player A activated Plains for 1(W)
+  Player A activated Scrubland for 1(W)
+  Player A's Pre-War Formalwear ability targeting Orcish Bowmasters is on the stack
 
---- Decision 403 ---
+--- Decision 381 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Underground Sea
+  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
   Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -8491,13 +8034,14 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 404 ---
+--- Decision 382 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Underground Sea
+  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
   Pending: Wasteland (self)
   Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
@@ -8516,14 +8060,14 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Underground Sea is on the stack
 
---- Decision 405 ---
+--- Decision 383 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
-  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Underground Sea
-  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 50)
+  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 50) -> Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
   Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -8536,14 +8080,14 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 406 ---
+--- Decision 384 ---
   Priority: Player B (non-active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
   Opp:   18 life | mana: empty | hand count: 0 | lib 64
   Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Underground Sea
-  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
-  Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 2)
+  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Stack: Wasteland (ability, opponent) -> Underground Sea (self, slot 2) -> Pre-War Formalwear (ability, opponent) -> Orcish Bowmasters (opponent, slot 50)
   Self GY: Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp GY:  Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
@@ -8561,7 +8105,50 @@
   Resolving ability (category: Destroy)
   Underground Sea is destroyed
 
---- Decision 407 ---
+--- Decision 385 ---
+  Priority: Player A (active)
+  Step: First Main (turn 15)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 64
+  Opp:   9 life | mana: empty | hand count: 6 | lib 42
+  Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] [Flying]
+  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
+  Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp GY:  Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 386 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 15)
+  Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
+  Opp:   18 life | mana: empty | hand count: 0 | lib 64
+  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 14] [Flying]
+  Opp BF:   Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Stack: Pre-War Formalwear (ability, opponent) -> Orcish Bowmasters (opponent, slot 50)
+  Self GY: Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp GY:  Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Arid Mesa, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: opp drawn=1
+  Self effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
+  Orcish Bowmasters gains 2/2 Vigilance (always)
+
+--- Decision 387 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8580,7 +8167,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 408 ---
+--- Decision 388 ---
   Priority: Player B (non-active)
   Step: First Main (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8598,7 +8185,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 409 ---
+--- Decision 389 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8617,7 +8204,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 410 ---
+--- Decision 390 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8637,7 +8224,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 411 ---
+--- Decision 391 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8661,7 +8248,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 412 ---
+--- Decision 392 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8684,7 +8271,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [3/3] -> Player B
 
---- Decision 413 ---
+--- Decision 393 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8707,7 +8294,7 @@
 --- Narrative ---
   Select target for Phelia, Exuberant Shepherd:
 
---- Decision 414 ---
+--- Decision 394 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8731,7 +8318,7 @@
     [attacking] Orcish Bowmasters [3/3] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 415 ---
+--- Decision 395 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8753,7 +8340,7 @@
 --- Narrative ---
   Select target for White Orchid Phantom:
 
---- Decision 416 ---
+--- Decision 396 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8778,7 +8365,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 417 ---
+--- Decision 397 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8799,7 +8386,7 @@
 --- Narrative ---
   Select target for White Orchid Phantom:
 
---- Decision 418 ---
+--- Decision 398 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8825,7 +8412,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 419 ---
+--- Decision 399 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8845,7 +8432,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 420 ---
+--- Decision 400 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8872,7 +8459,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [3/3] -> Player B
 
---- Decision 421 ---
+--- Decision 401 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8897,7 +8484,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 422 ---
+--- Decision 402 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -8927,7 +8514,7 @@
   Phelia, Exuberant Shepherd triggered
   Player B orders 5 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 423 ---
+--- Decision 403 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8953,7 +8540,7 @@
   A floating triggered ability triggers.
   Player B orders 4 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 424 ---
+--- Decision 404 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -8978,7 +8565,7 @@
   A floating triggered ability triggers.
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 425 ---
+--- Decision 405 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9002,7 +8589,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 426 ---
+--- Decision 406 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9025,7 +8612,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 427 ---
+--- Decision 407 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9045,7 +8632,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 428 ---
+--- Decision 408 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9067,7 +8654,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 2/3)
 
---- Decision 429 ---
+--- Decision 409 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9087,7 +8674,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 430 ---
+--- Decision 410 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9109,7 +8696,7 @@
   Resolving ability (category: Pump, -1/+0)
   White Orchid Phantom gets -1/+0 (now 1/2)
 
---- Decision 431 ---
+--- Decision 411 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9129,7 +8716,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 432 ---
+--- Decision 412 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9151,7 +8738,7 @@
   Resolving ability (category: Pump, -1/+0)
   White Orchid Phantom gets -1/+0 (now 1/2)
 
---- Decision 433 ---
+--- Decision 413 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9171,7 +8758,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 434 ---
+--- Decision 414 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9193,7 +8780,7 @@
   Resolving ability (category: Pump, -1/+0)
   Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
 
---- Decision 435 ---
+--- Decision 415 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9213,7 +8800,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 436 ---
+--- Decision 416 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9235,7 +8822,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 2/3)
 
---- Decision 437 ---
+--- Decision 417 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9255,7 +8842,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 438 ---
+--- Decision 418 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9277,7 +8864,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 439 ---
+--- Decision 419 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9296,7 +8883,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 440 ---
+--- Decision 420 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9316,7 +8903,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 441 ---
+--- Decision 421 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9335,7 +8922,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 442 ---
+--- Decision 422 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  9 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9358,7 +8945,7 @@
     White Orchid Phantom deals 1 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 443 ---
+--- Decision 423 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9377,7 +8964,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 444 ---
+--- Decision 424 ---
   Priority: Player B (non-active)
   Step: First Strike Dmg (turn 15)
   Self:  7 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9401,7 +8988,7 @@
     Orc Army token deals 2 damage to Player B
   --- End Combat Damage ---
 
---- Decision 445 ---
+--- Decision 425 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9420,7 +9007,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 446 ---
+--- Decision 426 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 15)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9438,7 +9025,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 447 ---
+--- Decision 427 ---
   Priority: Player A (active)
   Step: End Combat (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9457,7 +9044,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 448 ---
+--- Decision 428 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 15)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9475,7 +9062,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 449 ---
+--- Decision 429 ---
   Priority: Player A (active)
   Step: Second Main (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9494,7 +9081,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 450 ---
+--- Decision 430 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 15)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9512,7 +9099,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 451 ---
+--- Decision 431 ---
   Priority: Player A (active)
   Step: End Step (turn 15)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9531,7 +9118,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 452 ---
+--- Decision 432 ---
   Priority: Player B (non-active)
   Step: End Step (turn 15)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9554,7 +9141,7 @@
   PA: (empty)
   PB: Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 453 ---
+--- Decision 433 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 42
@@ -9570,7 +9157,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 454 ---
+--- Decision 434 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9589,7 +9176,7 @@
 --- Narrative ---
   Player B draws Lotus Petal
 
---- Decision 455 ---
+--- Decision 435 ---
   Priority: Player B (active)
   Step: Draw (turn 16)
   Self:  2 life | mana: empty | hand(7): Dark Ritual, Daze, Edge of Autumn, Lotus Petal, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9606,7 +9193,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 456 ---
+--- Decision 436 ---
   Priority: Player A (non-active)
   Step: Draw (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9624,7 +9211,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 457 ---
+--- Decision 437 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(7): Dark Ritual, Daze, Edge of Autumn, Lotus Petal, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9647,7 +9234,7 @@
 --- Narrative ---
   Player B casts Lotus Petal
 
---- Decision 458 ---
+--- Decision 438 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9666,7 +9253,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 459 ---
+--- Decision 439 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9687,7 +9274,7 @@
 --- Narrative ---
   Lotus Petal enters the battlefield
 
---- Decision 460 ---
+--- Decision 440 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(6): Dark Ritual, Daze, Edge of Autumn, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9715,7 +9302,7 @@
   Player B activated Island for 1(U)
   Player B casts Edge of Autumn
 
---- Decision 461 ---
+--- Decision 441 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9733,7 +9320,7 @@
    1: Cast Daze (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 462 ---
+--- Decision 442 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9755,7 +9342,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 463 ---
+--- Decision 443 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9776,7 +9363,7 @@
   Player B shuffles their library
   Player B fails to find
 
---- Decision 464 ---
+--- Decision 444 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -9798,7 +9385,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 16)
   Player B's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 465 ---
+--- Decision 445 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9820,7 +9407,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 466 ---
+--- Decision 446 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9839,7 +9426,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 467 ---
+--- Decision 447 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9860,7 +9447,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 468 ---
+--- Decision 448 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9878,51 +9465,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 469 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 16)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 64
-  Opp:   2 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1)
-  Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Edge of Autumn, Lotus Petal, Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=G
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 470 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 16)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 64
-  Opp:   2 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3] (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1)
-  Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
-  Opp GY:  Edge of Autumn, Lotus Petal, Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=G
-  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
-  Extras: opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 471 ---
+--- Decision 449 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9941,7 +9485,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 472 ---
+--- Decision 450 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9960,7 +9504,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 473 ---
+--- Decision 451 ---
   Priority: Player A (non-active)
   Step: End Step (turn 16)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -9985,7 +9529,7 @@
   PA: (empty)
   PB: Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 474 ---
+--- Decision 452 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10006,7 +9550,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 475 ---
+--- Decision 453 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10025,7 +9569,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 476 ---
+--- Decision 454 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10047,7 +9591,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 477 ---
+--- Decision 455 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10066,7 +9610,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 478 ---
+--- Decision 456 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10088,7 +9632,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 8).
 
---- Decision 479 ---
+--- Decision 457 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 64
@@ -10108,7 +9652,7 @@
 --- Narrative ---
   Player A draws Plains
 
---- Decision 480 ---
+--- Decision 458 ---
   Priority: Player A (active)
   Step: Draw (turn 17)
   Self:  18 life | mana: empty | hand(1): Plains | lib 63
@@ -10127,7 +9671,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 481 ---
+--- Decision 459 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  18 life | mana: empty | hand(1): Plains | lib 63
@@ -10151,7 +9695,7 @@
 --- Narrative ---
   Player A played Plains
 
---- Decision 482 ---
+--- Decision 460 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10172,17 +9716,14 @@
    4: Equip Pre-War Formalwear  [#32]
   >> A/A: 4 (Equip Pre-War Formalwear)
 --- Narrative ---
-  Player A activated Plains for 1(W)
-  Player A activated Plains for 1(W)
-  Player A activated Plains for 1(W)
-  Choose creature to equip:
+  Choose target for Pre-War Formalwear:
 
---- Decision 483 ---
+--- Decision 461 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
   Opp:   2 life | mana: empty | hand count: 5 | lib 41
-  Self BF:  Aether Vial [charge:8] (res 1) | Aether Vial [charge:7] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T,NEW) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Aether Vial [charge:8] (res 1) | Aether Vial [charge:7] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains (NEW) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying]
   Pending: Pre-War Formalwear (self)
   Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
@@ -10192,16 +9733,43 @@
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
-   0: Orcish Bowmasters [3/3]
-   1: Phelia, Exuberant Shepherd [2/2]
-   2: White Orchid Phantom [2/2]
-   3: White Orchid Phantom [2/2]
-   4: Orc Army [3/3]
-  >> A/A: 0 (Orcish Bowmasters [3/3])
+   0: Orcish Bowmasters
+   1: Phelia, Exuberant Shepherd
+   2: White Orchid Phantom
+   3: White Orchid Phantom
+   4: Orc Army token
+  >> A/A: 0 (Orcish Bowmasters)
 --- Narrative ---
-  Pre-War Formalwear equipped to Orcish Bowmasters.
+  Targeting choice 0
+  Player A activated Plains for 1(W)
+  Player A activated Plains for 1(W)
+  Player A activated Plains for 1(W)
+  Player A's Pre-War Formalwear ability targeting Orcish Bowmasters is on the stack
 
---- Decision 484 ---
+--- Decision 462 ---
+  Priority: Player A (active)
+  Step: First Main (turn 17)
+  Self:  18 life | mana: empty | hand(0): (empty) | lib 63
+  Opp:   2 life | mana: empty | hand count: 5 | lib 41
+  Self BF:  Aether Vial [charge:8] (res 1) | Aether Vial [charge:7] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T,NEW) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 16] [Flying]
+  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
+  Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
+  Opp GY:  Edge of Autumn, Lotus Petal, Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Island, Brainstorm, Lotus Petal, Edge of Autumn, Undercity Sewers, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Opp effects: floating trigger: Tamiyo, Seasoned Scholar
+  Extras: self_lands_played=1, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
+
+--- Decision 463 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10220,7 +9788,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 485 ---
+--- Decision 464 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10241,7 +9809,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 486 ---
+--- Decision 465 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10265,7 +9833,7 @@
 --- Narrative ---
   Select target for Orcish Bowmasters:
 
---- Decision 487 ---
+--- Decision 466 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10288,7 +9856,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orcish Bowmasters [3/3] -> Player B
 
---- Decision 488 ---
+--- Decision 467 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10311,7 +9879,7 @@
 --- Narrative ---
   Select target for Phelia, Exuberant Shepherd:
 
---- Decision 489 ---
+--- Decision 468 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10335,7 +9903,7 @@
     [attacking] Orcish Bowmasters [3/3] -> Player B
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 490 ---
+--- Decision 469 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10357,7 +9925,7 @@
 --- Narrative ---
   Select target for White Orchid Phantom:
 
---- Decision 491 ---
+--- Decision 470 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10382,7 +9950,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 492 ---
+--- Decision 471 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10403,7 +9971,7 @@
 --- Narrative ---
   Select target for White Orchid Phantom:
 
---- Decision 493 ---
+--- Decision 472 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10429,7 +9997,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 494 ---
+--- Decision 473 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10449,7 +10017,7 @@
 --- Narrative ---
   Select target for Orc Army token:
 
---- Decision 495 ---
+--- Decision 474 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10476,7 +10044,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [3/3] -> Player B
 
---- Decision 496 ---
+--- Decision 475 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10501,7 +10069,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 497 ---
+--- Decision 476 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10531,7 +10099,7 @@
   Phelia, Exuberant Shepherd triggered
   Player B orders 5 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 498 ---
+--- Decision 477 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -10557,7 +10125,7 @@
   A floating triggered ability triggers.
   Player B orders 4 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 499 ---
+--- Decision 478 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -10582,7 +10150,7 @@
   A floating triggered ability triggers.
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 500 ---
+--- Decision 479 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -10606,7 +10174,7 @@
   A floating triggered ability triggers.
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 501 ---
+--- Decision 480 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 17)
   Self:  2 life | mana: empty | hand(5): Dark Ritual, Daze, Teferi, Time Raveler, Teferi, Time Raveler, Thassa's Oracle | lib 41
@@ -10629,7 +10197,7 @@
   A floating triggered ability triggers.
   A floating triggered ability triggers.
 
---- Decision 502 ---
+--- Decision 481 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10652,7 +10220,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orc Army token gets -1/+0 (now 2/3)
 
---- Decision 503 ---
+--- Decision 482 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10675,7 +10243,7 @@
   Resolving ability (category: Pump, -1/+0)
   White Orchid Phantom gets -1/+0 (now 1/2)
 
---- Decision 504 ---
+--- Decision 483 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10698,7 +10266,7 @@
   Resolving ability (category: Pump, -1/+0)
   White Orchid Phantom gets -1/+0 (now 1/2)
 
---- Decision 505 ---
+--- Decision 484 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10721,7 +10289,7 @@
   Resolving ability (category: Pump, -1/+0)
   Phelia, Exuberant Shepherd gets -1/+0 (now 1/2)
 
---- Decision 506 ---
+--- Decision 485 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10744,7 +10312,7 @@
   Resolving ability (category: Pump, -1/+0)
   Orcish Bowmasters gets -1/+0 (now 2/3)
 
---- Decision 507 ---
+--- Decision 486 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10767,7 +10335,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 508 ---
+--- Decision 487 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63
@@ -10788,7 +10356,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 509 ---
+--- Decision 488 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 17)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 63

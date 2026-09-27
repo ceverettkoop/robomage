@@ -274,9 +274,6 @@
 --- Narrative ---
   Player A puts Brainstorm into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 2 (Player B) ---
@@ -447,9 +444,6 @@
   Tamiyo, Inquisitive Student can't be countered
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Cori-Steel Cutter
 --- Turn 3 (Player A) ---
@@ -569,9 +563,6 @@
 --- Narrative ---
   Player A puts Brainstorm into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
@@ -929,9 +920,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Misty Rainforest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Cori-Steel Cutter, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island
@@ -1843,9 +1831,6 @@
   Player A puts Mystic Sanctuary to the battlefield
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Cori-Steel Cutter, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island, Wasteland

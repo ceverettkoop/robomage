@@ -174,9 +174,6 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Swords to Plowshares
 --- Turn 2 (Player B) ---
@@ -320,9 +317,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Aether Vial triggered
 --- Turn 3 (Player A) ---
@@ -602,45 +596,8 @@
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
-  Self GY: Wasteland, Pre-War Formalwear
-  Opp GY:  Badlands, Thoughtseize, Marsh Flats
-  Opp revealed: Thoughtseize, Marsh Flats, Badlands
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 30 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
-  Self GY: Wasteland, Pre-War Formalwear
-  Opp GY:  Badlands, Thoughtseize, Marsh Flats
-  Opp revealed: Thoughtseize, Marsh Flats, Badlands
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 31 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -656,7 +613,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -672,7 +629,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -693,7 +650,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland
   PB: Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -710,7 +667,7 @@
 --- Narrative ---
   Player B draws Arid Mesa
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -726,7 +683,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(6): Arid Mesa, Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 51
@@ -746,7 +703,7 @@
 --- Narrative ---
   Player B played Arid Mesa
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 51
@@ -768,7 +725,7 @@
   Player B sacrifices Arid Mesa
   Player B's Arid Mesa ability is on the stack
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -789,7 +746,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -810,7 +767,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 51
@@ -843,7 +800,7 @@
   Player B surveils 1.
   Surveil: looking at Guide of Souls
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  16 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 50
@@ -865,16 +822,13 @@
 --- Narrative ---
   Player B puts Guide of Souls into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 5 (Player A) ---
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland
   PB: Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -894,7 +848,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -912,7 +866,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 44 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -933,7 +887,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 45 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -951,7 +905,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -972,7 +926,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland | lib 72
@@ -991,7 +945,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland, Witch Enchanter | lib 71
@@ -1009,7 +963,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Wasteland, Witch Enchanter | lib 71
@@ -1031,7 +985,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Orcish Bowmasters, Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1056,7 +1010,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1078,7 +1032,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1100,7 +1054,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1124,7 +1078,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1142,7 +1096,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1162,7 +1116,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1179,49 +1133,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 57 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
-  Opp:   15 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Elegant Parlor (T)
-  Self GY: Wasteland, Pre-War Formalwear
-  Opp GY:  Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 58 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
-  Opp:   15 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Elegant Parlor (T)
-  Self GY: Wasteland, Pre-War Formalwear
-  Opp GY:  Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Opp revealed: Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1239,7 +1152,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1257,7 +1170,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1280,7 +1193,7 @@
   PA: Phelia, Exuberant Shepherd, Witch Enchanter
   PB: Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  15 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 49
@@ -1300,7 +1213,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  15 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 49
@@ -1322,7 +1235,7 @@
   Player B activated Elegant Parlor for 1(W)
   Player B casts Swords to Plowshares targeting Orcish Bowmasters
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1346,7 +1259,7 @@
   Resolving ability (category: GainLife, amount: 1)
   Player A gains 1 life (now at 21)
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1367,7 +1280,7 @@
 --- Narrative ---
   Player B draws Thoughtseize
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1386,7 +1299,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  15 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory, Wasteland | lib 48
@@ -1407,7 +1320,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  15 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 48
@@ -1428,7 +1341,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  15 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 48
@@ -1454,7 +1367,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Scrubland is on the stack
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1477,7 +1390,7 @@
   Resolving ability (category: Destroy)
   Scrubland is destroyed
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1496,7 +1409,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1517,7 +1430,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1535,51 +1448,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 74 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
-  Opp:   15 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Elegant Parlor (T)
-  Self GY: Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Orcish Bowmasters
-  Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: self life_gained=1 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 75 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
-  Opp:   15 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Elegant Parlor (T)
-  Self GY: Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Orcish Bowmasters
-  Opp revealed: Wasteland, Swords to Plowshares, Thoughtseize, Arid Mesa, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: self life_gained=1 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1598,7 +1468,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1617,7 +1487,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1642,7 +1512,7 @@
   PA: Phelia, Exuberant Shepherd, Witch Enchanter
   PB: Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1663,7 +1533,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1683,7 +1553,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1705,7 +1575,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1725,7 +1595,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1747,7 +1617,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, Witch Enchanter | lib 71
@@ -1768,7 +1638,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1788,7 +1658,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1811,7 +1681,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1833,7 +1703,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1855,7 +1725,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1879,7 +1749,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Elegant Parlor is on the stack
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1902,7 +1772,7 @@
   Resolving ability (category: Destroy)
   Elegant Parlor is destroyed
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1920,7 +1790,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1940,7 +1810,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1961,7 +1831,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -1980,7 +1850,7 @@
   Attackers declared:
     Orc Army token -> Player B
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2000,7 +1870,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2022,7 +1892,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2040,7 +1910,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2058,7 +1928,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2076,7 +1946,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2099,7 +1969,7 @@
   PA: Phelia, Exuberant Shepherd, White Orchid Phantom
   PB: Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2118,7 +1988,7 @@
 --- Narrative ---
   Player B draws Arid Mesa
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2136,7 +2006,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 103 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  14 life | mana: empty | hand(5): Arid Mesa, Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
@@ -2156,7 +2026,7 @@
 --- Narrative ---
   Player B played Arid Mesa
 
---- Decision 104 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  14 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
@@ -2179,7 +2049,7 @@
   Player B sacrifices Arid Mesa
   Player B's Arid Mesa ability is on the stack
 
---- Decision 105 ---
+--- Decision 99 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2201,7 +2071,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 106 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 47
@@ -2229,7 +2099,7 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
 
---- Decision 107 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  13 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
@@ -2252,7 +2122,7 @@
   Player B activated Plains for 1(W)
   Player B casts Ocelot Pride
 
---- Decision 108 ---
+--- Decision 102 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2274,7 +2144,7 @@
 --- Narrative ---
   Ocelot Pride enters the battlefield
 
---- Decision 109 ---
+--- Decision 103 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2293,7 +2163,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 110 ---
+--- Decision 104 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2314,7 +2184,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 111 ---
+--- Decision 105 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2332,51 +2202,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 112 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plains (T,NEW)
-  Self GY: Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 113 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 8)
-  Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 3 | lib 46
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Plains (T,NEW)
-  Self GY: Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 114 ---
+--- Decision 106 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2395,7 +2222,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2414,7 +2241,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 116 ---
+--- Decision 108 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2439,7 +2266,7 @@
   PA: Phelia, Exuberant Shepherd, White Orchid Phantom
   PB: Ocelot Pride, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 117 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2460,7 +2287,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 118 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2479,7 +2306,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 119 ---
+--- Decision 111 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2501,7 +2328,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 120 ---
+--- Decision 112 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2520,7 +2347,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 121 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2542,7 +2369,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 122 ---
+--- Decision 114 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  21 life | mana: empty | hand(2): Phelia, Exuberant Shepherd, White Orchid Phantom | lib 70
@@ -2562,7 +2389,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 123 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2581,7 +2408,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2600,7 +2427,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2621,7 +2448,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 126 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2643,7 +2470,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 127 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2663,7 +2490,7 @@
   Attackers declared:
     Orc Army token -> Player B
 
---- Decision 128 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2687,7 +2514,7 @@
     0: Orc Army token [1/1]
   Your creatures:
 
---- Decision 129 ---
+--- Decision 121 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  13 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
@@ -2709,7 +2536,7 @@
   Blockers declared:
     (none)
 
---- Decision 130 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2732,7 +2559,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 131 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2751,7 +2578,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2770,7 +2597,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2789,7 +2616,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 134 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2813,7 +2640,7 @@
   PA: Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom
   PB: Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 135 ---
+--- Decision 127 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  12 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
@@ -2831,7 +2658,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 136 ---
+--- Decision 128 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2851,7 +2678,7 @@
 --- Narrative ---
   Player B draws Swords to Plowshares
 
---- Decision 137 ---
+--- Decision 129 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -2871,7 +2698,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 138 ---
+--- Decision 130 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2890,7 +2717,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 139 ---
+--- Decision 131 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -2910,7 +2737,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 140 ---
+--- Decision 132 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2929,7 +2756,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 141 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -2949,7 +2776,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 142 ---
+--- Decision 134 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2970,7 +2797,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 143 ---
+--- Decision 135 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -2993,7 +2820,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Ocelot Pride [1/1] -> Player A
 
---- Decision 144 ---
+--- Decision 136 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3014,7 +2841,7 @@
   Attackers declared:
     Ocelot Pride -> Player A
 
---- Decision 145 ---
+--- Decision 137 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3034,7 +2861,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 146 ---
+--- Decision 138 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3055,7 +2882,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 147 ---
+--- Decision 139 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 10)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3075,7 +2902,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 148 ---
+--- Decision 140 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  21 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3099,7 +2926,7 @@
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 149 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: First Strike Dmg (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3119,7 +2946,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 150 ---
+--- Decision 142 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3141,7 +2968,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 151 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3161,7 +2988,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 152 ---
+--- Decision 144 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3180,7 +3007,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 153 ---
+--- Decision 145 ---
   Priority: Player B (active)
   Step: End Combat (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3200,7 +3027,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 154 ---
+--- Decision 146 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3219,7 +3046,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 155 ---
+--- Decision 147 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3239,7 +3066,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 156 ---
+--- Decision 148 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3260,7 +3087,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 157 ---
+--- Decision 149 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3281,7 +3108,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 158 ---
+--- Decision 150 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3305,7 +3132,7 @@
   Token created: 1/1 Cat
   Resolving ability (category: CopyPermanent)
 
---- Decision 159 ---
+--- Decision 151 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3325,7 +3152,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 160 ---
+--- Decision 152 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3350,7 +3177,7 @@
   PA: Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom
   PB: Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 161 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3371,7 +3198,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 162 ---
+--- Decision 154 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3390,7 +3217,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 163 ---
+--- Decision 155 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3410,7 +3237,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 164 ---
+--- Decision 156 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3432,7 +3259,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 165 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3451,7 +3278,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 166 ---
+--- Decision 158 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3471,7 +3298,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 167 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3493,7 +3320,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 168 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3511,7 +3338,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 169 ---
+--- Decision 161 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3532,7 +3359,7 @@
 --- Narrative ---
   Player A draws Prismatic Vista
 
---- Decision 170 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3551,7 +3378,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 171 ---
+--- Decision 163 ---
   Priority: Player B (non-active)
   Step: Draw (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3571,7 +3398,7 @@
    2: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(4): Phelia, Exuberant Shepherd, Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3593,7 +3420,7 @@
 --- Narrative ---
   Player A played Prismatic Vista
 
---- Decision 173 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3617,7 +3444,7 @@
   Player A sacrifices Prismatic Vista
   Player A's Prismatic Vista ability is on the stack
 
---- Decision 174 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3637,7 +3464,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 175 ---
+--- Decision 167 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3661,7 +3488,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 176 ---
+--- Decision 168 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3689,7 +3516,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 177 ---
+--- Decision 169 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3715,7 +3542,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 178 ---
+--- Decision 170 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3735,7 +3562,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 179 ---
+--- Decision 171 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3757,7 +3584,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 180 ---
+--- Decision 172 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3776,7 +3603,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 181 ---
+--- Decision 173 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3797,7 +3624,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 182 ---
+--- Decision 174 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3822,7 +3649,7 @@
   Player B activated Plains for 1(W)
   Player B casts Swords to Plowshares targeting Phelia, Exuberant Shepherd
 
---- Decision 183 ---
+--- Decision 175 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3847,7 +3674,7 @@
   Resolving ability (category: GainLife, amount: 2)
   Player A gains 2 life (now at 21)
 
---- Decision 184 ---
+--- Decision 176 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3866,7 +3693,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 185 ---
+--- Decision 177 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3887,7 +3714,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 186 ---
+--- Decision 178 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3909,7 +3736,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 187 ---
+--- Decision 179 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3929,7 +3756,7 @@
   Attackers declared:
     Orc Army token -> Player B
 
---- Decision 188 ---
+--- Decision 180 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3953,7 +3780,7 @@
     0: Orc Army token [1/1]
   Your creatures:
 
---- Decision 189 ---
+--- Decision 181 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 11)
   Self:  13 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -3974,7 +3801,7 @@
   Blockers declared:
     (none)
 
---- Decision 190 ---
+--- Decision 182 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3997,7 +3824,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 191 ---
+--- Decision 183 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4016,7 +3843,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 192 ---
+--- Decision 184 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4035,7 +3862,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 193 ---
+--- Decision 185 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4054,7 +3881,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 194 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4078,7 +3905,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Swords to Plowshares, Thoughtseize, Voice of Victory
 
---- Decision 195 ---
+--- Decision 187 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  12 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
@@ -4095,7 +3922,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 196 ---
+--- Decision 188 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4115,7 +3942,7 @@
 --- Narrative ---
   Player B draws Thoughtseize
 
---- Decision 197 ---
+--- Decision 189 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4133,7 +3960,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 198 ---
+--- Decision 190 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4152,7 +3979,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 199 ---
+--- Decision 191 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4170,7 +3997,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 200 ---
+--- Decision 192 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4189,7 +4016,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 193 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4207,7 +4034,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 202 ---
+--- Decision 194 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4228,7 +4055,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 203 ---
+--- Decision 195 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4251,7 +4078,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Ocelot Pride [1/1] -> Player A
 
---- Decision 204 ---
+--- Decision 196 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4274,7 +4101,7 @@
     [attacking] Ocelot Pride [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 205 ---
+--- Decision 197 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4295,7 +4122,7 @@
     Ocelot Pride -> Player A
     Cat token -> Player A
 
---- Decision 206 ---
+--- Decision 198 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4313,7 +4140,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 207 ---
+--- Decision 199 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4334,7 +4161,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 208 ---
+--- Decision 200 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 12)
   Self:  12 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4352,7 +4179,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 209 ---
+--- Decision 201 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  21 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4376,7 +4203,7 @@
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 210 ---
+--- Decision 202 ---
   Priority: Player B (active)
   Step: First Strike Dmg (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4394,7 +4221,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 211 ---
+--- Decision 203 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 12)
   Self:  20 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4417,7 +4244,7 @@
     Cat token deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 212 ---
+--- Decision 204 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4435,7 +4262,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 213 ---
+--- Decision 205 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 12)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4454,7 +4281,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 214 ---
+--- Decision 206 ---
   Priority: Player B (active)
   Step: End Combat (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4472,7 +4299,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 215 ---
+--- Decision 207 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 12)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4491,7 +4318,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 216 ---
+--- Decision 208 ---
   Priority: Player B (active)
   Step: Second Main (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4509,7 +4336,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 217 ---
+--- Decision 209 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 12)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4530,7 +4357,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 218 ---
+--- Decision 210 ---
   Priority: Player B (active)
   Step: End Step (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4549,7 +4376,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 219 ---
+--- Decision 211 ---
   Priority: Player A (non-active)
   Step: End Step (turn 12)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4573,7 +4400,7 @@
   Token created: 1/1 Cat
   Resolving ability (category: CopyPermanent)
 
---- Decision 220 ---
+--- Decision 212 ---
   Priority: Player B (active)
   Step: End Step (turn 12)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4591,7 +4418,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 221 ---
+--- Decision 213 ---
   Priority: Player A (non-active)
   Step: End Step (turn 12)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4616,7 +4443,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 222 ---
+--- Decision 214 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4637,7 +4464,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 223 ---
+--- Decision 215 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4656,7 +4483,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 224 ---
+--- Decision 216 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4674,7 +4501,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 225 ---
+--- Decision 217 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4696,7 +4523,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 226 ---
+--- Decision 218 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4715,7 +4542,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 227 ---
+--- Decision 219 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4733,7 +4560,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 228 ---
+--- Decision 220 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4755,7 +4582,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 229 ---
+--- Decision 221 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -4773,7 +4600,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 230 ---
+--- Decision 222 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4792,7 +4619,7 @@
 --- Narrative ---
   Player A draws Orcish Bowmasters
 
---- Decision 231 ---
+--- Decision 223 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  19 life | mana: empty | hand(3): Orcish Bowmasters, White Orchid Phantom, White Orchid Phantom | lib 66
@@ -4811,7 +4638,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 232 ---
+--- Decision 224 ---
   Priority: Player B (non-active)
   Step: Draw (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4829,7 +4656,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 225 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(3): Orcish Bowmasters, White Orchid Phantom, White Orchid Phantom | lib 66
@@ -4854,7 +4681,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 234 ---
+--- Decision 226 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -4874,7 +4701,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 235 ---
+--- Decision 227 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4896,7 +4723,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 236 ---
+--- Decision 228 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -4918,7 +4745,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 237 ---
+--- Decision 229 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -4938,7 +4765,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 238 ---
+--- Decision 230 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4959,7 +4786,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 239 ---
+--- Decision 231 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
   Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -4986,7 +4813,7 @@
   Player B activated Plains for 1(W)
   Player B casts Swords to Plowshares targeting White Orchid Phantom
 
---- Decision 240 ---
+--- Decision 232 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  19 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5011,7 +4838,7 @@
   Resolving ability (category: GainLife, amount: 2)
   Player A gains 2 life (now at 21)
 
---- Decision 241 ---
+--- Decision 233 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5035,7 +4862,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 242 ---
+--- Decision 234 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5054,7 +4881,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 243 ---
+--- Decision 235 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5075,7 +4902,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 244 ---
+--- Decision 236 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5097,7 +4924,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 245 ---
+--- Decision 237 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5117,7 +4944,7 @@
   Attackers declared:
     Orc Army token -> Player B
 
---- Decision 246 ---
+--- Decision 238 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5141,7 +4968,7 @@
     0: Orc Army token [1/1]
   Your creatures:
 
---- Decision 247 ---
+--- Decision 239 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  13 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Voice of Victory | lib 44
@@ -5162,7 +4989,7 @@
   Blockers declared:
     (none)
 
---- Decision 248 ---
+--- Decision 240 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5185,7 +5012,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 249 ---
+--- Decision 241 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5204,7 +5031,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 250 ---
+--- Decision 242 ---
   Priority: Player A (active)
   Step: End Combat (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5223,7 +5050,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 251 ---
+--- Decision 243 ---
   Priority: Player A (active)
   Step: Second Main (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5242,7 +5069,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 252 ---
+--- Decision 244 ---
   Priority: Player A (active)
   Step: End Step (turn 13)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5266,7 +5093,7 @@
   PA: Orcish Bowmasters, White Orchid Phantom
   PB: Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 253 ---
+--- Decision 245 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5286,7 +5113,7 @@
 --- Narrative ---
   Player B draws Goblin Bombardment
 
---- Decision 254 ---
+--- Decision 246 ---
   Priority: Player A (non-active)
   Step: Draw (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5305,7 +5132,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 255 ---
+--- Decision 247 ---
   Priority: Player A (non-active)
   Step: First Main (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5324,7 +5151,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 256 ---
+--- Decision 248 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5345,7 +5172,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 257 ---
+--- Decision 249 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 43
@@ -5369,7 +5196,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Ocelot Pride [1/1] -> Player A
 
---- Decision 258 ---
+--- Decision 250 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 43
@@ -5393,7 +5220,7 @@
     [attacking] Ocelot Pride [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 259 ---
+--- Decision 251 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 43
@@ -5417,7 +5244,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 260 ---
+--- Decision 252 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  12 life | mana: empty | hand(4): Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 43
@@ -5439,7 +5266,7 @@
     Cat token -> Player A
     Cat token -> Player A
 
---- Decision 261 ---
+--- Decision 253 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5460,7 +5287,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 262 ---
+--- Decision 254 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  21 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5484,7 +5311,7 @@
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 263 ---
+--- Decision 255 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 14)
   Self:  20 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5508,7 +5335,7 @@
     Cat token deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 264 ---
+--- Decision 256 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 14)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5527,7 +5354,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 265 ---
+--- Decision 257 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 14)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5546,7 +5373,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 266 ---
+--- Decision 258 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 14)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5567,7 +5394,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 267 ---
+--- Decision 259 ---
   Priority: Player A (non-active)
   Step: End Step (turn 14)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5591,7 +5418,7 @@
   Token created: 1/1 Cat
   Resolving ability (category: CopyPermanent)
 
---- Decision 268 ---
+--- Decision 260 ---
   Priority: Player A (non-active)
   Step: End Step (turn 14)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5616,7 +5443,7 @@
   PA: Orcish Bowmasters, White Orchid Phantom
   PB: Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 269 ---
+--- Decision 261 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5637,7 +5464,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 270 ---
+--- Decision 262 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5656,7 +5483,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 271 ---
+--- Decision 263 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5678,7 +5505,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
---- Decision 272 ---
+--- Decision 264 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5697,7 +5524,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 273 ---
+--- Decision 265 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5719,7 +5546,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 274 ---
+--- Decision 266 ---
   Priority: Player A (active)
   Step: Upkeep (turn 15)
   Self:  18 life | mana: empty | hand(2): Orcish Bowmasters, White Orchid Phantom | lib 66
@@ -5739,7 +5566,7 @@
 --- Narrative ---
   Player A draws Arid Mesa
 
---- Decision 275 ---
+--- Decision 267 ---
   Priority: Player A (active)
   Step: Draw (turn 15)
   Self:  18 life | mana: empty | hand(3): Arid Mesa, Orcish Bowmasters, White Orchid Phantom | lib 65
@@ -5758,7 +5585,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 276 ---
+--- Decision 268 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(3): Arid Mesa, Orcish Bowmasters, White Orchid Phantom | lib 65
@@ -5783,7 +5610,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A casts White Orchid Phantom
 
---- Decision 277 ---
+--- Decision 269 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(2): Arid Mesa, Orcish Bowmasters | lib 65
@@ -5806,7 +5633,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 278 ---
+--- Decision 270 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(2): Arid Mesa, Orcish Bowmasters | lib 65
@@ -5828,7 +5655,7 @@
   Targeting choice 0
   White Orchid Phantom triggered
 
---- Decision 279 ---
+--- Decision 271 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(2): Arid Mesa, Orcish Bowmasters | lib 65
@@ -5852,7 +5679,7 @@
   Destroy: no target chosen
   Resolving ability (category: ChangeZone)
 
---- Decision 280 ---
+--- Decision 272 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(2): Arid Mesa, Orcish Bowmasters | lib 65
@@ -5874,7 +5701,7 @@
 --- Narrative ---
   Player A played Arid Mesa
 
---- Decision 281 ---
+--- Decision 273 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  18 life | mana: empty | hand(1): Orcish Bowmasters | lib 65
@@ -5898,7 +5725,7 @@
   Player A sacrifices Arid Mesa
   Player A's Arid Mesa ability is on the stack
 
---- Decision 282 ---
+--- Decision 274 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 65
@@ -5921,7 +5748,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 283 ---
+--- Decision 275 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 65
@@ -5951,7 +5778,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 284 ---
+--- Decision 276 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -5970,7 +5797,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 285 ---
+--- Decision 277 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -5991,7 +5818,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 286 ---
+--- Decision 278 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6013,7 +5840,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 287 ---
+--- Decision 279 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6033,7 +5860,7 @@
   Attackers declared:
     Orc Army token -> Player B
 
---- Decision 288 ---
+--- Decision 280 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6057,7 +5884,7 @@
     0: Orc Army token [1/1]
   Your creatures:
 
---- Decision 289 ---
+--- Decision 281 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 15)
   Self:  13 life | mana: empty | hand(4): Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 43
@@ -6078,7 +5905,7 @@
   Blockers declared:
     (none)
 
---- Decision 290 ---
+--- Decision 282 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6101,7 +5928,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 291 ---
+--- Decision 283 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6120,7 +5947,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 292 ---
+--- Decision 284 ---
   Priority: Player A (active)
   Step: End Combat (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6139,7 +5966,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 293 ---
+--- Decision 285 ---
   Priority: Player A (active)
   Step: Second Main (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6158,7 +5985,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 294 ---
+--- Decision 286 ---
   Priority: Player A (active)
   Step: End Step (turn 15)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6182,7 +6009,7 @@
   PA: Orcish Bowmasters
   PB: Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 295 ---
+--- Decision 287 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6202,7 +6029,7 @@
 --- Narrative ---
   Player B draws Ajani, Nacatl Pariah
 
---- Decision 296 ---
+--- Decision 288 ---
   Priority: Player A (non-active)
   Step: Draw (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6221,7 +6048,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 297 ---
+--- Decision 289 ---
   Priority: Player A (non-active)
   Step: First Main (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6240,7 +6067,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 298 ---
+--- Decision 290 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6261,7 +6088,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 299 ---
+--- Decision 291 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 16)
   Self:  12 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 42
@@ -6285,7 +6112,7 @@
   Attackers declared:
     (none)
 
---- Decision 300 ---
+--- Decision 292 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6303,51 +6130,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 301 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 16)
-  Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
-  Opp:   12 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Plains (T) | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 302 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 16)
-  Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
-  Opp:   12 life | mana: empty | hand count: 5 | lib 42
-  Self BF:  Aether Vial [charge:7] | Aether Vial [charge:6] | Plains (T) | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 303 ---
+--- Decision 293 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6366,7 +6150,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 304 ---
+--- Decision 294 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6385,7 +6169,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 305 ---
+--- Decision 295 ---
   Priority: Player A (non-active)
   Step: End Step (turn 16)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6410,7 +6194,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 306 ---
+--- Decision 296 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6431,7 +6215,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 307 ---
+--- Decision 297 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6450,7 +6234,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 308 ---
+--- Decision 298 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6472,7 +6256,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 7).
 
---- Decision 309 ---
+--- Decision 299 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6491,7 +6275,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 310 ---
+--- Decision 300 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6513,7 +6297,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 8).
 
---- Decision 311 ---
+--- Decision 301 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 64
@@ -6533,7 +6317,7 @@
 --- Narrative ---
   Player A draws Windswept Heath
 
---- Decision 312 ---
+--- Decision 302 ---
   Priority: Player A (active)
   Step: Draw (turn 17)
   Self:  17 life | mana: empty | hand(2): Orcish Bowmasters, Windswept Heath | lib 63
@@ -6552,7 +6336,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 313 ---
+--- Decision 303 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  17 life | mana: empty | hand(2): Orcish Bowmasters, Windswept Heath | lib 63
@@ -6575,7 +6359,7 @@
 --- Narrative ---
   Player A played Windswept Heath
 
---- Decision 314 ---
+--- Decision 304 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  17 life | mana: empty | hand(1): Orcish Bowmasters | lib 63
@@ -6600,7 +6384,7 @@
   Player A sacrifices Windswept Heath
   Player A's Windswept Heath ability is on the stack
 
---- Decision 315 ---
+--- Decision 305 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 63
@@ -6623,7 +6407,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 316 ---
+--- Decision 306 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 63
@@ -6652,7 +6436,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 317 ---
+--- Decision 307 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6672,7 +6456,7 @@
    3: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 318 ---
+--- Decision 308 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6693,7 +6477,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 319 ---
+--- Decision 309 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6716,7 +6500,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 320 ---
+--- Decision 310 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6739,7 +6523,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 321 ---
+--- Decision 311 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6760,7 +6544,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 322 ---
+--- Decision 312 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6785,7 +6569,7 @@
     1: Orc Army token [1/1]
   Your creatures:
 
---- Decision 323 ---
+--- Decision 313 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 17)
   Self:  12 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory | lib 42
@@ -6809,7 +6593,7 @@
   Blockers declared:
     (none)
 
---- Decision 324 ---
+--- Decision 314 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6832,7 +6616,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 325 ---
+--- Decision 315 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6855,7 +6639,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 326 ---
+--- Decision 316 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6874,7 +6658,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 327 ---
+--- Decision 317 ---
   Priority: Player A (active)
   Step: End Combat (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6893,7 +6677,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 328 ---
+--- Decision 318 ---
   Priority: Player A (active)
   Step: Second Main (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6913,7 +6697,7 @@
    3: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 329 ---
+--- Decision 319 ---
   Priority: Player A (active)
   Step: End Step (turn 17)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6937,7 +6721,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 330 ---
+--- Decision 320 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6957,7 +6741,7 @@
 --- Narrative ---
   Player B draws Orcish Bowmasters
 
---- Decision 331 ---
+--- Decision 321 ---
   Priority: Player A (non-active)
   Step: Draw (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6976,7 +6760,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 332 ---
+--- Decision 322 ---
   Priority: Player A (non-active)
   Step: First Main (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -6995,7 +6779,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 333 ---
+--- Decision 323 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7016,7 +6800,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 334 ---
+--- Decision 324 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  9 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7041,7 +6825,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Ocelot Pride [1/1] -> Player A
 
---- Decision 335 ---
+--- Decision 325 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  9 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7066,7 +6850,7 @@
     [attacking] Ocelot Pride [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 336 ---
+--- Decision 326 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  9 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7091,7 +6875,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 337 ---
+--- Decision 327 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  9 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7116,7 +6900,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 338 ---
+--- Decision 328 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  9 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7139,7 +6923,7 @@
     Cat token -> Player A
     Cat token -> Player A
 
---- Decision 339 ---
+--- Decision 329 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7160,7 +6944,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 340 ---
+--- Decision 330 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 18)
   Self:  16 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7184,7 +6968,7 @@
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 341 ---
+--- Decision 331 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 18)
   Self:  15 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7209,7 +6993,7 @@
     Cat token deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 342 ---
+--- Decision 332 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 18)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7228,7 +7012,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 343 ---
+--- Decision 333 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 18)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7247,7 +7031,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 344 ---
+--- Decision 334 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 18)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7268,7 +7052,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 345 ---
+--- Decision 335 ---
   Priority: Player A (non-active)
   Step: End Step (turn 18)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7292,7 +7076,7 @@
   Token created: 1/1 Cat
   Resolving ability (category: CopyPermanent)
 
---- Decision 346 ---
+--- Decision 336 ---
   Priority: Player A (non-active)
   Step: End Step (turn 18)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7317,7 +7101,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 347 ---
+--- Decision 337 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7338,7 +7122,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 348 ---
+--- Decision 338 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7357,7 +7141,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 349 ---
+--- Decision 339 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7379,7 +7163,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 8).
 
---- Decision 350 ---
+--- Decision 340 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7398,7 +7182,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 351 ---
+--- Decision 341 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7420,7 +7204,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 9).
 
---- Decision 352 ---
+--- Decision 342 ---
   Priority: Player A (active)
   Step: Upkeep (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 62
@@ -7440,7 +7224,7 @@
 --- Narrative ---
   Player A draws Stoneforge Mystic
 
---- Decision 353 ---
+--- Decision 343 ---
   Priority: Player A (active)
   Step: Draw (turn 19)
   Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Stoneforge Mystic | lib 61
@@ -7459,7 +7243,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 354 ---
+--- Decision 344 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Stoneforge Mystic | lib 61
@@ -7484,7 +7268,7 @@
   Player A activated Plains for 1(W)
   Player A casts Stoneforge Mystic
 
---- Decision 355 ---
+--- Decision 345 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7507,7 +7291,7 @@
   Stoneforge Mystic enters the battlefield
   Stoneforge Mystic triggered
 
---- Decision 356 ---
+--- Decision 346 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7527,7 +7311,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 357 ---
+--- Decision 347 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7549,7 +7333,7 @@
 --- Narrative ---
   Player A declines the optional triggered ability.
 
---- Decision 358 ---
+--- Decision 348 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7568,7 +7352,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 359 ---
+--- Decision 349 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7589,7 +7373,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 360 ---
+--- Decision 350 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7612,7 +7396,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 361 ---
+--- Decision 351 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7635,7 +7419,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 362 ---
+--- Decision 352 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7656,7 +7440,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 363 ---
+--- Decision 353 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7681,7 +7465,7 @@
     1: Orc Army token [1/1]
   Your creatures:
 
---- Decision 364 ---
+--- Decision 354 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 19)
   Self:  10 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory | lib 41
@@ -7702,7 +7486,7 @@
   Blockers declared:
     (none)
 
---- Decision 365 ---
+--- Decision 355 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7725,7 +7509,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 366 ---
+--- Decision 356 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7748,7 +7532,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 367 ---
+--- Decision 357 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7767,7 +7551,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 368 ---
+--- Decision 358 ---
   Priority: Player A (active)
   Step: End Combat (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7786,7 +7570,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 369 ---
+--- Decision 359 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7805,7 +7589,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 370 ---
+--- Decision 360 ---
   Priority: Player A (active)
   Step: End Step (turn 19)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7829,7 +7613,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 371 ---
+--- Decision 361 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7849,7 +7633,7 @@
 --- Narrative ---
   Player B draws Thoughtseize
 
---- Decision 372 ---
+--- Decision 362 ---
   Priority: Player A (non-active)
   Step: Draw (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7868,7 +7652,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 373 ---
+--- Decision 363 ---
   Priority: Player A (non-active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7887,7 +7671,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 374 ---
+--- Decision 364 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7908,7 +7692,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 375 ---
+--- Decision 365 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  7 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 40
@@ -7933,7 +7717,7 @@
   Attackers declared:
     (none)
 
---- Decision 376 ---
+--- Decision 366 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -7951,51 +7735,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 377 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 20)
-  Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
-  Opp:   7 life | mana: empty | hand count: 7 | lib 40
-  Self BF:  Aether Vial [charge:9] | Aether Vial [charge:8] | Plains (T) | Plains (T) | Plains | Stoneforge Mystic [1/2] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 378 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 20)
-  Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
-  Opp:   7 life | mana: empty | hand count: 7 | lib 40
-  Self BF:  Aether Vial [charge:9] | Aether Vial [charge:8] | Plains (T) | Plains (T) | Plains | Stoneforge Mystic [1/2] (SICK) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1]
-  Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Marsh Flats, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp drawn=1
-  Extras: opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 379 ---
+--- Decision 367 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8014,7 +7755,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 380 ---
+--- Decision 368 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8033,7 +7774,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 381 ---
+--- Decision 369 ---
   Priority: Player A (non-active)
   Step: End Step (turn 20)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8058,7 +7799,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 382 ---
+--- Decision 370 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8079,7 +7820,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 383 ---
+--- Decision 371 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8099,7 +7840,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 384 ---
+--- Decision 372 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8121,7 +7862,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 9).
 
---- Decision 385 ---
+--- Decision 373 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8141,7 +7882,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 386 ---
+--- Decision 374 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8163,7 +7904,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 10).
 
---- Decision 387 ---
+--- Decision 375 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 61
@@ -8184,7 +7925,7 @@
 --- Narrative ---
   Player A draws Phelia, Exuberant Shepherd
 
---- Decision 388 ---
+--- Decision 376 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Phelia, Exuberant Shepherd | lib 60
@@ -8209,7 +7950,7 @@
   Player A activated Plains for 1(W)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 389 ---
+--- Decision 377 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8232,7 +7973,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 390 ---
+--- Decision 378 ---
   Priority: Player A (active)
   Step: Draw (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8252,7 +7993,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 391 ---
+--- Decision 379 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8276,7 +8017,7 @@
   Player A activated Witch-Blessed Meadow for 1(W)
   Player A's Stoneforge Mystic ability is on the stack
 
---- Decision 392 ---
+--- Decision 380 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8299,7 +8040,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 393 ---
+--- Decision 381 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8320,7 +8061,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 394 ---
+--- Decision 382 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8339,7 +8080,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 395 ---
+--- Decision 383 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8360,7 +8101,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 396 ---
+--- Decision 384 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8383,7 +8124,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 397 ---
+--- Decision 385 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8406,7 +8147,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 398 ---
+--- Decision 386 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8427,7 +8168,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 399 ---
+--- Decision 387 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8452,7 +8193,7 @@
     1: Orc Army token [1/1]
   Your creatures:
 
---- Decision 400 ---
+--- Decision 388 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 21)
   Self:  7 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 40
@@ -8477,7 +8218,7 @@
   Blockers declared:
     (none)
 
---- Decision 401 ---
+--- Decision 389 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8500,7 +8241,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 402 ---
+--- Decision 390 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8523,7 +8264,7 @@
     Orc Army token deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 403 ---
+--- Decision 391 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8542,7 +8283,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 404 ---
+--- Decision 392 ---
   Priority: Player A (active)
   Step: End Combat (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8561,7 +8302,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 405 ---
+--- Decision 393 ---
   Priority: Player A (active)
   Step: Second Main (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8580,7 +8321,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 406 ---
+--- Decision 394 ---
   Priority: Player A (active)
   Step: End Step (turn 21)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8604,7 +8345,7 @@
   PA: Orcish Bowmasters
   PB: Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 407 ---
+--- Decision 395 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8624,7 +8365,7 @@
 --- Narrative ---
   Player B draws Marsh Flats
 
---- Decision 408 ---
+--- Decision 396 ---
   Priority: Player A (non-active)
   Step: Draw (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8643,7 +8384,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 409 ---
+--- Decision 397 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  4 life | mana: empty | hand(8): Ajani, Nacatl Pariah, Goblin Bombardment, Marsh Flats, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 39
@@ -8663,7 +8404,7 @@
 --- Narrative ---
   Player B played Marsh Flats
 
---- Decision 410 ---
+--- Decision 398 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  4 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 39
@@ -8685,7 +8426,7 @@
   Player B sacrifices Marsh Flats
   Player B's Marsh Flats ability is on the stack
 
---- Decision 411 ---
+--- Decision 399 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8708,7 +8449,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 412 ---
+--- Decision 400 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  3 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 39
@@ -8735,7 +8476,7 @@
   Player B shuffles their library
   Player B puts Plateau to the battlefield
 
---- Decision 413 ---
+--- Decision 401 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  3 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 38
@@ -8759,7 +8500,7 @@
   Player B activated Plateau for 1(R)
   Player B casts Ajani, Nacatl Pariah
 
---- Decision 414 ---
+--- Decision 402 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8782,7 +8523,7 @@
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
 
---- Decision 415 ---
+--- Decision 403 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8805,7 +8546,7 @@
   Resolving ability (category: Token)
   Token created: 2/1 Cat Warrior
 
---- Decision 416 ---
+--- Decision 404 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8824,7 +8565,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 417 ---
+--- Decision 405 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8845,7 +8586,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 418 ---
+--- Decision 406 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 22)
   Self:  3 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 38
@@ -8870,7 +8611,7 @@
   Attackers declared:
     (none)
 
---- Decision 419 ---
+--- Decision 407 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8888,51 +8629,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 420 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 22)
-  Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
-  Opp:   3 life | mana: empty | hand count: 6 | lib 38
-  Self BF:  Aether Vial [charge:10] | Aether Vial [charge:9] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T) | Stoneforge Mystic [1/2] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains (T) | Plateau (T,NEW) | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
-  Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Marsh Flats, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 421 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 22)
-  Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
-  Opp:   3 life | mana: empty | hand count: 6 | lib 38
-  Self BF:  Aether Vial [charge:10] | Aether Vial [charge:9] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T) | Stoneforge Mystic [1/2] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK,NEW,res 1) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains (T) | Plateau (T,NEW) | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1] (SICK,NEW)
-  Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
-  Opp GY:  Marsh Flats, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
-  Self exile: White Orchid Phantom, Phelia, Exuberant Shepherd, Orcish Bowmasters
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Marsh Flats, Plateau, Elegant Parlor, Badlands, Guide of Souls
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 422 ---
+--- Decision 408 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8951,7 +8649,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 423 ---
+--- Decision 409 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8970,7 +8668,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 424 ---
+--- Decision 410 ---
   Priority: Player A (non-active)
   Step: End Step (turn 22)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -8995,7 +8693,7 @@
   PA: Orcish Bowmasters
   PB: Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 425 ---
+--- Decision 411 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9016,7 +8714,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 426 ---
+--- Decision 412 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9036,7 +8734,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 427 ---
+--- Decision 413 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9058,7 +8756,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 10).
 
---- Decision 428 ---
+--- Decision 414 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9078,7 +8776,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 429 ---
+--- Decision 415 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9100,7 +8798,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 11).
 
---- Decision 430 ---
+--- Decision 416 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 60
@@ -9121,7 +8819,7 @@
 --- Narrative ---
   Player A draws Swords to Plowshares
 
---- Decision 431 ---
+--- Decision 417 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
   Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Swords to Plowshares | lib 59
@@ -9144,7 +8842,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 432 ---
+--- Decision 418 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
   Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Swords to Plowshares | lib 59
@@ -9176,7 +8874,7 @@
   Player A activated Plains for 1(W)
   Player A casts Swords to Plowshares targeting Ajani, Nacatl Pariah
 
---- Decision 433 ---
+--- Decision 419 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9202,7 +8900,7 @@
   Resolving ability (category: GainLife, amount: 1)
   Player B gains 1 life (now at 4)
 
---- Decision 434 ---
+--- Decision 420 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9223,7 +8921,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 435 ---
+--- Decision 421 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9249,7 +8947,7 @@
   Player A activated Plains for 1(W)
   Player A's Stoneforge Mystic ability is on the stack
 
---- Decision 436 ---
+--- Decision 422 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9273,7 +8971,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 437 ---
+--- Decision 423 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9295,7 +8993,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 438 ---
+--- Decision 424 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9315,7 +9013,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 439 ---
+--- Decision 425 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9337,7 +9035,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 440 ---
+--- Decision 426 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9362,7 +9060,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 441 ---
+--- Decision 427 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9387,7 +9085,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 442 ---
+--- Decision 428 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9412,7 +9110,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 443 ---
+--- Decision 429 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9436,7 +9134,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 444 ---
+--- Decision 430 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9469,7 +9167,7 @@
   Targeting choice 0
   Phelia, Exuberant Shepherd triggered
 
---- Decision 445 ---
+--- Decision 431 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9493,7 +9191,7 @@
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DelayedTrigger)
 
---- Decision 446 ---
+--- Decision 432 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9520,7 +9218,7 @@
     2: Orc Army token [1/1]
   Your creatures:
 
---- Decision 447 ---
+--- Decision 433 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 23)
   Self:  4 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 38
@@ -9546,7 +9244,7 @@
 --- Narrative ---
   Select attacker for Cat Warrior token to block:
 
---- Decision 448 ---
+--- Decision 434 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 23)
   Self:  4 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 38
@@ -9575,7 +9273,7 @@
   Your creatures:
     (assigned) Cat Warrior token [2/1] blocking Phelia, Exuberant Shepherd
 
---- Decision 449 ---
+--- Decision 435 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 23)
   Self:  4 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 38
@@ -9601,7 +9299,7 @@
   Blockers declared:
     Cat Warrior token blocking Phelia, Exuberant Shepherd
 
---- Decision 450 ---
+--- Decision 436 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9625,7 +9323,7 @@
     White Orchid Phantom deals 2 damage to Player B
   --- End First Strike Combat Damage ---
 
---- Decision 451 ---
+--- Decision 437 ---
   Priority: Player A (active)
   Step: First Strike Dmg (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9654,7 +9352,7 @@
   Cat Warrior token is destroyed (lethal damage)
   Cat Warrior (token) is put into the graveyard and ceases to exist.
 
---- Decision 452 ---
+--- Decision 438 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9674,7 +9372,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 453 ---
+--- Decision 439 ---
   Priority: Player A (active)
   Step: End Combat (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9694,7 +9392,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 454 ---
+--- Decision 440 ---
   Priority: Player A (active)
   Step: Second Main (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9714,7 +9412,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 455 ---
+--- Decision 441 ---
   Priority: Player A (active)
   Step: End Step (turn 23)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9739,7 +9437,7 @@
   PA: Orcish Bowmasters
   PB: Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 456 ---
+--- Decision 442 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9760,7 +9458,7 @@
 --- Narrative ---
   Player B draws Ajani, Nacatl Pariah
 
---- Decision 457 ---
+--- Decision 443 ---
   Priority: Player A (non-active)
   Step: Draw (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9780,7 +9478,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 458 ---
+--- Decision 444 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
   Self:  1 life | mana: empty | hand(7): Ajani, Nacatl Pariah, Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -9805,7 +9503,7 @@
   Player B activated Plateau for 1(R)
   Player B casts Ajani, Nacatl Pariah
 
---- Decision 459 ---
+--- Decision 445 ---
   Priority: Player A (non-active)
   Step: First Main (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9829,7 +9527,7 @@
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
 
---- Decision 460 ---
+--- Decision 446 ---
   Priority: Player A (non-active)
   Step: First Main (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9853,7 +9551,7 @@
   Resolving ability (category: Token)
   Token created: 2/1 Cat Warrior
 
---- Decision 461 ---
+--- Decision 447 ---
   Priority: Player A (non-active)
   Step: First Main (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9873,7 +9571,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 462 ---
+--- Decision 448 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -9895,7 +9593,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 463 ---
+--- Decision 449 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -9922,7 +9620,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Ocelot Pride [1/1] -> Player A
 
---- Decision 464 ---
+--- Decision 450 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -9949,7 +9647,7 @@
     [attacking] Ocelot Pride [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 465 ---
+--- Decision 451 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -9976,7 +9674,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 466 ---
+--- Decision 452 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10003,7 +9701,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 467 ---
+--- Decision 453 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10030,7 +9728,7 @@
     [attacking] Cat token [1/1] -> Player A
     [attacking] Cat token [1/1] -> Player A
 
---- Decision 468 ---
+--- Decision 454 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 24)
   Self:  1 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10055,7 +9753,7 @@
     Cat token -> Player A
     Cat token -> Player A
 
---- Decision 469 ---
+--- Decision 455 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10077,7 +9775,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 470 ---
+--- Decision 456 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 24)
   Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10102,7 +9800,7 @@
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
---- Decision 471 ---
+--- Decision 457 ---
   Priority: Player A (non-active)
   Step: First Strike Dmg (turn 24)
   Self:  11 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10129,7 +9827,7 @@
     Cat token deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 472 ---
+--- Decision 458 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 24)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10149,7 +9847,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 473 ---
+--- Decision 459 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 24)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10169,7 +9867,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 474 ---
+--- Decision 460 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 24)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10191,7 +9889,7 @@
 --- Narrative ---
   Ocelot Pride triggered
 
---- Decision 475 ---
+--- Decision 461 ---
   Priority: Player A (non-active)
   Step: End Step (turn 24)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10219,7 +9917,7 @@
   Token copy created: 2/1 Cat Warrior
   Token copy created: 1/1 Cat
 
---- Decision 476 ---
+--- Decision 462 ---
   Priority: Player A (non-active)
   Step: End Step (turn 24)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10245,7 +9943,7 @@
   PA: Orcish Bowmasters
   PB: Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory
 
---- Decision 477 ---
+--- Decision 463 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10267,7 +9965,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 478 ---
+--- Decision 464 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10288,7 +9986,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 479 ---
+--- Decision 465 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10311,7 +10009,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 11).
 
---- Decision 480 ---
+--- Decision 466 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10332,7 +10030,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 481 ---
+--- Decision 467 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10355,7 +10053,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 12).
 
---- Decision 482 ---
+--- Decision 468 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
   Self:  7 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
@@ -10377,7 +10075,7 @@
 --- Narrative ---
   Player A draws Overlord of the Balemurk
 
---- Decision 483 ---
+--- Decision 469 ---
   Priority: Player A (active)
   Step: Draw (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10398,7 +10096,7 @@
    3: Activate Stoneforge Mystic (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 484 ---
+--- Decision 470 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10424,7 +10122,7 @@
   Player A activated Plains for 1(W)
   Player A's Stoneforge Mystic ability is on the stack
 
---- Decision 485 ---
+--- Decision 471 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10448,7 +10146,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 486 ---
+--- Decision 472 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10470,7 +10168,7 @@
 --- Narrative ---
   Player A fails to find
 
---- Decision 487 ---
+--- Decision 473 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10490,7 +10188,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 488 ---
+--- Decision 474 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10512,7 +10210,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 489 ---
+--- Decision 475 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10536,7 +10234,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 490 ---
+--- Decision 476 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10560,7 +10258,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [1/1] -> Player B
 
---- Decision 491 ---
+--- Decision 477 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10582,7 +10280,7 @@
     White Orchid Phantom -> Player B
     Orc Army token -> Player B
 
---- Decision 492 ---
+--- Decision 478 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58
@@ -10608,7 +10306,7 @@
     1: Orc Army token [1/1]
   Your creatures:
 
---- Decision 493 ---
+--- Decision 479 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  2 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10633,7 +10331,7 @@
 --- Narrative ---
   Select attacker for Ajani, Nacatl Pariah to block:
 
---- Decision 494 ---
+--- Decision 480 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  2 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10660,7 +10358,7 @@
   Your creatures:
     (assigned) Ajani, Nacatl Pariah [1/2] blocking Orc Army token
 
---- Decision 495 ---
+--- Decision 481 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 25)
   Self:  2 life | mana: empty | hand(6): Goblin Bombardment, Orcish Bowmasters, Thoughtseize, Thoughtseize, Thoughtseize, Voice of Victory | lib 37
@@ -10685,7 +10383,7 @@
   Blockers declared:
     Ajani, Nacatl Pariah blocking Orc Army token
 
---- Decision 496 ---
+--- Decision 482 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 25)
   Self:  7 life | mana: empty | hand(2): Orcish Bowmasters, Overlord of the Balemurk | lib 58

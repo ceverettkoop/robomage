@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -331,9 +328,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Daze
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Delayed trigger fires.
@@ -341,7 +335,6 @@
   Player B draws Lightning Bolt
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island
@@ -353,14 +346,17 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
   This turn: opp drawn=1
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -372,6 +368,7 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
   Self exile: Rift Bolt
@@ -580,9 +577,6 @@
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Unholy Heat
 --- Turn 4 (Player B) ---
@@ -608,9 +602,6 @@
 --- Narrative ---
   Player B played Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Mountain, Mountain, Price of Progress, Rift Bolt
@@ -682,9 +673,6 @@
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 6 (Player B) ---
@@ -764,9 +752,6 @@
   Player B puts Mystic Sanctuary to the battlefield
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 7 (Player A) ---
@@ -792,7 +777,6 @@
 --- Narrative ---
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 
 --- Decision 34 ---
   Priority: Player A (active)
@@ -801,15 +785,17 @@
   Opp:   12 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
   Opp BF:   Island | Mystic Sanctuary (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-   2: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -821,6 +807,7 @@
   Opp:   12 life | mana: empty | hand count: 7 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
   Opp BF:   Island | Mystic Sanctuary (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -956,9 +943,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Tamiyo, Inquisitive Student
 --- Turn 8 (Player B) ---
@@ -1080,9 +1064,6 @@
 --- Narrative ---
   Player B puts Ponder into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Mountain

@@ -117,9 +117,6 @@
 --- Narrative ---
   Player A played Forest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
@@ -286,9 +283,6 @@
     Wasteland
   Player A discards Badgermole Cub
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Swords to Plowshares
 --- Turn 3 (Player A) ---
@@ -365,9 +359,6 @@
   Player A puts Thalia, Guardian of Thraben into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Ocelot Pride
 --- Turn 4 (Player B) ---
@@ -606,9 +597,6 @@
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Green Sun's Zenith
 --- Turn 5 (Player A) ---
@@ -732,9 +720,6 @@
   Player A casts Thalia, Guardian of Thraben
   Thalia, Guardian of Thraben enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
@@ -788,9 +773,6 @@
   Player A gains 1 life (now at 21)
   Player B draws Amped Raptor
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Swords to Plowshares, Wasteland
@@ -1024,9 +1006,6 @@
   Player A casts Thalia, Guardian of Thraben
   Thalia, Guardian of Thraben enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Silent Clearing
 --- Turn 8 (Player B) ---
@@ -1078,9 +1057,6 @@
 --- Narrative ---
   Player B played Silent Clearing
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Swords to Plowshares, Wasteland
@@ -1357,9 +1333,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 13)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
 --- Turn 11 (Player A) ---
   PA: Wasteland
@@ -1547,15 +1520,9 @@
   Player A casts Thalia, Guardian of Thraben
   Thalia, Guardian of Thraben enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Ajani, Nacatl Pariah
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
   PA: Windswept Heath
@@ -1884,15 +1851,9 @@
   Resolving ability (category: ChangeZone)
   Marsh Flats is moved to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
   PA: Thalia, Guardian of Thraben
@@ -2258,9 +2219,6 @@
   Resolving ability (category: Token)
   Token created: 2/1 Cat Warrior
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
 --- Turn 17 (Player A) ---
   PA: Thalia, Guardian of Thraben

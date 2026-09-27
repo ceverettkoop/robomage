@@ -247,9 +247,6 @@
   Skateboard triggered
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws The One Ring
 --- Turn 2 (Player B) ---
@@ -351,9 +348,6 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Boseiju, Who Endures
   Urza's Saga gets 1 lore counter (now 2).
@@ -414,9 +408,6 @@
   Token created: 0/0 Construct
   Construct token gains (always)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Boseiju, Who Endures, Wasteland
@@ -538,9 +529,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Boseiju, Who Endures, Wasteland
@@ -667,15 +655,14 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Boseiju, Who Endures for 1(G)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 28 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 48
-  Self BF:  Boseiju, Who Endures (T,NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
+  Self BF:  Boseiju, Who Endures (NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
@@ -685,11 +672,15 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Construct [5/5]
-   1: Construct [5/5]
-  >> A/A: 0 (Construct [5/5])
+   0: Construct token
+   1: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Boseiju, Who Endures for 1(G)
+  Player A's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player A) ---
 
@@ -810,9 +801,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Dark Depths, Wasteland
@@ -1208,9 +1196,6 @@
 --- Narrative ---
   Player B puts Polluted Delta into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Exploration, Wasteland
@@ -1337,15 +1322,14 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Wasteland for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 56 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   4 life | mana: empty | energy 2 | hand count: 3 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Exploration (NEW) | Exploration (NEW) | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Wasteland (T,NEW) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7]
+  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Exploration (NEW) | Exploration (NEW) | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Wasteland (NEW) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Mystic Sanctuary (T)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
@@ -1355,12 +1339,16 @@
   This turn: self spells=2 noncreature=2 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Construct [8/7]
-   1: Construct [7/7]
-   2: Construct [7/7]
-  >> A/A: 0 (Construct [8/7])
+   0: Construct token
+   1: Construct token
+   2: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Wasteland for 1(C)
+  Player A's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   --- Declare Attackers (Player A) ---
 
 --- Decision 57 ---

@@ -212,9 +212,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Cori-Steel Cutter
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Volcanic Island
 --- Turn 2 (Player B) ---
@@ -494,9 +491,6 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
@@ -770,9 +764,6 @@
   Daze is countered
   Dragon's Rage Channeler enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Flooded Strand
 --- Turn 4 (Player B) ---
@@ -823,9 +814,6 @@
   Player B casts Delver of Secrets
   Delver of Secrets enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Lightning Bolt
 --- Turn 5 (Player A) ---
@@ -1801,9 +1789,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
@@ -2637,16 +2622,14 @@
    1: Equip Cori-Steel Cutter  [#32]
   >> A/A: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
-  Player A activated Mountain for 1(R)
-  Player A activated Island for 1(U)
-  Choose creature to equip:
+  Choose target for Cori-Steel Cutter:
 
 --- Decision 114 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 33
   Opp:   4 life | mana: empty | hand count: 1 | lib 39
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island
+  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Cori-Steel Cutter | Island | Mountain | Volcanic Island
   Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Cori-Steel Cutter (self)
@@ -2656,12 +2639,17 @@
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
-   0: Dragon's Rage Channeler [3/3]
-   1: Dragon's Rage Channeler [3/3]
-   2: Dragon's Rage Channeler [3/3]
-  >> A/A: 0 (Dragon's Rage Channeler [3/3])
+   0: Dragon's Rage Channeler
+   1: Dragon's Rage Channeler
+   2: Dragon's Rage Channeler
+  >> A/A: 0 (Dragon's Rage Channeler)
 --- Narrative ---
-  Cori-Steel Cutter equipped to Dragon's Rage Channeler.
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A activated Island for 1(U)
+  Player A's Cori-Steel Cutter ability targeting Dragon's Rage Channeler is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
   Dragon's Rage Channeler must attack and is declared as an attacker.
   Dragon's Rage Channeler must attack and is declared as an attacker.

@@ -347,9 +347,6 @@
 --- Narrative ---
   Player A puts Brainstorm into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Island
 --- Turn 2 (Player B) ---
@@ -418,9 +415,6 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Griselbrand
 --- Turn 3 (Player A) ---
@@ -470,9 +464,6 @@
 --- Narrative ---
   Player A puts Brainstorm into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Scrubland
 --- Turn 4 (Player B) ---
@@ -687,9 +678,6 @@
   Otherworldly Gaze is exiled (flashback)
   Player A draws Animate Dead
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Archon of Cruelty, Griselbrand, Thoughtseize, Thoughtseize
@@ -1529,9 +1517,6 @@
   Otherworldly Gaze is exiled (flashback)
   Player A draws Brainstorm
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Animate Dead, Archon of Cruelty, Griselbrand, Thoughtseize, Thoughtseize

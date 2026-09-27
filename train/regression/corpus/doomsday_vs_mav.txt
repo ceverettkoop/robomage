@@ -285,9 +285,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Knight of the Reliquary
 --- Turn 2 (Player B) ---
@@ -333,9 +330,6 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 15 ---
   Priority: Player B (active)
@@ -603,49 +597,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (NEW)
-  Opp BF:   Savannah
-  Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 28 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Underground Sea (NEW)
-  Opp BF:   Savannah
-  Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 29 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -663,7 +616,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -681,7 +634,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -704,7 +657,7 @@
   PA: Force of Will, Dark Ritual, Misty Rainforest
   PB: Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Talon Gates of Madara, Wasteland, Windswept Heath
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -723,7 +676,7 @@
 --- Narrative ---
   Player B draws Wasteland
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -741,7 +694,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Keen-Eyed Curator, Talon Gates of Madara, Wasteland, Wasteland, Windswept Heath | lib 50
@@ -765,7 +718,7 @@
   Player B played Talon Gates of Madara
   Choose target for Talon Gates of Madara:
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
@@ -785,7 +738,7 @@
   Targeting choice 0
   Talon Gates of Madara triggered
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -806,7 +759,7 @@
 --- Narrative ---
   Resolving ability (category: Phases)
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
@@ -825,7 +778,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
@@ -847,7 +800,7 @@
   Player B activated Savannah for 1(G)
   Player B casts Green Sun's Zenith
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -869,7 +822,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
@@ -892,7 +845,7 @@
   Player B puts Dryad Arbor to the battlefield
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -910,7 +863,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -930,7 +883,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -947,49 +900,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 44 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 45 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (NEW,res 1)
-  Self GY: Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -1007,7 +919,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -1025,7 +937,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -1048,7 +960,7 @@
   PA: Force of Will, Dark Ritual, Misty Rainforest
   PB: Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  14 life | mana: empty | hand(3): Force of Will, Dark Ritual, Misty Rainforest | lib 51
@@ -1067,7 +979,7 @@
 --- Narrative ---
   Player A draws Daze
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  14 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Misty Rainforest | lib 50
@@ -1085,7 +997,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Misty Rainforest | lib 50
@@ -1106,7 +1018,7 @@
 --- Narrative ---
   Player A played Misty Rainforest
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  14 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 50
@@ -1129,7 +1041,7 @@
   Player A sacrifices Misty Rainforest
   Player A's Misty Rainforest ability is on the stack
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 50
@@ -1151,7 +1063,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 50
@@ -1176,7 +1088,7 @@
   Player A shuffles their library
   Player A puts Underground Sea to the battlefield
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1194,7 +1106,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1214,7 +1126,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1231,49 +1143,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 58 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 59 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Underground Sea | Underground Sea | Underground Sea (NEW)
-  Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
-  Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Keen-Eyed Curator, Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 60 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1291,7 +1162,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 61 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1309,7 +1180,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 62 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1332,7 +1203,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath
 
---- Decision 63 ---
+--- Decision 57 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1351,7 +1222,7 @@
 --- Narrative ---
   Player B draws Noble Hierarch
 
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1369,7 +1240,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 65 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(5): Keen-Eyed Curator, Noble Hierarch, Wasteland, Wasteland, Windswept Heath | lib 49
@@ -1394,7 +1265,7 @@
   Player B activated Savannah for 1(G)
   Player B casts Keen-Eyed Curator
 
---- Decision 66 ---
+--- Decision 60 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1418,7 +1289,7 @@
 --- Narrative ---
   Keen-Eyed Curator enters the battlefield
 
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(4): Noble Hierarch, Wasteland, Wasteland, Windswept Heath | lib 49
@@ -1440,7 +1311,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Noble Hierarch, Wasteland, Windswept Heath | lib 49
@@ -1463,7 +1334,7 @@
   Player B activated Talon Gates of Madara for 1(G)
   Player B casts Noble Hierarch
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1487,7 +1358,7 @@
 --- Narrative ---
   Noble Hierarch enters the battlefield
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1505,7 +1376,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 71 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1525,7 +1396,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 72 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1542,49 +1413,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 73 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
-  Opp:   20 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
-  Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 74 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
-  Opp:   20 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T,NEW)
-  Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: opp spells=2 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 75 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1602,7 +1432,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1620,7 +1450,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 77 ---
+--- Decision 69 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1643,7 +1473,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Noble Hierarch, Wasteland, Windswept Heath
 
---- Decision 78 ---
+--- Decision 70 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 49
@@ -1662,7 +1492,7 @@
 --- Narrative ---
   Player A draws Thoughtseize
 
---- Decision 79 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  13 life | mana: empty | hand(4): Force of Will, Thoughtseize, Daze, Dark Ritual | lib 48
@@ -1680,7 +1510,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 80 ---
+--- Decision 72 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  13 life | mana: empty | hand(4): Force of Will, Thoughtseize, Daze, Dark Ritual | lib 48
@@ -1701,7 +1531,7 @@
 --- Narrative ---
   Choose target for Thoughtseize:
 
---- Decision 81 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  13 life | mana: empty | hand(4): Force of Will, Thoughtseize, Daze, Dark Ritual | lib 48
@@ -1724,7 +1554,7 @@
   Player A activated Underground Sea for 1(B)
   Player A casts Thoughtseize targeting Player B
 
---- Decision 82 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1754,7 +1584,7 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 11)
 
---- Decision 83 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1772,7 +1602,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1792,7 +1622,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 85 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1809,49 +1639,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 86 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
-  Opp:   20 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 87 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
-  Opp:   20 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
-  Self GY: Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
-  Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Known opp hand: Wasteland, Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 88 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1869,7 +1658,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1887,7 +1676,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 90 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1910,7 +1699,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Wasteland, Windswept Heath
 
---- Decision 91 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(2): Wasteland, Windswept Heath | lib 49
@@ -1927,7 +1716,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 92 ---
+--- Decision 82 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1946,7 +1735,7 @@
 --- Narrative ---
   Player B draws Wooded Foothills
 
---- Decision 93 ---
+--- Decision 83 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Wooded Foothills | lib 48
@@ -1964,7 +1753,7 @@
    2: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 94 ---
+--- Decision 84 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -1982,7 +1771,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 85 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(3): Wasteland, Windswept Heath, Wooded Foothills | lib 48
@@ -2005,7 +1794,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 96 ---
+--- Decision 86 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2026,7 +1815,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 97 ---
+--- Decision 87 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2055,7 +1844,7 @@
   Player B activated Dryad Arbor for 1(G)
   Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
 
---- Decision 98 ---
+--- Decision 88 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2077,7 +1866,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 99 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2106,7 +1895,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Underground Sea is on the stack
 
---- Decision 100 ---
+--- Decision 90 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2127,7 +1916,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 101 ---
+--- Decision 91 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2155,7 +1944,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Underground Sea is on the stack
 
---- Decision 102 ---
+--- Decision 92 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2173,7 +1962,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 103 ---
+--- Decision 93 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2195,7 +1984,7 @@
   Resolving ability (category: Destroy)
   Underground Sea is destroyed
 
---- Decision 104 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2213,7 +2002,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 105 ---
+--- Decision 95 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2234,7 +2023,7 @@
 --- Narrative ---
   Destroy fizzles
 
---- Decision 106 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2252,7 +2041,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 97 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2274,7 +2063,7 @@
   Resolving ability (category: ChangeZone)
   Thoughtseize is moved to exile
 
---- Decision 108 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2294,7 +2083,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 109 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2326,7 +2115,7 @@
   Player B activated Noble Hierarch for 1(W)
   Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
 
---- Decision 110 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2345,7 +2134,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 101 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2368,7 +2157,7 @@
   Resolving ability (category: ChangeZone)
   Thoughtseize is moved to exile
 
---- Decision 112 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2388,7 +2177,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 113 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2419,7 +2208,7 @@
   Player B activated Savannah for 1(G)
   Player B's Keen-Eyed Curator ability targeting Thoughtseize is on the stack
 
---- Decision 114 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2438,7 +2227,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 105 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2461,7 +2250,7 @@
   Resolving ability (category: ChangeZone)
   Thoughtseize is moved to exile
 
---- Decision 116 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2481,7 +2270,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 117 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2511,7 +2300,7 @@
   Player B activated Talon Gates of Madara for 1(C)
   Player B's Keen-Eyed Curator ability targeting Polluted Delta is on the stack
 
---- Decision 118 ---
+--- Decision 108 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2534,7 +2323,7 @@
   Resolving ability (category: ChangeZone)
   Polluted Delta is moved to exile
 
---- Decision 119 ---
+--- Decision 109 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2553,7 +2342,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 120 ---
+--- Decision 110 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2574,7 +2363,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 121 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2596,7 +2385,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
---- Decision 122 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -2617,7 +2406,7 @@
     Keen-Eyed Curator -> Player A
   Noble Hierarch triggered
 
---- Decision 123 ---
+--- Decision 113 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2640,7 +2429,7 @@
   Resolving ability (category: ExaltedBonus)
   Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
 
---- Decision 124 ---
+--- Decision 114 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2661,7 +2450,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 125 ---
+--- Decision 115 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  11 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2684,7 +2473,7 @@
     Keen-Eyed Curator deals 4 damage to Player A
   --- End Combat Damage ---
 
---- Decision 126 ---
+--- Decision 116 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 8)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2703,7 +2492,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 127 ---
+--- Decision 117 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2722,7 +2511,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 128 ---
+--- Decision 118 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2741,7 +2530,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 129 ---
+--- Decision 119 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2765,7 +2554,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Windswept Heath, Wooded Foothills
 
---- Decision 130 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
@@ -2785,7 +2574,7 @@
 --- Narrative ---
   Player A draws Island
 
---- Decision 131 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  7 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Island | lib 47
@@ -2804,7 +2593,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  7 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Island | lib 47
@@ -2826,7 +2615,7 @@
 --- Narrative ---
   Player A played Island
 
---- Decision 133 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2845,7 +2634,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 134 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2866,7 +2655,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 135 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2884,51 +2673,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 136 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
-  Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island (NEW)
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Underground Sea, Misty Rainforest, Polluted Delta
-  Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
-  Known opp hand: Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 137 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
-  Opp:   20 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Island (NEW)
-  Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Self GY: Underground Sea, Misty Rainforest, Polluted Delta
-  Opp GY:  Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Self exile: Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
-  Known opp hand: Windswept Heath
-  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 138 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2947,7 +2693,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 139 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2966,7 +2712,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 140 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -2990,7 +2736,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Windswept Heath, Wooded Foothills
 
---- Decision 141 ---
+--- Decision 129 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 48
@@ -3007,7 +2753,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 142 ---
+--- Decision 130 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3027,7 +2773,7 @@
 --- Narrative ---
   Player B draws Collector Ouphe
 
---- Decision 143 ---
+--- Decision 131 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  20 life | mana: empty | hand(3): Collector Ouphe, Windswept Heath, Wooded Foothills | lib 47
@@ -3045,7 +2791,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 144 ---
+--- Decision 132 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3064,7 +2810,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 145 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(3): Collector Ouphe, Windswept Heath, Wooded Foothills | lib 47
@@ -3089,7 +2835,7 @@
   Player B activated Noble Hierarch for 1(W)
   Player B casts Collector Ouphe
 
---- Decision 146 ---
+--- Decision 134 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 47
@@ -3108,7 +2854,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 147 ---
+--- Decision 135 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3133,7 +2879,7 @@
 --- Narrative ---
   Collector Ouphe enters the battlefield
 
---- Decision 148 ---
+--- Decision 136 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(2): Windswept Heath, Wooded Foothills | lib 47
@@ -3155,7 +2901,7 @@
 --- Narrative ---
   Player B played Windswept Heath
 
---- Decision 149 ---
+--- Decision 137 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
@@ -3176,7 +2922,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 150 ---
+--- Decision 138 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
@@ -3205,7 +2951,7 @@
   Player B activated Savannah for 1(G)
   Player B's Keen-Eyed Curator ability targeting Polluted Delta is on the stack
 
---- Decision 151 ---
+--- Decision 139 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  20 life | mana: empty | hand(1): Wooded Foothills | lib 47
@@ -3229,7 +2975,7 @@
   Player B sacrifices Windswept Heath
   Player B's Windswept Heath ability is on the stack
 
---- Decision 152 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 47
@@ -3248,7 +2994,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 153 ---
+--- Decision 141 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3270,7 +3016,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 154 ---
+--- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 47
@@ -3297,7 +3043,7 @@
   Player B shuffles their library
   Player B puts Forest to the battlefield
 
---- Decision 155 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3316,7 +3062,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 156 ---
+--- Decision 144 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3338,7 +3084,7 @@
   Resolving ability (category: ChangeZone)
   Polluted Delta is moved to exile
 
---- Decision 157 ---
+--- Decision 145 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3358,7 +3104,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 158 ---
+--- Decision 146 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3387,7 +3133,7 @@
   Player B activated Forest for 1(G)
   Player B's Keen-Eyed Curator ability targeting Underground Sea is on the stack
 
---- Decision 159 ---
+--- Decision 147 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3406,7 +3152,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 160 ---
+--- Decision 148 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3428,7 +3174,7 @@
   Resolving ability (category: ChangeZone)
   Underground Sea is moved to exile
 
---- Decision 161 ---
+--- Decision 149 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3448,7 +3194,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 162 ---
+--- Decision 150 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3476,7 +3222,7 @@
   Player B activated Talon Gates of Madara for 1(C)
   Player B's Keen-Eyed Curator ability targeting Misty Rainforest is on the stack
 
---- Decision 163 ---
+--- Decision 151 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3498,7 +3244,7 @@
   Resolving ability (category: ChangeZone)
   Misty Rainforest is moved to exile
 
---- Decision 164 ---
+--- Decision 152 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3515,7 +3261,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 165 ---
+--- Decision 153 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3534,7 +3280,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 166 ---
+--- Decision 154 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3555,7 +3301,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Keen-Eyed Curator [3/3] -> Player A
 
---- Decision 167 ---
+--- Decision 155 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3575,7 +3321,7 @@
     Keen-Eyed Curator -> Player A
   Noble Hierarch triggered
 
---- Decision 168 ---
+--- Decision 156 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3596,7 +3342,7 @@
   Resolving ability (category: ExaltedBonus)
   Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
 
---- Decision 169 ---
+--- Decision 157 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3615,7 +3361,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 170 ---
+--- Decision 158 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  7 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3636,7 +3382,7 @@
     Keen-Eyed Curator deals 4 damage to Player A
   --- End Combat Damage ---
 
---- Decision 171 ---
+--- Decision 159 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 10)
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3653,7 +3399,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 160 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3670,7 +3416,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 173 ---
+--- Decision 161 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3687,7 +3433,7 @@
    1: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 174 ---
+--- Decision 162 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3709,7 +3455,7 @@
   PA: Force of Will, Daze, Dark Ritual
   PB: Wooded Foothills
 
---- Decision 175 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  3 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 47
@@ -3727,7 +3473,7 @@
 --- Narrative ---
   Player A draws Dark Ritual
 
---- Decision 176 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3745,7 +3491,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 177 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3763,7 +3509,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 178 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3783,7 +3529,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 179 ---
+--- Decision 167 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3800,49 +3546,8 @@
    1: Cast Dark Ritual  [#0]
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 180 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 11)
-  Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 46
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
-  Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 181 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 11)
-  Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 46
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara (T)
-  Opp GY:  Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
-  Self exile: Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
-  Opp revealed: Forest, Wasteland, Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara, Windswept Heath
-  This turn: self drawn=1
-  Extras: self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Cast Dark Ritual  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 182 ---
+--- Decision 168 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3860,7 +3565,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 183 ---
+--- Decision 169 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3878,7 +3583,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 184 ---
+--- Decision 170 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3901,7 +3606,7 @@
   PA: Force of Will, Daze, Dark Ritual, Dark Ritual
   PB: Wooded Foothills
 
---- Decision 185 ---
+--- Decision 171 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 46
@@ -3917,7 +3622,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 186 ---
+--- Decision 172 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3936,7 +3641,7 @@
 --- Narrative ---
   Player B draws Sylvan Library
 
---- Decision 187 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  19 life | mana: empty | hand(2): Sylvan Library, Wooded Foothills | lib 45
@@ -3953,7 +3658,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 188 ---
+--- Decision 174 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -3971,7 +3676,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 189 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(2): Sylvan Library, Wooded Foothills | lib 45
@@ -3994,7 +3699,7 @@
   Player B activated Forest for 1(G)
   Player B casts Sylvan Library
 
---- Decision 190 ---
+--- Decision 176 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 45
@@ -4012,7 +3717,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 191 ---
+--- Decision 177 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4036,7 +3741,7 @@
 --- Narrative ---
   Sylvan Library enters the battlefield
 
---- Decision 192 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(1): Wooded Foothills | lib 45
@@ -4056,7 +3761,7 @@
 --- Narrative ---
   Player B played Wooded Foothills
 
---- Decision 193 ---
+--- Decision 179 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
@@ -4076,7 +3781,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 194 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
@@ -4102,7 +3807,7 @@
   Player B activated Noble Hierarch for 1(W)
   Player B's Keen-Eyed Curator ability targeting Knight of the Reliquary is on the stack
 
---- Decision 195 ---
+--- Decision 181 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  19 life | mana: empty | hand(0): (empty) | lib 45
@@ -4125,7 +3830,7 @@
   Player B sacrifices Wooded Foothills
   Player B's Wooded Foothills ability is on the stack
 
---- Decision 196 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 45
@@ -4143,7 +3848,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 197 ---
+--- Decision 183 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4165,7 +3870,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 198 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 45
@@ -4189,7 +3894,7 @@
   Player B shuffles their library
   Player B puts Savannah to the battlefield
 
---- Decision 199 ---
+--- Decision 185 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4207,7 +3912,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 200 ---
+--- Decision 186 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4229,7 +3934,7 @@
   Resolving ability (category: ChangeZone)
   Knight of the Reliquary is moved to exile
 
---- Decision 201 ---
+--- Decision 187 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4249,7 +3954,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 202 ---
+--- Decision 188 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4276,7 +3981,7 @@
   Player B activated Savannah for 1(G)
   Player B's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
 
---- Decision 203 ---
+--- Decision 189 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4295,7 +4000,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 204 ---
+--- Decision 190 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4319,7 +4024,7 @@
   Once Upon a Time is moved to exile
   Keen-Eyed Curator gains 4/4 Trample (always)
 
---- Decision 205 ---
+--- Decision 191 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4339,7 +4044,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 206 ---
+--- Decision 192 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4365,7 +4070,7 @@
   Player B activated Savannah for 1(G)
   Player B's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
 
---- Decision 207 ---
+--- Decision 193 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4384,7 +4089,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 208 ---
+--- Decision 194 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4407,7 +4112,7 @@
   Resolving ability (category: ChangeZone)
   Swords to Plowshares is moved to exile
 
---- Decision 209 ---
+--- Decision 195 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4427,7 +4132,7 @@
 --- Narrative ---
   Choose target for Keen-Eyed Curator:
 
---- Decision 210 ---
+--- Decision 196 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4452,7 +4157,7 @@
   Player B activated Talon Gates of Madara for 1(C)
   Player B's Keen-Eyed Curator ability targeting Wasteland is on the stack
 
---- Decision 211 ---
+--- Decision 197 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4475,7 +4180,7 @@
   Resolving ability (category: ChangeZone)
   Wasteland is moved to exile
 
---- Decision 212 ---
+--- Decision 198 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4494,7 +4199,7 @@
    2: Cast Dark Ritual  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 213 ---
+--- Decision 199 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4515,7 +4220,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 214 ---
+--- Decision 200 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4538,7 +4243,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Collector Ouphe [2/2] -> Player A
 
---- Decision 215 ---
+--- Decision 201 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4561,7 +4266,7 @@
     [attacking] Collector Ouphe [2/2] -> Player A
     [attacking] Keen-Eyed Curator [7/7] -> Player A
 
---- Decision 216 ---
+--- Decision 202 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(0): (empty) | lib 44
@@ -4582,7 +4287,7 @@
     Collector Ouphe -> Player A
     Keen-Eyed Curator -> Player A
 
---- Decision 217 ---
+--- Decision 203 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46
@@ -4603,7 +4308,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 218 ---
+--- Decision 204 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  3 life | mana: empty | hand(4): Force of Will, Daze, Dark Ritual, Dark Ritual | lib 46

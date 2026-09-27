@@ -246,9 +246,6 @@
   Skateboard triggered
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Teferi, Time Raveler
 --- Turn 2 (Player B) ---
@@ -359,45 +356,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 20 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 21 ---
   Priority: Player B (active)
   Step: End Combat (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -413,7 +373,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (active)
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -431,7 +391,7 @@
    3: Cast Tamiyo, Inquisitive Student  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -452,7 +412,7 @@
   PA: Wasteland
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -469,7 +429,7 @@
 --- Narrative ---
   Player A draws Boseiju, Who Endures
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player A (active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
@@ -484,7 +444,7 @@
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -503,7 +463,7 @@
   Urza's Saga gets 1 lore counter (now 2).
   Urza's Saga chapter 2 triggers.
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
@@ -521,7 +481,7 @@
 --- Narrative ---
   Choose target for this ability:
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
@@ -545,7 +505,7 @@
   Player A discards Boseiju, Who Endures
   Player A activates Boseiju, Who Endures from hand targeting Lotus Petal
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -572,7 +532,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -600,7 +560,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -621,7 +581,7 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
@@ -640,7 +600,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 52
@@ -659,7 +619,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 52
@@ -683,7 +643,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Tropical Island is on the stack
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -706,7 +666,7 @@
   Resolving ability (category: Destroy)
   Tropical Island is destroyed
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -723,7 +683,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -742,7 +702,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -758,47 +718,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 39 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 40 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Self GY: Tropical Island, Lotus Petal
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -815,7 +736,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -832,7 +753,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -854,7 +775,7 @@
   PA: (empty)
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -871,7 +792,7 @@
 --- Narrative ---
   Player B draws Tropical Island
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -887,7 +808,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -908,7 +829,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Dark Ritual
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(6): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -928,7 +849,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: 3B | hand(6): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -947,7 +868,7 @@
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -967,7 +888,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -1040,7 +961,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -1113,7 +1034,7 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -1185,7 +1106,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -1256,7 +1177,7 @@
   Player B puts Brainstorm to top of library
   Searching Player B's graveyard and library:
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 50
@@ -1378,7 +1299,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 5
@@ -1403,7 +1324,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 5
@@ -1427,7 +1348,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 5
@@ -1450,7 +1371,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 5
@@ -1474,7 +1395,7 @@
   Player B loses 10 life (now at 10)
   Resolving ability (category: Cleanup)
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  10 life | mana: empty | hand(5): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Tropical Island | lib 5
@@ -1494,7 +1415,7 @@
 --- Narrative ---
   Player B played Tropical Island
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  10 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1516,7 +1437,7 @@
   Player B activated Tropical Island for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  10 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1538,15 +1459,12 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: (empty)
   PB: Force of Will, Quantum Riddler, Teferi, Time Raveler
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 52
@@ -1574,7 +1492,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
@@ -1602,7 +1520,7 @@
   Player A puts Expedition Map to the battlefield
   Urza's Saga is sacrificed (final chapter completed).
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
@@ -1623,16 +1541,13 @@
   Player A played Dark Depths
   Dark Depths enters with 10 ICE counter(s).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Edge of Autumn
 --- Turn 6 (Player B) ---
   PA: Dark Depths
   PB: Edge of Autumn, Force of Will, Quantum Riddler, Teferi, Time Raveler
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 4
@@ -1650,7 +1565,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 4
@@ -1674,7 +1589,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Quantum Riddler
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 4
@@ -1698,7 +1613,7 @@
   Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
   Quantum Riddler triggered
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 4
@@ -1721,7 +1636,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Street Wraith, Teferi, Time Raveler | lib 3
@@ -1744,7 +1659,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -1768,7 +1683,7 @@
   Player B draws Thassa's Oracle
   Tamiyo, Inquisitive Student triggered
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1795,7 +1710,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1816,7 +1731,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1838,7 +1753,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1857,53 +1772,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 75 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 76 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1923,7 +1793,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1946,7 +1816,7 @@
 --- Narrative ---
   Delayed trigger fires.
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1970,7 +1840,7 @@
   Resolving ability (category: WarpExile)
   Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -1994,7 +1864,7 @@
   PA: (empty)
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 50
@@ -2010,7 +1880,7 @@
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2030,7 +1900,7 @@
 --- Narrative ---
   Player A draws Sphere of Resistance
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
@@ -2047,7 +1917,7 @@
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2066,7 +1936,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
@@ -2089,7 +1959,7 @@
   Player A activated Mox Diamond for 1(W)
   Player A casts Sphere of Resistance
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2112,7 +1982,7 @@
 --- Narrative ---
   Sphere of Resistance enters the battlefield
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2131,7 +2001,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2152,7 +2022,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
@@ -2172,7 +2042,7 @@
 --- Narrative ---
   Select target for Construct token:
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
@@ -2195,7 +2065,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Construct token [6/6] -> Player B
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
@@ -2215,7 +2085,7 @@
   Attackers declared:
     Construct token -> Player B
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2236,7 +2106,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2259,7 +2129,7 @@
     Construct token deals 6 damage to Player B
   --- End Combat Damage ---
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2278,7 +2148,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2297,7 +2167,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2316,7 +2186,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2340,7 +2210,7 @@
   PA: (empty)
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
@@ -2359,7 +2229,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2378,7 +2248,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2398,7 +2268,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2419,7 +2289,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2437,51 +2307,8 @@
    1: Cast Brainstorm  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 103 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 104 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
-  Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Brainstorm  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 105 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2500,7 +2327,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 106 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2520,7 +2347,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2544,7 +2371,7 @@
   PA: (empty)
   PB: Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 108 ---
+--- Decision 100 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
@@ -2560,7 +2387,7 @@
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 101 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2581,7 +2408,7 @@
 --- Narrative ---
   Player A draws Malevolent Rumble
 
---- Decision 110 ---
+--- Decision 102 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
@@ -2598,7 +2425,7 @@
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 103 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2618,7 +2445,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 112 ---
+--- Decision 104 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
@@ -2641,7 +2468,7 @@
   Player A sacrifices Expedition Map
   Player A's Expedition Map ability is on the stack
 
---- Decision 113 ---
+--- Decision 105 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2665,7 +2492,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 114 ---
+--- Decision 106 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
@@ -2711,7 +2538,7 @@
   Player A shuffles their library
   Player A reveals Thespian's Stage and puts it to hand
 
---- Decision 115 ---
+--- Decision 107 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Thespian's Stage | lib 47
@@ -2731,7 +2558,7 @@
 --- Narrative ---
   Player A played Thespian's Stage
 
---- Decision 116 ---
+--- Decision 108 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
@@ -2749,15 +2576,14 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Thespian's Stage for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
---- Decision 117 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [5/5]
+  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
   Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
   Pending: Skateboard (self)
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2767,13 +2593,39 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Construct [5/5]
-  >> A/A: 0 (Construct [5/5])
+   0: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Thespian's Stage for 1(C)
+  Player A's Skateboard ability targeting Construct token is on the stack
+
+--- Decision 110 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
+  Opp:   20 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [5/5]
+  Stack: Skateboard (ability, opponent) -> Construct (opponent, slot 54)
+  Self GY: Street Wraith, Doomsday
+  Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
+  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
+  Known top: Brainstorm, ?, ?, ?, ?
+  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Sphere of Resistance, Boseiju, Who Endures, Dark Depths, Thespian's Stage, Mox Diamond
+  This turn: opp drawn=1
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
 
---- Decision 118 ---
+--- Decision 111 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2793,7 +2645,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 119 ---
+--- Decision 112 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2815,7 +2667,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 120 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
@@ -2835,7 +2687,7 @@
 --- Narrative ---
   Select target for Construct token:
 
---- Decision 121 ---
+--- Decision 114 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
@@ -2858,7 +2710,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Construct token [6/5] -> Player B
 
---- Decision 122 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
@@ -2878,7 +2730,7 @@
   Attackers declared:
     Construct token -> Player B
 
---- Decision 123 ---
+--- Decision 116 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2900,7 +2752,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 124 ---
+--- Decision 117 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1

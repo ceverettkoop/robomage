@@ -305,9 +305,6 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 15 ---
   Priority: Player A (active)
@@ -410,9 +407,6 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Veil of Summer
 --- Turn 3 (Player A) ---
@@ -500,9 +494,6 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 24 ---
   Priority: Player A (active)
@@ -738,9 +729,6 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 35 ---
   Priority: Player A (active)

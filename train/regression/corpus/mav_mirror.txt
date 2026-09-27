@@ -183,9 +183,6 @@
   Talon Gates of Madara triggered
   Resolving ability (category: Phases)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Knight of the Reliquary
 --- Turn 2 (Player B) ---
@@ -229,9 +226,6 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 11 ---
   Priority: Player B (active)
@@ -299,9 +293,6 @@
   Player A puts Thalia, Guardian of Thraben into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Wasteland
 --- Turn 4 (Player B) ---
@@ -419,15 +410,9 @@
   Player B puts Dryad Arbor to the battlefield
   Green Sun's Zenith is shuffled into its owner's library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Noble Hierarch
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
@@ -606,9 +591,6 @@
   Player B casts Keen-Eyed Curator
   Keen-Eyed Curator enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Karakas
 --- Turn 7 (Player A) ---
@@ -704,9 +686,6 @@
   Player A puts Dryad Arbor to the battlefield
   Green Sun's Zenith is shuffled into its owner's library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
@@ -1168,9 +1147,6 @@
   -------- TURN 9 (Player A) --------
   Player A draws Knight of the Reliquary
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
@@ -1595,9 +1571,6 @@
 --- Narrative ---
   Player A played Gaea's Cradle
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
   PA: Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
@@ -1993,9 +1966,6 @@
   -------- TURN 13 (Player A) --------
   Player A draws Green Sun's Zenith
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 --- Turn 13 (Player A) ---
@@ -2547,9 +2517,6 @@
   -------- TURN 15 (Player A) --------
   Player A draws Swords to Plowshares
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 --- Turn 15 (Player A) ---

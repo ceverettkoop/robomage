@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws The One Ring
 --- Turn 2 (Player B) ---
@@ -281,14 +278,10 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Flow State
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative
@@ -300,13 +293,16 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Opp GY:  Ponder, Flooded Strand
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Flooded Strand, Ponder, Island
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -318,6 +314,7 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Opp GY:  Ponder, Flooded Strand
   Self exile: Rift Bolt
@@ -511,9 +508,6 @@
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Mountain, Mountain, Price of Progress, Rift Bolt
@@ -642,9 +636,6 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 5 (Player A) ---
@@ -681,7 +672,6 @@
   Dealt 0 damage to player (now at 14 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 
 --- Decision 29 ---
   Priority: Player A (active)
@@ -690,16 +680,19 @@
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 47
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -711,6 +704,7 @@
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 47
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -751,9 +745,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Tamiyo, Inquisitive Student
 --- Turn 6 (Player B) ---
@@ -826,9 +817,6 @@
   Player B played Mystic Sanctuary
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Exquisite Firecraft, Mountain
@@ -940,9 +928,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Meticulous Archive
 --- Turn 8 (Player B) ---
@@ -1346,9 +1331,6 @@
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: Chain Lightning
@@ -1787,9 +1769,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Geist of Saint Traft
 --- Turn 12 (Player B) ---
@@ -2200,51 +2179,8 @@
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 95 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 13)
-  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
-  Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 96 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 13)
-  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
-  Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Wasteland
-  Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain (NEW)
-  Self GY: Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Ponder, Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Wasteland (Destroy)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 97 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 13)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
@@ -2263,7 +2199,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 98 ---
+--- Decision 96 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 13)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
@@ -2282,7 +2218,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 97 ---
   Priority: Player B (non-active)
   Step: End Step (turn 13)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
@@ -2306,7 +2242,7 @@
   PA: Mountain
   PB: Force of Negation, Force of Will, The One Ring
 
---- Decision 100 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Upkeep (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 39
@@ -2325,7 +2261,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 101 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Brainstorm, Force of Negation, Force of Will, The One Ring | lib 38
@@ -2347,7 +2283,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 102 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, The One Ring | lib 38
@@ -2376,7 +2312,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 103 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 35
@@ -2404,7 +2340,7 @@
   Player B puts Flow State to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 104 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Force of Negation, Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 36
@@ -2432,7 +2368,7 @@
   Player B puts Force of Negation to top of library
   Tamiyo, Inquisitive Student triggered
 
---- Decision 105 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
@@ -2460,7 +2396,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 106 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
@@ -2481,7 +2417,7 @@
    2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
@@ -2517,7 +2453,7 @@
   Player B draws Flow State
   Player B draws Tundra
 
---- Decision 108 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, The One Ring, Tundra, Wasteland | lib 34
@@ -2540,7 +2476,7 @@
 --- Narrative ---
   Player B played Tundra
 
---- Decision 109 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
@@ -2565,7 +2501,7 @@
   A floating triggered ability is created until your next turn.
   --- Declare Attackers (Player B) ---
 
---- Decision 110 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
@@ -2590,7 +2526,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Geist of Saint Traft [2/2] -> Player A
 
---- Decision 111 ---
+--- Decision 109 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
@@ -2615,7 +2551,7 @@
     [attacking] Geist of Saint Traft [2/2] -> Player A
     [attacking] Murktide Regent [6/6] -> Player A
 
---- Decision 112 ---
+--- Decision 110 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34

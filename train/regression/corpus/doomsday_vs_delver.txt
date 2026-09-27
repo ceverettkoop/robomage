@@ -238,49 +238,8 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 1)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Daze
-  Known opp hand: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Ponder, Polluted Delta, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 14 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 1)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Daze
-  Known opp hand: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Ponder, Polluted Delta, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 15 ---
   Priority: Player A (active)
   Step: End Combat (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -298,7 +257,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 16 ---
+--- Decision 14 ---
   Priority: Player A (active)
   Step: Second Main (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -316,7 +275,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 17 ---
+--- Decision 15 ---
   Priority: Player A (active)
   Step: End Step (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -339,7 +298,7 @@
   PA: Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   PB: Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Daze, Ponder, Polluted Delta, Scalding Tarn
 
---- Decision 18 ---
+--- Decision 16 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -358,7 +317,7 @@
 --- Narrative ---
   Player B draws Volcanic Island
 
---- Decision 19 ---
+--- Decision 17 ---
   Priority: Player A (non-active)
   Step: Draw (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -376,7 +335,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 20 ---
+--- Decision 18 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Mishra's Bauble, Brainstorm, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
@@ -396,7 +355,7 @@
 --- Narrative ---
   Player B casts Mishra's Bauble
 
---- Decision 21 ---
+--- Decision 19 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -417,7 +376,7 @@
 --- Narrative ---
   Mishra's Bauble enters the battlefield
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Brainstorm, Ponder, Polluted Delta, Volcanic Island, Scalding Tarn | lib 52
@@ -438,7 +397,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 52
@@ -458,7 +417,7 @@
 --- Narrative ---
   Choose target for Mishra's Bauble:
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 52
@@ -480,7 +439,7 @@
   Player B sacrifices Mishra's Bauble
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 52
@@ -502,7 +461,7 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -524,7 +483,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 52
@@ -549,7 +508,7 @@
   Player B shuffles their library
   Player B puts Island to the battlefield
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Brainstorm, Ponder, Volcanic Island, Scalding Tarn | lib 51
@@ -570,7 +529,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -597,7 +556,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
@@ -624,7 +583,7 @@
   Player B puts Volcanic Island to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn | lib 49
@@ -650,7 +609,7 @@
 --- Narrative ---
   Player B puts Ponder to top of library
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -675,7 +634,7 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -695,7 +654,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -717,7 +676,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -736,53 +695,8 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 36 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 2)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Underground Sea (T)
-  Opp BF:   Island (T,NEW)
-  Delayed: Mishra's Bauble (opponent, upkeep, waiting)
-  Self GY: Thoughtseize
-  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Dragon's Rage Channeler, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 37 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 2)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Underground Sea (T)
-  Opp BF:   Island (T,NEW)
-  Delayed: Mishra's Bauble (opponent, upkeep, waiting)
-  Self GY: Thoughtseize
-  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Dragon's Rage Channeler, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 38 ---
+--- Decision 34 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -802,7 +716,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -822,7 +736,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player A (non-active)
   Step: End Step (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -848,7 +762,7 @@
   PA: Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   PB: Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -870,7 +784,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Ponder
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -890,7 +804,7 @@
 --- Narrative ---
   Player A draws Doomsday
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Draw (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 52
@@ -908,7 +822,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 52
@@ -932,7 +846,7 @@
   Player A activated Underground Sea for 1(U)
   Player A casts Ponder
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -955,7 +869,7 @@
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -978,7 +892,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -999,7 +913,7 @@
    1: Force of Will  [#1]
   >> A/A: 1 (Force of Will)
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -1023,7 +937,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Edge of Autumn
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Island, Misty Rainforest | lib 51
@@ -1047,7 +961,7 @@
 --- Narrative ---
   Player A played Island
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1068,7 +982,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1091,7 +1005,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1111,55 +1025,8 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 53 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Island (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U | opp drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 54 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Island (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dragon's Rage Channeler, Scalding Tarn
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U | opp drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 55 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1180,7 +1047,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 56 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1201,7 +1068,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 57 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1227,7 +1094,7 @@
   PA: Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest
   PB: Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn
 
---- Decision 58 ---
+--- Decision 52 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1249,7 +1116,7 @@
 --- Narrative ---
   Player B draws Volcanic Island
 
---- Decision 59 ---
+--- Decision 53 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1270,7 +1137,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
@@ -1292,7 +1159,7 @@
   Player B activated Island for 1(U)
   Player B casts Ponder
 
---- Decision 61 ---
+--- Decision 55 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1318,7 +1185,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 62 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
@@ -1340,7 +1207,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 63 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
@@ -1360,7 +1227,7 @@
    1: Ponder  [#1]
   >> B/B: 0 (Ponder)
 
---- Decision 64 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 48
@@ -1383,7 +1250,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Ponder
 
---- Decision 65 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 47
@@ -1404,7 +1271,7 @@
 --- Narrative ---
   Player B played Volcanic Island
 
---- Decision 66 ---
+--- Decision 60 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn | lib 47
@@ -1428,7 +1295,7 @@
   Player B activated Volcanic Island for 1(R)
   Player B casts Dragon's Rage Channeler
 
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1453,7 +1320,7 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1474,7 +1341,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1497,7 +1364,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1517,55 +1384,8 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 71 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Underground Sea (T) | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Volcanic Island (T,NEW)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Scalding Tarn
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=UR
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 72 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Underground Sea (T) | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Volcanic Island (T,NEW)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Scalding Tarn
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=UR
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 73 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1586,7 +1406,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 74 ---
+--- Decision 66 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1607,7 +1427,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 75 ---
+--- Decision 67 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1633,7 +1453,7 @@
   PA: Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest
   PB: Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn
 
---- Decision 76 ---
+--- Decision 68 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1654,7 +1474,7 @@
 --- Narrative ---
   Player A draws Force of Will
 
---- Decision 77 ---
+--- Decision 69 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  18 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 50
@@ -1674,7 +1494,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 78 ---
+--- Decision 70 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 50
@@ -1697,7 +1517,7 @@
 --- Narrative ---
   Player A played Misty Rainforest
 
---- Decision 79 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 50
@@ -1723,7 +1543,7 @@
   Player A sacrifices Misty Rainforest
   Player A's Misty Rainforest ability is on the stack
 
---- Decision 80 ---
+--- Decision 72 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 50
@@ -1748,7 +1568,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 81 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 50
@@ -1774,7 +1594,7 @@
   Player A shuffles their library
   Player A puts Underground Sea to the battlefield
 
---- Decision 82 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1794,7 +1614,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1816,7 +1636,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 84 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1835,53 +1655,8 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 85 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   19 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Underground Sea (NEW) | Underground Sea | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Scalding Tarn
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 86 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   19 life | mana: empty | hand count: 5 | lib 47
-  Self BF:  Underground Sea (NEW) | Underground Sea | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Scalding Tarn
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 87 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1901,7 +1676,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1921,7 +1696,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -1946,7 +1721,7 @@
   PA: Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn
 
---- Decision 90 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn | lib 47
@@ -1964,7 +1739,7 @@
 --- Narrative ---
   Choose target for Lightning Bolt:
 
---- Decision 91 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn | lib 47
@@ -1988,7 +1763,7 @@
   Player B casts Lightning Bolt targeting Player A
   Dragon's Rage Channeler triggered
 
---- Decision 92 ---
+--- Decision 82 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2013,7 +1788,7 @@
   Player B surveils 1.
   Surveil: looking at Ponder
 
---- Decision 93 ---
+--- Decision 83 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Ponder, Scalding Tarn, Scalding Tarn | lib 47
@@ -2035,7 +1810,7 @@
 --- Narrative ---
   Player B puts Ponder into their graveyard.
 
---- Decision 94 ---
+--- Decision 84 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2059,7 +1834,7 @@
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 14 life)
 
---- Decision 95 ---
+--- Decision 85 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2081,7 +1856,7 @@
 --- Narrative ---
   Player B draws Volcanic Island
 
---- Decision 96 ---
+--- Decision 86 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2101,7 +1876,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 97 ---
+--- Decision 87 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 45
@@ -2124,7 +1899,7 @@
   Player B casts Ponder
   Dragon's Rage Channeler triggered
 
---- Decision 98 ---
+--- Decision 88 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2149,7 +1924,7 @@
   Player B surveils 1.
   Surveil: looking at Mishra's Bauble
 
---- Decision 99 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 45
@@ -2170,7 +1945,7 @@
 --- Narrative ---
   Player B puts Mishra's Bauble into their graveyard.
 
---- Decision 100 ---
+--- Decision 90 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2195,7 +1970,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 101 ---
+--- Decision 91 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 44
@@ -2217,7 +1992,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 102 ---
+--- Decision 92 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 44
@@ -2237,7 +2012,7 @@
    1: Mishra's Bauble  [#1]
   >> B/B: 0 (Flooded Strand)
 
---- Decision 103 ---
+--- Decision 93 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 44
@@ -2260,7 +2035,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Mishra's Bauble
 
---- Decision 104 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Mishra's Bauble, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 43
@@ -2283,7 +2058,7 @@
   Player B casts Mishra's Bauble
   Dragon's Rage Channeler triggered
 
---- Decision 105 ---
+--- Decision 95 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2308,7 +2083,7 @@
   Player B surveils 1.
   Surveil: looking at Flooded Strand
 
---- Decision 106 ---
+--- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 43
@@ -2330,7 +2105,7 @@
 --- Narrative ---
   Player B puts Flooded Strand into their graveyard.
 
---- Decision 107 ---
+--- Decision 97 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2353,7 +2128,7 @@
 --- Narrative ---
   Mishra's Bauble enters the battlefield
 
---- Decision 108 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Volcanic Island, Scalding Tarn, Scalding Tarn | lib 42
@@ -2375,7 +2150,7 @@
 --- Narrative ---
   Player B played Volcanic Island
 
---- Decision 109 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(3): Dragon's Rage Channeler, Scalding Tarn, Scalding Tarn | lib 42
@@ -2397,7 +2172,7 @@
   Player B activated Volcanic Island for 1(R)
   Player B casts Dragon's Rage Channeler
 
---- Decision 110 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(2): Scalding Tarn, Scalding Tarn | lib 42
@@ -2418,7 +2193,7 @@
 --- Narrative ---
   Choose target for Mishra's Bauble:
 
---- Decision 111 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(2): Scalding Tarn, Scalding Tarn | lib 42
@@ -2442,7 +2217,7 @@
   Player B sacrifices Mishra's Bauble
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
---- Decision 112 ---
+--- Decision 102 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2468,7 +2243,7 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
 
---- Decision 113 ---
+--- Decision 103 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2493,7 +2268,7 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 114 ---
+--- Decision 104 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2514,7 +2289,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 105 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2539,7 +2314,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
---- Decision 116 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  19 life | mana: empty | hand(2): Scalding Tarn, Scalding Tarn | lib 42
@@ -2560,7 +2335,7 @@
   Attackers declared:
     Dragon's Rage Channeler -> Player A
 
---- Decision 117 ---
+--- Decision 107 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2583,7 +2358,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 118 ---
+--- Decision 108 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 6)
   Self:  14 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2608,7 +2383,7 @@
     Dragon's Rage Channeler deals 3 damage to Player A
   --- End Combat Damage ---
 
---- Decision 119 ---
+--- Decision 109 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 6)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2629,7 +2404,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 120 ---
+--- Decision 110 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2650,7 +2425,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 121 ---
+--- Decision 111 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2671,7 +2446,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 122 ---
+--- Decision 112 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2698,7 +2473,7 @@
   PA: Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Scalding Tarn, Scalding Tarn
 
---- Decision 123 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2721,7 +2496,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thundering Falls
 
---- Decision 124 ---
+--- Decision 114 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  11 life | mana: empty | hand(5): Doomsday, Force of Will, Street Wraith, Edge of Autumn, Edge of Autumn | lib 49
@@ -2742,7 +2517,7 @@
 --- Narrative ---
   Player A draws Street Wraith
 
---- Decision 125 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2762,7 +2537,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 126 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2782,7 +2557,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 127 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2804,7 +2579,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 128 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2823,53 +2598,8 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 129 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   19 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Scalding Tarn
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 130 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   19 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
-  Known opp hand: Scalding Tarn
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Daze, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 131 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2889,7 +2619,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2909,7 +2639,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2934,7 +2664,7 @@
   PA: Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Scalding Tarn, Scalding Tarn
 
---- Decision 134 ---
+--- Decision 122 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -2956,7 +2686,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 135 ---
+--- Decision 123 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(4): Brainstorm, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 40
@@ -2976,7 +2706,7 @@
   Player B casts Brainstorm
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 136 ---
+--- Decision 124 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 40
@@ -2998,7 +2728,7 @@
   Dragon's Rage Channeler triggered
   Dragon's Rage Channeler triggered
 
---- Decision 137 ---
+--- Decision 125 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3024,7 +2754,7 @@
   Player B surveils 1.
   Surveil: looking at Force of Will
 
---- Decision 138 ---
+--- Decision 126 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 40
@@ -3045,7 +2775,7 @@
 --- Narrative ---
   Player B puts Force of Will into their graveyard.
 
---- Decision 139 ---
+--- Decision 127 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3071,7 +2801,7 @@
   Player B surveils 1.
   Surveil: looking at Wasteland
 
---- Decision 140 ---
+--- Decision 128 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(3): Scalding Tarn, Scalding Tarn, Thundering Falls | lib 39
@@ -3092,7 +2822,7 @@
 --- Narrative ---
   Player B puts Wasteland into their graveyard.
 
---- Decision 141 ---
+--- Decision 129 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3121,7 +2851,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 142 ---
+--- Decision 130 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(6): Murktide Regent, Force of Will, Mountain, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 35
@@ -3147,7 +2877,7 @@
   Player B puts Mountain to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 143 ---
+--- Decision 131 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(5): Murktide Regent, Force of Will, Scalding Tarn, Scalding Tarn, Thundering Falls | lib 36
@@ -3172,7 +2902,7 @@
 --- Narrative ---
   Player B puts Scalding Tarn to top of library
 
---- Decision 144 ---
+--- Decision 132 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3193,7 +2923,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 145 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3214,7 +2944,7 @@
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
 
---- Decision 146 ---
+--- Decision 134 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3248,7 +2978,7 @@
   Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (2 of 5):
 
---- Decision 147 ---
+--- Decision 135 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3282,7 +3012,7 @@
   Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (3 of 5):
 
---- Decision 148 ---
+--- Decision 136 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3315,7 +3045,7 @@
   Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (4 of 5):
 
---- Decision 149 ---
+--- Decision 137 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3347,7 +3077,7 @@
   Player B exiles Force of Will via Delve.
   Choose a card to exile via Delve (5 of 5):
 
---- Decision 150 ---
+--- Decision 138 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3382,7 +3112,7 @@
   Dragon's Rage Channeler loses Delirium bonus
   Dragon's Rage Channeler loses Delirium bonus
 
---- Decision 151 ---
+--- Decision 139 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3408,7 +3138,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
 
---- Decision 152 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
@@ -3429,7 +3159,7 @@
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 153 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 37
@@ -3452,7 +3182,7 @@
   Player B sacrifices Scalding Tarn
   Player B's Scalding Tarn ability is on the stack
 
---- Decision 154 ---
+--- Decision 142 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3477,7 +3207,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 155 ---
+--- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 37
@@ -3503,7 +3233,7 @@
   Player B shuffles their library
   Player B puts Mountain to the battlefield
 
---- Decision 156 ---
+--- Decision 144 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3524,7 +3254,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 157 ---
+--- Decision 145 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3547,7 +3277,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 158 ---
+--- Decision 146 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 36
@@ -3570,7 +3300,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Dragon's Rage Channeler [1/1] -> Player A
 
---- Decision 159 ---
+--- Decision 147 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 36
@@ -3593,7 +3323,7 @@
     [attacking] Dragon's Rage Channeler [1/1] -> Player A
     [attacking] Dragon's Rage Channeler [1/1] -> Player A
 
---- Decision 160 ---
+--- Decision 148 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 36
@@ -3614,7 +3344,7 @@
     Dragon's Rage Channeler -> Player A
     Dragon's Rage Channeler -> Player A
 
---- Decision 161 ---
+--- Decision 149 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3637,7 +3367,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 162 ---
+--- Decision 150 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  11 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3663,7 +3393,7 @@
     Dragon's Rage Channeler deals 1 damage to Player A
   --- End Combat Damage ---
 
---- Decision 163 ---
+--- Decision 151 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 8)
   Self:  9 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3684,7 +3414,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 164 ---
+--- Decision 152 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  9 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3705,7 +3435,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 165 ---
+--- Decision 153 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  9 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3726,7 +3456,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 166 ---
+--- Decision 154 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  9 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3752,7 +3482,7 @@
   PA: Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Force of Will, Thundering Falls
 
---- Decision 167 ---
+--- Decision 155 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  9 life | mana: empty | hand(6): Doomsday, Force of Will, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 48
@@ -3773,7 +3503,7 @@
 --- Narrative ---
   Player A draws Dark Ritual
 
---- Decision 168 ---
+--- Decision 156 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3794,7 +3524,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 169 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3815,7 +3545,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 170 ---
+--- Decision 158 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3838,7 +3568,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 171 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3858,55 +3588,8 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 172 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
-  Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Street Wraith from hand (Draw)  [#0]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-   5: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 173 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Misty Rainforest, Ponder, Thoughtseize
-  Opp GY:  Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
-  Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Island, Dragon's Rage Channeler, Brainstorm, Murktide Regent, Mishra's Bauble
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Street Wraith from hand (Draw)  [#0]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-   5: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 174 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3927,7 +3610,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 175 ---
+--- Decision 161 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3948,7 +3631,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 176 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3974,7 +3657,7 @@
   PA: Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Force of Will, Thundering Falls
 
---- Decision 177 ---
+--- Decision 163 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -3997,7 +3680,7 @@
 --- Narrative ---
   Player B draws Unholy Heat
 
---- Decision 178 ---
+--- Decision 164 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(3): Force of Will, Unholy Heat, Thundering Falls | lib 35
@@ -4016,7 +3699,7 @@
 --- Narrative ---
   Choose target for Unholy Heat:
 
---- Decision 179 ---
+--- Decision 165 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(3): Force of Will, Unholy Heat, Thundering Falls | lib 35
@@ -4041,7 +3724,7 @@
   Player B casts Unholy Heat targeting Murktide Regent
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 180 ---
+--- Decision 166 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 35
@@ -4064,7 +3747,7 @@
   Dragon's Rage Channeler triggered
   Dragon's Rage Channeler triggered
 
---- Decision 181 ---
+--- Decision 167 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4091,7 +3774,7 @@
   Player B surveils 1.
   Surveil: looking at Delver of Secrets
 
---- Decision 182 ---
+--- Decision 168 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 35
@@ -4115,7 +3798,7 @@
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 
---- Decision 183 ---
+--- Decision 169 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4142,7 +3825,7 @@
   Player B surveils 1.
   Surveil: looking at Lightning Bolt
 
---- Decision 184 ---
+--- Decision 170 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 34
@@ -4164,7 +3847,7 @@
 --- Narrative ---
   Player B puts Lightning Bolt into their graveyard.
 
---- Decision 185 ---
+--- Decision 171 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4191,7 +3874,7 @@
   Dealt 6 damage to creature
   Murktide Regent is destroyed (lethal damage)
 
---- Decision 186 ---
+--- Decision 172 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4213,7 +3896,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 187 ---
+--- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 33
@@ -4235,7 +3918,7 @@
   Thundering Falls enters tapped.
   Thundering Falls triggered
 
---- Decision 188 ---
+--- Decision 174 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4262,7 +3945,7 @@
   Player B surveils 1.
   Surveil: looking at Brainstorm
 
---- Decision 189 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 33
@@ -4284,7 +3967,7 @@
 --- Narrative ---
   Player B puts Brainstorm into their graveyard.
 
---- Decision 190 ---
+--- Decision 176 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4306,7 +3989,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 191 ---
+--- Decision 177 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4334,7 +4017,7 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
---- Decision 192 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 32
@@ -4355,7 +4038,7 @@
     Dragon's Rage Channeler -> Player A
     Dragon's Rage Channeler -> Player A
 
---- Decision 193 ---
+--- Decision 179 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4379,7 +4062,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 194 ---
+--- Decision 180 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  9 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4406,7 +4089,7 @@
     Dragon's Rage Channeler deals 3 damage to Player A
   --- End Combat Damage ---
 
---- Decision 195 ---
+--- Decision 181 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 10)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4428,7 +4111,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 196 ---
+--- Decision 182 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4450,7 +4133,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 197 ---
+--- Decision 183 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4472,7 +4155,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 198 ---
+--- Decision 184 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4499,7 +4182,7 @@
   PA: Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn
   PB: Force of Will
 
---- Decision 199 ---
+--- Decision 185 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4521,7 +4204,7 @@
 --- Narrative ---
   Player A draws Street Wraith
 
---- Decision 200 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  3 life | mana: empty | hand(8): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4543,7 +4226,7 @@
    6: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 187 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(8): Doomsday, Force of Will, Dark Ritual, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4568,7 +4251,7 @@
   Player A activated Underground Sea for 1(B)
   Player A casts Dark Ritual
 
---- Decision 202 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(7): Doomsday, Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4593,7 +4276,7 @@
   Resolving ability (category: AddMana)
   Player A adds 3{B}
 
---- Decision 203 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: 3B | hand(7): Doomsday, Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4620,7 +4303,7 @@
 --- Narrative ---
   Player A casts Doomsday
 
---- Decision 204 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4645,7 +4328,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's graveyard and library:
 
---- Decision 205 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4716,7 +4399,7 @@
   Player A puts Thassa's Oracle to top of library
   Searching Player A's graveyard and library:
 
---- Decision 206 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4787,7 +4470,7 @@
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
 
---- Decision 207 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4857,7 +4540,7 @@
   Player A puts Ponder to top of library
   Searching Player A's graveyard and library:
 
---- Decision 208 ---
+--- Decision 194 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -4926,7 +4609,7 @@
   Player A puts Brainstorm to top of library
   Searching Player A's graveyard and library:
 
---- Decision 209 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 47
@@ -5043,7 +4726,7 @@
   Player A looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 210 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5069,7 +4752,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 211 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5094,7 +4777,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 212 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5118,7 +4801,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 213 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  3 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5143,7 +4826,7 @@
   Player A loses 2 life (now at 1)
   Resolving ability (category: Cleanup)
 
---- Decision 214 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5163,7 +4846,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 215 ---
+--- Decision 201 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -5188,7 +4871,7 @@
   Player A sacrifices Island
   Player A activates Edge of Autumn from hand
 
---- Decision 216 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(5): Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 5
@@ -5212,7 +4895,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Street Wraith
 
---- Decision 217 ---
+--- Decision 203 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5232,7 +4915,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 218 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5254,7 +4937,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 219 ---
+--- Decision 205 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5273,53 +4956,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 220 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 11)
-  Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
-  Opp:   18 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Edge of Autumn, Island, Doomsday
-  Opp GY:  Brainstorm, Murktide Regent, Unholy Heat, Lightning Bolt, Delver of Secrets, Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Dark Ritual, Thoughtseize
-  Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Known top: Thassa's Oracle, Ponder, Brainstorm, Brainstorm, ?
-  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=B
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 221 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 11)
-  Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
-  Opp:   18 life | mana: empty | hand count: 1 | lib 32
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
-  Self GY: Edge of Autumn, Island, Doomsday
-  Opp GY:  Brainstorm, Murktide Regent, Unholy Heat, Lightning Bolt, Delver of Secrets, Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Dark Ritual, Thoughtseize
-  Opp exile:  Brainstorm, Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
-  Known top: Thassa's Oracle, Ponder, Brainstorm, Brainstorm, ?
-  Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Unholy Heat
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=B
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 222 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: End Combat (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5339,7 +4977,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 223 ---
+--- Decision 207 ---
   Priority: Player A (active)
   Step: Second Main (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5359,7 +4997,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 224 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: End Step (turn 11)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5384,7 +5022,7 @@
   PA: Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn
   PB: Force of Will
 
---- Decision 225 ---
+--- Decision 209 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5405,7 +5043,7 @@
 --- Narrative ---
   Player B draws Mishra's Bauble
 
---- Decision 226 ---
+--- Decision 210 ---
   Priority: Player A (non-active)
   Step: Draw (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5425,7 +5063,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 227 ---
+--- Decision 211 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(2): Mishra's Bauble, Force of Will | lib 31
@@ -5446,7 +5084,7 @@
   Player B casts Mishra's Bauble
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 228 ---
+--- Decision 212 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 31
@@ -5470,7 +5108,7 @@
   Dragon's Rage Channeler triggered
   Dragon's Rage Channeler triggered
 
---- Decision 229 ---
+--- Decision 213 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 31
@@ -5489,7 +5127,7 @@
    1: Cast Force of Will  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 230 ---
+--- Decision 214 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5514,7 +5152,7 @@
   Player B surveils 1.
   Surveil: looking at Delver of Secrets
 
---- Decision 231 ---
+--- Decision 215 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 31
@@ -5537,7 +5175,7 @@
 --- Narrative ---
   Player B puts Delver of Secrets into their graveyard.
 
---- Decision 232 ---
+--- Decision 216 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 30
@@ -5556,7 +5194,7 @@
    1: Cast Force of Will  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 217 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5581,7 +5219,7 @@
   Player B surveils 1.
   Surveil: looking at Unholy Heat
 
---- Decision 234 ---
+--- Decision 218 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 30
@@ -5604,7 +5242,7 @@
 --- Narrative ---
   Player B puts Unholy Heat into their graveyard.
 
---- Decision 235 ---
+--- Decision 219 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 29
@@ -5623,7 +5261,7 @@
    1: Cast Force of Will  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 236 ---
+--- Decision 220 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5646,7 +5284,7 @@
 --- Narrative ---
   Mishra's Bauble enters the battlefield
 
---- Decision 237 ---
+--- Decision 221 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 29
@@ -5666,7 +5304,7 @@
 --- Narrative ---
   Choose target for Mishra's Bauble:
 
---- Decision 238 ---
+--- Decision 222 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 29
@@ -5690,7 +5328,7 @@
   Player B sacrifices Mishra's Bauble
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
---- Decision 239 ---
+--- Decision 223 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5716,7 +5354,7 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
 
---- Decision 240 ---
+--- Decision 224 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5737,7 +5375,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 241 ---
+--- Decision 225 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5764,7 +5402,7 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
---- Decision 242 ---
+--- Decision 226 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  18 life | mana: empty | hand(1): Force of Will | lib 29
@@ -5787,7 +5425,7 @@
     Dragon's Rage Channeler -> Player A
     Dragon's Rage Channeler -> Player A
 
---- Decision 243 ---
+--- Decision 227 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4
@@ -5810,7 +5448,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 244 ---
+--- Decision 228 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  1 life | mana: empty | hand(6): Force of Will, Street Wraith, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn | lib 4

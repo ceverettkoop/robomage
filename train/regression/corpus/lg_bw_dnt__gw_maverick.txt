@@ -176,9 +176,6 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Horizon Canopy
 --- Turn 2 (Player B) ---
@@ -226,9 +223,6 @@
   Resolving ability (category: ChangeZoneAll)
   Player A moves 0 card(s) to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Aether Vial triggered
 --- Turn 3 (Player A) ---
@@ -492,45 +486,8 @@
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 26 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 27 ---
   Priority: Player A (active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -546,7 +503,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player A (active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -562,7 +519,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -583,7 +540,7 @@
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Badgermole Cub, Collector Ouphe, Horizon Canopy, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -600,7 +557,7 @@
 --- Narrative ---
   Player B draws Dryad Arbor
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -616,7 +573,7 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(8): Badgermole Cub, Collector Ouphe, Dryad Arbor, Horizon Canopy, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
@@ -634,7 +591,7 @@
 --- Narrative ---
   Player B played Dryad Arbor
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -655,7 +612,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 34 ---
+--- Decision 32 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -675,16 +632,13 @@
 --- Narrative ---
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 5 (Player A) ---
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
   PB: Badgermole Cub, Collector Ouphe, Dryad Arbor, Horizon Canopy, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 35 ---
+--- Decision 33 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -704,7 +658,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 36 ---
+--- Decision 34 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -721,7 +675,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 37 ---
+--- Decision 35 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -742,7 +696,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
---- Decision 38 ---
+--- Decision 36 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -759,7 +713,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 39 ---
+--- Decision 37 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -780,7 +734,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 40 ---
+--- Decision 38 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
@@ -798,7 +752,7 @@
 --- Narrative ---
   Player A draws Witch Enchanter
 
---- Decision 41 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -815,7 +769,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 42 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
@@ -836,7 +790,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 43 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -861,7 +815,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Orcish Bowmasters
 
---- Decision 44 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -883,7 +837,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 45 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -906,7 +860,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -930,7 +884,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -948,7 +902,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -968,7 +922,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -985,49 +939,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 50 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 51 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:2] (res 1) | Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (T,NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
-  This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1045,7 +958,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1063,7 +976,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1086,7 +999,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Badgermole Cub, Collector Ouphe, Dryad Arbor, Horizon Canopy, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1105,7 +1018,7 @@
 --- Narrative ---
   Player B draws Talon Gates of Madara
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1123,7 +1036,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(8): Badgermole Cub, Collector Ouphe, Horizon Canopy, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 49
@@ -1142,7 +1055,7 @@
 --- Narrative ---
   Player B played Horizon Canopy
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  19 life | mana: empty | hand(7): Badgermole Cub, Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 49
@@ -1168,7 +1081,7 @@
   Player B activated Horizon Canopy for 1(G)
   Player B casts Badgermole Cub
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1190,7 +1103,7 @@
   Badgermole Cub enters the battlefield
   Choose target for Badgermole Cub:
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 49
@@ -1211,7 +1124,7 @@
   Targeting choice 0
   Badgermole Cub triggered
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1233,7 +1146,7 @@
   Resolving ability (category: Earthbend)
   Dryad Arbor becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1252,7 +1165,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1273,7 +1186,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1291,51 +1204,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 65 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Badgermole Cub [2/2] (SICK,NEW,res 1) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Horizon Canopy (T,NEW)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 66 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Badgermole Cub [2/2] (SICK,NEW,res 1) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Horizon Canopy (T,NEW)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=G
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 67 ---
+--- Decision 61 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1354,7 +1224,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1373,7 +1243,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 69 ---
+--- Decision 63 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1398,7 +1268,7 @@
   PA: Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter
   PB: Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
 
---- Decision 70 ---
+--- Decision 64 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1419,7 +1289,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 71 ---
+--- Decision 65 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1443,7 +1313,7 @@
   Player A activated Wasteland for 1(C)
   Player A casts Phelia, Exuberant Shepherd
 
---- Decision 72 ---
+--- Decision 66 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1464,7 +1334,7 @@
 --- Narrative ---
   Phelia, Exuberant Shepherd enters the battlefield
 
---- Decision 73 ---
+--- Decision 67 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1483,7 +1353,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 74 ---
+--- Decision 68 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1506,7 +1376,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 75 ---
+--- Decision 69 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1525,7 +1395,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 70 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1548,7 +1418,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 77 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
@@ -1568,7 +1438,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 78 ---
+--- Decision 72 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1586,7 +1456,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
@@ -1607,7 +1477,7 @@
 --- Narrative ---
   Player A played Witch-Blessed Meadow
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1629,7 +1499,7 @@
   Witch Enchanter enters tapped.
   Witch Enchanter transforms into Witch-Blessed Meadow!
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1648,7 +1518,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1669,7 +1539,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1691,7 +1561,7 @@
   Attackers declared:
     (none)
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1709,51 +1579,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 85 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   18 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Horizon Canopy (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 86 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   18 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Horizon Canopy (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 87 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1772,7 +1599,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1791,7 +1618,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1815,7 +1642,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
 
---- Decision 90 ---
+--- Decision 82 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  18 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 49
@@ -1831,7 +1658,7 @@
    1: Activate Horizon Canopy (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 83 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1851,7 +1678,7 @@
 --- Narrative ---
   Player B draws Endurance
 
---- Decision 92 ---
+--- Decision 84 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  18 life | mana: empty | hand(7): Collector Ouphe, Endurance, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 48
@@ -1876,7 +1703,7 @@
   Player B activated Horizon Canopy for 1(G)
   Player B casts Endurance
 
---- Decision 93 ---
+--- Decision 85 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1899,7 +1726,7 @@
   Endurance enters the battlefield
   Choose target for Endurance:
 
---- Decision 94 ---
+--- Decision 86 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  17 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 48
@@ -1922,7 +1749,7 @@
   Targeting choice 0
   Endurance triggered
 
---- Decision 95 ---
+--- Decision 87 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1944,7 +1771,7 @@
 --- Narrative ---
   Resolving ability (category: ChangeZoneAll)
 
---- Decision 96 ---
+--- Decision 88 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -1963,7 +1790,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 97 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 48
@@ -1983,7 +1810,7 @@
   Player B played Talon Gates of Madara
   Choose target for Talon Gates of Madara:
 
---- Decision 98 ---
+--- Decision 90 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(5): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 48
@@ -2010,7 +1837,7 @@
   Targeting choice 0
   Talon Gates of Madara triggered
 
---- Decision 99 ---
+--- Decision 91 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2032,7 +1859,7 @@
 --- Narrative ---
   Resolving ability (category: Phases)
 
---- Decision 100 ---
+--- Decision 92 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2051,7 +1878,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 93 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2072,7 +1899,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 102 ---
+--- Decision 94 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | hand(5): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 48
@@ -2094,7 +1921,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Badgermole Cub [2/2] -> Player A
 
---- Decision 103 ---
+--- Decision 95 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | hand(5): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 48
@@ -2114,7 +1941,7 @@
   Attackers declared:
     Badgermole Cub -> Player A
 
---- Decision 104 ---
+--- Decision 96 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2138,7 +1965,7 @@
     0: Badgermole Cub [2/2]
   Your creatures:
 
---- Decision 105 ---
+--- Decision 97 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2161,7 +1988,7 @@
   Blockers declared:
     (none)
 
---- Decision 106 ---
+--- Decision 98 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2184,7 +2011,7 @@
     Badgermole Cub deals 2 damage to Player A
   --- End Combat Damage ---
 
---- Decision 107 ---
+--- Decision 99 ---
   Priority: Player A (non-active)
   Step: Combat Dmg (turn 8)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2203,7 +2030,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 108 ---
+--- Decision 100 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2222,7 +2049,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 101 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2241,7 +2068,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 110 ---
+--- Decision 102 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2266,7 +2093,7 @@
   PA: Pre-War Formalwear, White Orchid Phantom
   PB: Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 111 ---
+--- Decision 103 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2287,7 +2114,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 112 ---
+--- Decision 104 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2306,7 +2133,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 113 ---
+--- Decision 105 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2328,7 +2155,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 114 ---
+--- Decision 106 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2347,7 +2174,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 107 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2369,7 +2196,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 116 ---
+--- Decision 108 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  18 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
@@ -2389,7 +2216,7 @@
 --- Narrative ---
   Player A draws White Orchid Phantom
 
---- Decision 117 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  18 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2408,7 +2235,7 @@
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 118 ---
+--- Decision 110 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2436,7 +2263,7 @@
   Player A activated Scrubland for 1(W)
   Player A casts Pre-War Formalwear
 
---- Decision 119 ---
+--- Decision 111 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2458,7 +2285,7 @@
   Pre-War Formalwear enters the battlefield
   Pre-War Formalwear's trigger is removed - no legal targets (603.3d)
 
---- Decision 120 ---
+--- Decision 112 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2476,7 +2303,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 121 ---
+--- Decision 113 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2496,7 +2323,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 122 ---
+--- Decision 114 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2519,7 +2346,7 @@
   Attackers declared:
     (none)
 
---- Decision 123 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2536,49 +2363,8 @@
    1: Activate Aether Vial (ChangeZone)  [#0]
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 124 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Endurance [3/4] [Reach, Flash] (SICK) | Horizon Canopy (T) | Talon Gates of Madara
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=W
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 125 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Endurance [3/4] [Reach, Flash] (SICK) | Horizon Canopy (T) | Talon Gates of Madara
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=W
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 126 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2596,7 +2382,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 127 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2614,7 +2400,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 128 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2637,7 +2423,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 129 ---
+--- Decision 119 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  17 life | mana: empty | hand(5): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 48
@@ -2653,7 +2439,7 @@
    1: Activate Horizon Canopy (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 130 ---
+--- Decision 120 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2673,7 +2459,7 @@
 --- Narrative ---
   Player B draws Noble Hierarch
 
---- Decision 131 ---
+--- Decision 121 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  17 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
@@ -2690,7 +2476,7 @@
    1: Activate Horizon Canopy (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 122 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2709,7 +2495,7 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 123 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(6): Collector Ouphe, Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
@@ -2736,7 +2522,7 @@
   Player B activated Dryad Arbor for 1(G)
   Player B casts Collector Ouphe
 
---- Decision 134 ---
+--- Decision 124 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 47
@@ -2758,7 +2544,7 @@
   Player B sacrifices Horizon Canopy
   Player B's Horizon Canopy ability is on the stack
 
---- Decision 135 ---
+--- Decision 125 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2782,7 +2568,7 @@
   Player B draws Wasteland
   Choose target for Orcish Bowmasters:
 
---- Decision 136 ---
+--- Decision 126 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2811,7 +2597,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 137 ---
+--- Decision 127 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2836,7 +2622,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
---- Decision 138 ---
+--- Decision 128 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -2858,7 +2644,7 @@
 --- Narrative ---
   Collector Ouphe enters the battlefield
 
---- Decision 139 ---
+--- Decision 129 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(6): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Wasteland | lib 46
@@ -2878,7 +2664,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 140 ---
+--- Decision 130 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -2898,7 +2684,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 141 ---
+--- Decision 131 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -2928,7 +2714,7 @@
   Scrubland is destroyed
   --- Declare Attackers (Player B) ---
 
---- Decision 142 ---
+--- Decision 132 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -2951,7 +2737,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Badgermole Cub [2/2] -> Player A
 
---- Decision 143 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -2974,7 +2760,7 @@
     [attacking] Badgermole Cub [2/2] -> Player A
     [attacking] Endurance [3/4] -> Player A
 
---- Decision 144 ---
+--- Decision 134 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -3000,7 +2786,7 @@
     1: Endurance [3/4]
   Your creatures:
 
---- Decision 145 ---
+--- Decision 135 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 10)
   Self:  18 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3032,7 +2818,7 @@
   PA: White Orchid Phantom, White Orchid Phantom
   PB: Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 146 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3053,7 +2839,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 147 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3070,7 +2856,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 148 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3092,7 +2878,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 149 ---
+--- Decision 139 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3109,7 +2895,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 150 ---
+--- Decision 140 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3131,7 +2917,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 151 ---
+--- Decision 141 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
@@ -3149,7 +2935,7 @@
 --- Narrative ---
   Player A draws Prismatic Vista
 
---- Decision 152 ---
+--- Decision 142 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  13 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3166,7 +2952,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 153 ---
+--- Decision 143 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(3): Prismatic Vista, White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3186,7 +2972,7 @@
 --- Narrative ---
   Player A played Prismatic Vista
 
---- Decision 154 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  13 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3209,7 +2995,7 @@
   Player A sacrifices Prismatic Vista
   Player A's Prismatic Vista ability is on the stack
 
---- Decision 155 ---
+--- Decision 145 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  12 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3230,7 +3016,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 156 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  12 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3264,7 +3050,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 157 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  12 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 68
@@ -3291,7 +3077,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 158 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  12 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 67
@@ -3315,7 +3101,7 @@
   White Orchid Phantom enters the battlefield
   Choose target for White Orchid Phantom:
 
---- Decision 159 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3342,7 +3128,7 @@
   Resolving ability (category: ChangeZone)
   --- Declare Attackers (Player A) ---
 
---- Decision 160 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3365,7 +3151,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 161 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3388,7 +3174,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] Orc Army token [2/2] -> Player B
 
---- Decision 162 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3410,7 +3196,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 163 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 11)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3446,7 +3232,7 @@
     1: Orc Army token [2/2]
   Your creatures:
 
---- Decision 164 ---
+--- Decision 154 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 11)
   Self:  16 life | mana: empty | hand(5): Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 46
@@ -3475,7 +3261,7 @@
   PA: White Orchid Phantom
   PB: Forest, Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben
 
---- Decision 165 ---
+--- Decision 155 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(6): Forest, Icetill Explorer, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 45
@@ -3499,7 +3285,7 @@
   Player B casts Noble Hierarch
   Noble Hierarch enters the battlefield
 
---- Decision 166 ---
+--- Decision 156 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: 1G | hand(5): Forest, Icetill Explorer, Knight of the Reliquary, Scythecat Cub, Thalia, Guardian of Thraben | lib 45
@@ -3520,7 +3306,7 @@
   Player B casts Scythecat Cub
   Scythecat Cub enters the battlefield
 
---- Decision 167 ---
+--- Decision 157 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(4): Forest, Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3539,7 +3325,7 @@
   Player B played Forest
   Choose target for Scythecat Cub:
 
---- Decision 168 ---
+--- Decision 158 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  12 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3569,7 +3355,7 @@
   Resolving ability (category: MultiplyCounter)
   --- Declare Attackers (Player B) ---
 
---- Decision 169 ---
+--- Decision 159 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3592,7 +3378,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Badgermole Cub [3/3] -> Player A
 
---- Decision 170 ---
+--- Decision 160 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3615,7 +3401,7 @@
     [attacking] Badgermole Cub [3/3] -> Player A
     [attacking] Collector Ouphe [2/2] -> Player A
 
---- Decision 171 ---
+--- Decision 161 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3638,7 +3424,7 @@
     [attacking] Collector Ouphe [2/2] -> Player A
     [attacking] Endurance [3/4] -> Player A
 
---- Decision 172 ---
+--- Decision 162 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 12)
   Self:  12 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -3665,7 +3451,7 @@
     2: Endurance [3/4]
   Your creatures:
 
---- Decision 173 ---
+--- Decision 163 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 12)
   Self:  12 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3696,7 +3482,7 @@
   PA: White Orchid Phantom
   PB: Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben
 
---- Decision 174 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  4 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3716,7 +3502,7 @@
   Aether Vial triggered
   Aether Vial triggered
 
---- Decision 175 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  4 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3737,7 +3523,7 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
---- Decision 176 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
   Self:  4 life | mana: empty | hand(1): White Orchid Phantom | lib 67
@@ -3759,7 +3545,7 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
   Player A draws Solitude
 
---- Decision 177 ---
+--- Decision 167 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  4 life | mana: empty | hand(2): Solitude, White Orchid Phantom | lib 66
@@ -3775,7 +3561,7 @@
    1: Cast Solitude (alternate cost)  [#1]
   >> A/A: 1 (Cast Solitude (alternate cost))
 
---- Decision 178 ---
+--- Decision 168 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  4 life | mana: empty | hand(2): Solitude, White Orchid Phantom | lib 66
@@ -3797,7 +3583,7 @@
   Solitude enters the battlefield
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 179 ---
+--- Decision 169 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3818,7 +3604,7 @@
 --- Narrative ---
   Choose target for Solitude:
 
---- Decision 180 ---
+--- Decision 170 ---
   Priority: Player A (active)
   Step: Draw (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3857,7 +3643,7 @@
   Player B gains 3 life (now at 15)
   --- Declare Attackers (Player A) ---
 
---- Decision 181 ---
+--- Decision 171 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3883,7 +3669,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
 
---- Decision 182 ---
+--- Decision 172 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3909,7 +3695,7 @@
     [attacking] Phelia, Exuberant Shepherd [2/2] -> Player B
     [attacking] White Orchid Phantom [2/2] -> Player B
 
---- Decision 183 ---
+--- Decision 173 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3935,7 +3721,7 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
     [attacking] Orc Army token [2/2] -> Player B
 
---- Decision 184 ---
+--- Decision 174 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -3960,7 +3746,7 @@
     Orc Army token -> Player B
   Choose target for Phelia, Exuberant Shepherd:
 
---- Decision 185 ---
+--- Decision 175 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 13)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4000,7 +3786,7 @@
     2: Orc Army token [2/2]
   Your creatures:
 
---- Decision 186 ---
+--- Decision 176 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 13)
   Self:  15 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -4035,7 +3821,7 @@
   PA: (empty)
   PB: Green Sun's Zenith, Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben
 
---- Decision 187 ---
+--- Decision 177 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(4): Green Sun's Zenith, Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 44
@@ -4058,7 +3844,7 @@
 --- Narrative ---
   Choose X value (0-3):
 
---- Decision 188 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(4): Green Sun's Zenith, Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 44
@@ -4086,7 +3872,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 189 ---
+--- Decision 179 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 44
@@ -4110,7 +3896,7 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
 
---- Decision 190 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  9 life | mana: empty | hand(3): Icetill Explorer, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 45
@@ -4137,7 +3923,7 @@
   Knight of the Reliquary gains (always)
   --- Declare Attackers (Player B) ---
 
---- Decision 191 ---
+--- Decision 181 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  9 life | mana: empty | hand(2): Icetill Explorer, Thalia, Guardian of Thraben | lib 45
@@ -4162,7 +3948,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Collector Ouphe [2/2] -> Player A
 
---- Decision 192 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  9 life | mana: empty | hand(2): Icetill Explorer, Thalia, Guardian of Thraben | lib 45
@@ -4187,7 +3973,7 @@
     [attacking] Collector Ouphe [2/2] -> Player A
     [attacking] Endurance [3/4] -> Player A
 
---- Decision 193 ---
+--- Decision 183 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  9 life | mana: empty | hand(2): Icetill Explorer, Thalia, Guardian of Thraben | lib 45
@@ -4212,7 +3998,7 @@
     [attacking] Endurance [3/4] -> Player A
     [attacking] Scythecat Cub [2/2] -> Player A
 
---- Decision 194 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 14)
   Self:  9 life | mana: empty | hand(2): Icetill Explorer, Thalia, Guardian of Thraben | lib 45
@@ -4241,7 +4027,7 @@
     2: Scythecat Cub [2/2]
   Your creatures:
 
---- Decision 195 ---
+--- Decision 185 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4262,7 +4048,7 @@
 --- Narrative ---
   Select attacker for Orcish Bowmasters to block:
 
---- Decision 196 ---
+--- Decision 186 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66
@@ -4292,7 +4078,7 @@
   Your creatures:
     (assigned) Orcish Bowmasters [1/1] blocking Collector Ouphe
 
---- Decision 197 ---
+--- Decision 187 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 14)
   Self:  4 life | mana: empty | hand(0): (empty) | lib 66

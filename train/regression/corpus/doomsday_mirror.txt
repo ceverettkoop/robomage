@@ -253,49 +253,8 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 1)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Force of Will
-  Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 15 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 1)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Force of Will
-  Known opp hand: Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=2 colors=B
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 16 ---
   Priority: Player A (active)
   Step: End Combat (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -313,7 +272,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 17 ---
+--- Decision 15 ---
   Priority: Player A (active)
   Step: Second Main (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -331,7 +290,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 18 ---
+--- Decision 16 ---
   Priority: Player A (active)
   Step: End Step (turn 1)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -354,7 +313,7 @@
   PA: Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   PB: Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Verdant Catacombs
 
---- Decision 19 ---
+--- Decision 17 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -373,7 +332,7 @@
 --- Narrative ---
   Player B draws Underground Sea
 
---- Decision 20 ---
+--- Decision 18 ---
   Priority: Player A (non-active)
   Step: Draw (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -391,7 +350,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 21 ---
+--- Decision 19 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs | lib 52
@@ -410,7 +369,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
@@ -432,7 +391,7 @@
   Player B sacrifices Polluted Delta
   Player B's Polluted Delta ability is on the stack
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -454,7 +413,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 52
@@ -479,7 +438,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Personal Tutor, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -502,7 +461,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Personal Tutor
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -520,7 +479,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -543,7 +502,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 28 ---
+--- Decision 26 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -579,7 +538,7 @@
   Player B shuffles their library
   Player B reveals Edge of Autumn and puts it to top of library
 
---- Decision 29 ---
+--- Decision 27 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -597,7 +556,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 30 ---
+--- Decision 28 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -616,7 +575,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 31 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -634,7 +593,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 30 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -655,9 +614,46 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 33 ---
+--- Decision 31 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 2)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Underground Sea (T,NEW)
+  Opp BF:   Underground Sea (T)
+  Self GY: Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Thoughtseize
+  Known top: Edge of Autumn, ?, ?, ?, ?
+  Opp revealed: Thoughtseize, Underground Sea
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 32 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk (turn 2)
+  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Underground Sea (T,NEW)
+  Self GY: Thoughtseize
+  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: End Combat (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Underground Sea (T,NEW)
@@ -675,7 +671,7 @@
 
 --- Decision 34 ---
   Priority: Player A (non-active)
-  Step: Declare Atk (turn 2)
+  Step: End Combat (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
@@ -691,12 +687,10 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: Declare Blk (turn 2)
+  Step: Second Main (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Underground Sea (T,NEW)
@@ -714,7 +708,7 @@
 
 --- Decision 36 ---
   Priority: Player A (non-active)
-  Step: Declare Blk (turn 2)
+  Step: Second Main (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
@@ -730,122 +724,8 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 38 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 2)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 39 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 2)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 40 ---
-  Priority: Player A (non-active)
-  Step: End Combat (turn 2)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 41 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Thoughtseize, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 42 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 2)
-  Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T,NEW)
-  Self GY: Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 43 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -863,7 +743,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 44 ---
+--- Decision 38 ---
   Priority: Player A (non-active)
   Step: End Step (turn 2)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -887,7 +767,7 @@
   PA: Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest
   PB: Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
 
---- Decision 45 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  18 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
@@ -904,7 +784,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 40 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -923,7 +803,7 @@
 --- Narrative ---
   Player A draws Doomsday
 
---- Decision 47 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: Draw (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 52
@@ -941,7 +821,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 48 ---
+--- Decision 42 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -959,7 +839,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 43 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 52
@@ -983,7 +863,7 @@
   Player A activated Underground Sea for 1(U)
   Player A casts Ponder
 
---- Decision 50 ---
+--- Decision 44 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -1002,7 +882,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 45 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -1025,7 +905,7 @@
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 52 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -1048,7 +928,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 53 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -1069,7 +949,7 @@
    1: Force of Will  [#1]
   >> A/A: 1 (Force of Will)
 
---- Decision 54 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Island, Misty Rainforest | lib 52
@@ -1093,7 +973,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Edge of Autumn
 
---- Decision 55 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(6): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Island, Misty Rainforest | lib 51
@@ -1117,9 +997,128 @@
 --- Narrative ---
   Player A played Island
 
---- Decision 56 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T) | Island (NEW)
+  Opp BF:   Underground Sea (T)
+  Self GY: Ponder, Thoughtseize
+  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 51 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Underground Sea (T) | Island (NEW)
+  Self GY: Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Ponder, Thoughtseize
+  Known top: Edge of Autumn, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: Begin Combat (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T) | Island (NEW)
+  Opp BF:   Underground Sea (T)
+  Self GY: Ponder, Thoughtseize
+  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat (turn 3)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Underground Sea (T) | Island (NEW)
+  Self GY: Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Ponder, Thoughtseize
+  Known top: Edge of Autumn, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: Declare Atk (turn 3)
+  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T) | Island (NEW)
+  Opp BF:   Underground Sea (T)
+  Self GY: Ponder, Thoughtseize
+  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 55 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk (turn 3)
+  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Underground Sea (T)
+  Opp BF:   Underground Sea (T) | Island (NEW)
+  Self GY: Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Ponder, Thoughtseize
+  Known top: Edge of Autumn, ?, ?, ?, ?
+  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: End Combat (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T) | Island (NEW)
@@ -1140,7 +1139,7 @@
 
 --- Decision 57 ---
   Priority: Player B (non-active)
-  Step: First Main (turn 3)
+  Step: End Combat (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
@@ -1158,7 +1157,7 @@
 
 --- Decision 58 ---
   Priority: Player A (active)
-  Step: Begin Combat (turn 3)
+  Step: Second Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T) | Island (NEW)
@@ -1179,7 +1178,7 @@
 
 --- Decision 59 ---
   Priority: Player B (non-active)
-  Step: Begin Combat (turn 3)
+  Step: Second Main (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (T)
@@ -1194,210 +1193,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 61 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 3)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Ponder, Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
-
---- Decision 62 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 63 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Ponder, Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 64 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 65 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Ponder, Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 66 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 67 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 3)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Ponder, Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 68 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T) | Island (NEW)
-  Opp BF:   Underground Sea (T)
-  Self GY: Ponder, Thoughtseize
-  Opp GY:  Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 69 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island (NEW)
-  Self GY: Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Ponder, Thoughtseize
-  Known top: Edge of Autumn, ?, ?, ?, ?
-  Opp revealed: Ponder, Island, Thoughtseize, Underground Sea
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 70 ---
   Priority: Player A (active)
   Step: End Step (turn 3)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1418,7 +1215,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 71 ---
+--- Decision 61 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -1441,7 +1238,7 @@
   PA: Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest
   PB: Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
 
---- Decision 72 ---
+--- Decision 62 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 51
@@ -1458,7 +1255,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 73 ---
+--- Decision 63 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1480,7 +1277,7 @@
 --- Narrative ---
   Player B draws Edge of Autumn
 
---- Decision 74 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -1498,7 +1295,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 75 ---
+--- Decision 65 ---
   Priority: Player A (non-active)
   Step: Draw (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1519,7 +1316,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Dark Ritual, Edge of Autumn, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
@@ -1543,7 +1340,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Ponder
 
---- Decision 77 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Edge of Autumn, Underground Sea, Verdant Catacombs | lib 50
@@ -1561,7 +1358,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 78 ---
+--- Decision 68 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1587,7 +1384,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 79 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Edge of Autumn, Underground Sea, Verdant Catacombs | lib 50
@@ -1609,7 +1406,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 80 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Edge of Autumn, Underground Sea, Verdant Catacombs | lib 50
@@ -1629,7 +1426,7 @@
    1: Thoughtseize  [#1]
   >> B/B: 0 (Personal Tutor)
 
---- Decision 81 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Dark Ritual, Edge of Autumn, Edge of Autumn, Underground Sea, Verdant Catacombs | lib 50
@@ -1652,7 +1449,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thoughtseize
 
---- Decision 82 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(6): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Underground Sea, Verdant Catacombs | lib 49
@@ -1674,7 +1471,7 @@
 --- Narrative ---
   Player B played Underground Sea
 
---- Decision 83 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1697,7 +1494,7 @@
 --- Narrative ---
   Choose target for Thoughtseize:
 
---- Decision 84 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1720,7 +1517,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Thoughtseize targeting Player A
 
---- Decision 85 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1740,7 +1537,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 76 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(5): Doomsday, Street Wraith, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1771,7 +1568,7 @@
     Misty Rainforest
   Player B chooses a card to discard:
 
---- Decision 87 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1798,7 +1595,7 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 17)
 
---- Decision 88 ---
+--- Decision 78 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1818,7 +1615,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 89 ---
+--- Decision 79 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1838,7 +1635,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 90 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1858,7 +1655,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 81 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1880,7 +1677,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 92 ---
+--- Decision 82 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -1900,7 +1697,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 93 ---
+--- Decision 83 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -1919,93 +1716,8 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 94 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
-  Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Ponder, Thoughtseize
-  Known top: Personal Tutor, Ponder, ?, ?, ?
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 95 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 4)
-  Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
-  Self GY: Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 96 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 4)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Underground Sea (T,NEW) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Island
-  Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Ponder, Thoughtseize
-  Known top: Personal Tutor, Ponder, ?, ?, ?
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 97 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 4)
-  Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Island
-  Opp BF:   Underground Sea (T,NEW) | Underground Sea (T)
-  Self GY: Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known top: Force of Will, Thoughtseize, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=2 life_lost=2 colors=UB
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 98 ---
+--- Decision 84 ---
   Priority: Player B (active)
   Step: End Combat (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2025,7 +1737,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 85 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -2045,7 +1757,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 100 ---
+--- Decision 86 ---
   Priority: Player B (active)
   Step: Second Main (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2065,7 +1777,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 87 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -2085,7 +1797,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 102 ---
+--- Decision 88 ---
   Priority: Player B (active)
   Step: End Step (turn 4)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2105,7 +1817,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 103 ---
+--- Decision 89 ---
   Priority: Player A (non-active)
   Step: End Step (turn 4)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -2130,7 +1842,7 @@
   PA: Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest
   PB: Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs
 
---- Decision 104 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 51
@@ -2148,7 +1860,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 105 ---
+--- Decision 91 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2169,7 +1881,7 @@
 --- Narrative ---
   Player A draws Force of Will
 
---- Decision 106 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 50
@@ -2188,7 +1900,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 107 ---
+--- Decision 93 ---
   Priority: Player B (non-active)
   Step: Draw (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2208,7 +1920,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 108 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(5): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn, Misty Rainforest | lib 50
@@ -2230,7 +1942,7 @@
 --- Narrative ---
   Player A played Misty Rainforest
 
---- Decision 109 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  18 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 50
@@ -2255,7 +1967,7 @@
   Player A sacrifices Misty Rainforest
   Player A's Misty Rainforest ability is on the stack
 
---- Decision 110 ---
+--- Decision 96 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 50
@@ -2276,7 +1988,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 97 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2300,7 +2012,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 112 ---
+--- Decision 98 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 50
@@ -2326,7 +2038,7 @@
   Player A shuffles their library
   Player A puts Underground Sea to the battlefield
 
---- Decision 113 ---
+--- Decision 99 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2345,7 +2057,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 114 ---
+--- Decision 100 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2365,7 +2077,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 101 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2384,7 +2096,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 116 ---
+--- Decision 102 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2406,7 +2118,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 117 ---
+--- Decision 103 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2425,7 +2137,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 118 ---
+--- Decision 104 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2444,91 +2156,8 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 119 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (NEW) | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 120 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
-  Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known top: Personal Tutor, Ponder, ?, ?, ?
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 121 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (NEW) | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea (T)
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn, Verdant Catacombs
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 122 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 5)
-  Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (NEW) | Underground Sea | Island
-  Self GY: Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known top: Personal Tutor, Ponder, ?, ?, ?
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: opp drawn=1 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 123 ---
+--- Decision 105 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2547,7 +2176,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 106 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2567,7 +2196,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 107 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2586,7 +2215,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 126 ---
+--- Decision 108 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2606,7 +2235,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 127 ---
+--- Decision 109 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2625,7 +2254,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 128 ---
+--- Decision 110 ---
   Priority: Player B (non-active)
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2650,7 +2279,7 @@
   PA: Doomsday, Force of Will, Edge of Autumn, Edge of Autumn
   PB: Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs
 
---- Decision 129 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
@@ -2669,7 +2298,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 130 ---
+--- Decision 112 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2689,7 +2318,7 @@
 --- Narrative ---
   Player B draws Personal Tutor
 
---- Decision 131 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Personal Tutor, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2709,7 +2338,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 132 ---
+--- Decision 114 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2728,7 +2357,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 115 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(5): Dark Ritual, Personal Tutor, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2753,7 +2382,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Personal Tutor
 
---- Decision 134 ---
+--- Decision 116 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2774,7 +2403,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 135 ---
+--- Decision 117 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2797,7 +2426,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 136 ---
+--- Decision 118 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2832,7 +2461,7 @@
   Player B shuffles their library
   Player B reveals Ponder and puts it to top of library
 
---- Decision 137 ---
+--- Decision 119 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 48
@@ -2855,7 +2484,7 @@
 --- Narrative ---
   Player B played Verdant Catacombs
 
---- Decision 138 ---
+--- Decision 120 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 48
@@ -2881,7 +2510,7 @@
   Player B sacrifices Verdant Catacombs
   Player B's Verdant Catacombs ability is on the stack
 
---- Decision 139 ---
+--- Decision 121 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 48
@@ -2903,7 +2532,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 140 ---
+--- Decision 122 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2926,7 +2555,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 141 ---
+--- Decision 123 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 48
@@ -2952,7 +2581,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 142 ---
+--- Decision 124 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -2972,7 +2601,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 143 ---
+--- Decision 125 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -2991,7 +2620,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 144 ---
+--- Decision 126 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3011,7 +2640,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 145 ---
+--- Decision 127 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3032,7 +2661,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 146 ---
+--- Decision 128 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3052,7 +2681,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 147 ---
+--- Decision 129 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3070,91 +2699,8 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 148 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 149 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 150 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea (NEW)
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 151 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea (NEW)
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 152 ---
+--- Decision 130 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3174,7 +2720,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 153 ---
+--- Decision 131 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3193,7 +2739,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 154 ---
+--- Decision 132 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3213,7 +2759,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 155 ---
+--- Decision 133 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3232,7 +2778,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 156 ---
+--- Decision 134 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3252,7 +2798,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 157 ---
+--- Decision 135 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3276,7 +2822,7 @@
   PA: Doomsday, Force of Will, Edge of Autumn, Edge of Autumn
   PB: Dark Ritual, Edge of Autumn, Edge of Autumn
 
---- Decision 158 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  17 life | mana: empty | hand(4): Doomsday, Force of Will, Edge of Autumn, Edge of Autumn | lib 49
@@ -3293,7 +2839,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 159 ---
+--- Decision 137 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3314,7 +2860,7 @@
 --- Narrative ---
   Player A draws Daze
 
---- Decision 160 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3332,7 +2878,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 161 ---
+--- Decision 139 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3352,7 +2898,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 162 ---
+--- Decision 140 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3370,7 +2916,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 163 ---
+--- Decision 141 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3390,7 +2936,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 164 ---
+--- Decision 142 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3408,7 +2954,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 165 ---
+--- Decision 143 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3430,7 +2976,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 166 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3448,7 +2994,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 167 ---
+--- Decision 145 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3467,89 +3013,8 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 168 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 7)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 169 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 170 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 7)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   16 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 171 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Underground Sea (T) | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 172 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3567,7 +3032,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 173 ---
+--- Decision 147 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3587,7 +3052,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 174 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3605,7 +3070,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 175 ---
+--- Decision 149 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3625,7 +3090,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 176 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: End Step (turn 7)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3643,7 +3108,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 177 ---
+--- Decision 151 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3668,7 +3133,7 @@
   PA: Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn
   PB: Dark Ritual, Edge of Autumn, Edge of Autumn
 
---- Decision 178 ---
+--- Decision 152 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  16 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -3686,7 +3151,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 179 ---
+--- Decision 153 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3706,7 +3171,7 @@
 --- Narrative ---
   Player B draws Street Wraith
 
---- Decision 180 ---
+--- Decision 154 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -3726,7 +3191,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 181 ---
+--- Decision 155 ---
   Priority: Player A (non-active)
   Step: Draw (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3745,7 +3210,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 182 ---
+--- Decision 156 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -3765,7 +3230,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 183 ---
+--- Decision 157 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3784,7 +3249,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 184 ---
+--- Decision 158 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -3804,7 +3269,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 185 ---
+--- Decision 159 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3825,7 +3290,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 186 ---
+--- Decision 160 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -3845,7 +3310,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 187 ---
+--- Decision 161 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3863,91 +3328,8 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 188 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 189 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 8)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea | Underground Sea | Underground Sea
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 190 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
-  Opp:   17 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Island
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Known opp hand: Doomsday, Edge of Autumn, Edge of Autumn
-  Opp revealed: Misty Rainforest, Ponder, Island, Doomsday, Thoughtseize, Street Wraith, Edge of Autumn, Underground Sea
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 191 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 8)
-  Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Underground Sea | Underground Sea | Island
-  Opp BF:   Underground Sea | Underground Sea | Underground Sea
-  Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 192 ---
+--- Decision 162 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -3967,7 +3349,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 193 ---
+--- Decision 163 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -3986,7 +3368,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 194 ---
+--- Decision 164 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4006,7 +3388,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 195 ---
+--- Decision 165 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4025,7 +3407,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 196 ---
+--- Decision 166 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4045,7 +3427,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 197 ---
+--- Decision 167 ---
   Priority: Player A (non-active)
   Step: End Step (turn 8)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4069,7 +3451,7 @@
   PA: Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn
   PB: Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn
 
---- Decision 198 ---
+--- Decision 168 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4086,7 +3468,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 199 ---
+--- Decision 169 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4108,7 +3490,7 @@
 --- Narrative ---
   Player A draws Dark Ritual
 
---- Decision 200 ---
+--- Decision 170 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | hand(6): Doomsday, Force of Will, Daze, Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -4127,7 +3509,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 171 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4148,7 +3530,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 202 ---
+--- Decision 172 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(6): Doomsday, Force of Will, Daze, Dark Ritual, Edge of Autumn, Edge of Autumn | lib 47
@@ -4170,7 +3552,7 @@
   Player A activated Underground Sea for 1(B)
   Player A casts Dark Ritual
 
---- Decision 203 ---
+--- Decision 173 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 47
@@ -4192,7 +3574,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 204 ---
+--- Decision 174 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4217,7 +3599,7 @@
   Resolving ability (category: AddMana)
   Player A adds 3{B}
 
---- Decision 205 ---
+--- Decision 175 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: 3B | hand(5): Doomsday, Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 47
@@ -4238,7 +3620,7 @@
 --- Narrative ---
   Player A casts Doomsday
 
---- Decision 206 ---
+--- Decision 176 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 47
@@ -4260,7 +3642,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 207 ---
+--- Decision 177 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4285,7 +3667,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's graveyard and library:
 
---- Decision 208 ---
+--- Decision 178 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 47
@@ -4358,7 +3740,7 @@
   Player A puts Thassa's Oracle to top of library
   Searching Player A's graveyard and library:
 
---- Decision 209 ---
+--- Decision 179 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 47
@@ -4431,7 +3813,7 @@
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
 
---- Decision 210 ---
+--- Decision 180 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4503,7 +3885,7 @@
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
 
---- Decision 211 ---
+--- Decision 181 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4574,7 +3956,7 @@
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
 
---- Decision 212 ---
+--- Decision 182 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 48
@@ -4695,7 +4077,7 @@
   Player A looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 213 ---
+--- Decision 183 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4721,7 +4103,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 214 ---
+--- Decision 184 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4746,7 +4128,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 215 ---
+--- Decision 185 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4770,7 +4152,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 216 ---
+--- Decision 186 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4795,7 +4177,7 @@
   Player A loses 9 life (now at 8)
   Resolving ability (category: Cleanup)
 
---- Decision 217 ---
+--- Decision 187 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4815,7 +4197,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 218 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(4): Force of Will, Daze, Edge of Autumn, Edge of Autumn | lib 5
@@ -4840,7 +4222,7 @@
   Player A sacrifices Island
   Player A activates Edge of Autumn from hand
 
---- Decision 219 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(3): Force of Will, Daze, Edge of Autumn | lib 5
@@ -4861,7 +4243,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 220 ---
+--- Decision 190 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4887,7 +4269,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Street Wraith
 
---- Decision 221 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  8 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 4
@@ -4911,7 +4293,7 @@
   Player A pays 2 life
   Player A activates Street Wraith from hand
 
---- Decision 222 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  6 life | mana: empty | hand(3): Force of Will, Daze, Edge of Autumn | lib 4
@@ -4932,7 +4314,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 223 ---
+--- Decision 193 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -4958,7 +4340,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Street Wraith
 
---- Decision 224 ---
+--- Decision 194 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  6 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 3
@@ -4982,7 +4364,7 @@
   Player A pays 2 life
   Player A activates Street Wraith from hand
 
---- Decision 225 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  4 life | mana: empty | hand(3): Force of Will, Daze, Edge of Autumn | lib 3
@@ -5003,7 +4385,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 226 ---
+--- Decision 196 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5029,7 +4411,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Street Wraith
 
---- Decision 227 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  4 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 2
@@ -5053,7 +4435,7 @@
   Player A pays 2 life
   Player A activates Street Wraith from hand
 
---- Decision 228 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(3): Force of Will, Daze, Edge of Autumn | lib 2
@@ -5074,7 +4456,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 229 ---
+--- Decision 199 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5100,7 +4482,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Street Wraith
 
---- Decision 230 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5121,7 +4503,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 231 ---
+--- Decision 201 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5143,7 +4525,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 232 ---
+--- Decision 202 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5164,7 +4546,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 203 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5188,7 +4570,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 234 ---
+--- Decision 204 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5209,7 +4591,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 235 ---
+--- Decision 205 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5230,99 +4612,8 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 236 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 237 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 9)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 238 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   16 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea | Underground Sea | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
-  Extras: self_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 239 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 9)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea | Underground Sea | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 life_lost=15 colors=B
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 240 ---
+--- Decision 206 ---
   Priority: Player A (active)
   Step: End Combat (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5343,7 +4634,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 241 ---
+--- Decision 207 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5365,7 +4656,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 242 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5386,7 +4677,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 243 ---
+--- Decision 209 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5408,7 +4699,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 244 ---
+--- Decision 210 ---
   Priority: Player A (active)
   Step: End Step (turn 9)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5429,7 +4720,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 245 ---
+--- Decision 211 ---
   Priority: Player B (non-active)
   Step: End Step (turn 9)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5456,7 +4747,7 @@
   PA: Force of Will, Daze, Street Wraith, Edge of Autumn
   PB: Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn
 
---- Decision 246 ---
+--- Decision 212 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 46
@@ -5476,7 +4767,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 247 ---
+--- Decision 213 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5498,7 +4789,7 @@
 --- Narrative ---
   Player B draws Doomsday
 
---- Decision 248 ---
+--- Decision 214 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  16 life | mana: empty | hand(5): Doomsday, Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5519,7 +4810,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 249 ---
+--- Decision 215 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5540,7 +4831,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 250 ---
+--- Decision 216 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(5): Doomsday, Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5567,7 +4858,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Doomsday
 
---- Decision 251 ---
+--- Decision 217 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5588,7 +4879,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 252 ---
+--- Decision 218 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -5615,7 +4906,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 253 ---
+--- Decision 219 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5689,7 +4980,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 254 ---
+--- Decision 220 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5763,7 +5054,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 255 ---
+--- Decision 221 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5836,7 +5127,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 256 ---
+--- Decision 222 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -5908,7 +5199,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 257 ---
+--- Decision 223 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
@@ -6030,7 +5321,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 258 ---
+--- Decision 224 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -6057,7 +5348,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 259 ---
+--- Decision 225 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -6083,7 +5374,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 260 ---
+--- Decision 226 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -6108,7 +5399,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 261 ---
+--- Decision 227 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -6134,7 +5425,7 @@
   Player B loses 8 life (now at 8)
   Resolving ability (category: Cleanup)
 
---- Decision 262 ---
+--- Decision 228 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  8 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
@@ -6159,7 +5450,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 263 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  6 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 5
@@ -6181,7 +5472,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 264 ---
+--- Decision 230 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6207,7 +5498,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 265 ---
+--- Decision 231 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  6 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 4
@@ -6232,7 +5523,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 266 ---
+--- Decision 232 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  4 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 4
@@ -6254,7 +5545,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 267 ---
+--- Decision 233 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6280,7 +5571,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 268 ---
+--- Decision 234 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  4 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 3
@@ -6305,7 +5596,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 269 ---
+--- Decision 235 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 3
@@ -6327,7 +5618,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 270 ---
+--- Decision 236 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6353,7 +5644,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 271 ---
+--- Decision 237 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6375,7 +5666,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 272 ---
+--- Decision 238 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6397,7 +5688,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 273 ---
+--- Decision 239 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6419,7 +5710,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 274 ---
+--- Decision 240 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6443,7 +5734,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 275 ---
+--- Decision 241 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6465,7 +5756,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 276 ---
+--- Decision 242 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6486,101 +5777,8 @@
    1: Activate Street Wraith from hand (Draw)  [#0]
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 277 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 278 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 279 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 280 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 281 ---
+--- Decision 243 ---
   Priority: Player B (active)
   Step: End Combat (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6602,7 +5800,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 282 ---
+--- Decision 244 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6624,7 +5822,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 283 ---
+--- Decision 245 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6646,7 +5844,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 284 ---
+--- Decision 246 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6668,7 +5866,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 285 ---
+--- Decision 247 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6690,7 +5888,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 286 ---
+--- Decision 248 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6717,7 +5915,7 @@
   PA: Force of Will, Daze, Street Wraith, Edge of Autumn
   PB: Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn
 
---- Decision 287 ---
+--- Decision 249 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
@@ -6737,7 +5935,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 288 ---
+--- Decision 250 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6761,7 +5959,7 @@
 --- Narrative ---
   Player A draws Thassa's Oracle
 
---- Decision 289 ---
+--- Decision 251 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  2 life | mana: empty | hand(5): Force of Will, Daze, Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
@@ -6781,7 +5979,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 290 ---
+--- Decision 252 ---
   Priority: Player B (non-active)
   Step: Draw (turn 11)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6804,7 +6002,7 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 291 ---
+--- Decision 253 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(5): Force of Will, Daze, Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
@@ -6829,7 +6027,7 @@
   Player A activated Underground Sea for 1(U)
   Player A casts Thassa's Oracle
 
---- Decision 292 ---
+--- Decision 254 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
@@ -6852,7 +6050,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 293 ---
+--- Decision 255 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6879,7 +6077,7 @@
   Thassa's Oracle enters the battlefield
   Thassa's Oracle triggered
 
---- Decision 294 ---
+--- Decision 256 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
@@ -6900,7 +6098,7 @@
    2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 295 ---
+--- Decision 257 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
@@ -6927,7 +6125,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 0 card(s) of their library.
 
---- Decision 296 ---
+--- Decision 258 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0

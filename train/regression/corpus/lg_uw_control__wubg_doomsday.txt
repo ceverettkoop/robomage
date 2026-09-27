@@ -243,9 +243,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Lórien Revealed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Island
 --- Turn 2 (Player B) ---
@@ -314,9 +311,6 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
 --- Turn 3 (Player A) ---
   PA: Flow State, Lorien Revealed, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
@@ -368,9 +362,6 @@
   Player A played Mystic Sanctuary
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Scrubland
 --- Turn 4 (Player B) ---
@@ -724,9 +715,6 @@
   Player A puts Tune the Narrative into hand.
   Player A puts 1 card(s) on the bottom of their library.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Wasteland
@@ -1220,9 +1208,6 @@
   Player A shuffles their library
   Player A reveals Meticulous Archive and puts it to hand
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Swords to Plowshares, The One Ring, Wasteland
@@ -2043,55 +2028,8 @@
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  10 life | mana: empty | hand(0): (empty) | lib 5
-  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
-  Self BF:  Cavern of Souls | Flooded Strand (NEW) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue | Clue
-  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Self GY: Doomsday
-  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
-  Opp exile:  Geist of Saint Traft
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Known opp hand: Meticulous Archive
-  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=4 life_lost=10 colors=UB
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Flooded Strand (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  10 life | mana: empty | hand(0): (empty) | lib 5
-  Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 41
-  Self BF:  Cavern of Souls | Flooded Strand (NEW) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue | Clue
-  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T)
-  Self GY: Doomsday
-  Opp GY:  Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual, Dark Ritual
-  Opp exile:  Geist of Saint Traft
-  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Known opp hand: Meticulous Archive
-  Opp revealed: Polluted Delta, Ponder, Tundra, Island, Brainstorm, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Geist of Saint Traft
-  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=4 life_lost=10 colors=UB
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Activate Flooded Strand (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 75 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2112,7 +2050,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2134,7 +2072,7 @@
    2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 77 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2160,7 +2098,7 @@
   PA: Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland
   PB: (empty)
 
---- Decision 78 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 41
@@ -2178,7 +2116,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 79 ---
+--- Decision 77 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2200,7 +2138,7 @@
 --- Narrative ---
   Player A draws Force of Will
 
---- Decision 80 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 40
@@ -2219,7 +2157,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 79 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2240,7 +2178,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 82 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Meticulous Archive, Swords to Plowshares, The One Ring, Wasteland | lib 40
@@ -2268,7 +2206,7 @@
   Player A activated Tundra for 1(U)
   Player A casts The One Ring
 
---- Decision 83 ---
+--- Decision 81 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2293,7 +2231,7 @@
   The One Ring enters the battlefield
   The One Ring triggered
 
---- Decision 84 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Meticulous Archive, Swords to Plowshares, Wasteland | lib 40
@@ -2315,7 +2253,7 @@
 --- Narrative ---
   Player A's The One Ring ability is on the stack
 
---- Decision 85 ---
+--- Decision 83 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2342,7 +2280,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Force of Will
 
---- Decision 86 ---
+--- Decision 84 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2367,7 +2305,7 @@
   Resolving ability (category: Pump)
   Player A gains protection from everything until their next turn.
 
---- Decision 87 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(5): Force of Will, Force of Will, Meticulous Archive, Swords to Plowshares, Wasteland | lib 39
@@ -2392,7 +2330,7 @@
   Meticulous Archive enters tapped.
   Meticulous Archive triggered
 
---- Decision 88 ---
+--- Decision 86 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2418,7 +2356,7 @@
   Player A surveils 1.
   Surveil: looking at Force of Will
 
---- Decision 89 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 39
@@ -2442,7 +2380,7 @@
 --- Narrative ---
   Player A puts Force of Will into their graveyard.
 
---- Decision 90 ---
+--- Decision 88 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2463,7 +2401,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 91 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2486,7 +2424,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 92 ---
+--- Decision 90 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -2508,7 +2446,7 @@
 --- Narrative ---
   Select target for Tamiyo, Inquisitive Student:
 
---- Decision 93 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -2533,7 +2471,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
---- Decision 94 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -2556,7 +2494,7 @@
     Tamiyo, Inquisitive Student -> Player B
   Tamiyo, Inquisitive Student triggered
 
---- Decision 95 ---
+--- Decision 93 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2581,7 +2519,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 96 ---
+--- Decision 94 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2604,7 +2542,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 97 ---
+--- Decision 95 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2628,7 +2566,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 98 ---
+--- Decision 96 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2649,7 +2587,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 99 ---
+--- Decision 97 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2670,7 +2608,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 100 ---
+--- Decision 98 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2691,7 +2629,7 @@
    1: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 99 ---
   Priority: Player B (non-active)
   Step: End Step (turn 9)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2717,7 +2655,7 @@
   PA: Force of Will, Force of Will, Swords to Plowshares, Wasteland
   PB: (empty)
 
---- Decision 102 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 5
@@ -2741,7 +2679,7 @@
 --- Narrative ---
   Player B draws Edge of Autumn
 
---- Decision 103 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
   Self:  10 life | mana: empty | hand(1): Edge of Autumn | lib 4
@@ -2765,7 +2703,7 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  10 life | mana: empty | hand(1): Edge of Autumn | lib 4
@@ -2790,7 +2728,7 @@
    5: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 5 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 105 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  10 life | mana: empty | hand(1): Edge of Autumn | lib 4
@@ -2817,7 +2755,7 @@
   Player B sacrifices Flooded Strand
   Player B activates Edge of Autumn from hand
 
---- Decision 106 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  10 life | mana: empty | hand(0): (empty) | lib 4
@@ -2843,7 +2781,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 107 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  10 life | mana: empty | hand(1): Street Wraith | lib 3
@@ -2870,7 +2808,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 108 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  8 life | mana: empty | hand(0): (empty) | lib 3
@@ -2896,7 +2834,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thassa's Oracle
 
---- Decision 109 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  8 life | mana: empty | hand(1): Thassa's Oracle | lib 2
@@ -2924,7 +2862,7 @@
   Player B activated Island for 1(U)
   Player B casts Thassa's Oracle
 
---- Decision 110 ---
+--- Decision 108 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -2948,7 +2886,7 @@
 --- Narrative ---
   Choose target for Force of Will:
 
---- Decision 111 ---
+--- Decision 109 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -2971,7 +2909,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 112 ---
+--- Decision 110 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
@@ -3002,7 +2940,7 @@
   Resolving ability (category: Dig)
   Player B looks at the top 2 card(s) of their library.
 
---- Decision 113 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  8 life | mana: empty | hand(0): (empty) | lib 2

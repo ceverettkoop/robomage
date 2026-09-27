@@ -196,9 +196,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Force of Will
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
@@ -381,9 +378,6 @@
   Resolving ability (category: Counter)
   Cabal Therapy is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
 --- Turn 3 (Player A) ---
   PA: Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
@@ -579,9 +573,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Tamiyo, Inquisitive Student
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Arid Mesa
 --- Turn 4 (Player B) ---
@@ -767,9 +758,6 @@
 --- Narrative ---
   Player B puts Guide of Souls into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Force of Will
 --- Turn 5 (Player A) ---
@@ -797,9 +785,6 @@
 --- Narrative ---
   Player A played Tundra
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Wasteland
 --- Turn 6 (Player B) ---
@@ -1094,9 +1079,6 @@
   Player B casts Ocelot Pride
   Ocelot Pride enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   Ocelot Pride triggered
   Resolving ability (category: Token)
   Token created: 1/1 Cat
@@ -1177,9 +1159,6 @@
   Resolving ability (category: Destroy)
   Badlands is destroyed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Force of Negation, Force of Will
@@ -1550,9 +1529,6 @@
   Resolving ability (category: PutCounter, amount: 2)
   Player A gets 2 ENERGY counter(s) (now 4).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: Tune the Narrative
@@ -2021,9 +1997,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 7 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Brainstorm
 --- Turn 11 (Player A) ---
@@ -2183,9 +2156,6 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
   PA: (empty)
@@ -2333,9 +2303,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 6 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
   PA: (empty)
@@ -2577,9 +2544,6 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
   PA: (empty)
@@ -2780,9 +2744,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 4 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Force of Negation
 --- Turn 15 (Player A) ---
@@ -2814,9 +2775,6 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Marsh Flats
 --- Turn 16 (Player B) ---
@@ -2901,9 +2859,6 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
   Player A draws Wrath of the Skies
 --- Turn 17 (Player A) ---
@@ -2935,9 +2890,6 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
   Player B draws Guide of Souls
 --- Turn 18 (Player B) ---
@@ -3043,9 +2995,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 3 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Player A draws Flooded Strand
 --- Turn 19 (Player A) ---
@@ -3212,9 +3161,6 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
   Player B draws Shadowy Backstreet
 --- Turn 20 (Player B) ---
@@ -3273,9 +3219,6 @@
 --- Narrative ---
   Player B puts Guide of Souls into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
   Player A draws Brainstorm
 --- Turn 21 (Player A) ---
@@ -3753,57 +3696,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 143 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 21)
-  Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
-  Opp:   18 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary (T) | Teferi, Time Raveler [loy 10] (act 1) | Tundra | Tundra (NEW)
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet (T)
-  Self GY: Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Known top: Misty Rainforest, Force of Negation, ?, ?, ?
-  Opp revealed: Wasteland, Plains, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 144 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 21)
-  Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
-  Opp:   18 life | mana: empty | hand count: 1 | lib 36
-  Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Mystic Sanctuary (T) | Teferi, Time Raveler [loy 10] (act 1) | Tundra | Tundra (NEW)
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet (T)
-  Self GY: Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Known top: Misty Rainforest, Force of Negation, ?, ?, ?
-  Opp revealed: Wasteland, Plains, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 145 ---
   Priority: Player A (active)
   Step: End Combat (turn 21)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3825,7 +3719,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 146 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: Second Main (turn 21)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3847,7 +3741,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 147 ---
+--- Decision 145 ---
   Priority: Player A (active)
   Step: End Step (turn 21)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3874,7 +3768,7 @@
   PA: Wrath of the Skies
   PB: Swords to Plowshares
 
---- Decision 148 ---
+--- Decision 146 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 22)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3897,7 +3791,7 @@
 --- Narrative ---
   Player B draws Amped Raptor
 
---- Decision 149 ---
+--- Decision 147 ---
   Priority: Player A (non-active)
   Step: Draw (turn 22)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3919,7 +3813,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 150 ---
+--- Decision 148 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  18 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 35
@@ -3941,7 +3835,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 151 ---
+--- Decision 149 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  18 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 35
@@ -3966,7 +3860,7 @@
   Player B activated Plains for 1(W)
   Player B casts Swords to Plowshares targeting Murktide Regent
 
---- Decision 152 ---
+--- Decision 150 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  2 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -3994,7 +3888,7 @@
   Resolving ability (category: GainLife, amount: 6)
   Player A gains 6 life (now at 8)
 
---- Decision 153 ---
+--- Decision 151 ---
   Priority: Player A (non-active)
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4016,7 +3910,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 154 ---
+--- Decision 152 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4040,7 +3934,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 155 ---
+--- Decision 153 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4061,57 +3955,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 156 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 22)
-  Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
-  Opp:   18 life | mana: empty | hand count: 1 | lib 35
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Teferi, Time Raveler [loy 10] | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Scrubland | Shadowy Backstreet
-  Self GY: Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Known top: Misty Rainforest, Force of Negation, ?, ?, ?
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self life_gained=6 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 157 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 22)
-  Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
-  Opp:   18 life | mana: empty | hand count: 1 | lib 35
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Teferi, Time Raveler [loy 10] | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Scrubland | Shadowy Backstreet
-  Self GY: Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Known top: Misty Rainforest, Force of Negation, ?, ?, ?
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self life_gained=6 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 158 ---
+--- Decision 154 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4133,7 +3978,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 159 ---
+--- Decision 155 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4155,7 +4000,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 160 ---
+--- Decision 156 ---
   Priority: Player A (non-active)
   Step: End Step (turn 22)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 32
@@ -4183,7 +4028,7 @@
   PA: Misty Rainforest, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 161 ---
+--- Decision 157 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  8 life | mana: empty | energy 4 | hand(2): Misty Rainforest, Wrath of the Skies | lib 31
@@ -4208,7 +4053,7 @@
 --- Narrative ---
   Player A played Misty Rainforest
 
---- Decision 162 ---
+--- Decision 158 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  8 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 31
@@ -4238,7 +4083,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 163 ---
+--- Decision 159 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 31
@@ -4264,7 +4109,7 @@
   Player A shuffles their library
   Player A puts Tundra to the battlefield
 
---- Decision 164 ---
+--- Decision 160 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4291,7 +4136,7 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 165 ---
+--- Decision 161 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4312,7 +4157,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 166 ---
+--- Decision 162 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4335,7 +4180,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 167 ---
+--- Decision 163 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4355,55 +4200,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 168 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 23)
-  Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
-  Opp:   18 life | mana: empty | hand count: 1 | lib 35
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 11] (act 1) | Tundra (NEW) | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1 life_lost=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 169 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 23)
-  Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
-  Opp:   18 life | mana: empty | hand count: 1 | lib 35
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 11] (act 1) | Tundra (NEW) | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1 life_lost=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 170 ---
+--- Decision 164 ---
   Priority: Player A (active)
   Step: End Combat (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4424,7 +4222,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 171 ---
+--- Decision 165 ---
   Priority: Player A (active)
   Step: Second Main (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4445,7 +4243,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 172 ---
+--- Decision 166 ---
   Priority: Player A (active)
   Step: End Step (turn 23)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4471,7 +4269,7 @@
   PA: Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 173 ---
+--- Decision 167 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4493,7 +4291,7 @@
 --- Narrative ---
   Player B draws Amped Raptor
 
---- Decision 174 ---
+--- Decision 168 ---
   Priority: Player A (non-active)
   Step: Draw (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4514,7 +4312,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 175 ---
+--- Decision 169 ---
   Priority: Player A (non-active)
   Step: First Main (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4535,7 +4333,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 176 ---
+--- Decision 170 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4558,7 +4356,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 177 ---
+--- Decision 171 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4578,55 +4376,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 178 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 24)
-  Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
-  Opp:   18 life | mana: empty | hand count: 2 | lib 34
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 11] | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: opp drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 179 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 24)
-  Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
-  Opp:   18 life | mana: empty | hand count: 2 | lib 34
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 11] | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: opp drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 180 ---
+--- Decision 172 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4647,7 +4398,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 181 ---
+--- Decision 173 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4668,7 +4419,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 182 ---
+--- Decision 174 ---
   Priority: Player A (non-active)
   Step: End Step (turn 24)
   Self:  7 life | mana: empty | energy 4 | hand(1): Wrath of the Skies | lib 30
@@ -4695,7 +4446,7 @@
   PA: Force of Will, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 183 ---
+--- Decision 175 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4721,7 +4472,7 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 184 ---
+--- Decision 176 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4741,7 +4492,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 185 ---
+--- Decision 177 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4763,7 +4514,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 186 ---
+--- Decision 178 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4782,53 +4533,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 187 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 25)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
-  Opp:   18 life | mana: empty | hand count: 2 | lib 34
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 12] (act 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 188 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 25)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
-  Opp:   18 life | mana: empty | hand count: 2 | lib 34
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 12] (act 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 189 ---
+--- Decision 179 ---
   Priority: Player A (active)
   Step: End Combat (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4848,7 +4554,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 190 ---
+--- Decision 180 ---
   Priority: Player A (active)
   Step: Second Main (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4868,7 +4574,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 191 ---
+--- Decision 181 ---
   Priority: Player A (active)
   Step: End Step (turn 25)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4893,7 +4599,7 @@
   PA: Force of Will, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 192 ---
+--- Decision 182 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4915,7 +4621,7 @@
 --- Narrative ---
   Player B draws Swords to Plowshares
 
---- Decision 193 ---
+--- Decision 183 ---
   Priority: Player A (non-active)
   Step: Draw (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4936,7 +4642,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 194 ---
+--- Decision 184 ---
   Priority: Player A (non-active)
   Step: First Main (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4957,7 +4663,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 195 ---
+--- Decision 185 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -4980,7 +4686,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 196 ---
+--- Decision 186 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -5000,55 +4706,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 197 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 26)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
-  Opp:   18 life | mana: empty | hand count: 3 | lib 33
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 12] | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: opp drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 198 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 26)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
-  Opp:   18 life | mana: empty | hand count: 3 | lib 33
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 12] | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Scrubland | Shadowy Backstreet
-  Self GY: Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: opp drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 199 ---
+--- Decision 187 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -5069,7 +4728,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 200 ---
+--- Decision 188 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -5090,7 +4749,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 189 ---
   Priority: Player A (non-active)
   Step: End Step (turn 26)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 29
@@ -5117,7 +4776,7 @@
   PA: Force of Will, Wasteland, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 202 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(3): Force of Will, Wasteland, Wrath of the Skies | lib 28
@@ -5141,7 +4800,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 203 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5167,7 +4826,7 @@
   Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 13)
   Player A's Teferi, Time Raveler ability is on the stack
 
---- Decision 204 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5190,7 +4849,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 205 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5221,7 +4880,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Scrubland is on the stack
 
---- Decision 206 ---
+--- Decision 194 ---
   Priority: Player B (non-active)
   Step: First Main (turn 27)
   Self:  18 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Swords to Plowshares | lib 33
@@ -5248,7 +4907,7 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 207 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: First Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5269,7 +4928,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 208 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5292,7 +4951,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 209 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5312,55 +4971,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 210 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 27)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
-  Opp:   18 life | mana: empty | hand count: 3 | lib 33
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 13] (act 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
-  Self GY: Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 211 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 27)
-  Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
-  Opp:   18 life | mana: empty | hand count: 3 | lib 33
-  Self BF:  Island | Island | Mystic Sanctuary | Teferi, Time Raveler [loy 13] (act 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
-  Self GY: Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self drawn=1
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 212 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: End Combat (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5381,7 +4993,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 213 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: Second Main (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5402,7 +5014,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 214 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: End Step (turn 27)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5428,7 +5040,7 @@
   PA: Force of Will, Wrath of the Skies
   PB: Amped Raptor, Amped Raptor, Swords to Plowshares
 
---- Decision 215 ---
+--- Decision 201 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 28)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5450,7 +5062,7 @@
 --- Narrative ---
   Player B draws Cabal Therapy
 
---- Decision 216 ---
+--- Decision 202 ---
   Priority: Player A (non-active)
   Step: Draw (turn 28)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5471,7 +5083,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 217 ---
+--- Decision 203 ---
   Priority: Player B (active)
   Step: First Main (turn 28)
   Self:  18 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Cabal Therapy, Swords to Plowshares | lib 32
@@ -5493,7 +5105,7 @@
 --- Narrative ---
   Choose target for Cabal Therapy:
 
---- Decision 218 ---
+--- Decision 204 ---
   Priority: Player B (active)
   Step: First Main (turn 28)
   Self:  18 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Cabal Therapy, Swords to Plowshares | lib 32
@@ -5519,7 +5131,7 @@
   Player B activated Shadowy Backstreet for 1(B)
   Player B casts Cabal Therapy
 
---- Decision 219 ---
+--- Decision 205 ---
   Priority: Player A (non-active)
   Step: First Main (turn 28)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5544,7 +5156,7 @@
 --- Narrative ---
   Choose target for Force of Will:
 
---- Decision 220 ---
+--- Decision 206 ---
   Priority: Player A (non-active)
   Step: First Main (turn 28)
   Self:  7 life | mana: empty | energy 4 | hand(2): Force of Will, Wrath of the Skies | lib 28
@@ -5576,16 +5188,13 @@
   Resolving ability (category: Counter)
   Cabal Therapy is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 29 (Player A) --------
   Player A draws Lórien Revealed
 --- Turn 29 (Player A) ---
   PA: Lorien Revealed, Wrath of the Skies
   PB: Amped Raptor, Amped Raptor, Cabal Therapy, Swords to Plowshares
 
---- Decision 221 ---
+--- Decision 207 ---
   Priority: Player A (active)
   Step: Draw (turn 29)
   Self:  7 life | mana: empty | energy 4 | hand(2): Lorien Revealed, Wrath of the Skies | lib 27
@@ -5604,7 +5213,7 @@
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 222 ---
+--- Decision 208 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  7 life | mana: empty | energy 4 | hand(2): Lorien Revealed, Wrath of the Skies | lib 27
@@ -5638,7 +5247,7 @@
   Player A draws Flooded Strand
   Player A draws The One Ring
 
---- Decision 223 ---
+--- Decision 209 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  7 life | mana: empty | energy 4 | hand(4): Flooded Strand, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 24
@@ -5661,7 +5270,7 @@
 --- Narrative ---
   Player A played Flooded Strand
 
---- Decision 224 ---
+--- Decision 210 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  7 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 24
@@ -5689,7 +5298,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 225 ---
+--- Decision 211 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 24
@@ -5714,7 +5323,7 @@
   Player A shuffles their library
   Player A puts Plains to the battlefield
 
---- Decision 226 ---
+--- Decision 212 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5741,7 +5350,7 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 227 ---
+--- Decision 213 ---
   Priority: Player A (active)
   Step: First Main (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5762,7 +5371,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 228 ---
+--- Decision 214 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5785,7 +5394,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 229 ---
+--- Decision 215 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5805,55 +5414,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 230 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 29)
-  Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
-  Opp:   18 life | mana: empty | hand count: 3 | lib 32
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (NEW) | Teferi, Time Raveler [loy 14] (act 1) | Tundra (T) | Tundra (T) | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet (T)
-  Self GY: Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 231 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 29)
-  Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
-  Opp:   18 life | mana: empty | hand count: 3 | lib 32
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (NEW) | Teferi, Time Raveler [loy 14] (act 1) | Tundra (T) | Tundra (T) | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet (T)
-  Self GY: Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Cabal Therapy [play:opponent], Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 232 ---
+--- Decision 216 ---
   Priority: Player A (active)
   Step: End Combat (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5874,7 +5436,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 233 ---
+--- Decision 217 ---
   Priority: Player A (active)
   Step: Second Main (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5895,7 +5457,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 234 ---
+--- Decision 218 ---
   Priority: Player A (active)
   Step: End Step (turn 29)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5921,7 +5483,7 @@
   PA: Swords to Plowshares, The One Ring, Wrath of the Skies
   PB: Amped Raptor, Amped Raptor, Cabal Therapy, Swords to Plowshares
 
---- Decision 235 ---
+--- Decision 219 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 30)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5943,7 +5505,7 @@
 --- Narrative ---
   Player B draws Marsh Flats
 
---- Decision 236 ---
+--- Decision 220 ---
   Priority: Player A (non-active)
   Step: Draw (turn 30)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -5964,7 +5526,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 237 ---
+--- Decision 221 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  18 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Marsh Flats, Swords to Plowshares | lib 31
@@ -5986,7 +5548,7 @@
 --- Narrative ---
   Player B played Marsh Flats
 
---- Decision 238 ---
+--- Decision 222 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  18 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Swords to Plowshares | lib 31
@@ -6011,7 +5573,7 @@
   Player B sacrifices Marsh Flats
   Player B's Marsh Flats ability is on the stack
 
---- Decision 239 ---
+--- Decision 223 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6036,7 +5598,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 240 ---
+--- Decision 224 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Swords to Plowshares | lib 31
@@ -6063,7 +5625,7 @@
   Player B shuffles their library
   Player B puts Plateau to the battlefield
 
---- Decision 241 ---
+--- Decision 225 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Swords to Plowshares | lib 30
@@ -6089,7 +5651,7 @@
   Player B activated Plains for 1(W)
   Player B casts Amped Raptor
 
---- Decision 242 ---
+--- Decision 226 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6114,7 +5676,7 @@
   Amped Raptor enters the battlefield
   Amped Raptor triggered
 
---- Decision 243 ---
+--- Decision 227 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 30
@@ -6138,7 +5700,7 @@
 --- Narrative ---
   Choose target for Goblin Bombardment:
 
---- Decision 244 ---
+--- Decision 228 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 30
@@ -6165,7 +5727,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 245 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 30
@@ -6190,7 +5752,7 @@
   Player B sacrifices Amped Raptor
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
---- Decision 246 ---
+--- Decision 230 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  6 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6215,7 +5777,7 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 5 life)
 
---- Decision 247 ---
+--- Decision 231 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  5 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6246,7 +5808,7 @@
   Player B may cast Orcish Bowmasters this turn by paying 2 energy rather than its mana cost.
   Resolving ability (category: Cleanup)
 
---- Decision 248 ---
+--- Decision 232 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | energy 2 | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6270,7 +5832,7 @@
   Player B pays 2 energy
   Player B casts Orcish Bowmasters
 
---- Decision 249 ---
+--- Decision 233 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  5 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6295,7 +5857,7 @@
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
---- Decision 250 ---
+--- Decision 234 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6322,7 +5884,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
 
---- Decision 251 ---
+--- Decision 235 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6346,7 +5908,7 @@
 --- Narrative ---
   Choose target for Goblin Bombardment:
 
---- Decision 252 ---
+--- Decision 236 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6373,7 +5935,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 253 ---
+--- Decision 237 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6398,7 +5960,7 @@
   Player B sacrifices Orcish Bowmasters
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
---- Decision 254 ---
+--- Decision 238 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  5 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6423,7 +5985,7 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 4 life)
 
---- Decision 255 ---
+--- Decision 239 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  4 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6450,7 +6012,7 @@
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 1/1.
 
---- Decision 256 ---
+--- Decision 240 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6475,7 +6037,7 @@
 --- Narrative ---
   Choose target for Cabal Therapy:
 
---- Decision 257 ---
+--- Decision 241 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6499,7 +6061,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 258 ---
+--- Decision 242 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6524,7 +6086,7 @@
   Player B casts Cabal Therapy
   Orc Army (token) is put into the graveyard and ceases to exist.
 
---- Decision 259 ---
+--- Decision 243 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6549,7 +6111,7 @@
   Resolving ability (category: NameCard)
   Player B names a card:
 
---- Decision 260 ---
+--- Decision 244 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
   Self:  17 life | mana: empty | hand(2): Amped Raptor, Swords to Plowshares | lib 29
@@ -6602,7 +6164,7 @@
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
 
---- Decision 261 ---
+--- Decision 245 ---
   Priority: Player A (non-active)
   Step: First Main (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6623,7 +6185,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 262 ---
+--- Decision 246 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6646,7 +6208,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 263 ---
+--- Decision 247 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6666,55 +6228,8 @@
    0: Pass priority
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 264 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 30)
-  Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
-  Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains | Teferi, Time Raveler [loy 14] | Tundra (T) | Tundra (T) | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T,NEW) | Shadowy Backstreet
-  Self GY: Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self life_lost=3 | opp spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=BR
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 265 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 30)
-  Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
-  Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains | Teferi, Time Raveler [loy 14] | Tundra (T) | Tundra (T) | Tundra
-  Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T,NEW) | Shadowy Backstreet
-  Self GY: Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self life_lost=3 | opp spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=BR
-  Self effects: sorceries as flash
-  Opp effects: sorcery speed only
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 266 ---
+--- Decision 248 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6735,7 +6250,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 267 ---
+--- Decision 249 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6756,7 +6271,7 @@
    1: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 268 ---
+--- Decision 250 ---
   Priority: Player A (non-active)
   Step: End Step (turn 30)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 23
@@ -6783,7 +6298,7 @@
   PA: Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 269 ---
+--- Decision 251 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(4): Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 22
@@ -6810,7 +6325,7 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 270 ---
+--- Decision 252 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, The One Ring, Wrath of the Skies | lib 22
@@ -6839,7 +6354,7 @@
   Player A activated Tundra for 1(U)
   Player A casts The One Ring
 
---- Decision 271 ---
+--- Decision 253 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 22
@@ -6862,7 +6377,7 @@
   The One Ring enters the battlefield
   The One Ring triggered
 
---- Decision 272 ---
+--- Decision 254 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 22
@@ -6885,7 +6400,7 @@
 --- Narrative ---
   Player A's The One Ring ability is on the stack
 
---- Decision 273 ---
+--- Decision 255 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 22
@@ -6910,7 +6425,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Brainstorm
 
---- Decision 274 ---
+--- Decision 256 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(3): Brainstorm, Swords to Plowshares, Wrath of the Skies | lib 21
@@ -6934,7 +6449,7 @@
   Player A activated Tundra for 1(U)
   Player A casts Brainstorm
 
---- Decision 275 ---
+--- Decision 257 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 21
@@ -6961,7 +6476,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 276 ---
+--- Decision 258 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 18
@@ -6989,7 +6504,7 @@
   Player A puts Geist of Saint Traft to top of library
   Player A chooses a card from Player A hand:
 
---- Decision 277 ---
+--- Decision 259 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(4): Lorien Revealed, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 19
@@ -7017,7 +6532,7 @@
   Player A puts Lórien Revealed to top of library
   Tamiyo, Inquisitive Student triggered
 
---- Decision 278 ---
+--- Decision 260 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Wasteland, Wrath of the Skies | lib 20
@@ -7047,7 +6562,7 @@
   Resolving ability (category: Pump)
   Player A gains protection from everything until their next turn.
 
---- Decision 279 ---
+--- Decision 261 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Wasteland, Wrath of the Skies | lib 20
@@ -7074,7 +6589,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 280 ---
+--- Decision 262 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
@@ -7102,7 +6617,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
   Player A's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 281 ---
+--- Decision 263 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
@@ -7127,7 +6642,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 282 ---
+--- Decision 264 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
@@ -7164,7 +6679,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 283 ---
+--- Decision 265 ---
   Priority: Player A (active)
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
@@ -7192,22 +6707,16 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 32 (Player B) --------
   Player B draws Swords to Plowshares
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 33 (Player A) --------
   The One Ring triggered
 --- Turn 33 (Player A) ---
   PA: Swords to Plowshares, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 284 ---
+--- Decision 266 ---
   Priority: Player A (active)
   Step: Upkeep (turn 33)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
@@ -7234,7 +6743,7 @@
   Player A draws Lórien Revealed
   Player A draws Geist of Saint Traft
 
---- Decision 285 ---
+--- Decision 267 ---
   Priority: Player A (active)
   Step: Upkeep (turn 33)
   Self:  3 life | mana: empty | energy 4 | hand(4): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Wrath of the Skies | lib 18
@@ -7257,7 +6766,7 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 1)
 
---- Decision 286 ---
+--- Decision 268 ---
   Priority: Player A (active)
   Step: Upkeep (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(4): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Wrath of the Skies | lib 18
@@ -7278,7 +6787,7 @@
 --- Narrative ---
   Player A draws Swords to Plowshares
 
---- Decision 287 ---
+--- Decision 269 ---
   Priority: Player A (active)
   Step: Draw (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7297,7 +6806,7 @@
    1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 288 ---
+--- Decision 270 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7328,7 +6837,7 @@
   Player A activated Island for 1(U)
   Player A casts Geist of Saint Traft
 
---- Decision 289 ---
+--- Decision 271 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(4): Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7353,7 +6862,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 290 ---
+--- Decision 272 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7378,7 +6887,7 @@
   Player A fails to find
   Geist of Saint Traft enters the battlefield
 
---- Decision 291 ---
+--- Decision 273 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7406,7 +6915,7 @@
   Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
   Player A's Tamiyo, Seasoned Scholar ability is on the stack
 
---- Decision 292 ---
+--- Decision 274 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7430,7 +6939,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 293 ---
+--- Decision 275 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7457,7 +6966,7 @@
   Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 16)
   Player A's Teferi, Time Raveler ability is on the stack
 
---- Decision 294 ---
+--- Decision 276 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7482,7 +6991,7 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 295 ---
+--- Decision 277 ---
   Priority: Player A (active)
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7504,7 +7013,7 @@
    3: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 296 ---
+--- Decision 278 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7528,7 +7037,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 297 ---
+--- Decision 279 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7549,57 +7058,8 @@
    2: Cast Swords to Plowshares  [#0]
    3: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 298 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 33)
-  Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
-  Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
-  Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=1 drawn=3 life_lost=2 colors=WU
-  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
-  Opp effects: sorcery speed only
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-   2: Cast Swords to Plowshares  [#0]
-   3: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 299 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 33)
-  Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
-  Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
-  Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
-  Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
-  Self exile: Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
-  Opp exile:  Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
-  Opp revealed: Wasteland, Plains, Swords to Plowshares, Thoughtseize, Orcish Bowmasters, Shadowy Backstreet, Ajani, Nacatl Pariah, Arid Mesa, Ocelot Pride, Voice of Victory, Goblin Bombardment, Marsh Flats, Plateau, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor, Guide of Souls
-  This turn: self spells=1 drawn=3 life_lost=2 colors=WU
-  Self effects: sorceries as flash, floating trigger: Tamiyo, Seasoned Scholar
-  Opp effects: sorcery speed only
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-   2: Cast Swords to Plowshares  [#0]
-   3: Cast Wrath of the Skies  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 300 ---
+--- Decision 280 ---
   Priority: Player A (active)
   Step: End Combat (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7621,7 +7081,7 @@
    3: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 301 ---
+--- Decision 281 ---
   Priority: Player A (active)
   Step: Second Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7643,7 +7103,7 @@
    3: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 302 ---
+--- Decision 282 ---
   Priority: Player A (active)
   Step: End Step (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7670,7 +7130,7 @@
   PA: Swords to Plowshares, Swords to Plowshares, Wrath of the Skies
   PB: Amped Raptor, Swords to Plowshares
 
---- Decision 303 ---
+--- Decision 283 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7694,7 +7154,7 @@
 --- Narrative ---
   Player B draws Ajani, Nacatl Pariah
 
---- Decision 304 ---
+--- Decision 284 ---
   Priority: Player A (non-active)
   Step: Draw (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7717,7 +7177,7 @@
    3: Cast Wrath of the Skies  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 305 ---
+--- Decision 285 ---
   Priority: Player B (active)
   Step: First Main (turn 34)
   Self:  17 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
@@ -7742,7 +7202,7 @@
   Player B activated Shadowy Backstreet for 1(W)
   Player B casts Ajani, Nacatl Pariah
 
---- Decision 306 ---
+--- Decision 286 ---
   Priority: Player A (non-active)
   Step: First Main (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
@@ -7769,7 +7229,7 @@
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
 
---- Decision 307 ---
+--- Decision 287 ---
   Priority: Player B (active)
   Step: First Main (turn 34)
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
@@ -7793,7 +7253,7 @@
 --- Narrative ---
   Choose target for Goblin Bombardment:
 
---- Decision 308 ---
+--- Decision 288 ---
   Priority: Player B (active)
   Step: First Main (turn 34)
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
@@ -7822,7 +7282,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 309 ---
+--- Decision 289 ---
   Priority: Player B (active)
   Step: First Main (turn 34)
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
@@ -7848,7 +7308,7 @@
   Player B sacrifices Ajani, Nacatl Pariah
   Player B's Goblin Bombardment ability targeting Player A is on the stack
 
---- Decision 310 ---
+--- Decision 290 ---
   Priority: Player A (non-active)
   Step: First Main (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17

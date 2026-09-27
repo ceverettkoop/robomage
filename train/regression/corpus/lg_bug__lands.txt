@@ -214,9 +214,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Mox Diamond
 --- Turn 2 (Player B) ---
@@ -303,21 +300,12 @@
   Resolving ability (category: Tap)
   Tropical Island is tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Malevolent Rumble
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
 --- Turn 5 (Player A) ---
@@ -344,9 +332,6 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Boseiju, Who Endures
 --- Turn 6 (Player B) ---
@@ -415,9 +400,6 @@
   Player B casts Life from the Loam
   Resolving ability (category: ChangeZone)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Tropical Island
 --- Turn 7 (Player A) ---
@@ -705,9 +687,6 @@
   Resolving ability (category: Counter)
   Life from the Loam is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Swamp
 --- Turn 9 (Player A) ---
@@ -962,9 +941,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
 --- Turn 11 (Player A) ---
   PA: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
@@ -1334,9 +1310,6 @@
   Token created: 0/0 Construct
   Construct token gains (always)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
   PA: Fatal Push, Fatal Push
@@ -1806,9 +1779,6 @@
   Player B puts Expedition Map to the battlefield
   Urza's Saga is sacrificed (final chapter completed).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
   PA: Ponder
@@ -2139,9 +2109,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
 --- Turn 16 (Player B) ---
   PA: Orcish Bowmasters, Underground Sea, Wasteland
@@ -2402,15 +2369,14 @@
    1: Equip Skateboard  [#32]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
-  Player B activated Urza's Saga for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
-  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [3/3]
+  Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (NEW,res 1) | Construct [3/3]
   Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Pending: Skateboard (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2421,10 +2387,14 @@
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=2, opp_mulligans=1
   Actions:
-   0: Construct [3/3]
-  >> B/B: 0 (Construct [3/3])
+   0: Construct token
+  >> B/B: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player B activated Urza's Saga for 1(C)
+  Player B's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player B) ---
 
@@ -3274,9 +3244,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
   Player B draws Ancient Tomb
   Urza's Saga gets 1 lore counter (now 3).
@@ -3508,15 +3475,14 @@
    1: Equip Skateboard  [#32]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
-  Player B activated Urza's Saga for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 137 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
-  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [5/5]
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [5/5]
   Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Skateboard (self)
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3527,10 +3493,14 @@
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=2, opp_mulligans=1
   Actions:
-   0: Construct [5/5]
-  >> B/B: 0 (Construct [5/5])
+   0: Construct token
+  >> B/B: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player B activated Urza's Saga for 1(C)
+  Player B's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player B) ---
 
@@ -4494,15 +4464,14 @@
    1: Equip Skateboard  [#32]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
-  Player B activated Mox Diamond for 1(W)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 173 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
-  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
   Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Skateboard (self)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4513,10 +4482,14 @@
   Opp effects: floating trigger: Tamiyo, Seasoned Scholar
   Extras: self_lands_played=1, not_priority_window, self_mulligans=2, opp_mulligans=1
   Actions:
-   0: Construct [6/5]
-  >> B/B: 0 (Construct [6/5])
+   0: Construct token
+  >> B/B: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player B activated Mox Diamond for 1(W)
+  Player B's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   --- Declare Attackers (Player B) ---
 
 --- Decision 174 ---

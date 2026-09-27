@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Mountain
 --- Turn 2 (Player B) ---
@@ -196,7 +193,6 @@
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress
@@ -208,12 +204,15 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
-  Self exile: Rift Bolt [play:self/eot]
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
+  Self exile: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -225,6 +224,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self exile: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
@@ -344,9 +344,6 @@
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Mountain, Mountain, Price of Progress, Rift Bolt
@@ -546,7 +543,6 @@
   Dealt 0 damage to player (now at 14 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 
 --- Decision 24 ---
   Priority: Player A (active)
@@ -555,15 +551,18 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -575,6 +574,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
@@ -613,9 +613,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Exquisite Firecraft, Mountain, Mountain

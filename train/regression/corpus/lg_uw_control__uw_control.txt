@@ -213,9 +213,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Force of Will
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws The One Ring
 --- Turn 2 (Player B) ---
@@ -417,9 +414,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Tamiyo, Inquisitive Student
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
 --- Turn 3 (Player A) ---
   PA: Flow State, Force of Will, Swords to Plowshares, Tundra, Tune the Narrative, Wasteland
@@ -777,9 +771,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Tamiyo, Inquisitive Student
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Swords to Plowshares, Tundra, Wasteland
@@ -971,9 +962,6 @@
 --- Narrative ---
   Player B puts Flow State to top of library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Force of Will
 --- Turn 5 (Player A) ---
@@ -1088,53 +1076,8 @@
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 5)
-  Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
-  Opp:   17 life | mana: empty | energy 2 | hand count: 5 | lib 46
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra (NEW)
-  Opp BF:   Island (T) | Island (T)
-  Self GY: Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Flow State
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Force of Negation, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 48 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 5)
-  Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
-  Opp:   17 life | mana: empty | energy 2 | hand count: 5 | lib 46
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra (NEW)
-  Opp BF:   Island (T) | Island (T)
-  Self GY: Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Flow State
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Force of Negation, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 49 ---
   Priority: Player A (active)
   Step: End Combat (turn 5)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1154,7 +1097,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Second Main (turn 5)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1174,7 +1117,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: End Step (turn 5)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1199,7 +1142,7 @@
   PA: Force of Will, Swords to Plowshares, Wasteland
   PB: Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 46
@@ -1220,7 +1163,7 @@
   Player B activated Island for 1(U)
   Player B casts Tune the Narrative
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1246,7 +1189,7 @@
   Resolving ability (category: PutCounter, amount: 2)
   Player B gets 2 ENERGY counter(s) (now 4).
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (non-active)
   Step: Upkeep (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1268,7 +1211,7 @@
 --- Narrative ---
   Player B draws Brainstorm
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(6): Brainstorm, Flow State, Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 44
@@ -1289,7 +1232,7 @@
   Player B activated Island for 1(U)
   Player B casts Brainstorm
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1317,7 +1260,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 57 ---
+--- Decision 55 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(8): Flow State, Meticulous Archive, Murktide Regent, Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 41
@@ -1347,7 +1290,7 @@
   Player B puts Meticulous Archive to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 58 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(7): Flow State, Murktide Regent, Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 42
@@ -1376,7 +1319,7 @@
 --- Narrative ---
   Player B puts Flow State to top of library
 
---- Decision 59 ---
+--- Decision 57 ---
   Priority: Player A (non-active)
   Step: Draw (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1396,7 +1339,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 4 | hand(6): Murktide Regent, Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 43
@@ -1419,7 +1362,7 @@
   Player B played Mystic Sanctuary
   Mystic Sanctuary enters tapped.
 
---- Decision 61 ---
+--- Decision 59 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1439,7 +1382,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 62 ---
+--- Decision 60 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1461,7 +1404,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 63 ---
+--- Decision 61 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1480,53 +1423,8 @@
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 64 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 6)
-  Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
-  Opp:   17 life | mana: empty | energy 4 | hand count: 5 | lib 43
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T,NEW)
-  Self GY: Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Flow State
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Force of Negation, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 65 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 6)
-  Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
-  Opp:   17 life | mana: empty | energy 4 | hand count: 5 | lib 43
-  Self BF:  Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T,NEW)
-  Self GY: Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Opp GY:  Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Flow State
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Force of Negation, ?, ?, ?, ?
-  Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Brainstorm, Mystic Sanctuary, Tamiyo, Inquisitive Student, Tune the Narrative
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Swords to Plowshares  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1546,7 +1444,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1566,7 +1464,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player A (non-active)
   Step: End Step (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1591,7 +1489,7 @@
   PA: Force of Will, Swords to Plowshares, Wasteland
   PB: Murktide Regent, Mystic Sanctuary, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 46
@@ -1611,7 +1509,7 @@
 --- Narrative ---
   Player A draws Force of Negation
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Wasteland | lib 45
@@ -1629,7 +1527,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Wasteland | lib 45
@@ -1650,7 +1548,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1672,7 +1570,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1697,7 +1595,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Mystic Sanctuary is on the stack
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1720,7 +1618,7 @@
   Resolving ability (category: Destroy)
   Mystic Sanctuary is destroyed
 
---- Decision 75 ---
+--- Decision 71 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1739,7 +1637,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 76 ---
+--- Decision 72 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1760,7 +1658,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 77 ---
+--- Decision 73 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1783,7 +1681,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
---- Decision 78 ---
+--- Decision 74 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1805,7 +1703,7 @@
     Tamiyo, Inquisitive Student -> Player B
   Tamiyo, Inquisitive Student triggered
 
---- Decision 79 ---
+--- Decision 75 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1828,7 +1726,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 80 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1850,7 +1748,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 81 ---
+--- Decision 77 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1873,7 +1771,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 82 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1893,7 +1791,7 @@
    2: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 79 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1913,7 +1811,7 @@
    2: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 84 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1939,7 +1837,7 @@
   Player A's Clue ability is on the stack
   Clue (token) is put into the graveyard and ceases to exist.
 
---- Decision 85 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 45
@@ -1962,7 +1860,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Tune the Narrative
 
---- Decision 86 ---
+--- Decision 82 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Tune the Narrative | lib 44
@@ -1985,7 +1883,7 @@
   Player A activated Tundra for 1(U)
   Player A casts Tune the Narrative
 
---- Decision 87 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | energy 2 | hand(3): Force of Negation, Force of Will, Swords to Plowshares | lib 44
@@ -2017,7 +1915,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 88 ---
+--- Decision 84 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
   Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
@@ -2046,7 +1944,7 @@
   PA: Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler
   PB: Flow State, Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra
 
---- Decision 89 ---
+--- Decision 85 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(6): Flow State, Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 42
@@ -2073,7 +1971,7 @@
   Player B activated Island for 1(U)
   Player B casts Flow State
 
---- Decision 90 ---
+--- Decision 86 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
@@ -2097,7 +1995,7 @@
 --- Narrative ---
   Choose target for Force of Negation:
 
---- Decision 91 ---
+--- Decision 87 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
@@ -2120,7 +2018,7 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 92 ---
+--- Decision 88 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
@@ -2147,7 +2045,7 @@
   Resolving ability (category: Counter)
   Flow State is countered
 
---- Decision 93 ---
+--- Decision 89 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(5): Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tundra | lib 42
@@ -2170,7 +2068,7 @@
 --- Narrative ---
   Player B played Tundra
 
---- Decision 94 ---
+--- Decision 90 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  17 life | mana: empty | energy 4 | hand(4): Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 42
@@ -2195,15 +2093,12 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Swords to Plowshares, Teferi, Time Raveler
   PB: Murktide Regent, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring
 
---- Decision 95 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Teferi, Time Raveler | lib 43
@@ -2222,7 +2117,7 @@
 --- Narrative ---
   Player A draws Brainstorm
 
---- Decision 96 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(3): Brainstorm, Swords to Plowshares, Teferi, Time Raveler | lib 42
@@ -2244,7 +2139,7 @@
   Player A activated Island for 1(U)
   Player A casts Brainstorm
 
---- Decision 97 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Teferi, Time Raveler | lib 42
@@ -2270,7 +2165,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 98 ---
+--- Decision 94 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(5): Misty Rainforest, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, Wasteland | lib 39
@@ -2297,7 +2192,7 @@
   Player A puts Misty Rainforest to top of library
   Player A chooses a card from Player A hand:
 
---- Decision 99 ---
+--- Decision 95 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, Wasteland | lib 40
@@ -2323,7 +2218,7 @@
 --- Narrative ---
   Player A puts Polluted Delta to top of library
 
---- Decision 100 ---
+--- Decision 96 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Teferi, Time Raveler, Wasteland | lib 41
@@ -2342,7 +2237,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 101 ---
+--- Decision 97 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Teferi, Time Raveler, Wasteland | lib 41
@@ -2366,7 +2261,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 102 ---
+--- Decision 98 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Teferi, Time Raveler | lib 41
@@ -2396,7 +2291,7 @@
   Player A casts Teferi, Time Raveler
   Teferi, Time Raveler enters the battlefield
 
---- Decision 103 ---
+--- Decision 99 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(1): Swords to Plowshares | lib 41
@@ -2425,7 +2320,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 104 ---
+--- Decision 100 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  17 life | mana: empty | energy 4 | hand(1): Swords to Plowshares | lib 41
@@ -2453,16 +2348,13 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Meticulous Archive
 --- Turn 10 (Player B) ---
   PA: Swords to Plowshares
   PB: Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring
 
---- Decision 105 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2486,7 +2378,7 @@
 --- Narrative ---
   Choose how many cards to exile via Delve (4-5):
 
---- Decision 106 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2510,7 +2402,7 @@
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
 
---- Decision 107 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2542,7 +2434,7 @@
   Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
---- Decision 108 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2573,7 +2465,7 @@
   Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
---- Decision 109 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2603,7 +2495,7 @@
   Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (4 of 5):
 
---- Decision 110 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2632,7 +2524,7 @@
   Player B exiles Force of Will via Delve.
   Choose a card to exile via Delve (5 of 5):
 
---- Decision 111 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
@@ -2664,7 +2556,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
 
---- Decision 112 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
@@ -2692,7 +2584,7 @@
   Player B surveils 1.
   Surveil: looking at Wasteland
 
---- Decision 113 ---
+--- Decision 109 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 41
@@ -2717,7 +2609,7 @@
 --- Narrative ---
   Player B puts Wasteland into their graveyard.
 
---- Decision 114 ---
+--- Decision 110 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -2740,7 +2632,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 115 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -2763,7 +2655,7 @@
 --- Narrative ---
   Select target for Tamiyo, Inquisitive Student:
 
---- Decision 116 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -2790,7 +2682,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 117 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -2822,7 +2714,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 118 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
   Self:  17 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -2848,7 +2740,7 @@
   PA: Swords to Plowshares
   PB: Swords to Plowshares, The One Ring
 
---- Decision 119 ---
+--- Decision 115 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(1): Swords to Plowshares | lib 41
@@ -2870,7 +2762,7 @@
 --- Narrative ---
   Choose target for Swords to Plowshares:
 
---- Decision 120 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(1): Swords to Plowshares | lib 41
@@ -2895,7 +2787,7 @@
   Player A activated Tundra for 1(W)
   Player A casts Swords to Plowshares targeting Murktide Regent
 
---- Decision 121 ---
+--- Decision 117 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(0): (empty) | lib 41
@@ -2921,7 +2813,7 @@
   Resolving ability (category: GainLife, amount: 6)
   Player B gains 6 life (now at 23)
 
---- Decision 122 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(0): (empty) | lib 41
@@ -2944,7 +2836,7 @@
 --- Narrative ---
   Player A draws Polluted Delta
 
---- Decision 123 ---
+--- Decision 119 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(1): Polluted Delta | lib 40
@@ -2965,7 +2857,7 @@
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 124 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(1): Polluted Delta | lib 40
@@ -2993,7 +2885,7 @@
 --- Narrative ---
   Player A played Polluted Delta
 
---- Decision 125 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  17 life | mana: empty | energy 4 | hand(0): (empty) | lib 40
@@ -3023,7 +2915,7 @@
   Player A sacrifices Polluted Delta
   Player A's Polluted Delta ability is on the stack
 
---- Decision 126 ---
+--- Decision 122 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 40
@@ -3047,7 +2939,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 127 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 40
@@ -3080,7 +2972,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 128 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 40
@@ -3114,7 +3006,7 @@
   Player A surveils 1.
   Surveil: looking at Swords to Plowshares
 
---- Decision 129 ---
+--- Decision 125 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 39
@@ -3138,7 +3030,7 @@
 --- Narrative ---
   Player A puts Swords to Plowshares into their graveyard.
 
---- Decision 130 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 38
@@ -3166,7 +3058,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 131 ---
+--- Decision 127 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 38
@@ -3193,15 +3085,12 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
   PA: (empty)
   PB: Swords to Plowshares, The One Ring
 
---- Decision 132 ---
+--- Decision 128 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, The One Ring | lib 40
@@ -3222,7 +3111,7 @@
 --- Narrative ---
   Player B draws Force of Will
 
---- Decision 133 ---
+--- Decision 129 ---
   Priority: Player B (active)
   Step: Draw (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, The One Ring | lib 39
@@ -3242,7 +3131,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 134 ---
+--- Decision 130 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, The One Ring | lib 39
@@ -3271,7 +3160,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Ponder
 
---- Decision 135 ---
+--- Decision 131 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(4): Force of Will, Ponder, Swords to Plowshares, The One Ring | lib 38
@@ -3299,7 +3188,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 136 ---
+--- Decision 132 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, The One Ring | lib 38
@@ -3325,7 +3214,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 137 ---
+--- Decision 133 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, The One Ring | lib 38
@@ -3349,7 +3238,7 @@
    1: Force of Will  [#1]
   >> B/B: 0 (Plains)
 
---- Decision 138 ---
+--- Decision 134 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, The One Ring | lib 38
@@ -3383,7 +3272,7 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
 
---- Decision 139 ---
+--- Decision 135 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
   Self:  23 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, The One Ring | lib 37
@@ -3410,16 +3299,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Plains
 --- Turn 13 (Player A) ---
   PA: Plains
   PB: Force of Will, Force of Will, Swords to Plowshares, The One Ring
 
---- Decision 140 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  16 life | mana: empty | energy 4 | hand(1): Plains | lib 37
@@ -3445,7 +3331,7 @@
 --- Narrative ---
   Player A played Plains
 
---- Decision 141 ---
+--- Decision 137 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 37
@@ -3474,7 +3360,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 142 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 37
@@ -3501,16 +3387,13 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Plains
 --- Turn 14 (Player B) ---
   PA: (empty)
   PB: Force of Will, Force of Will, Plains, Swords to Plowshares, The One Ring
 
---- Decision 143 ---
+--- Decision 139 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  23 life | mana: empty | energy 4 | hand(5): Force of Will, Force of Will, Plains, Swords to Plowshares, The One Ring | lib 36
@@ -3535,7 +3418,7 @@
 --- Narrative ---
   Player B played Plains
 
---- Decision 144 ---
+--- Decision 140 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  23 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, The One Ring | lib 36
@@ -3567,7 +3450,7 @@
   The One Ring enters the battlefield
   The One Ring triggered
 
---- Decision 145 ---
+--- Decision 141 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  23 life | mana: empty | energy 4 | hand(3): Force of Will, Force of Will, Swords to Plowshares | lib 36
@@ -3598,7 +3481,7 @@
   Resolving ability (category: Pump)
   Player B gains protection from everything until their next turn.
 
---- Decision 146 ---
+--- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  23 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Spell Snare, Swords to Plowshares | lib 35
@@ -3625,16 +3508,13 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Flow State
 --- Turn 15 (Player A) ---
   PA: Flow State
   PB: Force of Will, Force of Will, Spell Snare, Swords to Plowshares
 
---- Decision 147 ---
+--- Decision 143 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(1): Flow State | lib 36
@@ -3664,7 +3544,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 3 card(s) of their library.
 
---- Decision 148 ---
+--- Decision 144 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 36
@@ -3687,7 +3567,7 @@
    2: Flooded Strand
   >> A/A: 1 (Tamiyo, Inquisitive Student)
 
---- Decision 149 ---
+--- Decision 145 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 36
@@ -3713,7 +3593,7 @@
   Player A puts Flooded Strand into hand.
   Player A puts 1 card(s) on the bottom of their library.
 
---- Decision 150 ---
+--- Decision 146 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(2): Flooded Strand, Tamiyo, Inquisitive Student | lib 34
@@ -3742,7 +3622,7 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 151 ---
+--- Decision 147 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(1): Flooded Strand | lib 34
@@ -3768,7 +3648,7 @@
 --- Narrative ---
   Player A played Flooded Strand
 
---- Decision 152 ---
+--- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  16 life | mana: empty | energy 4 | hand(0): (empty) | lib 34
@@ -3799,7 +3679,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 153 ---
+--- Decision 149 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 34
@@ -3827,7 +3707,7 @@
   Player A puts Mystic Sanctuary to the battlefield
   Choose target for Mystic Sanctuary:
 
---- Decision 154 ---
+--- Decision 150 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 33
@@ -3859,7 +3739,7 @@
   Targeting choice 0
   Mystic Sanctuary triggered
 
---- Decision 155 ---
+--- Decision 151 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 33
@@ -3883,7 +3763,7 @@
 --- Narrative ---
   Player A declines the optional triggered ability.
 
---- Decision 156 ---
+--- Decision 152 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 33
@@ -3912,7 +3792,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 157 ---
+--- Decision 153 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 33
@@ -3939,16 +3819,13 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   The One Ring triggered
 --- Turn 16 (Player B) ---
   PA: (empty)
   PB: Force of Will, Force of Will, Spell Snare, Swords to Plowshares
 
---- Decision 158 ---
+--- Decision 154 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
   Self:  23 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Spell Snare, Swords to Plowshares | lib 35
@@ -3978,7 +3855,7 @@
   Player B loses 2 life (now at 21)
   Player B draws Flow State
 
---- Decision 159 ---
+--- Decision 155 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(7): Flow State, Force of Will, Force of Will, Murktide Regent, Spell Snare, Swords to Plowshares, Wrath of the Skies | lib 32
@@ -4009,7 +3886,7 @@
   Resolving ability (category: Dig)
   Player B looks at the top 3 card(s) of their library.
 
---- Decision 160 ---
+--- Decision 156 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Murktide Regent, Spell Snare, Swords to Plowshares, Wrath of the Skies | lib 32
@@ -4033,7 +3910,7 @@
    2: Polluted Delta
   >> B/B: 1 (Wasteland)
 
---- Decision 161 ---
+--- Decision 157 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Murktide Regent, Spell Snare, Swords to Plowshares, Wrath of the Skies | lib 32
@@ -4060,7 +3937,7 @@
   Player B puts Polluted Delta into hand.
   Player B puts 1 card(s) on the bottom of their library.
 
---- Decision 162 ---
+--- Decision 158 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4087,7 +3964,7 @@
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
 
---- Decision 163 ---
+--- Decision 159 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4118,7 +3995,7 @@
   Player B exiles Flow State via Delve.
   Choose a card to exile via Delve (2 of 5):
 
---- Decision 164 ---
+--- Decision 160 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4148,7 +4025,7 @@
   Player B exiles Meticulous Archive via Delve.
   Choose a card to exile via Delve (3 of 5):
 
---- Decision 165 ---
+--- Decision 161 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4177,7 +4054,7 @@
   Player B exiles Mystic Sanctuary via Delve.
   Choose a card to exile via Delve (4 of 5):
 
---- Decision 166 ---
+--- Decision 162 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4205,7 +4082,7 @@
   Player B exiles Ponder via Delve.
   Choose a card to exile via Delve (5 of 5):
 
---- Decision 167 ---
+--- Decision 163 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4236,7 +4113,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
 
---- Decision 168 ---
+--- Decision 164 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4261,7 +4138,7 @@
 --- Narrative ---
   Player B played Polluted Delta
 
---- Decision 169 ---
+--- Decision 165 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  21 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4290,7 +4167,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 170 ---
+--- Decision 166 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  20 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
@@ -4317,7 +4194,7 @@
   Player B shuffles their library
   Player B puts Tundra to the battlefield
 
---- Decision 171 ---
+--- Decision 167 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  20 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 29
@@ -4345,7 +4222,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 172 ---
+--- Decision 168 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
   Self:  20 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 29
@@ -4367,11 +4244,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
 
---- Decision 173 ---
+--- Decision 169 ---
   Priority: Player B (active)
   Step: Second Main (turn 16)
   Self:  20 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 29
@@ -4398,7 +4272,7 @@
   PA: Tundra
   PB: Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies
 
---- Decision 174 ---
+--- Decision 170 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  15 life | mana: empty | energy 4 | hand(1): Tundra | lib 32
@@ -4424,7 +4298,7 @@
 --- Narrative ---
   Player A played Tundra
 
---- Decision 175 ---
+--- Decision 171 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 32
@@ -4453,7 +4327,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 176 ---
+--- Decision 172 ---
   Priority: Player A (active)
   Step: First Main (turn 17)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 32
@@ -4481,7 +4355,7 @@
   Player A may cast Sorcery spells as though they had flash until their next turn.
   --- Declare Attackers (Player A) ---
 
---- Decision 177 ---
+--- Decision 173 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 17)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 32
@@ -4504,16 +4378,13 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
   The One Ring triggered
 --- Turn 18 (Player B) ---
   PA: (empty)
   PB: Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies
 
---- Decision 178 ---
+--- Decision 174 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
   Self:  20 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 29
@@ -4544,7 +4415,7 @@
   Player B loses 3 life (now at 17)
   Player B draws Flooded Strand
 
---- Decision 179 ---
+--- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  17 life | mana: empty | energy 4 | hand(10): Flooded Strand, Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, Teferi, Time Raveler, Wasteland, Wrath of the Skies | lib 25
@@ -4576,7 +4447,7 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 180 ---
+--- Decision 176 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  17 life | mana: empty | energy 4 | hand(9): Flooded Strand, Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Teferi, Time Raveler, Wasteland, Wrath of the Skies | lib 25
@@ -4609,7 +4480,7 @@
   Player B casts Teferi, Time Raveler
   Teferi, Time Raveler enters the battlefield
 
---- Decision 181 ---
+--- Decision 177 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  17 life | mana: empty | energy 4 | hand(8): Flooded Strand, Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 25
@@ -4638,7 +4509,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 182 ---
+--- Decision 178 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  17 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 25
@@ -4671,7 +4542,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 183 ---
+--- Decision 179 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 25
@@ -4697,7 +4568,7 @@
   Player B shuffles their library
   Player B puts Tundra to the battlefield
 
---- Decision 184 ---
+--- Decision 180 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4729,7 +4600,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 185 ---
+--- Decision 181 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4758,7 +4629,7 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 186 ---
+--- Decision 182 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4782,7 +4653,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 187 ---
+--- Decision 183 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4805,7 +4676,7 @@
 --- Narrative ---
   Select target for Murktide Regent:
 
---- Decision 188 ---
+--- Decision 184 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4832,7 +4703,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [6/6] -> Player A
 
---- Decision 189 ---
+--- Decision 185 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4862,7 +4733,7 @@
     0: Murktide Regent [5/6]
   Your creatures:
 
---- Decision 190 ---
+--- Decision 186 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 18)
   Self:  15 life | mana: empty | energy 4 | hand(0): (empty) | lib 32
@@ -4889,7 +4760,7 @@
     Murktide Regent deals 5 damage to Player A
   --- End Combat Damage ---
 
---- Decision 191 ---
+--- Decision 187 ---
   Priority: Player B (active)
   Step: Second Main (turn 18)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -4917,7 +4788,7 @@
   PA: Spell Snare
   PB: Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies
 
---- Decision 192 ---
+--- Decision 188 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -4946,7 +4817,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 193 ---
+--- Decision 189 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -4973,7 +4844,7 @@
   Player A may cast Sorcery spells as though they had flash until their next turn.
   --- Declare Attackers (Player A) ---
 
---- Decision 194 ---
+--- Decision 190 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -4996,7 +4867,7 @@
 --- Narrative ---
   Select target for Tamiyo, Inquisitive Student:
 
---- Decision 195 ---
+--- Decision 191 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5023,7 +4894,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
---- Decision 196 ---
+--- Decision 192 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5052,7 +4923,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 197 ---
+--- Decision 193 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5077,7 +4948,7 @@
     0: Tamiyo, Inquisitive Student [0/3]
   Your creatures:
 
---- Decision 198 ---
+--- Decision 194 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 19)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -5101,7 +4972,7 @@
   Blockers declared:
     (none)
 
---- Decision 199 ---
+--- Decision 195 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5124,7 +4995,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 200 ---
+--- Decision 196 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5144,7 +5015,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 201 ---
+--- Decision 197 ---
   Priority: Player A (active)
   Step: End Combat (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5164,7 +5035,7 @@
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 202 ---
+--- Decision 198 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 31
@@ -5192,7 +5063,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player A draws Wrath of the Skies
 
---- Decision 203 ---
+--- Decision 199 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(2): Spell Snare, Wrath of the Skies | lib 30
@@ -5215,7 +5086,7 @@
 --- Narrative ---
   Choose X value (0-3):
 
---- Decision 204 ---
+--- Decision 200 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
   Self:  10 life | mana: empty | energy 4 | hand(2): Spell Snare, Wrath of the Skies | lib 30
@@ -5250,7 +5121,7 @@
   Player A gets 3 ENERGY counter(s) (now 7).
   Resolving ability (category: ChooseNumber)
 
---- Decision 205 ---
+--- Decision 201 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
   Self:  10 life | mana: empty | energy 7 | hand(1): Spell Snare | lib 30
@@ -5291,7 +5162,7 @@
   PA: Spell Snare
   PB: Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies
 
---- Decision 206 ---
+--- Decision 202 ---
   Priority: Player B (active)
   Step: Upkeep (turn 20)
   Self:  16 life | mana: empty | energy 4 | hand(7): Force of Negation, Force of Will, Force of Will, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 24
@@ -5323,7 +5194,7 @@
   Player B loses 4 life (now at 12)
   Player B draws Wasteland
 
---- Decision 207 ---
+--- Decision 203 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(12): Brainstorm, Flooded Strand, Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Wasteland | lib 19
@@ -5363,7 +5234,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 208 ---
+--- Decision 204 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(14): Flooded Strand, Flow State, Force of Negation, Force of Will, Force of Will, Lorien Revealed, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 16
@@ -5401,7 +5272,7 @@
   Player B puts Flooded Strand to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 209 ---
+--- Decision 205 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Lorien Revealed, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 17
@@ -5438,7 +5309,7 @@
 --- Narrative ---
   Player B puts Flow State to top of library
 
---- Decision 210 ---
+--- Decision 206 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(12): Force of Negation, Force of Will, Force of Will, Lorien Revealed, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wasteland | lib 18
@@ -5482,7 +5353,7 @@
   Player B draws Flooded Strand
   Player B draws Swords to Plowshares
 
---- Decision 211 ---
+--- Decision 207 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(14): Flooded Strand, Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 15
@@ -5511,7 +5382,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 212 ---
+--- Decision 208 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  12 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5543,7 +5414,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 213 ---
+--- Decision 209 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5568,7 +5439,7 @@
   Player B shuffles their library
   Player B fails to find
 
---- Decision 214 ---
+--- Decision 210 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5598,7 +5469,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 215 ---
+--- Decision 211 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5626,7 +5497,7 @@
   Player B may cast Sorcery spells as though they had flash until their next turn.
   --- Declare Attackers (Player B) ---
 
---- Decision 216 ---
+--- Decision 212 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5649,7 +5520,7 @@
 --- Narrative ---
   Select target for Murktide Regent:
 
---- Decision 217 ---
+--- Decision 213 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5676,7 +5547,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [6/6] -> Player A
 
---- Decision 218 ---
+--- Decision 214 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5708,7 +5579,7 @@
   --- Discard to hand size (Player B) ---
   Hand (13 cards, must discard to 7):
 
---- Decision 219 ---
+--- Decision 215 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(13): Flow State, Force of Negation, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring | lib 15
@@ -5744,7 +5615,7 @@
   --- Discard to hand size (Player B) ---
   Hand (12 cards, must discard to 7):
 
---- Decision 220 ---
+--- Decision 216 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(12): Flow State, Force of Negation, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wasteland | lib 15
@@ -5779,7 +5650,7 @@
   --- Discard to hand size (Player B) ---
   Hand (11 cards, must discard to 7):
 
---- Decision 221 ---
+--- Decision 217 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(11): Flow State, Force of Negation, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wasteland, Wasteland | lib 15
@@ -5813,7 +5684,7 @@
   --- Discard to hand size (Player B) ---
   Hand (10 cards, must discard to 7):
 
---- Decision 222 ---
+--- Decision 218 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(10): Flow State, Force of Negation, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland, Wrath of the Skies | lib 15
@@ -5846,7 +5717,7 @@
   --- Discard to hand size (Player B) ---
   Hand (9 cards, must discard to 7):
 
---- Decision 223 ---
+--- Decision 219 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(9): Flow State, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland, Wrath of the Skies | lib 15
@@ -5878,7 +5749,7 @@
   --- Discard to hand size (Player B) ---
   Hand (8 cards, must discard to 7):
 
---- Decision 224 ---
+--- Decision 220 ---
   Priority: Player B (active)
   Step: Cleanup (turn 20)
   Self:  11 life | mana: empty | energy 4 | hand(8): Flow State, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland | lib 15
@@ -5912,7 +5783,7 @@
   PA: Brainstorm, Spell Snare
   PB: Flow State, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland
 
---- Decision 225 ---
+--- Decision 221 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(2): Brainstorm, Spell Snare | lib 29
@@ -5946,7 +5817,7 @@
   Resolving ability (category: ChangeZone)
   Player A chooses a card from Player A hand:
 
---- Decision 226 ---
+--- Decision 222 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(4): Flow State, Misty Rainforest, Spell Snare, Tundra | lib 26
@@ -5974,7 +5845,7 @@
   Player A puts Flow State to top of library
   Player A chooses a card from Player A hand:
 
---- Decision 227 ---
+--- Decision 223 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(3): Misty Rainforest, Spell Snare, Tundra | lib 27
@@ -6001,7 +5872,7 @@
 --- Narrative ---
   Player A puts Misty Rainforest to top of library
 
---- Decision 228 ---
+--- Decision 224 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(2): Spell Snare, Tundra | lib 28
@@ -6029,7 +5900,7 @@
 --- Narrative ---
   Player A played Tundra
 
---- Decision 229 ---
+--- Decision 225 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(1): Spell Snare | lib 28
@@ -6060,7 +5931,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 230 ---
+--- Decision 226 ---
   Priority: Player A (active)
   Step: First Main (turn 21)
   Self:  5 life | mana: empty | energy 1 | hand(1): Spell Snare | lib 28
@@ -6088,16 +5959,13 @@
   Resolving ability (category: Effect)
   Player A may cast Sorcery spells as though they had flash until their next turn.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 22 (Player B) --------
   The One Ring triggered
 --- Turn 22 (Player B) ---
   PA: Spell Snare
   PB: Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland
 
---- Decision 231 ---
+--- Decision 227 ---
   Priority: Player B (active)
   Step: Upkeep (turn 22)
   Self:  11 life | mana: empty | energy 4 | hand(7): Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student, Wasteland, Wasteland | lib 15
@@ -6130,7 +5998,7 @@
   Player B loses 5 life (now at 6)
   Player B draws Force of Will
 
---- Decision 232 ---
+--- Decision 228 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(13): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Ponder, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 9
@@ -6170,7 +6038,7 @@
   Player B looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
 
---- Decision 233 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(12): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 9
@@ -6196,7 +6064,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 234 ---
+--- Decision 230 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(12): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 9
@@ -6220,7 +6088,7 @@
    1: Wrath of the Skies  [#1]
   >> B/B: 0 (Ponder)
 
---- Decision 235 ---
+--- Decision 231 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(12): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 9
@@ -6247,7 +6115,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Wrath of the Skies
 
---- Decision 236 ---
+--- Decision 232 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(13): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Tamiyo, Inquisitive Student | lib 8
@@ -6286,7 +6154,7 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 237 ---
+--- Decision 233 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(12): Flooded Strand, Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland | lib 8
@@ -6322,7 +6190,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 238 ---
+--- Decision 234 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  6 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6359,7 +6227,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 239 ---
+--- Decision 235 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6385,7 +6253,7 @@
   Player B shuffles their library
   Player B fails to find
 
---- Decision 240 ---
+--- Decision 236 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6419,7 +6287,7 @@
   Resolving ability (category: Effect)
   A floating triggered ability is created until your next turn.
 
---- Decision 241 ---
+--- Decision 237 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6450,7 +6318,7 @@
   Resolving ability (category: Effect)
   Player B may cast Sorcery spells as though they had flash until their next turn.
 
---- Decision 242 ---
+--- Decision 238 ---
   Priority: Player B (active)
   Step: First Main (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6476,7 +6344,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 243 ---
+--- Decision 239 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6499,7 +6367,7 @@
 --- Narrative ---
   Select target for Murktide Regent:
 
---- Decision 244 ---
+--- Decision 240 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8
@@ -6526,7 +6394,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Murktide Regent [6/6] -> Player A
 
---- Decision 245 ---
+--- Decision 241 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 22)
   Self:  5 life | mana: empty | energy 4 | hand(11): Force of Will, Misty Rainforest, Polluted Delta, Spell Pierce, Spell Snare, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares, Wasteland, Wasteland | lib 8

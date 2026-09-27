@@ -139,9 +139,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Keen-Eyed Curator
 --- Turn 2 (Player B) ---
@@ -167,14 +164,10 @@
 --- Narrative ---
   Player B played Dryad Arbor
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
@@ -186,13 +179,16 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Dryad Arbor [1/1] (SICK)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Opp GY:  Once Upon a Time
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Dryad Arbor, Once Upon a Time
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -204,6 +200,7 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Dryad Arbor [1/1] (SICK)
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Opp GY:  Once Upon a Time
   Self exile: Rift Bolt
@@ -329,9 +326,6 @@
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thalia, Guardian of Thraben
 --- Turn 4 (Player B) ---
@@ -480,9 +474,6 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 5 (Player A) ---
@@ -518,7 +509,6 @@
   Dealt 2 damage to player (now at 11 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
 
 --- Decision 22 ---
   Priority: Player A (active)
@@ -527,15 +517,18 @@
   Opp:   11 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Self exile: Rift Bolt [play:self/eot]
+  Self exile: Rift Bolt
   Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=2
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
@@ -547,6 +540,7 @@
   Opp:   11 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
+  Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
@@ -585,9 +579,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Gaea's Cradle
 --- Turn 6 (Player B) ---
@@ -659,9 +650,6 @@
   Player B casts Scythecat Cub
   Scythecat Cub enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Exquisite Firecraft, Mountain
@@ -770,9 +758,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Mountain, Mountain
@@ -1407,9 +1392,6 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: Mountain

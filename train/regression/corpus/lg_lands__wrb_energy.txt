@@ -198,9 +198,6 @@
   Skateboard triggered
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
@@ -356,9 +353,6 @@
     Wasteland
   No matching cards to discard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Boseiju, Who Endures
 --- Turn 3 (Player A) ---
@@ -550,9 +544,6 @@
   Resolving ability (category: Destroy)
   Elegant Parlor is destroyed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Marsh Flats
 --- Turn 4 (Player B) ---
@@ -746,9 +737,6 @@
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: (empty)
@@ -831,9 +819,6 @@
   Player A played Dark Depths
   Dark Depths enters with 10 ICE counter(s).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Dark Depths
@@ -952,9 +937,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 16)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: (empty)
@@ -1090,9 +1072,6 @@
   Resolving ability (category: Token)
   Token created: 20/20 Marit Lage
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Swords to Plowshares
 --- Turn 8 (Player B) ---
@@ -1145,9 +1124,6 @@
   Player A gains 20 life (now at 45)
   Marit Lage (token) is put into exile and ceases to exist.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: (empty)
@@ -1313,9 +1289,6 @@
   Player B moves Thoughtseize to exile
   Player B moves 9 card(s) to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Plateau
 --- Turn 10 (Player B) ---
@@ -1368,9 +1341,6 @@
 --- Narrative ---
   Player B played Plateau
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Pithing Needle
 --- Turn 11 (Player A) ---
@@ -1473,9 +1443,6 @@
 --- Narrative ---
   Player A names card: Ajani, Nacatl Pariah
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Ajani, Nacatl Pariah
 --- Turn 12 (Player B) ---
@@ -1740,9 +1707,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 14 (Player B) ---
@@ -2133,15 +2097,14 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Savannah for 1(G)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  37 life | mana: empty | hand(0): (empty) | lib 42
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Grafdigger's Cage (NEW) | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T,NEW) | Skateboard | The Tabernacle at Pendrell Vale | Construct [6/6] (SICK,NEW)
+  Self BF:  Grafdigger's Cage (NEW) | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (NEW) | Skateboard | The Tabernacle at Pendrell Vale | Construct [6/6] (SICK,NEW)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2151,10 +2114,14 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Construct [6/6]
-  >> A/A: 0 (Construct [6/6])
+   0: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Savannah for 1(G)
+  Player A's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player A) ---
 
@@ -3098,15 +3065,14 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Savannah for 1(G)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 124 ---
   Priority: Player A (active)
   Step: First Main (turn 19)
   Self:  27 life | mana: empty | hand(1): Life from the Loam | lib 40
   Opp:   2 life | mana: empty | hand count: 5 | lib 40
-  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah (T,NEW) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (res 1)
+  Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Pithing Needle [naming: Ajani, Nacatl Pariah] | Savannah (T) | Savannah (NEW) | Skateboard (->Construct) | The Tabernacle at Pendrell Vale | Construct [7/6] [Haste] (eq:Skateboard) (res 1)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Plains (T) | Plateau (T) | Scrubland (T) | Cat Warrior [2/1] (T) | Cat Warrior [2/1] (T)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Thespian's Stage, Dark Depths, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -3116,10 +3082,14 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Construct [7/6]
-  >> A/A: 0 (Construct [7/6])
+   0: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Savannah for 1(G)
+  Player A's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   --- Declare Attackers (Player A) ---
 
 --- Decision 125 ---

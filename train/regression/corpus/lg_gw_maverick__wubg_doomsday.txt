@@ -132,9 +132,6 @@
 --- Narrative ---
   Player A played Forest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Teferi, Time Raveler
 --- Turn 2 (Player B) ---
@@ -245,45 +242,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 14 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 15 ---
   Priority: Player B (active)
   Step: End Combat (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -299,7 +259,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 16 ---
+--- Decision 14 ---
   Priority: Player B (active)
   Step: Second Main (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -317,7 +277,7 @@
    3: Cast Tamiyo, Inquisitive Student  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 17 ---
+--- Decision 15 ---
   Priority: Player B (active)
   Step: End Step (turn 2)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -338,7 +298,7 @@
   PA: Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 18 ---
+--- Decision 16 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -355,7 +315,7 @@
 --- Narrative ---
   Player A draws Swords to Plowshares
 
---- Decision 19 ---
+--- Decision 17 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -371,7 +331,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 20 ---
+--- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(7): Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -390,7 +350,7 @@
 --- Narrative ---
   Player A played Savannah
 
---- Decision 21 ---
+--- Decision 19 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -412,7 +372,7 @@
   Player A activated Savannah for 1(G)
   Player A casts Badgermole Cub
 
---- Decision 22 ---
+--- Decision 20 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -433,7 +393,7 @@
   Badgermole Cub enters the battlefield
   Choose target for Badgermole Cub:
 
---- Decision 23 ---
+--- Decision 21 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -453,7 +413,7 @@
   Targeting choice 0
   Badgermole Cub triggered
 
---- Decision 24 ---
+--- Decision 22 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -473,7 +433,7 @@
   Resolving ability (category: Earthbend)
   Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
 
---- Decision 25 ---
+--- Decision 23 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -490,7 +450,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 26 ---
+--- Decision 24 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -509,7 +469,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 27 ---
+--- Decision 25 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -525,47 +485,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 28 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badgermole Cub [2/2] (SICK,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 29 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Lotus Petal | Tropical Island
-  Opp BF:   Badgermole Cub [2/2] (SICK,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: opp spells=1 drawn=1 colors=G
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 30 ---
+--- Decision 26 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -582,7 +503,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 31 ---
+--- Decision 27 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -599,7 +520,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 28 ---
   Priority: Player B (non-active)
   Step: End Step (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -621,7 +542,7 @@
   PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
   PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 33 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -638,7 +559,7 @@
 --- Narrative ---
   Player B draws Flooded Strand
 
---- Decision 34 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: Draw (turn 4)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -654,7 +575,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 31 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -675,7 +596,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 36 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -699,7 +620,7 @@
   Player B activated Lotus Petal for 1(B)
   Player B casts Dark Ritual
 
---- Decision 37 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -723,7 +644,7 @@
   Player B sacrifices Flooded Strand
   Player B's Flooded Strand ability is on the stack
 
---- Decision 38 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -745,7 +666,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 39 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -774,7 +695,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 40 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(5): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -796,7 +717,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 41 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: 3B | hand(5): Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -819,7 +740,7 @@
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 42 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -841,7 +762,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 43 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -915,7 +836,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 44 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -989,7 +910,7 @@
   Player B puts Island to top of library
   Searching Player B's graveyard and library:
 
---- Decision 45 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1062,7 +983,7 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 46 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1134,7 +1055,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 47 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 50
@@ -1257,7 +1178,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 48 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1283,7 +1204,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 49 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1308,7 +1229,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 50 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1332,7 +1253,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 51 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  19 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1357,7 +1278,7 @@
   Player B loses 10 life (now at 9)
   Resolving ability (category: Cleanup)
 
---- Decision 52 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(4): Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1382,7 +1303,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Quantum Riddler
 
---- Decision 53 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  9 life | mana: empty | hand(3): Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 5
@@ -1409,9 +1330,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   Delayed trigger fires.
   Resolving ability (category: WarpExile)
   Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
@@ -1420,7 +1338,7 @@
   PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
   PB: Force of Will, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 54 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -1442,7 +1360,7 @@
   Player A activated Forest for 1(G)
   Player A casts Once Upon a Time
 
---- Decision 55 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -1461,7 +1379,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 56 ---
+--- Decision 52 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  9 life | mana: empty | hand(4): Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 4
@@ -1485,7 +1403,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 5 card(s) of their library.
 
---- Decision 57 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
@@ -1513,7 +1431,7 @@
   Player A puts Thalia, Guardian of Thraben into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
---- Decision 58 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  20 life | mana: empty | hand(5): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 50
@@ -1533,7 +1451,7 @@
 --- Narrative ---
   Player A draws Green Sun's Zenith
 
---- Decision 59 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
@@ -1551,7 +1469,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 60 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
@@ -1574,7 +1492,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 61 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1599,7 +1517,7 @@
 --- Narrative ---
   Choose X value (0-1):
 
---- Decision 62 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1623,7 +1541,7 @@
   Player A activated Savannah for 1(G)
   Player A casts Green Sun's Zenith
 
---- Decision 63 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1645,7 +1563,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 64 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1672,7 +1590,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Tropical Island is on the stack
 
---- Decision 65 ---
+--- Decision 61 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  9 life | mana: empty | hand(4): Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 4
@@ -1696,7 +1614,7 @@
   Resolving ability (category: Destroy)
   Tropical Island is destroyed
 
---- Decision 66 ---
+--- Decision 62 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
   Self:  9 life | mana: empty | hand(4): Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 4
@@ -1720,7 +1638,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 67 ---
+--- Decision 63 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1746,7 +1664,7 @@
   Green Sun's Zenith is shuffled into its owner's library
   --- Declare Attackers (Player A) ---
 
---- Decision 68 ---
+--- Decision 64 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1769,7 +1687,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 69 ---
+--- Decision 65 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 5)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -1799,7 +1717,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Edge of Autumn, Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 70 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  7 life | mana: empty | hand(5): Edge of Autumn, Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 3
@@ -1818,7 +1736,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 71 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  7 life | mana: empty | hand(5): Edge of Autumn, Force of Will, Island, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 3
@@ -1842,7 +1760,7 @@
   Player B activated Underground Sea for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 72 ---
+--- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  7 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Island, Teferi, Time Raveler | lib 3
@@ -1865,7 +1783,7 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 73 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  7 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Island, Teferi, Time Raveler | lib 3
@@ -1887,7 +1805,7 @@
 --- Narrative ---
   Player B played Island
 
---- Decision 74 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -1907,7 +1825,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 75 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -1929,7 +1847,7 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 76 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -1948,53 +1866,8 @@
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Underground Sea (T)
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island, Doomsday
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 78 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Island (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Underground Sea (T)
-  Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Tropical Island, Doomsday
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 79 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2014,7 +1887,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2034,7 +1907,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2059,7 +1932,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
@@ -2076,7 +1949,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2097,7 +1970,7 @@
 --- Narrative ---
   Player A draws Noble Hierarch
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  20 life | mana: empty | hand(5): Noble Hierarch, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2115,7 +1988,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2135,7 +2008,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(5): Noble Hierarch, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2161,7 +2034,7 @@
   Player A activated Dryad Arbor for 1(G)
   Player A casts Noble Hierarch
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2180,7 +2053,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2204,7 +2077,7 @@
 --- Narrative ---
   Noble Hierarch enters the battlefield
 
---- Decision 89 ---
+--- Decision 83 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2228,7 +2101,7 @@
   Player A activated Savannah for 1(W)
   Player A casts Thalia, Guardian of Thraben
 
---- Decision 90 ---
+--- Decision 84 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2252,7 +2125,7 @@
 --- Narrative ---
   Thalia, Guardian of Thraben enters the battlefield
 
---- Decision 91 ---
+--- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 48
@@ -2272,7 +2145,7 @@
 --- Narrative ---
   Player A played Wasteland
 
---- Decision 92 ---
+--- Decision 86 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2293,7 +2166,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 93 ---
+--- Decision 87 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2319,7 +2192,7 @@
   Player A sacrifices Wasteland
   Player A's Wasteland ability targeting Underground Sea is on the stack
 
---- Decision 94 ---
+--- Decision 88 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2343,7 +2216,7 @@
   Resolving ability (category: Destroy)
   Underground Sea is destroyed
 
---- Decision 95 ---
+--- Decision 89 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2363,7 +2236,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 96 ---
+--- Decision 90 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2385,7 +2258,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 97 ---
+--- Decision 91 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2409,7 +2282,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 98 ---
+--- Decision 92 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2433,7 +2306,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Forest [1/1] -> Player B
 
---- Decision 99 ---
+--- Decision 93 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2455,7 +2328,7 @@
     Badgermole Cub -> Player B
     Forest -> Player B
 
---- Decision 100 ---
+--- Decision 94 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2481,7 +2354,7 @@
     1: Forest [1/1]
   Your creatures:
 
---- Decision 101 ---
+--- Decision 95 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2504,7 +2377,7 @@
   Blockers declared:
     (none)
 
---- Decision 102 ---
+--- Decision 96 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  7 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2529,7 +2402,7 @@
     Forest deals 1 damage to Player B
   --- End Combat Damage ---
 
---- Decision 103 ---
+--- Decision 97 ---
   Priority: Player B (non-active)
   Step: Combat Dmg (turn 7)
   Self:  4 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2549,7 +2422,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 104 ---
+--- Decision 98 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 7)
   Self:  4 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2569,7 +2442,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 105 ---
+--- Decision 99 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 7)
   Self:  4 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2589,7 +2462,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 106 ---
+--- Decision 100 ---
   Priority: Player B (non-active)
   Step: End Step (turn 7)
   Self:  4 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2614,7 +2487,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler
 
---- Decision 107 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  4 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 3
@@ -2634,7 +2507,7 @@
 --- Narrative ---
   Player B draws Street Wraith
 
---- Decision 108 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  4 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2654,7 +2527,7 @@
    2: Activate Street Wraith from hand (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 109 ---
+--- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Street Wraith, Teferi, Time Raveler | lib 2
@@ -2677,7 +2550,7 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 110 ---
+--- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(3): Edge of Autumn, Force of Will, Teferi, Time Raveler | lib 2
@@ -2700,7 +2573,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Thassa's Oracle
 
---- Decision 111 ---
+--- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2719,7 +2592,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 112 ---
+--- Decision 106 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2740,7 +2613,7 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 113 ---
+--- Decision 107 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2764,7 +2637,7 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 114 ---
+--- Decision 108 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2787,7 +2660,7 @@
     Tamiyo, Inquisitive Student -> Player A
   Tamiyo, Inquisitive Student triggered
 
---- Decision 115 ---
+--- Decision 109 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2810,7 +2683,7 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 116 ---
+--- Decision 110 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2831,7 +2704,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 117 ---
+--- Decision 111 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2853,7 +2726,7 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 118 ---
+--- Decision 112 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2872,7 +2745,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 119 ---
+--- Decision 113 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2891,7 +2764,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 120 ---
+--- Decision 114 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2910,7 +2783,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 121 ---
+--- Decision 115 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2934,7 +2807,7 @@
   PA: Swords to Plowshares, Thalia, Guardian of Thraben
   PB: Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle
 
---- Decision 122 ---
+--- Decision 116 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 48
@@ -2951,7 +2824,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 123 ---
+--- Decision 117 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -2972,7 +2845,7 @@
 --- Narrative ---
   Player A draws Talon Gates of Madara
 
---- Decision 124 ---
+--- Decision 118 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 47
@@ -2991,7 +2864,7 @@
    2: Activate Talon Gates of Madara from hand (ChangeZone)  [#2]
   >> A/A: 0 (Pass priority)
 
---- Decision 125 ---
+--- Decision 119 ---
   Priority: Player B (non-active)
   Step: Draw (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3011,7 +2884,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 126 ---
+--- Decision 120 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 47
@@ -3036,7 +2909,7 @@
   Player A activated Noble Hierarch for 1(W)
   Player A casts Thalia, Guardian of Thraben
 
---- Decision 127 ---
+--- Decision 121 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Talon Gates of Madara | lib 47
@@ -3062,7 +2935,7 @@
   Player A activated Forest for 1(G)
   Player A activates Talon Gates of Madara from hand
 
---- Decision 128 ---
+--- Decision 122 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3088,7 +2961,7 @@
   Talon Gates of Madara is moved to the battlefield
   Choose target for Talon Gates of Madara:
 
---- Decision 129 ---
+--- Decision 123 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3117,7 +2990,7 @@
   Targeting choice 0
   Talon Gates of Madara triggered
 
---- Decision 130 ---
+--- Decision 124 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3136,7 +3009,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 131 ---
+--- Decision 125 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3160,7 +3033,7 @@
 --- Narrative ---
   Resolving ability (category: Phases)
 
---- Decision 132 ---
+--- Decision 126 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3179,7 +3052,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 133 ---
+--- Decision 127 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3204,7 +3077,7 @@
   Thalia, Guardian of Thraben enters the battlefield
   Legend rule: Player A controls 2 copies of Thalia, Guardian of Thraben; choose one to keep.
 
---- Decision 134 ---
+--- Decision 128 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3225,7 +3098,7 @@
 --- Narrative ---
   Thalia, Guardian of Thraben is put into the graveyard (legend rule)
 
---- Decision 135 ---
+--- Decision 129 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3244,7 +3117,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 136 ---
+--- Decision 130 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3264,7 +3137,7 @@
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 137 ---
+--- Decision 131 ---
   Priority: Player A (active)
   Step: Begin Combat (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3283,7 +3156,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 138 ---
+--- Decision 132 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3305,7 +3178,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 139 ---
+--- Decision 133 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3329,7 +3202,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 140 ---
+--- Decision 134 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3353,7 +3226,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 141 ---
+--- Decision 135 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3375,7 +3248,7 @@
     Badgermole Cub -> Player B
     Thalia, Guardian of Thraben -> Player B
 
---- Decision 142 ---
+--- Decision 136 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3394,7 +3267,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 143 ---
+--- Decision 137 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
@@ -3416,7 +3289,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 144 ---
+--- Decision 138 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 9)
   Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 47
@@ -3435,7 +3308,7 @@
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 145 ---
+--- Decision 139 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 9)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1

@@ -189,9 +189,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 2 (Player B) ---
@@ -359,9 +356,6 @@
     Voice of Victory
   No matching cards to discard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
 --- Turn 3 (Player A) ---
@@ -413,9 +407,6 @@
   Player A casts Ocelot Pride
   Ocelot Pride enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Arid Mesa
 --- Turn 4 (Player B) ---
@@ -598,9 +589,6 @@
 --- Narrative ---
   Player B puts Ocelot Pride into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Ocelot Pride, Orcish Bowmasters, Voice of Victory
@@ -964,9 +952,6 @@
   Player B casts Voice of Victory
   Voice of Victory enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Cabal Therapy
 --- Turn 7 (Player A) ---
@@ -1060,9 +1045,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Cabal Therapy, Ocelot Pride, Voice of Victory
@@ -2215,9 +2197,6 @@
   Resolving ability (category: DealDamage, amount: 1)
   Dealt 1 damage to player (now at 6 life)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Arid Mesa
 --- Turn 12 (Player B) ---
@@ -2612,9 +2591,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player A loses 2 life (now at 7)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 14 (Player B) ---

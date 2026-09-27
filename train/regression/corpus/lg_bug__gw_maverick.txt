@@ -163,9 +163,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Keen-Eyed Curator
 --- Turn 2 (Player B) ---
@@ -191,15 +188,9 @@
 --- Narrative ---
   Player B played Dryad Arbor
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thalia, Guardian of Thraben
 --- Turn 4 (Player B) ---
@@ -337,9 +328,6 @@
   Player B fails to find
   Green Sun's Zenith is shuffled into its owner's library
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
 --- Turn 5 (Player A) ---
@@ -366,9 +354,6 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Bojuka Bog
 --- Turn 6 (Player B) ---
@@ -442,9 +427,6 @@
   Resolving ability (category: ChangeZoneAll)
   Player A moves 0 card(s) to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Tropical Island
 --- Turn 7 (Player A) ---
@@ -488,9 +470,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize

@@ -140,9 +140,6 @@
   Talon Gates of Madara triggered
   Resolving ability (category: Phases)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Volcanic Island
 --- Turn 2 (Player B) ---
@@ -463,9 +460,6 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 3 (Player A) ---
@@ -559,9 +553,6 @@
   Player A puts Thalia, Guardian of Thraben into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Lightning Bolt
 --- Turn 4 (Player B) ---
@@ -746,15 +737,9 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Noble Hierarch
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
@@ -1187,9 +1172,6 @@
 --- Narrative ---
   Green Sun's Zenith is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
@@ -1496,9 +1478,6 @@
 --- Narrative ---
   Green Sun's Zenith is countered
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Force of Will
 --- Turn 10 (Player B) ---
@@ -1697,9 +1676,6 @@
   Player A shuffles their library
   Player A puts Dryad Arbor to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Force of Will
 --- Turn 12 (Player B) ---
@@ -1945,9 +1921,6 @@
   Player A casts Scythecat Cub
   Scythecat Cub enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Murktide Regent
 --- Turn 14 (Player B) ---
@@ -2335,9 +2308,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Murktide Regent
 --- Turn 16 (Player B) ---

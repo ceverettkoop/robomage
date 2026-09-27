@@ -247,9 +247,6 @@
   Skateboard triggered
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -377,9 +374,6 @@
   Resolving ability (category: LoseLife, amount: 2)
   Player B loses 2 life (now at 16)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Boseiju, Who Endures
   Urza's Saga gets 1 lore counter (now 2).
@@ -440,9 +434,6 @@
   Token created: 0/0 Construct
   Construct token gains (always)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 4 (Player B) ---
@@ -750,9 +741,6 @@
 --- Narrative ---
   Player B discards Lotus Petal
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Boseiju, Who Endures, Wasteland
@@ -879,15 +867,14 @@
    1: Equip Skateboard  [#32]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
-  Player A activated Boseiju, Who Endures for 1(G)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 36 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
   Opp:   13 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Boseiju, Who Endures (T,NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
+  Self BF:  Boseiju, Who Endures (NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Swamp (T)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
@@ -897,11 +884,15 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Construct [5/5]
-   1: Construct [5/5]
-  >> A/A: 0 (Construct [5/5])
+   0: Construct token
+   1: Construct token
+  >> A/A: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player A activated Boseiju, Who Endures for 1(G)
+  Player A's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player A) ---
 
@@ -1029,49 +1020,8 @@
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T) | Construct [5/5] (SICK)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
-  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 44 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   20 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island | Swamp
-  Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T) | Construct [5/5] (SICK)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize, Marsh Flats, Force of Will
-  Opp GY:  Urza's Saga, Dark Depths, Mox Diamond
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Wasteland
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 45 ---
   Priority: Player B (active)
   Step: End Combat (turn 6)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1089,7 +1039,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 46 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: Second Main (turn 6)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1107,7 +1057,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 47 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: End Step (turn 6)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1130,7 +1080,7 @@
   PA: Dark Depths, Wasteland
   PB: Dark Ritual
 
---- Decision 48 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  20 life | mana: empty | hand(2): Dark Depths, Wasteland | lib 50
@@ -1151,7 +1101,7 @@
   Player A activated Boseiju, Who Endures for 1(G)
   Player A's Urza's Saga ability is on the stack
 
---- Decision 49 ---
+--- Decision 47 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1174,7 +1124,7 @@
   Token created: 0/0 Construct
   Construct token gains (always)
 
---- Decision 50 ---
+--- Decision 48 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1194,7 +1144,7 @@
 --- Narrative ---
   Player A draws Ghost Quarter
 
---- Decision 51 ---
+--- Decision 49 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1216,7 +1166,7 @@
   Urza's Saga gets 1 lore counter (now 3).
   Urza's Saga chapter 3 triggers.
 
---- Decision 52 ---
+--- Decision 50 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1239,7 +1189,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
---- Decision 53 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Dark Depths, Ghost Quarter, Wasteland | lib 49
@@ -1266,7 +1216,7 @@
   Player A puts Grafdigger's Cage to the battlefield
   Urza's Saga is sacrificed (final chapter completed).
 
---- Decision 54 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(3): Dark Depths, Ghost Quarter, Wasteland | lib 48
@@ -1289,7 +1239,7 @@
   Player A played Dark Depths
   Dark Depths enters with 10 ICE counter(s).
 
---- Decision 55 ---
+--- Decision 53 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1308,7 +1258,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 56 ---
+--- Decision 54 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1329,7 +1279,7 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 57 ---
+--- Decision 55 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
@@ -1352,7 +1302,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Construct token [8/7] -> Player B
 
---- Decision 58 ---
+--- Decision 56 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
@@ -1375,7 +1325,7 @@
     [attacking] Construct token [8/7] -> Player B
     [attacking] Construct token [7/7] -> Player B
 
---- Decision 59 ---
+--- Decision 57 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Ghost Quarter, Wasteland | lib 48
@@ -1396,7 +1346,7 @@
     Construct token -> Player B
     Construct token -> Player B
 
---- Decision 60 ---
+--- Decision 58 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44
@@ -1417,7 +1367,7 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 61 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: Declare Blk (turn 7)
   Self:  7 life | mana: empty | hand(1): Dark Ritual | lib 44

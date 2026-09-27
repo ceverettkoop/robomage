@@ -123,9 +123,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Mountain
 --- Turn 2 (Player B) ---
@@ -219,9 +216,6 @@
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island
@@ -400,9 +394,6 @@
   Player A casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
 --- Turn 6 (Player B) ---
   PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize

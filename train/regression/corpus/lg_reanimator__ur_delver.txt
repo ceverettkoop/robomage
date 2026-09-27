@@ -299,9 +299,6 @@
 --- Narrative ---
   Player A puts Reanimate into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -534,9 +531,6 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Lightning Bolt
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
@@ -640,9 +634,6 @@
 --- Narrative ---
   Player A puts Animate Dead into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thundering Falls
 --- Turn 4 (Player B) ---
@@ -719,9 +710,6 @@
   Player B puts Mystic Sanctuary to the battlefield
   Mystic Sanctuary enters tapped.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Archon of Cruelty, Thoughtseize, Thoughtseize, Undercity Sewers
@@ -868,9 +856,6 @@
 --- Narrative ---
   Player A puts Flow State into their graveyard.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Dragon's Rage Channeler
 --- Turn 6 (Player B) ---
@@ -973,9 +958,6 @@
   Player B casts Cori-Steel Cutter
   Cori-Steel Cutter enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Underground Sea
 --- Turn 7 (Player A) ---
@@ -1241,9 +1223,6 @@
 --- Narrative ---
   Player A played Underground Sea
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Polluted Delta
 --- Turn 8 (Player B) ---
@@ -1395,9 +1374,6 @@
   Dragon's Rage Channeler enters the battlefield
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Reanimate
 --- Turn 9 (Player A) ---

@@ -165,9 +165,6 @@
 --- Narrative ---
   Player A played Forest
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Malevolent Rumble
 --- Turn 2 (Player B) ---
@@ -194,9 +191,6 @@
   Player B played Dark Depths
   Dark Depths enters with 10 ICE counter(s).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Swords to Plowshares
 --- Turn 3 (Player A) ---
@@ -269,9 +263,6 @@
   Resolving ability (category: Earthbend)
   Forest becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Sphere of Resistance
 --- Turn 4 (Player B) ---
@@ -298,9 +289,6 @@
 --- Narrative ---
   Player B played Thespian's Stage
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
   PA: Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
@@ -669,9 +657,6 @@
 --- Narrative ---
   Player B played The Tabernacle at Pendrell Vale
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 7 (Player A) ---
@@ -1050,9 +1035,6 @@
   Player B casts Sphere of Resistance
   Sphere of Resistance enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 9 (Player A) ---
@@ -1464,9 +1446,6 @@
   Player B's Blast Zone ability is on the stack
   Resolving ability (category: PutCounter, amount: 0)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 11 (Player A) ---
@@ -1835,9 +1814,6 @@
   Player B's Blast Zone ability is on the stack
   Resolving ability (category: PutCounter, amount: 0)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 13 (Player A) ---
@@ -2226,9 +2202,6 @@
   Player B's Blast Zone ability is on the stack
   Resolving ability (category: PutCounter, amount: 0)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 15 (Player A) ---
@@ -2628,9 +2601,6 @@
   Player B's Blast Zone ability is on the stack
   Resolving ability (category: PutCounter, amount: 0)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 17 (Player A) ---
@@ -3079,9 +3049,6 @@
   Player B casts Expedition Map
   Expedition Map enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 19 (Player A) ---
@@ -3625,9 +3592,6 @@
   Dark Depths enters with 10 ICE counter(s).
   Exploration enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 21 (Player A) ---
@@ -4178,9 +4142,6 @@
   Resolving ability (category: Token)
   Token created: 20/20 Marit Lage
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 23 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 23 (Player A) ---
@@ -4707,9 +4668,6 @@
   Player A moves Windswept Heath to exile
   Player A moves 7 card(s) to exile
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 25 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 25 (Player A) ---
@@ -5215,9 +5173,6 @@
 --- Narrative ---
   Player B played Boseiju, Who Endures
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 27 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 27 (Player A) ---
@@ -5747,9 +5702,6 @@
   Player B casts Life from the Loam
   Resolving ability (category: ChangeZone)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 29 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 29 (Player A) ---
@@ -6372,9 +6324,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 31 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 31 (Player A) ---
@@ -7139,9 +7088,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 33 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 33 (Player A) ---
@@ -7910,9 +7856,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 35 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 35 (Player A) ---
@@ -8429,9 +8372,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 36 (Player B) --------
   Construct token triggered
 --- Turn 36 (Player B) ---
@@ -9260,9 +9200,6 @@
 --- Narrative ---
   Attackers declared:
     (none)
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 38 (Player B) --------
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 38 (Player B) ---
@@ -9481,9 +9418,6 @@
   Resolving ability (category: Destroy)
   Bojuka Bog is destroyed
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 39 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 39 (Player A) ---
@@ -9807,9 +9741,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Swords to Plowshares
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 
@@ -9943,9 +9874,6 @@
   Player B's Rishadan Port ability targeting Dryad Arbor is on the stack
   Resolving ability (category: Tap)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 41 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 41 (Player A) ---
@@ -10291,9 +10219,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Badgermole Cub
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 
@@ -10398,9 +10323,6 @@
   Mox Diamond has no Land to discard and is put into its owner's graveyard.
   Mox Diamond enters the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 43 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 43 (Player A) ---
@@ -10746,9 +10668,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Endurance
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 
@@ -10910,9 +10829,6 @@
 --- Narrative ---
   Player B names card: Badgermole Cub
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 45 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 45 (Player A) ---
@@ -11258,9 +11174,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Noble Hierarch
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 
@@ -11616,9 +11529,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 47 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 47 (Player A) ---
@@ -11974,9 +11884,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Knight of the Reliquary
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
 
@@ -12217,9 +12124,6 @@
   Resolving ability (category: Animate)
   Urza's Saga gains an activated ability.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 49 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 49 (Player A) ---
@@ -12496,9 +12400,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Swords to Plowshares
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 50 (Player B) --------
 --- Turn 50 (Player B) ---
   PA: Badgermole Cub, Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Noble Hierarch
@@ -12865,9 +12766,6 @@
   Player B fails to find
   Urza's Saga is sacrificed (final chapter completed).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 51 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 51 (Player A) ---
@@ -13220,9 +13118,6 @@
   Player A shuffles their library
   Player A fails to find
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 52 (Player B) --------
   Construct token triggered
 --- Turn 52 (Player B) ---
@@ -13472,15 +13367,14 @@
    1: Equip Skateboard  [#32]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
-  Player B activated Thespian's Stage for 1(C)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 493 ---
   Priority: Player B (active)
   Step: First Main (turn 52)
   Self:  24 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 15
   Opp:   12 life | mana: empty | hand count: 6 | lib 24
-  Self BF:  Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (T,NEW) | Yavimaya, Cradle of Growth (T) | Construct [8/8] (res 1) | Construct [8/8] (SICK,NEW)
+  Self BF:  Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth (T) | Construct [8/8] (res 1) | Construct [8/8] (SICK,NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Skateboard (self)
@@ -13492,11 +13386,15 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
-   0: Construct [8/8]
-   1: Construct [8/8]
-  >> B/B: 0 (Construct [8/8])
+   0: Construct token
+   1: Construct token
+  >> B/B: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player B activated Thespian's Stage for 1(C)
+  Player B's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   Construct token gains 1/0 Haste (always)
   --- Declare Attackers (Player B) ---
 
@@ -13882,9 +13780,6 @@
   Player A pays {1} — Dryad Arbor is not destroyed
   Player A draws Badgermole Cub
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 54 (Player B) --------
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 --- Turn 54 (Player B) ---
@@ -14203,15 +14098,14 @@
    1: Equip Skateboard  [#32]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
-  Player B activated Ancient Tomb for 1(G)
-  Choose creature to equip:
+  Choose target for Skateboard:
 
 --- Decision 518 ---
   Priority: Player B (active)
   Step: First Main (turn 54)
   Self:  24 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 14
   Opp:   3 life | mana: empty | hand count: 7 | lib 23
-  Self BF:  Ancient Tomb (T,NEW) | Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard (->Construct) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (T) | Yavimaya, Cradle of Growth (T) | Construct [9/8] [Haste] (eq:Skateboard) (res 1) | Construct [8/8] (res 1)
+  Self BF:  Ancient Tomb (NEW) | Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard (->Construct) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (T) | Yavimaya, Cradle of Growth (T) | Construct [9/8] [Haste] (eq:Skateboard) (res 1) | Construct [8/8] (res 1)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Skateboard (self)
@@ -14223,11 +14117,15 @@
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
-   0: Construct [9/8]
-   1: Construct [8/8]
-  >> B/B: 0 (Construct [9/8])
+   0: Construct token
+   1: Construct token
+  >> B/B: 0 (Construct token)
 --- Narrative ---
-  Skateboard equipped to Construct.
+  Targeting choice 0
+  Player B activated Ancient Tomb for 1(G)
+  Player B's Skateboard ability targeting Construct token is on the stack
+  Resolving ability (category: Attach)
+  Equipment attached.
   --- Declare Attackers (Player B) ---
 
 --- Decision 519 ---
