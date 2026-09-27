@@ -227,6 +227,13 @@ struct Game {
         bool blockers_declared = false;
         bool combat_damage_dealt = false;
         bool has_first_strikers = false;
+        // Cleanup step (CR 514): the 514.2 actions (damage removal, "until end of turn" and
+        // "this turn" effects end) have happened in this cleanup step; a state-based action was
+        // performed in it; and players received priority in it (CR 514.3a), so another cleanup
+        // step follows once the stack is empty and all players pass in succession.
+        bool cleanup_effects_ended = false;
+        bool cleanup_sba_performed = false;
+        bool cleanup_priority_round = false;
         // T3.10: attacker -> (blocker -> damage assigned). Populated by assign_combat_damage()
         // only for attackers that required a controller choice this strike step; deal_combat_damage()
         // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
@@ -840,6 +847,12 @@ struct Game {
         void known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx);
 
         bool ready_to_resolve();
+        // CR 514.2: all damage marked on permanents is removed and all "until end of turn" and
+        // "this turn" effects end, simultaneously. Run once per cleanup step, after the 514.1
+        // discard (process_turn_based_actions).
+        void end_cleanup_effects();
+        // Begin a cleanup step (CR 514) for the active player `active_player_entity`.
+        void begin_cleanup_step(Entity active_player_entity);
         // CR 615: is this combat damage prevented by an active combat-damage prevention shield?
         // True when `source` is a shielded creature under a prevent-as-source shield (damage it
         // would deal), or `target` is a shielded creature under a prevent-as-target shield (damage

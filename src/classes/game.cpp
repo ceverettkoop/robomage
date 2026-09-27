@@ -169,6 +169,151 @@ void Game::take_action() {
     payment_fail_counts.clear();
 }
 
+void Game::end_cleanup_effects() {
+    Zone::Ownership active_player = active_seat();
+    // Clear damage from all creatures; reset prowess bonus
+    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
+        if (global_coordinator.entity_has_component<Damage>(entity)) {
+            auto &damage = global_coordinator.GetComponent<Damage>(entity);
+            damage.damage_counters = 0;
+            damage.has_deathtouch_damage = false;
+        }
+        if (global_coordinator.entity_has_component<Creature>(entity)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+            if (cr.prowess_bonus != 0 || cr.eot_power_bonus != 0 ||
+                cr.eot_toughness_bonus != 0) {
+                cr.prowess_bonus = 0;
+                cr.eot_power_bonus = 0;
+                cr.eot_toughness_bonus = 0;
+                recompute_pt(cr);
+            }
+            // Drop "until end of turn" keyword grants (e.g. Haste); the
+            // static pass re-merges these onto cr.keywords each pass, so
+            // clearing the bucket here lets them lapse at cleanup (514.2).
+            cr.eot_keywords.clear();
+            // "Can't be blocked this turn" (Kappa Cannoneer) lapses at cleanup.
+            cr.cant_be_blocked_this_turn = false;
+        }
+        // "Loses <keyword> until end of turn" (Shadowspear's AB$ AnimateAll |
+        // RemoveKeywords$) lapses at cleanup (514.2). On a permanent (any type),
+        // so cleared outside the Creature branch above.
+        if (global_coordinator.entity_has_component<Permanent>(entity)) {
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            perm.removed_keywords_eot.clear();
+            // "Until end of turn" Animate (CR 514.2) lapses now: erase the
+            // EOT-added types, and if this EOT animate is what made a noncreature
+            // permanent a creature (a crewed-by-trigger Vehicle like The
+            // Fantasticar), strip its bootstrapped Creature/Damage components so it
+            // stops being a creature — unless it is a creature by a permanent means.
+            if (!perm.animate_added_types_eot.empty() ||
+                perm.animate_make_creature_eot) {
+                for (const auto &t : perm.animate_added_types_eot)
+                    perm.types.erase(t);
+                perm.animate_added_types_eot.clear();
+                if (perm.animate_make_creature_eot) {
+                    perm.animate_make_creature_eot = false;
+                    bool still_creature = perm.animate_make_creature;
+                    if (!still_creature &&
+                        global_coordinator.entity_has_component<CardData>(entity))
+                        still_creature = is_creature_card(
+                            global_coordinator.GetComponent<CardData>(entity));
+                    if (!still_creature) {
+                        if (global_coordinator.entity_has_component<Creature>(entity))
+                            global_coordinator.RemoveComponent<Creature>(entity);
+                        if (global_coordinator.entity_has_component<Damage>(entity))
+                            global_coordinator.RemoveComponent<Damage>(entity);
+                    }
+                }
+            }
+        }
+    }
+
+    // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
+    may_cast_this_turn.clear();
+    // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
+    // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
+    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
+    // survives cleanup — it is removed at its controller's next untap step instead.
+    floating_triggers.erase(
+        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
+                       [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
+        floating_triggers.end());
+    // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
+    // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
+    // "until the end of your next turn") survives this cleanup and is removed at the
+    // caster's NEXT turn's cleanup instead — detected as a later cleanup (turn >
+    // grant_turn) whose active player is the grant's caster.
+    for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
+        const ImpulseCastPermission &g = pit->second;
+        // A warp recast permission persists across turns for as long as the card
+        // remains in exile; it lapses only once the card has left exile (cast, or
+        // moved by another effect). It is never expired by the per-turn cleanup.
+        if (g.warp) {
+            bool in_exile =
+                global_coordinator.entity_has_component<Zone>(pit->first) &&
+                global_coordinator.GetComponent<Zone>(pit->first).location == Zone::EXILE;
+            if (in_exile) { ++pit; continue; }
+            pit = impulse_cast_permission.erase(pit);
+            continue;
+        }
+        bool expire = !g.persist_until_end_of_next_turn ||
+                      (g.caster == active_player && turn > g.grant_turn);
+        if (expire) pit = impulse_cast_permission.erase(pit);
+        else ++pit;
+    }
+    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
+    // "Spells you control can't be countered this turn" + "hexproof from blue and
+    // from black until end of turn") lapse at cleanup (CR 514.2).
+    cant_counter_spells_of.clear();
+    // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
+    cant_gain_life_this_turn.clear();
+    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
+    // lapse at cleanup (514.2).
+    combat_damage_prevention_shields.clear();
+    hexproof_from_colors_this_turn.clear();
+    // An "until end of turn" player protection-from-everything grant lapses at
+    // cleanup; an "until your next turn" grant persists (reverted at that player's
+    // untap step instead — see the UNTAP case above).
+    player_protection_from_everything.erase(
+        std::remove_if(player_protection_from_everything.begin(),
+                       player_protection_from_everything.end(),
+                       [](const PlayerProtectionFromEverything &p) {
+                           return !p.until_your_next_turn;
+                       }),
+        player_protection_from_everything.end());
+    // An "until end of turn" cast-with-flash permission (a bare CastWithFlash
+    // Effect) lapses at cleanup; an "until your next turn" grant (Teferi, Time
+    // Raveler's +1) persists, reverted at that player's untap step instead.
+    cast_with_flash_permissions.erase(
+        std::remove_if(cast_with_flash_permissions.begin(),
+                       cast_with_flash_permissions.end(),
+                       [](const CastWithFlashPermission &p) {
+                           return !p.until_your_next_turn;
+                       }),
+        cast_with_flash_permissions.end());
+    // "This turn" leave-battlefield delayed triggers (Searing Blood's "when that
+    // creature dies this turn") expire unfired at cleanup if the watched object
+    // never left the battlefield (CR 603.7b). Reached after the end step, so any
+    // death during this turn has already fired the trigger (and removed it).
+    delayed_triggers.erase(
+        std::remove_if(delayed_triggers.begin(), delayed_triggers.end(),
+                       [](const DelayedTrigger &dt) { return dt.expires_end_of_turn; }),
+        delayed_triggers.end());
+}
+
+// Begin a cleanup step (CR 514): cur_step becomes CLEANUP with no player holding priority, its
+// 514.2 actions still to happen, and CLEANUP_BEGAN fired for "at the beginning of the cleanup
+// step" abilities.
+void Game::begin_cleanup_step(Entity active_player_entity) {
+    cur_step = CLEANUP;
+    cleanup_effects_ended = false;
+    cleanup_sba_performed = false;
+    cleanup_priority_round = false;
+    Event cleanup_event(Events::CLEANUP_BEGAN);
+    cleanup_event.SetParam(Params::PLAYER, active_player_entity);
+    global_coordinator.SendEvent(cleanup_event);
+}
+
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared_ptr<Orderer> orderer) {
     // will advance step and return true if step advanced
     // otherwise will resove stack or pass priority as needed
@@ -182,6 +327,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
     // the upkeep (CR 603.3b), so it stays on the stack for the normal upkeep
     // priority round after the step change.
     if (ready_to_resolve() || cur_step == UNTAP) {
+        // CR 514.3a: a state-based action performed or a triggered ability put on the stack
+        // during the cleanup step gives the active player priority (the step began with no
+        // player holding it); another cleanup step follows once that priority round ends.
+        if (cur_step == CLEANUP && !cleanup_priority_round && !resolution.active &&
+            (cleanup_sba_performed || !stack_manager->is_empty())) {
+            cleanup_priority_round = true;
+            player_a_has_priority = player_a_turn;
+            a_has_passed = false;
+            b_has_passed = false;
+            return false;
+        }
         if (!stack_manager->is_empty() && cur_step != UNTAP) {
             stack_manager->resolve_top(orderer);
             // A suspended resolution parked its decision for the loop top:
@@ -417,107 +573,18 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // on the stack), not a step side effect — so nothing is done inline here.
                     break;
                 case END_STEP:
-                    cur_step = CLEANUP;
-                    {
-                        Event cleanup_event(Events::CLEANUP_BEGAN);
-                        cleanup_event.SetParam(Params::PLAYER, active_player_entity);
-                        global_coordinator.SendEvent(cleanup_event);
-                    }
+                    begin_cleanup_step(active_player_entity);
                     break;
                 case CLEANUP:
-                    // Clear damage from all creatures; reset prowess bonus
-                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
-                        if (global_coordinator.entity_has_component<Damage>(entity)) {
-                            auto &damage = global_coordinator.GetComponent<Damage>(entity);
-                            damage.damage_counters = 0;
-                            damage.has_deathtouch_damage = false;
-                        }
-                        if (global_coordinator.entity_has_component<Creature>(entity)) {
-                            auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                            if (cr.prowess_bonus != 0 || cr.eot_power_bonus != 0 ||
-                                cr.eot_toughness_bonus != 0) {
-                                cr.prowess_bonus = 0;
-                                cr.eot_power_bonus = 0;
-                                cr.eot_toughness_bonus = 0;
-                                recompute_pt(cr);
-                            }
-                            // Drop "until end of turn" keyword grants (e.g. Haste); the
-                            // static pass re-merges these onto cr.keywords each pass, so
-                            // clearing the bucket here lets them lapse at cleanup (514.2).
-                            cr.eot_keywords.clear();
-                            // "Can't be blocked this turn" (Kappa Cannoneer) lapses at cleanup.
-                            cr.cant_be_blocked_this_turn = false;
-                        }
-                        // "Loses <keyword> until end of turn" (Shadowspear's AB$ AnimateAll |
-                        // RemoveKeywords$) lapses at cleanup (514.2). On a permanent (any type),
-                        // so cleared outside the Creature branch above.
-                        if (global_coordinator.entity_has_component<Permanent>(entity)) {
-                            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                            perm.removed_keywords_eot.clear();
-                            // "Until end of turn" Animate (CR 514.2) lapses now: erase the
-                            // EOT-added types, and if this EOT animate is what made a noncreature
-                            // permanent a creature (a crewed-by-trigger Vehicle like The
-                            // Fantasticar), strip its bootstrapped Creature/Damage components so it
-                            // stops being a creature — unless it is a creature by a permanent means.
-                            if (!perm.animate_added_types_eot.empty() ||
-                                perm.animate_make_creature_eot) {
-                                for (const auto &t : perm.animate_added_types_eot)
-                                    perm.types.erase(t);
-                                perm.animate_added_types_eot.clear();
-                                if (perm.animate_make_creature_eot) {
-                                    perm.animate_make_creature_eot = false;
-                                    bool still_creature = perm.animate_make_creature;
-                                    if (!still_creature &&
-                                        global_coordinator.entity_has_component<CardData>(entity))
-                                        still_creature = is_creature_card(
-                                            global_coordinator.GetComponent<CardData>(entity));
-                                    if (!still_creature) {
-                                        if (global_coordinator.entity_has_component<Creature>(entity))
-                                            global_coordinator.RemoveComponent<Creature>(entity);
-                                        if (global_coordinator.entity_has_component<Damage>(entity))
-                                            global_coordinator.RemoveComponent<Damage>(entity);
-                                    }
-                                }
-                            }
-                        }
+                    // CR 514.3a: players received priority during this cleanup step, so once
+                    // the stack is empty and all players pass, another cleanup step begins.
+                    if (cleanup_priority_round) {
+                        begin_cleanup_step(active_player_entity);
+                        break;
                     }
-
                     // Reset per-turn state
                     revolt_player_a = false;
                     revolt_player_b = false;
-                    // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
-                    may_cast_this_turn.clear();
-                    // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
-                    // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
-                    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
-                    // survives cleanup — it is removed at its controller's next untap step instead.
-                    floating_triggers.erase(
-                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
-                                       [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
-                        floating_triggers.end());
-                    // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
-                    // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
-                    // "until the end of your next turn") survives this cleanup and is removed at the
-                    // caster's NEXT turn's cleanup instead — detected as a later cleanup (turn >
-                    // grant_turn) whose active player is the grant's caster.
-                    for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
-                        const ImpulseCastPermission &g = pit->second;
-                        // A warp recast permission persists across turns for as long as the card
-                        // remains in exile; it lapses only once the card has left exile (cast, or
-                        // moved by another effect). It is never expired by the per-turn cleanup.
-                        if (g.warp) {
-                            bool in_exile =
-                                global_coordinator.entity_has_component<Zone>(pit->first) &&
-                                global_coordinator.GetComponent<Zone>(pit->first).location == Zone::EXILE;
-                            if (in_exile) { ++pit; continue; }
-                            pit = impulse_cast_permission.erase(pit);
-                            continue;
-                        }
-                        bool expire = !g.persist_until_end_of_next_turn ||
-                                      (g.caster == active_player && turn > g.grant_turn);
-                        if (expire) pit = impulse_cast_permission.erase(pit);
-                        else ++pit;
-                    }
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     // Snapshot this (the ending) turn's active player's OWN-TURN spell count before
@@ -556,36 +623,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         opp.noncreature_spells_cast_this_turn = 0;
                         opp.instant_sorcery_spells_cast_this_turn = 0;
                     }
-                    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
-                    // "Spells you control can't be countered this turn" + "hexproof from blue and
-                    // from black until end of turn") lapse at cleanup (CR 514.2).
-                    cant_counter_spells_of.clear();
-                    // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
-                    cant_gain_life_this_turn.clear();
-                    // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
-                    // lapse at cleanup (514.2).
-                    combat_damage_prevention_shields.clear();
-                    hexproof_from_colors_this_turn.clear();
-                    // An "until end of turn" player protection-from-everything grant lapses at
-                    // cleanup; an "until your next turn" grant persists (reverted at that player's
-                    // untap step instead — see the UNTAP case above).
-                    player_protection_from_everything.erase(
-                        std::remove_if(player_protection_from_everything.begin(),
-                                       player_protection_from_everything.end(),
-                                       [](const PlayerProtectionFromEverything &p) {
-                                           return !p.until_your_next_turn;
-                                       }),
-                        player_protection_from_everything.end());
-                    // An "until end of turn" cast-with-flash permission (a bare CastWithFlash
-                    // Effect) lapses at cleanup; an "until your next turn" grant (Teferi, Time
-                    // Raveler's +1) persists, reverted at that player's untap step instead.
-                    cast_with_flash_permissions.erase(
-                        std::remove_if(cast_with_flash_permissions.begin(),
-                                       cast_with_flash_permissions.end(),
-                                       [](const CastWithFlashPermission &p) {
-                                           return !p.until_your_next_turn;
-                                       }),
-                        cast_with_flash_permissions.end());
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in
@@ -596,15 +633,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // (CR 702.107a) reads an opponent's life_lost_this_turn to enable its alt cost.
                     global_coordinator.GetComponent<Player>(player_a_entity).life_lost_this_turn = 0;
                     global_coordinator.GetComponent<Player>(player_b_entity).life_lost_this_turn = 0;
-
-                    // "This turn" leave-battlefield delayed triggers (Searing Blood's "when that
-                    // creature dies this turn") expire unfired at cleanup if the watched object
-                    // never left the battlefield (CR 603.7b). Reached after the end step, so any
-                    // death during this turn has already fired the trigger (and removed it).
-                    delayed_triggers.erase(
-                        std::remove_if(delayed_triggers.begin(), delayed_triggers.end(),
-                                       [](const DelayedTrigger &dt) { return dt.expires_end_of_turn; }),
-                        delayed_triggers.end());
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();

@@ -115,6 +115,12 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
             game.pending_choice = CLEANUP_DISCARD;
             return;
         }
+        // CR 514.2, after the discard: damage wears off and "until end of turn" / "this turn"
+        // effects end.
+        if (!game.cleanup_effects_ended) {
+            game.cleanup_effects_ended = true;
+            game.end_cleanup_effects();
+        }
     }
 }
 
@@ -393,6 +399,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         }
 
         if (!any_applied) break;
+        // CR 514.3a: an SBA performed during the cleanup step gives players priority.
+        if (game.cur_step == CLEANUP) game.cleanup_sba_performed = true;
     }
 
     // Latched-answer tripwire: a re-run entered with an answered SBE_LATCHED
