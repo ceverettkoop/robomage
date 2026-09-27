@@ -181,6 +181,18 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             return;
         }
 
+        // 704.5c - a player with ten or more poison counters (infect damage, CR 120.3b) loses.
+        if (player_a.counter_count("POISON") >= 10) {
+            printf("\nPlayer A has %d poison counters - Player B wins!\n", player_a.counter_count("POISON"));
+            game.player_loses(Zone::PLAYER_A);
+            return;
+        }
+        if (player_b.counter_count("POISON") >= 10) {
+            printf("\nPlayer B has %d poison counters - Player A wins!\n", player_b.counter_count("POISON"));
+            game.player_loses(Zone::PLAYER_B);
+            return;
+        }
+
         // 704.5d - tokens in zones other than battlefield cease to exist
         // (handled by apply_permanent_components above)
 
@@ -203,7 +215,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 // excluded above (it keeps its marked damage but is not destroyed).
                 auto &damage = global_coordinator.GetComponent<Damage>(entity);
                 // 702.2b: any nonzero damage from a deathtouch source is lethal.
-                bool deathtouched = damage.has_deathtouch_damage && damage.damage_counters > 0;
+                // The flag is set only by nonzero damage actually dealt, marked or as -1/-1
+                // counters (wither/infect), so it alone decides.
+                bool deathtouched = damage.has_deathtouch_damage;
                 if (deathtouched || damage.damage_counters >= creature.toughness) {
                     creatures_to_destroy.push_back(entity);
                 }

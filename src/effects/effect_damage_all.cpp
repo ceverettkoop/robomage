@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "../cli_output.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
@@ -27,12 +26,7 @@ HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
             targets.push_back(e);
 
-    for (auto e : targets) {
-        if (::deal_damage(ab.source, e, dmg)) {
-            game_log("Dealt %zu damage to %s\n", dmg,
-                     global_coordinator.GetComponent<Permanent>(e).name.c_str());
-        }
-    }
+    for (auto e : targets) ::deal_damage(ab.source, e, dmg, false);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

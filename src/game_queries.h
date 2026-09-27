@@ -1,6 +1,7 @@
 #ifndef GAME_QUERIES_H
 #define GAME_QUERIES_H
 
+#include <algorithm>
 #include <cctype>
 #include <climits>
 #include <set>
@@ -447,8 +448,8 @@ Zone::Ownership source_controller(Entity source);
 // (cur_game.player_protection_from_everything)? Protection from everything is protection from ALL
 // sources — including the protected player's OWN sources — so this returns true whenever the grant
 // is active for that player, regardless of who controls `source`. True means damage from `source`
-// to that player is prevented. Shared by the effect-damage chokepoint (deal_damage_to_player) and
-// the combat-damage path so the prevention rule lives in one place.
+// to that player is prevented. Consulted by the shared damage path (deal_damage) so the prevention
+// rule lives in one place.
 bool player_protected_from_source(Entity player_entity, Entity source);
 
 // CR 702.16d (damage facet): is `perm_target` a permanent with "protection from colored spells"
@@ -890,6 +891,34 @@ inline bool permanent_has_keyword(Entity e, const char *kw) {
     }
     return false;
 }
+
+// The permanent `e`'s effective keyword list, read the same way permanent_has_keyword reads one
+// keyword (a creature's Creature::keywords, else the face that's up or the Token's printed list),
+// minus any keyword suppressed until end of turn. Used to snapshot a departing permanent's
+// keywords into its last-known information (CR 608.2h).
+inline std::vector<std::string> permanent_keywords(Entity e) {
+    std::vector<std::string> out;
+    if (global_coordinator.entity_has_component<Creature>(e))
+        out = global_coordinator.GetComponent<Creature>(e).keywords;
+    else if (global_coordinator.entity_has_component<CardData>(e))
+        out = active_face(e, global_coordinator.GetComponent<CardData>(e)).keywords;
+    else if (global_coordinator.entity_has_component<Token>(e))
+        out = global_coordinator.GetComponent<Token>(e).keywords;
+    out.erase(std::remove_if(out.begin(), out.end(),
+                             [e](const std::string &k) { return keyword_removed_eot(e, k.c_str()); }),
+              out.end());
+    return out;
+}
+
+// The characteristics a damage source deals damage with (CR 702.2d-e, 702.15b-d, 702.80b-c,
+// 702.90d-e): these keywords work from any zone, and a source that changed zones before the effect
+// has it deal damage uses its last-known information. A battlefield permanent reads its live
+// keywords, a spell on the stack its printed ones, a card that left the battlefield its snapshot
+// (departed_lki_for), anything else its printed card. The controller is the source's controller,
+// or its owner if it has none (702.15b); a departed source's is its last-known controller.
+// Defined in game_queries.cpp.
+bool damage_source_has_keyword(Entity source, const char *kw);
+Zone::Ownership damage_source_controller(Entity source);
 
 // CR 302.6: a creature can't attack, and its abilities with {T} in the cost can't be activated,
 // unless it has been under its controller's control continuously since their most recent turn

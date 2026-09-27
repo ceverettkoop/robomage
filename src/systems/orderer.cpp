@@ -174,6 +174,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         LastKnownInfo &lki = cur_game.last_known_info[target];
         lki = LastKnownInfo{};
         lki.types = global_coordinator.GetComponent<Permanent>(target).types;
+        lki.keywords = permanent_keywords(target);
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
         // Identity (name, token-ness, token script): a token ceases to exist once it leaves the
         // battlefield (CR 111.7), taking every component with it, but an unless-cost prompt or a

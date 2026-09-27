@@ -24,6 +24,7 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership player);
 static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string &spec);
 static bool player_target_alternative(const std::string &alt, bool &opponent_only, bool &you_only);
+static const LastKnownInfo *departed_damage_source_lki(Entity source);
 
 // The effective_* accessors implement CR 608.2h: use the object's current information while it
 // is in the zone it is expected to be in (the battlefield, for a permanent's continuous-effect-
@@ -749,6 +750,37 @@ bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zo
         return true;
     }
     return false;
+}
+
+// ── Damage-source characteristics (declared in game_queries.h) ──────────────
+// The last-known snapshot a damage source deals damage with: set only when the source is neither
+// on the battlefield nor a spell on the stack, i.e. it left the battlefield before the effect had
+// it deal damage (CR 702.15c, 702.2e).
+static const LastKnownInfo *departed_damage_source_lki(Entity source) {
+    if (on_battlefield(source) || global_coordinator.entity_has_component<Spell>(source))
+        return nullptr;
+    return departed_lki_for(source);
+}
+
+bool damage_source_has_keyword(Entity source, const char *kw) {
+    if (on_battlefield(source)) return permanent_has_keyword(source, kw);
+    if (const LastKnownInfo *lki = departed_damage_source_lki(source))
+        return std::find(lki->keywords.begin(), lki->keywords.end(), kw) != lki->keywords.end();
+    if (global_coordinator.entity_has_component<CardData>(source)) {
+        for (const auto &k : active_face(source, global_coordinator.GetComponent<CardData>(source)).keywords)
+            if (k == kw) return true;
+        return false;
+    }
+    if (global_coordinator.entity_has_component<Token>(source))
+        for (const auto &k : global_coordinator.GetComponent<Token>(source).keywords)
+            if (k == kw) return true;
+    return false;
+}
+
+Zone::Ownership damage_source_controller(Entity source) {
+    if (const LastKnownInfo *lki = departed_damage_source_lki(source))
+        if (lki->controller != Zone::UNKNOWN) return lki->controller;
+    return source_controller(source);
 }
 
 // ── Defined$ player resolution (declared in game_queries.h) ─────────────────

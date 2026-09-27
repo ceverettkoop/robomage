@@ -105,6 +105,8 @@ struct LastKnownInfo {
                                            // token-band vocab index
     int power = 0;
     int toughness = 0;
+    std::vector<std::string> keywords;     // effective keywords (permanent_keywords): a damage source
+                                           // that left play deals damage with them (CR 702.15c)
     std::set<Type> types;                  // its type line (types, subtypes, supertypes)
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
@@ -682,7 +684,7 @@ struct Game {
         // damage by any source an opponent controls. `until_your_next_turn` selects the duration:
         // when true the grant is reverted at the start of the protected player's next turn (their
         // untap step); when false it lapses at cleanup (end of turn). Consulted in
-        // Ability::is_legal_target and deal_damage_to_player.
+        // Ability::is_legal_target and deal_damage.
         struct PlayerProtectionFromEverything {
             Zone::Ownership player = Zone::UNKNOWN;
             bool until_your_next_turn = false;
