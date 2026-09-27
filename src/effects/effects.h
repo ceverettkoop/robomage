@@ -103,6 +103,12 @@ int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Put card `e` onto the battlefield by an effect rather than by resolving as a spell — the one
+// entry every effect that "puts a card onto the battlefield" shares with ChangeZone: a
+// nonpermanent card can't enter (CR 110.4a), and an Aura first chooses what it will enchant, or
+// with no legal object stays where it is (CR 303.4f/g). `fctx` carries that pick (see
+// change_zone_move). Returns the zone the card is in afterwards. Defined in effect_change_zone.cpp.
+Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e);
 // ChangeType$ Remembered.sameName / Targeted.sameName mover, shared by change_zone
 // (force_all=false) and change_zone_all (force_all=true).
 bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all);

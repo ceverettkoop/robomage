@@ -137,6 +137,11 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     return landed;
 }
 
+Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e) {
+    static const Ability no_move_params;
+    return change_zone_move(orderer, fctx, no_move_params, e, Zone::BATTLEFIELD);
+}
+
 // CR 603.6e linked exile-and-return ("exile ... until [host] leaves the battlefield"). Records
 // that `host` exiled `card` from `origin` under a Duration$ UntilHostLeavesPlay, and registers a
 // delayed trigger that RETURNS the card when the host leaves the battlefield. The return goes

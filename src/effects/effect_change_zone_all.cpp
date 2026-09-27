@@ -156,6 +156,11 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     const bool top_seen_by_owner = !ab.rest_random_order;
     size_t moved = 0;
     for (auto entity : to_move) {
+        // The shared uncast battlefield entry first: an Aura picks what it enchants, or stays
+        // where it is without a legal object (CR 303.4f/g), and then isn't moved.
+        if (ab.destination == Zone::BATTLEFIELD &&
+            put_onto_battlefield(orderer, FrameCtx::blocking(), entity) != Zone::BATTLEFIELD)
+            continue;
         if (global_coordinator.entity_has_component<CardData>(entity)) {
             // A face-down exiled card's identity is hidden from every player (CR 406.3).
             if (global_coordinator.GetComponent<Zone>(entity).is_face_down) {
@@ -166,7 +171,8 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                          dest_str);
             }
         }
-        orderer->add_to_zone(on_bottom, entity, ab.destination, top_seen_by_owner);
+        if (ab.destination != Zone::BATTLEFIELD)
+            orderer->add_to_zone(on_bottom, entity, ab.destination, top_seen_by_owner);
         // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each

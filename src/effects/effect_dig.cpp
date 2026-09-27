@@ -232,7 +232,13 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // A revealed card is recorded in the opponent's belief state before it moves, so it
         // stays known if it lands in a hand (CR 701.20a).
         if (chosen_revealed) mark_card_revealed(chosen, dig_owner);
-        orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees, chosen_face_down);
+        if (chosen_dest == Zone::BATTLEFIELD) {
+            // An Aura chooses what it enchants as it enters, or stays put without a legal object
+            // (CR 303.4f/g) — the shared uncast battlefield entry.
+            if (put_onto_battlefield(orderer, FrameCtx::blocking(), chosen) != Zone::BATTLEFIELD) continue;
+        } else {
+            orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees, chosen_face_down);
+        }
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (blind) {
             // Nobody saw the card; the summary line above narrates the move.

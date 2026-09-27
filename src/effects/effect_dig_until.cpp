@@ -85,13 +85,17 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                     attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
                 if (attack_target != 0) cur_game.pending_enters_attacking[found] = attack_target;
             }
-            orderer->add_to_zone(false, found, Zone::BATTLEFIELD);
-            // The card enters under the digging player's control (CR 608.2 — it comes from their
-            // own library).
-            if (global_coordinator.GetComponent<Zone>(found).location == Zone::BATTLEFIELD)
+            // The shared uncast entry (an Aura picks what it enchants, CR 303.4f/g). The card
+            // enters under the digging player's control (CR 608.2 — it comes from their own
+            // library).
+            if (put_onto_battlefield(orderer, FrameCtx::blocking(), found) == Zone::BATTLEFIELD) {
                 global_coordinator.GetComponent<Zone>(found).controller = owner;
-            game_log("%s puts %s onto the battlefield tapped and attacking.\n",
-                     player_name(owner).c_str(), nm.c_str());
+                game_log("%s puts %s onto the battlefield tapped and attacking.\n",
+                         player_name(owner).c_str(), nm.c_str());
+            } else {
+                cur_game.pending_enters_tapped.erase(found);
+                cur_game.pending_enters_attacking.erase(found);
+            }
         } else {
             orderer->add_to_zone(false, found, found_dest);
             game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
