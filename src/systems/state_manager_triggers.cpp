@@ -141,6 +141,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
 // in one state-based-action check) still triggers, with its last-known abilities and controller.
 // Tokens keep no abilities to look back at once off the battlefield.
 static bool is_self_etb_event(const Event &ev, Entity entity);
+static bool trigger_needs_target(const Ability &ab);
 static void match_departed_watcher_triggers(const std::vector<Event> &events,
                                             std::shared_ptr<Orderer> orderer,
                                             std::vector<PendingTrigger> &pending);
@@ -149,6 +150,12 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
 // subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
+// Does triggered ability `ab` still need its targets chosen as it is put on the stack (CR 603.3d)?
+// True when it targets and no target was bound from its trigger event.
+static bool trigger_needs_target(const Ability &ab) {
+    return ab.valid_tgts != "N_A" && ab.target == 0;
+}
+
 // Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own
 // enters-the-battlefield triggered abilities)?
 static bool is_self_etb_event(const Event &ev, Entity entity) {
@@ -255,7 +262,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = trigger_ab.source;
                 pt.label = "Delayed trigger";
                 pt.log_line = "Delayed trigger fires.";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
                 to_remove.push_back(i);
             } else if (expired) {
@@ -298,7 +305,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = 0;
                 pt.label = "Floating trigger (" + trigger_ab.category + ")";
                 pt.log_line = "A floating triggered ability triggers.";
-                pt.needs_target = false;
+                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
             continue;
@@ -324,7 +331,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         pt.source = 0;
         pt.label = "Floating trigger (" + trigger_ab.category + ")";
         pt.log_line = "A floating triggered ability triggers.";
-        pt.needs_target = false;
+        pt.needs_target = trigger_needs_target(trigger_ab);
         pending.push_back(pt);
     }
 
@@ -419,7 +426,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         pt.source = saga;
         pt.label = entity_name(saga) + " (chapter " + std::to_string(chapter) + ")";
         pt.log_line = entity_name(saga) + " chapter " + std::to_string(chapter) + " triggers.";
-        pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+        pt.needs_target = trigger_needs_target(trigger_ab);
         pending.push_back(pt);
     }
 
@@ -669,7 +676,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = entity;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
     }
@@ -719,7 +726,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = spell_e;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
     }
@@ -765,7 +772,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
         }
@@ -824,7 +831,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
         }
@@ -1191,7 +1198,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // Triggered abilities that require a target (e.g. Talon Gates of Madara's
             // "up to one target creature phases out") choose their target as the ability
             // goes on the stack, by the controller, in APNAP placement order.
-            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
         }
