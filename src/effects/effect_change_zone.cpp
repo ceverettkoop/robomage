@@ -33,6 +33,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
                                         Zone::ZoneValue dest, bool exile_face_down = false,
                                         bool enters_transformed = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
+static bool in_declared_origin(const Ability &ab, Entity e);
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx);
 
@@ -159,6 +160,14 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.watch_entity = host;
     dt.fire_on_leave_battlefield = true;
     register_delayed_trigger(dt, host);
+}
+
+// True if `e` sits in one of the ability's declared Origin$ zones, or the ability declares none.
+// A Defined$ mover acts only on an object still where the effect says it comes from.
+static bool in_declared_origin(const Ability &ab, Entity e) {
+    if (ab.origins.empty()) return true;
+    Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
+    return std::find(ab.origins.begin(), ab.origins.end(), loc) != ab.origins.end();
 }
 
 // A library search reveals the chosen card when it must satisfy a restriction
@@ -399,11 +408,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (ab.defined == "Enchanted" && ab.source != 0) {
         Entity enchanted = 0;
         auto pat = cur_game.pending_aura_target.find(ab.source);
-        if (pat != cur_game.pending_aura_target.end())
-            enchanted = pat->second.target;
-        else if (global_coordinator.entity_has_component<Permanent>(ab.source))
+        if (pat != cur_game.pending_aura_target.end()) {
+            // The card the aura was put onto the battlefield enchanting — only while it is still
+            // that object: one that left its zone in response is a new object (CR 400.7) that
+            // this aura does not enchant.
+            if (is_same_object(pat->second.target, pat->second.target_gen))
+                enchanted = pat->second.target;
+        } else if (global_coordinator.entity_has_component<Permanent>(ab.source)) {
             enchanted = global_coordinator.GetComponent<Permanent>(ab.source).equipped_to;
-        if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted)) {
+        }
+        // Origin$ (Animate Dead: Graveyard) names where the enchanted card is returned from; a
+        // card no longer there is not moved.
+        if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted) &&
+            in_declared_origin(ab, enchanted)) {
             std::string ename = entity_name(enchanted);
             if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
                 cur_game.pending_enters_tapped.insert(enchanted);
@@ -570,13 +587,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // Origin$ Exile) must not "return" a card that already left exile — or a
             // recycled entity id — since the phantom move would emit a false
             // entered-the-battlefield event (falsely firing ETB watchers like Guide of Souls).
-            if (!ab.origins.empty()) {
-                Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
-                bool in_origin = false;
-                for (auto z : ab.origins)
-                    if (z == loc) in_origin = true;
-                if (!in_origin) continue;
-            }
+            if (!in_declared_origin(ab, e)) continue;
             std::string nm = entity_name(e);
             Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination,
                                                       /*exile_face_down=*/false, ab.enters_transformed);
