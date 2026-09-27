@@ -1192,25 +1192,29 @@ static void remerge_animate_granted_abilities(Entity entity) {
 static Ability keyword_triggered_ability(const std::string &keyword);
 
 void StateManager::apply_keyword_abilities(Entity entity) {
-    if (!global_coordinator.entity_has_component<Creature>(entity)) return;
-    auto &cr = global_coordinator.GetComponent<Creature>(entity);
     auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-
-    for (const auto &kw : cr.keywords) {
+    // The keyword triggers this permanent should have right now: one per distinct keyword it
+    // currently has (permanent_keywords, after the layer pass). A keyword that went away — a face
+    // transformed, an effect removed or stopped granting it — takes its triggered ability with it.
+    std::vector<std::string> kws;
+    for (const auto &kw : permanent_keywords(entity)) {
+        if (keyword_triggered_ability(kw).trigger_on == 0) continue;
+        if (std::find(kws.begin(), kws.end(), kw) == kws.end()) kws.push_back(kw);
+    }
+    perm_abilities.erase(
+        std::remove_if(perm_abilities.begin(), perm_abilities.end(),
+                       [&](const Ability &ab) {
+                           return !ab.derived_from_keyword.empty() &&
+                                  std::find(kws.begin(), kws.end(), ab.derived_from_keyword) == kws.end();
+                       }),
+        perm_abilities.end());
+    for (const auto &kw : kws) {
+        bool present = false;
+        for (const auto &existing : perm_abilities)
+            if (existing.derived_from_keyword == kw) { present = true; break; }
+        if (present) continue;
         Ability ab = keyword_triggered_ability(kw);
-        if (ab.trigger_on == 0) continue;
-
-        bool already_present = false;
-        for (const auto &existing : perm_abilities) {
-            if (existing.ability_type == Ability::TRIGGERED &&
-                existing.category == ab.category &&
-                existing.trigger_on == ab.trigger_on) {
-                already_present = true;
-                break;
-            }
-        }
-        if (already_present) continue;
-
+        ab.derived_from_keyword = kw;
         ab.source = entity;
         perm_abilities.push_back(ab);
     }

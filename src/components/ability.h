@@ -113,6 +113,11 @@ struct Ability{
     // cleared and regenerated each SBE pass when type-changing effects are active.
     bool subtype_derived = false;
 
+    // The keyword (Prowess, Exalted, Mobilize:N) this triggered ability was derived from by
+    // apply_keyword_abilities; re-derived from the permanent's current keywords each SBE pass, so
+    // it goes away with the keyword. Empty for any other ability.
+    std::string derived_from_keyword = "";
+
     // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
     // attached this activated ability to the permanent. Holds the granting static's SOURCE
     // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
