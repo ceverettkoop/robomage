@@ -178,9 +178,8 @@ struct Permanent {
     // skips a flagged permanent's innate TRIGGERED abilities, and the Saga chapter machinery
     // (saga.cpp / the 714.4 sacrifice SBA) treats a flagged Saga as not-a-Saga. Abilities still
     // present in `abilities` (granted by the remover itself, or the regenerated subtype-derived
-    // mana ability) are NOT suppressed by this flag. Simplification vs CR 613.5: any grant from
-    // a non-remover source is erased regardless of timestamp (matches the existing layer-6
-    // removal model documented in state_manager_statics.cpp).
+    // mana ability, a grant with a later timestamp than the removal) are NOT suppressed by this
+    // flag (see the layer-6 removal model documented in state_manager_statics.cpp).
     bool abilities_removed = false;
 
     // CR 714.4 Saga sacrifice gate: the number of this Saga's chapter abilities that have

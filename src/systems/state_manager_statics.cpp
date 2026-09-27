@@ -542,6 +542,9 @@ static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
 static bool static_begins_before_layer6(const ActiveStatic &a);
 static void strip_rules_text_abilities(Entity entity, Permanent &perm);
+static bool granted_after(const Ability &ab, Permanent &perm, size_t removal_ts);
+static void regrant_later_keywords(Entity entity, const Permanent &perm, Creature &cr,
+                                   size_t removal_ts, const std::set<Entity> &entities);
 
 // Is this Affected$ filter a *general* permanent filter (an anthem-style class like
 // "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
@@ -1959,9 +1962,12 @@ void StateManager::apply_layer6_ability_grants() {
 //     re-derived next pass by apply_permanent_components / apply_land_abilities / the
 //     keyword rebuild in gather, so the removal is reversible once the effect leaves.
 //
-// LIMITATION: removal currently wins over same-layer grants unconditionally (it runs after
-// the grant pass). Timestamp ordering between a grant and a removal within layer 6 (the
-// Humility + anthem interaction, rule 613.7) is deferred to the dependency work (§5).
+// Within layer 6 the removal is ordered against grants by timestamp (613.7): after the clear,
+// recompute_abilities keeps the abilities and re-adds the keywords granted by effects with a
+// later timestamp than the removal (a static's grant, a resolved Animate's, an until-end-of-turn
+// grant), and layer 7b lets a later Animate's base P/T stand over the removal's setter.
+// LIMITATION: keyword counters (613.7c) and the triggered abilities derived from a granted
+// keyword (Prowess) are treated as predating every removal.
 
 // Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter through the
 // shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
@@ -2095,6 +2101,48 @@ static void strip_rules_text_abilities(Entity entity, Permanent &perm) {
     }
 }
 
+// Was ability `ab` on `perm` granted by an effect whose timestamp is later than `removal_ts`
+// (CR 613.7)? A static's grant takes its source's timestamp (613.7a); a resolved Animate's
+// rest-of-game grant, the Animate's (613.7b). Printed abilities predate every removal.
+static bool granted_after(const Ability &ab, Permanent &perm, size_t removal_ts) {
+    if (ab.granted_by_static != 0)
+        return global_coordinator.entity_has_component<Permanent>(ab.granted_by_static) &&
+               global_coordinator.GetComponent<Permanent>(ab.granted_by_static)
+                       .timestamp_entered_battlefield > removal_ts;
+    if (perm.animate_timestamp <= removal_ts) return false;
+    for (auto &granted : perm.animate_granted_abilities)
+        if (granted.identical_activated_ability(ab)) return true;
+    return false;
+}
+
+// Re-add to a creature that lost all abilities the keywords granted by effects with a later
+// timestamp than that removal (CR 613.7): a resolved Animate's (an earthbend's haste), an
+// until-end-of-turn grant's, and every static keyword grant still applying to it (a static
+// whose source kept its abilities, or one that began applying in layer 4, 613.6).
+static void regrant_later_keywords(Entity entity, const Permanent &perm, Creature &cr,
+                                   size_t removal_ts, const std::set<Entity> &entities) {
+    auto add = [&](const std::string &kw) {
+        if (perm.removed_keywords_eot.count(kw)) return;
+        if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+            cr.keywords.push_back(kw);
+    };
+    if (perm.animate_timestamp > removal_ts)
+        for (const auto &kw : perm.animate_added_keywords) add(kw);
+    if (cr.eot_keywords_timestamp > removal_ts)
+        for (const auto &kw : cr.eot_keywords) add(kw);
+    for (const auto &a : g_active_statics) {
+        if (a.suppressed || !a.condition_met) continue;
+        const StaticAbility &sa = *a.sa();
+        if (sa.category != "Continuous" || sa.add_keyword.empty()) continue;
+        if (static_timestamp(a) <= removal_ts) continue;
+        std::vector<Entity> targets = static_targets(a, entities);
+        if (std::find(targets.begin(), targets.end(), entity) == targets.end()) continue;
+        Creature granted;
+        add_keywords_from_spec(granted, sa.add_keyword);
+        for (const auto &kw : granted.keywords) add(kw);
+    }
+}
+
 void StateManager::recompute_abilities(Game &game) {
     (void)game;
     std::vector<ActiveStatic *> removers = collect_ability_removers();
@@ -2110,8 +2158,12 @@ void StateManager::recompute_abilities(Game &game) {
         // abilities" — one static) survives its own removal. A pure remover (Humility) grants
         // nothing, so nothing is preserved and the clear is total, as before.
         std::vector<Entity> affecting_removers;
-        for (auto *r : removers)
-            if (removal_affects(*r, entity)) affecting_removers.push_back(r->entity);
+        size_t removal_ts = 0;  // the latest affecting removal's timestamp (CR 613.7a)
+        for (auto *r : removers) {
+            if (!removal_affects(*r, entity)) continue;
+            affecting_removers.push_back(r->entity);
+            removal_ts = std::max(removal_ts, static_timestamp(*r));
+        }
         bool full_removal = !affecting_removers.empty();
 
         // (b) 305.7 land set to a basic type — loses its rules-text abilities but keeps
@@ -2133,17 +2185,24 @@ void StateManager::recompute_abilities(Game &game) {
         auto &abilities = perm.abilities;
         if (full_removal) {
             // Drop every ability except one granted by a remover that affects this entity
-            // (the remover's own "and gains ..." clause, e.g. Toxicrene's any-color mana).
+            // (the remover's own "and gains ..." clause, e.g. Toxicrene's any-color mana) and
+            // one granted by an effect with a later timestamp than the removal, which applies
+            // after it (CR 613.7).
             abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                            [&](const Ability &ab) {
-                                               return std::find(affecting_removers.begin(),
-                                                                affecting_removers.end(),
-                                                                ab.granted_by_static) ==
-                                                      affecting_removers.end();
+                                               if (std::find(affecting_removers.begin(),
+                                                             affecting_removers.end(),
+                                                             ab.granted_by_static) !=
+                                                   affecting_removers.end())
+                                                   return false;
+                                               return !granted_after(ab, perm, removal_ts);
                                            }),
                             abilities.end());
-            if (global_coordinator.entity_has_component<Creature>(entity))
-                global_coordinator.GetComponent<Creature>(entity).keywords.clear();
+            if (global_coordinator.entity_has_component<Creature>(entity)) {
+                auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                cr.keywords.clear();
+                regrant_later_keywords(entity, perm, cr, removal_ts, mEntities);
+            }
         } else {
             strip_rules_text_abilities(entity, perm);
         }
@@ -2201,9 +2260,15 @@ void StateManager::apply_layer7_pt_effects() {
                 if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                 if (!is_battlefield_permanent(entity)) continue;
                 const ActiveStatic *winner = nullptr;
+                size_t winner_ts = 0;
                 for (auto &s : setters)
-                    if (s.targets.count(entity)) winner = s.a;  // later timestamp overwrites
+                    if (s.targets.count(entity)) { winner = s.a; winner_ts = s.timestamp; }  // later timestamp overwrites
                 if (!winner) continue;
+                // A resolved Animate that set this creature's base P/T (an earthbend's 0/0) is a
+                // 7b effect too: with a later timestamp it applies after the static setter, so its
+                // values (already the creature's base) stand.
+                const auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm.animate_set_pt && perm.animate_timestamp > winner_ts) continue;
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
                 cr.set_power = !winner->sa()->set_power_svar.empty()

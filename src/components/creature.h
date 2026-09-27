@@ -27,6 +27,7 @@ struct Creature {
     // pass rebuilds `keywords` from the printed base each pass (611.3a); these are re-merged
     // onto `keywords` after that rebuild and cleared at the cleanup step (514.2 / 611.2b).
     std::vector<std::string> eot_keywords;
+    size_t eot_keywords_timestamp = 0;  // CR 613.7b timestamp of the latest eot_keywords grant
     bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
     bool cant_be_blocked_this_turn = false;  // set by a "can't be blocked this turn" effect (Kappa Cannoneer); cleared at cleanup (514.2)
 

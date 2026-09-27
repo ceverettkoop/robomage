@@ -45,6 +45,7 @@ HandlerResult animate_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // Grant direction (until end of turn) — creatures only (keywords live on Creature).
         if (!ab.add_keywords.empty() && global_coordinator.entity_has_component<Creature>(e)) {
             auto &cr = global_coordinator.GetComponent<Creature>(e);
+            cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
             for (const auto &kw : ab.add_keywords) {
                 if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
                     cr.eot_keywords.push_back(kw);

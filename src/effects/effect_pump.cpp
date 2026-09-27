@@ -47,6 +47,7 @@ void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const Pum
     // bucket; the static pass re-merges them onto cr.keywords each pass and cleanup
     // clears them (514.2). De-dup so repeated grants don't pile up.
     if (pp) {
+        if (!pp->grant_keywords.empty()) cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
         for (const auto &kw : pp->grant_keywords) {
             if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
                 cr.eot_keywords.push_back(kw);
