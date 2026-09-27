@@ -233,23 +233,17 @@ struct EachPlayerPutRt {
 // A cast made during a resolution (CR 608.2g; cast_during_resolution, action_processor.h):
 // whether the "cast it?" offer is still to be answered, or the cast is in flight — its own
 // prompts park as CAST queries, and the resolution resumes once the spell is on the stack
-// (or the cast was cancelled). The DB$ Play handler's runtime, and embedded in suspend's.
+// (or the cast was cancelled). The runtime of the handlers that offer such a cast (DB$ Play,
+// suspend's last-counter trigger, a miracle trigger).
 struct ResolutionCastRt {
     enum Stage { OFFER, CASTING, DONE };
     Stage stage = OFFER;
     bool prev_priority = false;   // player_a_has_priority to restore once the cast completes
 };
-// Suspend's upkeep tick (effects::suspend_tick): the time counter comes off once, then the
-// last-counter free cast is offered and made during the resolution.
-struct SuspendTickRt {
-    bool ticked = false;          // the time counter was removed
-    bool last = false;            // it was the last one: the card may be cast
-    ResolutionCastRt cast;
-};
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt, SuspendTickRt,
+                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
                                    ResolutionCastRt>;
 
 // What one run_target_select call reports: the ability's targets are fully

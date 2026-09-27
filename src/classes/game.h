@@ -791,8 +791,8 @@ struct Game {
         // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
         // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
         // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
-        // its owner's upkeep (effects::suspend_tick), which then offers the free cast during its
-        // resolution (CR 702.62a third ability).
+        // its owner's upkeep (effects::suspend_tick); removing the last counter triggers the free
+        // cast (CR 702.62a third ability, effects::suspend_cast).
         std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created

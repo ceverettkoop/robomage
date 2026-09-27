@@ -81,6 +81,7 @@ enum class EffectKind {
     MiracleCast,
     Unattach,
     Ninjutsu,
+    SuspendCast,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

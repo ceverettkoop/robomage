@@ -149,9 +149,9 @@ struct CardData{
     // action usable from HAND, at the timing you could begin to cast the card (sorcery speed for a
     // sorcery). Instead of casting, its owner may pay `suspend_cost` and exile the card with
     // `suspend_count` time counters on it. At the beginning of its owner's upkeep a time counter is
-    // removed (a triggered ability, see state_manager_triggers); when the last is removed its owner
-    // may cast it without paying its mana cost, during that trigger's resolution
-    // (effects::suspend_tick). General over any Suspend card.
+    // removed (a triggered ability, see state_manager_triggers); removing the last one triggers
+    // "you may cast it without paying its mana cost", made during that trigger's resolution
+    // (effects::suspend_tick / suspend_cast). General over any Suspend card.
     bool has_suspend = false;
     int suspend_count = 0;               // N time counters the card is exiled with
     ManaValue suspend_cost;              // mana paid to begin the suspend process

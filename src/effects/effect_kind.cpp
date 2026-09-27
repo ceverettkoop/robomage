@@ -132,9 +132,13 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"CopySpellAbility", EffectKind::CopySpellAbility},
         // Suspend upkeep tick (CR 702.62a): the synthesized "remove a time counter" trigger of a
         // suspended card resolves here (see state_manager_triggers). Removes one suspend time
-        // counter from the exiled source and, when the last is removed, offers the free cast
-        // during the resolution. See effect_suspend_tick.cpp.
+        // counter from the exiled source; removing the last one triggers SuspendCast. See
+        // effect_suspend_tick.cpp.
         {"SuspendTick", EffectKind::SuspendTick},
+        // Suspend's "when the last time counter is removed from this card, if it's exiled, you
+        // may play it without paying its mana cost" trigger (CR 702.62a), queued by SuspendTick.
+        // Offers the free cast during its resolution. See effect_suspend_tick.cpp.
+        {"SuspendCast", EffectKind::SuspendCast},
         // DB$ SetState | Mode$ TurnFaceUp (The Creation of Avacyn chapter II): turn the Defined$
         // card face up (clear its face-down flag). See effect_set_state.cpp.
         {"SetState", EffectKind::SetState},
@@ -144,8 +148,8 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"WarpExile", EffectKind::WarpExile},
         // Miracle (CR 702.94a): the linked "when you reveal this card, you may cast it" triggered
         // ability, synthesized and put on the stack when its owner reveals a freshly-drawn miracle
-        // card (see proc_mandatory_choice's miracle-reveal branch). On resolution it opens the
-        // miracle-cast window for the source card. See effect_miracle.cpp.
+        // card (see proc_mandatory_choice's miracle-reveal branch). On resolution it offers the
+        // miracle cast of the source card. See effect_miracle.cpp.
         {"MiracleCast", EffectKind::MiracleCast},
         // Reconfigure's "[Cost]: Unattach this permanent" (CR 702.151a), synthesized with the
         // equip ability from K:Reconfigure. See effect_unattach.cpp.

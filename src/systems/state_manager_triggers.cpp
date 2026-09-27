@@ -445,8 +445,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // suspended, remove a time counter from it." This is a genuine triggered ability — one per
     // suspended card its owner controls — produced from the UPKEEP_BEGAN event and placed on the
     // stack (players get priority, opponents can respond), NOT applied as an immediate step side
-    // effect. The removal (and, when the last counter comes off, the free cast) is handled by the
-    // SuspendTick effect on resolution; see effect_suspend_tick. A suspended card is one in the
+    // effect. The removal is handled by the SuspendTick effect on resolution, and removing the last
+    // counter triggers the free cast (SuspendCast); see effect_suspend_tick. A suspended card is one in the
     // exile zone with a positive time-counter count (702.62b), tracked in suspend_time_counters
     // (an exiled card is not a permanent). General over any Suspend card.
     for (const auto &ev : events) {

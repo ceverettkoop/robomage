@@ -80,6 +80,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::MiracleCast:     return &miracle_cast;
         case EffectKind::Unattach:        return &unattach;
         case EffectKind::Ninjutsu:        return &ninjutsu;
+        case EffectKind::SuspendCast:     return &suspend_cast;
         default:                          return nullptr;
     }
 }

@@ -7,55 +7,74 @@
 #include "../action_processor.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
+#include "../resolution_frame.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static bool is_exiled(Entity card);
+
 namespace effects {
 
-// Suspend upkeep tick (CR 702.62a). Combines the second and third suspend triggered abilities for
-// a single suspended card: remove one time counter, and — if that was the last one — let its owner
-// cast it without paying its mana cost.
+// Suspend upkeep tick (CR 702.62a, second ability): "At the beginning of your upkeep, if this card
+// is suspended, remove a time counter from it."
 //
 // The suspended card lives in the EXILE zone and is not a permanent, so its time counters can't be
 // stored in Permanent::counters; they are tracked in cur_game.suspend_time_counters keyed by the
 // card entity (ab.source). This handler decrements that count. When it reaches 0 the card stops
-// being suspended (702.62b) and its owner may cast it without paying its mana cost right then, as
-// part of this resolution (CR 608.2g, through cast_during_resolution): the spell goes on the stack
-// above this ability with its targets chosen now. If they don't, it remains exiled — the cast
-// can't be held for later in the turn. General over any Suspend card.
+// being suspended (702.62b), and removing the last counter triggers the third ability ("When the
+// last time counter is removed from this card, if it's exiled, you may play it without paying its
+// mana cost if able"), queued as its own triggered ability so players get priority before it
+// resolves (suspend_cast). General over any Suspend card.
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    SuspendTickRt local_rt;
-    SuspendTickRt &rt = ctx.can_suspend() ? ctx.rt<SuspendTickRt>() : local_rt;
+    (void)orderer;
+    (void)ctx;
     Entity card = ab.source;
-    if (!rt.ticked) {
-        rt.ticked = true;
-        auto it = cur_game.suspend_time_counters.find(card);
-        if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
-        // The card must still be a suspended card (in exile). If it left exile some other way,
-        // drop the stale tracking and do nothing.
-        if (!global_coordinator.entity_has_component<Zone>(card) ||
-            global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) {
-            cur_game.suspend_time_counters.erase(it);
-            return HandlerResult::DONE_RUN_SUBS;
-        }
-        it->second -= 1;
-        game_log("Removed a time counter from %s (%d remaining).\n", entity_name(card).c_str(),
-                 it->second);
-        if (it->second > 0) return HandlerResult::DONE_RUN_SUBS;
+    auto it = cur_game.suspend_time_counters.find(card);
+    if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
+    // The card must still be a suspended card (in exile). If it left exile some other way, drop
+    // the stale tracking and do nothing.
+    if (!is_exiled(card)) {
         cur_game.suspend_time_counters.erase(it);
-        rt.last = true;
+        return HandlerResult::DONE_RUN_SUBS;
     }
-    if (!rt.last) return HandlerResult::DONE_RUN_SUBS;
-    // Last time counter removed (CR 702.62a third ability): its owner may cast it without paying
-    // its mana cost.
+    it->second -= 1;
+    game_log("Removed a time counter from %s (%d remaining).\n", entity_name(card).c_str(),
+             it->second);
+    if (it->second > 0) return HandlerResult::DONE_RUN_SUBS;
+    cur_game.suspend_time_counters.erase(it);
+    Ability cast_trigger;
+    cast_trigger.ability_type = Ability::TRIGGERED;
+    cast_trigger.category = "SuspendCast";
+    cast_trigger.source = card;
+    cast_trigger.controller = global_coordinator.GetComponent<Zone>(card).owner;
+    cur_game.queue_trigger(cast_trigger, entity_name(card) +
+                                             " triggers: the last time counter was removed (suspend).");
+    return HandlerResult::DONE_RUN_SUBS;
+}
+
+// Suspend's third ability (CR 702.62a): "When the last time counter is removed from this card, if
+// it's exiled, you may play it without paying its mana cost if able." Its owner may cast it right
+// then, as part of this resolution (CR 608.2g, through cast_during_resolution): the spell goes on
+// the stack above this ability with its targets chosen now. If it isn't cast, it remains exiled —
+// the cast can't be held for later in the turn. General over any Suspend card.
+HandlerResult suspend_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    ResolutionCastRt local_rt;
+    ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
+    Entity card = ab.source;
+    if (rt.stage == ResolutionCastRt::OFFER && !is_exiled(card)) return HandlerResult::DONE_RUN_SUBS;
     Game::ImpulseCastPermission grant;
     grant.resource = Game::ImpulseCastPermission::FREE;
-    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(card).owner;
-    if (cast_during_resolution(card, owner, grant, rt.cast, ctx, orderer) ==
+    if (cast_during_resolution(card, ab.controller, grant, rt, ctx, orderer) ==
         ResolutionCastStatus::SUSPENDED)
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }
 
 }  // namespace effects
+
+// True if `card` is in the exile zone.
+static bool is_exiled(Entity card) {
+    return global_coordinator.entity_has_component<Zone>(card) &&
+           global_coordinator.GetComponent<Zone>(card).location == Zone::EXILE;
+}
