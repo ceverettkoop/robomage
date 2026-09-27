@@ -41,6 +41,11 @@ static std::string chosen_targets_display(const Ability &ab);
 // Pay a life cost the legality gate already found payable (CR 119.4); a refusal here means the gate
 // and the payment disagree, which is an engine bug.
 static void pay_gated_life_cost(Player &player, int amount);
+// The largest X a variable life cost (Toxic Deluge: "pay X life") may be announced as (CR 601.2b,
+// 119.4): the life left after the cast's other life costs, lowered while the spell's mana could
+// only be paid by a painful source spending the life X needs.
+static size_t max_life_x(const Game::PendingCast &pc, Zone::Ownership caster, Entity spell_entity,
+                         std::shared_ptr<Orderer> orderer);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                 std::shared_ptr<Orderer> orderer, int resume_choice);
@@ -207,11 +212,6 @@ static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity
     return menu;
 }
 
-// Every chosen target of an ability, joined for the activation announcement. Targets are
-// public information as soon as the ability is put on the stack (CR 601.2c), so a
-// multi-target activation (e.g. Faerie Macabre's "up to two target cards") must announce
-// all of its targets — naming only the first makes the transcript read as if the other
-// cards were affected without ever being targeted.
 // See forward declaration at top of file.
 static void pay_gated_life_cost(Player &player, int amount) {
     if (!pay_life(player, amount))
@@ -219,6 +219,25 @@ static void pay_gated_life_cost(Player &player, int amount) {
                     " passed the legality gate but can't be paid (CR 119.4)");
 }
 
+// See forward declaration at top of file.
+static size_t max_life_x(const Game::PendingCast &pc, Zone::Ownership caster, Entity spell_entity,
+                         std::shared_ptr<Orderer> orderer) {
+    const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+    int max_x = std::max(0, player.life_total - pc.deferred_life_cost);
+    if (!pc.deferred_mana_pending || pc.deferred_mana_cost.empty()) return static_cast<size_t>(max_x);
+    while (max_x > 0 &&
+           !can_pay_mana(caster, pc.deferred_mana_cost, spell_entity, orderer, pc.deferred_delve,
+                         pc.deferred_improvise, /*exclude_entity=*/0,
+                         /*life_reserve=*/pc.deferred_life_cost + max_x))
+        --max_x;
+    return static_cast<size_t>(max_x);
+}
+
+// Every chosen target of an ability, joined for the activation announcement. Targets are
+// public information as soon as the ability is put on the stack (CR 601.2c), so a
+// multi-target activation (e.g. Faerie Macabre's "up to two target cards") must announce
+// all of its targets — naming only the first makes the transcript read as if the other
+// cards were affected without ever being targeted.
 static std::string chosen_targets_display(const Ability &ab) {
     if (ab.targets.empty()) return target_display_name(cur_game, ab.target);
     std::string out;
@@ -2681,17 +2700,17 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // The life paid IS the spell's X (Count$xPaid). CR 601.2b ANNOUNCES the value
             // of X here, before targets; the life itself is a cost, so it is deferred and
             // paid with everything else at PAY_APPLY — a cancelled mana payment then costs
-            // no life. X may be 0..life (CR 119.4 lets a player pay up to their whole total).
+            // no life. X may be 0..life (CR 119.4 lets a player pay up to their whole total),
+            // less whatever other life the cast costs and whatever life the mana payment must
+            // take (max_life_x), so every offered X is payable.
             if (spell_has_variable_life_cost(card_data)) {
-                Entity caster_entity = get_player_entity(caster);
-                auto &life_player = global_coordinator.GetComponent<Player>(caster_entity);
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
                     cur_game.x_paid = x_val;
                     pc.life_x_announced = static_cast<int>(x_val);
                 } else {
-                    size_t max_x = static_cast<size_t>(std::max(0, life_player.life_total));
+                    size_t max_x = max_life_x(pc, caster, spell_entity, orderer);
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {

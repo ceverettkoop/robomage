@@ -47,11 +47,11 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost, ManaValue
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true, bool has_improvise = false,
-                          Entity exclude_entity = 0);
+                          Entity exclude_entity = 0, int life_reserve = 0);
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   Entity paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, bool has_improvise,
-                                  Entity exclude_entity, bool max_yield_only);
+                                  Entity exclude_entity, bool max_yield_only, int life_reserve);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
@@ -65,14 +65,17 @@ static bool mana_ability_is_painful(const Ability &ab);
 // Life a mana ability's activation takes from its controller: its PayLife cost plus any
 // self-damage / life-loss rider (Ancient Tomb's 2 damage).
 static int mana_ability_life_loss(const Ability &ab);
-// Life the seat's in-flight cast still owes as part of its total cost (a deferred alternative /
-// flashback life cost, an announced X-life cost), paid after the mana (CR 601.2g-h); 0 when that
-// seat is casting nothing.
-static int life_reserved_for_pending_cast(Zone::Ownership seat);
+// Life the seat's in-flight payment still owes after its mana: a cast's deferred alternative /
+// flashback / escape life cost and announced X-life cost (CR 601.2g-h), or an activation's life
+// cost (CR 602.2b); 0 when that seat is paying for nothing.
+static int life_reserved_for_pending_payment(Zone::Ownership seat);
 // Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
-// payable (CR 119.4), and during a cast the activation must leave enough life to pay the cast's own
-// life cost afterward, since a cast whose total cost can't be paid is illegal (CR 601.2h).
-static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab);
+// payable (CR 119.4), and it must leave at least `life_reserve` life — or the in-flight payment's
+// own life cost, whichever is larger — for the life part of the cost being paid, since a spell or
+// ability whose total cost can't be paid is illegal (CR 601.2h, 602.2b). `life_reserve` is how a
+// legality gate asks "payable along with N life?" before any payment is in flight.
+static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab,
+                                      int life_reserve);
 static bool has_nonmana_activated_ability(Entity entity);
 static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
                                             std::shared_ptr<Orderer> orderer);
@@ -283,7 +286,7 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
 // produce" summary can never disagree with the menu about which sources are available.
 static bool mana_ability_available_now(Entity e, const Ability &ab,
                                        Zone::Ownership player, const std::set<Entity> &entities,
-                                       bool include_instant_speed) {
+                                       bool include_instant_speed, int life_reserve) {
     // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
     // mid-cost-payment. Callers listing actions for a player who holds priority pass
     // include_instant_speed; the affordability/payment callers leave it false.
@@ -293,7 +296,8 @@ static bool mana_ability_available_now(Entity e, const Ability &ab,
     if (!activation_source_ready(ab, e, player, entities)) return false;
     Entity player_entity = get_player_entity(player);
     if (global_coordinator.entity_has_component<Player>(player_entity) &&
-        !mana_ability_life_payable(global_coordinator.GetComponent<Player>(player_entity), player, ab))
+        !mana_ability_life_payable(global_coordinator.GetComponent<Player>(player_entity), player, ab,
+                                   life_reserve))
         return false;
     return true;
 }
@@ -303,7 +307,8 @@ static bool mana_ability_available_now(Entity e, const Ability &ab,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
 // to avoid circularity with can_afford_with_sources.
 static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false,
+    int life_reserve = 0) {
     std::vector<std::pair<Entity, Ability>> sources;
     for (auto entity : orderer->mEntities) {
         if (!is_battlefield_permanent(entity, player)) continue;
@@ -313,7 +318,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         for (const auto &ab : permanent.abilities) {
             if (!ability_is_mana(ab)) continue;
             if (!mana_ability_available_now(entity, ab, player, orderer->mEntities,
-                                            include_instant_speed))
+                                            include_instant_speed, life_reserve))
                 continue;
             // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
             // the Valid$-matching permanents you control, computed live. Expand into per-color
@@ -365,7 +370,7 @@ ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity> &ent
             // Instant-speed mana abilities (LED) ARE potential mana for their controller at
             // priority, which is the horizon this summary describes.
             if (!mana_ability_available_now(entity, ab, player, entities,
-                                            /*include_instant_speed=*/true))
+                                            /*include_instant_speed=*/true, /*life_reserve=*/0))
                 continue;
             // A ManaReflected source whose color set is empty (Mox Amber with no legendary,
             // or only colorless ones) produces nothing, so note_color leaves it uncounted —
@@ -788,10 +793,10 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
 // payer / pay-unless loop rely on this check to refuse.
 bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership controller,
                           std::shared_ptr<Orderer> orderer, ManaValue &pool,
-                          Player &player, bool commit, ManaLogStyle log_style) {
+                          Player &player, bool commit, ManaLogStyle log_style, int life_reserve) {
     auto &perm = global_coordinator.GetComponent<Permanent>(source);
     // A life cost the player can't pay (CR 119.4) refuses the activation before any effect.
-    if (!mana_ability_life_payable(player, controller, ab)) return false;
+    if (!mana_ability_life_payable(player, controller, ab, life_reserve)) return false;
     if (!ab.activation_mana_cost.empty()) {
         // pay_from_pool returns the unpayable remainder and drains the pool even on a
         // partial payment, so snapshot the pool and restore it when the cost bounces.
@@ -887,17 +892,26 @@ static int mana_ability_life_loss(const Ability &ab) {
 }
 
 // See forward declaration at top of file.
-static int life_reserved_for_pending_cast(Zone::Ownership seat) {
+static int life_reserved_for_pending_payment(Zone::Ownership seat) {
+    bool seat_is_a = (seat == Zone::PLAYER_A);
     const auto &pc = cur_game.pending_cast;
-    if (!pc.active || pc.caster_is_a != (seat == Zone::PLAYER_A)) return 0;
-    return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
+    if (pc.active && pc.caster_is_a == seat_is_a)
+        return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
+    // An activation pays its mana before its life (SECONDARY_PRE pays the life).
+    const auto &pa = cur_game.pending_activation;
+    if (pa.active && pa.activator_is_a == seat_is_a &&
+        pa.step < Game::PendingActivation::SECONDARY_PRE)
+        return pa.ability.life_cost;
+    return 0;
 }
 
 // See forward declaration at top of file.
-static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab) {
+static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab,
+                                      int life_reserve) {
     if (!can_pay_life(pl, ab.life_cost)) return false;
     int loss = mana_ability_life_loss(ab);
-    return loss <= 0 || pl.life_total - loss >= life_reserved_for_pending_cast(seat);
+    int reserve = std::max(life_reserve, life_reserved_for_pending_payment(seat));
+    return loss <= 0 || pl.life_total - loss >= reserve;
 }
 
 static bool has_nonmana_activated_ability(Entity entity) {
@@ -956,30 +970,31 @@ static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity p
 // replays the winning strategy so legality and payment stay in lockstep.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit, bool has_improvise, Entity exclude_entity) {
+                          bool commit, bool has_improvise, Entity exclude_entity,
+                          int life_reserve) {
     ManaValue trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
                               /*commit=*/false, has_improvise, exclude_entity,
-                              /*max_yield_only=*/false)) {
+                              /*max_yield_only=*/false, life_reserve)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
                                      /*commit=*/true, has_improvise, exclude_entity,
-                                     /*max_yield_only=*/false);
+                                     /*max_yield_only=*/false, life_reserve);
     }
     trial = remaining;
     if (auto_pay_mana_attempt(controller, trial, paid_for, orderer, has_delve,
                               /*commit=*/false, has_improvise, exclude_entity,
-                              /*max_yield_only=*/true)) {
+                              /*max_yield_only=*/true, life_reserve)) {
         if (!commit) {
             remaining = trial;
             return true;
         }
         return auto_pay_mana_attempt(controller, remaining, paid_for, orderer, has_delve,
                                      /*commit=*/true, has_improvise, exclude_entity,
-                                     /*max_yield_only=*/true);
+                                     /*max_yield_only=*/true, life_reserve);
     }
     return false;
 }
@@ -987,7 +1002,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaining,
                                   Entity paid_for, std::shared_ptr<Orderer> orderer,
                                   bool has_delve, bool commit, bool has_improvise,
-                                  Entity exclude_entity, bool max_yield_only) {
+                                  Entity exclude_entity, bool max_yield_only, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -1031,7 +1046,8 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     }
 
     // Collect available sources with their color info
-    auto sources = collect_available_mana_sources(controller, orderer);
+    auto sources = collect_available_mana_sources(controller, orderer,
+                                                  /*include_instant_speed=*/false, life_reserve);
 
     // Build per-entity info: which colors it can produce, how many entries
     struct SourceInfo {
@@ -1142,7 +1158,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
         return activate_mana_source(si.entity, si.ability, controller, orderer, pool, payer,
-                                    commit, ManaLogStyle::ACTIVATED);
+                                    commit, ManaLogStyle::ACTIVATED, life_reserve);
     };
 
     std::set<Entity> tapped_entities;
@@ -1372,7 +1388,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                  bool has_improvise, Entity exclude_entity) {
+                  bool has_improvise, Entity exclude_entity, int life_reserve) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
@@ -1380,7 +1396,7 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
     // so a spell can never be offered as legal and then fail to pay (and vice versa).
     ManaValue remaining = cost;
     return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
-                         has_improvise, exclude_entity);
+                         has_improvise, exclude_entity, life_reserve);
 }
 
 bool float_mana_before_cost_removal(Entity leaving, Zone::Ownership controller,

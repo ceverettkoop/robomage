@@ -190,10 +190,13 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     // spends the source's tap, so its mana ability is NOT also available to pay with — exclude
     // it, or a Blast Zone whose only other land is an Ancient Tomb reads as able to pay {3} off 2
     // mana plus its own {C}.
+    // The mana is paid before the PayLife cost, so a painful source may not spend the life that
+    // cost needs (life_reserve).
     ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
     if (!cost.empty() &&
         !can_pay_mana(activator, cost, source, orderer, /*has_delve=*/false,
-                      /*has_improvise=*/false, /*exclude_entity=*/ab.tap_cost ? source : 0))
+                      /*has_improvise=*/false, /*exclude_entity=*/ab.tap_cost ? source : 0,
+                      /*life_reserve=*/ab.life_cost))
         return false;
     const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
     // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
@@ -398,9 +401,13 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         if (!has_match) return false;
     }
 
-    // Floored mana portion of the alt cost (computed above)
+    // Floored mana portion of the alt cost (computed above). The alternative life cost (Force of
+    // Will's 1 life) is paid after the mana, so a painful source may not spend it.
     if (!alt_mana.empty()) {
-        if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer)) return false;
+        if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer, /*has_delve=*/false,
+                          /*has_improvise=*/false, /*exclude_entity=*/0,
+                          /*life_reserve=*/alt_cost.life_cost))
+            return false;
     }
 
     return true;
@@ -843,16 +850,16 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
 
         // Check affordability: flashback mana cost (floored — flashback is an alternative
-        // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
-        bool can_afford_fb = can_pay_mana(
-            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player), gy_entity, orderer);
-        if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
-            Entity pp_entity = get_player_entity(priority_player);
-            if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity),
-                              gcd.flashback_alt_cost.life_cost))
-                can_afford_fb = false;
-        }
-        if (!can_afford_fb) continue;
+        // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost (Deep
+        // Analysis: 3 life), paid after the mana, so a painful source may not spend that life.
+        int fb_life = gcd.flashback_alt_cost.life_cost;
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), fb_life))
+            continue;
+        if (!can_pay_mana(priority_player,
+                          floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player),
+                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
+                          /*exclude_entity=*/0, /*life_reserve=*/fb_life))
+            continue;
 
         // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
         // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
@@ -878,14 +885,17 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                           /*ignore_timing=*/false, orderer))
             continue;
 
-        // An escape life cost must be payable (CR 119.4).
-        if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
-                          gcd.escape_alt_cost.life_cost))
+        // An escape life cost must be payable (CR 119.4), and it is paid after the mana, so a
+        // painful source may not spend it.
+        int esc_life = gcd.escape_alt_cost.life_cost;
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), esc_life))
             continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
-                          gy_entity, orderer))
+        if (!can_pay_mana(priority_player,
+                          floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
+                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
+                          /*exclude_entity=*/0, /*life_reserve=*/esc_life))
             continue;
 
         // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
@@ -989,9 +999,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
         // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
         // cost above, so this alt-cost floor doesn't apply to them.
+        // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
         if (!is_normal_play) {
+            int grant_life = perm_grant.resource == Game::ImpulseCastPermission::LIFE
+                                 ? perm_grant.amount : 0;
             ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
-            if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
+            if (!floor_mana.empty() &&
+                !can_pay_mana(priority_player, floor_mana, ex_entity, orderer, /*has_delve=*/false,
+                              /*has_improvise=*/false, /*exclude_entity=*/0,
+                              /*life_reserve=*/grant_life))
                 continue;
         }
 

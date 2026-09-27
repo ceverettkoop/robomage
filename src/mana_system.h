@@ -59,14 +59,15 @@ void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership
 // `pool`, and the life cost to `player` (a throwaway copy in simulate mode); the write-only
 // ECS side effects are skipped when !commit (simulate mode).
 // Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
-// untouched) — when `player` can't pay the life cost (CR 119.4) or the ability's activation
-// mana cost (Talon Gates' {1}{T}) cannot be paid from the working pool. The cost is paid FIRST, before any other effect, so a
-// refusal cancels cleanly. Shared by the auto-payer (commit per simulate/real), the
-// interactive payer, and the pay-unless loop (both always commit, with pool == the
-// player's real mana pool).
+// untouched) — when `player` can't pay the life cost (CR 119.4), when its life loss would leave
+// less than `life_reserve` (see can_pay_mana) or the in-flight payment's own life cost, or when
+// the ability's activation mana cost (Talon Gates' {1}{T}) cannot be paid from the working pool.
+// The cost is paid FIRST, before any other effect, so a refusal cancels cleanly. Shared by the
+// auto-payer (commit per simulate/real), the interactive payer, and the pay-unless loop (both
+// always commit, with pool == the player's real mana pool).
 bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership controller,
                           std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
-                          bool commit, ManaLogStyle log_style);
+                          bool commit, ManaLogStyle log_style, int life_reserve = 0);
 
 // ── Mana development summary (ML observation) ───────────────────────────────
 // What a player COULD produce right now, as opposed to what is floating in their
@@ -180,9 +181,15 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // whose payment must then fail. The real payment never had this problem — by the time it
 // runs, the tap cost is already applied and the source reads as tapped — which is exactly
 // why only the LEGALITY side needs to be told.
+//
+// `life_reserve` is life the rest of the cost still has to pay after the mana (a flashback or
+// escape life cost, an activation's PayLife, an announced X-life cost): a painful source (Ancient
+// Tomb's damage, a horizon land's PayLife) is only used while it leaves at least that much life,
+// exactly as the payer does for the payment in flight, so a gate never offers a cost whose mana
+// can only be paid by spending the life the rest of it needs (CR 601.2h, 602.2b).
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false, Entity exclude_entity = 0);
+                  bool has_improvise = false, Entity exclude_entity = 0, int life_reserve = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
