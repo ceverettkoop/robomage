@@ -27,6 +27,8 @@ from env import (NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
                  CONCEDE_GAME, CONCEDE_MATCH)
 import decode
+from _enums import (CAT_BOTTOM_DECK_CARD, CAT_DIG_CHOICE, CAT_SEARCH_LIBRARY,
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_TOP_LIBRARY)
 
 # Abbreviations for the step phase strip (index aligns with the step one-hot).
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
@@ -66,11 +68,15 @@ _ZONE_REF_TO_ZONE = {1: "battlefield", 2: "battlefield", 3: "hand"}
 # put a card on top, not "Put Lightning Bolt on top". Keyed by action category
 # (see ActionCategory in CLAUDE.md). Choices with no chosen card (card_idx < 0,
 # e.g. "Fail to find", "Take nothing") fall through to their normal description.
+# A sideboard move names a card of the opponent's post-board deck, which is
+# hidden information between games too.
 _OPP_PRIVATE_DESC = {
-    12: "Put a card on the bottom of their library",  # BOTTOM_DECK_CARD
-    19: "Search their library for a card",            # SEARCH_LIBRARY
-    20: "Put a card on top of their library",          # TOP_LIBRARY
-    23: "Take a card",                                 # DIG_CHOICE
+    CAT_BOTTOM_DECK_CARD: "Put a card on the bottom of their library",
+    CAT_SEARCH_LIBRARY: "Search their library for a card",
+    CAT_TOP_LIBRARY: "Put a card on top of their library",
+    CAT_DIG_CHOICE: "Take a card",
+    CAT_SIDEBOARD_IN: "Bring in a card from their sideboard",
+    CAT_SIDEBOARD_OUT: "Take a card out of their deck",
 }
 
 # Trailing icons appended to a hand card's label so its kind is obvious at a

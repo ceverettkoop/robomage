@@ -1189,12 +1189,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             break;
         }
 
+        // A player's post-board configuration is hidden from the opponent, so
+        // the lines naming cards go to the sideboarding player's view only; an
+        // opponent viewer gets one redacted summary when the phase ends.
         if (balanced)
-            game_log("\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
-                     player_name, deck.sideboard.size(), st.sb_swaps);
+            game_log_private(player, "\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
+                             player_name, deck.sideboard.size(), st.sb_swaps);
         else
-            game_log("\n%s must balance %s (%+d): choose a card to cut.\n", player_name,
-                     st.unpaired_name.c_str(), st.delta);
+            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n",
+                             player_name, st.unpaired_name.c_str(), st.delta);
 
         // With a move outstanding, expose the unpaired card as the pending-decision
         // source so the observation shows WHICH card the balancing move is for.
@@ -1251,14 +1254,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             // the next decision offers only cuts.
             st.delta = 1;
             st.unpaired_name = moved;
-            game_log("Bringing in %s.\n", moved.c_str());
+            game_log_private(player, "Bringing in %s.\n", moved.c_str());
         } else {
             // Closing half: the pair is complete, so this counts as a swap. The
             // forced cut of a stranded +1 counts too, INCLUDING when it cuts the
             // very name just brought in — that leaves the deck exactly as it
             // started, which is a legal (if pointless) configuration, and the
             // phase force-ends on the next decision either way.
-            game_log("Swapped %s for %s.\n", moved.c_str(), st.unpaired_name.c_str());
+            game_log_private(player, "Swapped %s for %s.\n", moved.c_str(),
+                             st.unpaired_name.c_str());
             st.delta = 0;
             st.unpaired_name.clear();
             st.sb_swaps++;
@@ -1276,6 +1280,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     // the swap cap is only checked there, and an outstanding +1 always has a cut to
     // balance it (the forced one when every maindeck name is locked), so the loop
     // can never be left mid-swap.
+    game_log_redacted(player, "%s sideboards: %d swap(s).\n", player_name, st.sb_swaps);
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
     sideboard_phase_state = nullptr;
