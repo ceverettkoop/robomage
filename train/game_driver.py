@@ -932,7 +932,7 @@ class GameDriver:
             human_wins = (loser == "opponent")
             note = f" — {why}"
         elif self._reward == 0:
-            return "Game over — no winner detected (draw?)."
+            return "Game over — the game is a draw."
         # In bo3 the terminal reward is the DECIDING GAME's result (±1.0), whose
         # sign is also the match winner's; report it with the
         # final game score. The match ends the instant the deciding game does, so

@@ -192,7 +192,6 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
         non_fatal_error("concede: no player owns the pending decision — ignored");
         return;
     }
-    Zone::Ownership opponent = opponent_of(conceder);
     if (whole_match) {
         // Latched even with no live game (a concede during the between-games
         // sideboard phase still ends the match).
@@ -210,11 +209,7 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
         game_log("(no live game to concede)\n");
         return;
     }
-    // The same result line every other game-ending path prints, so a machine
-    // driver reading stdout sees the winner exactly as for a life/deck-out loss.
-    printf("\n%s concedes - %s wins!\n", player_name(conceder).c_str(),
-           player_name(opponent).c_str());
-    cur_game.player_loses(conceder);
+    cur_game.player_loses(conceder, player_name(conceder) + " concedes");
     g_concede_unwinding = true;
     g_concede_unwind_count = 0;
 }
@@ -273,7 +268,7 @@ EcsSystems init_ecs() {
     return {orderer, state_manager, stack_manager};
 }
 
-// Returns winner: Zone::PLAYER_A (1) or Zone::PLAYER_B (2)
+// Returns winner: Zone::PLAYER_A (1) or Zone::PLAYER_B (2), or Zone::UNKNOWN (0) for a draw
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed) {
     // A snapshot from a previous game of the match must never be restorable
@@ -1315,7 +1310,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     deck_state_reset();
 
     bool match_done = false;
-    while (!match_done && ctx.game_num < 3) {
+    while (!match_done) {
         // A MATCH-scoped restore latched by a sideboard-rooted simulation (its
         // unwind bailed out of the inner game/sideboard loop) is applied here,
         // rolling the whole match — cur_game, ECS, ctx (stage/decks/sb), deck_state
@@ -1334,13 +1329,19 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
         switch (ctx.stage) {
         case MatchContext::PLAY_GAME: {
+            // A drawn game counts for neither player, so the match plays on until one player has
+            // won two games; repeated draws are practically impossible, so a match this long
+            // means the engine is stuck.
+            if (ctx.game_num >= MAX_MATCH_GAMES)
+                fatal_error("bo3 match reached " + std::to_string(MAX_MATCH_GAMES) +
+                            " games without a match winner");
             match_game_number = ctx.game_num;
             // A sideboard-rooted sim rolls forward into this game only to search;
             // its real-match side effects (the actor's begin_game/backfill hooks,
             // the banner) must not fire. Suppress them while a match snapshot lives.
             bool simulating = snapshot_any_match_scope_live();
             if (!simulating) {
-                game_log("\n----- MATCH GAME %d of 3 -----\n", ctx.game_num + 1);
+                game_log("\n----- MATCH GAME %d -----\n", ctx.game_num + 1);
                 if (before_game) before_game(ctx.game_num, ctx.a_goes_first);
             }
 
@@ -1354,22 +1355,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
             // back so the dispatcher top applies the restore.
             if (search_match_restore_pending()) continue;
 
-            // Every end-of-game path must have set a winner; the else-branch below
-            // would otherwise silently credit a winnerless game to B.
-            if (winner != Zone::PLAYER_A && winner != Zone::PLAYER_B)
-                fatal_error("bo3 game " + std::to_string(ctx.game_num + 1) +
-                            " ended with no winner (Game::winner unset)");
-
+            // A game that ended with no winner is a draw (CR 104.4a): it counts for neither player.
             if (winner == Zone::PLAYER_A) {
                 ctx.wins_a++;
                 match_wins_a = ctx.wins_a;
-                std::printf("GAME_RESULT: %d Player A wins\n", ctx.game_num + 1);
-            } else {
+            } else if (winner == Zone::PLAYER_B) {
                 ctx.wins_b++;
                 match_wins_b = ctx.wins_b;
-                std::printf("GAME_RESULT: %d Player B wins\n", ctx.game_num + 1);
             }
-            std::fflush(stdout);
+            print_game_result(ctx.game_num + 1, winner);
 
             if (after_game) after_game(ctx.game_num, winner);
 
@@ -1394,8 +1388,10 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 break;
             }
 
-            // loser goes first next game
-            ctx.a_goes_first = (winner != Zone::PLAYER_A);
+            // The loser goes first next game (CR 103.1); after a draw, the player who went first
+            // in the drawn game goes first again.
+            if (winner == Zone::PLAYER_A || winner == Zone::PLAYER_B)
+                ctx.a_goes_first = (winner != Zone::PLAYER_A);
 
             // sideboarding phase - ECS from the just-ended game is still valid
             // (player entities exist for populate_gamestate, card_db works for load_card)
@@ -1434,6 +1430,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     }
     int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
     return result;
+}
+
+void print_game_result(int game_number, int winner) {
+    if (winner == Zone::PLAYER_A || winner == Zone::PLAYER_B)
+        std::printf("GAME_RESULT: %d Player %s wins\n", game_number,
+                    winner == Zone::PLAYER_A ? "A" : "B");
+    else
+        std::printf("GAME_RESULT: %d draw\n", game_number);
+    std::fflush(stdout);
 }
 
 static void print_match_concede_result(const MatchContext &ctx) {

@@ -149,13 +149,24 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed);
 void run_sideboard_phase(Deck &deck, SideboardPhaseState &st);
 
+// A best-of-three match that reaches this many games without a match winner is a fatal error
+// (only drawn games, which count for neither player, can lengthen a match past three).
+constexpr int MAX_MATCH_GAMES = 10;
+
+// Print game `game_number`'s (1-based) machine-readable result line: "GAME_RESULT: <n> Player A
+// wins" / "GAME_RESULT: <n> Player B wins", or "GAME_RESULT: <n> draw" when `winner` is neither
+// player (a drawn game, CR 104.4a). Printed once per real game — bo1 and every bo3 game.
+void print_game_result(int game_number, int winner);
+
 // Drive a full best-of-three MATCH — the single source of bo3 sequencing shared
 // by main.cpp (the robomage front end) and bin/az_actor. Mirrors the tabletop
 // flow: for each game it sets match_game_number, calls `before_game`, spins a
 // fresh ECS, plays the game via play_single_game (Player A on the play in game 1,
 // the loser on the play thereafter), records the winner, prints
 // GAME_RESULT/MATCH_RESULT, calls `after_game`, then runs BOTH players' sideboard
-// phases (unless the match is already decided). `deck_a`/`deck_b` are taken BY
+// phases (unless the match is already decided). A drawn game counts for neither
+// player (`after_game` gets winner 0): the match plays on until a player has won
+// two games, and the player who went first in the drawn game goes first again. `deck_a`/`deck_b` are taken BY
 // VALUE because sideboarding mutates them across games. `match_reset_revealed()`
 // is called once at match start (the revealed accumulator spans the whole match).
 // Callers must `std::srand(seed)` before calling (main.cpp does; the actor does

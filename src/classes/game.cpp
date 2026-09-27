@@ -120,9 +120,27 @@ void Game::queue_trigger(const Ability &ab, const std::string &log_line) {
     waiting_triggers.push_back(std::move(pt));
 }
 
-void Game::player_loses(Zone::Ownership loser) {
+void Game::end_game(Zone::Ownership result, const std::string &reason) {
+    if (ended) return;
     ended = true;
-    winner = opponent_of(loser);
+    winner = static_cast<int>(result);
+    if (result == Zone::UNKNOWN)
+        printf("\n%s - the game is a draw!\n", reason.c_str());
+    else
+        printf("\n%s - %s wins!\n", reason.c_str(), player_name(result).c_str());
+}
+
+void Game::player_loses(Zone::Ownership loser, const std::string &reason) {
+    end_game(opponent_of(loser), reason);
+}
+
+void Game::players_lose(bool a_loses, bool b_loses, const std::string &reason) {
+    if (a_loses && b_loses)
+        end_game(Zone::UNKNOWN, reason);
+    else if (a_loses)
+        player_loses(Zone::PLAYER_A, reason);
+    else if (b_loses)
+        player_loses(Zone::PLAYER_B, reason);
 }
 
 void Game::clear_known_top_library(bool player_a_owner) {

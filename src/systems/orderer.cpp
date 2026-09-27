@@ -663,10 +663,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
             for (const auto &r : cd.replacement_effects)
                 if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
             if (!has_win) continue;
-            printf("\n%s wins the game! (%s)\n", player_name(player).c_str(), cd.name.c_str());
-            game_log("%s wins the game!\n", player_name(player).c_str());
-            cur_game.winner = static_cast<int>(player);
-            cur_game.ended = true;
+            cur_game.end_game(player, cd.name);
             return;
         }
 

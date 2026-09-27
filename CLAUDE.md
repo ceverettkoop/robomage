@@ -349,12 +349,16 @@ functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtP
 `train/` holds the Python side: gymnasium env, PPO (`MaskablePPO`, sb3-contrib) and AlphaZero
 training, analysis and front ends. Venv: `train/.venv/` (invoke `train/.venv/bin/python`).
 
-**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` after each game;
-`MATCH_RESULT: Player A|B wins X-Y` ends the match.
+**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
+when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
+`MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
+the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
+who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
 
 **Reward (Player A's perspective, per game):** ±1.0 per game (`GAME_WIN_REWARD`/`GAME_LOSS_REWARD`,
-`train/env.py`); in bo3 it lands at every `GAME_RESULT`. The match reward (`MATCH_WIN_REWARD`/
-`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the episode. Per-game rewards match the
+`train/env.py`), 0.0 for a drawn game (`DRAW_REWARD`; AZ z = 0); it lands at every `GAME_RESULT`.
+The match reward (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the
+episode. Per-game rewards match the
 AlphaZero outcome target, so a PPO checkpoint warm-starting an AZ net (`az_net.from_ppo`) hands
 over a calibrated critic; AZ trains value on `(1 - q_mix) * z + q_mix * td_q` (n-step TD target;
 `--td-n` / `--q-mix`, see `cli_spec.py`). Shaping is capped per game (`SHAPING_EPISODE_CAP`).

@@ -176,8 +176,9 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
-  * A game that ends with no winner because the engine hit its internal step cap
-    (a stall) is a WARNING — flagged for review, does not fail the gate.
+  * A game that ends with no winner — a drawn game (both players lost at once,
+    CR 104.4a: GAME_RESULT "draw") or one the engine stalled out of (its internal
+    step cap) — is a WARNING: flagged for review, does not fail the gate.
   * A game whose engine process crashed (nonzero exit / EOF mid-game — surfaced
     as an exception from run_games) is an ERROR — fails the gate.
   * A standalone non-fatal 'ERROR:' / 'FATAL:' / assert / etc. line in any
@@ -846,8 +847,9 @@ def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
             rep.error(tier, f"{label}: only {wins + losses + draws}/{n_games} games "
                            f"completed (see {out_path})")
         if draws > 0:
-            # A returned draw is a clean-exit stall (a crash would have raised).
-            rep.warn(tier, f"{label}: {draws} step-cap-stall draw(s) — review {out_path}")
+            # A returned draw is a drawn game or a clean-exit stall (a crash would
+            # have raised); the transcript's DRAW banner says which.
+            rep.warn(tier, f"{label}: {draws} draw(s) — review {out_path}")
         errs, warns = scan_transcript(out_path)
         if errs:
             first = errs[0]

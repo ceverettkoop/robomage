@@ -219,7 +219,7 @@ struct Game {
         Entity player_b_entity;
         std::mt19937 gen;
         bool ended = false;
-        int winner = 0;  // 0=none, 1=PLAYER_A, 2=PLAYER_B (Zone::Ownership values)
+        int winner = 0;  // 0=none (or a draw once `ended`), 1=PLAYER_A, 2=PLAYER_B (Zone::Ownership values)
         bool player_a_turn = true;
         bool player_a_has_priority = true;
         bool a_has_passed = false;
@@ -823,14 +823,21 @@ struct Game {
         // Called for every id the coordinator issues (see forget_reissued_entity).
         void forget_entity(Entity e);
 
-        // The one place a player LOSING decides the game: marks the game over and credits the
-        // win to their opponent (a two-player game, so the last player standing wins — CR
-        // 104.2a). Shared by the state-based-action losses (0 or less life 704.5a, drawing from
-        // an empty library 704.5c) and by conceding (CR 104.3a, see concede_current_game in
-        // game_driver.h). Unconditional by design: callers that must not overwrite an
-        // already-decided game check `ended` first, exactly as they did when they assigned
-        // `ended`/`winner` inline.
-        void player_loses(Zone::Ownership loser);
+        // The one place a game ends (CR 104.1): marks the game over, records `result` as the
+        // winner (Zone::PLAYER_A / Zone::PLAYER_B, or Zone::UNKNOWN for a draw — CR 104.4a) and
+        // prints the one result line "\n<reason> - Player X wins!" / "\n<reason> - the game is
+        // a draw!". Every game-ending path goes through it: the state-based-action losses
+        // (players_lose), an effect that says a player wins (CR 104.2b), and conceding (CR
+        // 104.3a, see concede_current_game in game_driver.h). The first game-ending event
+        // decides the game: a call on an already-ended game changes nothing.
+        void end_game(Zone::Ownership result, const std::string &reason);
+        // A player LOSING decides the game for their opponent (a two-player game, so the last
+        // player standing wins — CR 104.2a); see end_game.
+        void player_loses(Zone::Ownership loser, const std::string &reason);
+        // State-based-action losses found in one check (CR 704.3): one loser's opponent wins; if
+        // both players lose simultaneously the game is a draw (CR 104.4a). No-op when neither
+        // player loses.
+        void players_lose(bool a_loses, bool b_loses, const std::string &reason);
 
         void clear_known_top_library(bool player_a_owner);
         void known_top_library_push(bool player_a_owner, int card_vocab_idx);

@@ -96,9 +96,9 @@ Draws are not acceptable, but the causes differ in severity:
   completed than requested, or any transcript line matching `^ERROR:` / `^FATAL:`, a Python
   traceback, `Segmentation fault`, a failed assertion, `Aborted` or `core dumped` (a non-fatal
   engine `ERROR:` is not acceptable per `CLAUDE.md`).
-- **Warning** (flagged for review, passes): a game that ends with no winner because the engine
-  hit its step cap (a **stall** draw; its log is moved into `--out-dir`), or an engine
-  `WARNING:` line.
+- **Warning** (flagged for review, passes): a game that ends with no winner — a drawn game (both
+  players lost at once, CR 104.4a) or a **stall** where the engine hit its step cap (either way
+  its log is moved into `--out-dir`) — or an engine `WARNING:` line.
 
 `WARNING: Unrecognized ability param` lines stay in the transcript (greppable) but are not
 surfaced: they fire in bulk for cosmetic / AI-hint params. Params the parser drops without

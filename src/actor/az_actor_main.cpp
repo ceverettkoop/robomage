@@ -749,14 +749,7 @@ int main(int argc, char const* argv[]) {
             if (recording) mcts->begin_match(seed_g);
             if (oracle) oracle->new_game();
             int winner = play_single_game(sys, deck_a, deck_b, true, seed_g);
-            bool draw = winner != static_cast<int>(Zone::PLAYER_A) &&
-                        winner != static_cast<int>(Zone::PLAYER_B);
-            if (draw)
-                std::printf("GAME_RESULT: %d draw\n", g + 1);
-            else
-                std::printf("GAME_RESULT: %d Player %s wins\n", g + 1,
-                            winner == Zone::PLAYER_A ? "A" : "B");
-            std::fflush(stdout);
+            print_game_result(g + 1, winner);
             backfill_selfplay(winner);
             flush_match_sidecars(seed_g);
         }

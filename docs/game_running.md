@@ -15,9 +15,9 @@ view without rerouting input; set by the TUI/GUI play boards).
 Other engine flags (`src/main.cpp` argv loop): `--deck-a/-b` (or `--deck` for both), `--seed`,
 `--no-shuffle`, zone presets `--battlefield/graveyard/exile/sideboard-a/-b`, `--life-a/-b`,
 `--narrative` (full game log + per-action description side-channels), `--bo3` (match loop:
-per-game seed = base + game, loser goes first, sideboarding, `GAME_RESULT:`/`MATCH_RESULT:`
-lines), `--replay <rmlog>` (deterministic replay), `--log-decisions` (write the replay log in
-machine mode), `--search-server` (snapshot/restore/determinize protocol for MCTS; implies
+per-game seed = base + game, loser goes first, sideboarding, a drawn game counts for neither
+player, `MATCH_RESULT:` line; every game, bo1 too, prints `GAME_RESULT:`), `--replay <rmlog>`
+(deterministic replay), `--log-decisions` (write the replay log in machine mode), `--search-server` (snapshot/restore/determinize protocol for MCTS; implies
 `--machine`), `--broadcast-steps` (passive `BSTATE` frames at auto-passed steps, for the GUI's
 step pacing).
 
@@ -124,7 +124,8 @@ run_match(agent_a="scripted", agent_b="scripted", *, deck_a=None, deck_b=None,
 - `transcript`: `"verbose"` (narrative + board + menu per decision), `"compact"` (narrative + one
   line per decision), `"narrative"` (engine narrative and results only, for a `human` seat),
   `"quiet"` (nothing). `out=` redirects to any stream.
-- Every draw (no winner, e.g. the engine's step cap) saves its full log to
+- Every draw (no winner: a drawn game — both players lost at once — or the engine's step cap),
+  including a drawn game inside a decided bo3 match, saves its full log to
   `draw_<timestamp>.txt` in the cwd, even when quiet. A game stopped by `max_decisions` is
   reported incomplete and not counted.
 - Extra kwargs pass to `run_games`: zone presets (`battlefield_a`, `graveyard_b`, `exile_a`,

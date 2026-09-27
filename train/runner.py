@@ -67,8 +67,8 @@ class Decision:
 
 
 class GameOutcome(NamedTuple):
-    """One game's result inside a bo3 match."""
-    winner: str | None      # "A" / "B", None if undecided
+    """One game's result (the engine's GAME_RESULT line)."""
+    winner: str | None      # "A" / "B", None for a drawn game (CR 104.4a)
     a_on_play: bool         # Player A was the starting player of THIS game
 
 
@@ -90,10 +90,9 @@ class GameRecord:
         # was played on a sideboarded deck, which is what makes sideboarding
         # measurable. `a_on_play` is recorded because a bo3's pre/post comparison
         # is otherwise CONFOUNDED: the loser of each game chooses to play first, so
-        # whoever wins game 1 is usually on the draw in game 2. Populated in bo3
-        # only — the engine emits the per-game marker this is built from under
-        # --bo3, so a bo1 run leaves it EMPTY (its single result is already
-        # `reward`/`winner`).
+        # whoever wins game 1 is usually on the draw in game 2. A bo1 record holds
+        # its single game; a record that ended without a GAME_RESULT (capped, or an
+        # engine stall) is missing that game.
         self.game_results = game_results if game_results is not None else []
 
     @property
@@ -102,6 +101,11 @@ class GameRecord:
         if self.capped:
             return None
         return "A" if self.reward > 0 else ("B" if self.reward < 0 else None)
+
+    @property
+    def drawn_games(self):
+        """How many of this record's games ended in a draw (CR 104.4a)."""
+        return sum(1 for g in self.game_results if g.winner is None)
 
 
 def drive_game(env, obs, controller_a, controller_b, *,
@@ -183,9 +187,9 @@ def drive_game(env, obs, controller_a, controller_b, *,
         actions_log.append(int(action))
         obs, reward, terminated, truncated, info = env.step(action)
         total_reward += reward
-        # Per-game winner (bo3): the engine flags the step a game ended on, and
-        # this env family reports the raw Player-A-perspective reward, so the sign
-        # names the winner. Every game is worth ±1.0; the bo3 match terminal adds
+        # Per-game winner: the engine flags the step a game ended on, and this env
+        # family reports the raw Player-A-perspective reward, so the sign names the
+        # winner (0.0: a drawn game). Every game is worth ±1.0; the bo3 match terminal adds
         # nothing by default (MATCH_*_REWARD = 0.0 in env.py) and, if re-enabled,
         # shares the final game's sign (the match winner won the final game), so
         # this stays correct either way.
@@ -210,8 +214,8 @@ def tally_per_game(records, flip=False):
     Returns ``{game index: {"wins", "played", "play_wins", "play_n",
     "draw_wins", "draw_n"}}``, where ``play_*`` / ``draw_*`` restrict to the games
     the subject was on the play / on the draw. Index 0 is the pre-board game; 1+
-    were played after sideboarding. Empty for bo1 records, which carry no per-game
-    breakdown.
+    were played after sideboarding (a bo1 record contributes only index 0). A drawn
+    game counts as played and not won.
 
     Tallies are Player A's unless ``flip`` is set, which scores them for Player B
     instead (used when the subject alternates seats between matches).
@@ -345,9 +349,13 @@ def run_games(controller_a, controller_b, *,
     with ``transcript="quiet"``, and a draw's saved log is then empty.
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
-    ends with no winner (e.g. the engine's step cap — a stall) counts as a draw
-    and its full log is saved to ``draw_<timestamp>.txt``; a game stopped early by
-    ``max_decisions`` is reported as incomplete and not counted.
+    ends with no winner — a drawn game (both players lost at once, CR 104.4a) or
+    one with no result at all (e.g. the engine's step cap — a stall) — counts as a
+    draw; a bo3 match is scored by its match result, and a drawn game inside it
+    counts for neither player. Every draw, including a drawn game inside a decided
+    bo3 match, is a finding for review: it is announced and the full log is saved
+    to ``draw_<timestamp>.txt``. A game stopped early by ``max_decisions`` is
+    reported as incomplete and not counted.
     """
     if transcript is None:
         transcript = "verbose" if verbose else "compact"
@@ -509,6 +517,7 @@ def run_games(controller_a, controller_b, *,
 
         all_records.append(record)
 
+        draw_note = None
         if record.capped:
             incomplete += 1
             if transcript != "quiet":
@@ -522,13 +531,19 @@ def run_games(controller_a, controller_b, *,
             result = f"{label_b}/B wins"
         else:
             draws += 1
-            result = "DRAW (should not occur)"
+            result = "DRAW"
+            draw_note = ("DRAW (both players lost at once, CR 104.4a)"
+                         if record.drawn_games else "DRAW (no result — should not occur)")
+        if not record.capped and draw_note is None and record.drawn_games:
+            draw_note = (f"{record.drawn_games} drawn game(s) in this match "
+                         "(both players lost at once, CR 104.4a)")
+        if draw_note is not None:
             stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
             log_path = f"draw_{stamp}.txt"
             with open(log_path, "w") as f:
                 f.write("\n".join(log_lines) + "\n")
             # A draw is a finding — always announce it, even in quiet mode.
-            print(f"\n=== DRAW (should not occur) — full log saved to {log_path} ===",
+            print(f"\n=== {draw_note} — review; full log saved to {log_path} ===",
                   file=stream, flush=True)
 
         if not record.capped and transcript != "quiet":

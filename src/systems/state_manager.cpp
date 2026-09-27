@@ -37,6 +37,14 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+// `who`'s state-based loss condition (CR 704.5a 0 or less life, 704.5b a draw from an empty
+// library, 704.5c ten or more poison counters), describing it in `reason`.
+static bool player_loss_reason(Zone::Ownership who, const Player &player, std::string &reason);
+
+// CR 704.5a-c for both players in one check (CR 704.3): ends the game when either loses — a draw
+// when both do (CR 104.4a). Returns whether the game ended.
+static bool check_player_losses(Game &game);
+
 // Rebuilt from scratch by gather_active_statics on every SBE pass; its ActiveStatic
 // entries are (source, static index) handles resolved at read time, so a snapshot
 // restore can leave it describing the previous simulation's statics. That is safe for
@@ -151,47 +159,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
         bool any_applied = false;
 
-        // 704.5a - player with 0 or less life loses
-        auto &player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
-        auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
-        if (player_a.life_total <= 0) {
-            printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
-            game.player_loses(Zone::PLAYER_A);
-            return;
-        }
-        if (player_b.life_total <= 0) {
-            printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
-            game.player_loses(Zone::PLAYER_B);
-            return;
-        }
-
-        // 704.5c - a player who attempted to draw from an empty library since the last SBA check
-        // loses. Deferred here from Orderer::perform_draw (CR 120.3): the failed draw itself does
-        // not end the game, so the resolving effect finishes first and a "then if your library is
-        // empty, you win" sub-ability (Jace, Wielder of Mysteries' -8) can decide the game before
-        // this check ever runs.
-        if (player_a.attempted_draw_from_empty) {
-            printf("\nPlayer A decked - Player B wins!\n");
-            game.player_loses(Zone::PLAYER_A);
-            return;
-        }
-        if (player_b.attempted_draw_from_empty) {
-            printf("\nPlayer B decked - Player A wins!\n");
-            game.player_loses(Zone::PLAYER_B);
-            return;
-        }
-
-        // 704.5c - a player with ten or more poison counters (infect damage, CR 120.3b) loses.
-        if (player_a.counter_count("POISON") >= 10) {
-            printf("\nPlayer A has %d poison counters - Player B wins!\n", player_a.counter_count("POISON"));
-            game.player_loses(Zone::PLAYER_A);
-            return;
-        }
-        if (player_b.counter_count("POISON") >= 10) {
-            printf("\nPlayer B has %d poison counters - Player A wins!\n", player_b.counter_count("POISON"));
-            game.player_loses(Zone::PLAYER_B);
-            return;
-        }
+        // CR 704.5a-c: a player who meets a loss condition loses; both players' conditions are
+        // checked together, so two simultaneous losers draw the game (CR 104.4a).
+        if (check_player_losses(game)) return;
 
         // 704.5d - tokens in zones other than battlefield cease to exist
         // (handled by apply_permanent_components above)
@@ -434,3 +404,36 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         state_based_effects(game, orderer);
 }
 
+static bool player_loss_reason(Zone::Ownership who, const Player &player, std::string &reason) {
+    const std::string name = player_name(who);
+    if (player.life_total <= 0) {
+        reason = name + " has " + std::to_string(player.life_total) + " life";
+        return true;
+    }
+    if (player.attempted_draw_from_empty) {
+        reason = name + " decked";
+        return true;
+    }
+    if (player.counter_count("POISON") >= 10) {
+        reason = name + " has " + std::to_string(player.counter_count("POISON")) +
+                 " poison counters";
+        return true;
+    }
+    return false;
+}
+
+static bool check_player_losses(Game &game) {
+    // 704.5b's failed draw is recorded by Orderer::perform_draw, not acted on there (CR 120.3):
+    // the resolving effect finishes first, so a "then if your library is empty, you win"
+    // sub-ability (Jace, Wielder of Mysteries' -8) decides the game before this check runs.
+    std::string reason_a, reason_b;
+    bool a_loses = player_loss_reason(
+        Zone::PLAYER_A, global_coordinator.GetComponent<Player>(game.player_a_entity), reason_a);
+    bool b_loses = player_loss_reason(
+        Zone::PLAYER_B, global_coordinator.GetComponent<Player>(game.player_b_entity), reason_b);
+    if (!a_loses && !b_loses) return false;
+    std::string reason = a_loses && b_loses ? reason_a + " and " + reason_b
+                                            : (a_loses ? reason_a : reason_b);
+    game.players_lose(a_loses, b_loses, reason);
+    return true;
+}

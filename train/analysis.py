@@ -2107,20 +2107,25 @@ def _analyze_sbvalue(games, verbose=True):
             phases_no_swaps += (phase_swaps == 0)
 
         # Per-game outcomes: a game was won iff self_wins ticked up by the next
-        # game's start; the final game goes to the match winner. Then bucket
+        # game's start and lost iff opp_wins did (neither: a drawn game, which
+        # has no outcome); the final game goes to the match winner. Then bucket
         # each POST-BOARD game by every offered class's cumulative net copies
         # in the deck for that game (swaps after game k apply to games > k).
         gns = sorted(game_starts)
         outcomes = {}
         for idx, gn in enumerate(gns):
             if idx + 1 < len(gns):
-                outcomes[gn] = 1 if game_starts[gns[idx + 1]][0] > game_starts[gn][0] else 0
+                nxt, cur = game_starts[gns[idx + 1]], game_starts[gn]
+                if nxt[0] > cur[0]:
+                    outcomes[gn] = 1
+                elif nxt[1] > cur[1]:
+                    outcomes[gn] = 0
             elif g["result"] != 0:
                 outcomes[gn] = 1 if g["result"] > 0 else 0
         match_classes = {cls for cls, ms in offered_cls.items() if gi in ms}
         for gn in gns:
             if gn == 0 or gn not in outcomes:
-                continue  # game 1 is pre-board; an unfinished draw has no outcome
+                continue  # game 1 is pre-board; a drawn or unfinished game has no outcome
             for cls in match_classes:
                 net = sum(d for agn, c, d in swap_events if c == cls and agn < gn)
                 bucket = "in" if net > 0 else ("out" if net < 0 else "zero")

@@ -275,9 +275,9 @@ SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on t
 
 # ── Game / match rewards (the ONE home; edit here, nowhere else) ─────────────
 # PER-GAME reward structure: the win/loss of EACH GAME is the primary signal at
-# ±1.0. In bo1 that is the single terminal reward; in bo3 it lands at every
-# GAME_RESULT boundary, so an episode's return is the (discounted) sum of the
-# match's game results.
+# ±1.0 (0.0 for a drawn game). In bo1 that is the single terminal reward; in bo3
+# it lands at every GAME_RESULT boundary, so an episode's return is the
+# (discounted) sum of the match's game results.
 # Why per-game: it matches the AlphaZero value target exactly, which is the
 # per-game z = ±1 (az_selfplay prices every sample by the winner of the GAME it
 # was played in). A PPO checkpoint then hands the AZ warm start
@@ -291,6 +291,8 @@ SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on t
 # reintroduces the scale mismatch with AZ's per-game target.
 GAME_WIN_REWARD   =  1.0   # reward for winning a game (bo1 terminal, bo3 per game)
 GAME_LOSS_REWARD  = -1.0   # penalty for losing a game
+DRAW_REWARD       =  0.0   # a drawn game (both players lost at once, CR 104.4a); in bo3
+                           # it counts for neither player and the match plays on
 MATCH_WIN_REWARD  =  0.0   # extra terminal reward for winning a bo3 match
 MATCH_LOSS_REWARD =  0.0   # extra terminal penalty for losing a bo3 match
 # Back-compat aliases (these bo3-prefixed names predate the per-game rework and
@@ -1148,30 +1150,27 @@ class RoboMageEnv(gym.Env):
 
             line = line.rstrip(b"\n")
 
-            # Detect win/loss
-            if self._bo3:
-                # In bo3 mode every GAME is worth the full ±GAME_WIN_REWARD; the
-                # match line only ENDS the episode (MATCH_*_REWARD is 0.0 by
-                # default — see the reward block above).
-                if line.startswith(b"GAME_RESULT:"):
-                    game_result = True
-                    if b"Player A wins" in line:
-                        reward += GAME_WIN_REWARD
-                    elif b"Player B wins" in line:
-                        reward += GAME_LOSS_REWARD
-                elif line.startswith(b"MATCH_RESULT:"):
-                    if b"Player A wins" in line:
-                        reward += MATCH_WIN_REWARD
-                    elif b"Player B wins" in line:
-                        reward += MATCH_LOSS_REWARD
-                    done = True
-            else:
+            # Detect win/loss/draw. Every GAME is worth the full ±GAME_WIN_REWARD,
+            # and a drawn game ("GAME_RESULT: <n> draw", CR 104.4a) is worth
+            # DRAW_REWARD (0.0). The GAME_RESULT line ends a bo1 episode; in bo3 the
+            # match line ENDS the episode (MATCH_*_REWARD is 0.0 by default — see
+            # the reward block above).
+            if line.startswith(b"GAME_RESULT:"):
+                game_result = True
                 if b"Player A wins" in line:
-                    reward = GAME_WIN_REWARD
-                    done = True
+                    reward += GAME_WIN_REWARD
                 elif b"Player B wins" in line:
-                    reward = GAME_LOSS_REWARD
+                    reward += GAME_LOSS_REWARD
+                else:
+                    reward += DRAW_REWARD
+                if not self._bo3:
                     done = True
+            elif self._bo3 and line.startswith(b"MATCH_RESULT:"):
+                if b"Player A wins" in line:
+                    reward += MATCH_WIN_REWARD
+                elif b"Player B wins" in line:
+                    reward += MATCH_LOSS_REWARD
+                done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
             if line.startswith(b"MANA_WASTED: "):
