@@ -1258,8 +1258,7 @@ static std::string charm_mode_desc(const Ability &ability, size_t idx) {
 // One mode pick's menu (CR 601.2b): the not-yet-taken, currently-choosable modes, with
 // mode_indices mapping action index -> charm_choices index. Pure ECS reads (choosability is
 // re-evaluated per pick), so the suspended CHARM_MODE step re-derives the identical menu on
-// resume. Shared by the blocking announce path (effect_choose_card's mini-cast) and the
-// run_cast_flow CHARM_MODE step.
+// resume. Used by the run_cast_flow CHARM_MODE step.
 static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
                                                       std::shared_ptr<Orderer> orderer,
                                                       Zone::Ownership caster,

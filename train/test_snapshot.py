@@ -3629,21 +3629,20 @@ PROMPT_SITE_WHITELIST = {
     #     were merged into a single per-move prompt; both halves of a swap now
     #     come through that one loop-safe site.
     #   action_processor.cpp: declare-attackers select, declare-blockers
-    #     select, cleanup discard, and the miracle ask (4 of its 7) — the
-    #     miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)
-    #     share one ask_miracle_choice site and both ride the mandatory-choice
-    #     channel via proc_mandatory_choice, wrapped in search_set_loop_safe
-    #     like cleanup discard, so they are loop-top snapshot-safe emitters
+    #     select, cleanup discard, and the miracle reveal ask (4 of its 6) —
+    #     the miracle reveal (CR 702.94) rides the mandatory-choice channel via
+    #     proc_mandatory_choice, wrapped in search_set_loop_safe like cleanup
+    #     discard, so it is a loop-top snapshot-safe emitter (the miracle cast
+    #     itself is offered through FrameCtx::ask as its trigger resolves)
     # (b) interactive-only (machine mode auto-resolves; never a search root):
-    #   action_processor.cpp: hybrid-pip interactive branch (1 of 7)
+    #   action_processor.cpp: hybrid-pip interactive branch (1 of 6)
     #   mana_system.cpp: interactive mana payment (1)
     # (c) blocking fallbacks / blocking-shim residuals:
     #   resolution_frame.cpp: FrameCtx::ask blocking path — serves every
     #     non-suspendable resolve (opening-hand abilities, mana-ability
-    #     SubAbility riders, pregame SBE, effect_choose_card mini-cast) (1)
-    #   action_processor.cpp: BlockingTargetAsker + blocking
-    #     announce_charm_modes — reachable only via effect_choose_card's
-    #     cast-from-exile mini-cast (2 of 7)
+    #     SubAbility riders, pregame SBE) (1)
+    #   action_processor.cpp: BlockingTargetAsker — reachable only via
+    #     select_target's non-suspendable trigger-placement fallback (1 of 6)
     #   state_manager.cpp / state_manager_statics.cpp /
     #     state_manager_triggers.cpp: outside-main-loop fallbacks (legend keep,
     #     ETB choose-type, ETB name-card, trigger ordering) — defensive,
@@ -3664,7 +3663,7 @@ PROMPT_SITE_WHITELIST = {
     "input_logger.cpp": 2,
     "game_driver.cpp": 4,
     "resolution_frame.cpp": 1,
-    "action_processor.cpp": 7,
+    "action_processor.cpp": 6,
     "mana_system.cpp": 1,
     os.path.join("systems", "replacement_effects.cpp"): 3,
     os.path.join("systems", "state_manager.cpp"): 1,
