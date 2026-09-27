@@ -554,6 +554,19 @@ inline bool on_battlefield(Entity e) {
            global_coordinator.GetComponent<Zone>(e).location == Zone::BATTLEFIELD;
 }
 
+// CR 400.7 object identity: the entity's current Zone::obj_gen, assigning a fresh one first if it
+// has none (an object placed without a zone move — a preset battlefield, a token created in play —
+// reads 0), so the returned stamp is always nonzero for an entity with a Zone. 0 for an entity
+// without one (a player). Defined in game_queries.cpp (needs cur_game).
+uint64_t stamp_object_gen(Entity e);
+
+// True if `e` is still the object whose stamp_object_gen was `gen` — it has not changed zones
+// since (CR 400.7). A 0 stamp (never taken) or an entity without a Zone passes.
+inline bool is_same_object(Entity e, uint64_t gen) {
+    if (gen == 0 || !global_coordinator.entity_has_component<Zone>(e)) return true;
+    return global_coordinator.GetComponent<Zone>(e).obj_gen == gen;
+}
+
 // True if `e` is a *live* battlefield permanent: it carries a Permanent component,
 // its Zone is BATTLEFIELD, and it is not phased out (702.26b — a phased-out permanent
 // is treated as though it doesn't exist), optionally controlled by `ctrl` (UNKNOWN =

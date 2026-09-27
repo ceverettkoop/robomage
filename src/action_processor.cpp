@@ -941,6 +941,27 @@ static Zone::Ownership ability_perspective_player(const Ability &ability) {
     return ability.controller;
 }
 
+Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership chooser) {
+    Ability enchant_ab;
+    enchant_ab.source = aura;
+    enchant_ab.controller = chooser;
+    enchant_ab.valid_tgts = cd.enchant_filter;
+    // "Enchant creature card in a graveyard" (Animate Dead): the legal objects are graveyard
+    // cards, not battlefield permanents (CR 303.4).
+    enchant_ab.target_in_graveyard = enchant_targets_graveyard(cd.enchant_filter);
+    return enchant_ab;
+}
+
+bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
+    auto pat = cur_game.pending_aura_target.find(aura);
+    if (pat == cur_game.pending_aura_target.end()) return false;
+    if (!global_coordinator.entity_has_component<CardData>(aura)) return false;
+    Entity tgt = pat->second.target;
+    if (tgt == 0 || !is_same_object(tgt, pat->second.target_gen)) return false;
+    const auto &cd = global_coordinator.GetComponent<CardData>(aura);
+    return enchant_target_ability(aura, cd, controller).is_legal_target(tgt, controller);
+}
+
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
     if (ability.target_min == 0) return true;  // optional targeting always has "legal targets"
@@ -1145,15 +1166,9 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
 // object's obj_gen then changes on any later add_to_zone, tripping the fizzle exactly as for a
 // normally-cast permanent.
 static void stamp_target_gens(Ability &ability) {
-    auto gen_of = [](Entity e) -> uint64_t {
-        if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return 0;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.obj_gen == 0) z.obj_gen = cur_game.next_obj_gen++;
-        return z.obj_gen;
-    };
     ability.target_gens.clear();
-    for (Entity t : ability.targets) ability.target_gens.push_back(gen_of(t));
-    ability.target_gen = gen_of(ability.target);
+    for (Entity t : ability.targets) ability.target_gens.push_back(stamp_object_gen(t));
+    ability.target_gen = stamp_object_gen(ability.target);
 }
 
 TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker &asker,
@@ -2915,22 +2930,15 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // (tsel.active guards the one-time construction).
             if (!card_data.enchant_filter.empty() &&
                 !global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                if (!pc.tsel.active) {
-                    pc.enchant_ab = Ability{};
-                    pc.enchant_ab.source = spell_entity;
-                    pc.enchant_ab.controller = caster;
-                    pc.enchant_ab.valid_tgts = card_data.enchant_filter;
-                    // "Enchant creature card in a graveyard" (Animate Dead): the enchant target is
-                    // a creature card in a graveyard, so the pick searches graveyards (CR 303.4).
-                    pc.enchant_ab.target_in_graveyard =
-                        enchant_targets_graveyard(card_data.enchant_filter);
-                }
+                if (!pc.tsel.active)
+                    pc.enchant_ab = enchant_target_ability(spell_entity, card_data, caster);
                 FlowTargetAsker asker(game, caster, resume_choice);
                 if (run_target_select(pc.enchant_ab, pc.tsel, asker, orderer, caster) !=
                     TargetStatus::DONE)
                     return;
                 if (pc.enchant_ab.target != 0) {
-                    cur_game.pending_aura_target[spell_entity] = pc.enchant_ab.target;
+                    cur_game.pending_aura_target[spell_entity] =
+                        PendingAuraTarget{pc.enchant_ab.target, pc.enchant_ab.target_gen};
                     game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
                              card_data.name.c_str(),
                              target_display_name(cur_game, pc.enchant_ab.target).c_str());

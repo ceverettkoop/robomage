@@ -127,6 +127,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         cur_game.cast_from_hand.erase(target);
         cur_game.pending_enters_transformed.erase(target);
     }
+    // An Aura's chosen enchant object (pending_aura_target) belongs to the one battlefield entry
+    // it was chosen for; an Aura leaving the stack or the battlefield for any other zone (countered,
+    // or removed before its Animate Dead-style reanimation resolved) drops it (CR 400.7).
+    if ((target_zone.location == Zone::STACK || target_zone.location == Zone::BATTLEFIELD) &&
+        destination != Zone::BATTLEFIELD)
+        cur_game.pending_aura_target.erase(target);
 
     // CR 400.7: a card that already left the battlefield becomes a new object again with this
     // move, so its snapshot from that exit no longer describes it (a departure from the

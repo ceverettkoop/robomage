@@ -62,13 +62,7 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, E
     // It enters under its owner's control for every ChangeZone put (CR 110.2a), so the owner
     // chooses what it will enchant (CR 303.4f).
     Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(e).owner;
-    Ability enchant_ab;
-    enchant_ab.source = e;
-    enchant_ab.controller = ctrl;
-    enchant_ab.valid_tgts = cd.enchant_filter;
-    // "Enchant creature card in a graveyard" (Animate Dead): the legal objects are graveyard
-    // cards, not battlefield permanents (CR 303.4).
-    enchant_ab.target_in_graveyard = enchant_targets_graveyard(cd.enchant_filter);
+    Ability enchant_ab = enchant_target_ability(e, cd, ctrl);
     if (!has_legal_targets(enchant_ab, orderer)) {
         game_log("%s stays in its current zone (no legal object for it to enchant, CR 303.4g)\n",
                  cd.name.c_str());
@@ -81,7 +75,8 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, E
     select_target(enchant_ab, orderer, ctrl);
     cur_game.player_a_has_priority = prev_priority;
     if (enchant_ab.target == 0) return false;  // defensive: target_min=1 never offers "No target"
-    cur_game.pending_aura_target[e] = enchant_ab.target;
+    cur_game.pending_aura_target[e] =
+        PendingAuraTarget{enchant_ab.target, stamp_object_gen(enchant_ab.target)};
     return true;
 }
 
@@ -121,7 +116,10 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     if (dest == Zone::BATTLEFIELD && enters_transformed) cur_game.pending_enters_transformed.insert(e);
     orderer->add_to_zone(false, e, dest, /*top_seen_by_owner=*/true, exile_face_down);
     Zone::ZoneValue landed = global_coordinator.GetComponent<Zone>(e).location;
-    if (landed != Zone::BATTLEFIELD) cur_game.pending_enters_transformed.erase(e);
+    if (landed != Zone::BATTLEFIELD) {
+        cur_game.pending_enters_transformed.erase(e);
+        cur_game.pending_aura_target.erase(e);
+    }
     return landed;
 }
 
@@ -402,7 +400,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Entity enchanted = 0;
         auto pat = cur_game.pending_aura_target.find(ab.source);
         if (pat != cur_game.pending_aura_target.end())
-            enchanted = pat->second;
+            enchanted = pat->second.target;
         else if (global_coordinator.entity_has_component<Permanent>(ab.source))
             enchanted = global_coordinator.GetComponent<Permanent>(ab.source).equipped_to;
         if (enchanted != 0 && global_coordinator.entity_has_component<Zone>(enchanted)) {

@@ -57,13 +57,7 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer) {
     if (card_data.enchant_filter.empty()) return true;  // not an Aura
-    Ability enchant_ab;
-    enchant_ab.controller = caster;
-    enchant_ab.valid_tgts = card_data.enchant_filter;
-    // "Enchant creature card in a graveyard" (Animate Dead): search graveyards, not the
-    // battlefield, for a legal enchant target (CR 303.4).
-    enchant_ab.target_in_graveyard = enchant_targets_graveyard(card_data.enchant_filter);
-    return has_legal_targets(enchant_ab, orderer);
+    return has_legal_targets(enchant_target_ability(0, card_data, caster), orderer);
 }
 
 // Chosen targets of every stack object that would destroy or exile a battlefield

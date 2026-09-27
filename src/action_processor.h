@@ -59,6 +59,19 @@ bool any_attacker_needs_damage_assignment(Game& game, std::shared_ptr<Orderer> o
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
 
+// The transient targeting ability an Aura's enchant ability defines (CR 303.4a): its legal
+// objects are those its Enchant filter names (CardData::enchant_filter), judged from `chooser`'s
+// perspective (the filter is controller-relative: Sheltered by Ghosts' Creature.YouCtrl), and a
+// graveyard-card filter (Animate Dead) searches graveyards. One builder for every enchant pick —
+// the cast-offer gate, the cast-time target, the choice as an uncast Aura enters, and the
+// resolution re-check — so they never disagree about what the Aura may enchant.
+Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership chooser);
+
+// True if `aura`'s recorded pending_aura_target is still a legal object for it to enchant
+// (CR 608.2b / 608.3b): still the same object (CR 400.7) and still matching its enchant ability
+// for `controller`. False with no recorded target.
+bool pending_aura_target_legal(Entity aura, Zone::Ownership controller);
+
 // CR 601.2c cast-legality target check across a spell's reachable modes. Returns true if every
 // required target (of the primary spell ability and any targeting sub-ability) can be legally
 // chosen for at least one reachable set of choices — in particular, for a Gift spell, the

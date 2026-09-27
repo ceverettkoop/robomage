@@ -722,7 +722,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 {
                     auto pat = game.pending_aura_target.find(entity);
                     if (pat != game.pending_aura_target.end()) {
-                        Entity enchanted = pat->second;
+                        Entity enchanted = pat->second.target;
                         if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
                             perm.equipped_to = enchanted;
                             game_log("%s is attached to %s.\n", perm.name.c_str(),

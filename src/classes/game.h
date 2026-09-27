@@ -176,6 +176,15 @@ struct Emblem {
     int source_vocab_idx = -1;
 };
 
+// The object an Aura will enchant, chosen before the Aura enters the battlefield: its cast
+// target (CR 303.4a) or the object chosen as it enters without being cast (CR 303.4f). The
+// target's Zone::obj_gen at the choice identifies that object (CR 400.7), so a card that changed
+// zones in between (a new object) no longer counts as the chosen one; 0 = not snapshotted.
+struct PendingAuraTarget {
+    Entity target = 0;
+    uint64_t target_gen = 0;
+};
+
 struct Game {
         Game() {};
         Game(size_t _seed) {
@@ -791,7 +800,7 @@ struct Game {
         std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
-        std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
+        std::map<Entity, PendingAuraTarget> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
         // Known top-of-library cards (one array per player). Index 0 is the top of the
         // library. -1 = unknown (default). Updated when a card is placed on top of a

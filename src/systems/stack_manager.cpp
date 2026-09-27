@@ -11,6 +11,7 @@
 #include "../components/permanent.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
+#include "../action_processor.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
@@ -73,6 +74,33 @@ static void frame_finish() {
     supersede_departed_cards();
 }
 
+// True if `spell` is an Aura spell whose enchant target (chosen at cast, CR 303.4a) is no longer
+// legal as it resolves (CR 608.3b / 608.2b): the object changed zones (CR 400.7) or no longer
+// matches its enchant ability. An Aura spell with no recorded target is not judged here.
+bool StackManager::aura_spell_target_illegal(Entity spell) {
+    const auto &cd = global_coordinator.GetComponent<CardData>(spell);
+    if (cd.enchant_filter.empty()) return false;
+    if (!cur_game.pending_aura_target.count(spell)) return false;
+    return !pending_aura_target_legal(spell, source_controller(spell));
+}
+
+// Take a spell off the stack without resolving it: into its owner's graveyard, or, for a copy
+// of a spell (not a card, CR 707.10a), out of existence.
+void StackManager::remove_unresolved_spell(Entity spell, std::shared_ptr<Orderer> orderer) {
+    bool is_copy = global_coordinator.entity_has_component<Spell>(spell) &&
+                   global_coordinator.GetComponent<Spell>(spell).is_copy;
+    if (global_coordinator.entity_has_component<Spell>(spell))
+        global_coordinator.RemoveComponent<Spell>(spell);
+    if (global_coordinator.entity_has_component<Ability>(spell))
+        global_coordinator.RemoveComponent<Ability>(spell);
+    if (is_copy) {
+        cur_game.pending_aura_target.erase(spell);
+        global_coordinator.DestroyEntity(spell);
+        return;
+    }
+    orderer->add_to_zone(false, spell, Zone::GRAVEYARD);
+}
+
 void StackManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
@@ -131,7 +159,13 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 }
             }
         }
-        if (is_permanent) {
+        if (is_permanent && aura_spell_target_illegal(top_entity)) {
+            // CR 608.3b: an Aura spell whose target is illegal doesn't resolve; it is removed
+            // from the stack and put into its owner's graveyard.
+            game_log("%s doesn't resolve: the object it targets is no longer legal (CR 608.3b)\n",
+                     card_data.name.c_str());
+            remove_unresolved_spell(top_entity, orderer);
+        } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
             // Capture evoke status before the Spell component (which carries it) is removed;
             // apply_permanent_components consumes pending_evoked to set Permanent::evoked.

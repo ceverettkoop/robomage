@@ -54,6 +54,13 @@ void supersede_departed_cards() {
 
 void forget_reissued_entity(Entity e) { cur_game.forget_entity(e); }
 
+uint64_t stamp_object_gen(Entity e) {
+    if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return 0;
+    auto &z = global_coordinator.GetComponent<Zone>(e);
+    if (z.obj_gen == 0) z.obj_gen = cur_game.next_obj_gen++;
+    return z.obj_gen;
+}
+
 std::string last_known_name(Entity e) {
     const LastKnownInfo *lki = lki_for(e);
     if (!lki || lki->name.empty()) return "";

@@ -831,9 +831,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 }
 
 bool Ability::target_gen_current(Entity cand, uint64_t recorded_gen) const {
-    if (recorded_gen == 0) return true;  // no snapshot taken — keep prior behavior
-    if (!global_coordinator.entity_has_component<Zone>(cand)) return true;  // e.g. a player target
-    return global_coordinator.GetComponent<Zone>(cand).obj_gen == recorded_gen;
+    return is_same_object(cand, recorded_gen);
 }
 
 bool Ability::is_target_valid() const {
