@@ -1998,6 +1998,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
             // Reveal$ are captured by / cosmetic to the choose_each handler.
             "Choices", "ControlledByPlayer", "Reveal",
+            // ChoiceTitle$ <text> (Dauthi Voidwalker's ChooseCard): the prose prompt shown for the
+            // choice. Purely cosmetic — the load-bearing Choices$ / ChoiceZone$ are parsed above.
+            "ChoiceTitle",
             // Ultimate$ True is informational: ultimate legality is already covered by the
             // minus-loyalty cost check, so the flag is unused.
             "Ultimate",
