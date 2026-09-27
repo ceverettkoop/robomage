@@ -2884,31 +2884,31 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: self_citys_blessing, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> A/A: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> A/A: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player A names card: Ajani, Nacatl Pariah
+  Player A names card: Brainstorm
   Resolving ability (category: Discard)
   Player B reveals their hand:
     Force of Will
@@ -3082,31 +3082,31 @@
   This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB
   Extras: self_citys_blessing, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> A/A: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> A/A: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player A names card: Ajani, Nacatl Pariah
+  Player A names card: Brainstorm
   Resolving ability (category: Discard)
   Player B reveals their hand:
     Force of Will

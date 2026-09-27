@@ -230,31 +230,26 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Chain Lightning
+   1: Name card: Eidolon of the Great Revel
+   2: Name card: Goblin Guide
+   3: Name card: Lava Spike
+   4: Name card: Leyline of the Void
+   5: Name card: Lightning Bolt
+   6: Name card: Monastery Swiftspear
+   7: Name card: Price of Progress
+   8: Name card: Smash to Smithereens
+   9: Name card: Fireblast
+  10: Name card: Rift Bolt
+  11: Name card: Roiling Vortex
+  12: Name card: Searing Blood
+  13: Name card: Skewer the Critics
+  14: Name card: Dead
+  15: Name card: Exquisite Firecraft
+  16: Name card: Light Up the Stage
+  >> B/B: 0 (Name card: Chain Lightning)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Chain Lightning
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Mountain
@@ -638,31 +633,26 @@
   This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=WB
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Chain Lightning
+   1: Name card: Eidolon of the Great Revel
+   2: Name card: Goblin Guide
+   3: Name card: Lava Spike
+   4: Name card: Leyline of the Void
+   5: Name card: Lightning Bolt
+   6: Name card: Monastery Swiftspear
+   7: Name card: Price of Progress
+   8: Name card: Smash to Smithereens
+   9: Name card: Fireblast
+  10: Name card: Rift Bolt
+  11: Name card: Roiling Vortex
+  12: Name card: Searing Blood
+  13: Name card: Skewer the Critics
+  14: Name card: Dead
+  15: Name card: Exquisite Firecraft
+  16: Name card: Light Up the Stage
+  >> B/B: 0 (Name card: Chain Lightning)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Chain Lightning
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Mountain

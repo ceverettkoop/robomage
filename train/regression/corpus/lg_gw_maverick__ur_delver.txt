@@ -1618,7 +1618,8 @@
   Player B casts Preordain
   Resolving ability (category: Scry, amount: 2)
   Player B scries 2.
-  Scry: top card is Lightning Bolt
+  Scry: looking at Lightning Bolt
+  Scry: looking at Flooded Strand
 
 --- Decision 66 ---
   Priority: Player B (active)
@@ -1638,11 +1639,11 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> B/B: 0 (Keep on top)
---- Narrative ---
-  Scry: top card is Flooded Strand
+   0: Put Lightning Bolt on top of library  [#0]
+   1: Put Flooded Strand on top of library  [#0]
+   2: Put Lightning Bolt on the bottom of library
+   3: Put Flooded Strand on the bottom of library
+  >> B/B: 0 (Put Lightning Bolt on top of library)
 
 --- Decision 67 ---
   Priority: Player B (active)
@@ -1662,9 +1663,9 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1, not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> B/B: 0 (Keep on top)
+   0: Put Flooded Strand on top of library  [#1]
+   1: Put Flooded Strand on the bottom of library
+  >> B/B: 0 (Put Flooded Strand on top of library)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player B draws Lightning Bolt

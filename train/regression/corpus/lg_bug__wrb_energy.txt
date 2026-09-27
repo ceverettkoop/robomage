@@ -252,31 +252,35 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Force of Will
+   2: Name card: Orcish Bowmasters
+   3: Name card: Ponder
+   4: Name card: Fatal Push
+   5: Name card: Flow State
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Baleful Strix
+   8: Name card: Carpet of Flowers
+   9: Name card: Consign to Memory
+  10: Name card: Endurance
+  11: Name card: Pernicious Deed
+  12: Name card: Sheoldred's Edict
+  13: Name card: Thoughtseize
+  14: Name card: Uro, Titan of Nature's Wrath
+  15: Name card: Witherbloom Command
+  16: Name card: Force of Negation
+  17: Name card: Force of Vigor
+  18: Name card: Hydroblast
+  19: Name card: Kaito, Bane of Nightmares
+  20: Name card: Life from the Loam
+  21: Name card: Lórien Revealed
+  22: Name card: Null Rod
+  23: Name card: Surgical Extraction
+  24: Name card: Toxic Deluge
+  25: Name card: Veil of Summer
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Fatal Push
@@ -503,31 +507,35 @@
   This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=WB
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Force of Will
+   2: Name card: Orcish Bowmasters
+   3: Name card: Ponder
+   4: Name card: Fatal Push
+   5: Name card: Flow State
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Baleful Strix
+   8: Name card: Carpet of Flowers
+   9: Name card: Consign to Memory
+  10: Name card: Endurance
+  11: Name card: Pernicious Deed
+  12: Name card: Sheoldred's Edict
+  13: Name card: Thoughtseize
+  14: Name card: Uro, Titan of Nature's Wrath
+  15: Name card: Witherbloom Command
+  16: Name card: Force of Negation
+  17: Name card: Force of Vigor
+  18: Name card: Hydroblast
+  19: Name card: Kaito, Bane of Nightmares
+  20: Name card: Life from the Loam
+  21: Name card: Lórien Revealed
+  22: Name card: Null Rod
+  23: Name card: Surgical Extraction
+  24: Name card: Toxic Deluge
+  25: Name card: Veil of Summer
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Fatal Push
@@ -995,31 +1003,35 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: not_priority_window, opp_mulligans=1
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Force of Will
+   2: Name card: Orcish Bowmasters
+   3: Name card: Ponder
+   4: Name card: Fatal Push
+   5: Name card: Flow State
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Baleful Strix
+   8: Name card: Carpet of Flowers
+   9: Name card: Consign to Memory
+  10: Name card: Endurance
+  11: Name card: Pernicious Deed
+  12: Name card: Sheoldred's Edict
+  13: Name card: Thoughtseize
+  14: Name card: Uro, Titan of Nature's Wrath
+  15: Name card: Witherbloom Command
+  16: Name card: Force of Negation
+  17: Name card: Force of Vigor
+  18: Name card: Hydroblast
+  19: Name card: Kaito, Bane of Nightmares
+  20: Name card: Life from the Loam
+  21: Name card: Lórien Revealed
+  22: Name card: Null Rod
+  23: Name card: Surgical Extraction
+  24: Name card: Toxic Deluge
+  25: Name card: Veil of Summer
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Fatal Push
@@ -1139,31 +1151,35 @@
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Force of Will
+   2: Name card: Orcish Bowmasters
+   3: Name card: Ponder
+   4: Name card: Fatal Push
+   5: Name card: Flow State
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Baleful Strix
+   8: Name card: Carpet of Flowers
+   9: Name card: Consign to Memory
+  10: Name card: Endurance
+  11: Name card: Pernicious Deed
+  12: Name card: Sheoldred's Edict
+  13: Name card: Thoughtseize
+  14: Name card: Uro, Titan of Nature's Wrath
+  15: Name card: Witherbloom Command
+  16: Name card: Force of Negation
+  17: Name card: Force of Vigor
+  18: Name card: Hydroblast
+  19: Name card: Kaito, Bane of Nightmares
+  20: Name card: Life from the Loam
+  21: Name card: Lórien Revealed
+  22: Name card: Null Rod
+  23: Name card: Surgical Extraction
+  24: Name card: Toxic Deluge
+  25: Name card: Veil of Summer
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Fatal Push

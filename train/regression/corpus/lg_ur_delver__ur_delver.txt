@@ -2030,7 +2030,8 @@
   Resolving ability (category: Cleanup)
   Resolving ability (category: Scry, amount: 2)
   Player A scries 2.
-  Scry: top card is Brainstorm
+  Scry: looking at Brainstorm
+  Scry: looking at Ponder
 
 --- Decision 87 ---
   Priority: Player A (active)
@@ -2047,11 +2048,11 @@
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UR
   Extras: not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> A/A: 0 (Keep on top)
---- Narrative ---
-  Scry: top card is Ponder
+   0: Put Brainstorm on top of library  [#0]
+   1: Put Ponder on top of library  [#0]
+   2: Put Brainstorm on the bottom of library
+   3: Put Ponder on the bottom of library
+  >> A/A: 0 (Put Brainstorm on top of library)
 
 --- Decision 88 ---
   Priority: Player A (active)
@@ -2069,9 +2070,9 @@
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UR
   Extras: not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> A/A: 0 (Keep on top)
+   0: Put Ponder on top of library  [#1]
+   1: Put Ponder on the bottom of library
+  >> A/A: 0 (Put Ponder on top of library)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player A draws Brainstorm

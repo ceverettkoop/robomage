@@ -2431,7 +2431,8 @@
   Resolving ability (category: Cleanup)
   Resolving ability (category: Scry, amount: 2)
   Player A scries 2.
-  Scry: top card is Dragon's Rage Channeler
+  Scry: looking at Dragon's Rage Channeler
+  Scry: looking at Force of Will
 
 --- Decision 101 ---
   Priority: Player A (active)
@@ -2450,11 +2451,11 @@
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> A/A: 0 (Keep on top)
---- Narrative ---
-  Scry: top card is Force of Will
+   0: Put Dragon's Rage Channeler on top of library  [#0]
+   1: Put Force of Will on top of library  [#0]
+   2: Put Dragon's Rage Channeler on the bottom of library
+   3: Put Force of Will on the bottom of library
+  >> A/A: 0 (Put Dragon's Rage Channeler on top of library)
 
 --- Decision 102 ---
   Priority: Player A (active)
@@ -2474,9 +2475,9 @@
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:
-   0: Keep on top
-   1: Put on bottom
-  >> A/A: 0 (Keep on top)
+   0: Put Force of Will on top of library  [#1]
+   1: Put Force of Will on the bottom of library
+  >> A/A: 0 (Put Force of Will on top of library)
 --- Narrative ---
   Resolving ability (category: Draw, amount: 1)
   Player A draws Dragon's Rage Channeler

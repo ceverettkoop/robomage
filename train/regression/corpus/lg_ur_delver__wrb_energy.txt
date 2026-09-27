@@ -827,31 +827,31 @@
   This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WB | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Cori-Steel Cutter
+   2: Name card: Daze
+   3: Name card: Dragon's Rage Channeler
+   4: Name card: Force of Will
+   5: Name card: Lightning Bolt
+   6: Name card: Mishra's Bauble
+   7: Name card: Ponder
+   8: Name card: Flow State
+   9: Name card: Red Elemental Blast
+  10: Name card: Blue Elemental Blast
+  11: Name card: Consign to Memory
+  12: Name card: Force of Negation
+  13: Name card: Murktide Regent
+  14: Name card: Price of Freedom
+  15: Name card: Unholy Heat
+  16: Name card: Grafdigger's Cage
+  17: Name card: Into the Flood Maw
+  18: Name card: Meltdown
+  19: Name card: Preordain
+  20: Name card: Surgical Extraction
+  21: Name card: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Cori-Steel Cutter
@@ -2699,31 +2699,31 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Cori-Steel Cutter
+   2: Name card: Daze
+   3: Name card: Dragon's Rage Channeler
+   4: Name card: Force of Will
+   5: Name card: Lightning Bolt
+   6: Name card: Mishra's Bauble
+   7: Name card: Ponder
+   8: Name card: Flow State
+   9: Name card: Red Elemental Blast
+  10: Name card: Blue Elemental Blast
+  11: Name card: Consign to Memory
+  12: Name card: Force of Negation
+  13: Name card: Murktide Regent
+  14: Name card: Price of Freedom
+  15: Name card: Unholy Heat
+  16: Name card: Grafdigger's Cage
+  17: Name card: Into the Flood Maw
+  18: Name card: Meltdown
+  19: Name card: Preordain
+  20: Name card: Surgical Extraction
+  21: Name card: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Cori-Steel Cutter
@@ -2839,31 +2839,31 @@
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Extras: self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   0: Name card: Brainstorm
+   1: Name card: Cori-Steel Cutter
+   2: Name card: Daze
+   3: Name card: Dragon's Rage Channeler
+   4: Name card: Force of Will
+   5: Name card: Lightning Bolt
+   6: Name card: Mishra's Bauble
+   7: Name card: Ponder
+   8: Name card: Flow State
+   9: Name card: Red Elemental Blast
+  10: Name card: Blue Elemental Blast
+  11: Name card: Consign to Memory
+  12: Name card: Force of Negation
+  13: Name card: Murktide Regent
+  14: Name card: Price of Freedom
+  15: Name card: Unholy Heat
+  16: Name card: Grafdigger's Cage
+  17: Name card: Into the Flood Maw
+  18: Name card: Meltdown
+  19: Name card: Preordain
+  20: Name card: Surgical Extraction
+  21: Name card: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Cori-Steel Cutter

@@ -1013,31 +1013,32 @@
   This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 life_gained=2 colors=WBR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
+   0: Name card: Brainstorm
+   1: Name card: Consign to Memory
+   2: Name card: Flow State
+   3: Name card: Force of Will
+   4: Name card: Ponder
    5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Wrath of the Skies
+   8: Name card: Containment Priest
+   9: Name card: Flusterstorm
+  10: Name card: Force of Negation
+  11: Name card: Lórien Revealed
+  12: Name card: Murktide Regent
+  13: Name card: Prismatic Ending
+  14: Name card: The One Ring
+  15: Name card: Triumph of Saint Katherine
+  16: Name card: Tune the Narrative
+  17: Name card: Geist of Saint Traft
+  18: Name card: Lavinia, Azorius Renegade
+  19: Name card: Spell Pierce
+  20: Name card: Spell Snare
+  21: Name card: Surgical Extraction
+  22: Name card: Teferi, Time Raveler
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Force of Will
@@ -6567,31 +6568,32 @@
   Opp effects: sorceries as flash
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
+   0: Name card: Brainstorm
+   1: Name card: Consign to Memory
+   2: Name card: Flow State
+   3: Name card: Force of Will
+   4: Name card: Ponder
    5: Name card: Swords to Plowshares
-   6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Wrath of the Skies
+   8: Name card: Containment Priest
+   9: Name card: Flusterstorm
+  10: Name card: Force of Negation
+  11: Name card: Lórien Revealed
+  12: Name card: Murktide Regent
+  13: Name card: Prismatic Ending
+  14: Name card: The One Ring
+  15: Name card: Triumph of Saint Katherine
+  16: Name card: Tune the Narrative
+  17: Name card: Geist of Saint Traft
+  18: Name card: Lavinia, Azorius Renegade
+  19: Name card: Spell Pierce
+  20: Name card: Spell Snare
+  21: Name card: Surgical Extraction
+  22: Name card: Teferi, Time Raveler
+  >> B/B: 0 (Name card: Brainstorm)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Brainstorm
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Swords to Plowshares

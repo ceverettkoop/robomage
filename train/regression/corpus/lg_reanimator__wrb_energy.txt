@@ -433,31 +433,31 @@
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
+   0: Name card: Atraxa, Grand Unifier
+   1: Name card: Brainstorm
+   2: Name card: Force of Will
+   3: Name card: Lotus Petal
+   4: Name card: Reanimate
+   5: Name card: Show and Tell
    6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   7: Name card: Animate Dead
+   8: Name card: Careful Study
+   9: Name card: Flow State
+  10: Name card: Otherworldly Gaze
+  11: Name card: Ponder
+  12: Name card: Archon of Cruelty
+  13: Name card: Consign to Memory
+  14: Name card: Echoing Truth
+  15: Name card: Fatal Push
+  16: Name card: Force of Negation
+  17: Name card: The Creation of Avacyn
+  18: Name card: Dark Ritual
+  19: Name card: Flusterstorm
+  20: Name card: Griselbrand
+  21: Name card: Raph & Mikey, Troublemakers
+  >> B/B: 0 (Name card: Atraxa, Grand Unifier)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Atraxa, Grand Unifier
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Archon of Cruelty
@@ -776,31 +776,31 @@
   This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=2 colors=WB
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Name card: Ajani, Nacatl Pariah
-   1: Name card: Amped Raptor
-   2: Name card: Guide of Souls
-   3: Name card: Leyline of the Void
-   4: Name card: Ocelot Pride
-   5: Name card: Swords to Plowshares
+   0: Name card: Atraxa, Grand Unifier
+   1: Name card: Brainstorm
+   2: Name card: Force of Will
+   3: Name card: Lotus Petal
+   4: Name card: Reanimate
+   5: Name card: Show and Tell
    6: Name card: Thoughtseize
-   7: Name card: Voice of Victory
-   8: Name card: Cabal Therapy
-   9: Name card: Orcish Bowmasters
-  10: Name card: Containment Priest
-  11: Name card: Goblin Bombardment
-  12: Name card: Pyroblast
-  13: Name card: Clarion Conqueror
-  14: Name card: Damping Sphere
-  15: Name card: Deafening Silence
-  16: Name card: Disruptor Flute
-  17: Name card: Hexing Squelcher
-  18: Name card: Null Rod
-  19: Name card: Static Prison
-  20: Name card: Stony Silence
-  21: Name card: Wrath of the Skies
-  >> B/B: 0 (Name card: Ajani, Nacatl Pariah)
+   7: Name card: Animate Dead
+   8: Name card: Careful Study
+   9: Name card: Flow State
+  10: Name card: Otherworldly Gaze
+  11: Name card: Ponder
+  12: Name card: Archon of Cruelty
+  13: Name card: Consign to Memory
+  14: Name card: Echoing Truth
+  15: Name card: Fatal Push
+  16: Name card: Force of Negation
+  17: Name card: The Creation of Avacyn
+  18: Name card: Dark Ritual
+  19: Name card: Flusterstorm
+  20: Name card: Griselbrand
+  21: Name card: Raph & Mikey, Troublemakers
+  >> B/B: 0 (Name card: Atraxa, Grand Unifier)
 --- Narrative ---
-  Player B names card: Ajani, Nacatl Pariah
+  Player B names card: Atraxa, Grand Unifier
   Resolving ability (category: Discard)
   Player A reveals their hand:
     Thoughtseize
