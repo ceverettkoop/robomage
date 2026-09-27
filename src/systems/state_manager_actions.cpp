@@ -43,6 +43,13 @@ static std::string loyalty_cost_label(const Ability &ab);
 static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer);
 static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty);
 static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window);
+static bool payment_blocked(Entity paid_for);
+static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
+                                              const std::set<Entity> &entities);
+static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                         Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
+                         std::shared_ptr<Orderer> orderer);
+static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
 
 // The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
 // stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
@@ -66,6 +73,98 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
     if (rules_mod::opponent_sorcery_speed_locked(caster)) return false;
     return card_has_type(face, "Instant") || card_has_keyword(face, "Flash") ||
            rules_mod::cast_with_flash_active(caster, face);
+}
+
+// Machine mode: stop offering a spell or ability whose payment already failed twice (the payer
+// bumps payment_fail_counts on each cancelled payment), so an agent can't loop on it.
+static bool payment_blocked(Entity paid_for) {
+    auto it = cur_game.payment_fail_counts.find(paid_for);
+    return it != cur_game.payment_fail_counts.end() && it->second >= 2;
+}
+
+// Machine mode only: action-masking optimization — don't offer a conditional-destroy spell to
+// the RL agent when no target on the board would currently pass the condition (e.g. Fatal Push:
+// only show if a creature with mana value <= the current revolt-aware threshold exists). This is
+// a masking heuristic, NOT a rules gate — the spell can still legally target any creature in
+// CLI/interactive play.
+static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
+                                              const std::set<Entity> &entities) {
+    if (!InputLogger::instance().is_machine_schedule()) return false;
+    for (const auto &ab : face.abilities) {
+        if (ab.ability_type != Ability::SPELL) continue;
+        if (ab.condition_present.find("cmcLEX") == std::string::npos ||
+            ab.dynamic_amount_expr.empty())
+            return false;
+        // Evaluate Revolt threshold inline
+        int threshold = 2;
+        if (ab.dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
+            size_t dot1 = ab.dynamic_amount_expr.find("Revolt.") + 7;
+            size_t dot2 = ab.dynamic_amount_expr.find('.', dot1);
+            int high_val = std::stoi(ab.dynamic_amount_expr.substr(dot1, dot2 - dot1));
+            int low_val = std::stoi(ab.dynamic_amount_expr.substr(dot2 + 1));
+            bool revolt = (caster == Zone::PLAYER_A) ? cur_game.revolt_player_a
+                                                     : cur_game.revolt_player_b;
+            threshold = revolt ? high_val : low_val;
+        }
+        for (auto ce : entities) {
+            if (!is_battlefield_permanent(ce)) continue;
+            if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
+            // A token creature carries no CardData; a non-copy token has no mana
+            // cost and therefore mana value 0 (CR 111.7), which is always <= the
+            // threshold, so it is a valid conditional-destroy target. Mirror
+            // effect_destroy.cpp, which likewise treats a CardData-less target as
+            // mana value 0 and destroys it — without this, boards whose only small
+            // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
+            int cmc = global_coordinator.entity_has_component<CardData>(ce)
+                          ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
+                          : 0;
+            if (cmc <= threshold) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+// The cast-legality gates every cast-offering path shares (CR 601.2c, 601.3): the spell's timing
+// (spell_timing_ok, unless `ignore_timing`), a legal target for every required target of some
+// reachable mode, an Aura's enchant target, no CantBeCast prohibition on a spell cast from
+// `from_zone`, and the payment-failure guard. `face` is the face being cast (a split / modal DFC
+// back face, or the card itself). Costs differ per path (normal, alternative, flashback, escape,
+// resource grants), so each caller checks its own.
+static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                         Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
+                         std::shared_ptr<Orderer> orderer) {
+    if (!ignore_timing && !spell_timing_ok(face, caster, sorcery_window)) return false;
+    // Target legality (CR 601.2c), mode-aware: for a Gift spell the required target type switches
+    // on the gift promise (Into the Flood Maw: a creature without the gift, a nonland permanent
+    // with it) and a modal spell needs enough choosable modes, so the spell is castable iff a legal
+    // target exists for at least one reachable mode. Probed with the real cast source/controller
+    // (card_entity) so source-dependent target restrictions — protection from this spell's color,
+    // OppCtrl — match select_target and a protected-only target (Emrakul vs white, Scryb Ranger vs
+    // blue) is not offered. A ConditionPresent$ "if ..." clause is checked only at resolution
+    // (CR 608.2c), so it never gates the cast.
+    for (const auto &ab : face.abilities) {
+        if (ab.ability_type != Ability::SPELL) continue;
+        if (!spell_has_castable_targets(cast_gate_probe(ab, card_entity, caster), orderer, caster,
+                                        face.has_gift))
+            return false;
+        break;
+    }
+    // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+    if (!aura_enchant_target_available(face, caster, orderer)) return false;
+    if (machine_masks_conditional_destroy(face, caster, orderer->mEntities)) return false;
+    if (rules_mod::cast_prohibited(caster, face, from_zone)) return false;
+    return !payment_blocked(card_entity);
+}
+
+// A CAST_SPELL action for `card_entity`; `option_ordinal` tells the cast variants apart
+// (0 normal, 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback,
+// 5 escape, 6 cast-from-graveyard permission, 7 impulse / free cast from exile).
+static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal) {
+    LegalAction la(CAST_SPELL, card_entity, desc);
+    la.category = ActionCategory::CAST_SPELL;
+    la.option_ordinal = option_ordinal;
+    return la;
 }
 
 // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
@@ -486,34 +585,18 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
         const CardData &back = *front.backside;
         if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
 
-        // Timing is the back face's own (Gone is an instant), under the shared rule.
-        if (!spell_timing_ok(back, priority_player, sorcery_window)) continue;
-
-        // Spell-target legality (mirrors the front-face checks).
-        bool tgt_ok = true;
-        for (const auto &ab : back.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(back, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, back)) continue;
-
-        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
-        if (pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2) continue;
+        // Timing, targets and prohibitions are the back face's own (Gone is an instant).
+        if (!can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
+            continue;
 
         ManaValue cost = effective_base_cost(back, priority_player);
         if (!can_pay_mana(priority_player, cost, card_entity, orderer,
                           back.has_delve, back.has_improvise))
             continue;
 
-        LegalAction la(CAST_SPELL, card_entity, "Cast " + back.name);
-        la.category = ActionCategory::CAST_SPELL;
+        LegalAction la = cast_action(card_entity, "Cast " + back.name, 3);
         la.cast_back_face = true;
-        la.option_ordinal = 3;  // cast variant: 3 = modal-DFC back face
         actions.push_back(la);
     }
 }
@@ -610,79 +693,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
         if (card_has_type(card_data, "Land")) continue;  // can't cast land
-        bool can_cast_now = spell_timing_ok(card_data, priority_player, sorcery_window);
-        // Check that at least one legal target exists for any targeting requirement. A
-        // ConditionPresent$ "if ..." clause is checked only at resolution (CR 608.2c), so it never
-        // gates the cast.
-        bool tgt_ok = true;
-        for (const auto &ab : card_data.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            // Mode-aware target legality (CR 601.2c): for a Gift spell the required target type
-            // switches on the gift promise (Into the Flood Maw: a creature without the gift, a
-            // nonland permanent with it), so the spell is castable iff a legal target exists for
-            // at least one reachable mode. Reduces to has_legal_targets for ordinary spells.
-            // Probe with the real cast source/controller (card_entity) so source-dependent target
-            // restrictions — protection from this spell's color, OppCtrl — match select_target and
-            // a protected-only target (Emrakul vs white, Scryb Ranger vs blue) is not offered.
-            Ability probe = cast_gate_probe(ab, card_entity, priority_player);
-            tgt_ok = spell_has_castable_targets(probe, orderer, priority_player, card_data.has_gift);
-            break;
-        }
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (tgt_ok)
-            tgt_ok = aura_enchant_target_available(card_data, priority_player, orderer);
-        // Machine mode only: action-masking optimization — don't offer a conditional-destroy
-        // spell to the RL agent when no target on the board would currently pass the
-        // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
-        // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
-        // the spell can still legally target any creature in CLI/interactive play.
-        if (InputLogger::instance().is_machine_schedule() && tgt_ok) {
-            for (const auto &ab : card_data.abilities) {
-                if (ab.ability_type != Ability::SPELL) continue;
-                if (ab.condition_present.find("cmcLEX") != std::string::npos &&
-                    !ab.dynamic_amount_expr.empty()) {
-                    // Evaluate Revolt threshold inline
-                    int threshold = 2;
-                    if (ab.dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
-                        size_t dot1 = ab.dynamic_amount_expr.find("Revolt.") + 7;
-                        size_t dot2 = ab.dynamic_amount_expr.find('.', dot1);
-                        int high_val = std::stoi(ab.dynamic_amount_expr.substr(dot1, dot2 - dot1));
-                        int low_val = std::stoi(ab.dynamic_amount_expr.substr(dot2 + 1));
-                        bool revolt = (priority_player == Zone::PLAYER_A)
-                            ? cur_game.revolt_player_a : cur_game.revolt_player_b;
-                        threshold = revolt ? high_val : low_val;
-                    }
-                    bool any_valid = false;
-                    for (auto ce : mEntities) {
-                        if (!is_battlefield_permanent(ce)) continue;
-                        if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
-                        // A token creature carries no CardData; a non-copy token has no mana
-                        // cost and therefore mana value 0 (CR 111.7), which is always <= the
-                        // threshold, so it is a valid conditional-destroy target. Mirror
-                        // effect_destroy.cpp, which likewise treats a CardData-less target as
-                        // mana value 0 and destroys it — without this, boards whose only small
-                        // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
-                        int cmc = global_coordinator.entity_has_component<CardData>(ce)
-                                      ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
-                                      : 0;
-                        if (cmc <= threshold) { any_valid = true; break; }
-                    }
-                    if (!any_valid) tgt_ok = false;
-                }
-                break;
-            }
-        }
-
-        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
-        bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
-        if (can_cast_now && tgt_ok && !payment_blocked) {
-            std::string desc = "Cast " + card_data.name;
-            LegalAction la(CAST_SPELL, card_entity, desc);
-            la.category = ActionCategory::CAST_SPELL;
-            la.option_ordinal = 0;  // cast variant: 0 = normal
-
-            // Check CantBeCast statics from cached active_statics
-            if (rules_mod::cast_prohibited(priority_player, card_data)) continue;
+        // Timing alone also gates the suspend special action below.
+        bool timing_ok = spell_timing_ok(card_data, priority_player, sorcery_window);
+        if (timing_ok && can_cast_now(card_data, card_entity, priority_player, Zone::HAND,
+                                      sorcery_window, /*ignore_timing=*/true, orderer)) {
+            LegalAction la = cast_action(card_entity, "Cast " + card_data.name, 0);
 
             ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
@@ -737,13 +752,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
         // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
-        // the card (`can_cast_now` — sorcery speed for a sorcery), its owner may instead pay the
+        // the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
         // suspend cost and exile it with N time counters. This is a special action (doesn't use the
         // stack). Its targets are chosen only later, when the last counter is removed and it is cast
         // for free, so no legal target is required now (702.62 casts it then, not here); the card
         // just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
-        if (card_data.has_suspend && can_cast_now &&
+        if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
             can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
@@ -759,18 +774,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::FLASHBACK)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-
-        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
-
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
+        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
+            continue;
 
         // Check affordability: flashback mana cost (floored — flashback is an alternative
         // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
@@ -791,13 +798,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                            orderer->mEntities, gy_entity).empty())
             continue;
 
-        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
-
-        LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
-        fb_la.category = ActionCategory::CAST_SPELL;
+        LegalAction fb_la = cast_action(gy_entity, "Cast " + gcd.name + " (flashback)", 4);
         fb_la.use_flashback = true;
-        fb_la.option_ordinal = 4;  // cast variant: 4 = flashback
         actions.push_back(fb_la);
     }
     // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
@@ -809,19 +811,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::ESCAPE)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-
-        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
-
-        // Spell-target legality (Nethergoyf has none, but keep general for future escape cards).
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
+            continue;
 
         // An escape life cost must be payable (CR 119.4).
         if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
@@ -847,12 +839,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 gcd.escape_alt_cost.exile_grave_count)
             continue;
 
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
-
-        LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
-        esc_la.category = ActionCategory::CAST_SPELL;
+        LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);
         esc_la.use_escape = true;
-        esc_la.option_ordinal = 5;  // cast variant: 5 = escape
         actions.push_back(esc_la);
     }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
@@ -862,31 +850,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::GRAVEYARD_CAST)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-
-        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
-
-        // Any targeting requirement must have at least one legal target.
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD))
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
             continue;
 
         ManaValue gy_cost = effective_base_cost(gcd, priority_player);
         if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve, gcd.has_improvise))
             continue;
 
-        LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
-        gy_la.category = ActionCategory::CAST_SPELL;
-        gy_la.option_ordinal = 6;  // cast variant: 6 = cast-from-graveyard permission (Emry)
-        actions.push_back(gy_la);
+        actions.push_back(cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6));
     }
     // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
     // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
@@ -914,13 +886,17 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
         }
 
-        bool can_cast_now = spell_timing_ok(ecd, priority_player, sorcery_window);
         // A suspend free cast (CR 702.62a) is made as an effect of resolving the last-time-counter
         // triggered ability during the caster's own upkeep, so it ignores the card's normal
         // sorcery/instant timing — offer it at any priority window this caster holds (until the
         // permission lapses at cleanup, i.e. "if you don't, it remains exiled").
-        if (perm_grant.from_suspend) can_cast_now = true;
-        if (!can_cast_now) continue;
+        // Aura enchant-target gate: the concrete crash it fixes here is Animate Dead reanimating
+        // the opponent's Amped Raptor (emptying the graveyard), the Raptor's impulse exiling a
+        // SECOND Animate Dead and granting this energy-cast permission — which must not be
+        // offered while no creature card is in any graveyard.
+        if (!can_cast_now(ecd, ex_entity, priority_player, Zone::EXILE, sorcery_window,
+                          /*ignore_timing=*/perm_grant.from_suspend, orderer))
+            continue;
 
         // Affordability of the alternative resource cost.
         Entity pe = get_player_entity(priority_player);
@@ -956,32 +932,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 continue;
         }
 
-        // Any targeting requirement must have at least one legal target.
-        bool tgt_ok = true;
-        for (const auto &ab : ecd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, ex_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        // The concrete crash this fixes: Animate Dead reanimates the opponent's Amped Raptor
-        // (emptying the graveyard), the Raptor's impulse exiles a SECOND Animate Dead and
-        // grants this energy-cast permission — which must not be offered while no creature
-        // card is in any graveyard.
-        if (!aura_enchant_target_available(ecd, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, ecd, Zone::EXILE))
-            continue;
-
         const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
                                      ? " (from exile, no cost)"
                                  : is_normal_play ? " (from exile)"
                                                   : " (impulse, alt cost)";
-        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + imp_suffix);
-        imp_la.category = ActionCategory::CAST_SPELL;
+        LegalAction imp_la = cast_action(ex_entity, "Cast " + ecd.name + imp_suffix, 7);
         imp_la.impulse_cast = true;
-        imp_la.option_ordinal = 7;  // cast variant: 7 = impulse/free cast from exile
         actions.push_back(imp_la);
     }
     // checking permanents for activated abilities
