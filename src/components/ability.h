@@ -776,6 +776,8 @@ struct Ability{
 
     // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
     std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value
+    // Origin$ All / Any — the mover acts on its object in whatever zone it is (origins is empty).
+    bool origin_any = false;
 
     // Dig ability (Once Upon a Time, Thassa's Oracle)
     size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library

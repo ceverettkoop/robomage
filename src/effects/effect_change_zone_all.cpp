@@ -86,7 +86,10 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     // Determine which zones to search
     std::vector<Zone::ZoneValue> search_zones;
-    if (ab.origins.size() > 1) {
+    if (ab.origin_any) {
+        // Origin$ All/Any: every owned-card zone this collector reads.
+        search_zones = {Zone::LIBRARY, Zone::HAND, Zone::GRAVEYARD, Zone::EXILE};
+    } else if (ab.origins.size() > 1) {
         search_zones = ab.origins;
     } else {
         search_zones.push_back(ab.origin);

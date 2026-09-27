@@ -15,6 +15,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../error.h"
 #include "../classes/action.h"
 #include "../action_processor.h"
 #include "../game_queries.h"
@@ -174,10 +175,11 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     register_delayed_trigger(dt, host);
 }
 
-// True if `e` sits in one of the ability's declared Origin$ zones, or the ability declares none.
-// A Defined$ mover acts only on an object still where the effect says it comes from.
+// True if `e` sits in one of the ability's declared Origin$ zones, or the ability declares none
+// (or Origin$ All/Any). A Defined$ mover acts only on an object still where the effect says it
+// comes from.
 static bool in_declared_origin(const Ability &ab, Entity e) {
-    if (ab.origins.empty()) return true;
+    if (ab.origin_any || ab.origins.empty()) return true;
     Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
     return std::find(ab.origins.begin(), ab.origins.end(), loc) != ab.origins.end();
 }
@@ -508,7 +510,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (card == 0 || !global_coordinator.entity_has_component<Zone>(card))
             return HandlerResult::DONE_RUN_SUBS;
         Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(card).location;
-        bool in_origin = ab.origins.empty() ? (loc == ab.origin) : false;
+        bool in_origin = ab.origin_any || (ab.origins.empty() && loc == ab.origin);
         for (auto z : ab.origins) if (z == loc) in_origin = true;
         if (!in_origin) return HandlerResult::DONE_RUN_SUBS;  // already moved by the other leg
 
@@ -560,7 +562,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
-                bool zone_ok = false;
+                bool zone_ok = ab.origin_any;
                 for (auto z : ab.origins) if (z == loc) zone_ok = true;
                 if (!zone_ok) continue;
                 if (is_land_card(global_coordinator.GetComponent<CardData>(e))) continue;  // nonland (oracle)
@@ -866,36 +868,29 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
         ab.remember_changed = (value == "True");
         return true;
     } else if (key == "Origin") {
-        // Handle comma-separated origins (e.g. "Graveyard,Library")
-        auto parse_zone = [](const std::string &s) -> Zone::ZoneValue {
-            if (s == "Library")        return Zone::LIBRARY;
-            if (s == "Hand")           return Zone::HAND;
-            if (s == "Graveyard")      return Zone::GRAVEYARD;
-            if (s == "Exile")          return Zone::EXILE;
-            if (s == "Sideboard")      return Zone::SIDEBOARD;
-            if (s == "Stack")          return Zone::STACK;
-            if (s == "Battlefield")    return Zone::BATTLEFIELD;
-            return Zone::LIBRARY;
-        };
+        // Comma-separated origins (e.g. "Graveyard,Library"). "All"/"Any" means the mover acts
+        // on its object wherever it is (Mox Diamond's Defined$ ReplacedCard move): no origin
+        // zone restriction, recorded as origin_any with an empty origin list.
         ab.origins.clear();
+        ab.origin_any = false;
         size_t zp = 0;
-        while (true) {
+        while (zp <= value.size()) {
             size_t comma = value.find(',', zp);
-            if (comma == std::string::npos) {
-                ab.origins.push_back(parse_zone(value.substr(zp)));
-                break;
-            }
-            ab.origins.push_back(parse_zone(value.substr(zp, comma - zp)));
+            std::string name = value.substr(zp, comma == std::string::npos ? std::string::npos : comma - zp);
+            Zone::ZoneValue z;
+            if (name == "All" || name == "Any") ab.origin_any = true;
+            else if (Zone::from_script_name(name, z)) ab.origins.push_back(z);
+            else warning("parse_change_zone: unknown Origin$ zone '" + name + "'");
+            if (comma == std::string::npos) break;
             zp = comma + 1;
         }
-        ab.origin = ab.origins[0];  // backward compat
+        if (ab.origin_any) ab.origins.clear();
+        if (!ab.origins.empty()) ab.origin = ab.origins[0];
         return true;
     } else if (key == "Destination") {
-        if (value == "Battlefield")    ab.destination = Zone::BATTLEFIELD;
-        else if (value == "Library")   ab.destination = Zone::LIBRARY;
-        else if (value == "Hand")      ab.destination = Zone::HAND;
-        else if (value == "Graveyard") ab.destination = Zone::GRAVEYARD;
-        else if (value == "Exile")     ab.destination = Zone::EXILE;
+        Zone::ZoneValue z;
+        if (Zone::from_script_name(value, z)) ab.destination = z;
+        else warning("parse_change_zone: unknown Destination$ zone '" + value + "'");
         return true;
     } else if (key == "MayShuffle") {
         ab.may_shuffle = (value == "True");

@@ -92,6 +92,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.sac_self != this->sac_self) return false;
     if (other.change_type != this->change_type) return false;
     if (other.origin != this->origin) return false;
+    if (other.origin_any != this->origin_any) return false;
     if (other.destination != this->destination) return false;
     if (other.color != this->color) return false;
     if (other.mana_choices != this->mana_choices) return false;
