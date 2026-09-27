@@ -600,13 +600,12 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-            // A transformed DFC shows its back face: determine creature/land-ness from the
-            // active face so a later SBA pass doesn't re-add a front-face Creature component
-            // to a permanent that flipped to a non-creature back face (Ajani -> planeswalker).
-            const CardData *face = &card_data;
-            if (global_coordinator.entity_has_component<Permanent>(entity) &&
-                global_coordinator.GetComponent<Permanent>(entity).transformed && card_data.backside)
-                face = card_data.backside.get();
+            // The face this permanent shows (CR 712.8d-f): the back face of a transformed DFC,
+            // else the front. The printed characteristics re-installed each pass below — P/T,
+            // keywords, abilities, statics — come from it, so a later SBA pass doesn't re-add a
+            // front-face Creature component to a permanent that flipped to a non-creature back
+            // face (Ajani -> planeswalker) or re-copy the front face's abilities.
+            const CardData *face = &active_face(entity, card_data);
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
             // Reconfigure (CR 702.151b): while a reconfigure equipment is attached, it is an
@@ -762,7 +761,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
-            for (const auto &ab : card_data.abilities) {
+            for (const auto &ab : face->abilities) {
                 if (ab.ability_type != Ability::ACTIVATED) continue;
                 auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
                 bool already_present = false;
@@ -787,18 +786,18 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
 
             // copy static abilities from card_data to permanent (applied = false by default)
             if (global_coordinator.GetComponent<Permanent>(entity).static_abilities.empty() &&
-                !card_data.static_abilities.empty()) {
+                !face->static_abilities.empty()) {
                 auto &perm_sa = global_coordinator.GetComponent<Permanent>(entity).static_abilities;
-                for (auto &sa : card_data.static_abilities)
+                for (auto &sa : face->static_abilities)
                     perm_sa.push_back(sa);
             }
 
             // providing creature related components if applicable
             if (is_creature && !global_coordinator.entity_has_component<Creature>(entity)) {
                 Creature creature;
-                creature.base_power = static_cast<int>(card_data.power);
-                creature.base_toughness = static_cast<int>(card_data.toughness);
-                creature.keywords = card_data.keywords;
+                creature.base_power = static_cast<int>(face->power);
+                creature.base_toughness = static_cast<int>(face->toughness);
+                creature.keywords = face->keywords;
                 recompute_pt(creature);
                 global_coordinator.AddComponent(entity, creature);
                 // damage component
@@ -1253,7 +1252,8 @@ static void apply_self_animate_statics() {
                 cr.base_power = 0;      // layer 7b's SetPower$/SetToughness$ override this to 3/4
                 cr.base_toughness = 0;
                 if (global_coordinator.entity_has_component<CardData>(a.entity))
-                    cr.keywords = global_coordinator.GetComponent<CardData>(a.entity).keywords;
+                    cr.keywords =
+                        active_face(a.entity, global_coordinator.GetComponent<CardData>(a.entity)).keywords;
                 global_coordinator.AddComponent(a.entity, cr);
                 if (!global_coordinator.entity_has_component<Damage>(a.entity)) {
                     Damage dmg;
@@ -1541,15 +1541,12 @@ void StateManager::gather_active_statics(Game &game) {
             cr.set_toughness = 0;
             // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
             // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
-            // Humility) are not sticky — mirrors the static_*_bonus rebuild above. A
-            // transformed DFC keeps its back-face keywords (set at transform; it is not
-            // gathered for statics below), so skip the reset for it.
-            if (!perm.transformed) {
-                if (global_coordinator.entity_has_component<CardData>(entity))
-                    cr.keywords = global_coordinator.GetComponent<CardData>(entity).keywords;
-                else if (global_coordinator.entity_has_component<Token>(entity))
-                    cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
-            }
+            // Humility) are not sticky — mirrors the static_*_bonus rebuild above. The base
+            // is the face that's up (CR 712.8e: a transformed DFC has its back face's keywords).
+            if (global_coordinator.entity_has_component<CardData>(entity))
+                cr.keywords = active_face(entity, global_coordinator.GetComponent<CardData>(entity)).keywords;
+            else if (global_coordinator.entity_has_component<Token>(entity))
+                cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
             // Re-merge "until end of turn" keyword grants (e.g. Haste from Eldrazi
             // Linebreaker) onto the freshly-rebuilt base keyword list. These persist
             // across the per-pass rebuild and are cleared at cleanup (514.2).
@@ -1584,10 +1581,9 @@ void StateManager::gather_active_statics(Game &game) {
                     cr.keywords.end());
             }
         }
-        if (perm.transformed) {
-            for (auto &sa : perm.static_abilities) sa.applied = false;
-            continue;
-        }
+        // perm.static_abilities holds the statics of the face that's up (installed from the
+        // active face on entry and swapped by set_permanent_face), so a transformed permanent's
+        // back-face statics apply like any other (CR 712.8e).
         for (auto &sa : perm.static_abilities)
             g_active_statics.push_back({entity, &sa, perm.controller, false});
     }

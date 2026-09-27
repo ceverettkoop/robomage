@@ -847,8 +847,8 @@ inline bool keyword_removed_eot(Entity e, const char *kw) {
 // state-based actions, CR 704.5g/h). Reads the keyword from the object's effective
 // keyword list: for a creature that is `Creature::keywords` (rebuilt each static pass
 // from the printed list plus any granted keywords), otherwise the printed keywords on
-// the CardData (or Token) — so a non-creature permanent like an artifact land with
-// `K:Indestructible` is covered too. Indestructible does NOT prevent sacrifice, exile,
+// the face that's up (CR 712.8e) or the Token — so a non-creature permanent like an
+// artifact land with `K:Indestructible` is covered too. Indestructible does NOT prevent sacrifice, exile,
 // "put into graveyard", or the 0-toughness SBA (CR 704.5f); those callers do not consult
 // this. Single source shared by the Destroy effects and the lethal-damage SBA.
 inline bool is_indestructible(Entity e) {
@@ -857,7 +857,7 @@ inline bool is_indestructible(Entity e) {
         return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), "Indestructible");
     }
     if (global_coordinator.entity_has_component<CardData>(e)) {
-        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+        for (const auto &k : active_face(e, global_coordinator.GetComponent<CardData>(e)).keywords)
             if (k == "Indestructible") return true;
         return false;
     }
@@ -871,16 +871,16 @@ inline bool is_indestructible(Entity e) {
 // True if the permanent `e` currently has the keyword `kw`, reading its EFFECTIVE
 // keyword list the same way is_indestructible does: a creature's `Creature::keywords`
 // (rebuilt each static pass from the printed list plus any granted keywords — Pump
-// grants, continuous effects, keyword counters), otherwise the printed CardData (or
-// Token) keywords. Single source for "does this permanent currently have keyword K";
-// targeting (Shroud/Hexproof, CR 702.18/702.11) and any future keyword query share it
+// grants, continuous effects, keyword counters), otherwise the printed keywords of the
+// face that's up (CR 712.8e) or the Token's. Single source for "does this permanent
+// currently have keyword K"; targeting (Shroud/Hexproof, CR 702.18/702.11) and any future keyword query share it
 // so they cannot drift on how a granted keyword is stored.
 inline bool permanent_has_keyword(Entity e, const char *kw) {
     if (keyword_removed_eot(e, kw)) return false;
     if (global_coordinator.entity_has_component<Creature>(e))
         return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), kw);
     if (global_coordinator.entity_has_component<CardData>(e)) {
-        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+        for (const auto &k : active_face(e, global_coordinator.GetComponent<CardData>(e)).keywords)
             if (k == kw) return true;
         return false;
     }

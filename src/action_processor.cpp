@@ -1317,7 +1317,7 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
                              global_coordinator.GetComponent<Permanent>(e).abilities_removed;
     // Printed ward.
     if (!abilities_removed && global_coordinator.entity_has_component<CardData>(e)) {
-        const auto &cd = global_coordinator.GetComponent<CardData>(e);
+        const auto &cd = active_face(e, global_coordinator.GetComponent<CardData>(e));
         if (cd.ward_cost > 0) wards.push_back({cd.ward_cost, cd.ward_is_life});
     }
     // Granted ward(s) from the effective keyword list. Use the same effective-keyword view as
@@ -1326,7 +1326,7 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
     if (global_coordinator.entity_has_component<Creature>(e))
         kw_list = &global_coordinator.GetComponent<Creature>(e).keywords;
     else if (global_coordinator.entity_has_component<CardData>(e))
-        kw_list = &global_coordinator.GetComponent<CardData>(e).keywords;
+        kw_list = &active_face(e, global_coordinator.GetComponent<CardData>(e)).keywords;
     else if (global_coordinator.entity_has_component<Token>(e))
         kw_list = &global_coordinator.GetComponent<Token>(e).keywords;
     if (kw_list) {
