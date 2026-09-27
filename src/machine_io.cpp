@@ -54,7 +54,8 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
-static void fill_permanent_state(PermanentState& ps, Entity e);
+static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer);
+static bool face_down_hidden_from(Entity e, Zone::Ownership viewer);
 static void fill_attached_by_refs(GameState* gs, int self_bf, int opp_bf);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
 static int battlefield_slot_ref_of(Entity e);
@@ -382,7 +383,15 @@ static void fill_attached_by_refs(GameState* gs, int self_bf, int opp_bf) {
 
 // Pass-B fill of one battlefield permanent's PermanentState. Runs after the
 // entity->slot map is built so the attachment/combat reference fields resolve.
-static void fill_permanent_state(PermanentState& ps, Entity e) {
+// A face-down exiled card (CR 406.3, 708.2) whose identity `viewer` can't see: one another player
+// owns. The same visibility rule the exile zone slots apply (fill_zone_card's hide_face_down).
+static bool face_down_hidden_from(Entity e, Zone::Ownership viewer) {
+    if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return false;
+    const Zone& z = global_coordinator.GetComponent<Zone>(e);
+    return z.is_face_down && z.owner != viewer;
+}
+
+static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership viewer) {
     auto& perm = global_coordinator.GetComponent<Permanent>(e);
 
     ps.card_vocab_idx        = get_card_vocab_idx(e);
@@ -394,9 +403,11 @@ static void fill_permanent_state(PermanentState& ps, Entity e) {
     // Most recently exiled card linked to this permanent that still has a live return path (a
     // Static Prison holding a real card, a Flickerwisp/Phelia EOT blink) — 0/none => sentinel.
     // Use the guarded vocab-idx helper (an exiled card is not a Permanent; an exiled token can't
-    // persist, but the helper handles the token case regardless).
+    // persist, but the helper handles the token case regardless). A face-down card the viewer
+    // can't see shows as the unknown sentinel.
     Entity returnable = returnable_exiled_card(e);
-    ps.returnable_exile_idx  = returnable == 0 ? -1 : get_card_vocab_idx(returnable);
+    ps.returnable_exile_idx  = (returnable == 0 || face_down_hidden_from(returnable, viewer))
+                                   ? -1 : get_card_vocab_idx(returnable);
     ps.is_tapped             = perm.is_tapped;
     ps.has_summoning_sickness = perm.has_summoning_sickness;
     ps.is_creature           = global_coordinator.entity_has_component<Creature>(e);
@@ -1008,9 +1019,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
     // ── Pass B (fill) ────────────────────────────────────────────────────────
     for (int i = 0; i < self_bf; i++)
-        fill_permanent_state(gs->self_permanents[i], self_ents[i]);
+        fill_permanent_state(gs->self_permanents[i], self_ents[i], viewer);
     for (int i = 0; i < opp_bf; i++)
-        fill_permanent_state(gs->opp_permanents[i], opp_ents[i]);
+        fill_permanent_state(gs->opp_permanents[i], opp_ents[i], viewer);
     fill_attached_by_refs(gs, self_bf, opp_bf);
     for (int i = 0; i < stored_stack; i++)
         fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
