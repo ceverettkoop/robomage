@@ -168,6 +168,8 @@
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
@@ -509,6 +511,8 @@
   Dealt 2 damage to player (now at 11 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 
 --- Decision 22 ---
   Priority: Player A (active)

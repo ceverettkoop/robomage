@@ -803,8 +803,7 @@
   Player B reveals Voice of Victory.
   Player B exiles Voice of Victory.
   Resolving ability (category: Play)
-  Player B may cast Voice of Victory this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player B may cast Voice of Victory by paying 2 energy rather than its mana cost.
 
 --- Decision 32 ---
   Priority: Player B (active)
@@ -813,37 +812,61 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
+  Stack: Amped Raptor (ability, self)
+  Pending: Voice of Victory (self)
   Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
-  Self exile: Voice of Victory [play:self/eot]
+  Self exile: Voice of Victory
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
-  Extras: self_lands_played=1, opp_revolt
+  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Cabal Therapy (flashback)  [#4]
-   2: Cast Voice of Victory (impulse, alt cost)  [#7]
-  >> B/B: 1 (Cast Cabal Therapy (flashback))
+   0: Do not cast Voice of Victory  [#0]
+   1: Cast Voice of Victory  [#1]
+  >> B/B: 1 (Cast Voice of Victory)
 --- Narrative ---
-  Choose target for Cabal Therapy:
+  Player B pays 2 energy
+  Player B casts Voice of Victory
+  Resolving ability (category: Cleanup)
+  Voice of Victory enters the battlefield
 
 --- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | energy 2 | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
+  Self:  14 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW)
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
+  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
+  Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
+  Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
+  Opp exile:  Ocelot Pride
+  Known opp hand: Ocelot Pride, Voice of Victory
+  Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands
+  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
+  Extras: self_lands_played=1, opp_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  14 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
+  Opp:   19 life | mana: empty | hand count: 3 | lib 50
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Pending: Cabal Therapy (self)
   Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
-  Self exile: Voice of Victory [play:self/eot]
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
+  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player A (19 life)
@@ -852,24 +875,24 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 34 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | energy 2 | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
+  Self:  14 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW)
+  Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Pending: Cabal Therapy (self)
   Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
-  Self exile: Voice of Victory [play:self/eot]
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
+  This turn: self spells=3 noncreature=1 instant_sorcery=1 drawn=1 colors=WR | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Sacrifice Amped Raptor
+   1: Sacrifice Voice of Victory
   >> B/B: 0 (Sacrifice Amped Raptor)
 --- Narrative ---
   Player B sacrifices Amped Raptor
@@ -877,22 +900,21 @@
   Resolving ability (category: NameCard)
   Player B names a card:
 
---- Decision 35 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | energy 2 | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
+  Self:  14 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW)
+  Self BF:  Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
   Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
   Pending: Cabal Therapy (self)
   Self GY: Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
-  Self exile: Voice of Victory [play:self/eot]
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
   Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WBR | opp life_gained=1
+  This turn: self spells=4 noncreature=2 instant_sorcery=2 drawn=1 colors=WBR | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Name card: Ajani, Nacatl Pariah
@@ -927,30 +949,6 @@
     Voice of Victory
   No matching cards to discard.
   Cabal Therapy is exiled (flashback)
-
---- Decision 36 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  14 life | mana: empty | energy 2 | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
-  Opp:   19 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW)
-  Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
-  Self GY: Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
-  Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
-  Self exile: Cabal Therapy, Voice of Victory [play:self/eot]
-  Opp exile:  Ocelot Pride
-  Known opp hand: Amped Raptor, Ocelot Pride, Voice of Victory
-  Opp revealed: Thoughtseize, Orcish Bowmasters, Arid Mesa, Ocelot Pride, Voice of Victory, Plateau, Badlands, Amped Raptor
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=WBR | opp life_gained=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Voice of Victory (impulse, alt cost)  [#7]
-  >> B/B: 1 (Cast Voice of Victory (impulse, alt cost))
---- Narrative ---
-  Player B pays 2 energy
-  Player B casts Voice of Victory
-  Voice of Victory enters the battlefield
   No creatures eligible to attack.
   -------- TURN 7 (Player A) --------
   Player A draws Cabal Therapy
@@ -991,8 +989,7 @@
   Player A reveals Ajani, Nacatl Pariah.
   Player A exiles Ajani, Nacatl Pariah.
   Resolving ability (category: Play)
-  Player A may cast Ajani, Nacatl Pariah this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player A may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
 
 --- Decision 38 ---
   Priority: Player A (active)
@@ -1001,20 +998,24 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Opp BF:   Badlands (T) | Elegant Parlor (T) | Scrubland (T) | Voice of Victory [1/3] (SICK)
+  Stack: Amped Raptor (ability, self)
+  Pending: Ajani, Nacatl Pariah (self)
   Self GY: Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
-  Self exile: Ajani, Nacatl Pariah [play:self/eot], Ocelot Pride
+  Self exile: Ajani, Nacatl Pariah, Ocelot Pride
   Opp exile:  Cabal Therapy
   Known opp hand: Ocelot Pride
   Opp revealed: Swords to Plowshares, Thoughtseize, Arid Mesa, Ocelot Pride, Voice of Victory, Marsh Flats, Elegant Parlor, Scrubland, Badlands, Cabal Therapy, Amped Raptor
   This turn: self spells=1 drawn=1 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Ajani, Nacatl Pariah (impulse, alt cost)  [#7]
-  >> A/A: 1 (Cast Ajani, Nacatl Pariah (impulse, alt cost))
+   0: Do not cast Ajani, Nacatl Pariah  [#0]
+   1: Cast Ajani, Nacatl Pariah  [#1]
+  >> A/A: 1 (Cast Ajani, Nacatl Pariah)
 --- Narrative ---
   Player A pays 2 energy
   Player A casts Ajani, Nacatl Pariah
+  Resolving ability (category: Cleanup)
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
   Resolving ability (category: Token)

@@ -281,8 +281,27 @@
 --- Narrative ---
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
 
 --- Decision 15 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 3)
+  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Lotus Petal | Tropical Island
+  Opp BF:   Fiery Islet
+  Stack: Rift Bolt (ability, opponent)
+  Opp exile:  Rift Bolt
+  Opp revealed: Fiery Islet, Rift Bolt
+  Extras: opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: SuspendCast)
+
+--- Decision 16 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
@@ -302,7 +321,7 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 16 ---
+--- Decision 17 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
@@ -322,7 +341,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 17 ---
+--- Decision 18 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -342,7 +361,7 @@
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 17 life)
 
---- Decision 18 ---
+--- Decision 19 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
   Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -360,7 +379,7 @@
 --- Narrative ---
   Player A draws Chain Lightning
 
---- Decision 19 ---
+--- Decision 20 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
   Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -376,7 +395,7 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 20 ---
+--- Decision 21 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
@@ -397,7 +416,7 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 21 ---
+--- Decision 22 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
@@ -419,7 +438,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
 
---- Decision 22 ---
+--- Decision 23 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -442,7 +461,7 @@
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 23 ---
+--- Decision 24 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -469,7 +488,7 @@
   Player B sacrifices Lotus Petal
   Player B tapped Lotus Petal for {W}
 
---- Decision 24 ---
+--- Decision 25 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  14 life | mana: 1W | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -491,7 +510,7 @@
 --- Narrative ---
   Player B tapped Tropical Island for {G}
 
---- Decision 25 ---
+--- Decision 26 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
   Self:  14 life | mana: 1W, 1G | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
@@ -509,7 +528,7 @@
    0: Don't pay (Chain Lightning is not copied)  [#0]
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
---- Decision 26 ---
+--- Decision 27 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
@@ -530,7 +549,7 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 27 ---
+--- Decision 28 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
@@ -556,7 +575,7 @@
   PA: Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
---- Decision 28 ---
+--- Decision 29 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
@@ -577,7 +596,7 @@
   Player B activated Tropical Island for 1(U)
   Player B casts Tamiyo, Inquisitive Student
 
---- Decision 29 ---
+--- Decision 30 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
@@ -597,7 +616,7 @@
 --- Narrative ---
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 30 ---
+--- Decision 31 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
@@ -616,7 +635,7 @@
 --- Narrative ---
   Player B played Flooded Strand
 
---- Decision 31 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
@@ -640,7 +659,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 32 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
@@ -669,7 +688,7 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 33 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -690,7 +709,7 @@
   Player B activated Underground Sea for 1(B)
   Player B casts Dark Ritual
 
---- Decision 34 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -712,7 +731,7 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 35 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: 3B | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -732,7 +751,7 @@
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 36 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -754,7 +773,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 37 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -828,7 +847,7 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 38 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -902,7 +921,7 @@
   Player B puts Island to top of library
   Searching Player B's graveyard and library:
 
---- Decision 39 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -975,7 +994,7 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 40 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -1047,7 +1066,7 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 41 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
@@ -1170,7 +1189,7 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 42 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1196,7 +1215,7 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 43 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1221,7 +1240,7 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 44 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1245,7 +1264,7 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 45 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1276,7 +1295,7 @@
   PA: Mountain, Mountain, Price of Progress
   PB: Force of Will, Quantum Riddler, Teferi, Time Raveler
 
---- Decision 46 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
@@ -1300,7 +1319,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Price of Progress
 
---- Decision 47 ---
+--- Decision 48 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  6 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
@@ -1328,8 +1347,10 @@
   Dealt 4 damage to player (now at 2 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 
---- Decision 48 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
@@ -1353,7 +1374,7 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 49 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
@@ -1378,7 +1399,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 50 ---
+--- Decision 51 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
   Self:  2 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5

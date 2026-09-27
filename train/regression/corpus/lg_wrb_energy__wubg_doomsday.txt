@@ -1829,8 +1829,7 @@
   Player A reveals Ajani, Nacatl Pariah.
   Player A exiles Ajani, Nacatl Pariah.
   Resolving ability (category: Play)
-  Player A may cast Ajani, Nacatl Pariah this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player A may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
 
 --- Decision 71 ---
   Priority: Player A (active)
@@ -1839,20 +1838,24 @@
   Opp:   7 life | mana: empty | hand count: 2 | lib 4
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1]
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue (SICK)
+  Stack: Amped Raptor (ability, self)
+  Pending: Ajani, Nacatl Pariah (self)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Doomsday
-  Self exile: Ajani, Nacatl Pariah [play:self/eot]
+  Self exile: Ajani, Nacatl Pariah
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   This turn: self spells=1 drawn=1 colors=R
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Ajani, Nacatl Pariah (impulse, alt cost)  [#7]
-  >> A/A: 1 (Cast Ajani, Nacatl Pariah (impulse, alt cost))
+   0: Do not cast Ajani, Nacatl Pariah  [#0]
+   1: Cast Ajani, Nacatl Pariah  [#1]
+  >> A/A: 1 (Cast Ajani, Nacatl Pariah)
 --- Narrative ---
   Player A pays 2 energy
   Player A casts Ajani, Nacatl Pariah
+  Resolving ability (category: Cleanup)
 
 --- Decision 72 ---
   Priority: Player B (non-active)

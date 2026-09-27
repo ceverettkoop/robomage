@@ -187,6 +187,8 @@
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Meteor Sword, Prismatic Vista, Shadowy Backstreet, White Orchid Phantom, Windswept Heath, Witch Enchanter
@@ -613,6 +615,8 @@
   Dealt 0 damage to player (now at 13 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 
 --- Decision 28 ---
   Priority: Player A (active)

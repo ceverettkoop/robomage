@@ -875,8 +875,7 @@
   Player B reveals Ajani, Nacatl Pariah.
   Player B exiles Ajani, Nacatl Pariah.
   Resolving ability (category: Play)
-  Player B may cast Ajani, Nacatl Pariah this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player B may cast Ajani, Nacatl Pariah by paying 2 energy rather than its mana cost.
 
 --- Decision 37 ---
   Priority: Player B (active)
@@ -885,23 +884,24 @@
   Opp:   17 life | mana: empty | energy 2 | hand count: 2 | lib 46
   Self BF:  Badlands (T) | Elegant Parlor (T)
   Opp BF:   Island | Island | Tundra (T)
+  Stack: Amped Raptor (ability, self)
+  Pending: Ajani, Nacatl Pariah (self)
   Self GY: Guide of Souls, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Ajani, Nacatl Pariah [play:self/eot], Plateau, Amped Raptor
+  Self exile: Ajani, Nacatl Pariah, Plateau, Amped Raptor
   Opp exile:  Flow State
   Known opp hand: Wasteland
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=1 drawn=1 life_gained=2 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt, opp_passed
+  Extras: self_revolt, not_priority_window
   Actions:
-   0: Pass priority
-   1: Play Scrubland
-   2: Play Wasteland
-   3: Cast Ajani, Nacatl Pariah (impulse, alt cost)  [#7]
-  >> B/B: 3 (Cast Ajani, Nacatl Pariah (impulse, alt cost))
+   0: Do not cast Ajani, Nacatl Pariah  [#0]
+   1: Cast Ajani, Nacatl Pariah  [#1]
+  >> B/B: 1 (Cast Ajani, Nacatl Pariah)
 --- Narrative ---
   Player B pays 2 energy
   Player B casts Ajani, Nacatl Pariah
+  Resolving ability (category: Cleanup)
   Ajani, Nacatl Pariah enters the battlefield
   Ajani, Nacatl Pariah triggered
   Resolving ability (category: Token)
@@ -921,7 +921,7 @@
   Known opp hand: Wasteland
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Swords to Plowshares, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=2 drawn=1 life_gained=2 colors=WR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: self_revolt
+  Extras: self_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -5805,8 +5805,7 @@
   Player B reveals Orcish Bowmasters.
   Player B exiles Orcish Bowmasters.
   Resolving ability (category: Play)
-  Player B may cast Orcish Bowmasters this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player B may cast Orcish Bowmasters by paying 2 energy rather than its mana cost.
 
 --- Decision 232 ---
   Priority: Player B (active)
@@ -5815,22 +5814,25 @@
   Opp:   5 life | mana: empty | energy 4 | hand count: 3 | lib 23
   Self BF:  Goblin Bombardment | Plains (T) | Plateau (T,NEW) | Shadowy Backstreet
   Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Plains | Teferi, Time Raveler [loy 14] | Tundra (T) | Tundra (T) | Tundra
+  Stack: Amped Raptor (ability, self)
+  Pending: Orcish Bowmasters (self)
   Self GY: Amped Raptor, Marsh Flats, Cabal Therapy [play:self], Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Orcish Bowmasters [play:self/eot], Cabal Therapy, Plateau, Amped Raptor
+  Self exile: Orcish Bowmasters, Cabal Therapy, Plateau, Amped Raptor
   Opp exile:  Murktide Regent, Force of Will, Flooded Strand, Flooded Strand, Brainstorm, Brainstorm, Force of Negation, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Murktide Regent, Plains, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Lorien Revealed, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 drawn=1 life_lost=1 colors=R | opp life_lost=1
   Self effects: sorcery speed only
   Opp effects: sorceries as flash
-  Extras: self_lands_played=1, self_revolt
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Orcish Bowmasters (impulse, alt cost)  [#7]
-  >> B/B: 1 (Cast Orcish Bowmasters (impulse, alt cost))
+   0: Do not cast Orcish Bowmasters  [#0]
+   1: Cast Orcish Bowmasters  [#1]
+  >> B/B: 1 (Cast Orcish Bowmasters)
 --- Narrative ---
   Player B pays 2 energy
   Player B casts Orcish Bowmasters
+  Resolving ability (category: Cleanup)
 
 --- Decision 233 ---
   Priority: Player A (non-active)

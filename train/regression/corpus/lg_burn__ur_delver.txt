@@ -335,6 +335,8 @@
   Player B draws Lightning Bolt
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island
@@ -777,8 +779,28 @@
 --- Narrative ---
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
 
 --- Decision 34 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 7)
+  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   12 life | mana: empty | hand count: 7 | lib 46
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Island | Mystic Sanctuary (T)
+  Stack: Rift Bolt (ability, self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self exile: Rift Bolt
+  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  Actions:
+   0: Pass priority
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: SuspendCast)
+
+--- Decision 35 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
@@ -800,7 +822,7 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 35 ---
+--- Decision 36 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
@@ -822,7 +844,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 36 ---
+--- Decision 37 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
@@ -842,7 +864,7 @@
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 9 life)
 
---- Decision 37 ---
+--- Decision 38 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
   Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
@@ -860,7 +882,7 @@
 --- Narrative ---
   Player A draws Mountain
 
---- Decision 38 ---
+--- Decision 39 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
@@ -876,7 +898,7 @@
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 39 ---
+--- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
@@ -897,7 +919,7 @@
 --- Narrative ---
   Choose target for Exquisite Firecraft:
 
---- Decision 40 ---
+--- Decision 41 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
@@ -924,7 +946,7 @@
   Resolving ability (category: DealDamage, amount: 4)
   Dealt 4 damage to player (now at 5 life)
 
---- Decision 41 ---
+--- Decision 42 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
@@ -949,7 +971,7 @@
   PA: Mountain, Mountain
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Tamiyo, Inquisitive Student, Unholy Heat, Volcanic Island
 
---- Decision 42 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Tamiyo, Inquisitive Student, Unholy Heat, Volcanic Island | lib 45
@@ -971,7 +993,7 @@
   Player B casts Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student enters the battlefield
 
---- Decision 43 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 45
@@ -990,7 +1012,7 @@
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 44 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  5 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
@@ -1013,7 +1035,7 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 45 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
@@ -1043,7 +1065,7 @@
   Player B surveils 1.
   Surveil: looking at Ponder
 
---- Decision 46 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 44
@@ -1069,7 +1091,7 @@
   PA: Mountain
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island
 
---- Decision 47 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
   Self:  14 life | mana: empty | hand(1): Mountain | lib 50
@@ -1086,7 +1108,7 @@
 --- Narrative ---
   Player A draws Eidolon of the Great Revel
 
---- Decision 48 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
   Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
@@ -1102,7 +1124,7 @@
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
@@ -1124,7 +1146,7 @@
   Player A activated Mountain for 1(R)
   Player A casts Eidolon of the Great Revel
 
---- Decision 50 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Mountain | lib 49
@@ -1148,7 +1170,7 @@
   Player A draws Chain Lightning
   Eidolon of the Great Revel enters the battlefield
 
---- Decision 51 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
@@ -1167,7 +1189,7 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 52 ---
+--- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
@@ -1186,7 +1208,7 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 53 ---
+--- Decision 54 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
   Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
@@ -1211,7 +1233,7 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
 
---- Decision 54 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
@@ -1229,7 +1251,7 @@
    1: Cast Into the Flood Maw  [#0]
   >> B/B: 1 (Cast Into the Flood Maw)
 
---- Decision 55 ---
+--- Decision 56 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
@@ -1250,7 +1272,7 @@
 --- Narrative ---
   Choose target for Into the Flood Maw:
 
---- Decision 56 ---
+--- Decision 57 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
@@ -1284,7 +1306,7 @@
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 57 ---
+--- Decision 58 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
   Self:  -1 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43

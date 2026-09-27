@@ -648,8 +648,7 @@
   Player B reveals Orcish Bowmasters.
   Player B exiles Orcish Bowmasters.
   Resolving ability (category: Play)
-  Player B may cast Orcish Bowmasters this turn by paying 2 energy rather than its mana cost.
-  Resolving ability (category: Cleanup)
+  Player B may cast Orcish Bowmasters by paying 2 energy rather than its mana cost.
 
 --- Decision 25 ---
   Priority: Player B (active)
@@ -658,21 +657,23 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Scrubland (T)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Stack: Amped Raptor (ability, self)
+  Pending: Orcish Bowmasters (self)
   Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
-  Self exile: Orcish Bowmasters [play:self/eot], Elegant Parlor, Arid Mesa, Marsh Flats, Arid Mesa, Cabal Therapy
+  Self exile: Orcish Bowmasters, Elegant Parlor, Arid Mesa, Marsh Flats, Arid Mesa, Cabal Therapy
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 drawn=1 colors=R
-  Extras: opp_mulligans=1
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
-   0: Pass priority
-   1: Play Wasteland
-   2: Cast Orcish Bowmasters (impulse, alt cost)  [#7]
-  >> B/B: 2 (Cast Orcish Bowmasters (impulse, alt cost))
+   0: Do not cast Orcish Bowmasters  [#0]
+   1: Cast Orcish Bowmasters  [#1]
+  >> B/B: 1 (Cast Orcish Bowmasters)
 --- Narrative ---
   Player B pays 2 energy
   Player B casts Orcish Bowmasters
+  Resolving ability (category: Cleanup)
   Orcish Bowmasters enters the battlefield
   Choose target for Orcish Bowmasters:
 
