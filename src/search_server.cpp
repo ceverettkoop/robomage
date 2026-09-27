@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "card_vocab.h"
+#include "classes/deck_state.h"
 #include "classes/game.h"
 #include "components/player.h"
 #include "ecs/coordinator.h"
@@ -28,6 +30,10 @@ unsigned int g_sim_seed_salt = 0;
 static bool any_slot_live();
 static bool read_command_line(char *buf, size_t len);
 static int parse_slot_arg(const char *line, const char *cmd);
+static void resample_face_down_identities(const std::vector<Entity> &face_down,
+                                          const std::vector<Entity> &pool, std::mt19937 &gen);
+static void resample_opp_known_top(Zone::Ownership opp);
+static void resplit_opp_live_deck(Zone::Ownership opp);
 
 static bool g_loop_safe = false;
 static int g_pending_restore_slot = -1;
@@ -270,19 +276,21 @@ void determinize_hidden_state(unsigned int world_seed) {
 
     Zone::Ownership p = priority_seat();
     Zone::Ownership opp = opponent_of(p);
-    const int *known_a = cur_game.known_top_library_a;
-    const int *known_b = cur_game.known_top_library_b;
+    const int *own_known =
+        (p == Zone::PLAYER_A) ? cur_game.known_top_library_a : cur_game.known_top_library_b;
 
-    // A library position is pinned when its occupant's identity is tracked in
-    // the owner's known-top array: the priority player's pins are cards they
-    // genuinely know; pinning the opponent's known-top as well keeps the
-    // opponent's own belief state (their Brainstorm knowledge) internally
-    // consistent at opponent nodes inside the sampled world -- a mild
-    // more-informed-than-P approximation, accepted for v1.
+    // Only what the priority player P knows is kept. A position of P's own library
+    // is pinned when P's known-top array tracks its occupant. The opponent's
+    // library is hidden from P, including the top cards the opponent knows (their
+    // Brainstorm put-backs): those positions are resampled like the rest, and the
+    // opponent's known-top entries are rewritten to the sampled cards afterwards
+    // (resample_opp_known_top) so opponent nodes still see "known" tops without
+    // learning the real ones.
     std::vector<Entity> own_pool;          // priority player's unpinned library cards
     std::vector<size_t> own_positions;     // the positions they vacate
     std::vector<Entity> opp_pool;          // opp unknown hand cards, then unpinned library cards
     std::vector<size_t> opp_lib_positions; // vacated opp library positions
+    std::vector<Entity> opp_face_down;     // opp face-down exiled cards (CR 406.3)
     size_t opp_hand_slots = 0;
     size_t opp_lib_slots = 0;
 
@@ -314,9 +322,8 @@ void determinize_hidden_state(unsigned int world_seed) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location == Zone::LIBRARY && (z.owner == p || z.owner == opp)) {
-            const int *known = (z.owner == Zone::PLAYER_A) ? known_a : known_b;
-            bool pinned = (z.distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
-                           known[z.distance_from_top] != -1) ||
+            bool pinned = (z.owner == p && z.distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
+                           own_known[z.distance_from_top] != -1) ||
                           decision_pins.count(e) > 0;
             if (pinned) continue;
             if (z.owner == p) {
@@ -338,6 +345,10 @@ void determinize_hidden_state(unsigned int world_seed) {
         } else if (opp_sideboard_hidden && z.location == Zone::SIDEBOARD &&
                    z.owner == opp && e != opp_companion) {
             opp_pool.push_back(e);
+        } else if (z.location == Zone::EXILE && z.owner == opp && z.is_face_down &&
+                   decision_pins.count(e) == 0 &&
+                   global_coordinator.entity_has_component<CardData>(e)) {
+            opp_face_down.push_back(e);
         }
     }
 
@@ -372,4 +383,64 @@ void determinize_hidden_state(unsigned int world_seed) {
         }
         z.identity_known = false;
     }
+
+    resample_face_down_identities(opp_face_down, opp_pool, world_gen);
+    resample_opp_known_top(opp);
+    if (opp_sideboard_hidden) resplit_opp_live_deck(opp);
+}
+
+// The opponent's face-down exiled cards are unknown to the searcher, so their
+// identities join the resample. The cards themselves stay where they are (a Saga
+// or a play permission may refer to them by entity), so the resample permutes the
+// printed cards (CardData) among the face-down cards and the opponent's other
+// unknown cards (`pool`: the hand, library and sideboard cards just dealt).
+static void resample_face_down_identities(const std::vector<Entity> &face_down,
+                                          const std::vector<Entity> &pool, std::mt19937 &gen) {
+    if (face_down.empty()) return;
+    std::vector<Entity> holders = face_down;
+    holders.insert(holders.end(), pool.begin(), pool.end());
+    std::vector<CardData> cards;
+    cards.reserve(holders.size());
+    for (Entity e : holders) cards.push_back(global_coordinator.GetComponent<CardData>(e));
+    stable_shuffle(cards, gen);
+    for (size_t i = 0; i < holders.size(); i++)
+        global_coordinator.GetComponent<CardData>(holders[i]) = cards[i];
+}
+
+// The opponent still knows as many of their library's top cards as before, but in
+// the sampled world those positions hold the sampled cards: rewrite each known
+// entry to the card now there, so the opponent's view is consistent with the world
+// without carrying the real identities into the search.
+static void resample_opp_known_top(Zone::Ownership opp) {
+    const bool is_a = (opp == Zone::PLAYER_A);
+    const int *known = is_a ? cur_game.known_top_library_a : cur_game.known_top_library_b;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        const auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location != Zone::LIBRARY || z.owner != opp ||
+            z.distance_from_top >= KNOWN_TOP_LIBRARY_SIZE)
+            continue;
+        const int pos = static_cast<int>(z.distance_from_top);
+        if (known[pos] == -1 || !global_coordinator.entity_has_component<CardData>(e)) continue;
+        cur_game.known_top_library_set(
+            is_a, pos, card_name_to_index(global_coordinator.GetComponent<CardData>(e).name));
+    }
+}
+
+// Post-board, which of the opponent's 75 sit in their sideboard is part of the
+// resample, so the opponent's own-view decklist (the live store their
+// observation reads) is re-split to the sampled sideboard.
+static void resplit_opp_live_deck(Zone::Ownership opp) {
+    std::vector<int> side;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!global_coordinator.entity_has_component<Zone>(e) ||
+            !global_coordinator.entity_has_component<CardData>(e))
+            continue;
+        const auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location == Zone::SIDEBOARD && z.owner == opp)
+            side.push_back(card_name_to_index(global_coordinator.GetComponent<CardData>(e).name));
+    }
+    deck_state_resplit_live(opp, side);
 }
