@@ -1123,7 +1123,7 @@ size_t evaluate_dynamic_amount(
         int mv = 0;
         Entity ew = exiled_with_card(source);
         if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew))
-            mv = card_mana_value(global_coordinator.GetComponent<CardData>(ew));
+            mv = object_mana_value(ew, global_coordinator.GetComponent<CardData>(ew));
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     if (expr.find("Targeted$CardManaCost") != std::string::npos) {
@@ -1132,7 +1132,7 @@ size_t evaluate_dynamic_amount(
         // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
         int mv = 0;
         if (target != 0 && global_coordinator.entity_has_component<CardData>(target))
-            mv = card_mana_value(global_coordinator.GetComponent<CardData>(target));
+            mv = object_mana_value(target, global_coordinator.GetComponent<CardData>(target));
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects
@@ -1170,7 +1170,7 @@ size_t evaluate_dynamic_amount(
         if (!cur_game.remembered_entities.empty()) {
             Entity r = cur_game.remembered_entities[0];
             if (global_coordinator.entity_has_component<CardData>(r))
-                base = card_mana_value(global_coordinator.GetComponent<CardData>(r));
+                base = object_mana_value(r, global_coordinator.GetComponent<CardData>(r));
         }
         size_t plus = expr.find("/Plus.");
         if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));

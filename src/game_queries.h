@@ -136,7 +136,8 @@ inline std::set<Colors> card_colors(const CardData &cd) {
 // outside the stack/cast (CR 202.3b). Each Phyrexian pip ({B/P}) counts 1 toward mana value
 // (CR 202.3f: a Phyrexian symbol is worth its color component, MV 1) regardless of whether the
 // cost is actually paid with mana or life; phyrexian_mana is kept out of mana_cost (mirroring
-// hybrid_mana), so fold it in here. Single source for "card CMC".
+// hybrid_mana), so fold it in here. Single source for "card CMC" of one face — a split card's
+// half, not the whole card (see object_mana_value for a card in a zone).
 inline int card_mana_value(const CardData &cd) {
     int mv = static_cast<int>(cd.mana_cost.size());
     for (const auto &pip : cd.hybrid_mana) mv += pip.mana_value;
@@ -144,14 +145,18 @@ inline int card_mana_value(const CardData &cd) {
     return mv;
 }
 
-// Mana value of object `e` (printed characteristics `cd`), counting X while it is a spell on
-// the stack: each {X} in its mana cost counts as the value announced for X (CR 202.3e). In
-// every other zone X is 0 (CR 202.3b), so this equals card_mana_value for a non-spell.
+// Mana value of object `e` (printed characteristics `cd`). A spell on the stack has the face
+// that was cast (a split card's half or a modal back face, CR 709.3, 712.8f; active_face), and
+// each {X} in its mana cost counts as the value announced for X (CR 202.3e). In every other zone
+// X is 0 (CR 202.3b) and a split card's mana value is that of its two halves combined (CR
+// 709.4b). With no entity (e == 0) the face `cd` is read on its own.
 inline int object_mana_value(Entity e, const CardData &cd) {
-    int mv = card_mana_value(cd);
-    if (e != 0 && global_coordinator.entity_has_component<Spell>(e))
-        mv += cd.x_pip_count * global_coordinator.GetComponent<Spell>(e).x_paid;
-    return mv;
+    if (e != 0 && global_coordinator.entity_has_component<Spell>(e)) {
+        const CardData &face = active_face(e, cd);
+        return card_mana_value(face) + face.x_pip_count * global_coordinator.GetComponent<Spell>(e).x_paid;
+    }
+    if (e != 0 && cd.is_split && cd.backside) return card_mana_value(cd) + card_mana_value(*cd.backside);
+    return card_mana_value(cd);
 }
 
 // The face whose mana cost gives a permanent its mana value (CR 112.7): a transformed NONMODAL

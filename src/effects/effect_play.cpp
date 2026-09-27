@@ -100,7 +100,7 @@ bool parse_play(Ability &ab, const std::string &key, const std::string &value) {
 // The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost", else the literal.
 static int play_cost_amount(const Ability &ab, Entity card) {
     if (ab.play_cost_expr == "ConvertedManaCost")
-        return card_mana_value(global_coordinator.GetComponent<CardData>(card));
+        return object_mana_value(card, global_coordinator.GetComponent<CardData>(card));
     if (!ab.play_cost_expr.empty()) return std::atoi(ab.play_cost_expr.c_str());
     return 0;
 }
