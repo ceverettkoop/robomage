@@ -43,22 +43,19 @@ Accepted ambiguities (documented, not bugs):
     Return<...>, AddCounter/SubCounter<N/LOYALTY>, ...) are dropped entirely —
     this block is about mana only.
 """
-import re, os, sys, unicodedata
+import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_util import write_if_changed  # noqa: E402
+from gen_util import (write_if_changed, REPO_ROOT, resolve_card_face,  # noqa: E402
+                      script_field, split_faces)
 
-REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
 MACHINE_IO_H = os.path.join(REPO_ROOT, "src/machine_io.h")
-CARDS_DIR   = os.path.join(REPO_ROOT, "bin/resources/cardsfolder")
 TOKENS_DIR  = os.path.join(REPO_ROOT, "bin/resources/tokenscripts")
 OUT_FILE    = os.path.join(REPO_ROOT, "train/card_costs.py")
 OUT_HEADER  = os.path.join(REPO_ROOT, "src/gen/card_costs_gen.h")
 N_FEATS     = 7   # W U B R G C generic
 
 COLOR_MAP = {'W': 0, 'U': 1, 'B': 2, 'R': 3, 'G': 4, 'C': 5}
-
-DFC_SEPARATOR = "ALTERNATE"
 
 # Ability categories that ARE mana abilities — excluded from the ability-cost
 # matrix (parse.cpp normalizes the script's `Mana` to `AddMana`).
@@ -137,80 +134,20 @@ def parse_mana_cost(cost_str):
                 counts[COLOR_MAP[ch]] += 1
     return counts
 
-def find_card_file(name):
-    """Find the card script file for a given card name.
-
-    Normalization matches parse.cpp name_to_uid: lowercase, space/hyphen/slash→underscore,
-    non-alpha/non-underscore chars removed.  For double-faced cards the file is
-    named after the combined front//back name (e.g. delver_of_secrets_insectile_aberration.txt),
-    so we also try a prefix match when an exact match isn't found.
-
-    '/' is a separator, not punctuation (CR 709 split cards), so a combined "Front/Back"
-    name resolves EXACTLY to Forge's underscore-joined script (e.g. "Dead/Gone" ->
-    dead_gone.txt) instead of falling through to the unverified prefix match below,
-    which would otherwise pick whichever "dead*.txt" happens to sort first on this
-    machine — making the generated costs depend on which scripts are provisioned.
-    """
-    stem = re.sub(r'[^a-z0-9_]', '',
-                  name.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
-    # Collapse consecutive underscores to one, matching parse.cpp name_to_uid — a name whose
-    # "& "/punctuation excision leaves a doubled "__" (e.g. "Raph & Mikey, Troublemakers")
-    # must resolve to Forge's single-underscore filename (raph_mikey_troublemakers.txt).
-    stem = re.sub(r'_+', '_', stem)
-    # Accented names: the C++ name_to_uid strips non-ASCII bytes (an accented letter is
-    # dropped, not transliterated), but Forge's filename transliterates the accent (e.g. to
-    # "lorien_revealed"). Try an NFKD-decomposed ASCII stem as well so an accented card name
-    # resolves to its on-disk script.
-    translit = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-    translit_stem = re.sub(r'[^a-z0-9_]', '',
-                           translit.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
-    translit_stem = re.sub(r'_+', '_', translit_stem)
-    stems = [stem] if translit_stem == stem else [stem, translit_stem]
-    for s in stems:
-        filename = s + '.txt'
-        first_letter = s[0]
-        # 1. Exact match in expected subdirectory
-        candidate = os.path.join(CARDS_DIR, first_letter, filename)
-        if os.path.exists(candidate):
-            return candidate
-        # 2. Prefix match in expected subdirectory (catches DFC combined files)
-        subdir_path = os.path.join(CARDS_DIR, first_letter)
-        if os.path.isdir(subdir_path):
-            for f in sorted(os.listdir(subdir_path)):
-                if f.lower().startswith(s) and f.lower().endswith('.txt'):
-                    return os.path.join(subdir_path, f)
-    filename = stem + '.txt'
-    # 3. Case-insensitive exact fallback across all subdirectories
-    for subdir in sorted(os.listdir(CARDS_DIR)):
-        subdir_path = os.path.join(CARDS_DIR, subdir)
-        if not os.path.isdir(subdir_path):
-            continue
-        for f in os.listdir(subdir_path):
-            if f.lower() == filename:
-                return os.path.join(subdir_path, f)
-    return None
-
-def get_mana_cost(card_name):
-    """Return raw int list for a card's cast cost."""
-    path = find_card_file(card_name)
-    if path is None:
-        print(f"  WARNING: no card file found for '{card_name}', defaulting to zero cost")
+def get_mana_cost(face):
+    """Return raw int list for a resolved CardFace's own printed mana cost. A
+    transforming DFC's back face has none (Forge `ManaCost:no cost`), so its row
+    is all zero; its mana value is gen_util.mana_value_lines's concern."""
+    cost_str = script_field(face.lines, "ManaCost")
+    if cost_str is None:
+        print(f"  WARNING: no ManaCost field in '{face.path}', defaulting to zero cost")
         return [0] * N_FEATS
-    for line in open(path):
-        if line.startswith("ManaCost:"):
-            return parse_mana_cost(line[len("ManaCost:"):].strip())
-    print(f"  WARNING: no ManaCost field in '{path}', defaulting to zero cost")
-    return [0] * N_FEATS
+    return parse_mana_cost(cost_str)
 
-def get_is_land(card_name):
-    """Return True if the card's Types line includes the Land type."""
-    path = find_card_file(card_name)
-    if path is None:
-        return False
-    for line in open(path):
-        if line.startswith("Types:"):
-            return "Land" in line[len("Types:"):].split()
-    return False
+def get_is_land(face):
+    """Return True if the resolved CardFace's Types line includes the Land type."""
+    types_line = script_field(face.lines, "Types")
+    return types_line is not None and "Land" in types_line.split()
 
 def parse_vocab_with_stems(path):
     """Return {index: script_stem} for the token band's 3-tuple entries
@@ -220,57 +157,6 @@ def parse_vocab_with_stems(path):
     text = open(path).read()
     return {int(m.group(3)): m.group(1)
             for m in re.finditer(r'\{\s*"([^"]+)"\s*,\s*"([^"]+)"\s*,\s*(\d+)', text)}
-
-
-def find_back_face_file(name):
-    """Resolve a DFC BACK-face vocab entry to its combined <front>_<back>.txt.
-
-    find_card_file matches by front stem (exact, then prefix), so a back-face
-    name like "Insectile Aberration" misses entirely; the combined filename
-    ends with the back face's uid instead."""
-    stem = re.sub(r'[^a-z0-9_]', '',
-                  name.lower().replace(' ', '_').replace('-', '_').replace('/', '_'))
-    stem = re.sub(r'_+', '_', stem)
-    suffix = "_" + stem + ".txt"
-    for subdir in sorted(os.listdir(CARDS_DIR)):
-        subdir_path = os.path.join(CARDS_DIR, subdir)
-        if not os.path.isdir(subdir_path):
-            continue
-        for f in sorted(os.listdir(subdir_path)):
-            if f.lower().endswith(suffix):
-                return os.path.join(subdir_path, f)
-    return None
-
-
-def split_faces(text):
-    """Split a script into (front_lines, back_lines) on the ALTERNATE
-    separator line. A single-faced script has back_lines == None."""
-    lines = text.splitlines()
-    for i, line in enumerate(lines):
-        if line.strip() == DFC_SEPARATOR:
-            return lines[:i], lines[i + 1:]
-    return lines, None
-
-
-def face_lines_for(name):
-    """The script lines for the vocab entry's own face, plus DFC context.
-
-    Returns ``(lines, front_lines, is_back)``: the front section of the
-    resolved script, or the back section (with the front carried alongside)
-    when the name only resolves as a combined-file suffix — a DFC back-face
-    vocab entry. ``(None, None, False)`` if no script."""
-    path = find_card_file(name)
-    if path is not None:
-        front, _back = split_faces(open(path).read())
-        return front, front, False
-    path = find_back_face_file(name)
-    if path is not None:
-        front, back = split_faces(open(path).read())
-        if back is not None:
-            return back, front, True
-        print(f"  WARNING: '{name}' matched combined file '{path}' "
-              f"but it has no {DFC_SEPARATOR} section")
-    return None, None, False
 
 
 def parse_ability_cost(cost_str):
@@ -372,16 +258,17 @@ def main():
             if alabel:
                 print(f"  [{idx}] {name} (token): ability {alabel} {acost}")
             continue
-        cost = get_mana_cost(name)
+        # Every row is read from THIS vocab entry's own face (gen_util's
+        # resolve_card_face), so a DFC back-face or split-half entry describes
+        # that face rather than the front (mirroring gen_card_props.py).
+        face = resolve_card_face(name)
+        if face is None:
+            print(f"  WARNING: no card file found for '{name}', defaulting to zero cost")
+            continue
+        cost = get_mana_cost(face)
         cast_matrix[idx] = cost
-        is_land[idx] = get_is_land(name)
-        # Activated-ability cost: parsed from THIS vocab entry's own face, so a
-        # DFC back-face entry describes the back face's abilities (mirroring
-        # gen_card_props.py) rather than the front's.
-        lines, _front, _is_back = face_lines_for(name)
-        alabel = None
-        if lines is not None:
-            ability_matrix[idx], alabel = get_ability_cost(lines)
+        is_land[idx] = get_is_land(face)
+        ability_matrix[idx], alabel = get_ability_cost(face.lines)
         print(f"  [{idx}] {name}: {cost}{' (land)' if is_land[idx] else ''}"
               f"{f'  ability {alabel} {ability_matrix[idx]}' if alabel else ''}")
     if n_tokens:

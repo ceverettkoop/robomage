@@ -241,9 +241,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     // filename). The in-game observation matches by ascii_fold (case/punctuation-preserving), so
     // the loaded front name "Dead" and the back-face cast name "Gone" each resolve to 328.
     // "Dead/Gone" is listed LAST so the cost-matrix codegen (last-write-wins per index) prices 328
-    // off the name that resolves EXACTLY: "Dead"/"Gone" only reach a script through
-    // find_card_file's unverified prefix match, which can land on an unrelated dead*/gone* script,
-    // while "Dead/Gone" hits dead_gone.txt by exact filename on any machine.
+    // off the whole card's script (dead_gone.txt by exact filename, read as its front face), not
+    // off the "Gone" half that gen_util.resolve_card_face resolves to the script's back face.
     {"Dead", 328},
     {"Gone", 328},
     {"Dead/Gone", 328},

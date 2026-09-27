@@ -227,12 +227,9 @@ def sb_card_class(name):
 
 # ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
 
-import os  # noqa: E402
 import re  # noqa: E402
 
-_CARDS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "bin", "resources", "cardsfolder")
+from gen_util import resolve_card_face, script_field  # noqa: E402
 
 
 def _name_to_uid(name):
@@ -242,74 +239,51 @@ def _name_to_uid(name):
                   name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
 
 
-def _resolve_script_path(uid):
-    """Script file the engine would load for `uid` (mirrors src/card_db.cpp):
-    the exact `<uid>.txt`, else a double-faced card's combined `<uid>_*.txt`."""
-    if not uid:
-        return None
-    direct = os.path.join(_CARDS_DIR, uid[0], f"{uid}.txt")
-    if os.path.exists(direct):
-        return direct
-    letter_dir = os.path.join(_CARDS_DIR, uid[0])
-    if os.path.isdir(letter_dir):
-        prefix = uid + "_"
-        for fn in sorted(os.listdir(letter_dir)):
-            if fn.startswith(prefix) and fn.endswith(".txt"):
-                return os.path.join(letter_dir, fn)
-    return None
+_SCRIPT_LINES_CACHE = {}
 
 
-_ORACLE_CACHE = {}
+def _card_script_lines(card_idx):
+    """Script lines of the face a vocab card id names, or None when unavailable.
+
+    Resolved through gen_util.resolve_card_face (the codegen's resolver), so a DFC
+    back face or split-card half reads its own face of the combined script; cached
+    per id. A token (the shared TOKEN_SENTINEL id) has no named script."""
+    if card_idx in _SCRIPT_LINES_CACHE:
+        return _SCRIPT_LINES_CACHE[card_idx]
+    lines = None
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        try:
+            face = resolve_card_face(_CARD_NAMES[card_idx])
+        except OSError:
+            face = None
+        if face is not None:
+            lines = face.lines
+    _SCRIPT_LINES_CACHE[card_idx] = lines
+    return lines
 
 
 def card_oracle_text(card_idx):
     r"""Oracle text for a vocab card id, or '' when unavailable.
 
-    Reads the card's Forge script `Oracle:` line (with `\n` expanded), resolving
-    DFC combined filenames the way the engine does; result cached per id. A token
-    (the shared TOKEN_SENTINEL id) has no named script, so returns ''."""
-    if card_idx in _ORACLE_CACHE:
-        return _ORACLE_CACHE[card_idx]
-    text = ""
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        if raw.startswith("Oracle:"):
-                            text = raw[len("Oracle:"):].strip().replace("\\n", "\n")
-                            break
-            except OSError:
-                pass
-    _ORACLE_CACHE[card_idx] = text
-    return text
+    Reads the `Oracle:` line (with `\n` expanded) of the card's own script face
+    (_card_script_lines). A token (the shared TOKEN_SENTINEL id) has no named
+    script, so returns ''."""
+    return _card_script_field(card_idx, "Oracle").replace("\\n", "\n")
 
 
 _SCRIPT_FIELD_CACHE = {}
 
 
 def _card_script_field(card_idx, field):
-    """First `<field>:` line from a vocab card's Forge script, stripped, or ''.
+    """First `<field>:` line of a vocab card's own script face, stripped, or ''.
 
-    Shares the DFC-aware script resolution and vocab bounds/token guards with
-    card_oracle_text; result cached per (id, field)."""
+    Resolved by _card_script_lines (vocab bounds/token guards included); result
+    cached per (id, field)."""
     key = (card_idx, field)
     if key in _SCRIPT_FIELD_CACHE:
         return _SCRIPT_FIELD_CACHE[key]
-    val = ""
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            prefix = field + ":"
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        if raw.startswith(prefix):
-                            val = raw[len(prefix):].strip()
-                            break
-            except OSError:
-                pass
+    lines = _card_script_lines(card_idx)
+    val = (script_field(lines, field) if lines is not None else None) or ""
     _SCRIPT_FIELD_CACHE[key] = val
     return val
 
@@ -543,33 +517,25 @@ def _land_color_letters(card_idx):
     if card_idx in _LAND_COLOR_CACHE:
         return _LAND_COLOR_CACHE[card_idx]
     found = set()
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        line = raw.rstrip("\n")
-                        if line.startswith("Types:"):
-                            for tok in line[len("Types:"):].split():
-                                if tok in _LAND_SUBTYPE_COLOR:
-                                    found.add(_LAND_SUBTYPE_COLOR[tok])
-                        m = re.search(r"Produced\$\s*([^|]+)", line)
-                        if m:
-                            found |= _mana_spec_to_colors(m.group(1))
-                        # Only a genuine fetchland ability fixes colors: it puts
-                        # the land onto its controller's battlefield. Skip a
-                        # ChangeType that fetches for someone else (a
-                        # DefinedPlayer, e.g. Ghost Quarter destroying a land and
-                        # letting its controller search a basic) or that doesn't
-                        # reach the battlefield.
-                        if ("Destination$ Battlefield" in line
-                                and "DefinedPlayer$" not in line):
-                            m = re.search(r"ChangeType\$\s*([^|]+)", line)
-                            if m:
-                                found |= _fetch_spec_to_colors(m.group(1))
-            except OSError:
-                pass
+    for line in _card_script_lines(card_idx) or ():
+        if line.startswith("Types:"):
+            for tok in line[len("Types:"):].split():
+                if tok in _LAND_SUBTYPE_COLOR:
+                    found.add(_LAND_SUBTYPE_COLOR[tok])
+        m = re.search(r"Produced\$\s*([^|]+)", line)
+        if m:
+            found |= _mana_spec_to_colors(m.group(1))
+        # Only a genuine fetchland ability fixes colors: it puts
+        # the land onto its controller's battlefield. Skip a
+        # ChangeType that fetches for someone else (a
+        # DefinedPlayer, e.g. Ghost Quarter destroying a land and
+        # letting its controller search a basic) or that doesn't
+        # reach the battlefield.
+        if ("Destination$ Battlefield" in line
+                and "DefinedPlayer$" not in line):
+            m = re.search(r"ChangeType\$\s*([^|]+)", line)
+            if m:
+                found |= _fetch_spec_to_colors(m.group(1))
     letters = [c for c in "WUBRG" if c in found]
     _LAND_COLOR_CACHE[card_idx] = letters
     return letters
