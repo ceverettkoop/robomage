@@ -19,7 +19,6 @@
 #include "../components/player.h"
 #include "../components/token.h"
 #include "../components/types.h"
-#include "../transform.h"
 #include "../day_night.h"
 #include "../type_constants.h"
 #include "../components/zone.h"
@@ -600,12 +599,19 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-            // The face this permanent shows (CR 712.8d-f): the back face of a transformed DFC,
-            // else the front. The printed characteristics re-installed each pass below — P/T,
-            // keywords, abilities, statics — come from it, so a later SBA pass doesn't re-add a
-            // front-face Creature component to a permanent that flipped to a non-creature back
-            // face (Ajani -> planeswalker) or re-copy the front face's abilities.
-            const CardData *face = &active_face(entity, card_data);
+            // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
+            // double-faced card, it enters transformed." Mark a daybound DFC entering while
+            // it's night so it is built from its back (night) face below, through the same
+            // pending_enters_transformed path Ajani-style transformed entries use.
+            if (!global_coordinator.entity_has_component<Permanent>(entity) &&
+                card_has_daybound(card_data) && game.day_night == Game::DN_NIGHT)
+                game.pending_enters_transformed.insert(entity);
+            // The face this permanent shows (CR 712.8d-f): the back face of a transformed DFC or
+            // of one entering transformed (CR 712.14a), else the front. Every printed
+            // characteristic installed below — name, types, P/T, keywords, abilities, statics,
+            // loyalty — comes from it, so a permanent showing a noncreature back face (Ajani,
+            // Nacatl Avenger) never gets a front-face Creature component.
+            const CardData *face = &entering_face(entity, card_data);
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
             // Reconfigure (CR 702.151b): while a reconfigure equipment is attached, it is an
@@ -622,8 +628,8 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
-                perm.name = card_data.name;
-                perm.types = card_data.types;
+                perm.name = face->name;
+                perm.types = face->types;
                 perm.controller = zone.controller;
                 perm.has_summoning_sickness = is_creature;
                 perm.is_tapped = false;
@@ -663,12 +669,14 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // spell the controller cast from their own hand sets this; any other entry
                 // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
                 if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
-                // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
-                // double-faced card, it enters transformed." Mark a daybound DFC entering while
-                // it's night to flip to its back (night) face once its components exist — reusing
-                // the same pending_enters_transformed path Ajani-style transformed entries use.
-                if (card_has_daybound(card_data) && game.day_night == Game::DN_NIGHT)
-                    game.pending_enters_transformed.insert(entity);
+                // A card put onto the battlefield transformed enters with its back face up
+                // (CR 712.14a), as does a modal DFC played or cast as its back face (CR 712.8f):
+                // it shows that face from the start, so only that face's ETB triggers fire.
+                if (game.pending_enters_transformed.erase(entity) && card_data.backside) {
+                    perm.transformed = true;
+                    if (!card_data.is_modal_dfc)
+                        game_log("%s enters transformed.\n", perm.name.c_str());
+                }
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
@@ -695,8 +703,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Warp: cast for its warp alternate cost — register the delayed end-step exile that
                 // then grants the recast-from-exile permission (no haste, no leaves→exile redirect).
                 if (game.pending_warp.erase(entity)) mark_warp_permanent(entity, perm);
-                // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
-                if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
+                // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b) —
+                // the printed loyalty of the face it enters with.
+                if (is_planeswalker_card(*face)) perm.counters["LOYALTY"] = face->starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
                 // A DB$ Attach resolved onto this creature before its Permanent existed
@@ -849,12 +858,6 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     effects::apply_animate_creature_bootstrap(entity);
             }
             apply_keyword_abilities(entity);
-
-            // A card moved here "transformed" (Ajani's exile-and-return) enters showing
-            // its DFC back face. The front-face components exist now, so flip to the back
-            // face before triggers are checked — this also suppresses the front-face ETB
-            // triggers (a permanent entering as its back face fires only that face's ETBs).
-            if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
 
             // Daybound (CR 702.145d): any time a player controls a front-face-up permanent with
             // daybound and it's neither day nor night, it becomes day. This continuous check fires
