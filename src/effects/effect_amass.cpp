@@ -56,10 +56,16 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         orderer->add_to_zone(false, army, Zone::BATTLEFIELD);
         bootstrap_token_components(army, tok, ctrl, cur_game.timestamp);
     } else {
-        // Existing Army gains the amassed creature type in addition to its types.
+        // Existing Army becomes the amassed creature type in addition to its other types
+        // (CR 701.47a) for the rest of the game — recorded like a rest-of-game Animate so the
+        // layer-4 rebuild re-adds it each pass (CR 613.1d, timestamp 613.7b).
         auto &perm = global_coordinator.GetComponent<Permanent>(army);
-        if (!permanent_has_type(perm, subtype))
-            perm.types.insert(Type{SUBTYPE, subtype});
+        if (!permanent_has_type(perm, subtype)) {
+            Type t{SUBTYPE, subtype};
+            perm.types.insert(t);
+            perm.animate_added_types.push_back(t);
+            perm.animate_timestamp = cur_game.timestamp++;
+        }
     }
 
     if (n > 0 && global_coordinator.entity_has_component<Creature>(army)) {

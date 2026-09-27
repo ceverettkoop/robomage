@@ -50,6 +50,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // "becomes a 0/0 creature with haste that's still a land" — bake the land-animation onto the
     // permanent so the layer system reapplies it for the rest of the game (Duration Permanent).
     perm.animate_make_creature = true;
+    perm.animate_timestamp = cur_game.timestamp++;  // CR 613.7b
     perm.animate_set_pt = true;
     perm.animate_power = 0;
     perm.animate_toughness = 0;

@@ -51,7 +51,28 @@ static std::vector<Entity> permanents_matching_static_filter(const ActiveStatic 
                                                              const std::set<Entity> &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
-static void apply_global_addtype_statics(const std::set<Entity> &entities);
+// One layer-4 (CR 613.1d) continuous effect, ordered by its timestamp (613.7): a static
+// ability's effect (`as`), or a resolved Animate's type grant recorded on the permanent it
+// animated (`animated`, its `animate_types` plus Creature when `animate_creature`).
+struct TypeEffect {
+    size_t timestamp = 0;
+    const ActiveStatic *as = nullptr;
+    Entity animated = 0;
+    const std::vector<Type> *animate_types = nullptr;
+    bool animate_creature = false;
+};
+static std::vector<Type> parse_self_added_types(const std::string &spec);
+static std::vector<Type> types_added_by_static(const StaticAbility &sa);
+static bool is_type_changing_static(const StaticAbility &sa);
+static std::set<Type> copiable_type_line(Entity e, const Permanent &perm);
+static size_t static_timestamp(const ActiveStatic &a);
+static bool land_type_setter_affects(const ActiveStatic &a, Entity e);
+static void set_land_subtypes(Permanent &perm, const std::vector<Type> &subtypes);
+static void apply_type_effect(const TypeEffect &te, const std::set<Entity> &entities);
+static void collect_animate_type_effects(Entity entity, const Permanent &perm,
+                                         std::vector<TypeEffect> &out);
+static void sync_self_animate_creature(const ActiveStatic &a);
+static bool affected_is_attached_target(const std::string &aff);
 static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
 static void remerge_animate_granted_abilities(Entity entity);
 static const char *zone_display_name(Zone::ZoneValue loc);
@@ -519,6 +540,8 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
+static bool static_begins_before_layer6(const ActiveStatic &a);
+static void strip_rules_text_abilities(Entity entity, Permanent &perm);
 
 // Is this Affected$ filter a *general* permanent filter (an anthem-style class like
 // "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
@@ -1213,13 +1236,17 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
     return ab;
 }
 
-// Rule 613.1d — Layer 4: type-changing continuous effects.
-// Resets land types to CardData originals, then applies type-changing effects
-// sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
-// Regenerates subtype-derived mana abilities after types are finalized.
+// Rule 613.1d — Layer 4: type-changing continuous effects. Every pass rebuilds each battlefield
+// permanent's type line from its copiable values and then applies the type-changing effects:
+// characteristic-defining ones first (613.3), then the rest in timestamp order (613.7), each to
+// the objects it affects at the moment it applies. An effect that no longer applies is simply not
+// re-added, and one effect never erases another's contribution out of order (an earthbended land
+// set to a Mountain keeps the Creature type the earthbend gave it). Regenerates subtype-derived
+// mana abilities after types are final.
+
 // Parse a " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") into Type objects,
 // classifying each token as TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is
-// (all_types / all_subtypes / all_supertypes). Used by the self card-type animate applier.
+// (all_types / all_subtypes / all_supertypes). Used by every layer-4 static applier.
 static std::vector<Type> parse_self_added_types(const std::string &spec) {
     std::vector<Type> out;
     size_t p = 0;
@@ -1241,132 +1268,178 @@ static std::vector<Type> parse_self_added_types(const std::string &spec) {
     return out;
 }
 
-// Layer 4 (CR 613.1d) — conditionally-active self card-type animate statics (Kaito, Bane of
-// Nightmares). For each active "Continuous" static whose AddType$ names CARD types and whose
-// Affected$ references the source itself, add those types to the source while the static's
-// condition holds and remove them when it lapses. If the added types include "Creature", the
-// source becomes a real creature: a Creature/Damage component is bootstrapped (so layers 6/7 set
-// its P/T and grant its keyword this same pass) when active, and stripped when inactive — unless
-// the source is a creature by a permanent means (printed face or an Animate). RemoveCardTypes$
-// drops the source's printed CARD types other than Planeswalker ("that's still a planeswalker").
-static void apply_self_animate_statics() {
-    for (auto &a : g_active_statics) {
-        if (a.suppressed) continue;
-        if (a.sa()->category != "Continuous") continue;
-        if (a.sa()->add_type.empty() || a.sa()->add_type == "AllNonBasicLandType") continue;
-        if (a.sa()->affected.find("Self") == std::string::npos) continue;
-        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+// The types a layer-4 static adds: its AddType$ list, or every nonbasic land type for the
+// "is every nonbasic land type" CDA (Planar Nexus: AddType$ AllNonBasicLandType, CR 205.3i).
+static std::vector<Type> types_added_by_static(const StaticAbility &sa) {
+    if (sa.add_type != "AllNonBasicLandType") return parse_self_added_types(sa.add_type);
+    std::vector<Type> out;
+    for (const std::string &t : nonbasic_land_types()) out.push_back({SUBTYPE, t});
+    return out;
+}
 
-        std::vector<Type> added = parse_self_added_types(a.sa()->add_type);
-        bool adds_creature = false;
-        for (const auto &t : added)
-            if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
+// Is this a layer-4 (type-changing) continuous static?
+static bool is_type_changing_static(const StaticAbility &sa) {
+    return sa.category == "Continuous" && !sa.add_type.empty();
+}
 
-        // Strip this static's added types first so the grant is idempotent across passes and lapses
-        // cleanly when the condition turns off (re-added below only while the gate holds).
-        for (const auto &t : added) perm.types.erase(t);
+// The type line a permanent has before any continuous effect (CR 613.1): the copiable values of
+// the face that's up (CR 712.8d-e; an in-place copy effect has already written the copied values
+// onto CardData), or a token's own definition (CR 111.4).
+static std::set<Type> copiable_type_line(Entity e, const Permanent &perm) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return active_face(e, global_coordinator.GetComponent<CardData>(e)).types;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).types;
+    return perm.types;
+}
 
-        if (a.condition_met) {
-            // RemoveCardTypes$ True: drop the printed CARD types other than Planeswalker before
-            // adding the new ones (a planeswalker becoming a creature stays a planeswalker, CR 306).
-            if (a.sa()->remove_card_types) {
-                for (auto it = perm.types.begin(); it != perm.types.end();) {
-                    if (it->kind == TYPE && it->name != "Planeswalker")
-                        it = perm.types.erase(it);
-                    else
-                        ++it;
-                }
-            }
-            for (const auto &t : added) perm.types.insert(t);
+// Timestamp of a static ability's continuous effect (CR 613.7a): its source permanent's; an
+// emblem's statics (no permanent) sort first.
+static size_t static_timestamp(const ActiveStatic &a) {
+    if (a.emblem < 0 && global_coordinator.entity_has_component<Permanent>(a.entity))
+        return global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield;
+    return 0;
+}
 
-            if (adds_creature && !global_coordinator.entity_has_component<Creature>(a.entity)) {
-                Creature cr;
-                cr.base_power = 0;      // layer 7b's SetPower$/SetToughness$ override this to 3/4
-                cr.base_toughness = 0;
-                if (global_coordinator.entity_has_component<CardData>(a.entity))
-                    cr.keywords =
-                        active_face(a.entity, global_coordinator.GetComponent<CardData>(a.entity)).keywords;
-                global_coordinator.AddComponent(a.entity, cr);
-                if (!global_coordinator.entity_has_component<Damage>(a.entity)) {
-                    Damage dmg;
-                    dmg.damage_counters = 0;
-                    global_coordinator.AddComponent(a.entity, dmg);
-                }
-                // Summoning sickness (CR 302.6 / 508.1a): a permanent that becomes a creature can
-                // attack only if its controller has controlled it continuously since their most
-                // recent turn began. Approximate with "entered this turn" — sick the turn it enters,
-                // able to attack thereafter (untap clears it for permanents that keep their Creature).
-                perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn);
+// Is `e` a nonbasic land that the land-type setter `a` (Blood Moon / Magus of the Moon, CR 305.7)
+// affects, judged on its current characteristics?
+static bool land_type_setter_affects(const ActiveStatic &a, Entity e) {
+    if (!is_battlefield_permanent(e)) return false;
+    const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (!permanent_has_type(perm, "Land") || has_basic_supertype(perm.types)) return false;
+    MatchCtx ctx;
+    ctx.controller = a.controller;
+    ctx.source = a.entity;
+    return permanent_matches_filter(e, a.sa()->affected, ctx);
+}
 
-                // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
-                // attacking" had its enters-attacking mark left pending by apply_permanent_components
-                // (it had no Creature yet). Consume it now that the Creature exists.
-                auto pea = cur_game.pending_enters_attacking.find(a.entity);
-                if (pea != cur_game.pending_enters_attacking.end()) {
-                    auto &ncr = global_coordinator.GetComponent<Creature>(a.entity);
-                    ncr.is_attacking = true;
-                    ncr.attack_target = pea->second;
-                    ncr.is_blocked = false;
-                    game_log("%s is attacking.\n", entity_name(a.entity).c_str());
-                    cur_game.pending_enters_attacking.erase(pea);
-                }
-            }
-        } else if (adds_creature) {
-            // Gate off: strip a Creature/Damage that exists ONLY because of this static (the source
-            // is not a creature by its printed face and isn't animated by another effect).
-            bool printed_creature =
-                global_coordinator.entity_has_component<CardData>(a.entity) &&
-                is_creature_card(global_coordinator.GetComponent<CardData>(a.entity));
-            bool animated = perm.animate_make_creature || perm.animate_make_creature_eot;
-            if (!printed_creature && !animated) {
-                if (global_coordinator.entity_has_component<Creature>(a.entity))
-                    global_coordinator.RemoveComponent<Creature>(a.entity);
-                if (global_coordinator.entity_has_component<Damage>(a.entity))
-                    global_coordinator.RemoveComponent<Damage>(a.entity);
+// CR 305.7: setting a land's subtype replaces all its land types (and only those — card types
+// such as Creature, supertypes and creature subtypes stay) with the new basic land type(s).
+static void set_land_subtypes(Permanent &perm, const std::vector<Type> &subtypes) {
+    for (auto it = perm.types.begin(); it != perm.types.end();) {
+        if (it->kind == SUBTYPE && is_land_subtype(it->name))
+            it = perm.types.erase(it);
+        else
+            ++it;
+    }
+    for (const auto &t : subtypes) perm.types.insert(t);
+}
+
+// Apply one layer-4 effect to the objects it affects right now.
+static void apply_type_effect(const TypeEffect &te, const std::set<Entity> &entities) {
+    if (te.as == nullptr) {  // a resolved Animate's grant on the permanent it animated
+        auto &perm = global_coordinator.GetComponent<Permanent>(te.animated);
+        for (const auto &t : *te.animate_types) perm.types.insert(t);
+        if (te.animate_creature) perm.types.insert(Type{TYPE, "Creature"});
+        return;
+    }
+    const ActiveStatic &a = *te.as;
+    const StaticAbility &sa = *a.sa();
+    std::vector<Type> added = types_added_by_static(sa);
+    if (sa.remove_land_types) {
+        for (auto e : entities) {
+            if (!land_type_setter_affects(a, e)) continue;
+            set_land_subtypes(global_coordinator.GetComponent<Permanent>(e), added);
+            if (std::find(g_type_set_lands.begin(), g_type_set_lands.end(), e) == g_type_set_lands.end())
+                g_type_set_lands.push_back(e);
+        }
+        return;
+    }
+    for (Entity e : static_targets(a, entities)) {
+        if (!is_battlefield_permanent(e)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        // RemoveCardTypes$ True (Kaito: "he's a 3/4 Ninja creature ... that's still a
+        // planeswalker"): drop the CARD types other than Planeswalker before adding the new ones.
+        if (sa.remove_card_types) {
+            for (auto it = perm.types.begin(); it != perm.types.end();) {
+                if (it->kind == TYPE && it->name != "Planeswalker")
+                    it = perm.types.erase(it);
+                else
+                    ++it;
             }
         }
+        for (const auto &t : added) perm.types.insert(t);
     }
 }
 
-// Layer 4 (CR 613.1d) — general additive card-type statics over an Affected$ permanent filter
-// (Mycosynth Lattice: "All permanents are artifacts in addition to their other types."). For each
-// active "Continuous" static whose AddType$ names types and whose Affected$ is a general permanent
-// filter — NOT the Self self-animate (apply_self_animate_statics), NOT the Land.nonBasic land-
-// subtype setter (Blood Moon, which strips/sets land subtypes via RemoveLandTypes$), NOT the
-// AllNonBasicLandType self-CDA — add those types to EVERY matching battlefield permanent in
-// addition to its existing types. Self-cleaning: each pass first strips the types this subsystem
-// recorded on each permanent (static_added_types), then re-adds for the currently-active statics,
-// so the grant lapses the instant the source leaves the battlefield. Only genuinely-new types are
-// recorded (a type the permanent already has is left untracked and never erased).
-static void apply_global_addtype_statics(const std::set<Entity> &entities) {
-    // Strip last pass's globally-added types from every permanent before re-deriving.
-    for (auto entity : entities) {
-        if (!is_battlefield_permanent(entity)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (perm.static_added_types.empty()) continue;
-        for (const auto &t : perm.static_added_types) perm.types.erase(t);
-        perm.static_added_types.clear();
-    }
-    for (auto &a : g_active_statics) {
-        if (a.suppressed) continue;
-        if (a.sa()->category != "Continuous") continue;
-        if (a.sa()->add_type.empty() || a.sa()->add_type == "AllNonBasicLandType") continue;
-        if (a.sa()->remove_land_types) continue;                  // Blood Moon land-subtype setter
-        if (a.sa()->affected == "Land.nonBasic") continue;        // pure land type-changer form
-        if (!affected_is_general_filter(a.sa()->affected)) continue;  // excludes Self/EquippedBy/empty
-        std::vector<Type> added = parse_self_added_types(a.sa()->add_type);
-        MatchCtx ctx;
-        ctx.controller = a.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
-        ctx.source = a.entity;           // .Other self-exclusion
-        extract_static_cmc_bound(a.sa()->affected, ctx);
-        for (auto entity : entities) {
-            if (!is_battlefield_permanent(entity)) continue;
-            if (!permanent_matches_filter(entity, a.sa()->affected, ctx)) continue;
-            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-            for (const auto &t : added)
-                if (perm.types.insert(t).second) perm.static_added_types.insert(t);
+// The type-changing effects a resolved Animate recorded on `entity` (Guide of Souls' Angel,
+// an earthbend's or Karn's "becomes a creature", an amassed Army's subtype, an until-end-of-turn
+// Animate), each with the Animate's timestamp (CR 613.7b).
+static void collect_animate_type_effects(Entity entity, const Permanent &perm,
+                                         std::vector<TypeEffect> &out) {
+    if (!perm.animate_added_types.empty() || !perm.animate_added_types_until_turn.empty() ||
+        perm.animate_make_creature) {
+        TypeEffect te;
+        te.timestamp = perm.animate_timestamp;
+        te.animated = entity;
+        te.animate_types = &perm.animate_added_types;
+        te.animate_creature = perm.animate_make_creature;
+        out.push_back(te);
+        if (!perm.animate_added_types_until_turn.empty()) {
+            te.animate_types = &perm.animate_added_types_until_turn;
+            out.push_back(te);
         }
+    }
+    if (!perm.animate_added_types_eot.empty() || perm.animate_make_creature_eot) {
+        TypeEffect te;
+        te.timestamp = perm.animate_timestamp_eot;
+        te.animated = entity;
+        te.animate_types = &perm.animate_added_types_eot;
+        te.animate_creature = perm.animate_make_creature_eot;
+        out.push_back(te);
+    }
+}
+
+// Keep the Creature component of a self-animating permanent (Kaito, Bane of Nightmares — "during
+// your turn ... he's a 3/4 Ninja creature") in step with its layer-4 type line: bootstrap a
+// Creature/Damage component when the static's effect made it a creature (so layers 6/7 set its
+// P/T and keyword this same pass), and strip them when it is no longer a creature by any effect.
+static void sync_self_animate_creature(const ActiveStatic &a) {
+    const StaticAbility &sa = *a.sa();
+    if (!is_type_changing_static(sa) || affected_is_general_filter(sa.affected)) return;
+    if (affected_is_attached_target(sa.affected) || sa.characteristic_defining) return;
+    bool adds_creature = false;
+    for (const auto &t : parse_self_added_types(sa.add_type))
+        if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
+    if (!adds_creature || !is_battlefield_permanent(a.entity)) return;
+    auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+
+    if (!permanent_has_type(perm, "Creature")) {
+        if (global_coordinator.entity_has_component<Creature>(a.entity))
+            global_coordinator.RemoveComponent<Creature>(a.entity);
+        if (global_coordinator.entity_has_component<Damage>(a.entity))
+            global_coordinator.RemoveComponent<Damage>(a.entity);
+        return;
+    }
+    if (global_coordinator.entity_has_component<Creature>(a.entity)) return;
+    Creature cr;
+    cr.base_power = 0;      // layer 7b's SetPower$/SetToughness$ override this to 3/4
+    cr.base_toughness = 0;
+    if (global_coordinator.entity_has_component<CardData>(a.entity))
+        cr.keywords = active_face(a.entity, global_coordinator.GetComponent<CardData>(a.entity)).keywords;
+    global_coordinator.AddComponent(a.entity, cr);
+    if (!global_coordinator.entity_has_component<Damage>(a.entity)) {
+        Damage dmg;
+        dmg.damage_counters = 0;
+        global_coordinator.AddComponent(a.entity, dmg);
+    }
+    // Summoning sickness (CR 302.6 / 508.1a): a permanent that becomes a creature can
+    // attack only if its controller has controlled it continuously since their most
+    // recent turn began. Approximate with "entered this turn" — sick the turn it enters,
+    // able to attack thereafter (untap clears it for permanents that keep their Creature).
+    perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn);
+
+    // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
+    // attacking" had its enters-attacking mark left pending by apply_permanent_components
+    // (it had no Creature yet). Consume it now that the Creature exists.
+    auto pea = cur_game.pending_enters_attacking.find(a.entity);
+    if (pea != cur_game.pending_enters_attacking.end()) {
+        auto &ncr = global_coordinator.GetComponent<Creature>(a.entity);
+        ncr.is_attacking = true;
+        ncr.attack_target = pea->second;
+        ncr.is_blocked = false;
+        game_log("%s is attacking.\n", entity_name(a.entity).c_str());
+        cur_game.pending_enters_attacking.erase(pea);
     }
 }
 
@@ -1404,141 +1477,58 @@ void StateManager::sync_subtype_mana_abilities() {
     }
 }
 
+
 void StateManager::apply_type_changing_effects() {
-    // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
-    // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
-    // from a battlefield static, so reassert them here every pass — survives any same-pass type
-    // reset (e.g. the land type-changer below) and the rest of the game.
+    // Rebuild every battlefield type line from its copiable values; the effects below re-add
+    // whatever still applies. Collect the Animate grants recorded on each permanent on the way.
+    std::vector<TypeEffect> effects;
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        for (const auto &t : perm.animate_added_types) perm.types.insert(t);
-        // "Until end of turn" Animate type grants (CR 514.2) — reasserted each pass while live;
-        // the CLEANUP step erases the bucket so they lapse at end of turn.
-        for (const auto &t : perm.animate_added_types_eot) perm.types.insert(t);
+        perm.types = copiable_type_line(entity, perm);
+        collect_animate_type_effects(entity, perm, effects);
     }
 
-    // Self card-type animate statics (Kaito's "During your turn ... he's a 3/4 Ninja creature with
-    // hexproof that's still a planeswalker"). A "Continuous" static whose AddType$ names CARD types
-    // and whose Affected$ references the source itself (Permanent.Self) conditionally adds those
-    // types to the source (CR 613 layer 4). When the gate (condition_met) holds the types are added
-    // and, if "Creature" is among them, a Creature/Damage component is bootstrapped so the source is
-    // a real creature this pass (its P/T set in 7b, AddKeyword$ granted in 6); when the gate lapses
-    // the added types and the bootstrapped Creature are stripped. Runs before the land type-changer
-    // (a distinct Land.nonBasic Affected$ form) and its early-out below.
-    apply_self_animate_statics();
-
-    // Self-CDA "is every nonbasic land type" (Planar Nexus: AddType$ AllNonBasicLandType,
-    // CharacteristicDefining$ True, Affected$ Card.Self). Add the full set of nonbasic land
-    // subtypes to the source permanent itself. Idempotent (a set), reasserted every pass; a
-    // later Land.nonBasic type-setter (Blood Moon) still wins because its reset/insert runs
-    // below. General for any AllNonBasicLandType source.
-    static const char *kNonBasicLandTypes[] = {"Desert", "Gate",        "Lair",  "Locus",
-                                               "Mine",   "Power-Plant", "Sphere", "Tower",
-                                               "Urza's", "Cave"};
+    // Characteristic-defining type effects apply first (CR 613.3) — Planar Nexus is every
+    // nonbasic land type before a Blood Moon sets its subtype.
     for (auto &a : g_active_statics) {
-        if (a.suppressed) continue;
-        if (a.sa()->add_type != "AllNonBasicLandType") continue;
-        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
-        for (const char *t : kNonBasicLandTypes) perm.types.insert({SUBTYPE, t});
+        if (a.suppressed || !a.condition_met) continue;
+        if (!is_type_changing_static(*a.sa()) || !a.sa()->characteristic_defining) continue;
+        TypeEffect te;
+        te.as = &a;
+        apply_type_effect(te, mEntities);
     }
 
-    // Collect type-changing statics from the already-populated g_active_statics.
-    struct TypeChanger {
-        ActiveStatic *as;
-        size_t timestamp;  // source permanent's ETB timestamp
-    };
-    std::vector<TypeChanger> changers;
+    // CR 613.8 dependency: a land-type setter (Blood Moon / Magus of the Moon) makes each nonbasic
+    // land it affects lose the abilities generated from its rules text (CR 305.7), so that land's
+    // own static effects depend on the setter — they wait for it and then no longer exist (Yavimaya
+    // under Magus makes no land a Forest). Suppress them before any of them applies, for every layer.
+    for (auto &s : g_active_statics) {
+        if (s.suppressed || !s.condition_met) continue;
+        if (!is_type_changing_static(*s.sa()) || !s.sa()->remove_land_types) continue;
+        for (auto &a : g_active_statics)
+            if (!a.suppressed && a.emblem < 0 && land_type_setter_affects(s, a.entity))
+                a.suppressed = true;
+    }
+
+    // Every other type-changing effect, in timestamp order (CR 613.7). A static ability's effect
+    // takes its source's timestamp (613.7a); a resolved Animate's, its own (613.7b). On a tie the
+    // static applies first (613.7n).
     for (auto &a : g_active_statics) {
-        if (a.suppressed) continue;
-        if (a.sa()->add_type.empty()) continue;
-        // AllNonBasicLandType is the self-CDA handled above, not a Land.nonBasic affector.
-        if (a.sa()->add_type == "AllNonBasicLandType") continue;
-        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-        auto &src_perm = global_coordinator.GetComponent<Permanent>(a.entity);
-        changers.push_back({&a, src_perm.timestamp_entered_battlefield});
+        if (a.suppressed || !a.condition_met) continue;
+        if (!is_type_changing_static(*a.sa()) || a.sa()->characteristic_defining) continue;
+        TypeEffect te;
+        te.timestamp = static_timestamp(a);
+        te.as = &a;
+        effects.push_back(te);
     }
+    std::stable_sort(effects.begin(), effects.end(), [](const TypeEffect &x, const TypeEffect &y) {
+        if (x.timestamp != y.timestamp) return x.timestamp < y.timestamp;
+        return x.as != nullptr && y.as == nullptr;
+    });
+    for (const auto &te : effects) apply_type_effect(te, mEntities);
 
-    if (changers.empty()) {
-        // No land-subtype changers, but a general AddType static (Mycosynth Lattice) may still
-        // apply card types to every permanent. Run it and return.
-        apply_global_addtype_statics(mEntities);
-        sync_subtype_mana_abilities();
-        return;
-    }
-
-    // Sort by timestamp ascending — later entries override earlier ones on the same permanent.
-    std::sort(changers.begin(), changers.end(),
-              [](const TypeChanger &a, const TypeChanger &b) { return a.timestamp < b.timestamp; });
-
-    for (auto entity : mEntities) {
-        if (!is_battlefield_permanent(entity)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-
-        bool is_land = false;
-        bool is_basic = false;
-        for (auto &t : perm.types) {
-            if (t.kind == TYPE && t.name == "Land") is_land = true;
-            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
-        }
-        if (!is_land || is_basic) continue;
-
-        // Find the winning (latest-timestamp) type-changing effect that affects this land.
-        // Because changers is sorted ascending, the last match wins.
-        const TypeChanger *winner = nullptr;
-        for (auto &tc : changers) {
-            if (tc.as->sa()->affected == "Land.nonBasic") {
-                winner = &tc;  // later entry overwrites
-            }
-        }
-        if (!winner) continue;
-
-        // Reset land subtypes to CardData originals
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-            // Restore subtypes from CardData
-            std::set<Type> new_types;
-            for (auto &t : card_data.types) {
-                if (t.kind != SUBTYPE) new_types.insert(t);
-            }
-            // Non-subtype types come from CardData; subtypes are replaced below
-            perm.types = new_types;
-        } else {
-            // Token land — strip existing land subtypes
-            std::set<Type> new_types;
-            for (auto &t : perm.types) {
-                if (t.kind == SUBTYPE && is_basic_land_subtype(t.name)) continue;
-                new_types.insert(t);
-            }
-            perm.types = new_types;
-        }
-
-        // Apply the winning type
-        if (winner->as->sa()->remove_land_types) {
-            // Already stripped above; add the new subtype
-            perm.types.insert({SUBTYPE, winner->as->sa()->add_type});
-            // 305.7: setting a land's subtype to a basic land type makes it lose all
-            // abilities generated from its rules text (printed activated/triggered/static
-            // and any scripted mana ability). Suppress its statics now so layers 6/7 skip
-            // them, and record it so recompute_abilities (after layer 7) erases the rest;
-            // the subtype-derived mana ability regenerated just below is kept.
-            g_type_set_lands.push_back(entity);
-            for (auto &a : g_active_statics)
-                if (a.entity == entity) a.suppressed = true;
-        }
-
-        // Strip subtype-derived mana abilities and regenerate from new types
-        auto &abilities = perm.abilities;
-        abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
-                                       [](const Ability &ab) { return ab.subtype_derived; }),
-                        abilities.end());
-        apply_land_abilities(entity);
-    }
-
-    // General additive AddType statics run AFTER the land-subtype changer so a permanent whose
-    // land subtypes were just reset (Blood Moon) still gains its global type (Mycosynth's Artifact).
-    apply_global_addtype_statics(mEntities);
+    for (const auto &a : g_active_statics) sync_self_animate_creature(a);
     sync_subtype_mana_abilities();
 }
 
@@ -1957,11 +1947,13 @@ void StateManager::apply_layer6_ability_grants() {
 // Layer 6 (rule 613.1f) ability REMOVAL — the counterpart to the keyword grants above.
 // An effect that says an object "loses all abilities" (Humility) is applied in two phases
 // so it interacts correctly with the rest of the layer engine:
-//   * suppress_removed_statics() runs right after gather, before any layer applier, and
-//     marks every gathered static whose SOURCE loses its abilities as suppressed. A static
-//     cannot be erased from perm.static_abilities — g_active_statics holds indices
-//     into that vector — so the layer appliers skip suppressed entries instead. This makes
-//     the affected object's CDAs, P/T pumps and keyword grants vanish in layers 4/6/7.
+//   * suppress_removed_statics() runs after layers 4 and 5, so the removal's Affected$ set
+//     is judged on the objects' current types (Humility affects what is a creature after
+//     layer 4). It marks every gathered static whose SOURCE loses its abilities as
+//     suppressed. A static cannot be erased from perm.static_abilities — g_active_statics
+//     holds indices into that vector — so the layer-6/7 appliers skip suppressed entries
+//     instead. A static whose effect already began applying in layer 4 or 5 is exempt: it
+//     keeps applying to the same objects in the later layers (613.6).
 //   * recompute_abilities() runs after layer 7 and erases the affected object's activated/
 //     triggered abilities and clears its (already base-rebuilt) keywords. They are
 //     re-derived next pass by apply_permanent_components / apply_land_abilities / the
@@ -2027,30 +2019,85 @@ static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &e
     return false;
 }
 
-// Gather every active static that removes all abilities and whose condition is met
-// (Humility and friends). Shared by suppress_removed_statics / recompute_abilities.
-static std::vector<const ActiveStatic *> collect_ability_removers() {
-    std::vector<const ActiveStatic *> removers;
+// Gather every active static that removes all abilities, whose condition is met and whose own
+// source hasn't lost it (Humility and friends). Shared by suppress_removed_statics /
+// recompute_abilities.
+static std::vector<ActiveStatic *> collect_ability_removers() {
+    std::vector<ActiveStatic *> removers;
     for (auto &a : g_active_statics)
-        if (a.sa()->remove_all_abilities && a.condition_met) removers.push_back(&a);
+        if (a.sa()->remove_all_abilities && a.condition_met && !a.suppressed) removers.push_back(&a);
     return removers;
+}
+
+// CR 613.6: does this static's effect begin applying before layer 6 — a type change (layer 4)
+// or a color change (layer 5)? Such an effect keeps applying to the same objects in layers 6
+// and 7 even when a layer-6 effect removes the ability generating it (Kaito under Humility
+// is still a 3/4 on his controller's turn once his layer-4 effect has made him a creature).
+static bool static_begins_before_layer6(const ActiveStatic &a) {
+    const StaticAbility &sa = *a.sa();
+    return sa.category == "Continuous" && (!sa.add_type.empty() || !sa.set_color.empty());
 }
 
 void StateManager::suppress_removed_statics(Game &game) {
     (void)game;
-    std::vector<const ActiveStatic *> removers = collect_ability_removers();
+    std::vector<ActiveStatic *> removers = collect_ability_removers();
     if (removers.empty()) return;
 
+    // A remover whose source another remover affects loses that ability first (613.8
+    // dependency: Toxicrene, a creature, has no ability left under Humility). Removers that
+    // affect each other (a dependency loop, 613.8b) all apply.
+    std::vector<ActiveStatic *> independent;
+    for (ActiveStatic *r : removers) {
+        bool affected = false;
+        for (const ActiveStatic *o : removers)
+            if (o->entity != r->entity && removal_affects(*o, r->entity)) { affected = true; break; }
+        if (!affected) independent.push_back(r);
+    }
+    for (ActiveStatic *r : removers) {
+        if (std::find(independent.begin(), independent.end(), r) != independent.end()) continue;
+        for (const ActiveStatic *o : independent)
+            if (removal_affects(*o, r->entity)) { r->suppressed = true; break; }
+    }
+
+    std::vector<ActiveStatic *> live = collect_ability_removers();
     for (auto &a : g_active_statics) {
-        if (a.sa()->remove_all_abilities) continue;  // a remover keeps its own ability
-        for (auto *r : removers)
+        if (a.suppressed || a.sa()->remove_all_abilities) continue;  // a remover keeps its own ability
+        if (static_begins_before_layer6(a)) continue;                  // 613.6
+        for (auto *r : live)
             if (removal_affects(*r, a.entity)) { a.suppressed = true; break; }
+    }
+}
+
+// CR 305.7: a land whose subtype an effect set to a basic land type loses the abilities
+// generated from its rules text — its printed activated/triggered abilities and keywords — but
+// keeps the mana ability of its new land type (subtype-derived) and every ability other effects
+// granted it: a static's grant (granted_by_static), a resolved Animate's (Urza's Saga chapters),
+// and an earthbend's haste.
+static void strip_rules_text_abilities(Entity entity, Permanent &perm) {
+    auto &abilities = perm.abilities;
+    abilities.erase(
+        std::remove_if(abilities.begin(), abilities.end(),
+                       [&](const Ability &ab) {
+                           if (ab.subtype_derived || ab.granted_by_static != 0) return false;
+                           for (auto &granted : perm.animate_granted_abilities)
+                               if (granted.identical_activated_ability(ab)) return false;
+                           return true;
+                       }),
+        abilities.end());
+    if (!global_coordinator.entity_has_component<Creature>(entity) ||
+        !global_coordinator.entity_has_component<CardData>(entity))
+        return;
+    auto &keywords = global_coordinator.GetComponent<Creature>(entity).keywords;
+    for (const auto &printed :
+         active_face(entity, global_coordinator.GetComponent<CardData>(entity)).keywords) {
+        auto it = std::find(keywords.begin(), keywords.end(), printed);
+        if (it != keywords.end()) keywords.erase(it);
     }
 }
 
 void StateManager::recompute_abilities(Game &game) {
     (void)game;
-    std::vector<const ActiveStatic *> removers = collect_ability_removers();
+    std::vector<ActiveStatic *> removers = collect_ability_removers();
     if (removers.empty() && g_type_set_lands.empty()) return;
 
     for (auto entity : mEntities) {
@@ -2095,13 +2142,11 @@ void StateManager::recompute_abilities(Game &game) {
                                                       affecting_removers.end();
                                            }),
                             abilities.end());
-        } else {  // type_set only — keep subtype-derived mana, drop printed rules-text abilities
-            abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
-                                           [](const Ability &ab) { return !ab.subtype_derived; }),
-                            abilities.end());
+            if (global_coordinator.entity_has_component<Creature>(entity))
+                global_coordinator.GetComponent<Creature>(entity).keywords.clear();
+        } else {
+            strip_rules_text_abilities(entity, perm);
         }
-        if (global_coordinator.entity_has_component<Creature>(entity))
-            global_coordinator.GetComponent<Creature>(entity).keywords.clear();
     }
 }
 
@@ -2145,9 +2190,7 @@ void StateManager::apply_layer7_pt_effects() {
             if (a.sa()->characteristic_defining) continue;  // CDA setters are 7a
             if (a.sa()->set_power_svar.empty() && a.sa()->set_toughness_svar.empty()) continue;
             if (!a.condition_met) continue;
-            size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
-                ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
-                : 0;
+            size_t ts = static_timestamp(a);
             std::vector<Entity> t = static_targets(a, mEntities);
             setters.push_back({&a, ts, std::set<Entity>(t.begin(), t.end())});
         }
@@ -2191,9 +2234,7 @@ void StateManager::apply_layer7_pt_effects() {
                      ? a.sa()->add_toughness
                      : evaluate_sa_svar(a.sa()->add_toughness_svar, a.controller, a.entity);
         // 613.7a — a static ability's effect has its source object's timestamp.
-        size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
-            ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
-            : 0;
+        size_t ts = static_timestamp(a);
 
         // Resolve the affected creature set. A general Affected$ filter (anthem:
         // "Creature.Colorless+Other+YouCtrl" on It That Heralds the End) buffs every matching

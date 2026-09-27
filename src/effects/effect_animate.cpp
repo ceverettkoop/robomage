@@ -109,6 +109,8 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     auto &types_bucket = eot       ? perm.animate_added_types_eot
                          : until_turn ? perm.animate_added_types_until_turn
                                       : perm.animate_added_types;
+    // The effect's timestamp (CR 613.7b), ordering it against static abilities' effects.
+    (eot ? perm.animate_timestamp_eot : perm.animate_timestamp) = cur_game.timestamp++;
     for (const auto &t : ab.animate_types) {
         bool already_recorded = false;
         for (const auto &existing : types_bucket)

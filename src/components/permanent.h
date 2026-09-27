@@ -107,6 +107,11 @@ struct Permanent {
     int animate_power = 0;         // (extension) base power Animate sets
     int animate_toughness = 0;     // (extension) base toughness Animate sets
     bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
+    // Timestamp (CR 613.7b) of the latest resolved Animate recorded in the rest-of-game and
+    // until-your-next-turn fields (animate_added_types, animate_added_types_until_turn,
+    // animate_make_creature, animate_set_pt, animate_added_keywords); orders those effects
+    // against static abilities' effects in layers 4, 6 and 7b.
+    size_t animate_timestamp = 0;
     // Activated abilities granted for the rest of the game by a resolved DB$ Animate |
     // Abilities$ ... | Duration$ Permanent (Urza's Saga chapters I & II: gains "{T}: Add {C}" /
     // the Construct-token ability). Stored here — not only on Permanent::abilities — so the
@@ -133,6 +138,7 @@ struct Permanent {
     // A card opts in by giving its Animate ability no Duration$ (or Duration$ other than Permanent).
     std::vector<Type> animate_added_types_eot;
     bool animate_make_creature_eot = false;
+    size_t animate_timestamp_eot = 0;  // CR 613.7b timestamp of the latest EOT Animate above
 
     // DB$/AB$ Animate with Duration$ UntilYourNextTurn (Karn, the Great Creator +1: "Until your
     // next turn, ... becomes an artifact creature with power and toughness each equal to its mana
@@ -192,15 +198,6 @@ struct Permanent {
     // impending creature-suppression strip and the end-step shed, so a future Vanishing/Suspend card
     // that also uses generic TIME counters does NOT get treated as an impending permanent.
     bool entered_via_impending = false;
-
-    // Card types added to this permanent by a GLOBAL additive type-changing static this SBA pass
-    // (Mycosynth Lattice's "All permanents are artifacts in addition to their other types.",
-    // CR 613.1d layer 4). Distinct from animate_added_types (baked on by a resolved DB$ Animate):
-    // these come from a battlefield static and are stripped-then-rebuilt every pass by
-    // apply_global_addtype_statics, so the grant lapses the instant the source leaves the
-    // battlefield. Only genuinely-new types are recorded (a type the permanent already had is not
-    // tracked here and so is never erased), and only TYPE/SUBTYPE/SUPERTYPE not already present.
-    std::set<Type> static_added_types;
 
     // CR 603.8 state-triggered abilities (Mode$ Always, e.g. Dark Depths' "When CARDNAME has no
     // ice counters on it, sacrifice it."). A state trigger fires the instant its condition becomes

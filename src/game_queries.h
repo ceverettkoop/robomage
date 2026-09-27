@@ -1002,6 +1002,22 @@ inline bool is_basic_land_subtype(const std::string &name) {
            name == "Island" || name == "Swamp" || name == "Wastes";
 }
 
+// The nonbasic land types: every land type of CR 205.3i other than the five basic ones.
+inline const std::vector<std::string> &nonbasic_land_types() {
+    static const std::vector<std::string> kTypes = {
+        "Cave", "Desert", "Gate", "Lair", "Locus", "Mine", "Planet",
+        "Power-Plant", "Sphere", "Tower", "Town", "Urza's"};
+    return kTypes;
+}
+
+// True for a land type (CR 205.3i), basic or nonbasic, including the engine's Wastes marker.
+inline bool is_land_subtype(const std::string &name) {
+    if (is_basic_land_subtype(name)) return true;
+    for (const auto &t : nonbasic_land_types())
+        if (t == name) return true;
+    return false;
+}
+
 // True when the type list carries at least one of the FIVE basic land types —
 // Plains/Island/Swamp/Mountain/Forest (CR 205.3i / 305.6). Wastes is deliberately
 // excluded here: it is a basic land with NO basic land type, even though
