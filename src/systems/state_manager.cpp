@@ -37,6 +37,24 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+namespace {
+// The state-based actions one check finds on the battlefield (CR 704.3), performed together as a
+// single event by perform_permanent_sbas.
+struct SbaActions {
+    std::vector<std::pair<Entity, std::string>> to_graveyard;  // object + narrative line (704.5f-j, m, s)
+    std::vector<Entity> unattach;                               // 704.5n / 704.5p
+    std::vector<std::pair<Entity, int>> annihilate;             // 704.5q: permanent + N
+
+    bool empty() const { return to_graveyard.empty() && unattach.empty() && annihilate.empty(); }
+    // Records `e` as put into its owner's graveyard, once however many actions apply to it.
+    void put_into_graveyard(Entity e, const std::string &log_line) {
+        for (const auto &entry : to_graveyard)
+            if (entry.first == e) return;
+        to_graveyard.emplace_back(e, log_line);
+    }
+};
+}  // namespace
+
 // `who`'s state-based loss condition (CR 704.5a 0 or less life, 704.5b a draw from an empty
 // library, 704.5c ten or more poison counters), describing it in `reason`.
 static bool player_loss_reason(Zone::Ownership who, const Player &player, std::string &reason);
@@ -44,6 +62,22 @@ static bool player_loss_reason(Zone::Ownership who, const Player &player, std::s
 // CR 704.5a-c for both players in one check (CR 704.3): ends the game when either loses — a draw
 // when both do (CR 104.4a). Returns whether the game ended.
 static bool check_player_losses(Game &game);
+
+// Whether an Aura is attached to an illegal object or to nothing (CR 704.5m).
+static bool aura_attached_illegally(Game &game, Entity aura, const CardData &cd,
+                                    const Permanent &perm);
+
+// One pass over the battlefield collecting every permanent state-based action that applies to
+// the current game state (CR 704.5f-i, m, n, p, q, s) into `out`.
+static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, SbaActions &out);
+
+// The legend rule (CR 704.5j): the first conflict's controller chooses the one to keep, and the
+// rest join `out`. Returns false when the choice parked as a loop-top pending decision.
+static bool choose_legend_rule_keep(Game &game, const std::set<Entity> &entities,
+                                    SbaActions &out);
+
+// Perform one check's actions together (CR 704.3).
+static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaActions &actions);
 
 // Rebuilt from scratch by gather_active_statics on every SBE pass; its ActiveStatic
 // entries are (source, static index) handles resolved at read time, so a snapshot
@@ -135,7 +169,7 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
 // State-based actions are checked simultaneously and loop until stable (rule 704.3)
 void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
     // CR 104.1: once the game has ended, nothing further happens. No SBAs — the
-    // deck-out check below must not overturn a "wins the game" effect that
+    // loss checks below must not overturn a "wins the game" effect that
     // already decided it (first game-ending event wins) — and no trigger
     // collection/placement, which could otherwise park a decision under a
     // finished game (the loop-exit "still parked" fatal). A resolution can end
@@ -156,8 +190,6 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         apply_continuous_effects(game);
         refresh_city_blessing(mEntities);  // 702.131: ascend grants the city's blessing at 10+ permanents
 
-        bool any_applied = false;
-
         // CR 704.5a-c: a player who meets a loss condition loses; both players' conditions are
         // checked together, so two simultaneous losers draw the game (CR 104.4a).
         if (check_player_losses(game)) return;
@@ -168,224 +200,13 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // abilities it already triggered.
         collect_triggered_abilities(game, orderer);
 
-        // 704.5d - tokens in zones other than battlefield cease to exist
-        // (handled by apply_permanent_components above)
-
-        // 704.5f - creature with toughness 0 or less goes to graveyard
-        // 704.5g - creature with lethal damage is destroyed
-        std::vector<Entity> creatures_to_destroy;
-        for (auto entity : mEntities) {
-            if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-            if (!is_battlefield_permanent(entity)) continue;
-
-            auto &creature = global_coordinator.GetComponent<Creature>(entity);
-            if (creature.toughness == 0) {
-                // 704.5f: a creature with toughness 0 or less is put into its owner's
-                // graveyard. This is NOT a destroy — indestructible does not prevent it.
-                creatures_to_destroy.push_back(entity);
-            } else if (global_coordinator.entity_has_component<Damage>(entity) &&
-                       !is_indestructible(entity)) {
-                // 704.5g/h: lethal-damage / deathtouch destruction. 702.12b: an
-                // indestructible creature ignores these state-based actions, so it is
-                // excluded above (it keeps its marked damage but is not destroyed).
-                auto &damage = global_coordinator.GetComponent<Damage>(entity);
-                // 702.2b: any nonzero damage from a deathtouch source is lethal.
-                // The flag is set only by nonzero damage actually dealt, marked or as -1/-1
-                // counters (wither/infect), so it alone decides.
-                bool deathtouched = damage.has_deathtouch_damage;
-                if (deathtouched || damage.damage_counters >= creature.toughness) {
-                    creatures_to_destroy.push_back(entity);
-                }
-            }
-        }
-
-        for (auto entity : creatures_to_destroy) {
-            std::string name = entity_name(entity);
-            auto &creature = global_coordinator.GetComponent<Creature>(entity);
-            if (creature.toughness == 0)
-                game_log("%s dies (zero toughness)\n", name.c_str());
-            else
-                game_log("%s is destroyed (lethal damage)\n", name.c_str());
-            orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-            any_applied = true;
-        }
-
-        // 704.5i - a planeswalker with 0 (or less) loyalty is put into its owner's graveyard
-        for (auto entity : mEntities) {
-            if (!is_battlefield_permanent(entity)) continue;
-            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-            if (!is_planeswalker(perm.types)) continue;
-            if (get_counters(entity, "LOYALTY") <= 0) {
-                game_log("%s dies (0 loyalty)\n", entity_name(entity).c_str());
-                orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-                any_applied = true;
-            }
-        }
-
-        // Attachments (Permanent::equipped_to, shared by Auras and Equipment):
-        // 704.5m - an Aura attached to an illegal object, or not attached to anything, is put
-        // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter).
-        // We check the structural part of "illegal": no attachment, the enchanted object has left
-        // the battlefield / is no longer a creature (the common fall-off when the enchanted
-        // creature dies or is bounced), or it enchants itself or is a creature (303.4d).
-        // 704.5n / 704.5p - an Equipment attached to a permanent it can't equip (not a creature,
-        // gone, itself, or the Equipment is a creature without reconfigure, 301.5c), and any
-        // other non-Aura permanent attached to something, becomes unattached and stays on the
-        // battlefield.
-        for (auto entity : mEntities) {
-            if (!is_battlefield_permanent(entity)) continue;
-            const CardData *acd = global_coordinator.entity_has_component<CardData>(entity)
-                                      ? &global_coordinator.GetComponent<CardData>(entity)
-                                      : nullptr;
-            if (!acd || acd->enchant_filter.empty()) {  // not an Aura
-                auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                if (perm.equipped_to == 0) continue;
-                if (acd && acd->is_equipment && equipment_can_equip(entity, perm.equipped_to))
-                    continue;
-                game_log("%s becomes unattached\n", entity_name(entity).c_str());
-                perm.equipped_to = 0;
-                any_applied = true;
-                continue;
-            }
-            const auto &cd = *acd;
-            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-            // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
-            // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
-            // and its trigger has not yet returned+attached the creature. Its pending_aura_target
-            // entry is retained (see state_manager_statics.cpp) to mark this window — skip the
-            // unattached-aura check until the reanimation resolves and attaches it, for as long as
-            // that card is still a legal object for it (a card that left the graveyard in
-            // response is gone, and the aura goes to the graveyard, CR 704.5m).
-            if (game.pending_aura_target.count(entity)) {
-                if (pending_aura_target_legal(entity, perm.controller)) continue;
-                game.pending_aura_target.erase(entity);
-            }
-            Entity enchanted = perm.equipped_to;
-            bool illegal = (enchanted == 0) || enchanted == entity ||
-                           !is_battlefield_permanent(enchanted) ||
-                           global_coordinator.entity_has_component<Creature>(entity);
-            if (!illegal && cd.enchant_filter.find("Creature") != std::string::npos &&
-                !global_coordinator.entity_has_component<Creature>(enchanted))
-                illegal = true;
-            if (illegal) {
-                game_log("%s is put into the graveyard (Aura not attached to a legal object)\n",
-                         entity_name(entity).c_str());
-                orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-                any_applied = true;
-            }
-        }
-
-        // CR 714.4 - Saga sacrifice. A Saga whose lore counters are >= its final chapter number,
-        // and which isn't the source of a chapter ability that has triggered but not yet left the
-        // stack (tracked by Permanent::saga_chapters_in_flight), is sacrificed by its controller.
-        // This holds for a Saga that is also a creature (Summon: Bahamut) — the printed "Sacrifice
-        // after IV" / the script's chapter count governs, independent of its other types. Note: the
-        // checked-in CR 714.4 text has no creature-Saga exception, and both cards' Oracle text
-        // ("Sacrifice after III/IV") confirms the creature Saga is sacrificed, so they agree.
-        for (auto entity : mEntities) {
-            if (!is_battlefield_permanent(entity)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-            const auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (!card_is_saga(cd)) continue;
-            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-            // Layer-6 ability removal: a Saga turned into a Mountain (Magus of the Moon,
-            // CR 305.7) is no longer a Saga — 714.4 doesn't sacrifice it, even at full lore.
-            if (perm.abilities_removed) continue;
-            int final_chapter = static_cast<int>(cd.saga_chapters.size());
-            if (get_counters(entity, "LORE") < final_chapter) continue;
-            if (perm.saga_chapters_in_flight > 0) continue;  // a chapter ability is still on the stack
-            game_log("%s is sacrificed (final chapter completed).\n", entity_name(entity).c_str());
-            orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-            any_applied = true;
-        }
-
-        // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are
-        // removed, where N is the smaller of the two counts (122.3 annihilation).
-        for (auto entity : mEntities) {
-            if (!is_battlefield_permanent(entity)) continue;
-            int plus = get_counters(entity, "P1P1");
-            int minus = get_counters(entity, "M1M1");
-            int n = std::min(plus, minus);
-            if (n <= 0) continue;
-            add_counters(entity, "P1P1", -n);
-            add_counters(entity, "M1M1", -n);
-            game_log("%s: %d +1/+1 and %d -1/-1 counter(s) annihilate.\n",
-                     entity_name(entity).c_str(), n, n);
-            any_applied = true;
-        }
-
-        // 704.5j - legend rule: a player who controls two or more legendary permanents with
-        // the same name chooses one to keep; the rest go to their owners' graveyards. Affected
-        // players choose in APNAP order (active player first); one conflict is resolved per pass,
-        // then the SBA loop re-evaluates.
-        {
-            Zone::Ownership legend_order[2] = {active_seat(), opponent_of(active_seat())};
-            bool legend_applied = false;
-            for (Zone::Ownership owner : legend_order) {
-                if (legend_applied) break;
-                std::map<std::string, std::vector<Entity>> by_name;
-                for (auto entity : mEntities) {
-                    if (!is_battlefield_permanent(entity, owner)) continue;
-                    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                    if (!has_legendary_supertype(perm.types)) continue;
-                    by_name[perm.name].push_back(entity);
-                }
-                for (auto &grp : by_name) {
-                    if (grp.second.size() < 2) continue;
-                    std::vector<LegalAction> choices;
-                    for (auto e : grp.second) {
-                        LegalAction la(PASS_PRIORITY, e, "Keep " + entity_name(e));
-                        la.category = ActionCategory::KEEP_LEGEND;
-                        choices.push_back(la);
-                    }
-                    // Latched-answer site (tag SBE_LATCHED): the keep choice is a
-                    // loop-top pending decision. Re-finding is deterministic — the
-                    // legend check is the LAST check in the pass body, so suspending
-                    // here ≡ end-of-pass: on resume the re-run's earlier checks are
-                    // silent no-ops on the frozen state, legend_order re-derives from
-                    // the unchanged player_a_turn, the name-sorted by_name map yields
-                    // the same first conflict, and legend_applied still limits the
-                    // pass to that one conflict — so the key (owner + conflicting
-                    // name + menu size) provably re-derives.
-                    uint64_t key = pq_key(SbeSite::LEGEND_KEEP, owner == Zone::PLAYER_A,
-                                          std::hash<std::string>{}(grp.first), choices.size());
-                    int keep = -1;
-                    if (!pq_take_latched(key, &keep)) {
-                        game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
-                                 player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
-                        if (in_main_loop()) {
-                            // Park the choice (priority persisted at the chooser) and
-                            // suspend the whole SBE call; the triggers collected so far
-                            // wait in Game::waiting_triggers.
-                            pq_arm_sbe(key, std::move(choices), owner, /*decision_source=*/0);
-                            return;
-                        }
-                        // Blocking fallback for an SBE call outside the main loop.
-                        // Since the pregame gate (Batch 13) even the preplaced-preset
-                        // SBE pass runs inside the loop, so this is defensive only.
-                        // The controller of the duplicates chooses which to keep;
-                        // point priority at them so the query routes/observes/records
-                        // from their perspective (SBAs run regardless of who
-                        // currently holds priority).
-                        bool prev_priority = game.player_a_has_priority;
-                        game.player_a_has_priority = (owner == Zone::PLAYER_A);
-                        keep = InputLogger::instance().get_input(choices);
-                        game.player_a_has_priority = prev_priority;
-                    }
-                    Entity kept = grp.second[static_cast<size_t>(keep)];
-                    for (auto e : grp.second) {
-                        if (e == kept) continue;
-                        game_log("%s is put into the graveyard (legend rule)\n", entity_name(e).c_str());
-                        orderer->add_to_zone(false, e, Zone::GRAVEYARD);
-                    }
-                    any_applied = true;
-                    legend_applied = true;
-                    break;
-                }
-            }
-        }
-
-        if (!any_applied) break;
+        // CR 704.3: check every permanent against the same game state, then perform all the
+        // applicable actions together as a single event.
+        SbaActions actions;
+        find_permanent_sbas(game, mEntities, actions);
+        if (!choose_legend_rule_keep(game, mEntities, actions)) return;  // keep choice parked
+        if (actions.empty()) break;
+        perform_permanent_sbas(orderer, actions);
         // CR 514.3a: an SBA performed during the cleanup step gives players priority.
         if (game.cur_step == CLEANUP) game.cleanup_sba_performed = true;
     }
@@ -439,4 +260,187 @@ static bool check_player_losses(Game &game) {
                                             : (a_loses ? reason_a : reason_b);
     game.players_lose(a_loses, b_loses, reason);
     return true;
+}
+
+// An Aura (CardData::enchant_filter) attached to an illegal object or to nothing (CR 704.5m).
+// The structural part of "illegal": no attachment, the enchanted object has left the battlefield
+// / is no longer a creature (the common fall-off when the enchanted creature dies or is bounced),
+// or it enchants itself or is a creature (303.4d).
+static bool aura_attached_illegally(Game &game, Entity aura, const CardData &cd,
+                                    const Permanent &perm) {
+    // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
+    // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
+    // and its trigger has not yet returned+attached the creature. Its pending_aura_target
+    // entry is retained (see state_manager_statics.cpp) to mark this window — skip the
+    // unattached-aura check until the reanimation resolves and attaches it, for as long as
+    // that card is still a legal object for it (a card that left the graveyard in
+    // response is gone, and the aura goes to the graveyard, CR 704.5m).
+    if (game.pending_aura_target.count(aura)) {
+        if (pending_aura_target_legal(aura, perm.controller)) return false;
+        game.pending_aura_target.erase(aura);
+    }
+    Entity enchanted = perm.equipped_to;
+    if (enchanted == 0 || enchanted == aura || !is_battlefield_permanent(enchanted) ||
+        global_coordinator.entity_has_component<Creature>(aura))
+        return true;
+    return cd.enchant_filter.find("Creature") != std::string::npos &&
+           !global_coordinator.entity_has_component<Creature>(enchanted);
+}
+
+static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, SbaActions &out) {
+    for (Entity entity : entities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        const CardData *cd = global_coordinator.entity_has_component<CardData>(entity)
+                                 ? &global_coordinator.GetComponent<CardData>(entity)
+                                 : nullptr;
+        const std::string name = entity_name(entity);
+
+        if (global_coordinator.entity_has_component<Creature>(entity)) {
+            auto &creature = global_coordinator.GetComponent<Creature>(entity);
+            if (creature.toughness == 0) {
+                // 704.5f: a creature with toughness 0 or less is put into its owner's
+                // graveyard. This is NOT a destroy — indestructible does not prevent it.
+                out.put_into_graveyard(entity, name + " dies (zero toughness)");
+            } else if (global_coordinator.entity_has_component<Damage>(entity) &&
+                       !is_indestructible(entity)) {
+                // 704.5g/h: lethal-damage / deathtouch destruction. 702.12b: an
+                // indestructible creature ignores these state-based actions, so it is
+                // excluded above (it keeps its marked damage but is not destroyed).
+                auto &damage = global_coordinator.GetComponent<Damage>(entity);
+                // 702.2b: any nonzero damage from a deathtouch source is lethal.
+                // The flag is set only by nonzero damage actually dealt, marked or as -1/-1
+                // counters (wither/infect), so it alone decides.
+                if (damage.has_deathtouch_damage || damage.damage_counters >= creature.toughness)
+                    out.put_into_graveyard(entity, name + " is destroyed (lethal damage)");
+            }
+        }
+
+        // 704.5i - a planeswalker with 0 (or less) loyalty is put into its owner's graveyard
+        if (is_planeswalker(perm.types) && get_counters(entity, "LOYALTY") <= 0)
+            out.put_into_graveyard(entity, name + " dies (0 loyalty)");
+
+        // Attachments (Permanent::equipped_to, shared by Auras and Equipment):
+        // 704.5m - an Aura attached to an illegal object, or not attached to anything, is put
+        // into its owner's graveyard (aura_attached_illegally).
+        // 704.5n / 704.5p - an Equipment attached to a permanent it can't equip (not a creature,
+        // gone, itself, or the Equipment is a creature without reconfigure, 301.5c), and any
+        // other non-Aura permanent attached to something, becomes unattached and stays on the
+        // battlefield.
+        if (cd && !cd->enchant_filter.empty()) {
+            if (aura_attached_illegally(game, entity, *cd, perm))
+                out.put_into_graveyard(
+                    entity, name + " is put into the graveyard (Aura not attached to a legal object)");
+        } else if (perm.equipped_to != 0 &&
+                   !(cd && cd->is_equipment && equipment_can_equip(entity, perm.equipped_to))) {
+            out.unattach.push_back(entity);
+        }
+
+        // CR 714.4 - Saga sacrifice. A Saga whose lore counters are >= its final chapter number,
+        // and which isn't the source of a chapter ability that has triggered but not yet left the
+        // stack (tracked by Permanent::saga_chapters_in_flight), is sacrificed by its controller.
+        // This holds for a Saga that is also a creature (Summon: Bahamut) — the printed "Sacrifice
+        // after IV" / the script's chapter count governs, independent of its other types. Note: the
+        // checked-in CR 714.4 text has no creature-Saga exception, and both cards' Oracle text
+        // ("Sacrifice after III/IV") confirms the creature Saga is sacrificed, so they agree.
+        // Layer-6 ability removal: a Saga turned into a Mountain (Magus of the Moon,
+        // CR 305.7) is no longer a Saga — 714.4 doesn't sacrifice it, even at full lore.
+        if (cd && card_is_saga(*cd) && !perm.abilities_removed &&
+            get_counters(entity, "LORE") >= static_cast<int>(cd->saga_chapters.size()) &&
+            perm.saga_chapters_in_flight == 0)
+            out.put_into_graveyard(entity, name + " is sacrificed (final chapter completed).");
+
+        // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are
+        // removed, where N is the smaller of the two counts (122.3 annihilation).
+        int n = std::min(get_counters(entity, "P1P1"), get_counters(entity, "M1M1"));
+        if (n > 0) out.annihilate.emplace_back(entity, n);
+    }
+}
+
+static bool choose_legend_rule_keep(Game &game, const std::set<Entity> &entities,
+                                    SbaActions &out) {
+    // 704.5j - legend rule: a player who controls two or more legendary permanents with
+    // the same name chooses one to keep; the rest go to their owners' graveyards. Affected
+    // players choose in APNAP order (active player first). One conflict is chosen per check and
+    // performed with the check's other actions; the loop's next check finds any other conflict.
+    Zone::Ownership legend_order[2] = {active_seat(), opponent_of(active_seat())};
+    for (Zone::Ownership owner : legend_order) {
+        std::map<std::string, std::vector<Entity>> by_name;
+        for (auto entity : entities) {
+            if (!is_battlefield_permanent(entity, owner)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            if (!has_legendary_supertype(perm.types)) continue;
+            by_name[perm.name].push_back(entity);
+        }
+        for (auto &grp : by_name) {
+            if (grp.second.size() < 2) continue;
+            std::vector<LegalAction> choices;
+            for (auto e : grp.second) {
+                LegalAction la(PASS_PRIORITY, e, "Keep " + entity_name(e));
+                la.category = ActionCategory::KEEP_LEGEND;
+                choices.push_back(la);
+            }
+            // Latched-answer site (tag SBE_LATCHED): the keep choice is a loop-top pending
+            // decision, asked before any of this check's actions is performed. Re-finding is
+            // deterministic — on resume the re-run finds the same actions on the frozen state,
+            // legend_order re-derives from the unchanged player_a_turn, and the name-sorted
+            // by_name map yields the same first conflict — so the key (owner + conflicting name +
+            // menu size) provably re-derives.
+            uint64_t key = pq_key(SbeSite::LEGEND_KEEP, owner == Zone::PLAYER_A,
+                                  std::hash<std::string>{}(grp.first), choices.size());
+            int keep = -1;
+            if (!pq_take_latched(key, &keep)) {
+                game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
+                         player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
+                if (in_main_loop()) {
+                    // Park the choice (priority persisted at the chooser) and suspend the whole
+                    // SBE call; the triggers collected so far wait in Game::waiting_triggers.
+                    pq_arm_sbe(key, std::move(choices), owner, /*decision_source=*/0);
+                    return false;
+                }
+                // Blocking fallback for an SBE call outside the main loop.
+                // Since the pregame gate (Batch 13) even the preplaced-preset
+                // SBE pass runs inside the loop, so this is defensive only.
+                // The controller of the duplicates chooses which to keep;
+                // point priority at them so the query routes/observes/records
+                // from their perspective (SBAs run regardless of who
+                // currently holds priority).
+                bool prev_priority = game.player_a_has_priority;
+                game.player_a_has_priority = (owner == Zone::PLAYER_A);
+                keep = InputLogger::instance().get_input(choices);
+                game.player_a_has_priority = prev_priority;
+            }
+            Entity kept = grp.second[static_cast<size_t>(keep)];
+            for (auto e : grp.second)
+                if (e != kept)
+                    out.put_into_graveyard(
+                        e, entity_name(e) + " is put into the graveyard (legend rule)");
+            return true;
+        }
+    }
+    return true;
+}
+
+static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaActions &actions) {
+    auto moving = [&](Entity e) {
+        for (const auto &[m, line] : actions.to_graveyard)
+            if (m == e) return true;
+        return false;
+    };
+    for (auto [entity, n] : actions.annihilate) {
+        if (moving(entity)) continue;
+        add_counters(entity, "P1P1", -n);
+        add_counters(entity, "M1M1", -n);
+        game_log("%s: %d +1/+1 and %d -1/-1 counter(s) annihilate.\n",
+                 entity_name(entity).c_str(), n, n);
+    }
+    for (Entity entity : actions.unattach) {
+        if (moving(entity)) continue;
+        game_log("%s becomes unattached\n", entity_name(entity).c_str());
+        global_coordinator.GetComponent<Permanent>(entity).equipped_to = 0;
+    }
+    for (const auto &[entity, line] : actions.to_graveyard) {
+        game_log("%s\n", line.c_str());
+        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+    }
 }
