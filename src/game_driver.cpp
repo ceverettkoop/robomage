@@ -63,6 +63,7 @@ static void pregame_opening_actions(EcsSystems &sys);
 static int pregame_ask(std::vector<LegalAction> &actions);
 static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
+static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -288,8 +289,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // guard, game 2+ would refresh it from the already-sideboarded structs and
     // hand each player their opponent's entire board plan.
     if (match_game_number <= 0) {
-        deck_state_set_registered(Zone::PLAYER_A, deck_a);
-        deck_state_set_registered(Zone::PLAYER_B, deck_b);
+        deck_state_set_registered(Zone::PLAYER_A, deck_with_presets(deck_a, Zone::PLAYER_A));
+        deck_state_set_registered(Zone::PLAYER_B, deck_with_presets(deck_b, Zone::PLAYER_B));
     }
     // The LIVE list is each player's own current configuration, so it DOES track
     // the post-sideboard structs and is refreshed every game.
@@ -823,6 +824,22 @@ static void pregame_mull_bottom(EcsSystems &sys) {
     sys.orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     pg.bottom_remaining--;
     if (pg.bottom_remaining == 0) pg.stage = Game::PregameState::MULL_DECIDE;
+}
+
+// `deck` plus the cards a test-harness preset starts `owner` with outside the deck (battlefield,
+// graveyard and exile presets to the main deck, sideboard presets to the sideboard), so the
+// registered decklist the opponent's observation reveals against includes every card that player
+// actually has in the game.
+static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
+    bool a = owner == Zone::PLAYER_A;
+    Deck out = deck;
+    for (const auto *zone : {a ? &battlefield_a_cards : &battlefield_b_cards,
+                             a ? &graveyard_a_cards : &graveyard_b_cards,
+                             a ? &exile_a_cards : &exile_b_cards})
+        for (const auto &name : *zone) out.main_deck.push_back({1, name});
+    for (const auto &name : a ? sideboard_a_cards : sideboard_b_cards)
+        out.sideboard.push_back({1, name});
+    return out;
 }
 
 // Promptless fiat setup: test-harness presets, companions, and the preplaced-
