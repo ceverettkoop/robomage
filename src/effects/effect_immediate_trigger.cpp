@@ -15,26 +15,25 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static void queue_reflexive_trigger(const Ability &parent, const Ability &execute);
+
 namespace effects {
 
-// ImmediateTrigger ("when you do ...") is a reflexive trigger created mid-resolution of
-// its parent ability (Ajani's [0]: create a token, then if you control a red permanent
-// other than Ajani, deal damage). We resolve it inline: gate on the ConditionPresent$
-// filter, then run the Execute$ sub-ability (selecting a target if it needs one). Any
-// Cleanup sub-ability runs regardless so remembered objects are cleared. Returns
-// DONE_NO_SUBS so resolve() does not also chain the sub-abilities (we ran them here).
+// ImmediateTrigger ("when you do ...") creates a reflexive triggered ability mid-resolution of
+// its parent ability (Ajani's [0]: create a token; when you do, if you control a red permanent
+// other than Ajani, deal damage). Reflexive triggers follow the rules for delayed triggered
+// abilities (CR 603.12): the Execute$ ability triggers now if the ConditionPresent$ filter holds,
+// and is put on the stack the next time a player would receive priority, with its targets chosen
+// then (CR 603.3d) — so opponents can respond to it and Ward can counter it. The parent's own
+// SubAbility$ chain (a Cleanup clearing remembered objects) runs here, as part of the parent.
 //
 // An optional Cost$ (PayEnergy<N>) turns the trigger into a reflexive "you MAY pay {cost}.
-// When you do, [Execute]" ability (CR 603.2c, Guide of Souls). The cost is offered only when
-// the controller can actually pay it; on accept the cost is paid and the Execute chain runs,
-// on decline (or when it can't be paid) the reflexive effect is skipped.
+// When you do, [Execute]" ability (Guide of Souls). The cost is offered only when the
+// controller can actually pay it, and paid during the parent's resolution; on decline (or when
+// it can't be paid) nothing triggers.
 //
-// Suspendable (Batch 8): the fire decision (condition scan + energy yes/no) resolves once
-// into ImmediateRt — the scan is pure so re-running it before the energy answer latches is
-// identical, but it must never re-run after a sub mutates the board — and each sub resolves
-// as a persisted IMMEDIATE FrameLevel, its per-sub target selection on the shared
-// run_target_select machine (RESOLUTION asker, selection held on the persisted parent's
-// stored sub entry so a suspended pick survives).
+// Suspendable: the fire decision (condition scan + energy yes/no) resolves once into
+// ImmediateRt, and each parent-chain sub resolves as a persisted IMMEDIATE FrameLevel.
 HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     ImmediateRt local_rt;
     ImmediateRt &rt = ctx.can_suspend() ? ctx.rt<ImmediateRt>() : local_rt;
@@ -77,34 +76,12 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         rt.init = true;
     }
 
-    for (; rt.sub_idx < static_cast<int>(ab.subabilities.size());
-         ++rt.sub_idx, rt.tsel_done = false, rt.tsel = TargetSelectRT{}) {
+    for (; rt.sub_idx < static_cast<int>(ab.subabilities.size()); ++rt.sub_idx) {
         Ability &stored = ab.subabilities[static_cast<size_t>(rt.sub_idx)];
-        bool is_cleanup = (stored.category == "Cleanup");
-        if (!is_cleanup && !rt.fire) continue;  // condition not met: skip the reflexive effect
-        stored.source = ab.source;
-        stored.controller = ab.controller;
-        stored.targeted_player = ab.player_target_for_subs();
-        // The reflexive ability's targets are chosen as it would be put on the stack (CR
-        // 603.12, 603.3d) through the shared legality check — Guide of Souls' "target
-        // attacking creature" offers only attacking creatures, never a hexproof or shrouded
-        // opponent's creature. With no legal choice for a required target the sub resolves
-        // untargeted and is countered by its own target check (CR 608.2b). Selection runs on
-        // the STORED sub entry (the persisted parent), so a suspended pick resumes against
-        // the same in-flight ability; tsel_done gates it off once complete so a suspension
-        // inside the sub's own resolve never re-selects.
-        if (!is_cleanup && !rt.tsel_done && stored.valid_tgts != "N_A" &&
-            has_legal_targets(stored, orderer)) {
-            if (ctx.can_suspend()) {
-                ResolutionTargetAsker asker(ctx);
-                if (run_target_select(stored, rt.tsel, asker, orderer, ab.controller) ==
-                    TargetStatus::SUSPENDED)
-                    return HandlerResult::SUSPENDED;
-            } else {
-                select_target(stored, orderer, ab.controller);
-            }
+        if (stored.from_delayed_execute) {
+            if (rt.fire) queue_reflexive_trigger(ab, stored);
+            continue;
         }
-        rt.tsel_done = true;
         if (ctx.can_suspend()) {
             Ability *parent = &ab;
             auto bind = [parent](Ability &sub) {
@@ -116,6 +93,8 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
                 return HandlerResult::SUSPENDED;
         } else {
             Ability sub = stored;
+            sub.source = ab.source;
+            sub.controller = ab.controller;
             sub.resolve(orderer);
         }
     }
@@ -123,3 +102,15 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
 }
 
 }  // namespace effects
+
+// The Execute$ ability of `parent` as the reflexive triggered ability it creates: controlled by
+// the parent's controller, with the parent's source (CR 603.12, 603.7d), queued for the next
+// trigger placement.
+static void queue_reflexive_trigger(const Ability &parent, const Ability &execute) {
+    Ability reflexive = execute;
+    reflexive.from_delayed_execute = false;
+    reflexive.source = parent.source;
+    reflexive.controller = parent.controller;
+    reflexive.targeted_player = parent.player_target_for_subs();
+    cur_game.queue_trigger(reflexive, entity_name(parent.source) + " reflexive trigger");
+}

@@ -180,9 +180,7 @@ struct RepeatRt {
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
     bool fire = false;            // reflexive effect fires (condition met, cost paid)
-    int sub_idx = 0;              // next Execute/Cleanup sub-ability
-    bool tsel_done = false;       // current sub's target selection completed
-    TargetSelectRT tsel;          // current sub's in-flight target selection
+    int sub_idx = 0;              // next sub-ability of the parent chain (Cleanup)
 };
 // ── Batch 10: spell copies (CR 707.10 / 707.12) ─────────────────────────────
 // The resumable form of copy-a-spell-on-stack (effect_copy_spell.cpp), shared
