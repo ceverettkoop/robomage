@@ -36,11 +36,37 @@ static bool count_intervening_condition(const std::string &expr, Zone::Ownership
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer);
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
                                         Zone::Ownership priority_player,
-                                        std::shared_ptr<Orderer> orderer, bool stack_empty);
+                                        std::shared_ptr<Orderer> orderer, bool sorcery_window);
 static std::string loyalty_cost_label(const Ability &ab);
 static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer);
+static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty);
+static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window);
+
+// The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
+// stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
+// ability (CR 606.3) or any "activate only as a sorcery" ability, and the companion special
+// action (CR 702.139a) all wait for it.
+static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty) {
+    return stack_empty && (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+           game.player_a_turn == (seat == Zone::PLAYER_A);
+}
+
+// May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
+// 307.1)? An instant, a Flash card, or a spell a cast-with-flash permission covers (Teferi, Time
+// Raveler's +1, CR 702.8) may be cast any time its caster holds priority; any other spell only in
+// the caster's sorcery window. An opponent's sorcery-speed lock (Teferi's static "each opponent can
+// cast spells only any time they could cast a sorcery") overrides both, so under it every spell —
+// even an instant, or one the caster's own permission grants flash — waits for the sorcery window.
+// Every cast-offering path shares this one rule: hand, split / modal DFC back face, flashback,
+// escape, the graveyard and exile cast permissions, and the suspend special action.
+static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window) {
+    if (sorcery_window) return true;
+    if (rules_mod::opponent_sorcery_speed_locked(caster)) return false;
+    return card_has_type(face, "Instant") || card_has_keyword(face, "Flash") ||
+           rules_mod::cast_with_flash_active(caster, face);
+}
 
 // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
 // cast-offering path — hand, modal back face, flashback, escape, a cast-from-graveyard
@@ -448,9 +474,9 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 // main hand loop, and the LAND-back case is offered there as a PLAY_LAND; only the nonland-back
 // CAST is added here. Kept in its own hand pass so a prohibition/`continue` on the front face
 // doesn't suppress the back-face option (the two faces are cast independently).
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
                                         Zone::Ownership priority_player,
-                                        std::shared_ptr<Orderer> orderer, bool stack_empty) {
+                                        std::shared_ptr<Orderer> orderer, bool sorcery_window) {
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &front = global_coordinator.GetComponent<CardData>(card_entity);
@@ -460,16 +486,8 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
         const CardData &back = *front.backside;
         if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
 
-        // Timing: an instant (or Flash) back may be cast anytime the player has priority; any
-        // other back face is sorcery-speed (your main phase, empty stack).
-        bool is_instant = card_has_type(back, "Instant");
-        if (!is_instant)
-            for (const auto &kw : back.keywords)
-                if (kw == "Flash") { is_instant = true; break; }
-        bool can_cast_now = is_instant ||
-            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
+        // Timing is the back face's own (Gone is an instant), under the shared rule.
+        if (!spell_timing_ok(back, priority_player, sorcery_window)) continue;
 
         // Spell-target legality (mirrors the front-face checks).
         bool tgt_ok = true;
@@ -507,6 +525,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // Determine whose turn/priority it is
     Zone::Ownership priority_player = priority_seat();
     Entity priority_player_entity = get_player_entity(priority_player);
+    bool stack_empty = stack_manager->is_empty();
+    bool sorcery_window = sorcery_timing_ok(game, priority_player, stack_empty);
 
     // Graveyard / exile cards the priority player has some play route for (the shared
     // card_play_permission predicate, which ignores timing and cost), in ascending entity
@@ -524,9 +544,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     actions.push_back(la);
 
     // LAND FROM HAND — requires empty stack (sorcery-speed)
-    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
-        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
+    if (sorcery_window && global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         // Effective land play allowance (base 1 + AdjustLandPlays statics) minus the
         // lands already played, through the shared rules_mod expression the ML
         // observation's mana-development block reports.
@@ -566,9 +584,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // and the deckbuilding-restriction gate were resolved at game start (setup_companions); here we
     // only offer the special action while the companion is still in the sideboard, it hasn't been
     // used yet, and {3} is affordable. Mirrors the play-land special action's timing gate.
-    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
-        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
+    if (sorcery_window && global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
         Entity comp = player.chosen_companion;
         if (comp != 0 && !player.companion_brought_to_hand &&
@@ -590,44 +606,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
     // checking for spells to cast from hand
     // TODO spells cast from elsewhere
-    bool stack_empty = stack_manager->is_empty();
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        bool is_instant = false;
-        bool is_land = false;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE) {
-                if (type.name == "Instant") {
-                    is_instant = true;
-                } else if (type.name == "Land") {
-                    is_land = true;  // can't cast land
-                    break;
-                }
-            }
-        }
-        if (is_land) continue;
-        // Flash keyword grants instant-speed casting
-        if (!is_instant) {
-            for (const auto &kw : card_data.keywords) {
-                if (kw == "Flash") { is_instant = true; break; }
-            }
-        }
-        // Timing restrictions. The sorcery-speed window is the caster's own main phase with an
-        // empty stack (CR 307.1 / 601.3a). A card is castable at instant speed if it is inherently
-        // an instant/flash OR a cast-with-flash permission (Teferi, Time Raveler's +1) covers it —
-        // BUT an opponent sorcery-speed lock (Teferi's static "each opponent can cast spells only
-        // any time they could cast a sorcery") overrides both, forcing the sorcery-speed window for
-        // every spell this caster casts. Order matters: apply the flash permission first, then let
-        // the lock veto it (a player under the lock can't use their own flash-granting either).
-        bool sorcery_window = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                              (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        bool effective_instant = is_instant;
-        if (!effective_instant && rules_mod::cast_with_flash_active(priority_player, card_data))
-            effective_instant = true;
-        if (rules_mod::opponent_sorcery_speed_locked(priority_player))
-            effective_instant = false;
-        bool can_cast_now = effective_instant || sorcery_window;
+        if (card_has_type(card_data, "Land")) continue;  // can't cast land
+        bool can_cast_now = spell_timing_ok(card_data, priority_player, sorcery_window);
         // Check that at least one legal target exists for any targeting requirement. A
         // ConditionPresent$ "if ..." clause is checked only at resolution (CR 608.2c), so it never
         // gates the cast.
@@ -771,27 +754,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
     // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
     // cast and the land-back PLAY_LAND were handled in the hand loop above).
-    offer_modal_back_face_casts(actions, game, priority_player, orderer, stack_empty);
+    offer_modal_back_face_casts(actions, priority_player, orderer, sorcery_window);
     // checking graveyard for flashback spells (the FLASHBACK route)
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::FLASHBACK)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
 
-        bool is_instant = false;
-        for (auto &type : gcd.types) {
-            if (type.kind == TYPE && type.name == "Instant") { is_instant = true; break; }
-        }
-        // Teferi, Time Raveler's opponent sorcery-speed lock forces even a flashback instant to
-        // sorcery-speed timing (CR 601.3a).
-        if (is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) is_instant = false;
-        bool can_cast_now = false;
-        if (is_instant) {
-            can_cast_now = true;
-        } else {
-            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
-        if (!can_cast_now) continue;
+        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
 
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
@@ -841,13 +810,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!(routes & CardPlayPermission::ESCAPE)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
 
-        bool esc_is_instant = card_has_type(gcd, "Instant");
-        // Teferi opponent sorcery-speed lock: even an escape instant is sorcery-timed (CR 601.3a).
-        if (esc_is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) esc_is_instant = false;
-        bool can_cast_now = esc_is_instant ||
-                            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
+        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
 
         // Spell-target legality (Nethergoyf has none, but keep general for future escape cards).
         bool tgt_ok = true;
@@ -900,17 +863,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!(routes & CardPlayPermission::GRAVEYARD_CAST)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
 
-        // Flash / instant cards may be cast anytime; everything else is sorcery-speed.
-        bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
-        for (const auto &kw : gcd.keywords)
-            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
-        // Teferi opponent sorcery-speed lock: a granted graveyard cast is sorcery-timed (CR 601.3a).
-        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
-            can_cast_at_instant_speed = false;
-        bool can_cast_now = can_cast_at_instant_speed ||
-            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
+        if (!spell_timing_ok(gcd, priority_player, sorcery_window)) continue;
 
         // Any targeting requirement must have at least one legal target.
         bool tgt_ok = true;
@@ -946,17 +899,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         const auto &perm_grant = cur_game.impulse_cast_permission.at(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
-        bool main_phase_window =
-            (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-
         // A LAND among the exiled cards: only a NORMAL "play" permission (Light Up the Stage's
         // "you may PLAY those cards") may play it — a land play, sorcery-timing, own main phase,
         // empty stack, and a land drop remaining (CR 305.2 / 601.3e). A free/energy/life "cast"
         // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), and card_play_permission
         // reports no route for a land under one.
         if (is_land_card(ecd)) {
-            if (!main_phase_window) continue;
+            if (!sorcery_window) continue;
             // Same shared land-drop expression the hand loop above uses.
             if (rules_mod::land_drops_remaining(priority_player) <= 0) continue;
             LegalAction land_la(SPECIAL_ACTION, ex_entity, "Play " + ecd.name + " (from exile)");
@@ -965,14 +914,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
         }
 
-        // Timing: instants / Flash cards anytime; everything else sorcery-speed.
-        bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
-        for (const auto &kw : ecd.keywords)
-            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
-        // Teferi opponent sorcery-speed lock: an impulse cast is sorcery-timed (CR 601.3a).
-        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
-            can_cast_at_instant_speed = false;
-        bool can_cast_now = can_cast_at_instant_speed || main_phase_window;
+        bool can_cast_now = spell_timing_ok(ecd, priority_player, sorcery_window);
         // A suspend free cast (CR 702.62a) is made as an effect of resolving the last-time-counter
         // triggered ability during the caster's own upkeep, so it ignores the card's normal
         // sorcery/instant timing — offer it at any priority window this caster holds (until the
@@ -1051,12 +993,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!is_battlefield_permanent(entity, priority_player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
 
-        // Sorcery-speed window: controller's main phase with an empty stack. Gates both the
-        // Equip ability and planeswalker loyalty abilities (606.3), so it is computed once.
-        bool sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                             (game.player_a_turn == game.player_a_has_priority) &&
-                             stack_manager->is_empty();
-
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
@@ -1067,7 +1003,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // so synthesise the action here when there is a creature to equip and the cost is payable.
         if (global_coordinator.entity_has_component<CardData>(entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (cd.is_equipment && sorcery_speed) {
+            if (cd.is_equipment && sorcery_window) {
                 bool has_creature = !equip_candidates(entity, priority_player, orderer->mEntities).empty();
                 if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
                     Ability equip_ab;
@@ -1117,7 +1053,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
             // is legal — may go to exactly 0 and die to the SBA).
             if (ab.is_loyalty_ability) {
-                if (!sorcery_speed) continue;
+                if (!sorcery_window) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
                 // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
@@ -1126,7 +1062,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
             // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
             // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
-            if (ab.sorcery_speed_only && !sorcery_speed) continue;
+            if (ab.sorcery_speed_only && !sorcery_window) continue;
             // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
             // illegal unless the controller meets the named condition. (Mana abilities take the
             // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
@@ -1239,8 +1175,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // Such abilities are activated from the graveyard at sorcery speed (controller's main phase,
     // empty stack, holding priority) and return the card to the battlefield.
     {
-        bool gy_sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                                (game.player_a_turn == game.player_a_has_priority) && stack_empty;
         for (auto card_entity : orderer->get_graveyard(priority_player)) {
             if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
             auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
@@ -1249,7 +1183,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 ++gy_ability_index;
                 if (ab.ability_type != Ability::ACTIVATED) continue;
                 if (ab.activation_zone != Zone::GRAVEYARD) continue;
-                if (ab.sorcery_speed_only && !gy_sorcery_speed) continue;
+                if (ab.sorcery_speed_only && !sorcery_window) continue;
                 ManaValue gy_cost = effective_activation_mana_cost(ab, priority_player, orderer);
                 if (!gy_cost.empty() && !can_pay_mana(priority_player, gy_cost, card_entity, orderer)) continue;
                 // Target-existence gate (CR 601.2c), stamped like the hand loop above — today's

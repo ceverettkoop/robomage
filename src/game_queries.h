@@ -34,6 +34,13 @@ inline bool card_has_type(const CardData &cd, const std::string &type_name) {
     return false;
 }
 
+// True if the card's printed keywords include `keyword`, e.g. "Flash".
+inline bool card_has_keyword(const CardData &cd, const std::string &keyword) {
+    for (const auto &kw : cd.keywords)
+        if (kw == keyword) return true;
+    return false;
+}
+
 // True if the permanent carries a type/subtype whose name matches `type_name`
 // (any kind — top-level type, supertype, or subtype). Used by effects that scan a
 // permanent's type line (Amass's Army check, sacrifice's SacValid$ filter).
