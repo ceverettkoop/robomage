@@ -664,13 +664,11 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // decking out. Scan the drawing player's battlefield permanents for the replacement.
         for (auto e : mEntities) {
             if (!is_battlefield_permanent(e, player)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            const auto &cd = global_coordinator.GetComponent<CardData>(e);
             bool has_win = false;
-            for (const auto &r : cd.replacement_effects)
+            for (const auto &r : permanent_replacement_effects(e))
                 if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
             if (!has_win) continue;
-            cur_game.end_game(player, cd.name);
+            cur_game.end_game(player, global_coordinator.GetComponent<Permanent>(e).name);
             return;
         }
 

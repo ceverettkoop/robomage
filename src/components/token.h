@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "ability.h"
+#include "effect.h"
 #include "static_ability.h"
 #include "types.h"
 #include "zone.h"
@@ -26,6 +27,9 @@ struct Token {
     // Construct token's "This creature gets +1/+1 for each artifact you control."). Copied onto
     // the Permanent at bootstrap so gather_active_statics applies them like a real card's statics.
     std::vector<StaticAbility> static_abilities;
+    // Replacement effects (R: lines) of the card a token copy copied (CR 707.2 copiable values);
+    // generated while the token is on the battlefield, like a card's. Empty for a scripted token.
+    std::vector<Effect::Replacement> replacement_effects;
     std::vector<std::string> keywords; // informational; copied to Creature on creation
     uint32_t power = 0;
     uint32_t toughness = 0;

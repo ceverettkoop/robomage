@@ -85,6 +85,17 @@ inline const CardData &active_face(Entity e, const CardData &cd) {
     return cd;
 }
 
+// The replacement effects permanent `e` generates (CR 614): those of a card's face that's up
+// (CR 712.8e), or a token's (a token copy has the copied card's, CR 707.2). Empty otherwise.
+inline const std::vector<Effect::Replacement> &permanent_replacement_effects(Entity e) {
+    static const std::vector<Effect::Replacement> none;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return active_face(e, global_coordinator.GetComponent<CardData>(e)).replacement_effects;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).replacement_effects;
+    return none;
+}
+
 // The face a card will have on the battlefield as it enters (CR 614.12 / 712.14a): its back face
 // when it is entering transformed (Game::pending_enters_transformed, a modal back face played or
 // a card returned transformed) or is already a transformed permanent, else its front. Replacement
@@ -981,9 +992,8 @@ inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &
                                      ? global_coordinator.GetComponent<Spell>(spell).caster
                                      : Zone::UNKNOWN;
     for (auto e : battlefield_permanents(entities)) {
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         Zone::Ownership perm_ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
-        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects) {
+        for (const auto &r : permanent_replacement_effects(e)) {
             if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) continue;
             // Controller scope is read from the spell's caster (the matcher can't read it for a
             // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.

@@ -22,7 +22,7 @@ namespace effects {
 // Builds the Token characteristics for a copy of permanent `src` from its copiable values
 // (CR 707.2): a token source's own Token component; a nontoken permanent's printed card, on the
 // face it shows (CR 712.8e) — name, types, colors, mana value, P/T, keywords, and its triggered,
-// activated and static abilities. Counters, pumps and type- or ability-changing effects are not
+// activated and static abilities and replacement effects. Counters, pumps and type- or ability-changing effects are not
 // copiable, so the live Permanent / Creature state is not read.
 static Token copyable_token_of(Entity src) {
     if (global_coordinator.entity_has_component<Token>(src))
@@ -42,6 +42,7 @@ static Token copyable_token_of(Entity src) {
     tok.keywords = face.keywords;
     tok.abilities = face.abilities;
     tok.static_abilities = face.static_abilities;
+    tok.replacement_effects = face.replacement_effects;
     return tok;
 }
 

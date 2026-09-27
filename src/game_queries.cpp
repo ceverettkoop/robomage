@@ -1015,9 +1015,8 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
 bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities) {
     if (cur_game.cant_counter_spells_of.count(player) > 0) return true;
     for (auto e : battlefield_permanents(entities)) {
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
-        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects)
+        for (const auto &r : permanent_replacement_effects(e))
             if (unfiltered_counter_protection_covers(r, ctrl, player)) return true;
     }
     return false;
