@@ -38,19 +38,19 @@
 #include "orderer.h"
 
 // Rebuilt from scratch by gather_active_statics on every SBE pass; its ActiveStatic
-// entries hold raw pointers into component arrays, so it can be left holding stale
-// pointers across a snapshot restore (the ECS component storage moves). That is
-// safe for restores: the post-restore hook recomputes it before any reader. It is
-// deliberately NOT part of the game snapshot. But it is NOT safe across a bo3 game
-// boundary: the per-game init_ecs() destroys the previous game's components without
-// touching this registry, and the mulligan-decision observation reads it (via
-// rules_mod::land_drops_remaining in populate_gamestate) BEFORE the first SBE pass
-// of the new game rebuilds it — so StateManager::init() must clear it.
+// entries are (source, static index) handles resolved at read time, so a snapshot
+// restore can leave it describing the previous simulation's statics. That is safe for
+// restores: the post-restore hook recomputes it before any reader. It is deliberately
+// NOT part of the game snapshot. Across a bo3 game boundary the per-game init_ecs()
+// destroys the previous game's components and entity ids are reissued, and the
+// mulligan-decision observation reads it (via rules_mod::land_drops_remaining in
+// populate_gamestate) BEFORE the first SBE pass of the new game rebuilds it — so
+// StateManager::init() must clear it.
 std::vector<ActiveStatic> g_active_statics;
 
 void StateManager::init() {
-    // Drop the previous game's registry: its sa pointers dangle into component
-    // storage the ECS reset just destroyed (see the comment on g_active_statics).
+    // Drop the previous game's registry: its handles name entities the ECS reset just
+    // destroyed (see the comment on g_active_statics).
     g_active_statics.clear();
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
@@ -106,10 +106,10 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
         int max_hand_size = 7;
         bool unlimited = false;
         for (const auto &as : g_active_statics) {
-            if (as.suppressed || !as.condition_met || !as.sa) continue;
-            if (as.controller != active_player || as.sa->set_max_hand_size == 0) continue;
-            if (as.sa->set_max_hand_size < 0) { unlimited = true; break; }
-            if (as.sa->set_max_hand_size > max_hand_size) max_hand_size = as.sa->set_max_hand_size;
+            if (as.suppressed || !as.condition_met) continue;
+            if (as.controller != active_player || as.sa()->set_max_hand_size == 0) continue;
+            if (as.sa()->set_max_hand_size < 0) { unlimited = true; break; }
+            if (as.sa()->set_max_hand_size > max_hand_size) max_hand_size = as.sa()->set_max_hand_size;
         }
         if (!unlimited && hand_size > static_cast<size_t>(max_hand_size)) {
             game.pending_choice = CLEANUP_DISCARD;

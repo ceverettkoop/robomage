@@ -45,8 +45,8 @@ static std::string activation_source_name(Entity source) {
 bool mana_activation_prohibited(Entity permanent_entity) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
-        if (cant_activate_filter_matches(permanent_entity, as.sa->cant_activate_card_filter, as.controller))
+        if (as.sa()->category != "CantBeActivated" || as.sa()->cant_activate_card_filter.empty()) continue;
+        if (cant_activate_filter_matches(permanent_entity, as.sa()->cant_activate_card_filter, as.controller))
             return true;
     }
     return false;
@@ -56,8 +56,8 @@ bool activation_prohibited(Entity source) {
     bool is_permanent = global_coordinator.entity_has_component<Permanent>(source);
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "CantBeActivated") continue;
-        if (as.sa->match_named_card) {
+        if (as.sa()->category != "CantBeActivated") continue;
+        if (as.sa()->match_named_card) {
             // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name,
             // in whatever zone the ability is activated from
             if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
@@ -65,7 +65,7 @@ bool activation_prohibited(Entity source) {
             if (!src.chosen_name.empty() && src.chosen_name == activation_source_name(source))
                 return true;
         } else if (is_permanent &&
-                   cant_activate_filter_matches(source, as.sa->cant_activate_card_filter,
+                   cant_activate_filter_matches(source, as.sa()->cant_activate_card_filter,
                                                 as.controller)) {
             // A type filter ("Artifact", "Artifact.OppCtrl") names permanents (CR 109.2), so it
             // never reaches a card activated from the hand or graveyard.
@@ -79,39 +79,39 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
     bool card_is_creature = is_creature_card(card);
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "CantBeCast") continue;
+        if (as.sa()->category != "CantBeCast") continue;
         // Creatures are unaffected by a nonCreature restriction.
-        if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
+        if (as.sa()->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
             continue;
         // Origin$ Graveyard,Library (Grafdigger's Cage): only spells cast from those zones are
         // prohibited. A spell cast from any other zone (e.g. the hand) is unaffected by this
         // static; when neither origin flag is set the restriction is zone-agnostic.
-        if (as.sa->cant_cast_from_graveyard || as.sa->cant_cast_from_library) {
+        if (as.sa()->cant_cast_from_graveyard || as.sa()->cant_cast_from_library) {
             bool origin_restricted =
-                (cast_from == Zone::GRAVEYARD && as.sa->cant_cast_from_graveyard) ||
-                (cast_from == Zone::LIBRARY && as.sa->cant_cast_from_library);
+                (cast_from == Zone::GRAVEYARD && as.sa()->cant_cast_from_graveyard) ||
+                (cast_from == Zone::LIBRARY && as.sa()->cant_cast_from_library);
             if (!origin_restricted) continue;
             return true;
         }
         // Caster$ Opponent (Voice of Victory): the controller's opponents can't cast spells.
         // condition_met (e.g. Condition$ PlayerTurn) gates when the static is live; an
         // unconditional opponent-lock has condition_met == true already.
-        if (as.sa->cant_cast_by_opponent) {
+        if (as.sa()->cant_cast_by_opponent) {
             // OnlySorcerySpeed$ (Teferi, Time Raveler) is a TIMING restriction, NOT a blanket
             // "can't cast at all" — it does not prohibit the cast here; the cast-speed gate
             // enforces it via opponent_sorcery_speed_locked. Skip it in this prohibition scan.
-            if (as.sa->only_sorcery_speed) continue;
+            if (as.sa()->only_sorcery_speed) continue;
             if (!as.condition_met) continue;
             if (caster != as.controller) {  // caster is an opponent of the source
                 // Lavinia, Azorius Renegade: cmcGT$ Land is a DYNAMIC bound — the opponent can't
                 // cast a spell matching ValidCard$ (noncreature nonland) whose mana value exceeds
                 // the number of lands THEY control (CR 601.3e; the bound is the caster's land
                 // count at cast-legality time). Count via the shared battlefield accessor.
-                if (as.sa->cant_cast_cmc_gt_land) {
+                if (as.sa()->cant_cast_cmc_gt_land) {
                     MatchCtx ctx;
                     ctx.controller = caster;  // "you" reference for the ValidCard$ filter
-                    if (!as.sa->cant_cast_filter.empty() &&
-                        !card_matches_filter(card, as.sa->cant_cast_filter, ctx))
+                    if (!as.sa()->cant_cast_filter.empty() &&
+                        !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
                         continue;  // creature / land spells are unaffected
                     int land_count = count_battlefield_matching("Land.YouCtrl", caster, 0);
                     if (card_mana_value(card) > land_count) return true;
@@ -121,10 +121,10 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
             }
             continue;
         }
-        if (as.sa->cant_cast_limit_per_turn > 0) {
+        if (as.sa()->cant_cast_limit_per_turn > 0) {
             auto &pp = global_coordinator.GetComponent<Player>(get_player_entity(caster));
             if (static_cast<int>(pp.noncreature_spells_cast_this_turn) >=
-                as.sa->cant_cast_limit_per_turn)
+                as.sa()->cant_cast_limit_per_turn)
                 return true;
             continue;
         }
@@ -135,11 +135,11 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         // qualifier (hasXCost). Reached only by statics that aren't one of the special-cased forms
         // above, so it never double-applies to an origin/opponent/per-turn static. Applies to all
         // casters (Gaddock Teeg's lock is symmetric, CR 614/611 continuous prohibition).
-        if (!as.sa->cant_cast_filter.empty()) {
+        if (!as.sa()->cant_cast_filter.empty()) {
             MatchCtx ctx;
             ctx.controller = caster;
-            extract_static_cmc_bound(as.sa->cant_cast_filter, ctx);
-            if (card_matches_filter(card, as.sa->cant_cast_filter, ctx)) return true;
+            extract_static_cmc_bound(as.sa()->cant_cast_filter, ctx);
+            if (card_matches_filter(card, as.sa()->cant_cast_filter, ctx)) return true;
         }
     }
     return false;
@@ -148,12 +148,12 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
 bool opponent_sorcery_speed_locked(Zone::Ownership caster) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "CantBeCast" || !as.sa->only_sorcery_speed) continue;
+        if (as.sa()->category != "CantBeCast" || !as.sa()->only_sorcery_speed) continue;
         if (!as.condition_met) continue;
         // Teferi, Time Raveler: the lock applies to the source controller's opponents. Reuses the
         // same Caster$ Opponent CantBeCast path a cmc/land-count opponent restriction (Lavinia)
         // would key on.
-        if (as.sa->cant_cast_by_opponent && caster != as.controller) return true;
+        if (as.sa()->cant_cast_by_opponent && caster != as.controller) return true;
     }
     return false;
 }
@@ -175,8 +175,8 @@ bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
 bool attack_prohibited(Entity creature_entity) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "CantAttack") continue;
-        if (as.sa->cant_attack_filter.empty()) continue;  // targeted / unhandled "can't attack you" form
+        if (as.sa()->category != "CantAttack") continue;
+        if (as.sa()->cant_attack_filter.empty()) continue;  // targeted / unhandled "can't attack you" form
         if (!as.condition_met) continue;                  // gated statics (IsPresent$, etc.)
         MatchCtx ctx;
         ctx.controller = as.controller;  // "you" reference for any YouCtrl/OppCtrl in the filter
@@ -184,9 +184,9 @@ bool attack_prohibited(Entity creature_entity) {
         // Resolve a dynamic X (Ensnaring Bridge: hand size) against the static's controller, so
         // "your hand" is the source controller's hand — the threshold is the same for every
         // creature, matching the card (it affects all creatures vs. its controller's hand).
-        if (!as.sa->cant_attack_x_svar.empty())
-            ctx.x_bound = evaluate_sa_svar(as.sa->cant_attack_x_svar, as.controller, as.entity);
-        if (permanent_matches_filter(creature_entity, as.sa->cant_attack_filter, ctx)) return true;
+        if (!as.sa()->cant_attack_x_svar.empty())
+            ctx.x_bound = evaluate_sa_svar(as.sa()->cant_attack_x_svar, as.controller, as.entity);
+        if (permanent_matches_filter(creature_entity, as.sa()->cant_attack_filter, ctx)) return true;
     }
     return false;
 }
@@ -196,7 +196,7 @@ int land_play_bonus(Zone::Ownership player) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.controller != player) continue;
-        if (as.sa->adjust_land_plays > 0) bonus += as.sa->adjust_land_plays;
+        if (as.sa()->adjust_land_plays > 0) bonus += as.sa()->adjust_land_plays;
     }
     return bonus;
 }
@@ -218,7 +218,7 @@ bool may_play_lands_from_graveyard(Zone::Ownership player) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.controller != player) continue;
-        if (as.sa->may_play_from_graveyard) return true;
+        if (as.sa()->may_play_from_graveyard) return true;
     }
     return false;
 }
@@ -226,11 +226,11 @@ bool may_play_lands_from_graveyard(Zone::Ownership player) {
 bool etb_triggers_suppressed(Entity entering) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->category != "DisableTriggers") continue;
+        if (as.sa()->category != "DisableTriggers") continue;
         if (entering != 0 && global_coordinator.entity_has_component<CardData>(entering)) {
             auto &ecd = global_coordinator.GetComponent<CardData>(entering);
             for (auto &t : ecd.types)
-                if (as.sa->disable_triggers_cause.find(t.name) != std::string::npos) return true;
+                if (as.sa()->disable_triggers_cause.find(t.name) != std::string::npos) return true;
         }
     }
     return false;

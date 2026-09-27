@@ -24,12 +24,23 @@ class StackManager;
 // Rebuilt each SBE pass by gather_active_statics() (the continuous-effects engine
 // preamble); queried by determine_legal_actions, check_triggered_abilities,
 // mana_system, game.cpp untap, etc.
+//
+// The static itself is held as a handle — its source (a battlefield permanent, or an emblem
+// index) plus its position in that source's static list — and resolved by sa() at every read,
+// never as a pointer into component storage: a Permanent removed or added between gathers
+// moves other permanents' components (the component array's swap-remove), and a new emblem can
+// reallocate Game::emblems. A static whose source has left the battlefield (or phased out)
+// since the gather resolves to an inert, empty StaticAbility, so its effect stops at once
+// (CR 611.3b: a static ability's effect applies only while its source is on the battlefield).
 struct ActiveStatic {
-    Entity            entity = 0;
-    StaticAbility    *sa = nullptr;
+    Entity            entity = 0;              // source permanent (0 for an emblem)
+    int               emblem = -1;             // index into Game::emblems when the source is an emblem
+    size_t            index = 0;               // position in the source's static list
     Zone::Ownership   controller = Zone::PLAYER_A;
     bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
     bool              suppressed = false;     // an ability-removal effect (Humility) removed this static's source's abilities; every layer applier skips it
+
+    StaticAbility *sa() const;
 };
 
 // Global cached list of active static abilities on battlefield permanents.
