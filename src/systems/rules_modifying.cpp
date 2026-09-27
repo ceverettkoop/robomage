@@ -13,6 +13,10 @@
 
 namespace rules_mod {
 
+static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
+                                         Zone::Ownership source_controller);
+static std::string activation_source_name(Entity source);
+
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
 // Conqueror, or "Artifact.OppCtrl" for Karn, the Great Creator)? Routed through the shared
@@ -27,6 +31,17 @@ static bool cant_activate_filter_matches(Entity permanent_entity, const std::str
     return permanent_matches_any(permanent_entity, filter, ctx);
 }
 
+// The name a NamedCard CantBeActivated static (Pithing Needle, Disruptor Flute) compares against
+// its chosen name: a permanent's current name, or the name of a card in another zone (a channel
+// land in hand, CR 201.2). Empty for an object with neither.
+static std::string activation_source_name(Entity source) {
+    if (global_coordinator.entity_has_component<Permanent>(source))
+        return global_coordinator.GetComponent<Permanent>(source).name;
+    if (global_coordinator.entity_has_component<CardData>(source))
+        return global_coordinator.GetComponent<CardData>(source).name;
+    return "";
+}
+
 bool mana_activation_prohibited(Entity permanent_entity) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
@@ -37,18 +52,23 @@ bool mana_activation_prohibited(Entity permanent_entity) {
     return false;
 }
 
-bool activation_prohibited(Entity permanent_entity) {
-    auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+bool activation_prohibited(Entity source) {
+    bool is_permanent = global_coordinator.entity_has_component<Permanent>(source);
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeActivated") continue;
         if (as.sa->match_named_card) {
-            // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name
+            // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name,
+            // in whatever zone the ability is activated from
             if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
             auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
-            if (!src.chosen_name.empty() && src.chosen_name == permanent.name) return true;
-        } else if (cant_activate_filter_matches(permanent_entity, as.sa->cant_activate_card_filter,
+            if (!src.chosen_name.empty() && src.chosen_name == activation_source_name(source))
+                return true;
+        } else if (is_permanent &&
+                   cant_activate_filter_matches(source, as.sa->cant_activate_card_filter,
                                                 as.controller)) {
+            // A type filter ("Artifact", "Artifact.OppCtrl") names permanents (CR 109.2), so it
+            // never reaches a card activated from the hand or graveyard.
             return true;
         }
     }

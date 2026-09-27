@@ -1204,6 +1204,21 @@ inline bool activation_condition_met(const Ability &ab, Zone::Ownership controll
     return false;
 }
 
+// The state `source` must be in for `controller` to activate its ability `ab` (CR 602.5): the
+// Activation$ condition holds, a {T} in the cost finds an untapped permanent free of summoning
+// sickness (CR 302.6), and the per-turn activation limit isn't reached. Shared by the mana-source
+// enumeration and the non-mana activated-ability offers, whichever zone the source is in.
+inline bool activation_source_ready(const Ability &ab, Entity source, Zone::Ownership controller,
+                                    const std::set<Entity> &entities) {
+    if (!activation_condition_met(ab, controller, entities, source)) return false;
+    if (ab.tap_cost) {
+        if (!global_coordinator.entity_has_component<Permanent>(source)) return false;
+        if (global_coordinator.GetComponent<Permanent>(source).is_tapped) return false;
+        if (is_summoning_sick(source)) return false;
+    }
+    return ab.activation_limit <= 0 || ab.activations_this_turn < ab.activation_limit;
+}
+
 // Distinct card types (CR 205.2) among cards in `owner`'s graveyard, excluding `except`
 // (pass 0 to count every card). Single source for delirium / Escape's ExileFromGrave
 // group-type constraint / any "card types in your graveyard" count over a live entity set.

@@ -276,25 +276,21 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
     return ordered;
 }
 
-// Can `ab` (a mana ability of `permanent`, entity `e`) be activated RIGHT NOW, ignoring its
+// Can `ab` (a mana ability of the permanent `e`) be activated RIGHT NOW, ignoring its
 // own activation mana cost? The physical gate — instant-speed window, Activation$ condition,
 // tap state, activation limit, summoning sickness without haste. Shared by
 // collect_available_mana_sources and mana_potential so the observation's "what could I
 // produce" summary can never disagree with the menu about which sources are available.
-static bool mana_ability_available_now(Entity e, const Permanent &permanent, const Ability &ab,
+static bool mana_ability_available_now(Entity e, const Ability &ab,
                                        Zone::Ownership player, const std::set<Entity> &entities,
                                        bool include_instant_speed) {
     // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
     // mid-cost-payment. Callers listing actions for a player who holds priority pass
     // include_instant_speed; the affordability/payment callers leave it false.
     if (ab.instant_speed && !include_instant_speed) return false;
-    // Activation$ gate (CR 602.5): e.g. Mox Opal's Metalcraft — illegal unless the
-    // controller meets the named condition (here, controls 3+ artifacts).
-    if (!activation_condition_met(ab, player, entities, e)) return false;
-    if (ab.tap_cost && permanent.is_tapped) return false;
-    if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) return false;
-    // Summoning sickness check for creatures with tap cost
-    if (ab.tap_cost && is_summoning_sick(e)) return false;
+    // Activation$ gate (CR 602.5; e.g. Mox Opal's Metalcraft), untapped and not summoning-sick
+    // for a {T} cost, activation limit.
+    if (!activation_source_ready(ab, e, player, entities)) return false;
     Entity player_entity = get_player_entity(player);
     if (global_coordinator.entity_has_component<Player>(player_entity) &&
         !mana_ability_life_payable(global_coordinator.GetComponent<Player>(player_entity), player, ab))
@@ -316,7 +312,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
 
         for (const auto &ab : permanent.abilities) {
             if (!ability_is_mana(ab)) continue;
-            if (!mana_ability_available_now(entity, permanent, ab, player, orderer->mEntities,
+            if (!mana_ability_available_now(entity, ab, player, orderer->mEntities,
                                             include_instant_speed))
                 continue;
             // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
@@ -368,7 +364,7 @@ ManaPotential mana_potential(Zone::Ownership player, const std::set<Entity> &ent
             if (!ability_is_mana(ab)) continue;
             // Instant-speed mana abilities (LED) ARE potential mana for their controller at
             // priority, which is the horizon this summary describes.
-            if (!mana_ability_available_now(entity, permanent, ab, player, entities,
+            if (!mana_ability_available_now(entity, ab, player, entities,
                                             /*include_instant_speed=*/true))
                 continue;
             // A ManaReflected source whose color set is empty (Mox Amber with no legendary,

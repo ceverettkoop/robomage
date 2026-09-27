@@ -50,6 +50,10 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
                          Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
                          std::shared_ptr<Orderer> orderer);
 static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
+static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
+                             bool sorcery_window, std::shared_ptr<Orderer> orderer);
+static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
+                                   int ability_index);
 
 // The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
 // stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
@@ -164,6 +168,65 @@ static LegalAction cast_action(Entity card_entity, const std::string &desc, int 
     LegalAction la(CAST_SPELL, card_entity, desc);
     la.category = ActionCategory::CAST_SPELL;
     la.option_ordinal = option_ordinal;
+    return la;
+}
+
+// The activation-legality gates every non-mana activated-ability offer shares (CR 602.2, 602.5):
+// no CantBeActivated prohibition on the source, "activate only as a sorcery" timing, the source's
+// state (Activation$ condition, {T} readiness, activation limit), the mana cost after ReduceCost$,
+// the energy and life costs, the sacrifice and return-to-hand costs, a legal target for every
+// required target, and the payment-failure guard. `source` is the object the ability is activated
+// from: a battlefield permanent, or a card in hand (channel, ninjutsu) or graveyard (unearth).
+// Loyalty and ninjutsu windows stay with their callers.
+static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
+                             bool sorcery_window, std::shared_ptr<Orderer> orderer) {
+    if (rules_mod::activation_prohibited(source)) return false;
+    // SorcerySpeed$ True (Ba Sing Se's earthbend, unearth): activatable only any time its
+    // controller could cast a sorcery (CR 602.5d).
+    if (ab.sorcery_speed_only && !sorcery_window) return false;
+    if (!activation_source_ready(ab, source, activator, orderer->mEntities)) return false;
+    // Gate on the post-ReduceCost$ cost (Eiganjo's Channel is cheaper per legendary creature you
+    // control) so legality matches what payment will charge. A {T} in the ability's own cost
+    // spends the source's tap, so its mana ability is NOT also available to pay with — exclude
+    // it, or a Blast Zone whose only other land is an Ancient Tomb reads as able to pay {3} off 2
+    // mana plus its own {C}.
+    ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
+    if (!cost.empty() &&
+        !can_pay_mana(activator, cost, source, orderer, /*has_delve=*/false,
+                      /*has_improvise=*/false, /*exclude_entity=*/ab.tap_cost ? source : 0))
+        return false;
+    const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
+    // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
+    if (ab.energy_cost > 0 && player_energy(player) < ab.energy_cost) return false;
+    // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A fetch land
+    // (Pay 1 life) at 1 life is still legal (you pay down to 0, then die); only an ability
+    // costing MORE life than you have is filtered out here.
+    if (!can_pay_life(player, ab.life_cost)) return false;
+    // sac_cost_spec: require controller has a permanent matching type (honouring a .Other
+    // self-exclusion against the ability's source — "another creature").
+    if (!ab.sac_cost_spec.empty() &&
+        controlled_permanents_matching(activator, ab.sac_cost_spec, orderer->mEntities, source).empty())
+        return false;
+    // Return cost: require controller has a land of given subtype
+    if (!ab.return_cost_type.empty() &&
+        controlled_permanents_matching(activator, ab.return_cost_type, orderer->mEntities).empty())
+        return false;
+    // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
+    // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
+    // against its own controller's nonbasic lands).
+    if (!has_legal_targets(cast_gate_probe(ab, source, activator), orderer)) return false;
+    return !payment_blocked(source);
+}
+
+// An ACTIVATE_ABILITY action for `ab` of `source`. `ability_index` is the ability's stable
+// position in its source's ability list, emitted as the action's option_ordinal so the ML
+// observation can tell same-source activations apart (e.g. a planeswalker's loyalty abilities,
+// which are otherwise feature-identical).
+static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
+                                   int ability_index) {
+    LegalAction la(ACTIVATE_ABILITY, source, ab, desc);
+    la.category = ActionCategory::ACTIVATE_ABILITY;
+    la.option_ordinal = ability_index;
     return la;
 }
 
@@ -1016,65 +1079,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!ab.loyalty_cost_is_x && ab.loyalty_cost < 0 &&
                     get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
-            // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
-            // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
-            if (ab.sorcery_speed_only && !sorcery_window) continue;
-            // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
-            // illegal unless the controller meets the named condition. (Mana abilities take the
-            // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
-            if (!activation_condition_met(ab, priority_player, orderer->mEntities, entity)) continue;
-            // todo handle this elswewhere, tapping check
-            if (ab.tap_cost && permanent.is_tapped) continue;
-            if (ab.tap_cost && is_summoning_sick(entity)) continue;
-            // Activation limit check
-            if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-            // sac_cost_spec: require controller has a permanent matching type (honouring a
-            // .Other self-exclusion against the ability's source — "another creature").
-            if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, ab.source).empty())
-                continue;
-            // Return cost: require controller has a land of given subtype
-            if (!ab.return_cost_type.empty() &&
-                controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
-                continue;
-            if (ability_is_mana(ab)) {
-                // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$
-                // ManaReflected (Mox Amber) — are collected via collect_mana_legal_actions above
-                // and resolve off-stack. None go on the stack.
-                continue;
-            } else {
-                // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
-                // Gate on the post-ReduceCost$ cost so legality matches what payment will charge.
-                // A {T} in the ability's own cost spends the source's tap, so its mana ability is
-                // NOT also available to pay with — exclude it, or a Blast Zone whose only other
-                // land is an Ancient Tomb reads as able to pay {3} off 2 mana plus its own {C}.
-                ManaValue ab_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-                if (!ab_cost.empty() &&
-                    !can_pay_mana(priority_player, ab_cost, ab.source, orderer,
-                                  /*has_delve=*/false, /*has_improvise=*/false,
-                                  /*exclude_entity=*/ab.tap_cost ? entity : 0))
-                    continue;
-                // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-                if (ab.energy_cost > 0 &&
-                    player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
-                    continue;
-                // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A
-                // fetch land (Pay 1 life) at 1 life is still legal (you pay down to 0, then die);
-                // only an ability costing MORE life than you have is filtered out here.
-                if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
-                                  ab.life_cost))
-                    continue;
-                if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
-                { auto it = cur_game.payment_fail_counts.find(ab.source);
-                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-                std::string src_name = entity_name(ab.source);
-                std::string desc = "Activate " + src_name + loyalty_cost_label(ab)
-                                   + " (" + ab.category + ")";
-                LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
-                non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
-                non_mana_la.option_ordinal = ability_index;
-                actions.push_back(non_mana_la);
-            }
+            // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
+            // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve
+            // off-stack. None go on the stack.
+            if (ability_is_mana(ab)) continue;
+            // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
+            if (!can_activate_now(ab, entity, priority_player, sorcery_window, orderer)) continue;
+            std::string desc = "Activate " + entity_name(entity) + loyalty_cost_label(ab) + " (" +
+                               ab.category + ")";
+            actions.push_back(activate_action(entity, ab, desc, ability_index));
         }
     }
     // Check hand for cards with ActivationZone$ Hand abilities (e.g. Talon Gates of Madara)
@@ -1091,70 +1104,29 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (game.cur_step != DECLARE_BLOCKERS) continue;
                 if (unblocked_attackers(orderer->mEntities, priority_player).empty()) continue;
             }
-            // Check mana affordability against the post-ReduceCost$ cost (Eiganjo's Channel is
-            // cheaper per legendary creature you control), so legality matches payment.
-            ManaValue from_hand_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-            if (!from_hand_cost.empty() && !can_pay_mana(priority_player, from_hand_cost, card_entity, orderer)) continue;
-            // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-            if (ab.energy_cost > 0 &&
-                player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
-                continue;
-            // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have.
-            if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
-                              ab.life_cost))
-                continue;
-            // Check target legality. The bare CardData ability carries no source/controller, and
-            // ability_perspective_player would fall back to the default-initialized controller
-            // (player A) — evaluating .OppCtrl from the wrong seat when B activates (Boseiju's
-            // Channel was offered targeting B's own nonbasic land). Stamp the real activator via
-            // cast_gate_probe so the existence check matches what target selection will offer.
-            if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
-                !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
-            // sac_cost_spec: require controller has a permanent matching type (honouring a
-            // .Other self-exclusion against the activating card).
-            if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, card_entity).empty())
-                continue;
-            { auto it = cur_game.payment_fail_counts.find(card_entity);
-              if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
+            if (!can_activate_now(ab, card_entity, priority_player, sorcery_window, orderer)) continue;
             std::string desc = ab.is_ninjutsu
                 ? ("Ninjutsu " + card_data.name)
                 : ("Activate " + card_data.name + " from hand (" + ab.category + ")");
-            LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
-            la.category = ActionCategory::ACTIVATE_ABILITY;
-            la.option_ordinal = hand_ability_index;
-            actions.push_back(la);
+            actions.push_back(activate_action(card_entity, ab, desc, hand_ability_index));
         }
     }
 
     // Check the graveyard for cards with ActivationZone$ Graveyard abilities (Unearth, CR 702.84).
     // Such abilities are activated from the graveyard at sorcery speed (controller's main phase,
     // empty stack, holding priority) and return the card to the battlefield.
-    {
-        for (auto card_entity : orderer->get_graveyard(priority_player)) {
-            if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
-            auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-            int gy_ability_index = -1;  // ordinal: see the battlefield loop above
-            for (const auto &ab : card_data.abilities) {
-                ++gy_ability_index;
-                if (ab.ability_type != Ability::ACTIVATED) continue;
-                if (ab.activation_zone != Zone::GRAVEYARD) continue;
-                if (ab.sorcery_speed_only && !sorcery_window) continue;
-                ManaValue gy_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-                if (!gy_cost.empty() && !can_pay_mana(priority_player, gy_cost, card_entity, orderer)) continue;
-                // Target-existence gate (CR 601.2c), stamped like the hand loop above — today's
-                // graveyard activations (Unearth) don't target, but a targeted one must not be
-                // offered with zero legal targets.
-                if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
-                    !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
-                { auto it = cur_game.payment_fail_counts.find(card_entity);
-                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-                std::string desc = "Unearth " + card_data.name;
-                LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
-                la.category = ActionCategory::ACTIVATE_ABILITY;
-                la.option_ordinal = gy_ability_index;
-                actions.push_back(la);
-            }
+    for (auto card_entity : orderer->get_graveyard(priority_player)) {
+        if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
+        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        int gy_ability_index = -1;  // ordinal: see the battlefield loop above
+        for (const auto &ab : card_data.abilities) {
+            ++gy_ability_index;
+            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.activation_zone != Zone::GRAVEYARD) continue;
+            if (!can_activate_now(ab, card_entity, priority_player, sorcery_window, orderer))
+                continue;
+            actions.push_back(activate_action(card_entity, ab, "Unearth " + card_data.name,
+                                              gy_ability_index));
         }
     }
 

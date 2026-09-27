@@ -17,11 +17,14 @@ struct CardData;
 namespace rules_mod {
 
 // CantBeActivated (Null Rod, Collector Ouphe, Disruptor Flute). `activation_prohibited` is
-// the general check for a permanent's non-mana activated abilities (artifact filter +
-// Disruptor Flute NamedCard). `mana_activation_prohibited` is the mana-ability variant: it
-// ignores NamedCard prohibitions, since Disruptor Flute's restriction excludes mana
-// abilities (ValidSA$ Activated.!ManaAbility).
-bool activation_prohibited(Entity permanent);
+// the general check for a source's non-mana activated abilities: a type filter (Null Rod's
+// artifacts) applies to permanents, and a NamedCard prohibition (Pithing Needle, Disruptor
+// Flute: "activated abilities of sources with the chosen name") applies to the source in any
+// zone — a channel or ninjutsu ability in hand, an unearth in the graveyard (CR 602.5).
+// `mana_activation_prohibited` is the mana-ability variant: it ignores NamedCard
+// prohibitions, since Disruptor Flute's restriction excludes mana abilities
+// (ValidSA$ Activated.!ManaAbility).
+bool activation_prohibited(Entity source);
 bool mana_activation_prohibited(Entity permanent);
 
 // CantBeCast: may `caster` not cast `card` right now? The spell's printed characteristics are
