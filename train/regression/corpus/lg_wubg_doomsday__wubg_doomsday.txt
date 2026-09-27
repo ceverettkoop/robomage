@@ -1911,14 +1911,14 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1945,7 +1945,7 @@
   Self:  19 life | mana: empty | hand(4): Daze, Daze, Force of Will, Thassa's Oracle | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
   Stack: Thassa's Oracle (spell, opponent)
   Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
@@ -1970,7 +1970,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   19 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)

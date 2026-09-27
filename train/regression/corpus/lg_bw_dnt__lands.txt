@@ -1400,15 +1400,14 @@
    1: Accept: pay 3 life so it enters untapped  [#1]
   >> A/A: 0 (Decline: pay 3 life so it enters untapped)
 --- Narrative ---
-  Witch Enchanter enters tapped.
-  Witch Enchanter transforms into Witch-Blessed Meadow!
+  Witch-Blessed Meadow enters tapped.
 
 --- Decision 72 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1426,7 +1425,7 @@
   Step: Begin Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1446,7 +1445,7 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1468,7 +1467,7 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1490,7 +1489,7 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1510,7 +1509,7 @@
   Step: Declare Atk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1530,7 +1529,7 @@
   Step: Declare Blk (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   19 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1553,7 +1552,7 @@
   Step: Combat Dmg (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1571,7 +1570,7 @@
   Step: End Combat (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1589,7 +1588,7 @@
   Step: Second Main (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1607,7 +1606,7 @@
   Step: End Step (turn 7)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1630,7 +1629,7 @@
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1649,7 +1648,7 @@
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond
   Self GY: Wasteland
   Opp GY:  Thespian's Stage, Boseiju, Who Endures
@@ -1668,7 +1667,7 @@
   Self:  17 life | mana: empty | hand(6): Crop Rotation, Crop Rotation, Dark Depths, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Expedition Map | Grafdigger's Cage | Mox Diamond
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -1687,7 +1686,7 @@
   Self:  17 life | mana: empty | hand(5): Crop Rotation, Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage | Mox Diamond
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -1705,7 +1704,7 @@
   Self:  17 life | mana: empty | hand(5): Crop Rotation, Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage | Mox Diamond
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Crop Rotation (self)
   Self GY: Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland
@@ -1725,7 +1724,7 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T)
   Stack: Crop Rotation (spell, opponent)
   Self GY: Wasteland
@@ -1748,7 +1747,7 @@
   Self:  17 life | mana: empty | hand(4): Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Expedition Map | Grafdigger's Cage | Mox Diamond (T)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1795,7 +1794,7 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1813,7 +1812,7 @@
   Step: Begin Combat (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1833,7 +1832,7 @@
   Step: Declare Atk (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1851,7 +1850,7 @@
   Step: End Combat (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1869,7 +1868,7 @@
   Step: Second Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -1887,7 +1886,7 @@
   Step: End Step (turn 8)
   Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Expedition Map | Grafdigger's Cage | Mox Diamond (T) | The Tabernacle at Pendrell Vale (NEW)
   Self GY: Wasteland
   Opp GY:  Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures

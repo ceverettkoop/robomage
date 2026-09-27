@@ -1708,14 +1708,14 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 68 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1736,7 +1736,7 @@
   Step: Begin Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1758,7 +1758,7 @@
   Step: Declare Atk (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1778,7 +1778,7 @@
   Step: End Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1798,7 +1798,7 @@
   Step: Second Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1821,7 +1821,7 @@
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Stack: Quantum Riddler (ability, self)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step, on stack #0)
@@ -1845,7 +1845,7 @@
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -1870,7 +1870,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 50
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -1885,7 +1885,7 @@
   Step: Upkeep (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -1906,7 +1906,7 @@
   Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -1922,7 +1922,7 @@
   Step: Draw (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -1942,7 +1942,7 @@
   Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 49
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -1964,7 +1964,7 @@
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5]
   Stack: Sphere of Resistance (spell, opponent)
   Self GY: Street Wraith, Doomsday
@@ -1987,7 +1987,7 @@
   Step: First Main (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2006,7 +2006,7 @@
   Step: Begin Combat (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2028,7 +2028,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2048,7 +2048,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Pending: Construct (self)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
@@ -2071,7 +2071,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
   Opp:   8 life | mana: empty | hand count: 4 | lib 2
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (ATK)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2090,7 +2090,7 @@
   Step: Declare Atk (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2111,7 +2111,7 @@
   Step: Declare Blk (turn 7)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2134,7 +2134,7 @@
   Step: Combat Dmg (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2153,7 +2153,7 @@
   Step: End Combat (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2172,7 +2172,7 @@
   Step: Second Main (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2191,7 +2191,7 @@
   Step: End Step (turn 7)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island (T) | Underground Sea (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance (NEW) | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2215,7 +2215,7 @@
   Step: Upkeep (turn 8)
   Self:  2 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2234,7 +2234,7 @@
   Step: Draw (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2253,7 +2253,7 @@
   Step: First Main (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2273,7 +2273,7 @@
   Step: Begin Combat (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2294,7 +2294,7 @@
   Step: Declare Atk (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2313,7 +2313,7 @@
   Step: End Combat (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2332,7 +2332,7 @@
   Step: Second Main (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2352,7 +2352,7 @@
   Step: End Step (turn 8)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [6/6] (T)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2377,7 +2377,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 49
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2392,7 +2392,7 @@
   Step: Upkeep (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2414,7 +2414,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2430,7 +2430,7 @@
   Step: Draw (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2451,7 +2451,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Sphere of Resistance | Construct [6/6]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2473,7 +2473,7 @@
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
   Stack: Expedition Map (ability, opponent) [amt=1]
   Self GY: Street Wraith, Doomsday
@@ -2498,7 +2498,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 48
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Stack: Expedition Map (ability, self) [amt=1]
   Pending: Expedition Map (self)
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2544,7 +2544,7 @@
   Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Thespian's Stage | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2564,7 +2564,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2584,7 +2584,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Pending: Skateboard (self)
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
@@ -2605,7 +2605,7 @@
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [5/5]
   Stack: Skateboard (ability, opponent) -> Construct (opponent, slot 54)
   Self GY: Street Wraith, Doomsday
@@ -2630,7 +2630,7 @@
   Step: First Main (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2650,7 +2650,7 @@
   Step: Begin Combat (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2673,7 +2673,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2693,7 +2693,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Pending: Construct (self)
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
@@ -2716,7 +2716,7 @@
   Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 47
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (ATK)
-  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday
   Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Tropical Island, Lotus Petal, Dark Ritual
@@ -2735,7 +2735,7 @@
   Step: Declare Atk (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -2757,7 +2757,7 @@
   Step: Declare Blk (turn 9)
   Self:  2 life | mana: empty | hand(5): Brainstorm, Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] [Flying] | Tropical Island | Underground Sea
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Sphere of Resistance | Thespian's Stage (T,NEW) | Construct [6/5] [Haste] (eq:Skateboard) (T,ATK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths

@@ -2398,14 +2398,14 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 104 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Wasteland
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2426,7 +2426,7 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Lorien Revealed, The One Ring, Wasteland | lib 37
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra | Wasteland
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Meticulous Archive | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Wasteland
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2462,7 +2462,7 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, The One Ring, Tundra, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2485,7 +2485,7 @@
   Step: First Main (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2510,7 +2510,7 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2535,7 +2535,7 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -2560,7 +2560,7 @@
   Step: Declare Atk (turn 14)
   Self:  2 life | mana: empty | energy 2 | hand(5): Flow State, Force of Negation, Force of Will, The One Ring, Wasteland | lib 34
   Opp:   8 life | mana: empty | hand count: 0 | lib 46
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (ATK) | Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra (NEW) | Tundra (T) | Wasteland (T)
   Opp BF:   Mountain | Mountain | Mountain | Mountain | Mountain | Mountain
   Self GY: Lorien Revealed, Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt

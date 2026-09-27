@@ -1702,15 +1702,14 @@
    1: Accept: pay 3 life so it enters untapped  [#1]
   >> A/A: 0 (Decline: pay 3 life so it enters untapped)
 --- Narrative ---
-  Witch Enchanter enters tapped.
-  Witch Enchanter transforms into Witch-Blessed Meadow!
+  Witch-Blessed Meadow enters tapped.
 
 --- Decision 88 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1728,7 +1727,7 @@
   Step: Begin Combat (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1748,7 +1747,7 @@
   Step: Declare Atk (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1768,7 +1767,7 @@
   Step: Declare Atk (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1786,7 +1785,7 @@
   Step: End Combat (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1804,7 +1803,7 @@
   Step: Second Main (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1822,7 +1821,7 @@
   Step: End Step (turn 7)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial (T) | Lion Sash [1/1] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1847,7 +1846,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Aether Vial (ability, self)
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -1862,7 +1861,7 @@
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
   Stack: Aether Vial (ability, opponent)
   Opp GY:  Marsh Flats
@@ -1881,7 +1880,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Self GY: Marsh Flats
@@ -1901,7 +1900,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 69
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   Actions:
@@ -1915,7 +1914,7 @@
   Step: Upkeep (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 69
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1935,7 +1934,7 @@
   Self:  18 life | mana: empty | hand(5): Overlord of the Balemurk, Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -1950,7 +1949,7 @@
   Step: Draw (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Marsh Flats, Aether Vial, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -1969,7 +1968,7 @@
   Self:  18 life | mana: empty | hand(5): Overlord of the Balemurk, Overlord of the Balemurk, Recruiter of the Guard, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -1995,7 +1994,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Recruiter of the Guard (spell, self)
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -2012,7 +2011,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T)
   Stack: Aether Vial (ability, opponent) -> Recruiter of the Guard (spell, opponent)
   Opp GY:  Marsh Flats
@@ -2035,7 +2034,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Aether Vial (ability, self) -> Recruiter of the Guard (spell, self)
   Pending: Aether Vial (self)
   Self GY: Marsh Flats
@@ -2053,7 +2052,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T)
   Stack: Recruiter of the Guard (spell, opponent)
   Opp GY:  Marsh Flats
@@ -2075,7 +2074,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 4 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW)
   Stack: Recruiter of the Guard (ability, opponent) [amt=1]
   Opp GY:  Marsh Flats
@@ -2095,7 +2094,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Recruiter of the Guard (ability, self) [amt=1]
   Pending: Recruiter of the Guard (self)
   Self GY: Marsh Flats
@@ -2115,7 +2114,7 @@
   Self:  18 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Shadowy Backstreet, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Marsh Flats
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self spells=1 drawn=1 colors=W
@@ -2133,7 +2132,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW)
   Stack: Shadowy Backstreet (ability, opponent) [amt=1]
   Opp GY:  Marsh Flats
@@ -2154,7 +2153,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW)
   Stack: Shadowy Backstreet (ability, opponent) [amt=1]
   Pending: Wasteland (self)
@@ -2179,7 +2178,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW)
   Stack: Wasteland (ability, self) -> Shadowy Backstreet (opponent, slot 55) -> Shadowy Backstreet (ability, opponent) [amt=1]
   Self GY: Wasteland
@@ -2201,7 +2200,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 68
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Stack: Shadowy Backstreet (ability, opponent) [amt=1]
   Self GY: Wasteland
@@ -2225,7 +2224,7 @@
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 68
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Stack: Shadowy Backstreet (ability, self) [amt=1]
   Pending: Shadowy Backstreet (self)
   Self GY: Shadowy Backstreet, Marsh Flats
@@ -2245,7 +2244,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2263,7 +2262,7 @@
   Step: Begin Combat (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2284,7 +2283,7 @@
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -2306,7 +2305,7 @@
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Self GY: Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
@@ -2327,7 +2326,7 @@
   Self:  18 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 67
   Opp:   19 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
-  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Pending: Phelia, Exuberant Shepherd (self)
   Self GY: Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
@@ -2354,7 +2353,7 @@
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Stack: Phelia, Exuberant Shepherd (ability, opponent)
   Self GY: Wasteland
@@ -2376,7 +2375,7 @@
   Step: Declare Atk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2399,7 +2398,7 @@
   Step: Declare Blk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2421,7 +2420,7 @@
   Step: Declare Blk (turn 8)
   Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2443,7 +2442,7 @@
   Step: Combat Dmg (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2461,7 +2460,7 @@
   Step: End Combat (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2479,7 +2478,7 @@
   Step: Second Main (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -2497,7 +2496,7 @@
   Step: End Step (turn 8)
   Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   18 life | mana: empty | hand count: 3 | lib 67
-  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1)
   Self GY: Wasteland
   Opp GY:  Swords to Plowshares, Shadowy Backstreet, Marsh Flats

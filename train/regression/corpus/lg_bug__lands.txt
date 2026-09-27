@@ -2032,14 +2032,14 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 84 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | hand(4): Orcish Bowmasters, Underground Sea, Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 41
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Tropical Island (T) | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard | Construct [4/4] (SICK)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2064,7 +2064,7 @@
   Step: First Main (turn 15)
   Self:  15 life | mana: empty | hand(3): Orcish Bowmasters, Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 41
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard | Construct [4/4] (SICK)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2090,7 +2090,7 @@
   Step: Declare Atk (turn 15)
   Self:  15 life | mana: empty | hand(3): Orcish Bowmasters, Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 41
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (NEW) | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Boseiju, Who Endures (T) | Expedition Map | Mox Diamond (T) | Skateboard | Construct [4/4] (SICK)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2120,7 +2120,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 41
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond | Skateboard | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2140,7 +2140,7 @@
   Self:  15 life | mana: empty | hand(5): Crop Rotation, Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 40
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond | Skateboard | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2160,7 +2160,7 @@
   Self:  15 life | mana: empty | hand(5): Crop Rotation, Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 40
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Boseiju, Who Endures | Expedition Map | Mox Diamond | Skateboard | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Pending: Crop Rotation (self)
   Self GY: Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2185,7 +2185,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 40
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Expedition Map | Mox Diamond | Skateboard | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2235,7 +2235,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 39
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Expedition Map | Mox Diamond | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2257,7 +2257,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 39
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Expedition Map | Mox Diamond | Skateboard | Urza's Saga [lore:2] (NEW,res 1) | Construct [4/4]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Stack: Urza's Saga (ability, self)
   Self GY: Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2284,7 +2284,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 39
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 1) | Construct [3/3]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Stack: Expedition Map (ability, self) [amt=1] -> Urza's Saga (ability, self)
   Pending: Expedition Map (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2331,7 +2331,7 @@
   Self:  15 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Urza's Saga | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 2) | Construct [3/3]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2356,7 +2356,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (NEW,res 1) | Construct [3/3]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2377,7 +2377,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (NEW,res 1) | Construct [3/3]
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Pending: Skateboard (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2404,7 +2404,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [4/3] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2425,7 +2425,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [4/3] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Pending: Construct (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2449,7 +2449,7 @@
   Self:  15 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   15 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [4/3] [Haste] (eq:Skateboard) (ATK)
-  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Opp BF:   Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2476,7 +2476,7 @@
   Step: Declare Blk (turn 16)
   Self:  15 life | mana: empty | hand(3): Orcish Bowmasters, Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,NEW,res 2) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [3/3] [Haste] (eq:Skateboard) (T,ATK)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2508,7 +2508,7 @@
   Step: Upkeep (turn 17)
   Self:  12 life | mana: empty | hand(3): Orcish Bowmasters, Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou | Forest | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou | Forest | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2532,7 +2532,7 @@
   Step: Upkeep (turn 17)
   Self:  12 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Orcish Bowmasters (spell, self)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2556,7 +2556,7 @@
   Step: Upkeep (turn 17)
   Self:  12 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Pending: Orcish Bowmasters (self)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2585,7 +2585,7 @@
   Step: Upkeep (turn 17)
   Self:  12 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 39
   Opp:   15 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [1/1] [+1/+1:1] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2611,7 +2611,7 @@
   Step: Upkeep (turn 17)
   Self:  12 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 39
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2633,7 +2633,7 @@
   Step: Draw (turn 17)
   Self:  12 life | mana: empty | hand(3): Polluted Delta, Underground Sea, Wasteland | lib 38
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2653,7 +2653,7 @@
   Step: First Main (turn 17)
   Self:  12 life | mana: empty | hand(3): Polluted Delta, Underground Sea, Wasteland | lib 38
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2680,7 +2680,7 @@
   Step: First Main (turn 17)
   Self:  12 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 38
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Polluted Delta (NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Polluted Delta (NEW) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2707,7 +2707,7 @@
   Step: First Main (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 38
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
+  Self BF:  Bayou (T) | Forest | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2] | Clue
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2736,7 +2736,7 @@
   Step: First Main (turn 17)
   Self:  11 life | mana: empty | hand(3): Orcish Bowmasters, Underground Sea, Wasteland | lib 37
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island | Underground Sea | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Polluted Delta (ability, self)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2762,7 +2762,7 @@
   Step: First Main (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 37
   Opp:   14 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2]
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Polluted Delta (ability, self)
   Pending: Orcish Bowmasters (self)
@@ -2798,7 +2798,7 @@
   Step: First Main (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 37
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Stack: Polluted Delta (ability, self)
   Pending: Polluted Delta (self)
@@ -2824,7 +2824,7 @@
   Step: First Main (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 36
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 4] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2850,7 +2850,7 @@
   Step: Declare Atk (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 36
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2875,7 +2875,7 @@
   Step: Declare Atk (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 36
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2900,7 +2900,7 @@
   Step: Declare Atk (turn 17)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 36
   Opp:   13 life | mana: empty | hand count: 4 | lib 38
-  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (ATK)
+  Self BF:  Bayou (T) | Forest (T) | Island (NEW) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (ATK)
   Opp BF:   Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] (T) | Construct [4/3] [Haste] (eq:Skateboard) (T)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -2933,7 +2933,7 @@
   Self:  9 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble | lib 38
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:2] | Urza's Saga [lore:1] | Construct [4/3] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -2962,7 +2962,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 37
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Construct [4/4] (SICK,NEW)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Urza's Saga (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -2989,7 +2989,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 37
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:3] (T,res 1) | Urza's Saga [lore:2] (T,res 1) | Construct [5/4] [Haste] (eq:Skateboard) | Construct [4/4] (SICK,NEW)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Stack: Urza's Saga (ability, self) [amt=1]
   Pending: Urza's Saga (self)
   Self GY: Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3018,7 +3018,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 36
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5] (SICK,NEW)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3039,7 +3039,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 36
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Construct [5/5] (SICK,NEW)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Construct (self)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3063,7 +3063,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 36
   Opp:   11 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Construct [5/5] (SICK,NEW)
-  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3090,7 +3090,7 @@
   Step: Declare Blk (turn 18)
   Self:  11 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 36
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Self BF:  Bayou (T) | Forest (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Opp BF:   Grafdigger's Cage (NEW) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] [Haste] (eq:Skateboard) (T,ATK) | Construct [5/5] (SICK,NEW)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3122,7 +3122,7 @@
   Step: Draw (turn 19)
   Self:  6 life | mana: empty | hand(3): Fatal Push, Underground Sea, Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T) | Construct [5/5] (SICK)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3143,7 +3143,7 @@
   Step: Draw (turn 19)
   Self:  6 life | mana: empty | hand(3): Fatal Push, Underground Sea, Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T) | Construct [5/5] (SICK)
   Pending: Fatal Push (self)
   Self GY: Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3174,7 +3174,7 @@
   Step: First Main (turn 19)
   Self:  6 life | mana: empty | hand(2): Underground Sea, Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island | Tropical Island | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [4/4] (SICK)
   Self GY: Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3198,7 +3198,7 @@
   Step: First Main (turn 19)
   Self:  6 life | mana: empty | hand(1): Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea (NEW) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 6] | Tropical Island | Tropical Island | Underground Sea | Underground Sea (NEW) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [4/4] (SICK)
   Self GY: Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3224,7 +3224,7 @@
   Step: Declare Atk (turn 19)
   Self:  6 life | mana: empty | hand(1): Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 5 | lib 36
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Tropical Island | Tropical Island | Underground Sea | Underground Sea (NEW) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] (act 1) | Tropical Island | Tropical Island | Underground Sea | Underground Sea (NEW) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T) | Construct [4/4] (SICK)
   Self GY: Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3260,7 +3260,7 @@
   Self:  9 life | mana: empty | hand(6): Ancient Tomb, Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 35
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Skateboard | Urza's Saga [lore:3] (res 1) | Construct [4/4]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Stack: Urza's Saga (ability, self) [amt=1]
   Pending: Urza's Saga (self)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3285,7 +3285,7 @@
   Self:  9 life | mana: empty | hand(6): Ancient Tomb, Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 35
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Skateboard | Urza's Saga [lore:3] (res 1) | Construct [4/4]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Stack: Urza's Saga (ability, self) [amt=1]
   Pending: Mox Diamond (self)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3310,7 +3310,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond (NEW) | Skateboard | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Self GY: Urza's Saga, Ancient Tomb, Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3336,7 +3336,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond (NEW) | Skateboard | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Life from the Loam (self)
   Self GY: Urza's Saga, Ancient Tomb, Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3368,7 +3368,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond (NEW) | Skateboard | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Life from the Loam (self)
   Self GY: Urza's Saga, Ancient Tomb, Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3399,7 +3399,7 @@
   Self:  9 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond (NEW) | Skateboard | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Life from the Loam (self)
   Self GY: Urza's Saga, Ancient Tomb, Urza's Saga, Expedition Map, Crop Rotation, Boseiju, Who Endures, Urza's Saga, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3435,7 +3435,7 @@
   Self:  9 life | mana: empty | hand(7): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3462,7 +3462,7 @@
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3483,7 +3483,7 @@
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [5/5]
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Skateboard (self)
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3510,7 +3510,7 @@
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3531,7 +3531,7 @@
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Pending: Construct (self)
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3555,7 +3555,7 @@
   Self:  9 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   6 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK)
-  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Opp BF:   Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Self GY: Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -3582,7 +3582,7 @@
   Step: Declare Blk (turn 20)
   Self:  6 life | mana: empty | hand(1): Wasteland | lib 35
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp (T) | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T,NEW) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [5/5] [Haste] (eq:Skateboard) (T,ATK)
   Self GY: Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3616,7 +3616,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Flow State, Wasteland | lib 34
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou | Forest | Island | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3645,7 +3645,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(1): Wasteland | lib 34
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -3667,7 +3667,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(1): Wasteland | lib 34
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -3692,7 +3692,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Ponder, Tamiyo, Inquisitive Student, Wasteland | lib 32
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3722,7 +3722,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Tamiyo, Inquisitive Student, Wasteland | lib 32
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -3746,7 +3746,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Tamiyo, Inquisitive Student, Wasteland | lib 32
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -3768,7 +3768,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Tamiyo, Inquisitive Student, Wasteland | lib 32
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -3793,7 +3793,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Flow State, Tamiyo, Inquisitive Student, Wasteland | lib 31
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3824,7 +3824,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Tamiyo, Inquisitive Student, Wasteland | lib 31
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -3847,7 +3847,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(2): Tamiyo, Inquisitive Student, Wasteland | lib 31
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Flow State (spell, self)
   Pending: Flow State (self)
@@ -3873,7 +3873,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(4): Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Wasteland | lib 29
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -3901,7 +3901,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Brainstorm, Tamiyo, Inquisitive Student, Wasteland | lib 29
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Brainstorm (spell, self)
   Self GY: Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -3930,7 +3930,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(5): Misty Rainforest, Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland, Wasteland | lib 26
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Brainstorm (spell, self) -> Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -3957,7 +3957,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(4): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Brainstorm (spell, self) -> Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -3989,7 +3989,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(6): Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland, Wasteland | lib 25
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -4017,7 +4017,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(5): Sheoldred's Edict, Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland, Wasteland | lib 26
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -4044,7 +4044,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(4): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4070,7 +4070,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 8] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4096,7 +4096,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -4119,7 +4119,7 @@
   Step: First Main (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Wasteland (NEW) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
@@ -4155,7 +4155,7 @@
   Step: Declare Atk (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4183,7 +4183,7 @@
   Step: Declare Atk (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4211,7 +4211,7 @@
   Step: Declare Atk (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4239,7 +4239,7 @@
   Step: Declare Atk (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4267,7 +4267,7 @@
   Step: Declare Atk (turn 21)
   Self:  1 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, Uro, Titan of Nature's Wrath, Wasteland | lib 27
   Opp:   9 life | mana: empty | hand count: 6 | lib 34
-  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (ATK)
+  Self BF:  Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Swamp | Tamiyo, Seasoned Scholar [loy 10] (act 1) | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (ATK)
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard) (T)
   Self GY: Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp GY:  Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
@@ -4305,7 +4305,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 34
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Urza's Saga, Life from the Loam, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -4328,7 +4328,7 @@
   Self:  3 life | mana: empty | hand(7): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Skateboard (->Construct) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Karakas, Savannah, Yavimaya, Cradle of Growth, Urza's Saga, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -4359,7 +4359,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Karakas, Savannah, Yavimaya, Cradle of Growth, Urza's Saga, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -4384,7 +4384,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Life from the Loam (self)
   Self GY: Karakas, Savannah, Yavimaya, Cradle of Growth, Urza's Saga, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -4416,7 +4416,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Life from the Loam (self)
   Self GY: Karakas, Savannah, Yavimaya, Cradle of Growth, Urza's Saga, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -4451,7 +4451,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -4472,7 +4472,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Skateboard (self)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -4498,7 +4498,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix
@@ -4519,7 +4519,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Pending: Construct (self)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
@@ -4543,7 +4543,7 @@
   Self:  3 life | mana: empty | hand(6): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Urza's Saga, Urza's Saga | lib 31
   Opp:   1 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK)
-  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
+  Opp BF:   Bayou (T) | Forest (T) | Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp | Tamiyo, Seasoned Scholar [loy 10] | Tropical Island (T) | Tropical Island (T) | Underground Sea (T) | Underground Sea (T) | Orc Army [3/3] [+1/+1:3] (T)
   Self GY: Life from the Loam, Karakas, Savannah, Yavimaya, Cradle of Growth, Ancient Tomb, Expedition Map, Crop Rotation, Boseiju, Who Endures, Thespian's Stage, Swords to Plowshares, Rishadan Port, Sphere of Resistance, Mox Diamond, Sphere of Resistance, Yavimaya, Cradle of Growth, Ghost Quarter, Swords to Plowshares, The Tabernacle at Pendrell Vale
   Opp GY:  Wasteland, Brainstorm, Brainstorm, Flow State, Ponder, Flow State, Fatal Push, Polluted Delta, Ponder, Flow State, Verdant Catacombs, Fatal Push, Fatal Push, Thoughtseize, Misty Rainforest, Sheoldred's Edict, Force of Will
   Opp exile:  Baleful Strix

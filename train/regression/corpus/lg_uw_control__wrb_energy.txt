@@ -6560,7 +6560,7 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
   Resolving ability (category: Pump)
   Player A gains protection from everything until their next turn.
 
@@ -6569,7 +6569,7 @@
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Wasteland, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T) | Shadowy Backstreet
   Self GY: Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6596,7 +6596,7 @@
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
   Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T) | Shadowy Backstreet
   Self GY: Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6624,7 +6624,7 @@
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
   Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T) | Shadowy Backstreet
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6649,7 +6649,7 @@
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra | Wasteland (NEW)
   Opp BF:   Goblin Bombardment | Plains (T) | Plateau (T) | Shadowy Backstreet
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
@@ -6686,7 +6686,7 @@
   Step: First Main (turn 31)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 2 | lib 29
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK,NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Teferi, Time Raveler [loy 14] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T) | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Shadowy Backstreet
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6723,7 +6723,7 @@
   Step: Upkeep (turn 33)
   Self:  3 life | mana: empty | energy 4 | hand(2): Swords to Plowshares, Wrath of the Skies | lib 20
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:1] [Indestructible] | Tundra | Tundra | Tundra
+  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:1] [Indestructible] | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: The One Ring (ability, self)
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6750,7 +6750,7 @@
   Step: Upkeep (turn 33)
   Self:  3 life | mana: empty | energy 4 | hand(4): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Wrath of the Skies | lib 18
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: The One Ring (ability, self)
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6773,7 +6773,7 @@
   Step: Upkeep (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(4): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Wrath of the Skies | lib 18
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6794,7 +6794,7 @@
   Step: Draw (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6813,7 +6813,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(5): Geist of Saint Traft, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Island | Island | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6844,7 +6844,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(4): Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: Geist of Saint Traft (spell, self)
   Self GY: Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6869,7 +6869,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: Lorien Revealed (ability, self) -> Geist of Saint Traft (spell, self)
   Pending: Lorien Revealed (self)
@@ -6894,7 +6894,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6922,7 +6922,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6946,7 +6946,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 15] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -6973,7 +6973,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Stack: Teferi, Time Raveler (ability, self)
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -6998,7 +6998,7 @@
   Step: First Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7020,7 +7020,7 @@
   Step: Begin Combat (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7044,7 +7044,7 @@
   Step: Declare Atk (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7066,7 +7066,7 @@
   Step: End Combat (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7088,7 +7088,7 @@
   Step: Second Main (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7110,7 +7110,7 @@
   Step: End Step (turn 33)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Teferi, Time Raveler [loy 16] (act 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7137,7 +7137,7 @@
   Step: Upkeep (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 28
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7161,7 +7161,7 @@
   Step: Draw (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 4 | lib 27
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains | Shadowy Backstreet
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7185,7 +7185,7 @@
   Self:  17 life | mana: empty | hand(4): Ajani, Nacatl Pariah, Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Goblin Bombardment | Plains | Shadowy Backstreet
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Self exile: Cabal Therapy, Cabal Therapy, Plateau, Amped Raptor
@@ -7209,7 +7209,7 @@
   Step: First Main (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 27
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
   Stack: Ajani, Nacatl Pariah (spell, opponent)
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -7237,7 +7237,7 @@
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Ajani, Nacatl Pariah (ability, self)
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -7261,7 +7261,7 @@
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Ajani, Nacatl Pariah (ability, self)
   Pending: Goblin Bombardment (self)
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7290,7 +7290,7 @@
   Self:  17 life | mana: empty | hand(3): Amped Raptor, Swords to Plowshares, Swords to Plowshares | lib 27
   Opp:   1 life | mana: empty | energy 4 | hand count: 3 | lib 17
   Self BF:  Ajani, Nacatl Pariah [1/2] (SICK,NEW) | Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Ajani, Nacatl Pariah (ability, self)
   Pending: Goblin Bombardment (self)
   Self GY: Plateau, Orcish Bowmasters, Amped Raptor, Marsh Flats, Scrubland, Swords to Plowshares, Guide of Souls, Guide of Souls, Marsh Flats, Guide of Souls, Wasteland, Elegant Parlor, Voice of Victory, Voice of Victory, Ocelot Pride, Ocelot Pride, Badlands, Ajani, Nacatl Pariah, Guide of Souls, Arid Mesa, Thoughtseize, Marsh Flats
@@ -7315,7 +7315,7 @@
   Step: First Main (turn 34)
   Self:  1 life | mana: empty | energy 4 | hand(3): Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 17
   Opp:   17 life | mana: empty | hand count: 3 | lib 27
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 16] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Goblin Bombardment | Plains (T) | Shadowy Backstreet (T)
   Stack: Goblin Bombardment (ability, opponent) [amt=1] -> self (player) -> Ajani, Nacatl Pariah (ability, opponent)
   Self GY: Lorien Revealed, Wasteland, Brainstorm, Flooded Strand, Lorien Revealed, Force of Will, Wasteland, Misty Rainforest, Meticulous Archive, Murktide Regent, Wasteland, Polluted Delta, Tune the Narrative, Wasteland, Swords to Plowshares, Tamiyo, Inquisitive Student, Ponder, Tune the Narrative, Force of Will, Ponder, Polluted Delta

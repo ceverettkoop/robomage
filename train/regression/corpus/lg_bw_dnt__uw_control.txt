@@ -1683,15 +1683,14 @@
    1: Accept: pay 3 life so it enters untapped  [#1]
   >> A/A: 0 (Decline: pay 3 life so it enters untapped)
 --- Narrative ---
-  Witch Enchanter enters tapped.
-  Witch Enchanter transforms into Witch-Blessed Meadow!
+  Witch-Blessed Meadow enters tapped.
 
 --- Decision 80 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1713,7 +1712,7 @@
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland, Aether Vial
@@ -1736,7 +1735,7 @@
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
@@ -1758,7 +1757,7 @@
   Step: First Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1777,7 +1776,7 @@
   Step: Begin Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1798,7 +1797,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1822,7 +1821,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1]
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1846,7 +1845,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1869,7 +1868,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Pending: Phelia, Exuberant Shepherd (self)
   Self GY: Wasteland, Aether Vial
@@ -1893,7 +1892,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Stack: Phelia, Exuberant Shepherd (ability, self)
   Self GY: Wasteland, Aether Vial
@@ -1916,7 +1915,7 @@
   Step: Declare Atk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1937,7 +1936,7 @@
   Step: Declare Blk (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1961,7 +1960,7 @@
   Step: Combat Dmg (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1980,7 +1979,7 @@
   Step: End Combat (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,ATK,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T,ATK)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1999,7 +1998,7 @@
   Step: Second Main (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -2018,7 +2017,7 @@
   Step: End Step (turn 7)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK,NEW) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T,res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (T,res 1) | Scrubland | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -2042,7 +2041,7 @@
   Step: Upkeep (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island | Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -2062,7 +2061,7 @@
   Step: Draw (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 5 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island | Island
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -2082,7 +2081,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
   Self exile: Geist of Saint Traft
@@ -2103,7 +2102,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
@@ -2132,7 +2131,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
@@ -2160,7 +2159,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
@@ -2187,7 +2186,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
@@ -2213,7 +2212,7 @@
   Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
-  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Polluted Delta, Force of Will
   Opp GY:  Wasteland, Aether Vial
@@ -2239,7 +2238,7 @@
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T)
   Stack: Murktide Regent (spell, opponent)
   Self GY: Wasteland, Aether Vial
@@ -2262,7 +2261,7 @@
   Step: First Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
@@ -2281,7 +2280,7 @@
   Step: Begin Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
@@ -2302,7 +2301,7 @@
   Step: Declare Atk (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
@@ -2321,7 +2320,7 @@
   Step: End Combat (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
@@ -2340,7 +2339,7 @@
   Step: Second Main (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta
@@ -2359,7 +2358,7 @@
   Step: End Step (turn 8)
   Self:  21 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T,SICK) | Orc Army [1/1] [+1/+1:1] (T)
+  Self BF:  Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK,NEW)
   Self GY: Wasteland, Aether Vial
   Opp GY:  Swords to Plowshares, Tundra, Polluted Delta

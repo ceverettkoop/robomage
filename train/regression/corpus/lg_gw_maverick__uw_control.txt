@@ -2890,14 +2890,14 @@
   Resolving ability (category: ChangeZone)
   Tamiyo, Inquisitive Student is moved to the battlefield
   Resolving ability (category: Cleanup)
-  Tamiyo, Inquisitive Student transforms into Tamiyo, Seasoned Scholar!
+  Tamiyo, Seasoned Scholar enters transformed.
 
 --- Decision 127 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(6): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Tundra, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Clue
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Brainstorm, Wasteland, Wasteland, Ponder, Mystic Sanctuary, Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2922,7 +2922,7 @@
   Step: First Main (turn 14)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 45
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] [Flying] (SICK,NEW,res 1) | Tundra (NEW) | Clue
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (NEW) | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Brainstorm, Wasteland, Wasteland, Ponder, Mystic Sanctuary, Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2955,7 +2955,7 @@
   Self:  20 life | mana: empty | hand(5): Bojuka Bog, Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Brainstorm, Wasteland, Wasteland, Ponder, Mystic Sanctuary, Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2979,7 +2979,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] | Bojuka Bog (T,NEW) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Bojuka Bog (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3022,7 +3022,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Green Sun's Zenith
@@ -3046,7 +3046,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Badgermole Cub (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3071,7 +3071,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] (ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Green Sun's Zenith
@@ -3094,7 +3094,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] (ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Forest (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3120,7 +3120,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] (ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Green Sun's Zenith
@@ -3142,7 +3142,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] (ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3169,7 +3169,7 @@
   Self:  20 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 44
   Opp:   8 life | mana: empty | energy 2 | hand count: 5 | lib 34
   Self BF:  Badgermole Cub [2/2] (ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Green Sun's Zenith
@@ -3193,7 +3193,7 @@
   Step: Declare Atk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Opp BF:   Badgermole Cub [2/2] (T,ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Tamiyo, Seasoned Scholar (self)
@@ -3219,7 +3219,7 @@
   Step: Declare Atk (turn 15)
   Self:  8 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] [Flying] (SICK) | Tundra | Clue
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Opp BF:   Badgermole Cub [2/2] (T,ATK) | Bojuka Bog (T,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Tamiyo, Seasoned Scholar (self)
@@ -3261,7 +3261,7 @@
   Step: Upkeep (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tundra | Clue
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3283,7 +3283,7 @@
   Step: Upkeep (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tundra | Clue
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
@@ -3314,7 +3314,7 @@
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring, Wasteland | lib 33
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 4] | Tundra (T) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares
@@ -3339,7 +3339,7 @@
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 4] [Flying] | Tundra (T) | Wasteland (NEW) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 4] | Tundra (T) | Wasteland (NEW) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares
@@ -3366,7 +3366,7 @@
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Tundra (T) | Wasteland (NEW) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tundra (T) | Wasteland (NEW) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
@@ -3391,7 +3391,7 @@
   Step: First Main (turn 16)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] (act 1) | Tundra (T) | Wasteland (NEW) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tundra (T) | Wasteland (NEW) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
@@ -3430,7 +3430,7 @@
   Self:  22 life | mana: empty | hand(5): Knight of the Reliquary, Misty Rainforest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland, Swords to Plowshares
@@ -3452,7 +3452,7 @@
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Misty Rainforest (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland, Swords to Plowshares
@@ -3479,7 +3479,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 43
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Stack: Misty Rainforest (ability, self)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Misty Rainforest (self)
@@ -3508,7 +3508,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland, Swords to Plowshares
@@ -3532,7 +3532,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Forest (self)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3558,7 +3558,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland, Swords to Plowshares
@@ -3581,7 +3581,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3608,7 +3608,7 @@
   Self:  21 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 42
   Opp:   6 life | mana: empty | energy 2 | hand count: 4 | lib 33
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Wasteland, Swords to Plowshares
@@ -3632,7 +3632,7 @@
   Step: Declare Atk (turn 17)
   Self:  6 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   21 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Opp BF:   Dryad Arbor [1/1] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,ATK,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Tamiyo, Seasoned Scholar (self)
@@ -3672,7 +3672,7 @@
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   21 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra | Clue
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra | Clue
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares
@@ -3694,7 +3694,7 @@
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
   Opp:   21 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra | Clue
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra | Clue
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
@@ -3721,7 +3721,7 @@
   Step: Upkeep (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 33
   Opp:   21 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Swords to Plowshares (spell, self) -> Dryad Arbor (opponent, slot 48)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
@@ -3748,7 +3748,7 @@
   Step: First Main (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Misty Rainforest, Murktide Regent, The One Ring | lib 32
   Opp:   22 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3772,7 +3772,7 @@
   Step: First Main (turn 18)
   Self:  5 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 32
   Opp:   22 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Misty Rainforest (NEW) | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Misty Rainforest (NEW) | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3800,7 +3800,7 @@
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 32
   Opp:   22 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (T) | Clue
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Misty Rainforest (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -3826,7 +3826,7 @@
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 31
   Opp:   22 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] [Flying] | Tundra (NEW) | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra (NEW) | Tundra (T) | Clue
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3851,7 +3851,7 @@
   Step: First Main (turn 18)
   Self:  4 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 31
   Opp:   22 life | mana: empty | hand count: 4 | lib 42
-  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] (act 1) | Tundra (NEW) | Tundra (T) | Clue
+  Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 8] (act 1) | Tundra (NEW) | Tundra (T) | Clue
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -3889,7 +3889,7 @@
   Self:  22 life | mana: empty | hand(5): Knight of the Reliquary, Savannah, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3911,7 +3911,7 @@
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3940,7 +3940,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3964,7 +3964,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -3987,7 +3987,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4013,7 +4013,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   4 life | mana: empty | energy 2 | hand count: 4 | lib 30
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -4048,7 +4048,7 @@
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(4): Brainstorm, Force of Will, Murktide Regent, The One Ring | lib 30
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra | Tundra
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 8] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -4070,7 +4070,7 @@
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 30
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Brainstorm (spell, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4097,7 +4097,7 @@
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(6): Flooded Strand, Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Brainstorm (spell, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4126,7 +4126,7 @@
   Step: Upkeep (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Brainstorm (spell, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4155,7 +4155,7 @@
   Step: First Main (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(5): Force of Will, Murktide Regent, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra | Tundra
+  Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 8] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Brainstorm, Misty Rainforest, Swords to Plowshares, Wasteland, Swords to Plowshares
@@ -4189,7 +4189,7 @@
   Step: First Main (turn 20)
   Self:  3 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 28
   Opp:   22 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 8] [Flying] | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 8] | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Opp GY:  Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4220,7 +4220,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   3 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -4241,7 +4241,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
   Opp:   3 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4273,7 +4273,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
   Opp:   9 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -4295,7 +4295,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
   Opp:   9 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4320,7 +4320,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
   Opp:   9 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -4355,7 +4355,7 @@
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 2 | hand(5): Flooded Strand, Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra | Tundra
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 10] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4378,7 +4378,7 @@
   Step: First Main (turn 22)
   Self:  8 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Flooded Strand (NEW) | Island | Island | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra | Tundra
+  Self BF:  Flooded Strand (NEW) | Island | Island | Tamiyo, Seasoned Scholar [loy 10] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4406,7 +4406,7 @@
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 27
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra | Tundra
+  Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 10] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Flooded Strand (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4432,7 +4432,7 @@
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, The One Ring, Wrath of the Skies | lib 26
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Island | Island | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | Tundra | Tundra
+  Self BF:  Island | Island | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 10] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Flooded Strand
@@ -4464,7 +4464,7 @@
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(3): Force of Will, Spell Pierce, Wrath of the Skies | lib 26
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Island (T) | Island (T) | Plains (T,NEW) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | The One Ring [Indestructible] (NEW) | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Plains (T,NEW) | Tamiyo, Seasoned Scholar [loy 10] | The One Ring [Indestructible] (NEW) | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: The One Ring (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4493,7 +4493,7 @@
   Step: First Main (turn 22)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 25
   Opp:   22 life | mana: empty | hand count: 3 | lib 40
-  Self BF:  Island (T) | Island (T) | Plains (T,NEW) | Tamiyo, Seasoned Scholar [loy 10] [Flying] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Plains (T,NEW) | Tamiyo, Seasoned Scholar [loy 10] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Flooded Strand
@@ -4526,7 +4526,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 40
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4547,7 +4547,7 @@
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Savannah, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4567,7 +4567,7 @@
   Self:  22 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Savannah, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4590,7 +4590,7 @@
   Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah (NEW) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4621,7 +4621,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4644,7 +4644,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4670,7 +4670,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 25
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK,NEW) | Savannah (T,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand
@@ -4706,7 +4706,7 @@
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(4): Force of Will, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 25
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:1] [Indestructible] | Tundra | Tundra
+  Self BF:  Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:1] [Indestructible] | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: The One Ring (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4732,7 +4732,7 @@
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(6): Force of Will, Geist of Saint Traft, Spell Pierce, Tamiyo, Inquisitive Student, Tune the Narrative, Wrath of the Skies | lib 23
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra
+  Self BF:  Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: The One Ring (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4756,7 +4756,7 @@
   Step: Upkeep (turn 24)
   Self:  7 life | mana: empty | energy 2 | hand(5): Force of Will, Geist of Saint Traft, Spell Pierce, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 23
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra
+  Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T) | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Tune the Narrative (spell, self) -> The One Ring (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4785,7 +4785,7 @@
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(7): Flooded Strand, Force of Will, Geist of Saint Traft, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra
+  Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra | Tundra
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Tune the Narrative, Flooded Strand
@@ -4816,7 +4816,7 @@
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(6): Flooded Strand, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Tune the Narrative, Flooded Strand
@@ -4840,7 +4840,7 @@
   Step: First Main (turn 24)
   Self:  5 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Flooded Strand (NEW) | Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Flooded Strand (NEW) | Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Tune the Narrative, Flooded Strand
@@ -4869,7 +4869,7 @@
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 21
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Flooded Strand (ability, self)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
@@ -4894,7 +4894,7 @@
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(5): Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 20
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (NEW) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (NEW) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
@@ -4921,7 +4921,7 @@
   Step: First Main (turn 24)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
   Opp:   22 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T,NEW) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK,NEW) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T,NEW) | Tundra (T)
   Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
@@ -4954,7 +4954,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Knight of the Reliquary [8/8] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -4976,7 +4976,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Knight of the Reliquary [8/8] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5004,7 +5004,7 @@
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 39
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Stack: Swords to Plowshares (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 53)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5030,7 +5030,7 @@
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 39
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5053,7 +5053,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5074,7 +5074,7 @@
   Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Windswept Heath | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5098,7 +5098,7 @@
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Windswept Heath (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5120,7 +5120,7 @@
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Windswept Heath (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5147,7 +5147,7 @@
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Knight of the Reliquary [9/9] (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Windswept Heath (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Stack: Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1]
   Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #0)
   Self GY: Forest, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5175,7 +5175,7 @@
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Knight of the Reliquary [10/10] (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Stack: Windswept Heath (ability, self) -> Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1]
   Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #1)
   Pending: Windswept Heath (self)
@@ -5206,7 +5206,7 @@
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 37
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest (T,NEW,res 1) | Knight of the Reliquary [9/9] (T) | Plains (NEW) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Stack: Knight of the Reliquary (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5240,7 +5240,7 @@
   Self:  21 life | mana: empty | hand(1): Knight of the Reliquary | lib 36
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest (T,NEW,res 1) | Horizon Canopy (NEW) | Knight of the Reliquary [9/9] (T) | Plains (NEW) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5270,7 +5270,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5292,7 +5292,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Pending: Thalia, Guardian of Thraben (self)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5317,7 +5317,7 @@
   Self:  20 life | mana: empty | hand(0): (empty) | lib 36
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Self GY: Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5345,7 +5345,7 @@
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Opp BF:   Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [1/1] [First Strike] (T,ATK)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5367,7 +5367,7 @@
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Opp BF:   Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [1/1] [First Strike] (T,ATK)
   Pending: Geist of Saint Traft (self)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5394,7 +5394,7 @@
   Step: Declare Blk (turn 25)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (BLK->Thalia, Guardian of Thraben,SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] (BLK->Thalia, Guardian of Thraben,SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
   Opp BF:   Forest (T,NEW,res 1) | Horizon Canopy (T,NEW) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK,NEW) | Plains (T,NEW) | Savannah (T) | Savannah (T) | Thalia, Guardian of Thraben [1/1] [First Strike] (T,ATK,BLOCKED)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5428,7 +5428,7 @@
   Step: Upkeep (turn 26)
   Self:  4 life | mana: empty | energy 4 | hand(4): Force of Will, Spell Pierce, Spell Snare, Wrath of the Skies | lib 20
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:2] [Indestructible] | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: The One Ring (ability, self)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5457,7 +5457,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Brainstorm, Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 16
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5478,7 +5478,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 16
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: Brainstorm (spell, self)
   Self GY: Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5508,7 +5508,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(10): Flow State, Force of Will, Force of Will, Ponder, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 13
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -5540,7 +5540,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(9): Flow State, Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 14
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: Brainstorm (spell, self)
   Pending: Brainstorm (self)
@@ -5571,7 +5571,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5592,7 +5592,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Pending: Swords to Plowshares (self)
   Self GY: Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5618,7 +5618,7 @@
   Step: Draw (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: Swords to Plowshares (spell, self) -> Knight of the Reliquary (opponent, slot 50)
   Self GY: Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5645,7 +5645,7 @@
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5673,7 +5673,7 @@
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Stack: Tamiyo, Inquisitive Student (spell, self)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5697,7 +5697,7 @@
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 14] [Flying] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5725,7 +5725,7 @@
   Step: First Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5748,7 +5748,7 @@
   Step: Declare Atk (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5772,7 +5772,7 @@
   Step: Second Main (turn 26)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 36
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] [Flying] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5799,7 +5799,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 36
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest | Horizon Canopy | Knight of the Reliquary [9/9] | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Self GY: Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Knight of the Reliquary, Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5820,7 +5820,7 @@
   Self:  29 life | mana: empty | hand(1): Wasteland | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest | Horizon Canopy | Knight of the Reliquary [9/9] | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Self GY: Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Knight of the Reliquary, Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5840,7 +5840,7 @@
   Self:  29 life | mana: empty | hand(1): Wasteland | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest | Horizon Canopy | Knight of the Reliquary [9/9] | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Self GY: Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Knight of the Reliquary, Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5863,7 +5863,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest | Horizon Canopy | Knight of the Reliquary [9/9] | Plains | Savannah | Savannah | Wasteland (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Self GY: Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Self exile: Knight of the Reliquary, Dryad Arbor, Badgermole Cub, Green Sun's Zenith
@@ -5889,7 +5889,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest (T) | Knight of the Reliquary [10/10] | Plains | Savannah | Savannah | Wasteland (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Horizon Canopy (ability, self) [amt=1]
   Self GY: Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5911,7 +5911,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Forest (T) | Knight of the Reliquary [10/10] (T) | Plains | Savannah | Savannah | Wasteland (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Horizon Canopy (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
   Self GY: Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5938,7 +5938,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Knight of the Reliquary [11/11] (T) | Plains | Savannah | Savannah | Wasteland (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
   Self GY: Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5961,7 +5961,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Knight of the Reliquary [11/11] (T) | Plains | Savannah | Savannah | Wasteland (NEW)
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
   Pending: Wasteland (self)
   Self GY: Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5990,7 +5990,7 @@
   Step: First Main (turn 27)
   Self:  1 life | mana: empty | energy 4 | hand(6): Force of Will, Force of Will, Spell Pierce, Spell Snare, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 0 | lib 35
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
   Stack: Wasteland (ability, opponent) -> Tundra (self, slot 7) -> Knight of the Reliquary (ability, opponent) [amt=1] -> Horizon Canopy (ability, opponent) [amt=1]
   Self GY: Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -6019,7 +6019,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
   Self GY: Wasteland, Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -6051,7 +6051,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 34
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Karakas (NEW) | Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
   Stack: Horizon Canopy (ability, self) [amt=1]
   Self GY: Wasteland, Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Tundra, Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -6074,7 +6074,7 @@
   Self:  29 life | mana: empty | hand(0): (empty) | lib 34
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Karakas (NEW) | Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
-  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
+  Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
   Stack: Horizon Canopy (ability, self) [amt=1]
   Pending: Karakas (self)
   Self GY: Wasteland, Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -6107,7 +6107,7 @@
   Step: Upkeep (turn 28)
   Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   29 life | mana: empty | hand count: 1 | lib 33
-  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 16] [Flying] | The One Ring [burden:3] [Indestructible] | Tundra | Tundra
+  Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island | Island | Plains | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] | Tundra | Tundra
   Opp BF:   Karakas (T) | Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
   Stack: The One Ring (ability, self)
   Self GY: Tundra, Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
