@@ -218,8 +218,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     return true;
 }
 
-// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if, spell
-// castability, and ConditionDefined$ Remembered subability gates all share this).
+// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if and the
+// CR 608.2c resolution-time "if" gate, including ConditionDefined$ Remembered, share this).
 // Counts battlefield permanents matching the filter (or remembered cards when
 // condition_on_remembered) and compares against the threshold (default ">= 1").
 // Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
@@ -434,8 +434,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
 
 // Public entry point: evaluate the present condition, applying ConditionNotPresent$ negation.
 // An empty condition_present is "no condition" → always satisfied (the negate flag is never set
-// in that case, since ConditionNotPresent always carries a filter). CR 603.4-style gate used for
-// spell castability and intervening-if trigger checks alike.
+// in that case, since ConditionNotPresent always carries a filter). Used by the intervening-if
+// trigger checks (CR 603.4) and the resolution-time condition gate (CR 608.2c) alike.
 bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     bool raw = present_condition_raw(ab, caster, orderer);
     return ab.condition_negate ? !raw : raw;
@@ -471,16 +471,14 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
              (game.player_a_turn == game.player_a_has_priority) && stack_empty);
         if (!can_cast_now) continue;
 
-        // Spell-target legality + ConditionPresent castability gate (mirrors the front-face checks).
-        bool tgt_ok = true, condition_ok = true;
+        // Spell-target legality (mirrors the front-face checks).
+        bool tgt_ok = true;
         for (const auto &ab : back.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             tgt_ok = has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer);
-            if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
-        if (!tgt_ok || !condition_ok) continue;
+        if (!tgt_ok) continue;
         // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
         if (!aura_enchant_target_available(back, priority_player, orderer)) continue;
 
@@ -630,10 +628,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (rules_mod::opponent_sorcery_speed_locked(priority_player))
             effective_instant = false;
         bool can_cast_now = effective_instant || sorcery_window;
-        // Check that at least one legal target exists for any targeting requirement
-        // and that any ConditionPresent$ castability condition is met
+        // Check that at least one legal target exists for any targeting requirement. A
+        // ConditionPresent$ "if ..." clause is checked only at resolution (CR 608.2c), so it never
+        // gates the cast.
         bool tgt_ok = true;
-        bool condition_ok = true;
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             // Mode-aware target legality (CR 601.2c): for a Gift spell the required target type
@@ -645,11 +643,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // a protected-only target (Emrakul vs white, Scryb Ranger vs blue) is not offered.
             Ability probe = cast_gate_probe(ab, card_entity, priority_player);
             tgt_ok = spell_has_castable_targets(probe, orderer, priority_player, card_data.has_gift);
-            // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
-            // may target anything legal; the condition is checked on the target at
-            // resolution, so it must not gate cast-time legality.
-            if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
         // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
@@ -660,7 +653,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
         // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
         // the spell can still legally target any creature in CLI/interactive play.
-        if (InputLogger::instance().is_machine_schedule() && tgt_ok && condition_ok) {
+        if (InputLogger::instance().is_machine_schedule() && tgt_ok) {
             for (const auto &ab : card_data.abilities) {
                 if (ab.ability_type != Ability::SPELL) continue;
                 if (ab.condition_present.find("cmcLEX") != std::string::npos &&
@@ -699,7 +692,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         auto pf_it = cur_game.payment_fail_counts.find(card_entity);
         bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
-        if (can_cast_now && tgt_ok && condition_ok && !payment_blocked) {
+        if (can_cast_now && tgt_ok && !payment_blocked) {
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;

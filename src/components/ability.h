@@ -822,7 +822,10 @@ struct Ability{
     std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1", or "LEX" with SVar RHS
     std::string condition_compare_svar_expr = "";  // when compare RHS is an SVar (e.g. LEX → "Count$Devotion.Blue")
 
-    // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
+    // ConditionPresent$ resolution condition (Edge of Autumn: "If you control four or fewer lands,
+    // search..."): count permanents matching the filter and compare to the threshold as the
+    // ability resolves (CR 608.2c); on failure Ability::resolve skips the body and still chains
+    // the subabilities. It never restricts casting or activating.
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
     // ConditionNotPresent$ — the condition is INVERTED: the gated body runs only when the
@@ -851,8 +854,8 @@ struct Ability{
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
     // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND
     // again as it resolves; if false at resolution the ability does nothing (no subabilities).
-    // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from condition_present used
-    // for spell castability, which is checked only at cast time.
+    // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from a plain
+    // condition_present, which is checked only at resolution.
     bool intervening_if = false;
 
     // IsCurse$ True (Carpet of Flowers' DB$ Pump): a Pump used purely as a targeting vehicle to

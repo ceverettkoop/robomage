@@ -1606,21 +1606,16 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             condition_passed =
                 compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
         }
-        // ConditionDefined$ Remembered gate (Birthing Ritual): the dig only happens if a creature
-        // was sacrificed (remembered count satisfies condition_present/condition_compare). Like the
-        // SVar gate, failure skips this body but still chains subabilities.
-        if (condition_passed && condition_on_remembered)
-            condition_passed = evaluate_present_condition(*this, controller, orderer);
-        // ConditionDefined$ TriggeredCard gate (Amped Raptor): the dig only happens if the card
-        // that triggered this ability was cast from its controller's hand. evaluate_present_condition
-        // reads the property off the source's permanent state. Failure skips this body but still
-        // chains subabilities.
-        if (condition_passed && condition_on_triggered_card)
-            condition_passed = evaluate_present_condition(*this, controller, orderer);
-        // ConditionDefined$ ExiledWith gate (The Creation of Avacyn II & III): the body runs only
-        // if the card the source Saga exiled matches the condition (ConditionPresent$ Creature).
-        // Failure skips this body but still chains subabilities (the noncreature → hand fallthrough).
-        if (condition_passed && condition_on_exiled_with)
+        // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
+        // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you
+        // control four or fewer lands"), ConditionDefined$ Remembered (Birthing Ritual: the dig
+        // only happens if a creature was sacrificed), TriggeredCard (Amped Raptor: the card that
+        // triggered this was cast from its controller's hand) and ExiledWith (The Creation of
+        // Avacyn II & III: the card the Saga exiled is a creature). Like the SVar gate, failure
+        // skips this body but still chains subabilities. An intervening-if was already checked in
+        // phase 2, and a ConditionDefined$ Targeted condition is applied by the effect handler
+        // to its target.
+        if (condition_passed && !condition_present.empty() && !intervening_if && !condition_on_target)
             condition_passed = evaluate_present_condition(*this, controller, orderer);
         // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
         // controller has the city's blessing (702.131). Failure still chains subabilities.
