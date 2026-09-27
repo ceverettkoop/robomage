@@ -301,6 +301,16 @@ void Game::end_cleanup_effects() {
         delayed_triggers.end());
 }
 
+// Begin the end of combat step (CR 511). "At end of combat" (CR 511.2): fire the end-of-combat
+// step event so end-of-combat delayed triggers (Geist of Saint Traft's "exile that token at end
+// of combat") can fire before the combat state is cleared as the step ends.
+void Game::begin_end_of_combat_step(Entity active_player_entity) {
+    cur_step = END_OF_COMBAT;
+    Event end_of_combat_event(Events::END_OF_COMBAT_BEGAN);
+    end_of_combat_event.SetParam(Params::PLAYER, active_player_entity);
+    global_coordinator.SendEvent(end_of_combat_event);
+}
+
 // Begin a cleanup step (CR 514): cur_step becomes CLEANUP with no player holding priority, its
 // 514.2 actions still to happen, and CLEANUP_BEGAN fired for "at the beginning of the cleanup
 // step" abilities.
@@ -505,8 +515,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     attackers_declared = false;  // Reset for new combat
                     break;
                 case DECLARE_ATTACKERS:
-                    cur_step = DECLARE_BLOCKERS;
                     blockers_declared = false;  // Reset for new combat
+                    // CR 508.8: with no creature attacking (none declared or put onto the
+                    // battlefield attacking), the declare blockers and combat damage steps are
+                    // skipped.
+                    if (std::none_of(orderer->mEntities.begin(), orderer->mEntities.end(),
+                                     is_attacking_creature)) {
+                        begin_end_of_combat_step(active_player_entity);
+                        break;
+                    }
+                    cur_step = DECLARE_BLOCKERS;
                     break;
                 case DECLARE_BLOCKERS: {
                     // Scan for first strikers / double strikers
@@ -532,15 +550,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     combat_damage_assignment.clear();  // T3.10: regular step re-decides for survivors
                     break;
                 case COMBAT_DAMAGE:
-                    cur_step = END_OF_COMBAT;
-                    {
-                        // "At end of combat" (CR 512): fire the end-of-combat step event so
-                        // end-of-combat delayed triggers (Geist of Saint Traft's "exile that token
-                        // at end of combat") can fire before the combat state is cleared below.
-                        Event end_of_combat_event(Events::END_OF_COMBAT_BEGAN);
-                        end_of_combat_event.SetParam(Params::PLAYER, active_player_entity);
-                        global_coordinator.SendEvent(end_of_combat_event);
-                    }
+                    begin_end_of_combat_step(active_player_entity);
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures

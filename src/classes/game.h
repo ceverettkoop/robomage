@@ -851,6 +851,8 @@ struct Game {
         // "this turn" effects end, simultaneously. Run once per cleanup step, after the 514.1
         // discard (process_turn_based_actions).
         void end_cleanup_effects();
+        // Begin the end of combat step (CR 511) for the active player `active_player_entity`.
+        void begin_end_of_combat_step(Entity active_player_entity);
         // Begin a cleanup step (CR 514) for the active player `active_player_entity`.
         void begin_cleanup_step(Entity active_player_entity);
         // CR 615: is this combat damage prevented by an active combat-damage prevention shield?
