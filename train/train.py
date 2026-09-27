@@ -2249,8 +2249,8 @@ def observe(binary_path: str,
     ``deck_a``/``deck_b`` set each side's deck; game i uses seed ``seed + i``.
     Every decision by each agent is logged; ``--verbose`` additionally dumps the
     full board state and the legal action menu at each decision (the same
-    transcript format the test harness prints), ``--quiet`` prints none of it,
-    only a one-line W/L/D summary.
+    transcript format the test harness prints), ``--quiet`` prints none of it to
+    stdout, only a one-line W/L/D summary (with ``out`` the file still gets it).
     With ``n_games > 1`` a per-game result line and a final W/L/D summary are
     printed.
 
@@ -2277,12 +2277,14 @@ def observe(binary_path: str,
         "Play" if isinstance(ctrl, PlayController)
         else "Scripted" if is_scripted_spec(spec) else "Model"
         for ctrl, spec in ((ctrl_a, player_a), (ctrl_b, player_b)))
-    transcript = "quiet" if quiet else ("verbose" if verbose else "compact")
+    # --quiet silences stdout only: with --out the transcript still goes to the file.
+    quiet_transcript = quiet and not out
+    transcript = "quiet" if quiet_transcript else ("verbose" if verbose else "compact")
     unit = f"{'match' if bo3 else 'game'}{'es' if bo3 else 's'}"
     records = []
 
     def run():
-        if not quiet:
+        if not quiet_transcript:
             print(f"=== {label_a}/A [{player_a}] ({deck_a or 'default'} deck) vs "
                   f"{label_b}/B [{player_b}] ({deck_b or 'default'} deck) — "
                   f"{n_games} {unit} ===\n", flush=True)
@@ -2291,7 +2293,7 @@ def observe(binary_path: str,
             binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=n_games, bo3=bo3, seed=seed, transcript=transcript,
             max_decisions=max_decisions, on_game_end=records.append,
-            narrative=not (timing and quiet))
+            narrative=not (timing and quiet_transcript))
 
     t0 = time.perf_counter()
     if out:
