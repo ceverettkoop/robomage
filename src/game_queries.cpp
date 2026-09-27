@@ -969,6 +969,9 @@ static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt) {
 
 void register_delayed_trigger(DelayedTrigger dt, Entity creator) {
     stamp_source_transforms(dt.ability);  // CR 701.27f: since the delayed trigger was created
+    // CR 107.3n: a delayed trigger created by a resolving spell or ability uses that object's X.
+    if (dt.ability.x_paid < 0 && cur_game.resolution.active)
+        dt.ability.x_paid = static_cast<int>(cur_game.x_paid);
     DelayedTriggerLink &link = dt.ability.delayed_link;
     link.seq = cur_game.next_delayed_seq++;
     link.creator = creator;

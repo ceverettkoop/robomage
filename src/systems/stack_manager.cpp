@@ -262,7 +262,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         // restore it the way a resolving spell restores Spell::x_paid, so Count$xPaid / cmcLEX
         // read this ability's X and not a spell or ability that resolved in between (Pernicious
         // Deed answered by Lightning Bolt). An ability is not cast, so no mana spent casting it
-        // counts for Converge (CR 702.90). A triggered ability (x_paid < 0) leaves both as is.
+        // counts for Converge (CR 702.90). A triggered ability carries the X it was put on the
+        // stack with (CR 107.3m/n, else 0); an ability with none recorded (x_paid < 0) leaves
+        // both as is.
         if (ability.x_paid >= 0) {
             cur_game.x_paid = static_cast<size_t>(ability.x_paid);
             cur_game.converge = 0;

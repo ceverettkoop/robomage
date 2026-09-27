@@ -89,6 +89,10 @@ struct Permanent {
     // battlefield, and any other non-cast entry. Set one-shot from cur_game.cast_to_battlefield
     // when the Permanent is created.
     bool entered_by_cast = false;
+    // CR 107.3m: the X chosen for the spell that became this permanent as it resolved (0 for any
+    // other entry). Its enters-the-battlefield triggered abilities use this X, though the
+    // permanent's own X is 0. Set one-shot from cur_game.pending_etb_xpaid.
+    int entered_x = 0;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)

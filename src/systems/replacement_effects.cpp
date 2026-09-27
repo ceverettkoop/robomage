@@ -435,7 +435,6 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             ev.etb_p1p1 += c.amount;
             ev.etb_counter_type = c.counter_type;
             cur_game.delve_exiled.clear();
-            cur_game.pending_etb_xpaid.erase(ev.entity);
             break;
         case EXILE_INSTEAD: {
             ev.destination = Zone::EXILE;

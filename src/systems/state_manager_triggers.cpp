@@ -140,6 +140,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
 // objects it watches (Super Shredder's "another permanent leaves the battlefield" when both die
 // in one state-based-action check) still triggers, with its last-known abilities and controller.
 // Tokens keep no abilities to look back at once off the battlefield.
+static bool is_self_etb_event(const Event &ev, Entity entity);
 static void match_departed_watcher_triggers(const std::vector<Event> &events,
                                             std::shared_ptr<Orderer> orderer,
                                             std::vector<PendingTrigger> &pending);
@@ -148,6 +149,14 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
 // subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
+// Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own
+// enters-the-battlefield triggered abilities)?
+static bool is_self_etb_event(const Event &ev, Entity entity) {
+    return ev.GetType() == Events::CARD_CHANGED_ZONE && ev.HasParam(Params::ENTITY) &&
+           ev.GetParam<Entity>(Params::ENTITY) == entity &&
+           ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD;
+}
+
 static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
     Zone::Ownership activator = seat_of_player(activator_entity);
     if (ab.defined_triggered_activator) ab.triggered_activator = activator;
@@ -1100,6 +1109,9 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             Ability trigger_ab = ab;
             trigger_ab.source = entity;
             trigger_ab.controller = controller;
+            // CR 107.3m: an enters-the-battlefield trigger of a permanent uses the X its spell was
+            // cast with.
+            if (perm && is_self_etb_event(ev, entity)) trigger_ab.x_paid = perm->entered_x;
             // Defined$ TriggeredSourceSA — the Counter effect acts on the spell that targeted
             // this permanent. Bind it as the ability's target from the event's ENTITY (the
             // targeting object). UnlessPayer$ TriggeredSourceSAController binds the payer of the
@@ -1378,6 +1390,9 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
             tp.queue.erase(tp.queue.begin());
             continue;
         }
+        // A triggered ability whose X nothing defined (CR 107.3m/n) has X = 0 (CR 107.3i: the
+        // source's own X is 0 off the stack), so it never reads a stale X from another spell.
+        if (pt.ab.x_paid < 0) pt.ab.x_paid = 0;
         tp.placed.push_back(orderer->push_ability_onto_stack(pt.ab, pt.controller));
         game_log("%s\n", pt.log_line.c_str());
         tp.queue.erase(tp.queue.begin());
