@@ -22,7 +22,7 @@ class StackManager;
 
 // Cached snapshot of an active static ability on the battlefield.
 // Rebuilt each SBE pass by gather_active_statics() (the continuous-effects engine
-// preamble); queried by determine_legal_actions, check_triggered_abilities,
+// preamble); queried by determine_legal_actions, collect_triggered_abilities,
 // mana_system, game.cpp untap, etc.
 //
 // The static itself is held as a handle — its source (a battlefield permanent, or an emblem
@@ -163,7 +163,12 @@ private:
     void apply_land_abilities(Entity entity);
     void apply_keyword_abilities(Entity entity);
     void deal_combat_damage(Game& game, bool first_strike_only);
-    void check_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
+    // CR 603.2: drain the events since the last call and record the abilities they triggered in
+    // Game::waiting_triggers (sources still as they were when the events happened: this runs
+    // before a state-based-action check can move them).
+    void collect_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
+    // CR 603.3 / 603.3b: put every waiting triggered ability on the stack in APNAP order.
+    void place_waiting_triggers(Game& game, std::shared_ptr<Orderer> orderer);
 
     // Continuous-effects engine internals (rule 613): the per-layer appliers and
     // the gather preamble live in state_manager_statics.cpp where the keyword

@@ -322,8 +322,9 @@ std::set<Entity> collect_pending_pins() {
             pin_ability_tree_targets(pt.ab, pins);
         }
     }
-    // Triggered abilities queued for the next placement (Ward, a reflexive trigger created by a
-    // resolution that then suspended): their sources and bound references.
+    // Triggered abilities waiting for the next placement (collected from events before a
+    // state-based-action choice parked, Ward, a reflexive trigger created by a resolution that
+    // then suspended): their sources and bound references.
     for (const auto &pt : cur_game.waiting_triggers) {
         if (pt.source != 0) pins.insert(pt.source);
         pin_ability_tree_targets(pt.ab, pins);

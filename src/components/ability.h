@@ -565,7 +565,7 @@ struct Ability{
     // (Permanent::state_triggers_armed) enforces that. Dark Depths' "When CARDNAME has no ice
     // counters on it, sacrifice it. If you do, create Marit Lage." is a Mode$ Always trigger
     // gated on IsPresent$ Card.Self+counters_EQ0_ICE. There is no trigger_on event; the state
-    // scan in check_triggered_abilities collects these separately from the event-driven scan.
+    // scan in collect_triggered_abilities collects these separately from the event-driven scan.
     bool trigger_state_condition = false;
 
     // Mode$ TapsForMana | Static$ True (Badgermole Cub): "whenever you tap a creature for mana,
@@ -863,7 +863,7 @@ struct Ability{
     bool condition_on_triggered_card = false;
 
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
-    // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND
+    // are checked BOTH when the trigger would go on the stack (collect_triggered_abilities) AND
     // again as it resolves; if false at resolution the ability does nothing (no subabilities).
     // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from a plain
     // condition_present, which is checked only at resolution.

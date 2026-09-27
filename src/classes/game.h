@@ -256,7 +256,7 @@ struct Game {
         // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
         // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
         // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
-        // the trigger scan (check_triggered_abilities) tests them against drained events just like
+        // the trigger scan (collect_triggered_abilities) tests them against drained events just like
         // a permanent's triggered ability. Cleared at the cleanup step so they last only their
         // turn of creation. General over any until-end-of-turn floating triggered ability.
         std::vector<Ability> floating_triggers;
@@ -330,11 +330,13 @@ struct Game {
         // member so a snapshot covers the
         // parked placement. See resolution_frame.h.
         TriggerPlacementRT trigger_placement;
-        // Triggered abilities that triggered outside the trigger scan's event matching — Ward
-        // when a spell or ability targets (CR 702.21a), a reflexive "when you do" trigger created
-        // by a resolving ability (CR 603.12) — waiting to be put on the stack. The next trigger
-        // scan places them in APNAP order with everything else that triggered since a player
-        // last received priority (CR 603.3b). Queued through queue_trigger.
+        // Triggered abilities that have triggered (CR 603.2) and wait to be put on the stack the
+        // next time a player would receive priority (CR 603.3): those the trigger scan collected
+        // from events (collect_triggered_abilities, run before each state-based-action check)
+        // and those that triggered outside it — Ward when a spell or ability targets (CR
+        // 702.21a), a reflexive "when you do" trigger created by a resolving ability (CR 603.12),
+        // queued through queue_trigger. place_waiting_triggers puts them all on the stack in
+        // APNAP order (CR 603.3b).
         std::vector<PendingTriggerRT> waiting_triggers;
         // Cast-time suspension state (pending_query tag CAST): the persisted
         // state machine of process_action's CAST_SPELL branch (run_cast_flow,
@@ -808,11 +810,11 @@ struct Game {
 
         // CR 725: make `player` the monarch. The previous monarch (if any) ceases to be the
         // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
-        // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
+        // triggers (end-step draw, steal-on-combat-damage) are fired by collect_triggered_abilities.
         void set_monarch(Entity player_entity);
 
-        // Queue a triggered ability that just triggered for the next trigger scan to put on the
-        // stack (waiting_triggers). `ab` carries its source and controller; its targets are
+        // Queue a triggered ability that just triggered to be put on the stack with the other
+        // waiting triggers (waiting_triggers). `ab` carries its source and controller; its targets are
         // chosen as it is put on the stack (CR 603.3d). `log_line` is narrated as it is placed;
         // the scan labels it for the ordering choice.
         void queue_trigger(const Ability &ab, const std::string &log_line);

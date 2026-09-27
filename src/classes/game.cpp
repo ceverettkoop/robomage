@@ -597,7 +597,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         global_coordinator.SendEvent(end_step_event);
                     }
                     // CR 702.175e: the "remove a time counter" impending shed is a triggered
-                    // ability (produced from END_STEP_BEGAN in check_triggered_abilities and put
+                    // ability (produced from END_STEP_BEGAN in collect_triggered_abilities and put
                     // on the stack), not a step side effect — so nothing is done inline here.
                     break;
                 case END_STEP:

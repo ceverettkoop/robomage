@@ -3507,7 +3507,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     // Mode$ Always — a state-triggered ability (CR 603.8). Its trigger condition is a game STATE
     // (the IsPresent$ intervening-if parsed above into condition_present/intervening_if), not a
     // game event, so it has no trigger_on; the dedicated state-trigger scan in
-    // check_triggered_abilities evaluates the condition each SBA pass and fires once when it
+    // collect_triggered_abilities evaluates the condition each SBA pass and fires once when it
     // becomes true. Dark Depths: IsPresent$ Card.Self+counters_EQ0_ICE ("when this has no ice
     // counters on it"). trigger_only_self is set so the source is the permanent whose counters
     // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.

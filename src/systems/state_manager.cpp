@@ -147,8 +147,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         apply_permanent_components(game, orderer);
         // An ETB choice inside apply_permanent_components parked a loop-top
         // pending decision (tag SBE_LATCHED): suspend the whole SBE call by
-        // early return (no trigger drain — it stays deferred until the resumed
-        // run's scan). On resume the main loop re-enters state_based_effects
+        // early return. On resume the main loop re-enters state_based_effects
         // from scratch; already-processed permanents are idempotent no-ops and
         // the same mid-apply site re-finds the question and consumes the latch.
         // (An ACTIVE-and-ANSWERED query is that resume in flight — fall
@@ -162,6 +161,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // CR 704.5a-c: a player who meets a loss condition loses; both players' conditions are
         // checked together, so two simultaneous losers draw the game (CR 104.4a).
         if (check_player_losses(game)) return;
+
+        // CR 603.2 / 603.3: abilities trigger when their events happen and wait to be put on the
+        // stack. Record them before this check's actions move any object, so a source the
+        // check removes (a creature that dealt combat damage and died of it) keeps the
+        // abilities it already triggered.
+        collect_triggered_abilities(game, orderer);
 
         // 704.5d - tokens in zones other than battlefield cease to exist
         // (handled by apply_permanent_components above)
@@ -350,10 +355,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                                  player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
                         if (in_main_loop()) {
                             // Park the choice (priority persisted at the chooser) and
-                            // suspend the whole SBE call — early return WITHOUT
-                            // check_triggered_abilities, deferring the pass's event
-                            // drain to the resumed run (the drain must stay inside
-                            // the trigger scan).
+                            // suspend the whole SBE call; the triggers collected so far
+                            // wait in Game::waiting_triggers.
                             pq_arm_sbe(key, std::move(choices), owner, /*decision_source=*/0);
                             return;
                         }
@@ -396,7 +399,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         fatal_error("SBE re-run did not re-derive the latched question");
 
     // SBA loop settled; triggered abilities go on the stack (rule 704.3)
-    check_triggered_abilities(game, orderer);
+    place_waiting_triggers(game, orderer);
     // CR 603.3b: abilities that triggered while that batch was put on the stack (Ward on a
     // placed trigger's target) go on the stack before any player receives priority, after the
     // game checks state-based actions again.

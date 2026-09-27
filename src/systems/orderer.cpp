@@ -193,7 +193,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         lki.exiled_with = global_coordinator.GetComponent<Permanent>(target).exiled_with;
         // How-it-entered markers: an ETB trigger of a permanent that leaves again before trigger
         // collection (legend rule, 0-toughness SBA) is fired by the look-back scan in
-        // check_triggered_abilities, which needs these gates after Permanent is stripped.
+        // collect_triggered_abilities, which needs these gates after Permanent is stripped.
         {
             const auto &p = global_coordinator.GetComponent<Permanent>(target);
             lki.entered_by_cast = p.entered_by_cast;
