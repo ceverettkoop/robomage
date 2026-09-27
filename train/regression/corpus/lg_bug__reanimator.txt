@@ -789,6 +789,7 @@
   Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
   Self GY: Force of Will
   Opp GY:  Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
+  Known opp hand: Otherworldly Gaze
   Opp revealed: Scalding Tarn, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Atraxa, Grand Unifier
   This turn: self drawn=1
   Extras: self_mulligans=1

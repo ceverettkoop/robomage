@@ -570,7 +570,7 @@
    3: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 26 ---
@@ -582,7 +582,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -602,7 +602,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -622,7 +622,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -644,7 +644,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -664,7 +664,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -684,7 +684,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -704,7 +704,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -729,7 +729,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: self_mulligans=1, opp_mulligans=1
   Actions:
@@ -750,7 +750,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -770,7 +770,7 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -796,7 +796,7 @@
   Stack: Ponder (spell, self)
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_mulligans=1, opp_mulligans=1
@@ -820,7 +820,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -844,7 +844,7 @@
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -865,7 +865,7 @@
   Self GY: Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Undercity Sewers, Doomsday, Brainstorm, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -887,7 +887,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_mulligans=1, opp_mulligans=1
@@ -913,7 +913,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -938,7 +938,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -957,7 +957,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -976,7 +976,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -997,7 +997,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -1016,7 +1016,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -1035,7 +1035,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -1054,7 +1054,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -1078,7 +1078,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
@@ -1098,7 +1098,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1117,7 +1117,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1136,7 +1136,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1157,7 +1157,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1176,7 +1176,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1195,7 +1195,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1214,7 +1214,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -1238,7 +1238,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Doomsday, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: self_mulligans=1, opp_mulligans=1
   Actions:
@@ -1260,7 +1260,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1281,7 +1281,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1307,7 +1307,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1331,7 +1331,7 @@
   Self GY: Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1354,7 +1354,7 @@
   Self GY: Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1376,7 +1376,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1400,7 +1400,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1424,7 +1424,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Brainstorm, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1501,7 +1501,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Thassa's Oracle, Brainstorm, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1577,7 +1577,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1652,7 +1652,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, Brainstorm, ?
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1726,7 +1726,7 @@
   Self GY: Dark Ritual, Dark Ritual, Ponder, Polluted Delta, Thoughtseize, Lotus Petal
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Brainstorm
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1853,7 +1853,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1879,7 +1879,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith, Street Wraith
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1904,7 +1904,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith, Street Wraith
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1928,7 +1928,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, Street Wraith, Street Wraith
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 colors=B
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -1952,7 +1952,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_mulligans=1, opp_mulligans=1
@@ -1975,7 +1975,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -1995,7 +1995,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -2017,7 +2017,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -2037,7 +2037,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -2057,7 +2057,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -2077,7 +2077,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=1 life_lost=9 colors=B
   Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
@@ -2102,7 +2102,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
@@ -2123,7 +2123,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2210,7 +2210,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2257,7 +2257,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2277,7 +2277,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2299,7 +2299,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2319,7 +2319,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2339,7 +2339,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2359,7 +2359,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, self_mulligans=1, opp_mulligans=1
@@ -2384,7 +2384,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: self_mulligans=1, opp_mulligans=1
   Actions:
@@ -2405,7 +2405,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2426,7 +2426,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2451,7 +2451,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=2
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2474,7 +2474,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=2 life_lost=2
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2499,7 +2499,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=2 life_lost=4
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2522,7 +2522,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=3 life_lost=4
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2547,7 +2547,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=3 life_lost=6
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2570,7 +2570,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=4 life_lost=6
   Extras: self_mulligans=1, opp_mulligans=1
@@ -2592,7 +2592,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=4 life_lost=6
   Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
@@ -2617,7 +2617,7 @@
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=4 life_lost=6
   Extras: self_revolt, self_mulligans=1, opp_mulligans=1
@@ -2639,7 +2639,7 @@
   Self GY: Edge of Autumn, Island, Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=5 life_lost=6
   Extras: self_revolt, self_mulligans=1, opp_mulligans=1
@@ -2664,7 +2664,7 @@
   Self GY: Edge of Autumn, Island, Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=5 life_lost=6 colors=U
   Extras: self_revolt, self_mulligans=1, opp_mulligans=1
@@ -2687,7 +2687,7 @@
   Self GY: Edge of Autumn, Island, Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=5 life_lost=6 colors=U
   Extras: self_revolt, self_mulligans=1, opp_mulligans=1
@@ -2711,7 +2711,7 @@
   Self GY: Edge of Autumn, Island, Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben
   Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Edge of Autumn, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Polluted Delta, Ponder, Lotus Petal, Dark Ritual, Dark Ritual, Thoughtseize
-  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub
+  Known opp hand: Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=5 life_lost=6 colors=U
   Extras: self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1

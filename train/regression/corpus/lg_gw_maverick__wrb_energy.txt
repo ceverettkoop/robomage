@@ -97,7 +97,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
@@ -130,7 +130,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -148,7 +149,8 @@
   Self BF:  Marsh Flats (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -172,7 +174,8 @@
   Pending: Marsh Flats (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -198,7 +201,8 @@
   Opp BF:   Forest
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -219,7 +223,8 @@
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -244,7 +249,8 @@
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -356,7 +362,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
   -------- TURN 4 (Player B) --------
@@ -374,7 +380,7 @@
   Opp BF:   Forest (T) | Savannah (T)
   Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben, Wasteland, Wasteland
+  Known opp hand: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
@@ -395,7 +401,7 @@
   Pending: Thoughtseize (self)
   Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben, Wasteland, Wasteland
+  Known opp hand: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window

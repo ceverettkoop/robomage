@@ -547,7 +547,7 @@
   Resolving ability (category: Dig)
   Player A looks at the top 1 card(s) of their library.
   Player A reveals Tropical Island from the top of their library.
-  Player A puts Tropical Island into hand.
+  Player A reveals Tropical Island and puts it into hand.
   Player A puts 0 card(s) on the top of their library.
   --- Declare Blockers (Player A) ---
   Attackers:

@@ -116,7 +116,7 @@
    5: Horizon Canopy
   >> B/B: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player B puts Thalia, Guardian of Thraben into hand.
+  Player B reveals Thalia, Guardian of Thraben and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
   Resolving ability (category: Dig)
   Player A looks at the top 5 card(s) of their library.
@@ -129,7 +129,8 @@
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -140,7 +141,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
@@ -150,7 +151,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
@@ -176,7 +178,8 @@
   Opp BF:   Forest
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -202,7 +205,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -222,7 +226,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -249,7 +254,8 @@
   Pending: Badgermole Cub (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -425,7 +431,8 @@
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time  [#0]
@@ -447,7 +454,8 @@
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
@@ -468,7 +476,8 @@
   Pending: Swords to Plowshares (self)
   Self GY: Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -500,7 +509,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=WG | opp life_gained=1
   Extras: opp_revolt, not_priority_window
   Actions:
@@ -512,7 +522,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   Player A draws Green Sun's Zenith
 
@@ -527,7 +537,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: opp_revolt
   Actions:
@@ -549,7 +560,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -568,7 +580,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -589,7 +602,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -612,7 +626,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -633,7 +648,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -654,7 +670,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -677,7 +694,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1 life_lost=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -696,7 +714,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1 life_lost=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -715,7 +734,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1 life_lost=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -734,7 +754,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1 life_lost=2
   Extras: self_lands_played=1, opp_revolt
   Actions:
@@ -758,7 +779,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -778,7 +800,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -797,7 +820,8 @@
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -820,7 +844,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_passed
   Actions:
@@ -841,7 +866,8 @@
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -861,7 +887,8 @@
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -883,7 +910,8 @@
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -908,7 +936,8 @@
   Self GY: Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
@@ -930,7 +959,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -949,7 +979,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -970,7 +1001,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -989,7 +1021,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -1008,7 +1041,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -1027,7 +1061,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -1051,7 +1086,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1070,7 +1106,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1088,7 +1125,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1112,7 +1150,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window
   Actions:
@@ -1137,7 +1176,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -1160,7 +1200,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -1183,7 +1224,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -1205,7 +1247,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -1224,7 +1267,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -1245,7 +1289,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1268,7 +1313,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1289,7 +1335,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -1313,7 +1360,8 @@
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window, mandatory_choice=Declare Blk
   Actions:
@@ -1335,7 +1383,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -1358,7 +1407,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1377,7 +1427,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1396,7 +1447,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1415,7 +1467,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1439,7 +1492,8 @@
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1459,7 +1513,8 @@
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Badgermole Cub
@@ -1484,7 +1539,8 @@
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: opp_passed
   Actions:
@@ -1509,7 +1565,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben
   This turn: self life_gained=2 | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_revolt, opp_passed
   Actions:
@@ -1531,7 +1588,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben
   This turn: self life_gained=2 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
   Extras: self_revolt, opp_passed
   Actions:
@@ -1551,7 +1609,8 @@
   Opp GY:  Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=2
   Extras: opp_revolt
   Actions:
@@ -1575,7 +1634,8 @@
   Opp GY:  Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
@@ -1601,7 +1661,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self life_gained=2 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
   Extras: opp_lands_played=1, self_revolt, opp_passed
   Actions:
@@ -1625,7 +1686,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self life_gained=2 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
   Extras: opp_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -1652,7 +1714,8 @@
   Opp GY:  Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=2
   Extras: self_lands_played=1, opp_revolt, opp_passed
   Actions:
@@ -1687,7 +1750,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1708,7 +1772,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1728,7 +1793,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1750,7 +1816,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1775,7 +1842,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1800,7 +1868,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1823,7 +1892,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1845,7 +1915,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1870,7 +1941,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1890,7 +1962,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1910,7 +1983,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1930,7 +2004,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 | opp life_lost=2
   Extras: self_lands_played=1
   Actions:
@@ -1955,7 +2030,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -1976,7 +2052,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -1996,7 +2073,8 @@
   Opp GY:  Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2024,7 +2102,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_passed
   Actions:
@@ -2046,7 +2125,8 @@
   Opp GY:  Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -2067,7 +2147,8 @@
   Opp GY:  Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -2091,7 +2172,8 @@
   Opp GY:  Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
   Self exile: Dryad Arbor
   Opp exile:  Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -2124,7 +2206,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2148,7 +2231,8 @@
   Opp GY:  Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window
   Actions:
@@ -2185,7 +2269,8 @@
   Opp GY:  Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2213,7 +2298,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2233,7 +2319,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2252,7 +2339,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2278,7 +2366,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window
   Actions:
@@ -2303,7 +2392,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -2327,7 +2417,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -2350,7 +2441,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -2372,7 +2464,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Once Upon a Time, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -2408,7 +2501,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2432,7 +2526,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2461,7 +2556,8 @@
   Opp GY:  Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
@@ -2494,7 +2590,8 @@
   Opp GY:  Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2519,7 +2616,8 @@
   Opp GY:  Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2544,7 +2642,8 @@
   Opp GY:  Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2576,7 +2675,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2596,7 +2696,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2624,7 +2725,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -2636,7 +2738,7 @@
    5: Wasteland
   >> B/B: 1 (Birds of Paradise)
 --- Narrative ---
-  Player B puts Birds of Paradise into hand.
+  Player B reveals Birds of Paradise and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
   --- Declare Attackers (Player B) ---
 
@@ -2652,7 +2754,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2676,7 +2779,8 @@
   Opp GY:  Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2710,7 +2814,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Birds of Paradise, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2731,7 +2836,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Birds of Paradise, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -2759,7 +2865,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Birds of Paradise, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -2783,7 +2890,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Birds of Paradise, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -2819,7 +2927,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -2839,7 +2948,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2858,7 +2968,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2886,7 +2997,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -2907,7 +3019,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -2930,7 +3043,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Savannah, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -2967,7 +3081,8 @@
   Opp GY:  Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Verdant Catacombs, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Verdant Catacombs, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2994,7 +3109,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
@@ -3014,7 +3130,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3033,7 +3150,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3063,7 +3181,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Actions:
    0: Pass priority
@@ -3084,7 +3203,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: not_priority_window
   Actions:
@@ -3112,7 +3232,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3151,7 +3272,8 @@
   Opp GY:  Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3184,7 +3306,8 @@
   Self GY: Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt
   Actions:
@@ -3205,7 +3328,8 @@
   Self GY: Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3232,7 +3356,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=WG
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -3255,7 +3380,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=WG
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3287,7 +3413,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -3306,7 +3433,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3324,7 +3452,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3352,7 +3481,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -3374,7 +3504,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -3396,7 +3527,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -3417,7 +3549,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
@@ -3445,7 +3578,8 @@
   Opp GY:  Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
   Opp exile:  Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Verdant Catacombs, Bojuka Bog, Badgermole Cub
   This turn: self spells=2 drawn=1 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -3471,7 +3605,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Knight of the Reliquary (ChangeZone)  [#0]
@@ -3492,7 +3627,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3512,7 +3648,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -3540,7 +3677,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -3562,7 +3700,8 @@
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: not_priority_window
   Actions:
@@ -3587,7 +3726,8 @@
   Self GY: Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3609,7 +3749,8 @@
   Self GY: Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3632,7 +3773,8 @@
   Self GY: Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3653,7 +3795,8 @@
   Self GY: Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3678,7 +3821,8 @@
   Self GY: Savannah, Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3710,7 +3854,8 @@
   Self GY: Savannah, Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3739,7 +3884,8 @@
   Self GY: Horizon Canopy, Savannah, Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=2 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3776,7 +3922,8 @@
   Self GY: Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=2 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3806,7 +3953,8 @@
   Self GY: Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=2 colors=W
   Extras: self_revolt
   Actions:
@@ -3833,7 +3981,8 @@
   Self GY: Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=2 life_lost=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3856,7 +4005,8 @@
   Self GY: Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=2 life_lost=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3883,7 +4033,8 @@
   Self GY: Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 drawn=2 life_lost=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3904,7 +4055,8 @@
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 drawn=2 life_lost=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3929,7 +4081,8 @@
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=3 drawn=2 life_lost=1 colors=W
   Extras: self_revolt, not_priority_window
   Actions:
@@ -3950,7 +4103,8 @@
   Self GY: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=3 drawn=2 life_lost=1 colors=W
   Extras: self_revolt
   Actions:
@@ -3971,7 +4125,8 @@
   Self GY: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=3 drawn=2 life_lost=1 colors=W
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -3998,7 +4153,8 @@
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
   Opp exile:  Wasteland, Wasteland, Talon Gates of Madara, Swords to Plowshares, Once Upon a Time, Once Upon a Time, Misty Rainforest, Dryad Arbor
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=3 drawn=2 life_lost=2 colors=W
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -4497,7 +4653,7 @@
    4: Misty Rainforest
   >> A/A: 1 (Scryb Ranger)
 --- Narrative ---
-  Player A puts Scryb Ranger into hand.
+  Player A reveals Scryb Ranger and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 188 ---

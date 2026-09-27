@@ -100,7 +100,7 @@
    5: Savannah
   >> B/B: 1 (Collector Ouphe)
 --- Narrative ---
-  Player B puts Collector Ouphe into hand.
+  Player B reveals Collector Ouphe and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
@@ -109,7 +109,8 @@
   Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
@@ -126,7 +127,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Scrubland (NEW)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -146,7 +148,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Aether Vial (NEW) | Scrubland (T,NEW)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time
   This turn: self spells=1 noncreature=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -167,7 +170,8 @@
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time
   This turn: self spells=1 noncreature=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -238,7 +242,8 @@
   Opp BF:   Bojuka Bog (T)
   Stack: Aether Vial (ability, self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -254,7 +259,8 @@
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -272,7 +278,8 @@
   Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Bojuka Bog (T)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -288,7 +295,8 @@
   Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Bojuka Bog (T)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -303,7 +311,8 @@
   Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
   Opp BF:   Bojuka Bog (T)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -325,7 +334,8 @@
   Opp BF:   Bojuka Bog (T)
   Stack: Aether Vial (spell, self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
@@ -346,7 +356,8 @@
   Stack: Aether Vial (ability, self) -> Aether Vial (spell, self)
   Pending: Aether Vial (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: not_priority_window
   Actions:
@@ -364,7 +375,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Opp BF:   Bojuka Bog (T)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
@@ -383,7 +395,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Bojuka Bog (T)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -403,7 +416,8 @@
   Opp BF:   Bojuka Bog (T)
   Pending: Wasteland (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -426,7 +440,8 @@
   Stack: Wasteland (ability, self) -> Bojuka Bog (opponent, slot 48)
   Self GY: Wasteland
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -445,7 +460,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -461,7 +477,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -479,7 +496,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -495,7 +513,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -511,7 +530,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -527,7 +547,8 @@
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -548,7 +569,8 @@
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -565,7 +587,8 @@
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Once Upon a Time, Bojuka Bog
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -600,7 +623,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK,NEW)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: opp drawn=1
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -623,7 +647,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: opp drawn=1
   Extras: opp_lands_played=1, not_priority_window
   Actions:
@@ -648,7 +673,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Extras: not_priority_window
   Actions:
    0: Aether Vial (PutCounter)  [#0]
@@ -668,7 +694,8 @@
   Stack: Aether Vial (ability, self) -> Aether Vial (ability, self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -686,7 +713,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -706,7 +734,8 @@
   Stack: Aether Vial (ability, self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -724,7 +753,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -743,7 +773,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -761,7 +792,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -778,7 +810,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -799,7 +832,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -825,7 +859,8 @@
   Stack: Orcish Bowmasters (spell, self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B
   Extras: self_lands_played=1
   Actions:
@@ -847,7 +882,8 @@
   Pending: Orcish Bowmasters (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -870,7 +906,8 @@
   Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B
   Extras: self_lands_played=1
   Actions:
@@ -893,7 +930,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -911,7 +949,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -931,7 +970,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -949,7 +989,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -967,7 +1008,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -985,7 +1027,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: self spells=1 drawn=1 colors=B | opp life_lost=1
   Extras: self_lands_played=1
   Actions:
@@ -1008,7 +1051,8 @@
   Opp BF:   Dryad Arbor [1/1]
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -1027,7 +1071,8 @@
   Opp BF:   Dryad Arbor [1/1]
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time, Bojuka Bog
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Once Upon a Time, Bojuka Bog
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -1091,7 +1136,8 @@
   Stack: Badgermole Cub (spell, opponent)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1134,7 +1180,8 @@
   Stack: Badgermole Cub (ability, opponent) [amt=1] -> Dryad Arbor (opponent, slot 49)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1156,7 +1203,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1175,7 +1223,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1196,7 +1245,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1215,7 +1265,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1234,7 +1285,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1253,7 +1305,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1279,7 +1332,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Aether Vial (PutCounter)  [#0]
@@ -1300,7 +1354,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   Actions:
    0: Pass priority
    1: Cast Phelia, Exuberant Shepherd  [#0]
@@ -1324,7 +1379,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
@@ -1345,7 +1401,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
@@ -1365,7 +1422,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Extras: not_priority_window
   Actions:
@@ -1387,7 +1445,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
@@ -1407,7 +1466,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Extras: not_priority_window
   Actions:
@@ -1428,7 +1488,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
@@ -1448,7 +1509,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -1466,7 +1528,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -1488,7 +1551,8 @@
   Pending: Witch Enchanter (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -1508,7 +1572,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1527,7 +1592,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1548,7 +1614,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1570,7 +1637,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1589,7 +1657,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1608,7 +1677,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1627,7 +1697,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=W
   Extras: self_lands_played=1
   Actions:
@@ -1667,7 +1738,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -1713,7 +1785,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_passed
   Actions:
@@ -1759,7 +1832,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_passed
   Actions:
@@ -1780,7 +1854,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_passed
   Actions:
@@ -1847,7 +1922,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1868,7 +1944,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1887,7 +1964,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1950,7 +2028,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1974,7 +2053,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, not_priority_window, mandatory_choice=Declare Blk
   Actions:
@@ -1997,7 +2077,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2020,7 +2101,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self life_lost=2 | opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2039,7 +2121,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self life_lost=2 | opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2058,7 +2141,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self life_lost=2 | opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2077,7 +2161,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self life_lost=2 | opp spells=1 drawn=1 life_lost=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -2103,7 +2188,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Aether Vial (PutCounter)  [#0]
@@ -2124,7 +2210,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2144,7 +2231,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -2165,7 +2253,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2185,7 +2274,8 @@
   Pending: Aether Vial (self)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -2205,7 +2295,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2225,7 +2316,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2244,7 +2336,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -2273,7 +2366,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2294,7 +2388,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2312,7 +2407,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2332,7 +2428,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Extras: not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -2355,7 +2452,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2373,7 +2471,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2391,7 +2490,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2409,7 +2509,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=W
   Actions:
    0: Pass priority
@@ -2448,7 +2549,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -2485,7 +2587,8 @@
   Delayed: Badgermole Cub@48 -> Dryad Arbor@49 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Bojuka Bog, Once Upon a Time
-  Opp revealed: Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
+  Known opp hand: Collector Ouphe
+  Opp revealed: Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:

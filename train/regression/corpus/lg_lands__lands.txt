@@ -847,7 +847,7 @@
    4: Ancient Tomb
   >> B/B: 1 (Karakas)
 --- Narrative ---
-  Player B puts Karakas into hand.
+  Player B reveals Karakas and puts it into hand.
   Player B puts Exploration into their graveyard.
   Player B puts Urza's Saga into their graveyard.
   Player B puts Ancient Tomb into their graveyard.
@@ -1008,7 +1008,7 @@
    3: Urza's Saga
   >> A/A: 1 (Thespian's Stage)
 --- Narrative ---
-  Player A puts Thespian's Stage into hand.
+  Player A reveals Thespian's Stage and puts it into hand.
   Player A puts Malevolent Rumble into their graveyard.
   Player A puts Ancient Tomb into their graveyard.
   Player A puts Urza's Saga into their graveyard.
@@ -1546,7 +1546,7 @@
    3: Thespian's Stage
   >> B/B: 1 (Savannah)
 --- Narrative ---
-  Player B puts Savannah into hand.
+  Player B reveals Savannah and puts it into hand.
   Player B puts Life from the Loam into their graveyard.
   Player B puts Yavimaya, Cradle of Growth into their graveyard.
   Player B puts Thespian's Stage into their graveyard.

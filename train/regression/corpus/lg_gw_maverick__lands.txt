@@ -144,7 +144,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
@@ -178,7 +178,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -359,7 +360,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 16 ---
@@ -600,7 +601,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Dark Depths
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -621,7 +623,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Dark Depths
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -647,7 +650,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Dark Depths
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=G
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -1000,7 +1004,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1021,7 +1026,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -1377,7 +1383,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -1396,7 +1403,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1414,7 +1422,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1435,7 +1444,8 @@
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -1745,7 +1755,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -1764,7 +1775,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1782,7 +1794,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1803,7 +1816,8 @@
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -2133,7 +2147,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -2152,7 +2167,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -2170,7 +2186,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -2191,7 +2208,8 @@
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -2532,7 +2550,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -2551,7 +2570,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -2569,7 +2589,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -2590,7 +2611,8 @@
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -2998,7 +3020,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -3017,7 +3040,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -3035,7 +3059,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -3412,7 +3437,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -3432,7 +3458,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -3451,7 +3478,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -3473,7 +3501,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -3505,7 +3534,8 @@
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=G
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -3527,7 +3557,8 @@
   Pending: Crop Rotation (self)
   Self GY: Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -3556,7 +3587,8 @@
   Pending: Crop Rotation (self)
   Self GY: Yavimaya, Cradle of Growth, Savannah, Dark Depths
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
@@ -4005,7 +4037,8 @@
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -4025,7 +4058,8 @@
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -4044,7 +4078,8 @@
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -4066,7 +4101,8 @@
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -4092,7 +4128,8 @@
   Pending: Thespian's Stage (self)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -4128,7 +4165,8 @@
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -4530,7 +4568,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -4552,7 +4591,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -4573,7 +4613,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -4600,7 +4641,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -4623,7 +4665,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -4648,7 +4691,8 @@
   Self GY: Thespian's Stage, Dark Depths
   Opp GY:  Swords to Plowshares, Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Windswept Heath, Bojuka Bog, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -5088,6 +5132,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
@@ -5111,6 +5156,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
@@ -5133,6 +5179,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
@@ -5163,6 +5210,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_mulligans=1
@@ -5608,6 +5656,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
@@ -5632,6 +5681,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
@@ -5655,6 +5705,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: self_mulligans=1
@@ -5685,6 +5736,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
@@ -6157,6 +6209,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
@@ -6179,6 +6232,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -6203,6 +6257,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
@@ -6225,6 +6280,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: self_mulligans=1
   Actions:
@@ -6254,6 +6310,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -6280,6 +6337,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -6310,6 +6368,7 @@
   Opp GY:  Endurance, Thalia, Guardian of Thraben
   Self exile: Yavimaya, Cradle of Growth, Savannah, Dark Depths, Crop Rotation
   Opp exile:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Wasteland, Dryad Arbor, Endurance, Green Sun's Zenith, Once Upon a Time, Plains, Savannah, Swords to Plowshares, Talon Gates of Madara, Thalia, Guardian of Thraben, Windswept Heath, Bojuka Bog, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_mulligans=1

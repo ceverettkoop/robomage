@@ -550,7 +550,7 @@
    3: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
   -------- TURN 4 (Player B) --------
@@ -568,7 +568,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -593,7 +594,8 @@
   Stack: Ponder (spell, self)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: opp_mulligans=1
   Actions:
@@ -616,7 +618,8 @@
   Pending: Ponder (self)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -639,7 +642,8 @@
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Dragon's Rage Channeler, ?, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -659,7 +663,8 @@
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Unholy Heat, Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -680,7 +685,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: opp_mulligans=1
   Actions:
@@ -703,7 +709,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -726,7 +733,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=UR
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -755,7 +763,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -776,7 +785,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
@@ -800,7 +810,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: opp_mulligans=1
   Actions:
@@ -824,7 +835,8 @@
   Self GY: Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Cori-Steel Cutter, Dragon's Rage Channeler, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -845,7 +857,8 @@
   Self GY: Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Dragon's Rage Channeler, ?, ?, ?, ?
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: opp_mulligans=1
   Actions:
@@ -866,7 +879,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: opp_mulligans=1
   Actions:
@@ -887,7 +901,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -909,7 +924,8 @@
   Stack: Dragon's Rage Channeler (spell, self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -932,7 +948,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1025,7 +1042,8 @@
   Stack: Green Sun's Zenith (spell, opponent)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
   Actions:
@@ -1046,7 +1064,8 @@
   Pending: Daze (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -1066,7 +1085,8 @@
   Pending: Daze (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -1090,7 +1110,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1115,7 +1136,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1139,7 +1161,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1186,7 +1209,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -1205,7 +1229,8 @@
   Pending: Unholy Heat (self)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
@@ -1228,7 +1253,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1253,7 +1279,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1277,7 +1304,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1300,7 +1328,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -1324,7 +1353,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1397,7 +1427,8 @@
   Stack: Green Sun's Zenith (spell, opponent)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, opp_mulligans=1
   Actions:
@@ -1419,7 +1450,8 @@
   Pending: Daze (self)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1446,7 +1478,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1493,7 +1526,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1513,7 +1547,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -1538,7 +1573,8 @@
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1563,7 +1599,8 @@
   Opp BF:   Karakas (T) | Talon Gates of Madara (T)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1691,7 +1728,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1717,7 +1755,8 @@
   Pending: Thundering Falls (self)
   Self GY: Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -1739,7 +1778,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Noble Hierarch [0/1] (SICK) | Talon Gates of Madara (T)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1815,7 +1855,8 @@
   Stack: Life from the Loam (spell, opponent)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed, opp_mulligans=1
   Actions:
@@ -1837,7 +1878,8 @@
   Pending: Force of Will (self)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1857,7 +1899,8 @@
   Pending: Force of Will (self)
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1884,7 +1927,8 @@
   Self GY: Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1937,7 +1981,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1958,7 +2003,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1981,7 +2027,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Delver of Secrets, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2021,7 +2068,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Dragon's Rage Channeler, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Delver of Secrets, Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2060,7 +2108,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Dragon's Rage Channeler, Delver of Secrets, Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2098,7 +2147,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Mishra's Bauble, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2135,7 +2185,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2176,7 +2227,8 @@
   Self GY: Force of Will, Scalding Tarn, Force of Will, Scalding Tarn, Daze, Unholy Heat, Brainstorm, Scalding Tarn, Daze, Cori-Steel Cutter, Lightning Bolt, Cori-Steel Cutter, Ponder, Brainstorm, Polluted Delta
   Opp GY:  Life from the Loam, Wooded Foothills, Green Sun's Zenith, Green Sun's Zenith, Once Upon a Time
   Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Dragon's Rage Channeler, Delver of Secrets, Force of Will
-  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Life from the Loam
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Wooded Foothills, Dryad Arbor, Green Sun's Zenith, Karakas, Noble Hierarch, Once Upon a Time, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben, Life from the Loam
   This turn: self spells=1 drawn=1 colors=U
   Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:

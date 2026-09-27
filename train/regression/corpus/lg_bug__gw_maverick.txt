@@ -144,7 +144,7 @@
    5: Horizon Canopy
   >> B/B: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player B puts Thalia, Guardian of Thraben into hand.
+  Player B reveals Thalia, Guardian of Thraben and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
@@ -153,7 +153,8 @@
   Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_mulligans=1
   Actions:
@@ -342,7 +343,8 @@
   Self BF:  Tropical Island
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -441,7 +443,8 @@
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK)
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -460,7 +463,8 @@
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (NEW) | Tropical Island
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (SICK)
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -667,7 +671,8 @@
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample] (SICK,NEW)
   Stack: Wasteland (ability, opponent) -> Tropical Island (self, slot 1) -> Scythecat Cub (ability, opponent) -> Dryad Arbor (opponent, slot 49)
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: opp spells=2 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_revolt, opp_passed, self_mulligans=1
   Actions:
@@ -740,7 +745,8 @@
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Keen-Eyed Curator [4/4] (T,ATK) | Noble Hierarch [0/1] (SICK,NEW,res 1) | Scythecat Cub [2/2] [Trample] (SICK,NEW,res 1)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: opp spells=2 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Blk
   Actions:
@@ -769,7 +775,8 @@
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -790,7 +797,8 @@
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -881,7 +889,8 @@
   Stack: Scryb Ranger (spell, opponent)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_passed, self_mulligans=1
   Actions:
@@ -902,7 +911,8 @@
   Pending: Force of Will (self)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: opp spells=1 drawn=1 colors=G
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -922,7 +932,8 @@
   Pending: Force of Will (self)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Bojuka Bog
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scryb Ranger, Scythecat Cub, Thalia, Guardian of Thraben, Bojuka Bog
   This turn: opp spells=1 drawn=1 colors=G
   Extras: not_priority_window, self_mulligans=1
   Actions:

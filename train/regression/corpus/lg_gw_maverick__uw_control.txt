@@ -112,7 +112,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 6 ---
@@ -145,7 +145,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -163,7 +164,8 @@
   Self BF:  Flooded Strand (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -187,7 +189,8 @@
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -214,7 +217,8 @@
   Opp BF:   Forest
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -237,7 +241,8 @@
   Stack: Ponder (spell, self)
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -260,7 +265,8 @@
   Pending: Ponder (self)
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -283,7 +289,8 @@
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
   Known top: Polluted Delta, ?, ?, ?, ?
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -303,7 +310,8 @@
   Self GY: Flooded Strand
   Opp GY:  Once Upon a Time
   Known top: Tamiyo, Inquisitive Student, Flooded Strand, Polluted Delta, ?, ?
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -610,7 +618,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   Player A draws Green Sun's Zenith
 
@@ -796,7 +804,8 @@
   Self GY: Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -816,7 +825,8 @@
   Self GY: Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -862,7 +872,8 @@
   Self GY: Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -942,7 +953,8 @@
   Self GY: Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
@@ -963,7 +975,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -985,7 +998,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1008,7 +1022,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1028,7 +1043,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1049,7 +1065,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1067,7 +1084,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1085,7 +1103,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
@@ -1216,7 +1235,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed
   Actions:
@@ -1238,7 +1258,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -1259,7 +1280,8 @@
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -1485,7 +1507,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1505,7 +1528,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1553,7 +1577,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -1619,7 +1644,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1642,7 +1668,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1687,7 +1714,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1727,7 +1755,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1768,7 +1797,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1806,7 +1836,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1844,7 +1875,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Self exile: Teferi, Time Raveler, Tamiyo, Inquisitive Student
   Opp exile:  Green Sun's Zenith
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:

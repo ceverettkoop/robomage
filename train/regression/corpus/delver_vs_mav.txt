@@ -98,7 +98,7 @@
    5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
-  Player B puts Wasteland into hand.
+  Player B reveals Wasteland and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
@@ -107,7 +107,8 @@
   Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Daze, Daze, Ponder, Misty Rainforest, Scalding Tarn, Wasteland | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
@@ -125,7 +126,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Misty Rainforest (NEW)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -148,7 +150,8 @@
   Pending: Misty Rainforest (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -172,7 +175,8 @@
   Self BF:  Island (NEW)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -192,7 +196,8 @@
   Stack: Ponder (spell, self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -215,7 +220,8 @@
   Pending: Ponder (self)
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -237,7 +243,8 @@
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -256,7 +263,8 @@
   Self GY: Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Mishra's Bauble, Scalding Tarn, Unholy Heat, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -276,7 +284,8 @@
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -296,7 +305,8 @@
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -316,7 +326,8 @@
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -336,7 +347,8 @@
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
   Known top: Scalding Tarn, Unholy Heat, ?, ?, ?
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -432,7 +444,8 @@
   Opp BF:   Savannah
   Self GY: Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -452,7 +465,8 @@
   Opp BF:   Savannah
   Self GY: Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -477,7 +491,8 @@
   Pending: Scalding Tarn (self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -502,7 +517,8 @@
   Opp BF:   Savannah
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -523,7 +539,8 @@
   Stack: Dragon's Rage Channeler (spell, self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self spells=1 drawn=1 life_lost=1 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -584,7 +601,8 @@
   Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 0)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
   This turn: self spells=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_lands_played=1, self_revolt, opp_passed
   Actions:
@@ -606,7 +624,8 @@
   Pending: Daze (self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
   This turn: self spells=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -626,7 +645,8 @@
   Pending: Daze (self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
   This turn: self spells=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -651,7 +671,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah, Swords to Plowshares
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah, Swords to Plowshares
   This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -821,7 +842,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Savannah (T) | Talon Gates of Madara
   Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Actions:
    0: Pass priority
    1: Cast Unholy Heat  [#0]
@@ -839,7 +861,8 @@
   Pending: Unholy Heat (self)
   Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   Extras: not_priority_window
   Actions:
    0: Dryad Arbor
@@ -865,7 +888,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
   Actions:
@@ -888,7 +912,8 @@
   Opp BF:   Savannah (T) | Talon Gates of Madara
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: opp_revolt
   Actions:
@@ -913,7 +938,8 @@
   Opp BF:   Savannah (T) | Talon Gates of Madara
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -986,7 +1012,8 @@
   Stack: Keen-Eyed Curator (spell, opponent)
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_passed
   Actions:
@@ -1007,7 +1034,8 @@
   Pending: Daze (self)
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window
   Actions:
@@ -1027,7 +1055,8 @@
   Pending: Daze (self)
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, not_priority_window
   Actions:
@@ -1052,7 +1081,8 @@
   Pending: Dragon's Rage Channeler (self)
   Self GY: Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -1100,7 +1130,8 @@
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1124,7 +1155,8 @@
   Opp BF:   Karakas (T) | Savannah (T) | Talon Gates of Madara (T)
   Self GY: Daze, Dragon's Rage Channeler, Unholy Heat, Delver of Secrets, Daze, Dragon's Rage Channeler, Scalding Tarn, Mishra's Bauble, Ponder, Misty Rainforest
   Opp GY:  Keen-Eyed Curator, Dryad Arbor, Swords to Plowshares, Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Dryad Arbor, Green Sun's Zenith, Karakas, Keen-Eyed Curator, Once Upon a Time, Savannah, Swords to Plowshares, Talon Gates of Madara
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
@@ -1188,7 +1220,7 @@
    5: Collector Ouphe
   >> B/B: 1 (Endurance)
 --- Narrative ---
-  Player B puts Endurance into hand.
+  Player B reveals Endurance and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 53 ---

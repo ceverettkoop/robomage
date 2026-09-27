@@ -98,7 +98,7 @@
    5: Horizon Canopy
   >> B/B: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player B puts Thalia, Guardian of Thraben into hand.
+  Player B reveals Thalia, Guardian of Thraben and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
@@ -107,7 +107,8 @@
   Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
@@ -126,7 +127,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Fiery Islet (NEW)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1
   Actions:
@@ -185,7 +187,8 @@
   Pending: Rift Bolt (self)
   Opp GY:  Once Upon a Time
   Self exile: Rift Bolt
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   Extras: not_priority_window
   Actions:
    0: Do not cast Rift Bolt  [#0]
@@ -206,7 +209,8 @@
   Pending: Rift Bolt (self)
   Opp GY:  Once Upon a Time
   Self exile: Rift Bolt
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   Extras: not_priority_window
   Actions:
    0: Player B (20 life)
@@ -229,7 +233,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Rift Bolt
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
@@ -252,7 +257,8 @@
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: not_priority_window
   Actions:
@@ -297,7 +303,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
   Actions:
    0: Pass priority
@@ -317,7 +324,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
   Extras: self_lands_played=1
   Actions:
@@ -493,7 +501,8 @@
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
   Self exile: Rift Bolt [1 ctr]
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
@@ -526,7 +535,8 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
   Self exile: Rift Bolt
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=2
   Extras: not_priority_window
   Actions:
@@ -549,7 +559,8 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
   Self exile: Rift Bolt
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=2
   Extras: not_priority_window
   Actions:
@@ -573,7 +584,8 @@
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=5
   Actions:
    0: Pass priority
@@ -668,7 +680,8 @@
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -685,7 +698,8 @@
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -701,7 +715,8 @@
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -723,7 +738,8 @@
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window
   Actions:
@@ -752,7 +768,8 @@
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
   Actions:
    0: Pass priority
@@ -1364,7 +1381,8 @@
   Self GY: Rift Bolt, Rift Bolt
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1387,7 +1405,8 @@
   Self GY: Rift Bolt, Rift Bolt
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
@@ -1873,7 +1892,8 @@
   Opp BF:   Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (T,ATK) | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample] (T,ATK)
   Self exile: Rift Bolt, Rift Bolt, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
   Opp exile:  Wasteland, Once Upon a Time, Misty Rainforest
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: opp spells=1 drawn=1 life_lost=2 colors=G
   Extras: not_priority_window, mandatory_choice=Declare Blk
   Actions:
@@ -1902,7 +1922,8 @@
   Opp BF:   Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] (T)
   Self exile: Rift Bolt, Rift Bolt, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
   Opp exile:  Wasteland, Once Upon a Time, Misty Rainforest
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1921,7 +1942,8 @@
   Pending: Chain Lightning (self)
   Self exile: Rift Bolt, Rift Bolt, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
   Opp exile:  Wasteland, Once Upon a Time, Misty Rainforest
-  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Misty Rainforest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Once Upon a Time, Scythecat Cub, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window
   Actions:

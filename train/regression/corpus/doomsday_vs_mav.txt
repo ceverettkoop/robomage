@@ -144,7 +144,7 @@
    5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
-  Player B puts Wasteland into hand.
+  Player B reveals Wasteland and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
@@ -153,7 +153,8 @@
   Self:  20 life | mana: empty | hand(6): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta, Polluted Delta | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_mulligans=1
   Actions:
@@ -171,7 +172,8 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Polluted Delta (NEW)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
@@ -194,7 +196,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
@@ -218,7 +221,8 @@
   Self BF:  Underground Sea (NEW)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
@@ -239,7 +243,8 @@
   Pending: Thoughtseize (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: self life_lost=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:

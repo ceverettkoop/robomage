@@ -1679,6 +1679,7 @@
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
+  Known opp hand: Animate Dead, Flow State, Force of Will, Griselbrand, Lotus Petal, Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=7 colors=B
   Extras: not_priority_window, mandatory_choice=Declare Blk
@@ -1817,6 +1818,7 @@
   Self GY: Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
+  Known opp hand: Flow State, Force of Will, Griselbrand, Lotus Petal, Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
   This turn: self life_lost=14 | opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B
   Extras: not_priority_window
@@ -1843,6 +1845,7 @@
   Self GY: Dragon's Rage Channeler, Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp exile:  Otherworldly Gaze
+  Known opp hand: Flow State, Force of Will, Griselbrand, Lotus Petal, Underground Sea
   Opp revealed: Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Flow State, Reanimate, Careful Study, Griselbrand, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
   This turn: self life_lost=14 | opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_gained=7 life_lost=7 colors=B
   Extras: self_revolt, not_priority_window

@@ -144,7 +144,7 @@
    5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
-  Player B puts Wasteland into hand.
+  Player B reveals Wasteland and puts it into hand.
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
@@ -153,7 +153,8 @@
   Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Talon Gates of Madara, Thalia, Guardian of Thraben | lib 54
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_mulligans=1
   Actions:
@@ -172,7 +173,8 @@
   Self BF:  Talon Gates of Madara (NEW)
   Pending: Talon Gates of Madara (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
@@ -257,7 +259,8 @@
   Self BF:  Talon Gates of Madara
   Opp BF:   Savannah
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -280,7 +283,8 @@
   Stack: Once Upon a Time (spell, self)
   Pending: Once Upon a Time (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Savannah
+  Known opp hand: Wasteland
+  Opp revealed: Wasteland, Once Upon a Time, Savannah
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -290,7 +294,7 @@
    3: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   No creatures eligible to attack.
   -------- TURN 4 (Player B) --------
@@ -308,7 +312,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -333,7 +338,8 @@
   Pending: Talon Gates of Madara (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -353,7 +359,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -373,7 +380,8 @@
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -398,7 +406,8 @@
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -427,7 +436,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -445,7 +455,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -462,7 +473,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -488,7 +500,8 @@
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -511,7 +524,8 @@
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -533,7 +547,8 @@
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -553,7 +568,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -575,7 +591,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -700,7 +717,8 @@
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Talon Gates of Madara (T)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -721,7 +739,8 @@
   Pending: Swords to Plowshares (self)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dryad Arbor
@@ -743,7 +762,8 @@
   Stack: Swords to Plowshares (spell, self) -> Dryad Arbor (opponent, slot 48)
   Self GY: Once Upon a Time
   Opp GY:  Once Upon a Time
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
   Extras: opp_mulligans=1
   Actions:
@@ -767,7 +787,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W | opp life_gained=1
   Extras: opp_revolt, opp_mulligans=1
   Actions:
@@ -788,7 +809,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: opp_revolt, opp_mulligans=1
   Actions:
@@ -807,7 +829,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: opp_revolt, opp_mulligans=1
   Actions:
@@ -832,7 +855,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=1
   Extras: opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -856,7 +880,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: opp_revolt, opp_mulligans=1
   Actions:
@@ -879,7 +904,8 @@
   Self GY: Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -906,7 +932,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -928,7 +955,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -951,7 +979,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -972,7 +1001,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -994,7 +1024,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1016,7 +1047,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1042,7 +1074,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Karakas, Once Upon a Time
   Opp exile:  Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1063,7 +1096,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1084,7 +1118,8 @@
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp GY:  Once Upon a Time
   Opp exile:  Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1110,7 +1145,8 @@
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1131,7 +1167,8 @@
   Opp BF:   Talon Gates of Madara (T)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=WG | opp life_gained=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1161,7 +1198,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -1180,7 +1218,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1198,7 +1237,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1224,7 +1264,8 @@
   Stack: Collector Ouphe (spell, self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -1243,7 +1284,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -1263,7 +1305,8 @@
   Opp BF:   Talon Gates of Madara
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -1284,7 +1327,8 @@
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
@@ -1307,7 +1351,8 @@
   Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
@@ -1330,7 +1375,8 @@
   Stack: Windswept Heath (ability, self) -> Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
@@ -1352,7 +1398,8 @@
   Pending: Windswept Heath (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1377,7 +1424,8 @@
   Stack: Keen-Eyed Curator (ability, self) -> Once Upon a Time (self)
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
@@ -1398,7 +1446,8 @@
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
@@ -1419,7 +1468,8 @@
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1443,7 +1493,8 @@
   Self GY: Windswept Heath, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
@@ -1464,7 +1515,8 @@
   Self GY: Windswept Heath, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
@@ -1485,7 +1537,8 @@
   Self GY: Windswept Heath, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1510,7 +1563,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1532,7 +1586,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1586,7 +1641,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -1606,7 +1662,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1625,7 +1682,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -1652,7 +1710,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: opp_mulligans=1
   Actions:
@@ -1675,7 +1734,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1702,7 +1762,8 @@
   Self GY: Wasteland, Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -1744,7 +1805,8 @@
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1766,7 +1828,8 @@
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1788,7 +1851,8 @@
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1810,7 +1874,8 @@
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1835,7 +1900,8 @@
   Opp GY:  Gaea's Cradle
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1856,7 +1922,8 @@
   Self GY: Wasteland, Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
@@ -1877,7 +1944,8 @@
   Self GY: Wasteland, Windswept Heath
   Self exile: Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -1902,7 +1970,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1925,7 +1994,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -1948,7 +2018,8 @@
   Self GY: Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=WG
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -2013,7 +2084,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -2034,7 +2106,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -2061,7 +2134,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -2085,7 +2159,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2109,7 +2184,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -2131,7 +2207,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -2151,7 +2228,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -2174,7 +2252,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2198,7 +2277,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: opp_mulligans=1
   Actions:
@@ -2220,7 +2300,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -2245,7 +2326,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2269,7 +2351,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -2306,7 +2389,8 @@
   Opp GY:  Knight of the Reliquary
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2327,7 +2411,8 @@
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2348,7 +2433,8 @@
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -2371,7 +2457,8 @@
   Self GY: Dryad Arbor, Windswept Heath
   Self exile: Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2392,7 +2479,8 @@
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2413,7 +2501,8 @@
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1
   Actions:
@@ -2434,7 +2523,8 @@
   Self GY: Windswept Heath
   Self exile: Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, opp_mulligans=1
   Actions:
@@ -2455,7 +2545,8 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -2477,7 +2568,8 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -2499,7 +2591,8 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
-  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=1 colors=G
   Extras: self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
@@ -2562,6 +2655,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   Extras: opp_mulligans=1
   Actions:
@@ -2582,6 +2676,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
@@ -2601,6 +2696,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: opp_mulligans=1
@@ -2623,6 +2719,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, opp_mulligans=1
@@ -2646,6 +2743,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
@@ -2668,6 +2766,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, opp_mulligans=1
@@ -2690,6 +2789,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
@@ -2714,6 +2814,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2739,6 +2840,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2763,6 +2865,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -2787,6 +2890,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2811,6 +2915,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -2845,6 +2950,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2870,6 +2976,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2893,6 +3000,7 @@
   Opp GY:  Thalia, Guardian of Thraben
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=2 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2914,6 +3022,7 @@
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self drawn=2 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2936,6 +3045,7 @@
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2956,6 +3066,7 @@
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -2977,6 +3088,7 @@
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -3000,6 +3112,7 @@
   Self GY: Horizon Canopy, Wooded Foothills, Forest
   Self exile: Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -3021,6 +3134,7 @@
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -3042,6 +3156,7 @@
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -3065,6 +3180,7 @@
   Self GY: Horizon Canopy, Wooded Foothills
   Self exile: Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -3086,6 +3202,7 @@
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -3107,6 +3224,7 @@
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -3129,6 +3247,7 @@
   Self GY: Wooded Foothills
   Self exile: Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -3150,6 +3269,7 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
@@ -3173,6 +3293,7 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
@@ -3196,6 +3317,7 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
@@ -3219,6 +3341,7 @@
   Opp BF:   Talon Gates of Madara
   Self exile: Wooded Foothills, Horizon Canopy, Forest, Windswept Heath, Dryad Arbor, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Opp exile:  Thalia, Guardian of Thraben, Knight of the Reliquary, Gaea's Cradle, Once Upon a Time, Karakas, Dryad Arbor
+  Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Karakas, Knight of the Reliquary, Once Upon a Time, Talon Gates of Madara, Thalia, Guardian of Thraben
   This turn: self spells=1 drawn=2 life_lost=1 colors=G
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk

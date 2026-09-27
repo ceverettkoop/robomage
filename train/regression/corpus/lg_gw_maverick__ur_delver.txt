@@ -97,7 +97,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
@@ -130,7 +130,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -151,7 +152,8 @@
   Self BF:  Mishra's Bauble (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
@@ -171,7 +173,8 @@
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -191,7 +194,8 @@
   Opp BF:   Forest
   Pending: Mishra's Bauble (self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -213,7 +217,8 @@
   Stack: Mishra's Bauble (ability, self) -> opponent (player)
   Self GY: Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -237,7 +242,8 @@
   Pending: Polluted Delta (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -267,7 +273,8 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -293,7 +300,8 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -317,7 +325,8 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -338,7 +347,8 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Ponder, Cori-Steel Cutter, Lightning Bolt, ?, ?
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -624,7 +634,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
   Player A draws Green Sun's Zenith
 
@@ -710,8 +720,8 @@
   Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
   Self GY: Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -738,8 +748,8 @@
   Pending: Ponder (self)
   Self GY: Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:
@@ -763,8 +773,8 @@
   Self GY: Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:
@@ -785,8 +795,8 @@
   Self GY: Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Known top: Ponder, Daze, Lightning Bolt, ?, ?
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:
@@ -808,8 +818,8 @@
   Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Known top: Daze, Lightning Bolt, ?, ?, ?
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Actions:
    0: Pass priority
@@ -829,8 +839,8 @@
   Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Known top: Daze, Lightning Bolt, ?, ?, ?
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -988,7 +998,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Daze, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -1009,7 +1020,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Daze, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   Extras: not_priority_window
   Actions:
    0: Player A (20 life)
@@ -1037,7 +1049,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
@@ -1061,7 +1074,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
   Actions:
    0: Pass priority
@@ -1086,7 +1100,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
   Extras: not_priority_window
   Actions:
@@ -1111,7 +1126,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
   Extras: not_priority_window
   Actions:
@@ -1133,7 +1149,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Wasteland, Thundering Falls, Lightning Bolt, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
   Extras: not_priority_window
   Actions:
@@ -1156,7 +1173,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UR | opp life_lost=3
   Actions:
    0: Pass priority
@@ -1177,7 +1195,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UR | opp life_lost=3
   Extras: self_lands_played=1
   Actions:
@@ -1200,7 +1219,8 @@
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UR | opp life_lost=3
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -1284,7 +1304,8 @@
   Opp GY:  Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: opp_passed
   Actions:
@@ -1308,7 +1329,8 @@
   Opp GY:  Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -1331,7 +1353,8 @@
   Opp GY:  Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Thundering Falls, Lightning Bolt, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Extras: not_priority_window
   Actions:
@@ -1560,7 +1583,8 @@
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1582,7 +1606,8 @@
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -1611,7 +1636,8 @@
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -1635,7 +1661,8 @@
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Known top: Lightning Bolt, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: self_lands_played=1, not_priority_window
   Actions:

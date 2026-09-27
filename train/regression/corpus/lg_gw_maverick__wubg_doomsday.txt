@@ -112,7 +112,7 @@
    4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
-  Player A puts Badgermole Cub into hand.
+  Player A reveals Badgermole Cub and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 6 ---
@@ -145,7 +145,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -163,7 +164,8 @@
   Opp BF:   Forest
   Stack: Lotus Petal (spell, self)
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
@@ -180,7 +182,8 @@
   Self BF:  Lotus Petal (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
@@ -199,7 +202,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -217,7 +221,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -235,7 +240,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -251,7 +257,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -267,7 +274,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -285,7 +293,8 @@
   Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1
   Actions:
@@ -306,7 +315,8 @@
   Self BF:  Lotus Petal | Tropical Island
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -323,7 +333,8 @@
   Self BF:  Lotus Petal | Tropical Island
   Opp BF:   Forest
   Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time
+  Known opp hand: Badgermole Cub
+  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -1428,7 +1439,7 @@
    5: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
-  Player A puts Thalia, Guardian of Thraben into hand.
+  Player A reveals Thalia, Guardian of Thraben and puts it into hand.
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 54 ---
@@ -1603,7 +1614,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
-  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
   Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
@@ -1627,7 +1639,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
-  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
   Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
   Actions:
@@ -1729,7 +1742,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1748,7 +1762,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1773,7 +1788,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
@@ -1795,7 +1811,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
@@ -1817,7 +1834,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1837,7 +1855,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1859,7 +1878,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1879,7 +1899,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1899,7 +1920,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1919,7 +1941,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
@@ -1961,7 +1984,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   Extras: opp_passed
   Actions:
    0: Pass priority
@@ -2000,7 +2024,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp drawn=1
   Extras: opp_passed
   Actions:
@@ -2066,7 +2091,8 @@
   Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, ?, ?
-  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Badgermole Cub
+  Known opp hand: Thalia, Guardian of Thraben
+  Opp revealed: Forest, Wasteland, Dryad Arbor, Green Sun's Zenith, Noble Hierarch, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: opp spells=1 drawn=1 colors=G
   Extras: opp_passed
   Actions:

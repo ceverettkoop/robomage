@@ -994,6 +994,7 @@
   Pending: Delver of Secrets (self)
   Self GY: Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
+  Known top: Dragon's Rage Channeler, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler
   Extras: not_priority_window
   Actions:
@@ -1036,7 +1037,7 @@
   Stack: Ponder (spell, opponent)
   Self GY: Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Brainstorm, Mishra's Bauble
+  Opp revealed: Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: opp_passed
   Actions:
@@ -1645,6 +1646,7 @@
   Pending: Delver of Secrets (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
+  Known top: Mishra's Bauble, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R | opp drawn=1 life_lost=3
   Extras: not_priority_window
@@ -2101,6 +2103,7 @@
   Pending: Delver of Secrets (self)
   Self GY: Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
+  Known top: Cori-Steel Cutter, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter
   Extras: not_priority_window
   Actions:
