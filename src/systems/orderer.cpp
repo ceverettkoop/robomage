@@ -303,6 +303,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // card is now either public, or a fresh hidden object). Reveal sites set this
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
+    const bool left_face_down = target_zone.is_face_down;
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
@@ -312,10 +313,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // hidden zone (e.g. Overlord of the Balemurk returning a creature card from the
     // graveyard to hand, or bouncing a permanent to its owner's hand). Keep that
     // belief so the observation carries the exact opponent-hand card. A draw
-    // (LIBRARY→HAND) is a hidden move and is intentionally excluded.
+    // (LIBRARY→HAND) is a hidden move and is intentionally excluded, as is a card leaving
+    // exile face down: its identity was hidden there too (CR 406.3).
     if (destination == Zone::HAND &&
-        (origin == Zone::BATTLEFIELD || origin == Zone::STACK ||
-         origin == Zone::GRAVEYARD || origin == Zone::EXILE)) {
+        (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
+         (origin == Zone::EXILE && !left_face_down))) {
         target_zone.identity_known = true;
     }
 

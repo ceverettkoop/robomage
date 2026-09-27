@@ -148,13 +148,22 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                                                                             : "the top of their library")
                                                                : "zone";
 
+    // Cards put into a library in a random order land in positions no player knows (Triumph of
+    // Saint Katherine's shuffled pile), so the owner's known-top cache records them as unknown.
+    const bool top_seen_by_owner = !ab.rest_random_order;
     size_t moved = 0;
     for (auto entity : to_move) {
         if (global_coordinator.entity_has_component<CardData>(entity)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            game_log("%s moves %s to %s\n", player_name(owner).c_str(), cd.name.c_str(), dest_str);
+            // A face-down exiled card's identity is hidden from every player (CR 406.3).
+            if (global_coordinator.GetComponent<Zone>(entity).is_face_down) {
+                game_log("%s moves a face-down card to %s\n", player_name(owner).c_str(), dest_str);
+            } else {
+                auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                game_log("%s moves %s to %s\n", player_name(owner).c_str(), cd.name.c_str(),
+                         dest_str);
+            }
         }
-        orderer->add_to_zone(on_bottom, entity, ab.destination);
+        orderer->add_to_zone(on_bottom, entity, ab.destination, top_seen_by_owner);
         // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each

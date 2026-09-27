@@ -27,6 +27,8 @@ static Zone::ZoneValue dig_chosen_destination(const Ability &ab);
 static bool dig_chosen_on_bottom(const Ability &ab);
 static Zone::ZoneValue dig_rest_destination(const Ability &ab);
 static bool dig_rest_on_bottom(const Ability &ab);
+static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest);
+static bool dig_is_blind(const Ability &ab);
 
 // Where the chosen cards go: DestinationZone$, else the hand.
 static Zone::ZoneValue dig_chosen_destination(const Ability &ab) {
@@ -48,6 +50,20 @@ static Zone::ZoneValue dig_rest_destination(const Ability &ab) {
 // Whether the unchosen rest go on the bottom of the library (LibraryPosition2$ 0 keeps them on
 // top — Fateseal).
 static bool dig_rest_on_bottom(const Ability &ab) { return ab.dig_rest_library_position != 0; }
+
+// ExileFaceDown$ True (Triumph of Saint Katherine): the cards this dig moves into exile are
+// exiled face down (CR 406.3), so their identities stay hidden and are not publicly revealed.
+static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest) {
+    return ab.exile_face_down && dest == Zone::EXILE;
+}
+
+// A face-down exile of every card in the slice, with no filter and no reveal, is a blind move:
+// no player is instructed to look at the cards (Triumph's "exile ... the top six cards of your
+// library in a face-down pile"), so none of them becomes known to anyone (CR 406.3).
+static bool dig_is_blind(const Ability &ab) {
+    return dig_exiles_face_down(ab, dig_chosen_destination(ab)) && ab.change_num_all &&
+           ab.change_valid.empty() && !ab.dig_reveal;
+}
 
 namespace effects {
 
@@ -106,8 +122,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             if (ab.change_valid.empty() || card_matches_filter(e, ab.change_valid, mctx))
                 matching.push_back(e);
 
-        game_log("%s looks at the top %zu card(s) of %s library.\n", actor_name.c_str(), rt.lib.size(),
-                 owner_poss.c_str());
+        if (dig_is_blind(ab))
+            game_log("%s exiles the top %zu card(s) of %s library face down.\n", actor_name.c_str(),
+                     rt.lib.size(), owner_poss.c_str());
+        else
+            game_log("%s looks at the top %zu card(s) of %s library.\n", actor_name.c_str(),
+                     rt.lib.size(), owner_poss.c_str());
 
         // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
         // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
@@ -193,10 +213,14 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
 
     Zone::ZoneValue chosen_dest = dig_chosen_destination(ab);
     bool on_bottom = dig_chosen_on_bottom(ab);
+    const bool chosen_face_down = dig_exiles_face_down(ab, chosen_dest);
+    const bool blind = dig_is_blind(ab);
     for (Entity chosen : rt.chosen) {
-        orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees);
+        orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees, chosen_face_down);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
-        if (chosen_dest == Zone::LIBRARY) {
+        if (blind) {
+            // Nobody saw the card; the summary line above narrates the move.
+        } else if (chosen_dest == Zone::LIBRARY) {
             game_log_private(looker, "%s puts %s on the %s of %s library.\n", actor_name.c_str(),
                 cd.name.c_str(), on_bottom ? "bottom" : "top", owner_poss.c_str());
             game_log_redacted(looker, "%s puts a card on the %s of %s library.\n",
@@ -209,9 +233,11 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
                                       : chosen_dest == Zone::GRAVEYARD ? owner_poss + " graveyard"
                                       : actor == dig_owner             ? std::string("hand")
                                                                        : owner_poss + " hand";
-            game_log_private(looker, "%s puts %s into %s.\n", actor_name.c_str(), cd.name.c_str(),
-                where.c_str());
-            game_log_redacted(looker, "%s puts a card into %s.\n", actor_name.c_str(), where.c_str());
+            const char *face = chosen_face_down ? " face down" : "";
+            game_log_private(looker, "%s puts %s into %s%s.\n", actor_name.c_str(), cd.name.c_str(),
+                where.c_str(), face);
+            game_log_redacted(looker, "%s puts a card into %s%s.\n", actor_name.c_str(), where.c_str(),
+                              face);
         }
     }
 
@@ -234,9 +260,17 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // (Malevolent Rumble: "Put the rest into your graveyard"). Default (-1) stays the library.
     if (dig_rest_destination(ab) != Zone::LIBRARY) {
         Zone::ZoneValue rest_dest = dig_rest_destination(ab);
+        const bool rest_face_down = dig_exiles_face_down(ab, rest_dest);
         for (auto e : remaining) {
-            orderer->add_to_zone(false, e, rest_dest, owner_sees);
+            orderer->add_to_zone(false, e, rest_dest, owner_sees, rest_face_down);
             auto &cd = global_coordinator.GetComponent<CardData>(e);
+            if (rest_face_down) {
+                game_log_private(looker, "%s puts %s into exile face down.\n", actor_name.c_str(),
+                                 cd.name.c_str());
+                game_log_redacted(looker, "%s puts a card into exile face down.\n",
+                                  actor_name.c_str());
+                continue;
+            }
             game_log("%s puts %s into %s %s.\n", actor_name.c_str(), cd.name.c_str(), owner_poss.c_str(),
                      rest_dest == Zone::GRAVEYARD ? "graveyard"
                      : rest_dest == Zone::EXILE   ? "exile"
