@@ -91,6 +91,11 @@ static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg) {
 }
 
 bool parse_deal_damage(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "ValidPlayers" && ab.category == "DamageAll") {
+        // DamageAll's players (Pyroclasm-style "each creature and each player").
+        effect_params<DamageParams>(ab).valid_players = value;
+        return true;
+    }
     if (key != "NumDmg") return false;
     // Check if value is numeric; if not, store as SVar key for resolution later
     if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||

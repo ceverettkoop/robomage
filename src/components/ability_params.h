@@ -53,6 +53,8 @@ struct PumpParams {
 struct DamageParams {
     bool is_delirium_scale = false;  // use delirium_amount when delirium is active
     size_t delirium_amount = 0;      // damage dealt when the caster has delirium
+    std::string valid_players = "";  // DamageAll's ValidPlayers$: the players also dealt the
+                                     // damage (player_matches_target_spec form; empty = none)
 };
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
