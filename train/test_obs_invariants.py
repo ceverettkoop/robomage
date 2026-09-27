@@ -89,7 +89,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
                     ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
                     ZONE_COUNTER_NORMALIZER, CAT_CAST_SPELL, CAT_PLAY_LAND, CAT_SELECT_TARGET,
-                    _REF_NAMES)
+                    CAT_SEARCH_LIBRARY, _REF_NAMES)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -1252,6 +1252,101 @@ def check_graveyard_play_permissions():
         env.close()
 
 
+def _write_face_down_decks():
+    """Stacked temp decks for check_face_down_exile_hidden: A opens with The
+    Creation of Avacyn and six Swamps, with one Lightning Bolt deep in the library
+    (so it is still there to search for); B holds only Islands. Returns the two
+    deck specs (relative to decks/)."""
+    specs = []
+    for stem, lines in (("obsinv_facedown_a",
+                         ["1 The Creation of Avacyn", "6 Swamp", "10 Swamp",
+                          "1 Lightning Bolt", "12 Swamp"]),
+                        ("obsinv_facedown_b", ["30 Island"])):
+        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+        specs.append("temp/" + stem)
+    return specs
+
+
+def _zone_block_ids(state, start, slot_size):
+    """The decoded card ids of a graveyard / exile block's slots."""
+    return [_decode_card_id(state[o]) for o in _zone_block_offsets(start, slot_size)]
+
+
+def check_face_down_exile_hidden():
+    """A face-down exiled card is hidden from the opponent (CR 406.3): seat A
+    casts The Creation of Avacyn and its chapter I exiles the searched Lightning
+    Bolt face down. While it is face down, B's opp_exile block never names it
+    and B's revealed bit for it stays clear, though A's own self_exile block
+    names it. Chapter II turns it face up, after which B sees it (proving the
+    probe can see the id at all). Every decision also runs the full
+    check_decision battery. Returns (hidden B decisions, visible B decisions)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    avacyn = names["The Creation of Avacyn"]
+    bolt = names["Lightning Bolt"]
+    deck_a, deck_b = _write_face_down_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, no_shuffle=True,
+                      battlefield_a="Swamp,Swamp,Swamp", bo3=False)
+    n_hidden = n_visible = 0
+    in_a_exile = False   # A's latest view holds the Bolt in its own exile
+    cast = searched = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(400):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            choice = 0
+            if priority_is_a:
+                in_a_exile = bolt in _zone_block_ids(state, _EXILE_START, _EXILE_SLOT_SIZE)
+                ids = decode.action_card_ids(obs)
+                for a in range(num):
+                    cat, cid = int(cats[a]), _decode_card_id(ids[a])
+                    if not cast and cat == CAT_CAST_SPELL and cid == avacyn:
+                        choice, cast = a, True
+                        break
+                    if cat == CAT_SEARCH_LIBRARY and cid == bolt:
+                        choice, searched = a, True
+                        break
+            elif in_a_exile:
+                seen = bolt in _zone_block_ids(state, _OPP_EXILE_START, _EXILE_SLOT_SIZE)
+                revealed = _opp_revealed_bits(state).get(bolt, 0.0) > 0.5
+                if seen:
+                    if not revealed:
+                        _fail(i, "B", "opp_deck.revealed", bolt, 0.0,
+                              "a face-up exiled card is not marked revealed")
+                    n_visible += 1
+                elif revealed:
+                    if n_visible == 0:
+                        _fail(i, "B", "opp_deck.revealed", bolt, 1.0,
+                              "the face-down exiled card is marked revealed")
+                else:
+                    if n_visible:
+                        _fail(i, "B", "opp_exile", bolt, None,
+                              "the exiled card turned face down again")
+                    n_hidden += 1
+            if n_hidden and n_visible:
+                return n_hidden, n_visible
+            env.step(choice)
+        raise InvariantError(
+            f"face-down window not observed within 400 decisions (cast={cast}, "
+            f"searched={searched}, hidden B decisions={n_hidden}, visible={n_visible})")
+    finally:
+        env.close()
+        for spec in (deck_a, deck_b):
+            try:
+                os.remove(os.path.join(_DECKS_DIR, spec + ".dk"))
+            except OSError:
+                pass
+
+
 def check_delayed_trigger_lifecycle():
     """Guaranteed coverage for invariant (17): stage two Mishra's Baubles for
     seat A, activate one, and follow its "draw at the beginning of the next
@@ -2301,6 +2396,14 @@ def main():
         return 1
     print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
           f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
+
+    try:
+        n_fd_hidden, n_fd_visible = check_face_down_exile_hidden()
+    except InvariantError as e:
+        print(f"FAIL  face-down exile hidden\n  {e}", flush=True)
+        return 1
+    print(f"ok    face-down exile hidden: the opponent saw no identity at {n_fd_hidden} "
+          f"decisions, then the face-up card at {n_fd_visible}", flush=True)
 
     try:
         n_wait, n_stack = check_delayed_trigger_lifecycle()
