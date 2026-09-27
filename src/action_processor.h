@@ -57,6 +57,8 @@ bool any_attacker_needs_damage_assignment(Game& game, std::shared_ptr<Orderer> o
                                           bool first_strike_only);
 
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
+// "Requirement" is the ability's minimum target count (CR 601.2c) as effective_target_min reads it
+// before X is announced: an X-driven minimum counts as 0, since X may legally be 0.
 bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
 
 // The transient targeting ability an Aura's enchant ability defines (CR 303.4a): its legal

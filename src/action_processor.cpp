@@ -976,17 +976,20 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
 
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
-    if (ability.target_min == 0) return true;  // optional targeting always has "legal targets"
     // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
     // targets must be evaluated from the controlling player's perspective (see above), or a
     // ".YouOwn" ability could be offered with no legal target and crash on an empty target menu.
-    return !build_valid_targets(ability, orderer, ability_perspective_player(ability)).empty();
+    Zone::Ownership perspective = ability_perspective_player(ability);
+    // optional targeting always has "legal targets"
+    if (effective_target_min(ability, perspective, orderer, /*x_announced=*/false) <= 0) return true;
+    return !build_valid_targets(ability, orderer, perspective).empty();
 }
 
-// The minimum number of targets `ab` requires (CR 601.2c), the one rule behind the cast-legality
-// gate, the charm-mode filter and target selection. A static TargetMin$ is its literal value. A
-// non-xPaid count-SVar min (Into the Flood Maw: TargetMin$ X = Count$PromisedGift.0.1) is
-// evaluated now against the current game state (which reads the pending gift-promise flag).
+// The minimum number of targets `ab` requires (CR 601.2c), the one rule behind the cast- and
+// activation-legality gates (has_legal_targets), the charm-mode filter and target selection. A
+// static TargetMin$ is its literal value. A non-xPaid count-SVar min (Into the Flood Maw:
+// TargetMin$ X = Count$PromisedGift.0.1) is evaluated now against the current game state (which
+// reads the pending gift-promise flag).
 // An xPaid-driven min ("exactly X targets", Hide on the Ceiling; "up to X", Kozilek's Command)
 // reads the X announced for the spell when `x_announced`; before X is chosen (the cast-legality
 // gate) it counts as 0 — X may legally be 0, so it must not gate castability.
