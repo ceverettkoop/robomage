@@ -84,15 +84,17 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         if (!is_cleanup && !rt.fire) continue;  // condition not met: skip the reflexive effect
         stored.source = ab.source;
         stored.controller = ab.controller;
-        // A DB$ Pump sub with no pre-chosen target picks its own target inside the pump
-        // handler (which also knows the ControlledBy-ParentTarget filter select_target
-        // doesn't), so leave its target unset here and let the handler prompt (Guide of
-        // Souls' put-counters-on-target-attacker, Cloak and Dagger's optional pump).
-        // Selection runs on the STORED sub entry (the persisted parent), so a suspended
-        // pick resumes against the same in-flight ability; tsel_done gates it off once
-        // complete so a suspension inside the sub's own resolve never re-selects.
+        stored.targeted_player = ab.player_target_for_subs();
+        // The reflexive ability's targets are chosen as it would be put on the stack (CR
+        // 603.12, 603.3d) through the shared legality check — Guide of Souls' "target
+        // attacking creature" offers only attacking creatures, never a hexproof or shrouded
+        // opponent's creature. With no legal choice for a required target the sub resolves
+        // untargeted and is countered by its own target check (CR 608.2b). Selection runs on
+        // the STORED sub entry (the persisted parent), so a suspended pick resumes against
+        // the same in-flight ability; tsel_done gates it off once complete so a suspension
+        // inside the sub's own resolve never re-selects.
         if (!is_cleanup && !rt.tsel_done && stored.valid_tgts != "N_A" &&
-            stored.category != "Pump" && has_legal_targets(stored, orderer)) {
+            has_legal_targets(stored, orderer)) {
             if (ctx.can_suspend()) {
                 ResolutionTargetAsker asker(ctx);
                 if (run_target_select(stored, rt.tsel, asker, orderer, ab.controller) ==

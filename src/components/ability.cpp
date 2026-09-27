@@ -766,6 +766,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     MatchCtx ctx;
     ctx.controller = caster;
     ctx.source = source;
+    if (targeted_player != 0) ctx.targeted_player = seat_of_player(targeted_player);
     // The mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed above into
     // cmc_le; feed it to the evaluator so the bound is actually enforced.
     if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
@@ -1254,16 +1255,19 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // Propagate the chain's PLAYER target for DefinedPlayer$ Targeted reads — through EVERY
     // sub, including independently-targeted ones, whose own (card) target must not erase the
     // outer player target (see Ability::targeted_player).
-    sub.targeted_player = (parent.target != 0 &&
-                           global_coordinator.entity_has_component<Player>(parent.target))
-                              ? parent.target
-                              : parent.targeted_player;
+    sub.targeted_player = parent.player_target_for_subs();
     if (sub.valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
     const std::string &d = sub.defined;
     if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
         d == "TargetedController")
         sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
+}
+
+Entity Ability::player_target_for_subs() const {
+    return (target != 0 && global_coordinator.entity_has_component<Player>(target))
+               ? target
+               : targeted_player;
 }
 
 // See forward declaration at top of file. The bind closure holds the exact
@@ -1521,13 +1525,10 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
-            // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
-            // pre-chosen target selects its own target inside the handler (an immediate-trigger
-            // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
-            // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
-            // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
-            bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
-            if (valid_tgts != "N_A" && !pump_selects_own_target) {
+            // Pre-resolve target validity check (CR 608.2b): every targeted effect, a Pump
+            // included, was targeted as it was put on the stack and fizzles here if its target
+            // became illegal (it does NOT retarget).
+            if (valid_tgts != "N_A") {
                 if (!is_target_valid()) {
                     fizzle(orderer);
                     return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command

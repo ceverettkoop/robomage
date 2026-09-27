@@ -316,6 +316,11 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // the defending player is that controller's sole opponent, so this is OppCtrl semantics.
     if (q == "ControlledBy TriggeredDefendingPlayer")
         return !v.on_battlefield || v.controller != ctx.controller;
+    // "ControlledBy ParentTarget" (Forge): the object is controlled by the player the parent
+    // ability targeted (Cloak and Dagger, Entwined: "up to one target creature they control").
+    if (q == "ControlledBy ParentTarget")
+        return !v.on_battlefield ||
+               (ctx.targeted_player != Zone::UNKNOWN && v.controller == ctx.targeted_player);
     // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
     // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
     // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring

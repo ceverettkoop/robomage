@@ -309,6 +309,9 @@ struct Ability{
     // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
     // way). 0 = no player target anywhere up the chain.
     Entity targeted_player = 0;
+    // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:
+    // this ability's own target when it is a player, else the one it inherited.
+    Entity player_target_for_subs() const;
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the

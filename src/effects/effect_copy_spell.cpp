@@ -157,6 +157,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                     // legal target simply leaves it untargeted (it does nothing at
                     // resolution) rather than crashing.
                     Ability &sub = rt.work.subabilities[rt.sub_idx];
+                    sub.targeted_player = rt.work.player_target_for_subs();  // ParentTarget
                     if (sub.valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(sub, orderer))) {
                         if (run_target_select(sub, rt.tsel, asker, orderer, controller) !=

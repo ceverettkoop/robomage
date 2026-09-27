@@ -288,6 +288,7 @@ struct TriggerPlacementRT {
     bool saved_priority = false;   // player_a_has_priority to restore at completion
     bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
     TargetSelectRT tsel;           // the front trigger's in-flight target selection
+    size_t sub_idx = 0;            // next of the front trigger's sub-abilities to target (603.3d)
     std::vector<Entity> placed;    // abilities already put on the stack by this placement; their
                                    // targeting hooks (Ward, becomes-target) fire once it completes
 };

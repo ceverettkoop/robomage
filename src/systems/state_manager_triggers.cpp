@@ -108,6 +108,22 @@ static size_t storm_count_this_turn(const Game &game) {
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
 
+// One placement-time target choice (CR 603.3d) for `ab` — the trigger itself or one of its
+// targeting sub-abilities — on the persisted tp.tsel machine (blocking when the placement can't
+// suspend). SUSPENDED means the pick parked a TRIGGER_PLACE query; re-enter with the same tp.
+static TargetStatus choose_placement_target(Ability &ab, TriggerPlacementRT &tp, bool suspendable,
+                                            std::shared_ptr<Orderer> orderer,
+                                            Zone::Ownership controller);
+
+// The placement-time target choices of the trigger at the queue front (CR 603.3d, which applies
+// 601.2c): its own target, then each chained sub-ability's that targets (Cloak and Dagger,
+// Entwined's "and up to one target creature they control"), a sub's "ParentTarget" player
+// bound from the ability's chosen player target first. Returns SUSPENDED on a parked pick; sets
+// `removed` when a required target has no legal choice, so the ability is removed instead.
+static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                           bool suspendable, std::shared_ptr<Orderer> orderer,
+                                           bool &removed);
+
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
@@ -1131,12 +1147,72 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     tp.saved_priority = cur_game.player_a_has_priority;
     tp.target_in_flight = false;
     tp.tsel = TargetSelectRT{};
+    tp.sub_idx = 0;
     tp.queue.clear();
     tp.placed.clear();
     for (Zone::Ownership owner : apnap)
         for (const auto &pt : pending)
             if (pt.controller == owner) tp.queue.push_back(pt);
     resume_trigger_placement(game, orderer);
+}
+
+static TargetStatus choose_placement_target(Ability &ab, TriggerPlacementRT &tp, bool suspendable,
+                                            std::shared_ptr<Orderer> orderer,
+                                            Zone::Ownership controller) {
+    if (!suspendable) {
+        select_target(ab, orderer, controller);
+        return TargetStatus::DONE;
+    }
+    if (!tp.target_in_flight) {
+        tp.target_in_flight = true;
+        tp.tsel = TargetSelectRT{};
+    }
+    TriggerPlaceTargetAsker asker;
+    if (run_target_select(ab, tp.tsel, asker, orderer, controller) == TargetStatus::SUSPENDED)
+        return TargetStatus::SUSPENDED;
+    tp.target_in_flight = false;
+    return TargetStatus::DONE;
+}
+
+static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                           bool suspendable, std::shared_ptr<Orderer> orderer,
+                                           bool &removed) {
+    removed = false;
+    // The legality checks run once per choice, before its pick begins (target_in_flight clear);
+    // nothing runs between a parked pick and its resume.
+    if (pt.needs_target) {
+        if (!tp.target_in_flight && !has_legal_targets(pt.ab, orderer)) {
+            removed = true;
+            return TargetStatus::DONE;
+        }
+        if (choose_placement_target(pt.ab, tp, suspendable, orderer, pt.controller) ==
+            TargetStatus::SUSPENDED)
+            return TargetStatus::SUSPENDED;
+        pt.needs_target = false;  // chosen: a resume inside a sub's pick must not re-ask it
+    }
+    for (; tp.sub_idx < pt.ab.subabilities.size(); ++tp.sub_idx) {
+        Ability &sub = pt.ab.subabilities[tp.sub_idx];
+        if (!tp.target_in_flight) {
+            // An Execute$ body (a reflexive or delayed trigger's effect) belongs to the ability
+            // that triggers later and chooses its targets then (CR 603.12, 603.7).
+            if (sub.from_delayed_execute || sub.valid_tgts == "N_A" || sub.target != 0 ||
+                !sub.targets.empty())
+                continue;
+            sub.source = pt.ab.source;
+            sub.controller = pt.ab.controller;
+            sub.targeted_player = pt.ab.player_target_for_subs();
+            if (!has_legal_targets(sub, orderer)) {
+                removed = true;
+                tp.sub_idx = 0;
+                return TargetStatus::DONE;
+            }
+        }
+        if (choose_placement_target(sub, tp, suspendable, orderer, pt.controller) ==
+            TargetStatus::SUSPENDED)
+            return TargetStatus::SUSPENDED;
+    }
+    tp.sub_idx = 0;
+    return TargetStatus::DONE;
 }
 
 void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1219,34 +1295,19 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                         tp.queue.begin() + static_cast<ptrdiff_t>(pick) + 1);
 
         PendingTrigger &pt = tp.queue.front();
-        if (pt.needs_target) {
-            if (!tp.target_in_flight) {
-                // CR 603.3d: if no legal choices can be made for a required target as the
-                // triggered ability would go on the stack, the ability is simply removed —
-                // never placed target-less (it would fizzle confusingly, or worse, resolve
-                // against target 0). Optional targeting (target_min 0) always passes.
-                // Checked at placement time exactly as before — nothing can run between
-                // the ordering prompt and this check.
-                if (!has_legal_targets(pt.ab, orderer)) {
-                    game_log("%s's trigger is removed - no legal targets (603.3d)\n",
-                             entity_name(pt.source).c_str());
-                    tp.queue.erase(tp.queue.begin());
-                    continue;
-                }
-            }
-            if (!suspendable) {
-                select_target(pt.ab, orderer, pt.controller);
-            } else {
-                if (!tp.target_in_flight) {
-                    tp.target_in_flight = true;
-                    tp.tsel = TargetSelectRT{};
-                }
-                TriggerPlaceTargetAsker asker;
-                if (run_target_select(pt.ab, tp.tsel, asker, orderer, pt.controller) ==
-                    TargetStatus::SUSPENDED)
-                    return;
-                tp.target_in_flight = false;
-            }
+        bool removed = false;
+        if (choose_trigger_targets(pt, tp, suspendable, orderer, removed) ==
+            TargetStatus::SUSPENDED)
+            return;
+        if (removed) {
+            // CR 603.3d: if no legal choices can be made for a required target as the
+            // triggered ability would go on the stack, the ability is simply removed —
+            // never placed target-less (it would fizzle confusingly, or worse, resolve
+            // against target 0). Optional targeting (target_min 0) always passes.
+            game_log("%s's trigger is removed - no legal targets (603.3d)\n",
+                     entity_name(pt.source).c_str());
+            tp.queue.erase(tp.queue.begin());
+            continue;
         }
         tp.placed.push_back(orderer->push_ability_onto_stack(pt.ab, pt.controller));
         game_log("%s\n", pt.log_line.c_str());

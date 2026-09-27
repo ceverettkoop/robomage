@@ -99,7 +99,7 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
 }
 
 HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    (void)orderer;
+    (void)ctx;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
@@ -134,64 +134,16 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         }
     }
 
-    // A target chosen when the spell was cast (CR 601.2c) or the trigger was placed (603.3d)
-    // is honored as-is — its legality was already re-verified in Ability::resolve (608.2b;
-    // an illegal target fizzles there and never reaches this handler). That covers targeted
-    // pump spells (Giant Growth, Dismember — whose IsCurse$ AI hint needs no special-casing
-    // here), player-targeted curse pumps (Carpet of Flowers: ab.target stays the opponent so
-    // the chained DB$ Mana sub's Count$Valid Island.TargetedPlayerCtrl reads their Islands;
-    // apply_pump_to_creature no-ops on a player), and graveyard targets. Only a Pump that
-    // reaches resolution with NO pre-chosen target — an immediate-trigger sub-ability, which
-    // deliberately skips placement-time selection (see effect_immediate_trigger.cpp; Guide of
-    // Souls, Cloak and Dagger) — selects its target here.
+    // The target was chosen when the spell was cast (CR 601.2c), the ability activated (602.2b)
+    // or the trigger put on the stack (603.3d, 603.12 for a reflexive trigger), and its legality
+    // was re-verified in Ability::resolve (608.2b; an illegal target fizzles there and never
+    // reaches this handler). That covers targeted pump spells (Giant Growth, Dismember — whose
+    // IsCurse$ AI hint needs no special-casing here), player-targeted curse pumps (Carpet of
+    // Flowers: ab.target stays the opponent so the chained DB$ Mana sub's Count$Valid
+    // Island.TargetedPlayerCtrl reads their Islands; apply_pump_to_creature no-ops on a player),
+    // graveyard targets, and "up to one" pumps left without a target (Cloak and Dagger,
+    // Entwined), which apply nothing.
     Zone::Ownership ctrl = ab.controller;
-    if (ab.target == 0) {
-        Zone::Ownership opp = opponent_of(ctrl);
-        // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
-        // must be controlled by the targeted opponent. In the two-player engine the parent's
-        // "target opponent" is always the source's single opponent, so filter to the opponent's
-        // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
-        bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
-        bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
-                            ab.valid_tgts.find("OppCtrl") != std::string::npos ||
-                            ab.valid_tgts.find("ControlledBy") != std::string::npos;
-        std::vector<Entity> pump_targets;
-        for (auto e : battlefield_permanents(orderer->mEntities)) {
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            auto &p = global_coordinator.GetComponent<Permanent>(e);
-            if (want_youctrl && p.controller != ctrl) continue;
-            if (want_oppctrl && p.controller != opp) continue;
-            pump_targets.push_back(e);
-        }
-        if (pump_targets.empty()) {
-            game_log("Pump: no valid targets.\n");
-            // still chain subabilities with no target
-        } else {
-            // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
-            // choose no creature. Offer an explicit decline option in that case.
-            bool optional = (ab.target_min == 0);
-            if (!ctx.resuming())
-                game_log("Choose a creature for Pump:\n");
-            std::vector<LegalAction> tgt_actions;
-            for (auto te : pump_targets) {
-                std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
-                auto &tcr = global_coordinator.GetComponent<Creature>(te);
-                LegalAction la(PASS_PRIORITY, te,
-                    ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
-                la.category = ActionCategory::SELECT_TARGET;
-                tgt_actions.push_back(la);
-            }
-            if (optional) {
-                LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
-                none.category = ActionCategory::SELECT_TARGET;
-                tgt_actions.push_back(none);
-            }
-            int choice = ctx.ask(std::move(tgt_actions), ctrl, ab.source);
-            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-            if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
-                ab.target = pump_targets[static_cast<size_t>(choice)];
-        }
-    }
 
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the

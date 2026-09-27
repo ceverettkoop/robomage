@@ -296,6 +296,11 @@ struct MatchCtx {
     // exactly the creature the DBPump sub targeted). 0 = no card target in context, in which
     // case the qualifier fails closed.
     Entity chain_target = 0;
+    // The player the ability's chain targeted (Ability::targeted_player's seat), for the
+    // `ControlledBy ParentTarget` qualifier (Cloak and Dagger, Entwined's DBPump: "target
+    // creature they control", where "they" is the opponent TrigRevealHand targeted). UNKNOWN =
+    // no player targeted yet, in which case the qualifier fails closed for a permanent.
+    Zone::Ownership targeted_player = Zone::UNKNOWN;
 };
 
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});

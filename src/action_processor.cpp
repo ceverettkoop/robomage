@@ -1389,6 +1389,7 @@ void announce_spell_targets(Ability &ability, std::shared_ptr<Orderer> orderer,
         if (sub.valid_tgts != "N_A") {
             sub.source = ability.source;
             sub.controller = caster;
+            sub.targeted_player = ability.player_target_for_subs();  // ParentTarget
             select_target(sub, orderer, caster);
         }
     }
@@ -1507,7 +1508,8 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
 }
 
 // Append the targets chosen for one targeting instance of `ab` (CR 115.1) — the ability itself
-// when it targets, every chosen mode (CR 700.2), and every chained sub-ability — to `out`,
+// when it targets, every chosen mode (CR 700.2), and every chained sub-ability (an Execute$ body
+// is a separate reflexive/delayed ability, targeted when it triggers) — to `out`,
 // skipping an object already listed. A non-targeting ability (ValidTgts$ absent, "N_A") adds
 // nothing of its own even if its `target` field carries a bound reference.
 static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
@@ -1519,7 +1521,8 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
     for (int ci : ab.charm_chosen)
         if (ci >= 0 && static_cast<size_t>(ci) < ab.charm_choices.size())
             append_chosen_targets(ab.charm_choices[static_cast<size_t>(ci)], out);
-    for (const Ability &sub : ab.subabilities) append_chosen_targets(sub, out);
+    for (const Ability &sub : ab.subabilities)
+        if (!sub.from_delayed_execute) append_chosen_targets(sub, out);  // not a later trigger's
 }
 
 // Every object or player the stack object `targeting_entity` targets, each listed once: the
@@ -2933,6 +2936,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (sub.valid_tgts != "N_A") {
                     sub.source = pc.ability.source;
                     sub.controller = caster;
+                    sub.targeted_player = pc.ability.player_target_for_subs();  // ParentTarget
                     FlowTargetAsker asker(game, caster, resume_choice);
                     if (run_target_select(sub, pc.tsel, asker, orderer, caster) !=
                         TargetStatus::DONE)
