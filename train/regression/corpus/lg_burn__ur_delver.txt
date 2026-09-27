@@ -490,7 +490,7 @@
 --- Narrative ---
   Player A pays {1} — Rift Bolt is not countered
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 16 life)
+  Rift Bolt deals 3 damage to Player B (now at 16 life)
   Player A draws Chain Lightning
 
 --- Decision 22 ---
@@ -556,7 +556,7 @@
   Player A activated Mountain for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 13 life)
+  Chain Lightning deals 3 damage to Player B (now at 13 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -631,9 +631,8 @@
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
   Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 13 life)
   Player A draws Exquisite Firecraft
 
 --- Decision 28 ---
@@ -862,7 +861,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 9 life)
+  Rift Bolt deals 3 damage to Player B (now at 9 life)
 
 --- Decision 38 ---
   Priority: Player A (active)
@@ -944,7 +943,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 5 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 5 life)
 
 --- Decision 42 ---
   Priority: Player A (active)
@@ -1295,14 +1294,14 @@
   Player B casts Into the Flood Maw targeting Eidolon of the Great Revel
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 2 life)
+  Eidolon of the Great Revel deals 2 damage to Player B (now at 2 life)
   Resolving ability (category: ChangeZone)
   Eidolon of the Great Revel is moved to hand
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 12 life)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 12 life)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at -1 life)
+  Chain Lightning deals 3 damage to Player B (now at -1 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 

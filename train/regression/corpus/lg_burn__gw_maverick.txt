@@ -217,7 +217,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Rift Bolt deals 3 damage to Player B (now at 17 life)
   Player A draws Chain Lightning
 
 --- Decision 10 ---
@@ -266,7 +266,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Chain Lightning deals 3 damage to Player B (now at 14 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -506,9 +506,9 @@
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 11 life)
+  Price of Progress deals 2 damage to Player B (now at 11 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
@@ -561,7 +561,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 8 life)
+  Rift Bolt deals 3 damage to Player B (now at 8 life)
   Player A draws Exquisite Firecraft
 
 --- Decision 24 ---
@@ -741,7 +741,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 4 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 4 life)
 
 --- Decision 32 ---
   Priority: Player A (active)
@@ -1345,8 +1345,8 @@
     Scythecat Cub -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 11 life)
+    Scythecat Cub deals 2 damage to Player A (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Eidolon of the Great Revel
@@ -1477,7 +1477,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 2 life)
+  Eidolon of the Great Revel deals 2 damage to Player B (now at 2 life)
 
 --- Decision 65 ---
   Priority: Player B (active)
@@ -1884,8 +1884,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 6 life)
+    Scythecat Cub deals 2 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Chain Lightning
@@ -1939,9 +1939,9 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 2 life)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 2 life)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at -1 life)
+  Chain Lightning deals 3 damage to Player B (now at -1 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 

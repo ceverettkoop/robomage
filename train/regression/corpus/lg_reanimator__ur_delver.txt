@@ -1692,9 +1692,9 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Atraxa, Grand Unifier deals 7 damage to Player B
-    Raph & Mikey, Troublemakers deals 7 damage to Player B
+    Atraxa, Grand Unifier deals 7 damage to Player B (now at 9 life)
     Player A gains 7 life (lifelink)
+    Raph & Mikey, Troublemakers deals 7 damage to Player B (now at 2 life)
   --- End Combat Damage ---
 
 --- Decision 68 ---

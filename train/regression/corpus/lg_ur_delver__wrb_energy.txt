@@ -2117,7 +2117,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Guide of Souls deals 1 damage to Player A
+    Guide of Souls deals 1 damage to Player A (now at 17 life)
   --- End Combat Damage ---
 
 --- Decision 94 ---
@@ -2877,9 +2877,9 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 16 life)
+    Warrior token deals 1 damage to Player A (now at 15 life)
+    Warrior token deals 1 damage to Player A (now at 14 life)
   --- End Combat Damage ---
 
 --- Decision 127 ---
@@ -3673,7 +3673,7 @@
     Dragon's Rage Channeler -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 4 damage to Player B
+    Dragon's Rage Channeler deals 4 damage to Player B (now at 13 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Swords to Plowshares
@@ -3871,11 +3871,11 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Voice of Victory deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 15 life)
+    Voice of Victory deals 1 damage to Player A (now at 14 life)
+    Cat Warrior token deals 2 damage to Player A (now at 12 life)
+    Warrior token deals 1 damage to Player A (now at 11 life)
+    Warrior token deals 1 damage to Player A (now at 10 life)
   --- End Combat Damage ---
   Delayed trigger fires.
   Resolving ability (category: SacrificeTokens)
@@ -4052,7 +4052,7 @@
     Monk token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Monk token deals 2 damage to Player B
+    Monk token deals 2 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
   Player B draws Shadowy Backstreet
@@ -4217,11 +4217,11 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Voice of Victory deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 9 life)
+    Voice of Victory deals 1 damage to Player A (now at 8 life)
+    Cat Warrior token deals 2 damage to Player A (now at 6 life)
+    Warrior token deals 1 damage to Player A (now at 5 life)
+    Warrior token deals 1 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   Delayed trigger fires.
   Resolving ability (category: SacrificeTokens)
@@ -4452,8 +4452,8 @@
   Token created: 0/0 Clue
   No creatures eligible to block.
   --- Combat Damage ---
-    Tamiyo, Inquisitive Student deals 1 damage to Player B
-    Monk token deals 1 damage to Player B
+    Tamiyo, Inquisitive Student deals 1 damage to Player B (now at 10 life)
+    Monk token deals 1 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
   Player B draws Ajani, Nacatl Pariah
@@ -4630,10 +4630,10 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
   No creatures eligible to block.
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 3 life)
+    Cat Warrior token deals 2 damage to Player A (now at 1 life)
+    Warrior token deals 1 damage to Player A (now at 0 life)
+    Warrior token deals 1 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
 

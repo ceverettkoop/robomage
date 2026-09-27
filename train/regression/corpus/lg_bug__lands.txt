@@ -765,7 +765,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 19 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   --- Declare Attackers (Player A) ---
@@ -1249,8 +1249,8 @@
   Token created: 0/0 Clue
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
+    Orc Army token deals 1 damage to Player B (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
@@ -1714,8 +1714,8 @@
   Token created: 0/0 Clue
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
+    Orc Army token deals 1 damage to Player B (now at 15 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
@@ -2496,7 +2496,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Construct token deals 3 damage to Player A
+    Construct token deals 3 damage to Player A (now at 12 life)
   --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
 --- Turn 17 (Player A) ---
@@ -2602,7 +2602,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
@@ -2787,7 +2787,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 13 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
   Resolving ability (category: ChangeZone)
@@ -2919,8 +2919,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 3 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 12 life)
+    Orc Army token deals 3 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
@@ -3109,7 +3109,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Construct token deals 5 damage to Player A
+    Construct token deals 5 damage to Player A (now at 6 life)
   --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Player A draws Fatal Push
@@ -3603,7 +3603,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Construct token deals 5 damage to Player A
+    Construct token deals 5 damage to Player A (now at 1 life)
   --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
   Player A draws Flow State
@@ -4289,10 +4289,10 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orcish Bowmasters deals 1 damage to Player B
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 3 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 8 life)
+    Orcish Bowmasters deals 1 damage to Player B (now at 7 life)
+    Orcish Bowmasters deals 1 damage to Player B (now at 6 life)
+    Orc Army token deals 3 damage to Player B (now at 3 life)
   --- End Combat Damage ---
   -------- TURN 22 (Player B) --------
 --- Turn 22 (Player B) ---
@@ -4562,7 +4562,7 @@
   Construct token gets -1/+0 (now 5/5)
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 5 damage to Player A
+    Construct token deals 5 damage to Player A (now at -4 life)
   --- End Combat Damage ---
   Player A has -4 life - Player B wins!
 

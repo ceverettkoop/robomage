@@ -751,7 +751,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Keen-Eyed Curator deals 4 damage to Player A
+    Keen-Eyed Curator deals 4 damage to Player A (now at 16 life)
   --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Baleful Strix
@@ -1070,8 +1070,8 @@
     Scythecat Cub -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 12 life)
+    Scythecat Cub deals 2 damage to Player A (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Swamp
@@ -1485,11 +1485,11 @@
     Thalia, Guardian of Thraben -> Player A
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player A
+    Thalia, Guardian of Thraben deals 2 damage to Player A (now at 8 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 5 life)
+    Scythecat Cub deals 2 damage to Player A (now at 3 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
@@ -2189,7 +2189,7 @@
     Thalia, Guardian of Thraben -> Player A
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player A
+    Thalia, Guardian of Thraben deals 2 damage to Player A (now at 0 life)
   --- End First Strike Combat Damage ---
   Player A has 0 life - Player B wins!
 

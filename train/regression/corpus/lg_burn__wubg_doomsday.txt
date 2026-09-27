@@ -359,7 +359,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Rift Bolt deals 3 damage to Player B (now at 17 life)
 
 --- Decision 19 ---
   Priority: Player B (non-active)
@@ -457,7 +457,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Chain Lightning deals 3 damage to Player B (now at 14 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -1342,9 +1342,9 @@
 --- Narrative ---
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 2 life)
+  Price of Progress deals 4 damage to Player B (now at 2 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
@@ -1420,7 +1420,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at -1 life)
+  Rift Bolt deals 3 damage to Player B (now at -1 life)
   Player B has -1 life - Player A wins!
 
 === A/A wins ===

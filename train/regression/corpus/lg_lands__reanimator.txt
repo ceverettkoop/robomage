@@ -939,7 +939,7 @@
     Construct token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Dark Ritual
@@ -1387,8 +1387,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Construct token deals 8 damage to Player B
-    Construct token deals 7 damage to Player B
+    Construct token deals 8 damage to Player B (now at -1 life)
+    Construct token deals 7 damage to Player B (now at -8 life)
   --- End Combat Damage ---
   Player B has -8 life - Player A wins!
 

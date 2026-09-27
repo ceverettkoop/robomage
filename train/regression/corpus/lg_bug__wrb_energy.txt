@@ -703,7 +703,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 19 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 19 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 1/1.
 
@@ -1328,8 +1328,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player A
-    Orc Army token deals 1 damage to Player A
+    Orcish Bowmasters deals 1 damage to Player A (now at 18 life)
+    Orc Army token deals 1 damage to Player A (now at 17 life)
   --- End Combat Damage ---
 
 --- Decision 51 ---
@@ -1840,8 +1840,8 @@
     Orc Army token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player A
-    Orc Army token deals 1 damage to Player A
+    Orcish Bowmasters deals 1 damage to Player A (now at 16 life)
+    Orc Army token deals 1 damage to Player A (now at 15 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Swamp
@@ -1932,7 +1932,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 2/2.
   --- Declare Attackers (Player A) ---
@@ -2177,10 +2177,10 @@
     Cat Warrior token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Orcish Bowmasters deals 1 damage to Player A
-    Orc Army token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 14 life)
+    Orcish Bowmasters deals 1 damage to Player A (now at 13 life)
+    Orc Army token deals 2 damage to Player A (now at 11 life)
+    Cat Warrior token deals 2 damage to Player A (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
@@ -2641,8 +2641,8 @@
   Resolving ability (category: ImmediateTrigger)
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Orc Army token deals 2 damage to Player A (now at 6 life)
+    Cat Warrior token deals 2 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
@@ -2706,7 +2706,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   Player A draws Force of Will
@@ -3111,8 +3111,8 @@
   --- Combat Damage ---
     Orc Army token deals 1 damage to Guide of Souls
     Guide of Souls deals 1 damage to Orc Army token
-    Orc Army token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Orc Army token deals 2 damage to Player A (now at 1 life)
+    Cat Warrior token deals 2 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
 

@@ -2445,7 +2445,7 @@
     Thalia, Guardian of Thraben -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 13 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -2763,11 +2763,11 @@
     Thalia, Guardian of Thraben -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 11 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
-    Forest deals 1 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 9 life)
+    Forest deals 1 damage to Player B (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
@@ -3246,10 +3246,10 @@
   Badgermole Cub gets -1/+0 (now 1/2)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 1 damage to Player B
+    Thalia, Guardian of Thraben deals 1 damage to Player B (now at 7 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Badgermole Cub deals 1 damage to Player B
+    Badgermole Cub deals 1 damage to Player B (now at 6 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
 --- Turn 16 (Player B) ---
@@ -3658,7 +3658,7 @@
   Forest gets -1/+0 (now 0/1)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 1 damage to Player B
+    Thalia, Guardian of Thraben deals 1 damage to Player B (now at 5 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -4034,7 +4034,7 @@
   Thalia, Guardian of Thraben gets -1/+0 (now 1/1)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 1 damage to Player B
+    Thalia, Guardian of Thraben deals 1 damage to Player B (now at 3 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -4340,7 +4340,7 @@
   Thalia, Guardian of Thraben gets -1/+0 (now 1/1)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 1 damage to Player B
+    Thalia, Guardian of Thraben deals 1 damage to Player B (now at 8 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -4691,7 +4691,7 @@
   Thalia, Guardian of Thraben gets -1/+0 (now 1/1)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Player B has protection from everything — 1 combat damage prevented
+    Player B has protection from everything — 1 damage prevented
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---

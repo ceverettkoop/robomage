@@ -187,7 +187,7 @@
   Player A puts 1 card(s) on the top of their library.
   No creatures eligible to block.
   --- Combat Damage ---
-    Goblin Guide deals 2 damage to Player A
+    Goblin Guide deals 2 damage to Player A (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
@@ -240,7 +240,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Rift Bolt deals 3 damage to Player B (now at 17 life)
   Player A draws Chain Lightning
 
 --- Decision 11 ---
@@ -287,7 +287,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Chain Lightning deals 3 damage to Player B (now at 14 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -390,7 +390,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 13 life)
+  Lightning Bolt deals 3 damage to Player A (now at 13 life)
   Player B draws Lava Spike
 
 --- Decision 18 ---
@@ -457,7 +457,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Lava Spike targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 10 life)
+  Lava Spike deals 3 damage to Player A (now at 10 life)
   --- Declare Attackers (Player B) ---
 
 --- Decision 21 ---
@@ -508,7 +508,7 @@
   Player A puts 1 card(s) on the top of their library.
   No creatures eligible to block.
   --- Combat Damage ---
-    Goblin Guide deals 2 damage to Player A
+    Goblin Guide deals 2 damage to Player A (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
@@ -540,9 +540,8 @@
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 5 life)
+  Price of Progress deals 2 damage to Player A (now at 5 life)
   Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 14 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
@@ -595,7 +594,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 11 life)
+  Rift Bolt deals 3 damage to Player B (now at 11 life)
   Player A draws Exquisite Firecraft
 
 --- Decision 26 ---
@@ -642,9 +641,8 @@
   Player B casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 11 life)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 3 life)
+  Price of Progress deals 2 damage to Player A (now at 3 life)
   Player B draws Chain Lightning
 
 --- Decision 28 ---
@@ -708,7 +706,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Chain Lightning targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 0 life)
+  Chain Lightning deals 3 damage to Player A (now at 0 life)
   Resolving ability (category: CopySpellAbility)
   Player A may pay to copy Chain Lightning:
 

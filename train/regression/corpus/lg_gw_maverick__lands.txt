@@ -582,7 +582,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 18 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws The Tabernacle at Pendrell Vale
@@ -982,7 +982,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 16 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Blast Zone
@@ -1360,7 +1360,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
@@ -1728,7 +1728,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 12 life)
   --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
 --- Turn 12 (Player B) ---
@@ -2116,7 +2116,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
@@ -2515,7 +2515,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
 --- Turn 16 (Player B) ---
@@ -2981,7 +2981,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 6 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
@@ -3395,7 +3395,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
 --- Turn 20 (Player B) ---
@@ -3988,7 +3988,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 2 life)
   --- End Combat Damage ---
   -------- TURN 22 (Player B) --------
 --- Turn 22 (Player B) ---
@@ -4512,7 +4512,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 20 life)
   --- End Combat Damage ---
   -------- TURN 24 (Player B) --------
 --- Turn 24 (Player B) ---
@@ -5040,7 +5040,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 18 life)
   --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
@@ -5559,7 +5559,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 16 life)
   --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
@@ -6138,7 +6138,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 30 (Player B) --------
 --- Turn 30 (Player B) ---
@@ -6776,7 +6776,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 12 life)
   --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
@@ -7555,7 +7555,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 10 life)
   --- End Combat Damage ---
   --- Discard to hand size (Player A) ---
   Hand (8 cards, must discard to 7):
@@ -8674,7 +8674,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Construct token deals 6 damage to Player A
+    Construct token deals 6 damage to Player A (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 37 (Player A) --------
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
@@ -13445,7 +13445,7 @@
     Construct token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 9 damage to Player A
+    Construct token deals 9 damage to Player A (now at 3 life)
   --- End Combat Damage ---
   -------- TURN 53 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
@@ -14202,8 +14202,8 @@
     Construct token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 9 damage to Player A
-    Construct token deals 8 damage to Player A
+    Construct token deals 9 damage to Player A (now at -6 life)
+    Construct token deals 8 damage to Player A (now at -14 life)
   --- End Combat Damage ---
   Player A has -14 life - Player B wins!
 

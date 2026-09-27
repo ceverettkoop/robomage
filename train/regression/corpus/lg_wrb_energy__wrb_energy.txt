@@ -640,7 +640,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 15 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 15 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   Player A draws Amped Raptor
@@ -689,7 +689,7 @@
     Ocelot Pride -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player B
+    Ocelot Pride deals 1 damage to Player B (now at 14 life)
     Player A gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
@@ -1264,9 +1264,9 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 19 life)
+    Warrior token deals 1 damage to Player A (now at 18 life)
+    Warrior token deals 1 damage to Player A (now at 17 life)
   --- End Combat Damage ---
   Delayed trigger fires.
   Resolving ability (category: SacrificeTokens)
@@ -1675,10 +1675,10 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
-    Cat token deals 1 damage to Player B
-    Cat Warrior token deals 2 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
+    Orc Army token deals 1 damage to Player B (now at 12 life)
+    Cat token deals 1 damage to Player B (now at 11 life)
+    Cat Warrior token deals 2 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Swords to Plowshares
@@ -1819,13 +1819,13 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 17 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 16 life)
+    Warrior token deals 1 damage to Player A (now at 15 life)
+    Warrior token deals 1 damage to Player A (now at 14 life)
   --- End Combat Damage ---
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
@@ -2190,13 +2190,13 @@
   Player A's Goblin Bombardment ability targeting Player B is on the stack
   Cat Warrior (token) is put into the graveyard and ceases to exist.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 9 life)
+  Goblin Bombardment deals 1 damage to Player B (now at 9 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 8 life)
+  Goblin Bombardment deals 1 damage to Player B (now at 8 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 7 life)
+  Goblin Bombardment deals 1 damage to Player B (now at 7 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 6 life)
+  Goblin Bombardment deals 1 damage to Player B (now at 6 life)
   No creatures eligible to attack.
   -------- TURN 12 (Player B) --------
   Player B draws Arid Mesa
@@ -2387,14 +2387,14 @@
   Player B gets the city's blessing.
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 13 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 12 life)
+    Cat token deals 1 damage to Player A (now at 11 life)
+    Warrior token deals 1 damage to Player A (now at 10 life)
+    Warrior token deals 1 damage to Player A (now at 9 life)
   --- End Combat Damage ---
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
@@ -2585,7 +2585,7 @@
   Player A sacrifices Guide of Souls
   Player A's Goblin Bombardment ability targeting Player B is on the stack
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 5 life)
+  Goblin Bombardment deals 1 damage to Player B (now at 5 life)
   Resolving ability (category: Discard)
   Player B reveals their hand:
   No valid cards to discard.
@@ -2909,18 +2909,18 @@
   Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 6 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Voice of Victory deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
-    Warrior token deals 1 damage to Player A
+    Voice of Victory deals 1 damage to Player A (now at 5 life)
+    Cat token deals 1 damage to Player A (now at 4 life)
+    Cat token deals 1 damage to Player A (now at 3 life)
+    Warrior token deals 1 damage to Player A (now at 2 life)
+    Warrior token deals 1 damage to Player A (now at 1 life)
+    Cat token deals 1 damage to Player A (now at 0 life)
+    Warrior token deals 1 damage to Player A (now at -1 life)
+    Warrior token deals 1 damage to Player A (now at -2 life)
   --- End Combat Damage ---
   Player A has -2 life - Player B wins!
 

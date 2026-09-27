@@ -1608,8 +1608,8 @@
     Cat Warrior token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 44 life)
+    Cat Warrior token deals 2 damage to Player A (now at 42 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Crop Rotation
@@ -1996,9 +1996,9 @@
     Cat Warrior token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 41 life)
+    Cat Warrior token deals 2 damage to Player A (now at 39 life)
+    Cat Warrior token deals 2 damage to Player A (now at 37 life)
   --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
@@ -2168,7 +2168,7 @@
     Construct token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 7 damage to Player B
+    Construct token deals 7 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
@@ -2459,9 +2459,9 @@
     Cat Warrior token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 36 life)
+    Cat Warrior token deals 2 damage to Player A (now at 34 life)
+    Cat Warrior token deals 2 damage to Player A (now at 32 life)
   --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
   Construct token triggered
@@ -2620,7 +2620,7 @@
     Construct token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 7 damage to Player B
+    Construct token deals 7 damage to Player B (now at 2 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
   Player B orders 3 simultaneous triggers (pick which goes on the stack next).
@@ -2911,9 +2911,9 @@
     Cat Warrior token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Ajani, Nacatl Pariah deals 1 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
-    Cat Warrior token deals 2 damage to Player A
+    Ajani, Nacatl Pariah deals 1 damage to Player A (now at 31 life)
+    Cat Warrior token deals 2 damage to Player A (now at 29 life)
+    Cat Warrior token deals 2 damage to Player A (now at 27 life)
   --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
   Construct token triggered
@@ -3135,7 +3135,7 @@
     Construct token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Construct token deals 7 damage to Player B
+    Construct token deals 7 damage to Player B (now at -5 life)
   --- End Combat Damage ---
   Player B has -5 life - Player A wins!
 

@@ -1002,7 +1002,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
@@ -1520,7 +1520,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 15 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 15 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
@@ -1544,7 +1544,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
 
@@ -1568,7 +1568,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 13 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 4/4.
 
@@ -2088,8 +2088,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 4 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 11 life)
+    Orc Army token deals 4 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Reanimate

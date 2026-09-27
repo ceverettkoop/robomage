@@ -430,7 +430,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 13 life)
+  Chain Lightning deals 3 damage to Player B (now at 13 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -913,7 +913,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 6 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 6 life)
   No creatures eligible to attack.
   -------- TURN 6 (Player B) --------
   Player B draws Dark Ritual
@@ -1765,7 +1765,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 15 life)
 
 --- Decision 80 ---
   Priority: Player B (non-active)
@@ -1788,7 +1788,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 2 life)
+  Chain Lightning deals 3 damage to Player B (now at 2 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -1941,7 +1941,7 @@
     Eidolon of the Great Revel -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Eidolon of the Great Revel deals 2 damage to Player B
+    Eidolon of the Great Revel deals 2 damage to Player B (now at 0 life)
   --- End Combat Damage ---
   Player B has 0 life - Player A wins!
 

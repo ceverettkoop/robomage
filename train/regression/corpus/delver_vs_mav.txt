@@ -875,7 +875,7 @@
 --- Narrative ---
   Player A puts Delver of Secrets into their graveyard.
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Dryad Arbor
   Dryad Arbor is destroyed (lethal damage)
   Player A draws Wooded Foothills
 
@@ -924,7 +924,7 @@
     Dragon's Rage Channeler -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Karakas
@@ -1135,7 +1135,7 @@
     Dragon's Rage Channeler -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Once Upon a Time
@@ -1694,7 +1694,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 11 life)
+  Lightning Bolt deals 3 damage to Player B (now at 11 life)
 
 --- Decision 76 ---
   Priority: Player B (non-active)
@@ -1929,7 +1929,7 @@
 --- Narrative ---
   Player A puts Unholy Heat into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 8 life)
+  Lightning Bolt deals 3 damage to Player B (now at 8 life)
   Dragon's Rage Channeler must attack and is declared as an attacker.
   --- Declare Attackers (Player A) ---
     [attacking] Dragon's Rage Channeler [3/3] -> Player B
@@ -1955,7 +1955,7 @@
     Dragon's Rage Channeler -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 5 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Wooded Foothills
@@ -2206,7 +2206,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 2 life)
+  Lightning Bolt deals 3 damage to Player B (now at 2 life)
 
 --- Decision 99 ---
   Priority: Player B (non-active)
@@ -2475,7 +2475,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at -1 life)
   --- End Combat Damage ---
   Player B has -1 life - Player A wins!
 

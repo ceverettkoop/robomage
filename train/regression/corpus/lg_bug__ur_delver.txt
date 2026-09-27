@@ -992,7 +992,7 @@
   Orcish Bowmasters is moved to hand
   Resolving ability (category: ChangeZone)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
@@ -1163,7 +1163,7 @@
 --- Narrative ---
   Resolving ability (category: Cleanup)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 16 life)
+  Lightning Bolt deals 3 damage to Player A (now at 16 life)
 
 --- Decision 49 ---
   Priority: Player B (active)
@@ -1772,7 +1772,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 15 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
@@ -1936,7 +1936,7 @@
 --- Narrative ---
   Resolving ability (category: Cleanup)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 12 life)
+  Lightning Bolt deals 3 damage to Player A (now at 12 life)
 
 --- Decision 79 ---
   Priority: Player B (active)
@@ -2390,7 +2390,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
   Resolving ability (category: Draw, amount: 1)
@@ -2424,7 +2424,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 13 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
   Player A draws Orcish Bowmasters
@@ -2624,7 +2624,7 @@
     Murktide Regent -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Murktide Regent deals 8 damage to Player A
+    Murktide Regent deals 8 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 17 (Player A) --------
 --- Turn 17 (Player A) ---
@@ -2684,7 +2684,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 12 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 12 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 4/4.
   Player A draws Brainstorm
@@ -2871,8 +2871,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 4 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 11 life)
+    Orc Army token deals 4 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
   Player B draws Flow State
@@ -3274,7 +3274,7 @@
   Blockers declared:
     Orcish Bowmasters blocking Monk token
   --- Combat Damage ---
-    Murktide Regent deals 8 damage to Player A
+    Murktide Regent deals 8 damage to Player A (now at -4 life)
     Orcish Bowmasters deals 1 damage to Monk token
     Monk token deals 2 damage to Orcish Bowmasters
   --- End Combat Damage ---

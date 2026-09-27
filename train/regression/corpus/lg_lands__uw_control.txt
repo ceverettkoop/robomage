@@ -751,7 +751,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Murktide Regent
@@ -1025,7 +1025,7 @@
     Tamiyo, Inquisitive Student blocking Construct token
   --- Combat Damage ---
     Construct token deals 8 damage to Tamiyo, Inquisitive Student
-    Construct token deals 7 damage to Player B
+    Construct token deals 7 damage to Player B (now at 4 life)
   --- End Combat Damage ---
   Tamiyo, Inquisitive Student is destroyed (lethal damage)
   -------- TURN 8 (Player B) --------
@@ -1522,8 +1522,8 @@
   --- Combat Damage ---
     Murktide Regent deals 5 damage to Construct token
     Construct token deals 8 damage to Murktide Regent
-    Construct token deals 7 damage to Player B
-    Construct token deals 7 damage to Player B
+    Construct token deals 7 damage to Player B (now at -3 life)
+    Construct token deals 7 damage to Player B (now at -10 life)
   --- End Combat Damage ---
   Player B has -10 life - Player A wins!
 

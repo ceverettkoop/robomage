@@ -880,7 +880,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 19 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
@@ -2007,7 +2007,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player A
+    Badgermole Cub deals 2 damage to Player A (now at 18 life)
   --- End Combat Damage ---
 
 --- Decision 99 ---
@@ -2617,7 +2617,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
@@ -2808,8 +2808,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player A
-    Endurance deals 3 damage to Player A
+    Badgermole Cub deals 2 damage to Player A (now at 16 life)
+    Endurance deals 3 damage to Player A (now at 13 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
@@ -3251,8 +3251,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 2 damage to Player B
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 14 life)
+    Orc Army token deals 2 damage to Player B (now at 12 life)
   --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Forest
@@ -3471,9 +3471,9 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Badgermole Cub deals 3 damage to Player A
-    Collector Ouphe deals 2 damage to Player A
-    Endurance deals 3 damage to Player A
+    Badgermole Cub deals 3 damage to Player A (now at 9 life)
+    Collector Ouphe deals 2 damage to Player A (now at 7 life)
+    Endurance deals 3 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
@@ -3808,11 +3808,11 @@
   Blockers declared:
     (none)
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 13 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 2 damage to Player B
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 11 life)
+    Orc Army token deals 2 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Green Sun's Zenith
@@ -4100,8 +4100,8 @@
   --- Combat Damage ---
     Orcish Bowmasters deals 1 damage to Collector Ouphe
     Collector Ouphe deals 2 damage to Orcish Bowmasters
-    Endurance deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Endurance deals 3 damage to Player A (now at 1 life)
+    Scythecat Cub deals 2 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
 

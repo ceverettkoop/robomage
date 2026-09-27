@@ -901,7 +901,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
@@ -1318,8 +1318,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+    Orc Army token deals 1 damage to Player B (now at 13 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Murktide Regent
@@ -1748,12 +1748,12 @@
   Resolving ability (category: DelayedTrigger)
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 11 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 10 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 8 life)
+    Orc Army token deals 1 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Ponder
@@ -1879,7 +1879,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 6 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 6 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
   No creatures eligible to attack.
@@ -2396,7 +2396,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 4 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 106 ---
@@ -2418,9 +2418,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 2 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 3 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 1 life)
+    Orc Army token deals 2 damage to Player B (now at -1 life)
   --- End Combat Damage ---
   Player B has -1 life - Player A wins!
 

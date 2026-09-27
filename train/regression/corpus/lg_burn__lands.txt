@@ -219,7 +219,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Rift Bolt deals 3 damage to Player B (now at 17 life)
   Player A draws Chain Lightning
 
 --- Decision 10 ---
@@ -266,7 +266,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Chain Lightning deals 3 damage to Player B (now at 14 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -382,9 +382,9 @@
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 10 life)
+  Price of Progress deals 4 damage to Player B (now at 10 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
@@ -434,7 +434,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 7 life)
+  Rift Bolt deals 3 damage to Player B (now at 7 life)
   Player A draws Exquisite Firecraft
 
 --- Decision 19 ---
@@ -605,7 +605,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 3 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 3 life)
 
 --- Decision 27 ---
   Priority: Player A (active)
@@ -898,9 +898,9 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 12 life)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 12 life)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 0 life)
+  Chain Lightning deals 3 damage to Player B (now at 0 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 

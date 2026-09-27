@@ -2005,7 +2005,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
@@ -2479,7 +2479,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 13 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 2/2.
 
@@ -2588,7 +2588,7 @@
   Orc Army token gets -1/+0 (now 1/2)
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 102 ---
@@ -3163,7 +3163,7 @@
   Orcish Bowmasters gets -1/+0 (now 0/1)
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 22 (Player B) --------
   Player B draws Brainstorm
@@ -3404,15 +3404,15 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 10 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 10 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 3/3.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 9 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 9 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 4/4.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 8 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 8 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 5/5.
 
@@ -3733,7 +3733,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Orc Army token deals 4 damage to Player B
+    Orc Army token deals 4 damage to Player B (now at 4 life)
   --- End Combat Damage ---
 
 --- Decision 141 ---
@@ -4501,7 +4501,7 @@
     Murktide Regent blocking Orcish Bowmasters
   --- Combat Damage ---
     Murktide Regent deals 7 damage to Orcish Bowmasters
-    Orc Army token deals 4 damage to Player B
+    Orc Army token deals 4 damage to Player B (now at 0 life)
   --- End Combat Damage ---
   Player B has 0 life - Player A wins!
 

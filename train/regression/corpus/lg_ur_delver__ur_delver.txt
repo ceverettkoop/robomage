@@ -1082,7 +1082,7 @@
     Fish token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Fish token deals 1 damage to Player B
+    Fish token deals 1 damage to Player B (now at 18 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Scalding Tarn
@@ -1404,7 +1404,7 @@
     Fish token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Fish token deals 1 damage to Player B
+    Fish token deals 1 damage to Player B (now at 16 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Player B draws Tamiyo, Inquisitive Student
@@ -1577,7 +1577,7 @@
   Player A activated Thundering Falls for 1(R)
   Player A casts Unholy Heat targeting Tamiyo, Inquisitive Student
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student is destroyed (lethal damage)
   Player A draws Lightning Bolt
 
@@ -1625,7 +1625,7 @@
   Player A activated Volcanic Island for 1(R)
   Player A casts Lightning Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 12 life)
+  Lightning Bolt deals 3 damage to Player B (now at 12 life)
 
 --- Decision 71 ---
   Priority: Player A (active)
@@ -1715,7 +1715,7 @@
     Fish token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Fish token deals 1 damage to Player B
+    Fish token deals 1 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
@@ -1765,7 +1765,7 @@
   Player B activated Thundering Falls for 1(R)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Lightning Bolt deals 3 damage to Player A (now at 17 life)
   Player B draws Misty Rainforest
 
 --- Decision 77 ---
@@ -2416,8 +2416,8 @@
     Fish token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
-    Fish token deals 1 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 7 life)
+    Fish token deals 1 damage to Player B (now at 6 life)
   --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Delayed trigger fires.
@@ -2468,7 +2468,7 @@
   Player B activated Thundering Falls for 1(R)
   Player B casts Unholy Heat targeting Dragon's Rage Channeler
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Dragon's Rage Channeler
   Dragon's Rage Channeler is destroyed (lethal damage)
   Resolving ability (category: Draw, amount: 1)
   Player A draws Ponder
@@ -3248,7 +3248,7 @@
   --- Combat Damage ---
     Murktide Regent deals 8 damage to Dragon's Rage Channeler
     Dragon's Rage Channeler deals 4 damage to Murktide Regent
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 13 life)
   --- End Combat Damage ---
   Dragon's Rage Channeler is destroyed (lethal damage)
   Cori-Steel Cutter becomes unattached
@@ -4032,12 +4032,12 @@
   Blockers declared:
     Monk token blocking Fish token
   --- Combat Damage ---
-    Murktide Regent deals 8 damage to Player B
+    Murktide Regent deals 8 damage to Player B (now at -2 life)
     Monk token deals 1 damage to Fish token
     Fish token deals 1 damage to Monk token
-    Monk token deals 3 damage to Player B
-    Monk token deals 3 damage to Player B
-    Monk token deals 3 damage to Player B
+    Monk token deals 3 damage to Player B (now at -5 life)
+    Monk token deals 3 damage to Player B (now at -8 life)
+    Monk token deals 3 damage to Player B (now at -11 life)
   --- End Combat Damage ---
   Player B has -11 life - Player A wins!
 

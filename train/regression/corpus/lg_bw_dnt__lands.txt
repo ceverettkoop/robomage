@@ -871,7 +871,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 19 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
@@ -1543,8 +1543,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
+    Orc Army token deals 1 damage to Player B (now at 17 life)
   --- End Combat Damage ---
 
 --- Decision 79 ---
@@ -2504,9 +2504,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 16 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 14 life)
+    Orc Army token deals 1 damage to Player B (now at 13 life)
   --- End Combat Damage ---
 
 --- Decision 125 ---
@@ -3494,9 +3494,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 12 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 10 life)
+    Orc Army token deals 1 damage to Player B (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 171 ---
@@ -4762,7 +4762,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Construct token deals 5 damage to Player A
+    Construct token deals 5 damage to Player A (now at 13 life)
   --- End Combat Damage ---
 
 --- Decision 230 ---
@@ -5413,7 +5413,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 7 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 260 ---
@@ -5435,9 +5435,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 6 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 4 life)
+    Orc Army token deals 1 damage to Player B (now at 3 life)
   --- End Combat Damage ---
 
 --- Decision 261 ---
@@ -5797,7 +5797,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Construct token deals 5 damage to Player A
+    Construct token deals 5 damage to Player A (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 278 ---
@@ -6379,8 +6379,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 1 life)
+    White Orchid Phantom deals 2 damage to Player B (now at -1 life)
   --- End First Strike Combat Damage ---
   Player B has -1 life - Player A wins!
 

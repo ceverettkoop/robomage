@@ -2126,7 +2126,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B (now at 2 life)
   --- End Combat Damage ---
 
 --- Decision 88 ---
@@ -2773,7 +2773,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B (now at -4 life)
   --- End Combat Damage ---
   Player B has -4 life - Player A wins!
 

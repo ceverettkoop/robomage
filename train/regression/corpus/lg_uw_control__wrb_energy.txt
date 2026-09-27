@@ -1487,12 +1487,12 @@
     Cat token -> Player A
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 15 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Cat Warrior token deals 2 damage to Player A
-    Cat token deals 1 damage to Player A
+    Cat Warrior token deals 2 damage to Player A (now at 13 life)
+    Cat token deals 1 damage to Player A (now at 12 life)
   --- End Combat Damage ---
   Ocelot Pride triggered
   Resolving ability (category: Token)
@@ -1987,15 +1987,15 @@
   Player B's Goblin Bombardment ability targeting Player A is on the stack
   Cat (token) is put into the graveyard and ceases to exist.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 11 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 11 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 10 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 10 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 9 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 9 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 8 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 8 life)
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 7 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 7 life)
   No creatures eligible to attack.
   -------- TURN 11 (Player A) --------
   Player A draws Brainstorm
@@ -2301,7 +2301,7 @@
   Player B sacrifices Voice of Victory
   Player B's Goblin Bombardment ability targeting Player A is on the stack
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 6 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 6 life)
   No creatures eligible to attack.
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
@@ -2742,7 +2742,7 @@
   Player B sacrifices Guide of Souls
   Player B's Goblin Bombardment ability targeting Player A is on the stack
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 4 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 4 life)
   No creatures eligible to attack.
   -------- TURN 15 (Player A) --------
   Player A draws Force of Negation
@@ -2993,7 +2993,7 @@
   Player B sacrifices Guide of Souls
   Player B's Goblin Bombardment ability targeting Player A is on the stack
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 3 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 3 life)
   No creatures eligible to attack.
   -------- TURN 19 (Player A) --------
   Player A draws Flooded Strand
@@ -5775,7 +5775,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 5 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 5 life)
 
 --- Decision 231 ---
   Priority: Player A (non-active)
@@ -5985,7 +5985,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 4 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 4 life)
 
 --- Decision 239 ---
   Priority: Player A (non-active)
@@ -6010,7 +6010,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 3 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 3 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 1/1.
 
@@ -7335,7 +7335,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 0 life)
+  Goblin Bombardment deals 1 damage to Player A (now at 0 life)
   Player A has 0 life - Player B wins!
 
 === B/B wins ===

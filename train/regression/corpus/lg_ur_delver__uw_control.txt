@@ -1640,7 +1640,7 @@
   Resolving ability (category: ProwessBonus)
   Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Tamiyo, Inquisitive Student
   Tamiyo, Inquisitive Student is destroyed (lethal damage)
   Player A draws Lightning Bolt
 
@@ -1743,7 +1743,7 @@
 --- Narrative ---
   Resolving ability (category: Cleanup)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Lightning Bolt deals 3 damage to Player B (now at 14 life)
 
 --- Decision 76 ---
   Priority: Player A (active)
@@ -1837,7 +1837,7 @@
     Monk token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Monk token deals 3 damage to Player B
+    Monk token deals 3 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
@@ -3089,7 +3089,7 @@
   Resolving ability (category: ProwessBonus)
   Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to creature
+  Lightning Bolt deals 3 damage to Murktide Regent
   --- Declare Attackers (Player A) ---
 
 --- Decision 127 ---
@@ -3311,9 +3311,9 @@
   --- Combat Damage ---
     Murktide Regent deals 6 damage to Murktide Regent
     Murktide Regent deals 8 damage to Murktide Regent
-    Player B has protection from everything — 3 combat damage prevented
-    Player B has protection from everything — 3 combat damage prevented
-    Player B has protection from everything — 3 combat damage prevented
+    Player B has protection from everything — 3 damage prevented
+    Player B has protection from everything — 3 damage prevented
+    Player B has protection from everything — 3 damage prevented
   --- End Combat Damage ---
   Murktide Regent is destroyed (lethal damage)
   -------- TURN 14 (Player B) --------
@@ -4090,12 +4090,12 @@
   Blockers declared:
     Geist of Saint Traft blocking Monk token
   --- Combat Damage ---
-    Murktide Regent deals 9 damage to Player B
+    Murktide Regent deals 9 damage to Player B (now at -1 life)
     Geist of Saint Traft deals 2 damage to Monk token
     Monk token deals 2 damage to Geist of Saint Traft
-    Monk token deals 2 damage to Player B
-    Monk token deals 2 damage to Player B
-    Monk token deals 2 damage to Player B
+    Monk token deals 2 damage to Player B (now at -3 life)
+    Monk token deals 2 damage to Player B (now at -5 life)
+    Monk token deals 2 damage to Player B (now at -7 life)
   --- End Combat Damage ---
   Player B has -7 life - Player A wins!
 

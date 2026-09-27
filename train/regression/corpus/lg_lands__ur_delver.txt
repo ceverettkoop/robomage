@@ -575,7 +575,7 @@
     Fish token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Fish token deals 2 damage to Player B
+    Fish token deals 2 damage to Player B (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Lightning Bolt
@@ -985,8 +985,8 @@
     Construct token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Fish token deals 2 damage to Player B
-    Construct token deals 6 damage to Player B
+    Fish token deals 2 damage to Player B (now at 14 life)
+    Construct token deals 6 damage to Player B (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Ponder
@@ -1227,7 +1227,7 @@
   Player A activated Mox Diamond for 1(W)
   Player A activated Ancient Tomb for 2(C)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 18 life)
+  Ancient Tomb deals 2 damage to Player A (now at 18 life)
   Player A's Dark Depths ability is on the stack
   Resolving ability (category: RemoveCounter, amount: 1)
   Removed 1 ICE counter(s) from Dark Depths.
@@ -1443,8 +1443,8 @@
   --- Combat Damage ---
     Dragon's Rage Channeler deals 3 damage to Fish token
     Fish token deals 2 damage to Dragon's Rage Channeler
-    Construct token deals 6 damage to Player B
-    Construct token deals 6 damage to Player B
+    Construct token deals 6 damage to Player B (now at 2 life)
+    Construct token deals 6 damage to Player B (now at -4 life)
   --- End Combat Damage ---
   Player B has -4 life - Player A wins!
 

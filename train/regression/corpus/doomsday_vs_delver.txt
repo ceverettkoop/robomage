@@ -1832,7 +1832,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Lightning Bolt deals 3 damage to Player A (now at 14 life)
 
 --- Decision 85 ---
   Priority: Player A (non-active)
@@ -2380,7 +2380,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 11 life)
   --- End Combat Damage ---
 
 --- Decision 109 ---
@@ -3389,8 +3389,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 1 damage to Player A
-    Dragon's Rage Channeler deals 1 damage to Player A
+    Dragon's Rage Channeler deals 1 damage to Player A (now at 10 life)
+    Dragon's Rage Channeler deals 1 damage to Player A (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 151 ---
@@ -3871,7 +3871,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Murktide Regent
   Murktide Regent is destroyed (lethal damage)
 
 --- Decision 172 ---
@@ -4085,8 +4085,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 6 life)
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 3 life)
   --- End Combat Damage ---
 
 --- Decision 181 ---
@@ -5470,8 +5470,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at -2 life)
+    Dragon's Rage Channeler deals 3 damage to Player A (now at -5 life)
   --- End Combat Damage ---
   Player A has -5 life - Player B wins!
 

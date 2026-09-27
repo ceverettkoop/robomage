@@ -1074,7 +1074,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 15 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 15 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
@@ -1888,7 +1888,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 14 life)
   --- End Combat Damage ---
 
 --- Decision 91 ---
@@ -2555,7 +2555,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 123 ---
@@ -2921,7 +2921,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 20 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
@@ -3820,7 +3820,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 183 ---
@@ -4198,7 +4198,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 20 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
@@ -4240,7 +4240,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A (now at 19 life)
   --- End Combat Damage ---
 
 --- Decision 204 ---
@@ -5008,7 +5008,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 241 ---
@@ -5306,7 +5306,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 20 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
@@ -5330,8 +5330,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A (now at 19 life)
+    Cat token deals 1 damage to Player A (now at 18 life)
   --- End Combat Damage ---
 
 --- Decision 256 ---
@@ -5924,7 +5924,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 283 ---
@@ -6612,7 +6612,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 10 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 315 ---
@@ -6635,7 +6635,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 316 ---
@@ -6963,7 +6963,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 15 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
@@ -6987,9 +6987,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A (now at 14 life)
+    Cat token deals 1 damage to Player A (now at 13 life)
+    Cat token deals 1 damage to Player A (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 332 ---
@@ -7505,7 +7505,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 8 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 356 ---
@@ -7528,7 +7528,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 7 life)
   --- End Combat Damage ---
 
 --- Decision 357 ---
@@ -8237,7 +8237,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 5 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 390 ---
@@ -8260,7 +8260,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 4 life)
   --- End Combat Damage ---
 
 --- Decision 391 ---
@@ -9319,7 +9319,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 2 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 437 ---
@@ -9345,7 +9345,7 @@
   --- Combat Damage ---
     Cat Warrior token deals 2 damage to Phelia, Exuberant Shepherd
     Phelia, Exuberant Shepherd deals 2 damage to Cat Warrior token
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 1 life)
   --- End Combat Damage ---
   Phelia, Exuberant Shepherd is destroyed (lethal damage)
   Cat Warrior token is destroyed (lethal damage)
@@ -9795,7 +9795,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Ocelot Pride deals 1 damage to Player A
+    Ocelot Pride deals 1 damage to Player A (now at 11 life)
     Player B gains 1 life (lifelink)
   --- End First Strike Combat Damage ---
 
@@ -9820,10 +9820,10 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
-    Cat token deals 1 damage to Player A
+    Cat token deals 1 damage to Player A (now at 10 life)
+    Cat token deals 1 damage to Player A (now at 9 life)
+    Cat token deals 1 damage to Player A (now at 8 life)
+    Cat token deals 1 damage to Player A (now at 7 life)
   --- End Combat Damage ---
 
 --- Decision 458 ---
@@ -10403,7 +10403,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 0 life)
   --- End First Strike Combat Damage ---
   Player B has 0 life - Player A wins!
 

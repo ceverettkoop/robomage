@@ -1709,7 +1709,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Player B draws Edge of Autumn
@@ -2398,8 +2398,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
-    Forest deals 1 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 5 life)
+    Forest deals 1 damage to Player B (now at 4 life)
   --- End Combat Damage ---
 
 --- Decision 97 ---
@@ -3329,7 +3329,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 0 life)
   --- End First Strike Combat Damage ---
   Player B has 0 life - Player A wins!
 

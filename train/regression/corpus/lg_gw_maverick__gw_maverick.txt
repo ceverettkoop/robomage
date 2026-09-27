@@ -663,7 +663,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 18 life)
   --- End Combat Damage ---
 
 --- Decision 29 ---
@@ -1344,7 +1344,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 16 life)
   --- End Combat Damage ---
 
 --- Decision 61 ---
@@ -1854,8 +1854,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dryad Arbor deals 1 damage to Player B
-    Forest deals 1 damage to Player B
+    Dryad Arbor deals 1 damage to Player B (now at 15 life)
+    Forest deals 1 damage to Player B (now at 14 life)
   --- End Combat Damage ---
 
 --- Decision 83 ---
@@ -2473,7 +2473,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Keen-Eyed Curator deals 4 damage to Player A
+    Keen-Eyed Curator deals 4 damage to Player A (now at 18 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Knight of the Reliquary
@@ -2556,8 +2556,8 @@
     Forest -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dryad Arbor deals 1 damage to Player B
-    Forest deals 1 damage to Player B
+    Dryad Arbor deals 1 damage to Player B (now at 13 life)
+    Forest deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
@@ -2690,7 +2690,7 @@
   Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 4 damage to Player A
+    Keen-Eyed Curator deals 4 damage to Player A (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Verdant Catacombs
@@ -4390,9 +4390,9 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player A
-    Keen-Eyed Curator deals 3 damage to Player A
-    Scythecat Cub deals 2 damage to Player A
+    Badgermole Cub deals 2 damage to Player A (now at 8 life)
+    Keen-Eyed Curator deals 3 damage to Player A (now at 5 life)
+    Scythecat Cub deals 2 damage to Player A (now at 3 life)
   --- End Combat Damage ---
   -------- TURN 21 (Player A) --------
 --- Turn 21 (Player A) ---
@@ -4932,10 +4932,10 @@
     Thalia, Guardian of Thraben -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 10 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Knight of the Reliquary deals 15 damage to Player B
+    Knight of the Reliquary deals 15 damage to Player B (now at -5 life)
   --- End Combat Damage ---
   Player B has -5 life - Player A wins!
 

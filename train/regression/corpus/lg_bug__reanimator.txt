@@ -1146,10 +1146,10 @@
   Player B gains 3 life (now at 12)
   No creatures eligible to block.
   --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player A
-    Atraxa, Grand Unifier deals 7 damage to Player A
-    Raph & Mikey, Troublemakers deals 6 damage to Player A
+    Archon of Cruelty deals 6 damage to Player A (now at 11 life)
+    Atraxa, Grand Unifier deals 7 damage to Player A (now at 4 life)
     Player B gains 7 life (lifelink)
+    Raph & Mikey, Troublemakers deals 6 damage to Player A (now at -2 life)
   --- End Combat Damage ---
   Player A has -2 life - Player B wins!
 

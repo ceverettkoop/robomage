@@ -1022,7 +1022,7 @@
   Player B activated Volcanic Island for 1(R)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Lightning Bolt deals 3 damage to Player A (now at 17 life)
   Player B draws Daze
 
 --- Decision 43 ---
@@ -1541,7 +1541,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 19 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Player B draws Thundering Falls
@@ -1772,7 +1772,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 12 (Player B) --------
   Player B draws Flooded Strand
@@ -1903,7 +1903,7 @@
   Player B activated Island for 1(U)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Lightning Bolt deals 3 damage to Player A (now at 14 life)
   No creatures eligible to attack.
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
@@ -2246,7 +2246,7 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 14 (Player B) --------
   Player B draws Wasteland
@@ -2732,11 +2732,11 @@
     Thalia, Guardian of Thraben -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 12 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 10 life)
+    Badgermole Cub deals 2 damage to Player B (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Force of Will
@@ -3389,8 +3389,8 @@
     Badgermole Cub -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
-    Badgermole Cub deals 2 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 6 life)
+    Badgermole Cub deals 2 damage to Player B (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
@@ -4173,9 +4173,9 @@
     Scryb Ranger -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B
-    Badgermole Cub deals 2 damage to Player B
-    Scryb Ranger deals 1 damage to Player B
+    Badgermole Cub deals 2 damage to Player B (now at 1 life)
+    Badgermole Cub deals 2 damage to Player B (now at -1 life)
+    Scryb Ranger deals 1 damage to Player B (now at -2 life)
   --- End Combat Damage ---
   Player B has -2 life - Player A wins!
 

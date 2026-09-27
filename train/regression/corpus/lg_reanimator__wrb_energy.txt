@@ -1008,7 +1008,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 17 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 17 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 1/1.
   No creatures eligible to attack.
@@ -1177,11 +1177,11 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 16 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 16 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 2/2.
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 15 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 15 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 3/3.
 
@@ -1554,8 +1554,8 @@
     Orc Army token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player A
-    Orc Army token deals 3 damage to Player A
+    Orcish Bowmasters deals 1 damage to Player A (now at 10 life)
+    Orc Army token deals 3 damage to Player A (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Reanimate

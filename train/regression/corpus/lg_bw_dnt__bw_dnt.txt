@@ -825,7 +825,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 18 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 18 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
 
@@ -1408,7 +1408,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Lion Sash deals 1 damage to Player A
+    Lion Sash deals 1 damage to Player A (now at 19 life)
   --- End Combat Damage ---
 
 --- Decision 73 ---
@@ -2434,7 +2434,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 2 damage to Player A
+    Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 17 life)
   --- End Combat Damage ---
 
 --- Decision 124 ---
@@ -2938,9 +2938,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Phelia, Exuberant Shepherd deals 2 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 17 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player B (now at 15 life)
+    Orc Army token deals 1 damage to Player B (now at 14 life)
   --- End Combat Damage ---
 
 --- Decision 148 ---
@@ -3881,9 +3881,9 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Lion Sash deals 2 damage to Player A
-    Phelia, Exuberant Shepherd deals 2 damage to Player A
-    Recruiter of the Guard deals 1 damage to Player A
+    Lion Sash deals 2 damage to Player A (now at 17 life)
+    Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 15 life)
+    Recruiter of the Guard deals 1 damage to Player A (now at 14 life)
   --- End Combat Damage ---
 
 --- Decision 191 ---
@@ -4469,8 +4469,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
 
 --- Decision 217 ---
@@ -5416,7 +5416,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 4 damage to Player A
+    Phelia, Exuberant Shepherd deals 4 damage to Player A (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 259 ---
@@ -6345,7 +6345,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 9 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 303 ---
@@ -6387,8 +6387,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 8 life)
+    Orc Army token deals 1 damage to Player B (now at 7 life)
   --- End Combat Damage ---
 
 --- Decision 305 ---
@@ -8007,8 +8007,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at 5 life)
+    White Orchid Phantom deals 2 damage to Player B (now at 3 life)
   --- End First Strike Combat Damage ---
 
 --- Decision 379 ---
@@ -8055,7 +8055,7 @@
   --- Combat Damage ---
     Lion Sash deals 1 damage to Orcish Bowmasters
     Orcish Bowmasters deals 3 damage to Lion Sash
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 2 life)
   --- End Combat Damage ---
   Lion Sash is destroyed (lethal damage)
 
@@ -9868,8 +9868,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player B
-    White Orchid Phantom deals 2 damage to Player B
+    White Orchid Phantom deals 2 damage to Player B (now at -1 life)
+    White Orchid Phantom deals 2 damage to Player B (now at -3 life)
   --- End First Strike Combat Damage ---
   Player B has -3 life - Player A wins!
 

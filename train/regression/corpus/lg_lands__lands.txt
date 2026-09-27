@@ -1614,7 +1614,7 @@
     Marit Lage token -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Marit Lage token deals 20 damage to Player A
+    Marit Lage token deals 20 damage to Player A (now at 5 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Rishadan Port
@@ -1757,7 +1757,7 @@
     Marit Lage token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Marit Lage token deals 21 damage to Player B
+    Marit Lage token deals 21 damage to Player B (now at -1 life)
   --- End Combat Damage ---
   Player B has -1 life - Player A wins!
 

@@ -4757,7 +4757,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Murktide Regent deals 5 damage to Player A
+    Murktide Regent deals 5 damage to Player A (now at 10 life)
   --- End Combat Damage ---
 
 --- Decision 187 ---
@@ -5574,7 +5574,7 @@
   Murktide Regent gets -1/+0 (now 5/6)
   No creatures eligible to block.
   --- Combat Damage ---
-    Murktide Regent deals 5 damage to Player A
+    Murktide Regent deals 5 damage to Player A (now at 5 life)
   --- End Combat Damage ---
   --- Discard to hand size (Player B) ---
   Hand (13 cards, must discard to 7):
@@ -6421,7 +6421,7 @@
   Murktide Regent gets -1/+0 (now 5/6)
   No creatures eligible to block.
   --- Combat Damage ---
-    Murktide Regent deals 5 damage to Player A
+    Murktide Regent deals 5 damage to Player A (now at 0 life)
   --- End Combat Damage ---
   Player A has 0 life - Player B wins!
 

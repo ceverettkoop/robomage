@@ -887,7 +887,7 @@
 --- Narrative ---
   Player A puts Volcanic Island into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 16 life)
+  Lightning Bolt deals 3 damage to Player B (now at 16 life)
 
 --- Decision 40 ---
   Priority: Player A (active)
@@ -973,7 +973,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 1 damage to Player B
+    Dragon's Rage Channeler deals 1 damage to Player B (now at 15 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Delver of Secrets triggered
@@ -1360,7 +1360,7 @@
     Delver of Secrets -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Delver of Secrets deals 1 damage to Player A
+    Delver of Secrets deals 1 damage to Player A (now at 17 life)
   --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Mishra's Bauble
@@ -1574,7 +1574,7 @@
     Dragon's Rage Channeler -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Delver of Secrets triggered
@@ -1628,7 +1628,7 @@
   Player B activated Volcanic Island for 1(R)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 14 life)
+  Lightning Bolt deals 3 damage to Player A (now at 14 life)
   Resolving ability (category: Draw, amount: 1)
   Player A draws Polluted Delta
   Resolving ability (category: PeekAndReveal)
@@ -2079,8 +2079,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 8 life)
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 5 life)
   --- End Combat Damage ---
   -------- TURN 10 (Player B) --------
   Delver of Secrets triggered
@@ -2343,7 +2343,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Mishra's Bauble
@@ -2758,9 +2758,9 @@
   --- Combat Damage ---
     Dragon's Rage Channeler deals 3 damage to Dragon's Rage Channeler
     Dragon's Rage Channeler deals 3 damage to Dragon's Rage Channeler
-    Dragon's Rage Channeler tramples 1 damage to Player B
-    Dragon's Rage Channeler deals 3 damage to Player B
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 1 damage to Player B (now at 3 life)
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 0 life)
+    Dragon's Rage Channeler deals 3 damage to Player B (now at -3 life)
   --- End Combat Damage ---
   Player B has -3 life - Player A wins!
 

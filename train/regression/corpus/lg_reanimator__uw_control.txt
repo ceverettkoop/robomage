@@ -8028,7 +8028,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Murktide Regent deals 6 damage to Player A
+    Murktide Regent deals 6 damage to Player A (now at 5 life)
   --- End Combat Damage ---
 
 --- Decision 326 ---
@@ -8866,7 +8866,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Murktide Regent deals 6 damage to Player A
+    Murktide Regent deals 6 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
 

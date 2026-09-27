@@ -854,7 +854,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 17 life)
+  Lightning Bolt deals 3 damage to Player A (now at 17 life)
   Player B draws Dragon's Rage Channeler
 
 --- Decision 38 ---
@@ -943,7 +943,7 @@
     Dragon's Rage Channeler -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 14 life)
   --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Karakas
@@ -1287,7 +1287,7 @@
 --- Narrative ---
   Player B puts Brainstorm into their graveyard.
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Dragon's Rage Channeler
   Dragon's Rage Channeler is destroyed (lethal damage)
   Player B draws Daze
 
@@ -1335,7 +1335,7 @@
     Dragon's Rage Channeler -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Life from the Loam
@@ -1574,7 +1574,7 @@
     Dragon's Rage Channeler -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 8 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Wooded Foothills
@@ -1750,7 +1750,7 @@
     Dragon's Rage Channeler -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Knight of the Reliquary
@@ -2187,7 +2187,7 @@
     Dragon's Rage Channeler -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A (now at 1 life)
   --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
@@ -2773,7 +2773,7 @@
   --- End First Strike Combat Damage ---
   Dragon's Rage Channeler is destroyed (lethal damage)
   --- Combat Damage ---
-    Murktide Regent deals 6 damage to Player A
+    Murktide Regent deals 6 damage to Player A (now at -5 life)
   --- End Combat Damage ---
   Player A has -5 life - Player B wins!
 

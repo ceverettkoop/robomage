@@ -1142,7 +1142,7 @@
     Keen-Eyed Curator -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 18 life)
   --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
   Player A draws Knight of the Reliquary
@@ -1543,7 +1543,7 @@
     Keen-Eyed Curator -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 3 damage to Player A
+    Keen-Eyed Curator deals 3 damage to Player A (now at 15 life)
   --- End Combat Damage ---
   -------- TURN 11 (Player A) --------
   Player A draws Gaea's Cradle
@@ -1960,8 +1960,8 @@
     Keen-Eyed Curator -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Collector Ouphe deals 2 damage to Player A
-    Keen-Eyed Curator deals 3 damage to Player A
+    Collector Ouphe deals 2 damage to Player A (now at 13 life)
+    Keen-Eyed Curator deals 3 damage to Player A (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Green Sun's Zenith
@@ -2511,8 +2511,8 @@
     Keen-Eyed Curator -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Collector Ouphe deals 2 damage to Player A
-    Keen-Eyed Curator deals 3 damage to Player A
+    Collector Ouphe deals 2 damage to Player A (now at 8 life)
+    Keen-Eyed Curator deals 3 damage to Player A (now at 5 life)
   --- End Combat Damage ---
   -------- TURN 15 (Player A) --------
   Player A draws Swords to Plowshares
@@ -3232,9 +3232,9 @@
     Keen-Eyed Curator -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Collector Ouphe deals 2 damage to Player A
-    Endurance deals 3 damage to Player A
-    Keen-Eyed Curator deals 3 damage to Player A
+    Collector Ouphe deals 2 damage to Player A (now at 3 life)
+    Endurance deals 3 damage to Player A (now at 0 life)
+    Keen-Eyed Curator deals 3 damage to Player A (now at -3 life)
   --- End Combat Damage ---
   Player A has -3 life - Player B wins!
 

@@ -444,7 +444,7 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 15 life)
+  Chain Lightning deals 3 damage to Player B (now at 15 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -669,9 +669,8 @@
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
   Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 14 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
@@ -726,7 +725,7 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 11 life)
+  Rift Bolt deals 3 damage to Player B (now at 11 life)
   Player A draws Exquisite Firecraft
 
 --- Decision 31 ---
@@ -910,7 +909,7 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 7 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 7 life)
 
 --- Decision 39 ---
   Priority: Player A (active)
@@ -1287,9 +1286,9 @@
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 12 life)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 12 life)
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 4 life)
+  Chain Lightning deals 3 damage to Player B (now at 4 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
@@ -1381,7 +1380,7 @@
   Player B casts Swords to Plowshares targeting Eidolon of the Great Revel
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 2 life)
+  Eidolon of the Great Revel deals 2 damage to Player B (now at 2 life)
   Resolving ability (category: ChangeZone)
   Eidolon of the Great Revel is moved to exile
   Resolving ability (category: GainLife, amount: 2)
@@ -1937,7 +1936,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Murktide Regent deals 6 damage to Player A
+    Murktide Regent deals 6 damage to Player A (now at 8 life)
   --- End Combat Damage ---
 
 --- Decision 83 ---
@@ -2582,9 +2581,9 @@
   Token created: 4/4 Angel (tapped and attacking)
   No creatures eligible to block.
   --- Combat Damage ---
-    Geist of Saint Traft deals 2 damage to Player A
-    Murktide Regent deals 6 damage to Player A
-    Angel token deals 4 damage to Player A
+    Geist of Saint Traft deals 2 damage to Player A (now at 6 life)
+    Murktide Regent deals 6 damage to Player A (now at 0 life)
+    Angel token deals 4 damage to Player A (now at -4 life)
   --- End Combat Damage ---
   Player A has -4 life - Player B wins!
 

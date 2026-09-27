@@ -3115,7 +3115,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 14 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
@@ -3577,8 +3577,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 13 life)
+    Orc Army token deals 1 damage to Player B (now at 12 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
@@ -4168,7 +4168,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 11 life)
   --- End Combat Damage ---
   -------- TURN 20 (Player B) --------
 --- Turn 20 (Player B) ---
@@ -4618,7 +4618,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 22 (Player B) --------
 --- Turn 22 (Player B) ---
@@ -5122,7 +5122,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 24 (Player B) --------
   Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
@@ -5573,7 +5573,7 @@
     Kaito, Bane of Nightmares -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Kaito, Bane of Nightmares deals 5 damage to Player A
+    Kaito, Bane of Nightmares deals 5 damage to Player A (now at 13 life)
   --- End Combat Damage ---
   -------- TURN 25 (Player A) --------
   Player A draws Wasteland
@@ -5859,7 +5859,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 26 (Player B) --------
   Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
@@ -6315,7 +6315,7 @@
     Kaito, Bane of Nightmares -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Kaito, Bane of Nightmares deals 6 damage to Player A
+    Kaito, Bane of Nightmares deals 6 damage to Player A (now at 7 life)
   --- End Combat Damage ---
   -------- TURN 27 (Player A) --------
   Player A draws Undercity Sewers
@@ -6476,7 +6476,7 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 6 life)
   --- End Combat Damage ---
   -------- TURN 28 (Player B) --------
   Kaito, Bane of Nightmares gains Hexproof (PlayerTurn)
@@ -6937,7 +6937,7 @@
     Kaito, Bane of Nightmares -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Kaito, Bane of Nightmares deals 7 damage to Player A
+    Kaito, Bane of Nightmares deals 7 damage to Player A (now at -1 life)
   --- End Combat Damage ---
   Player A has -1 life - Player B wins!
 

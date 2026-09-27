@@ -1887,7 +1887,7 @@
   Player A gains 3 life (now at 10)
   No creatures eligible to block.
   --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player B
+    Archon of Cruelty deals 6 damage to Player B (now at 4 life)
   --- End Combat Damage ---
 
 --- Decision 78 ---

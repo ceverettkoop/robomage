@@ -211,7 +211,7 @@
   Player A puts 1 card(s) on the top of their library.
   No creatures eligible to block.
   --- Combat Damage ---
-    Goblin Guide deals 2 damage to Player A
+    Goblin Guide deals 2 damage to Player A (now at 18 life)
   --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Player A draws Orcish Bowmasters
@@ -257,7 +257,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Lightning Bolt targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 15 life)
+  Lightning Bolt deals 3 damage to Player A (now at 15 life)
   Player B draws Lava Spike
 
 --- Decision 12 ---
@@ -319,7 +319,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Lava Spike targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 12 life)
+  Lava Spike deals 3 damage to Player A (now at 12 life)
   --- Declare Attackers (Player B) ---
 
 --- Decision 15 ---
@@ -366,7 +366,7 @@
   Player A puts 1 card(s) on the top of their library.
   No creatures eligible to block.
   --- Combat Damage ---
-    Goblin Guide deals 2 damage to Player A
+    Goblin Guide deals 2 damage to Player A (now at 10 life)
   --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
@@ -419,9 +419,8 @@
   Player B casts Price of Progress
   Resolving ability (category: RepeatEach)
   Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 20 life)
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 8 life)
+  Price of Progress deals 2 damage to Player A (now at 8 life)
   Player B draws Chain Lightning
 
 --- Decision 19 ---
@@ -484,7 +483,7 @@
   Player B activated Mountain for 1(R)
   Player B casts Chain Lightning targeting Player A
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 5 life)
+  Chain Lightning deals 3 damage to Player A (now at 5 life)
   Resolving ability (category: CopySpellAbility)
   Player A may pay to copy Chain Lightning:
 
@@ -574,7 +573,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Goblin Guide deals 2 damage to Player A
+    Goblin Guide deals 2 damage to Player A (now at 3 life)
   --- End Combat Damage ---
   -------- TURN 7 (Player A) --------
   Player A draws Baleful Strix
@@ -848,7 +847,7 @@
   Player B sacrifices Mountain
   Player B casts Fireblast targeting Player A
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at -1 life)
+  Fireblast deals 4 damage to Player A (now at -1 life)
   Player A has -1 life - Player B wins!
 
 === B/B wins ===

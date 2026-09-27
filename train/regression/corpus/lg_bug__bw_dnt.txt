@@ -326,7 +326,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 19 life)
+  Orcish Bowmasters deals 1 damage to Player B (now at 19 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player A Army is now 1/1.
   No creatures eligible to attack.
@@ -746,8 +746,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 17 life)
+    Orc Army token deals 1 damage to Player B (now at 16 life)
   --- End Combat Damage ---
   -------- TURN 6 (Player B) --------
   Aether Vial triggered
@@ -1198,8 +1198,8 @@
     Orc Army token -> Player B
   No creatures eligible to block.
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+    Orc Army token deals 1 damage to Player B (now at 13 life)
   --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
   Aether Vial triggered
@@ -1986,7 +1986,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Witch Enchanter deals 2 damage to Player A
+    Witch Enchanter deals 2 damage to Player A (now at 16 life)
   --- End Combat Damage ---
 
 --- Decision 91 ---
@@ -2371,8 +2371,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 11 life)
+    Orc Army token deals 1 damage to Player B (now at 10 life)
   --- End Combat Damage ---
 
 --- Decision 109 ---
@@ -2725,7 +2725,7 @@
     Witch Enchanter -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Witch Enchanter deals 2 damage to Player A
+    Witch Enchanter deals 2 damage to Player A (now at 17 life)
   --- End Combat Damage ---
 
 --- Decision 126 ---
@@ -3121,8 +3121,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 8 life)
+    Orc Army token deals 1 damage to Player B (now at 7 life)
   --- End Combat Damage ---
 
 --- Decision 144 ---
@@ -3440,7 +3440,7 @@
     Witch Enchanter -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Witch Enchanter deals 2 damage to Player A
+    Witch Enchanter deals 2 damage to Player A (now at 15 life)
   --- End Combat Damage ---
 
 --- Decision 159 ---
@@ -3739,8 +3739,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orcish Bowmasters deals 1 damage to Player B
-    Orc Army token deals 1 damage to Player B
+    Orcish Bowmasters deals 1 damage to Player B (now at 4 life)
+    Orc Army token deals 1 damage to Player B (now at 3 life)
   --- End Combat Damage ---
 
 --- Decision 173 ---
@@ -4054,7 +4054,7 @@
     Witch Enchanter -> Player A
   No creatures eligible to block.
   --- Combat Damage ---
-    Witch Enchanter deals 2 damage to Player A
+    Witch Enchanter deals 2 damage to Player A (now at 13 life)
   --- End Combat Damage ---
 
 --- Decision 188 ---
@@ -4760,8 +4760,8 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 2 damage to Player A
-    Witch Enchanter deals 2 damage to Player A
+    Phelia, Exuberant Shepherd deals 2 damage to Player A (now at 11 life)
+    Witch Enchanter deals 2 damage to Player A (now at 9 life)
   --- End Combat Damage ---
 
 --- Decision 221 ---
@@ -5111,7 +5111,7 @@
   --- Combat Damage ---
     Stoneforge Mystic deals 1 damage to Orcish Bowmasters
     Orcish Bowmasters deals 1 damage to Stoneforge Mystic
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 1 life)
   --- End Combat Damage ---
   Orcish Bowmasters is destroyed (lethal damage)
 
@@ -5730,8 +5730,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Phelia, Exuberant Shepherd deals 5 damage to Player A
-    Witch Enchanter deals 2 damage to Player A
+    Phelia, Exuberant Shepherd deals 5 damage to Player A (now at 4 life)
+    Witch Enchanter deals 2 damage to Player A (now at 2 life)
   --- End Combat Damage ---
 
 --- Decision 266 ---
@@ -6068,7 +6068,7 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Orc Army token deals 1 damage to Player B
+    Orc Army token deals 1 damage to Player B (now at 0 life)
   --- End Combat Damage ---
   Player B has 0 life - Player A wins!
 

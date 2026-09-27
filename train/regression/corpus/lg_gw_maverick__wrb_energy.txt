@@ -1229,7 +1229,7 @@
     Thalia, Guardian of Thraben -> Player B
   No creatures eligible to block.
   --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B
+    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 16 life)
   --- End First Strike Combat Damage ---
   --- Combat Damage ---
   --- End Combat Damage ---
@@ -2157,7 +2157,7 @@
   Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
   No creatures eligible to block.
   --- Combat Damage ---
-    Keen-Eyed Curator deals 4 damage to Player B
+    Keen-Eyed Curator deals 4 damage to Player B (now at 9 life)
   --- End Combat Damage ---
   -------- TURN 16 (Player B) --------
   Player B draws Wasteland
@@ -2562,7 +2562,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Keen-Eyed Curator deals 4 damage to Player B
+    Keen-Eyed Curator deals 4 damage to Player B (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 18 (Player B) --------
 --- Turn 18 (Player B) ---
@@ -2624,7 +2624,7 @@
   Targeting choice 0
   Orcish Bowmasters triggered
   Resolving ability (category: DealDamage, amount: 1)
-  Dealt 1 damage to player (now at 18 life)
+  Orcish Bowmasters deals 1 damage to Player A (now at 18 life)
   Resolving ability (category: Amass)
   Amass Orc 1: Player B Army is now 1/1.
   Player B draws Voice of Victory
@@ -2702,7 +2702,7 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Cat Warrior token deals 2 damage to Player A
+    Cat Warrior token deals 2 damage to Player A (now at 16 life)
   --- End Combat Damage ---
   -------- TURN 19 (Player A) --------
 --- Turn 19 (Player A) ---
@@ -3190,7 +3190,7 @@
   --- Combat Damage ---
     Orcish Bowmasters deals 1 damage to Keen-Eyed Curator
     Keen-Eyed Curator deals 3 damage to Orcish Bowmasters
-    Scythecat Cub deals 2 damage to Player B
+    Scythecat Cub deals 2 damage to Player B (now at 1 life)
   --- End Combat Damage ---
   Orcish Bowmasters is destroyed (lethal damage)
   -------- TURN 20 (Player B) --------

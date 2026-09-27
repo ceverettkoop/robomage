@@ -2892,7 +2892,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 6 damage to creature
+  Unholy Heat deals 6 damage to Delver of Secrets
   Delver of Secrets is destroyed (lethal damage)
 
 --- Decision 124 ---
@@ -3166,7 +3166,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at 5 life)
   --- End Combat Damage ---
 
 --- Decision 136 ---
@@ -3830,7 +3830,7 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
-    Dragon's Rage Channeler deals 3 damage to Player B
+    Dragon's Rage Channeler deals 3 damage to Player B (now at -2 life)
   --- End Combat Damage ---
   Player B has -2 life - Player A wins!
 
