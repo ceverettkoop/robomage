@@ -2270,6 +2270,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     // pick an X that leaves a mandatory target choice with too few candidates.
                     max_x = std::min(max_x,
                                      spell_xpaid_target_cap(card_data, spell_entity, caster, orderer));
+                    // CR 601.2e: an X whose mana value a static prohibits (Lavinia) would make
+                    // the proposed spell illegal, so it isn't offered.
+                    max_x = std::min(max_x, static_cast<size_t>(rules_mod::max_castable_x(caster, card_data)));
 
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;

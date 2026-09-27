@@ -36,6 +36,12 @@ bool mana_activation_prohibited(Entity permanent);
 bool cast_prohibited(Zone::Ownership caster, const CardData &card,
                      Zone::ZoneValue cast_from = Zone::HAND);
 
+// CR 601.2b/601.2e: the largest X `caster` may announce for `card` without a mana-value
+// prohibition (Lavinia, Azorius Renegade's lands bound) making the proposed spell illegal — on the
+// stack its mana value includes X (CR 202.3e). INT_MAX when nothing bounds it. The X menu offers
+// only values up to this, since announcing a larger X would return the game to before the cast.
+int max_castable_x(Zone::Ownership caster, const CardData &card);
+
 // Opponent sorcery-speed lock (Teferi, Time Raveler's static "Each opponent can cast spells only
 // any time they could cast a sorcery"): is `caster` currently forced to cast at sorcery speed by an
 // active OnlySorcerySpeed$ CantBeCast static an opponent controls? When true the cast-speed gate

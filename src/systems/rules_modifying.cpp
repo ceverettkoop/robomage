@@ -1,5 +1,8 @@
 #include "rules_modifying.h"
 
+#include <algorithm>
+#include <climits>
+
 #include "state_manager.h"  // g_active_statics, ActiveStatic
 #include "../classes/game.h"  // cur_game, CastWithFlashPermission
 #include "../ecs/coordinator.h"
@@ -16,6 +19,7 @@ namespace rules_mod {
 static bool cant_activate_filter_matches(Entity permanent_entity, const std::string &filter,
                                          Zone::Ownership source_controller);
 static std::string activation_source_name(Entity source);
+static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card);
 
 // Does `permanent_entity` satisfy a CantBeActivated ValidCard$ filter (a comma-OR list of
 // Forge clauses, e.g. "Artifact" for Null Rod, "Artifact,Creature,Planeswalker" for Clarion
@@ -40,6 +44,21 @@ static std::string activation_source_name(Entity source) {
     if (global_coordinator.entity_has_component<CardData>(source))
         return global_coordinator.GetComponent<CardData>(source).name;
     return "";
+}
+
+// Lavinia, Azorius Renegade (CantBeCast Caster$ Opponent | cmcGT$ Land): the largest mana value
+// `caster` may cast `card` with under static `as` — the number of lands the caster controls — or
+// -1 when this static puts no mana-value bound on this card (not that form, not live, the caster
+// is its controller, or the card is outside its ValidCard$ filter).
+static int mv_land_bound(const ActiveStatic &as, Zone::Ownership caster, const CardData &card) {
+    if (as.suppressed || as.sa()->category != "CantBeCast") return -1;
+    if (!as.sa()->cant_cast_by_opponent || !as.sa()->cant_cast_cmc_gt_land) return -1;
+    if (as.sa()->only_sorcery_speed || !as.condition_met || caster == as.controller) return -1;
+    MatchCtx ctx;
+    ctx.controller = caster;  // "you" reference for the ValidCard$ filter
+    if (!as.sa()->cant_cast_filter.empty() && !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
+        return -1;  // creature / land spells are unaffected
+    return count_battlefield_matching("Land.YouCtrl", caster, 0);
 }
 
 bool mana_activation_prohibited(Entity permanent_entity) {
@@ -105,16 +124,11 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
             if (caster != as.controller) {  // caster is an opponent of the source
                 // Lavinia, Azorius Renegade: cmcGT$ Land is a DYNAMIC bound — the opponent can't
                 // cast a spell matching ValidCard$ (noncreature nonland) whose mana value exceeds
-                // the number of lands THEY control (CR 601.3e; the bound is the caster's land
-                // count at cast-legality time). Count via the shared battlefield accessor.
+                // the number of lands THEY control. An {X} counts as 0 here (CR 107.3g, 601.3a:
+                // X = 0 may make the cast legal); the announced X is bounded by max_castable_x.
                 if (as.sa()->cant_cast_cmc_gt_land) {
-                    MatchCtx ctx;
-                    ctx.controller = caster;  // "you" reference for the ValidCard$ filter
-                    if (!as.sa()->cant_cast_filter.empty() &&
-                        !card_matches_filter(card, as.sa()->cant_cast_filter, ctx))
-                        continue;  // creature / land spells are unaffected
-                    int land_count = count_battlefield_matching("Land.YouCtrl", caster, 0);
-                    if (card_mana_value(card) > land_count) return true;
+                    int bound = mv_land_bound(as, caster, card);
+                    if (bound >= 0 && card_mana_value(card) > bound) return true;
                     continue;
                 }
                 return true;  // blanket opponent lock (Voice of Victory)
@@ -143,6 +157,18 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
         }
     }
     return false;
+}
+
+int max_castable_x(Zone::Ownership caster, const CardData &card) {
+    int cap = INT_MAX;
+    if (card.x_pip_count <= 0) return cap;
+    for (const auto &as : g_active_statics) {
+        int bound = mv_land_bound(as, caster, card);
+        if (bound < 0) continue;
+        int room = bound - card_mana_value(card);
+        cap = std::min(cap, room < 0 ? 0 : room / card.x_pip_count);
+    }
+    return cap;
 }
 
 bool opponent_sorcery_speed_locked(Zone::Ownership caster) {
