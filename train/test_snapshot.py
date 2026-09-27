@@ -843,9 +843,9 @@ def _write_pool_decks():
     """Stacked decks for the frozen-pool (Batch 4) tests. With --no-shuffle A's
     opening hand is the first 7 deck cards (Preordain + 6 Islands); an Island
     battlefield preset pays the {U}, so a cast-first policy casts Preordain on
-    A's first turn and reaches its scry-2 loop — two consecutive per-card
-    keep/bottom picks over a FROZEN 2-card pool (Lightning Bolt then Grizzly
-    Bears, the 8th/9th deck cards). The rest of A's library is a VARIED run of
+    A's first turn and reaches its scry-2 loop — two consecutive top/bottom
+    picks over a FROZEN 2-card pool (Lightning Bolt then Grizzly Bears, the
+    8th/9th deck cards). The rest of A's library is a VARIED run of
     basics so a determinize resample of the unpinned cards becomes observable in
     later draws; B's all-Forest deck keeps B's resampled hand/library
     indistinguishable (any deal is 7 Forests), so sampled-world descents can
@@ -868,7 +868,7 @@ _POOL_EXTRA = ["--deck-a", "temp/pool_pq_a", "--deck-b", "temp/pool_pq_b",
 
 def _record_pool_line(seed, scry_choices, cap=4000):
     """Play one full game with a payload-aware policy: cast the first castable
-    spell seen (Preordain, exactly once), answer the scry keep/bottom picks with
+    spell seen (Preordain, exactly once), answer the scry top/bottom picks with
     `scry_choices` in order, auto-0 everything else. Returns (records, choices,
     outcome) where choices[i] is the integer played at decision i — the caller
     replays the line by index, so the policy never has to be re-run."""
@@ -899,20 +899,23 @@ def _record_pool_line(seed, scry_choices, cap=4000):
 
 def _scry_pick_indices(records):
     """Decision indices whose menu contains a BOTTOM_DECK_CARD action — in the
-    pool scenario, exactly the per-card scry keep/bottom picks."""
+    pool scenario, exactly the scry top/bottom picks."""
     return [i for i, (nc, pl, _s) in enumerate(records)
             if bool((_query_cats(pl)[:nc] == CAT_BOTTOM_DECK_CARD).any())]
 
 
-def _assert_scry_pick(records, i, ctx):
+def _assert_scry_pick(records, i, ctx, remaining):
+    """A scry pick with `remaining` undecided cards offers one TOP_LIBRARY option per
+    card, then one BOTTOM_DECK_CARD option per card (effects::look_and_split)."""
     nc, pl, safe = records[i]
-    if nc != 2:
+    if nc != 2 * remaining:
         raise ProtocolError(f"{ctx}: scry pick at {i} has {nc} options, expected "
-                            "the 2-option keep/bottom menu")
+                            f"{2 * remaining} (top/bottom for {remaining} cards)")
     cats = _query_cats(pl)[:nc]
-    if not (cats[0] == CAT_TOP_LIBRARY and cats[1] == CAT_BOTTOM_DECK_CARD):
+    if not ((cats[:remaining] == CAT_TOP_LIBRARY).all()
+            and (cats[remaining:] == CAT_BOTTOM_DECK_CARD).all()):
         raise ProtocolError(f"{ctx}: scry pick at {i} categories {cats} are not "
-                            "[TOP_LIBRARY, BOTTOM_DECK_CARD]")
+                            f"{remaining}x TOP_LIBRARY then {remaining}x BOTTOM_DECK_CARD")
     if not safe:
         raise ProtocolError(f"{ctx}: scry pick at {i} reports safe=0 — a frozen-"
                             "pool loop pick should be a loop-top pending decision")
@@ -939,8 +942,8 @@ def test_pool_loop_roundtrip():
         if p2 != p1 + 1:
             raise ProtocolError(f"scry picks at {p1}/{p2} are not consecutive — "
                                 "the loop should re-arm immediately")
-        _assert_scry_pick(control, p1, "pool control")
-        _assert_scry_pick(control, p2, "pool control")
+        _assert_scry_pick(control, p1, "pool control", remaining=2)
+        _assert_scry_pick(control, p2, "pool control", remaining=1)
         # The first pick's keep puts the kept card on the known-top cache at once.
         kept_id = _query_ids(control[p1][1])[0]
         kt2 = _known_top_ids(control[p2][1])
@@ -959,8 +962,9 @@ def test_pool_loop_roundtrip():
                 q = eng.snapshot(0)
                 _assert_same_query(q, snap_pl, snap_nc,
                                    f"pool post-SNAPSHOT re-emit at {idx}")
-                # Divergent excursion: bottom the card (choice 1) instead of the
-                # control's keep, then a scrambled continuation.
+                # Divergent excursion: choice 1 instead of the control's 0 (put
+                # Bears on top first at the first pick, bottom the last card at the
+                # second), then a scrambled continuation.
                 dq = q
                 for i in range(8):
                     dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
@@ -1000,7 +1004,7 @@ def test_pool_determinize_pin():
     """Batch 4 (determinize pinning for revealed pools): at a suspended MID-LOOP
     scry root (the SECOND Preordain pick — the already-kept Lightning Bolt is no
     longer in the parked menu, so keeping it in place relies purely on the
-    ScryRt.lib pin fed into collect_pending_pins), DETERMINIZE with several
+    LookSplitRt.to_top pin fed into collect_pending_pins), DETERMINIZE with several
     seeds must:
 
     - re-emit the root byte-identically (the parked menu and everything visible
@@ -1025,7 +1029,7 @@ def test_pool_determinize_pin():
             raise ProtocolError(f"expected exactly 2 scry picks in the control "
                                 f"line, found {len(picks)}")
         p2 = picks[1]
-        _assert_scry_pick(control, p2, "pin control")
+        _assert_scry_pick(control, p2, "pin control", remaining=1)
 
         eng = Engine(seed, extra=_POOL_EXTRA)
         cur = eng.read()
