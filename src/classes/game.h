@@ -203,8 +203,9 @@ struct Game {
         // cleanup from Player::spells_cast_this_turn before that per-turn counter is reset. Because
         // cleanup resets BOTH players' spells_cast_this_turn to 0 (so a player's instants cast on
         // the opponent's turn never leak into their own-turn count), the snapshot is just the active
-        // player's spells_cast_this_turn at cleanup.
-        int prev_turn_active_spell_count = 0;
+        // player's spells_cast_this_turn at cleanup. -1 until a turn has ended: on the game's first
+        // turn there is no previous turn to check (CR 731.2).
+        int prev_turn_active_spell_count = -1;
         size_t seed;
         size_t timestamp = 0;
         // Monotonic source for Zone::obj_gen (CR 400.7 object identity). Handed out and
