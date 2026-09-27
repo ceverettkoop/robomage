@@ -54,6 +54,8 @@ static Ability parse_one_trigger(const std::string& line, const std::map<std::st
                                  const std::string& card_name);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
+static bool take_direct_amount_expr(Ability& ability);
+static void warn_unresolved_amount_svar(const Ability& ability, const std::string& card_name);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 static std::vector<std::string> find_trigger_lines(const std::string &script);
@@ -2138,6 +2140,25 @@ static void resolve_pump_exprs(Ability& ability,
     }
 }
 
+// A non-numeric amount param (NumCards$, LifeAmount$, ...) that contains '$' is a DIRECT dynamic
+// expression rather than an SVar name (Kaito, Bane of Nightmares: NumCards$
+// PlayerCountRegisteredOpponents$HasPropertyLostLifeThisTurn; The Creation of Avacyn:
+// ExiledWith$CardManaCost). Keep it verbatim for evaluate_dynamic_amount at resolution (CR 608.2c).
+static bool take_direct_amount_expr(Ability &ability) {
+    if (ability.amount_svar.find('$') == std::string::npos) return false;
+    ability.dynamic_amount_expr = ability.amount_svar;
+    ability.amount_svar = "";
+    return true;
+}
+
+// An amount SVar name with no SVar body cannot be evaluated; flag it instead of silently falling
+// back to the effect's default amount.
+static void warn_unresolved_amount_svar(const Ability &ability, const std::string &card_name) {
+    std::string msg = "Unresolved amount SVar: " + ability.amount_svar;
+    if (!card_name.empty()) msg += " (card: " + card_name + ")";
+    warning(msg);
+}
+
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
 // "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE) and an energy UnlessCost SVar into
 // their runtime Count$ expressions + comparator on DestroyAllParams, so effect_destroy_all can
@@ -2376,15 +2397,9 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
     }
     // Resolve amount_svar through SVars map (same logic as parse_abilities)
-    if (!sub.amount_svar.empty() && sub.amount_svar.find("ExiledWith$") != std::string::npos) {
-        // A DIRECT dynamic expression (not an SVar name): ExiledWith$CardManaCost (The Creation of
-        // Avacyn chapter II — lose life equal to the exiled card's mana value). Preserve it verbatim
-        // for evaluate_dynamic_amount instead of looking it up as an SVar key (which would fail and
-        // silently drop it).
-        sub.dynamic_amount_expr = sub.amount_svar;
-        sub.amount_svar = "";
-    } else if (!sub.amount_svar.empty()) {
+    if (!sub.amount_svar.empty() && !take_direct_amount_expr(sub)) {
         auto it = svars.find(sub.amount_svar);
+        if (it == svars.end()) warn_unresolved_amount_svar(sub, card_name);
         if (it != svars.end()) {
             const std::string &sv = it->second;
             // TriggerCount$DamageAmount → use combat damage trigger's damage amount at runtime
@@ -2704,8 +2719,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
         // Also handles runtime SVar expressions: Count$Valid ..., Targeted$CardPower
-        if (!ability.amount_svar.empty()) {
+        if (!ability.amount_svar.empty() && !take_direct_amount_expr(ability)) {
             auto it = svars.find(ability.amount_svar);
+            if (it == svars.end()) warn_unresolved_amount_svar(ability, card_name);
             if (it != svars.end()) {
                 const std::string &sv = it->second;
                 // Generalized conditional amount (Flow State): "Count$Compare <Var>

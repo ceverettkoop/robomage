@@ -16,6 +16,7 @@ extern Coordinator global_coordinator;
 
 static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
                                      Zone::Ownership controller);
+static int count_players_with_property(const std::string &expr, Zone::Ownership controller);
 
 // The bare operator table — one home for the EQ/NE/GE/LE/GT/LT switch.
 // The number of cards in `zone` (either player's) matching a Count$Valid<Zone> filter. A card
@@ -33,6 +34,29 @@ static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         if (global_coordinator.GetComponent<Zone>(e).location != zone) continue;
         if (card_matches_filter(e, filter, ctx)) count++;
+    }
+    return count;
+}
+
+// PlayerCount<Players>$HasProperty<Prop> — the number of players among <Players> (relative to
+// `controller`) that have <Prop> (Kaito, Bane of Nightmares: PlayerCountRegisteredOpponents$
+// HasPropertyLostLifeThisTurn = "each opponent who lost life this turn"). In the two-player game
+// Opponents / RegisteredOpponents is the one opponent and Players is both seats. An unmodelled
+// player set or property counts no player (CR 107.2).
+static int count_players_with_property(const std::string &expr, Zone::Ownership controller) {
+    size_t dollar = expr.find('$');
+    const std::string players = expr.substr(std::string("PlayerCount").size(),
+                                            dollar - std::string("PlayerCount").size());
+    const std::string prop = expr.substr(dollar + 1);
+    std::vector<Zone::Ownership> seats;
+    if (players == "Opponents" || players == "RegisteredOpponents") seats = {opponent_of(controller)};
+    else if (players == "Players") seats = {Zone::PLAYER_A, Zone::PLAYER_B};
+    int count = 0;
+    for (Zone::Ownership seat : seats) {
+        Entity pe = get_player_entity(seat);
+        if (!global_coordinator.entity_has_component<Player>(pe)) continue;
+        const Player &pl = global_coordinator.GetComponent<Player>(pe);
+        if (prop == "HasPropertyLostLifeThisTurn" && pl.life_lost_this_turn > 0) count++;
     }
     return count;
 }
@@ -128,6 +152,9 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     // PayEnergy<Y> unless-cost) can reference the chosen value.
     if (expr == "Count$ChosenNumber")
         return cur_game.chosen_number;
+
+    if (expr.rfind("PlayerCount", 0) == 0 && expr.find('$') != std::string::npos)
+        return count_players_with_property(expr, controller);
 
     // Count$YourCountersEnergy — the controller's current energy ({E}) total (CR 122.1c),
     // stored as an "ENERGY" counter on the Player (Wrath of the Skies: the cap on the amount
