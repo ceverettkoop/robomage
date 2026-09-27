@@ -76,7 +76,6 @@ static void finish_pending_attacker(Game &game);
 static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer);
-static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
@@ -3547,8 +3546,8 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // OWNER (who need not hold priority) before they proceed. On decline the card stays hidden in hand.
 // On accept the card becomes public (belief state + log) and the linked "when you reveal this card
 // this way, you may cast it" triggered ability is synthesized onto the stack (opponent now sees the
-// revealed card and gets a response window); that trigger resolves in effect_miracle.cpp by opening
-// the miracle-cast window, so the owner makes the actual cast decision at their following priority.
+// revealed card and gets a response window); the owner decides whether to cast it as that trigger
+// resolves (effect_miracle.cpp).
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     Entity card = game.miracle_reveal_pending;
     // The pending flag is the ONLY state that lets a restored loop re-derive this
@@ -3605,88 +3604,21 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     orderer->push_ability_onto_stack(trig, owner);
 }
 
-// Miracle (CR 702.94a) cast decision. The linked "you may cast it" triggered ability has resolved
-// (effect_miracle.cpp armed Game::miracle_cast_pending), so the owner now makes a single immediate
-// choice: cast the card for its miracle cost, or do not. Presented only while the card is still in
-// the owner's hand; the "Cast" option is offered only when the miracle mana cost is affordable
-// (CR 601.2f floor folded in), otherwise ONLY "do not cast" is offered. On "cast" the real cast is
-// initiated immediately for the miracle alternate cost through the normal cast machinery
-// (process_action -> run_cast_flow), so payment / targets / X behave exactly like any other cast.
-static void proc_miracle_cast(Game &game, std::shared_ptr<Orderer> orderer) {
-    Entity card = game.miracle_cast_pending;
-    // Keep the pending flag SET across the ask, exactly like proc_miracle_reveal
-    // above: the get_input below is a loop-safe search root, and only this flag
-    // lets a snapshot-restored loop re-derive the same prompt. Consume it after
-    // the answer / on the validity bail-outs.
-    if (!global_coordinator.entity_has_component<Zone>(card)) {
-        game.miracle_cast_pending = 0;
-        return;
-    }
-    auto &z = global_coordinator.GetComponent<Zone>(card);
-    if (z.location != Zone::HAND ||  // left hand (e.g. countered reveal) — nothing to cast
-        (z.owner != Zone::PLAYER_A && z.owner != Zone::PLAYER_B) ||
-        !global_coordinator.entity_has_component<CardData>(card)) {
-        game.miracle_cast_pending = 0;
-        return;
-    }
-    Zone::Ownership owner = z.owner;
-    const CardData &card_data = global_coordinator.GetComponent<CardData>(card);
-    const std::string nm = card_data.name;
-
-    // Affordability of the miracle mana cost, matching can_afford_alt's final mana check so the
-    // offer and the actual payment agree.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, owner);
-    bool affordable = alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
-
-    // Decline (0) = do not cast; accept (1) = cast now for the miracle cost, dropped when the
-    // miracle cost is unaffordable.
-    std::vector<LegalAction> menu =
-        yesno_menu("Do not cast " + nm + " (miracle)", "Cast " + nm + " for its miracle cost", card);
-    if (!affordable) menu.pop_back();
-
-    // Present to the OWNER (seat repointed, loop-safe — same pattern as cleanup discard / the reveal).
-    bool prev_priority = game.player_a_has_priority;
-    game.player_a_has_priority = (owner == Zone::PLAYER_A);
-    int choice = ask_miracle_choice(game, menu, card);
-    // Answer consumed — the one-shot decision is spent (a search unwind's restore
-    // brings the still-set flag back from the snapshot, re-deriving this prompt).
-    game.miracle_cast_pending = 0;
-
-    if (choice != 1) {
-        game.player_a_has_priority = prev_priority;  // declined (or unaffordable) — restore priority
-        return;
-    }
-    // Cast it now for the miracle alternate cost via the normal cast machinery. Priority stays at the
-    // owner (the caster) so run_cast_flow's converted prompts (mana payment, targets, X) seat on them.
-    LegalAction cast(CAST_SPELL, card, std::string("Cast ") + nm + " (miracle)");
-    cast.category = ActionCategory::CAST_SPELL;
-    cast.use_alt_cost = true;
-    cast.option_ordinal = 1;
-    process_action(cast, game, orderer);
-}
-
 // See declaration in action_processor.h.
-ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
-                                            Game::ImpulseCastPermission grant,
+ResolutionCastStatus cast_during_resolution(const LegalAction &cast, Zone::Ownership caster,
+                                            bool castable, const std::string &accept_label,
                                             ResolutionCastRt &rt, FrameCtx &ctx,
                                             std::shared_ptr<Orderer> orderer) {
+    Entity card = cast.source_entity;
     if (rt.stage == ResolutionCastRt::OFFER) {
-        grant.caster = caster;
-        grant.during_resolution = true;
-        cur_game.impulse_cast_permission[card] = grant;
-        if (!exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer)) {
-            cur_game.impulse_cast_permission.erase(card);
+        if (!castable) {
             rt.stage = ResolutionCastRt::DONE;
             return ResolutionCastStatus::DECLINED;
         }
-        const std::string nm = entity_name(card);
-        const char *how = grant.resource == Game::ImpulseCastPermission::FREE
-                              ? " without paying its mana cost" : "";
-        int choice = ctx.ask(yesno_menu("Do not cast " + nm, "Cast " + nm + how, card), caster,
-                             card);
+        int choice =
+            ctx.ask(yesno_menu("Do not cast " + entity_name(card), accept_label, card), caster, card);
         if (choice < 0 && decision_suspended()) return ResolutionCastStatus::SUSPENDED;
         if (choice != 1) {
-            cur_game.impulse_cast_permission.erase(card);
             rt.stage = ResolutionCastRt::DONE;
             return ResolutionCastStatus::DECLINED;
         }
@@ -3695,9 +3627,6 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
         rt.stage = ResolutionCastRt::CASTING;
         rt.prev_priority = cur_game.player_a_has_priority;
         cur_game.player_a_has_priority = (caster == Zone::PLAYER_A);
-        LegalAction cast(CAST_SPELL, card, "Cast " + nm);
-        cast.category = ActionCategory::CAST_SPELL;
-        cast.impulse_cast = true;
         process_action(cast, cur_game, orderer);
         if (decision_suspended()) return ResolutionCastStatus::SUSPENDED;
     }
@@ -3706,8 +3635,7 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
             fatal_error("cast_during_resolution re-entered with the cast still in flight");
         cur_game.player_a_has_priority = rt.prev_priority;
         rt.stage = ResolutionCastRt::DONE;
-        // A cancelled cast leaves the card where it was, without the permission.
-        cur_game.impulse_cast_permission.erase(card);
+        // A cancelled cast leaves the card where it was.
         bool on_stack = global_coordinator.entity_has_component<Zone>(card) &&
                         global_coordinator.GetComponent<Zone>(card).location == Zone::STACK;
         return on_stack ? ResolutionCastStatus::CAST : ResolutionCastStatus::DECLINED;
@@ -3715,15 +3643,37 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
     return ResolutionCastStatus::DECLINED;
 }
 
+// See declaration in action_processor.h.
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
+                                            Game::ImpulseCastPermission grant,
+                                            ResolutionCastRt &rt, FrameCtx &ctx,
+                                            std::shared_ptr<Orderer> orderer) {
+    // The permission exists only while the offer is open or the cast is in flight: the cast
+    // consumes it, and a declined or cancelled cast drops it.
+    bool castable = false;
+    if (rt.stage == ResolutionCastRt::OFFER) {
+        grant.caster = caster;
+        grant.during_resolution = true;
+        cur_game.impulse_cast_permission[card] = grant;
+        castable = exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer);
+    }
+    const std::string nm = entity_name(card);
+    LegalAction cast(CAST_SPELL, card, "Cast " + nm);
+    cast.category = ActionCategory::CAST_SPELL;
+    cast.impulse_cast = true;
+    const char *how = grant.resource == Game::ImpulseCastPermission::FREE
+                          ? " without paying its mana cost" : "";
+    ResolutionCastStatus status =
+        cast_during_resolution(cast, caster, castable, "Cast " + nm + how, rt, ctx, orderer);
+    if (status != ResolutionCastStatus::SUSPENDED) cur_game.impulse_cast_permission.erase(card);
+    return status;
+}
+
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
-    // A pending miracle reveal or cast (CR 702.94) is a forced decision the drawing player makes
-    // before proceeding; both ride this channel but are not pending_choice enum values.
+    // A pending miracle reveal (CR 702.94) is a forced decision the drawing player makes before
+    // proceeding; it rides this channel but is not a pending_choice enum value.
     if (game.miracle_reveal_pending != 0) {
         proc_miracle_reveal(game, orderer);
-        return;
-    }
-    if (game.miracle_cast_pending != 0) {
-        proc_miracle_cast(game, orderer);
         return;
     }
     switch (game.pending_choice) {

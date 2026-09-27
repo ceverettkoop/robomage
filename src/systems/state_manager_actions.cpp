@@ -283,6 +283,21 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
     return true;
 }
 
+// See declaration in state_manager.h.
+bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer) {
+    if (!global_coordinator.entity_has_component<CardData>(card) ||
+        !global_coordinator.entity_has_component<Zone>(card))
+        return false;
+    const auto &z = global_coordinator.GetComponent<Zone>(card);
+    if (z.location != Zone::HAND || z.owner != owner) return false;
+    const CardData &cd = global_coordinator.GetComponent<CardData>(card);
+    if (!can_cast_now(cd, card, owner, Zone::HAND, /*sorcery_window=*/false,
+                      /*ignore_timing=*/true, orderer))
+        return false;
+    ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.mana_cost, owner);
+    return alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
+}
+
 // An ACTIVATE_ABILITY action for `ab` of `source`. `ability_index` is the ability's stable
 // position in its source's ability list, emitted as the action's option_ordinal so the ML
 // observation can tell same-source activations apart (e.g. a planeswalker's loyalty abilities,

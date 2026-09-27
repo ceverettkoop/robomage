@@ -120,6 +120,11 @@ void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
 bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
                           std::shared_ptr<Orderer> orderer);
 
+// Whether `owner` may cast the revealed miracle `card` from their hand for its miracle cost as
+// its miracle trigger resolves (CR 702.94a, 608.2g): timing ignored, its targets and cast
+// prohibitions (can_cast_now), and the miracle mana cost with any cost floor (CR 118.9d, 601.2f).
+bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
+
 class StateManager : public System {
 
 public:

@@ -2,6 +2,7 @@
 #define ACTION_PROCESSOR_H
 
 #include <memory>
+#include <string>
 #include <vector>
 #include "classes/action.h"
 #include "classes/game.h"
@@ -18,17 +19,25 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
-// Cast during resolution (CR 608.2g): a resolving effect lets `caster` cast `card` (in exile) as
-// part of its resolution, for the cost `grant` puts in place of the card's mana cost (FREE =
-// "without paying its mana cost"). Offers "cast it / don't" when the cast is possible (timing
-// ignored; targets, prohibitions and the cost checked by exile_grant_castable), then runs the
+// Cast during resolution (CR 608.2g): a resolving effect lets `caster` make the cast `cast`
+// describes as part of its resolution. When `castable` (the caller's check that the cast is
+// possible now, timing ignored), offers "cast it / don't" labelled `accept_label`, then runs the
 // ordinary cast flow: the spell becomes the topmost object on the stack, above the still-resolving
 // ability, and no player receives priority after it is cast. Suspendable: the offer is asked
 // through `ctx`, and a cast prompt parks as a CAST query that the main loop resumes before
 // re-entering the resolution — the calling handler returns SUSPENDED on SUSPENDED and calls this
-// again with the same `rt` when re-entered. CAST when the spell was cast, DECLINED when it
-// wasn't (declined, not castable, or the cast was cancelled).
+// again with the same `rt` when re-entered (`castable` is read only before the offer is answered).
+// CAST when the spell was cast, DECLINED when it wasn't (declined, not castable, or the cast was
+// cancelled). Used by suspend's last time counter (CR 702.62a), a miracle trigger (CR 702.94a)
+// and DB$ Play (Amped Raptor).
 enum class ResolutionCastStatus { CAST, DECLINED, SUSPENDED };
+ResolutionCastStatus cast_during_resolution(const LegalAction& cast, Zone::Ownership caster,
+                                            bool castable, const std::string& accept_label,
+                                            ResolutionCastRt& rt, FrameCtx& ctx,
+                                            std::shared_ptr<Orderer> orderer);
+// The exile form: `caster` may cast the exiled `card` for the cost `grant` puts in place of its
+// mana cost (FREE = "without paying its mana cost"), checked by exile_grant_castable. The grant
+// is a Game::impulse_cast_permission that lasts only while the offer and the cast are open.
 ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
                                             Game::ImpulseCastPermission grant,
                                             ResolutionCastRt& rt, FrameCtx& ctx,

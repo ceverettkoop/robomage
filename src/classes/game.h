@@ -719,22 +719,16 @@ struct Game {
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
-        // Miracle (CR 702.94) is modeled as two sequential decisions on the drawing player, both
-        // riding the mandatory-choice channel (proc_mandatory_choice):
-        //  1. miracle_reveal_pending: a first-of-turn miracle card was just drawn and awaits its
-        //     owner's PRIVATE reveal decision — the "you may reveal it as you draw it" special action
-        //     (off the stack, hidden from the opponent until they choose to reveal). Set in
-        //     Orderer::perform_draw. On reveal the card becomes public and the linked "you may cast
-        //     it" triggered ability (category MiracleCast) is put on the stack.
-        //  2. miracle_cast_pending: that triggered ability resolved (effect_miracle.cpp) and now the
-        //     owner makes a single immediate "cast it for the miracle cost / do not cast" decision —
-        //     the cast, if taken, happens right then (not a lingering window); if the miracle cost is
-        //     unaffordable only "do not cast" is offered.
-        // Both are 0 when nothing is pending and are cleared each cleanup (the opportunity lapses at
-        // end of turn). Miracle is never offered as a normal priority-menu cast (can_afford_alt
-        // returns false for it) — it is castable only through decision 2.
+        // Miracle (CR 702.94): miracle_reveal_pending is a first-of-turn miracle card just drawn,
+        // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
+        // special action (off the stack, hidden from the opponent until they choose to reveal),
+        // riding the mandatory-choice channel (proc_mandatory_choice). Set in
+        // Orderer::perform_draw; 0 when nothing is pending, and cleared each cleanup. On reveal
+        // the card becomes public and the linked "you may cast it" triggered ability (category
+        // MiracleCast) is put on the stack; the owner decides whether to cast it as that trigger
+        // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
+        // priority-menu cast (can_afford_alt returns false for it).
         Entity miracle_reveal_pending = 0;
-        Entity miracle_cast_pending = 0;
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
