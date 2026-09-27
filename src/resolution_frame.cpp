@@ -322,6 +322,12 @@ std::set<Entity> collect_pending_pins() {
             pin_ability_tree_targets(pt.ab, pins);
         }
     }
+    // Triggered abilities queued for the next placement (Ward, a reflexive trigger created by a
+    // resolution that then suspended): their sources and bound references.
+    for (const auto &pt : cur_game.waiting_triggers) {
+        if (pt.source != 0) pins.insert(pt.source);
+        pin_ability_tree_targets(pt.ab, pins);
+    }
     // A suspended cast (tag CAST): the spell being cast — its zone row (hand /
     // graveyard / exile) must survive a world resample so the resumed flow
     // (and its FINISH move-to-stack) finds it where it left it — plus every

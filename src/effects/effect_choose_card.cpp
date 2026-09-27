@@ -204,7 +204,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             orderer->add_to_zone(false, chosen, Zone::STACK);
             game_log("%s casts %s from exile (Dauthi Voidwalker).\n",
                      player_name(ctrl).c_str(), cd.name.c_str());
-            fire_targeting_hooks(chosen, ctrl, orderer);  // Ward / becomes-target (CR 702.21a)
+            fire_targeting_hooks(chosen, ctrl);  // Ward / becomes-target (CR 702.21a)
         }
     } else {
         game_log("No exiled cards with void counters to choose.\n");

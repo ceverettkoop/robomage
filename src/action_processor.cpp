@@ -87,8 +87,7 @@ struct WardInstance {
 };
 static std::vector<WardInstance> collect_ward_instances(Entity e);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
-                                     const std::vector<Entity> &targets,
-                                     std::shared_ptr<Orderer> orderer);
+                                     const std::vector<Entity> &targets);
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
                                       const std::vector<Entity> &targets);
 static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
@@ -1418,8 +1417,7 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
 }
 
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
-                                     const std::vector<Entity> &targets,
-                                     std::shared_ptr<Orderer> orderer) {
+                                     const std::vector<Entity> &targets) {
     Zone::Ownership opp = opponent_of(controller);
     for (Entity tgt : targets) {
         if (tgt == 0) continue;
@@ -1439,10 +1437,15 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
             ward.unless_generic_cost = static_cast<size_t>(w.cost);
             ward.unless_cost_is_life = w.is_life;  // Ward—Pay N life pays life, not mana
 
-            orderer->push_ability_onto_stack(ward, opp);
-            game_log("Ward %s%d%s: %s's controller may pay to counter the spell or ability "
-                     "targeting %s\n", w.is_life ? "—Pay " : "{", w.cost,
-                     w.is_life ? " life" : "}", nm.c_str(), nm.c_str());
+            // Ward is a triggered ability: it goes on the stack with everything else that
+            // triggered before a player next receives priority (CR 603.3b), so a cast trigger
+            // (prowess) is ordered with it in APNAP order.
+            char line[256];
+            snprintf(line, sizeof line,
+                     "Ward %s%d%s: %s's controller may pay to counter the spell or ability "
+                     "targeting %s", w.is_life ? "—Pay " : "{", w.cost, w.is_life ? " life" : "}",
+                     nm.c_str(), nm.c_str());
+            cur_game.queue_trigger(ward, line);
         }
     }
 }
@@ -1504,11 +1507,10 @@ static std::vector<Entity> chosen_targets_of(Entity targeting_entity) {
     return out;
 }
 
-void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
-                          std::shared_ptr<Orderer> orderer) {
+void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller) {
     std::vector<Entity> tgts = chosen_targets_of(targeting_entity);
     if (tgts.empty()) return;
-    trigger_ward_for_targets(targeting_entity, controller, tgts, orderer);
+    trigger_ward_for_targets(targeting_entity, controller, tgts);
     fire_became_target_events(targeting_entity, controller, tgts);
 }
 
@@ -1948,7 +1950,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 // abilities too — CR 702.21b triggers on ANY spell or ability an opponent
                 // controls that targets the warded permanent. (Graveyard/non-battlefield
                 // targets are filtered inside the hooks.)
-                fire_targeting_hooks(ability_stack_entity, controller, orderer);
+                fire_targeting_hooks(ability_stack_entity, controller);
 
                 auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
                 const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
@@ -1987,7 +1989,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
             // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
             // ability sources for BecomesTarget.
-            fire_targeting_hooks(ability_stack_entity, controller, orderer);
+            fire_targeting_hooks(ability_stack_entity, controller);
 
             if (pa.stack_ab.target != 0) {
                 std::string tgt_names = chosen_targets_display(pa.stack_ab);
@@ -3225,7 +3227,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // permanent whose becomes-target trigger matches fires it above this spell (CR
             // 603.2c/603.3). Every target counts — each chosen mode's, each sub-ability's and an
             // Aura's enchant target (CR 115.1a/b, 601.2c).
-            fire_targeting_hooks(spell_entity, caster, orderer);
+            fire_targeting_hooks(spell_entity, caster);
 
             // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
             // its replicate cost." The replicate count was recorded on the Spell as the cost

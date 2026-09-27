@@ -321,6 +321,12 @@ struct Game {
         // member so a snapshot covers the
         // parked placement. See resolution_frame.h.
         TriggerPlacementRT trigger_placement;
+        // Triggered abilities that triggered outside the trigger scan's event matching — Ward
+        // when a spell or ability targets (CR 702.21a), a reflexive "when you do" trigger created
+        // by a resolving ability (CR 603.12) — waiting to be put on the stack. The next trigger
+        // scan places them in APNAP order with everything else that triggered since a player
+        // last received priority (CR 603.3b). Queued through queue_trigger.
+        std::vector<PendingTriggerRT> waiting_triggers;
         // Cast-time suspension state (pending_query tag CAST): the persisted
         // state machine of process_action's CAST_SPELL branch (run_cast_flow,
         // action_processor.cpp). The branch's former locals — the accumulating
@@ -800,6 +806,12 @@ struct Game {
         // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
         // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
         void set_monarch(Entity player_entity);
+
+        // Queue a triggered ability that just triggered for the next trigger scan to put on the
+        // stack (waiting_triggers). `ab` carries its source and controller; its targets are
+        // chosen as it is put on the stack (CR 603.3d). `log_line` is narrated as it is placed;
+        // the scan labels it for the ordering choice.
+        void queue_trigger(const Ability &ab, const std::string &log_line);
 
         // Drop everything this Game recorded under entity id `e` (per-entity maps and sets, and
         // `e`'s entries in the remembered / imprinted / delve / prevention-shield lists), so an

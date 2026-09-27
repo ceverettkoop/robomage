@@ -135,11 +135,11 @@ TargetStatus run_copy_spell(CopySpellRT& rt, TargetAsker& asker, std::shared_ptr
 // the stack object `targeting_entity` (a spell, a copy of a spell, or an activated or triggered
 // ability, controlled by `controller`) is on the stack with all of its targets chosen. Every
 // object it targets — through its own "target", any chosen mode, any chained sub-ability, or an
-// Aura spell's enchant ability (CR 115.1b) — becomes its target once: Ward triggers go on the
-// stack above it (CR 702.21a) and a BECAME_TARGET event fires for each targeted permanent
-// (Mode$ BecomesTarget, CR 603.2c). No-op for an object with no targets.
-void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
-                          std::shared_ptr<Orderer> orderer);
+// Aura spell's enchant ability (CR 115.1b) — becomes its target once: each Ward triggers
+// (CR 702.21a), queued to go on the stack with the next trigger placement (CR 603.3b), and a
+// BECAME_TARGET event fires for each targeted permanent (Mode$ BecomesTarget, CR 603.2c). No-op
+// for an object with no targets.
+void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller);
 
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,

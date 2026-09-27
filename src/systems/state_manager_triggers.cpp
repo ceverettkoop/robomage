@@ -162,6 +162,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // on the stack together in APNAP order (603.3b) — nothing is pushed mid-scan.
     std::vector<PendingTrigger> pending;
 
+    // Abilities that triggered outside this event matching (Ward, reflexive triggers) join the
+    // batch (CR 603.3b).
+    for (PendingTrigger &pt : game.waiting_triggers) {
+        pt.label = trigger_label(entity_name(pt.source), pt.ab);
+        pending.push_back(std::move(pt));
+    }
+    game.waiting_triggers.clear();
+
     // Fire any delayed triggers that match current events
     {
         std::vector<size_t> to_remove;
@@ -1318,8 +1326,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
     // the Ward and becomes-target abilities that triggered meanwhile are put on the stack after
     // this placement, above every ability it placed (CR 603.3b).
     for (Entity placed : tp.placed)
-        fire_targeting_hooks(placed, global_coordinator.GetComponent<Ability>(placed).controller,
-                             orderer);
+        fire_targeting_hooks(placed, global_coordinator.GetComponent<Ability>(placed).controller);
 
     // Placement complete: restore the pre-placement priority seat.
     cur_game.player_a_has_priority = tp.saved_priority;

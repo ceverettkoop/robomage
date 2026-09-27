@@ -109,6 +109,17 @@ void Game::set_monarch(Entity player_entity) {
              player_name(seat_of_player(player_entity)).c_str());
 }
 
+void Game::queue_trigger(const Ability &ab, const std::string &log_line) {
+    PendingTriggerRT pt;
+    pt.ab = ab;
+    pt.ab.ability_type = Ability::TRIGGERED;
+    pt.controller = ab.controller;
+    pt.source = ab.source;
+    pt.log_line = log_line;
+    pt.needs_target = (ab.valid_tgts != "N_A" && ab.target == 0 && ab.targets.empty());
+    waiting_triggers.push_back(std::move(pt));
+}
+
 void Game::player_loses(Zone::Ownership loser) {
     ended = true;
     winner = opponent_of(loser);

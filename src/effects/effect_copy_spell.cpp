@@ -205,7 +205,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
     }
     // Each copy's targets became its targets as it was put on the stack (CR 707.10); the Ward
     // and becomes-target abilities that triggered meanwhile go on the stack above the copies.
-    for (Entity copy : rt.placed) fire_targeting_hooks(copy, controller, orderer);
+    for (Entity copy : rt.placed) fire_targeting_hooks(copy, controller);
     rt = CopySpellRT{};
     return TargetStatus::DONE;
 }

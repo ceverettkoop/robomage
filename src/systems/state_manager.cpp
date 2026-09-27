@@ -405,5 +405,10 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
     // SBA loop settled; triggered abilities go on the stack (rule 704.3)
     check_triggered_abilities(game, orderer);
+    // CR 603.3b: abilities that triggered while that batch was put on the stack (Ward on a
+    // placed trigger's target) go on the stack before any player receives priority, after the
+    // game checks state-based actions again.
+    if (!game.waiting_triggers.empty() && !game.trigger_placement.active)
+        state_based_effects(game, orderer);
 }
 
