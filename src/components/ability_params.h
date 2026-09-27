@@ -135,6 +135,9 @@ struct DiscardParams {
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
+    // RevealOptional$ True (Delver of Secrets): "You may reveal that card" — the controller
+    // chooses whether to reveal the peeked card; without it the card is revealed.
+    bool reveal_optional = false;
     // ImprintRevealed$ True (Atraxa, Grand Unifier): reveal the top PeekAmount cards of the
     // controller's library to all players AND record them as the "imprinted" set
     // (cur_game.imprinted_entities) so a chained Card.IsImprinted filter can act on exactly the

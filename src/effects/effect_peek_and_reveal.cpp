@@ -101,15 +101,18 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // pinned against determinize by collect_pending_pins) without re-logging.
     if (!ctx.resuming())
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
-    std::vector<LegalAction> reveal_actions = {
-        LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
-        LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
-    };
-    // The old inline get_input ran without a priority repoint — ambient priority
-    // is the resolving controller here — so seating the ask on ab.controller is
-    // a no-op swap, byte-identical to today.
-    int reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source);
-    if (reveal_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+    int reveal_choice = 1;
+    if (pp && pp->reveal_optional) {
+        std::vector<LegalAction> reveal_actions = {
+            LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
+            LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
+        };
+        // The old inline get_input ran without a priority repoint — ambient priority
+        // is the resolving controller here — so seating the ask on ab.controller is
+        // a no-op swap, byte-identical to today.
+        reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source);
+        if (reveal_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
+    }
 
     if (reveal_choice == 1) {
         game_log("Revealed: %s\n", top_cd.name.c_str());
@@ -135,6 +138,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {
     if (key == "NoReveal") { effect_params<PeekParams>(ab).no_reveal = (value == "True"); return true; }
+    if (key == "RevealOptional") { effect_params<PeekParams>(ab).reveal_optional = (value == "True"); return true; }
     if (key == "ImprintRevealed") { effect_params<PeekParams>(ab).imprint_revealed = (value == "True"); return true; }
     if (key == "PeekAmount") { effect_params<PeekParams>(ab).peek_amount = std::stoi(value); return true; }
     return false;
