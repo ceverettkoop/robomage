@@ -394,7 +394,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                 auto &pl = global_coordinator.GetComponent<Player>(pe);
                 std::string prompt = "pay " + std::to_string(c.tapped_unless_life) +
                                      " life so it enters untapped";
-                if (pl.life_total >= c.tapped_unless_life) {
+                if (can_pay_life(pl, c.tapped_unless_life)) {
                     // Latched-answer site (tag SBE_LATCHED): the y/n is a loop-top
                     // pending decision. The dispatch runs inside the SBE
                     // apply_permanent_components pass BEFORE anything about the
@@ -423,8 +423,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                         choice = request_optional_yesno(ev.affected_player, prompt) ? 1 : 0;
                     }
                     if (choice == 1) {
-                        pl.life_total -= c.tapped_unless_life;
-                        pl.life_lost_this_turn += c.tapped_unless_life;  // CR 119.4: paying life is losing life
+                        pay_life(pl, c.tapped_unless_life);
                         game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
                                  c.tapped_unless_life);
                         break;  // enters untapped

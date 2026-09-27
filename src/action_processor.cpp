@@ -38,6 +38,9 @@ static std::vector<LegalAction> permanent_choice_menu(const std::vector<Entity> 
 static int select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                 bool allow_done, TargetAsker &asker);
 static std::string chosen_targets_display(const Ability &ab);
+// Pay a life cost the legality gate already found payable (CR 119.4); a refusal here means the gate
+// and the payment disagree, which is an engine bug.
+static void pay_gated_life_cost(Player &player, int amount);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                                 std::shared_ptr<Orderer> orderer, int resume_choice);
@@ -209,6 +212,13 @@ static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity
 // multi-target activation (e.g. Faerie Macabre's "up to two target cards") must announce
 // all of its targets — naming only the first makes the transcript read as if the other
 // cards were affected without ever being targeted.
+// See forward declaration at top of file.
+static void pay_gated_life_cost(Player &player, int amount) {
+    if (!pay_life(player, amount))
+        fatal_error("a life cost of " + std::to_string(amount) +
+                    " passed the legality gate but can't be paid (CR 119.4)");
+}
+
 static std::string chosen_targets_display(const Ability &ab) {
     if (ab.targets.empty()) return target_display_name(cur_game, ab.target);
     std::string out;
@@ -1991,8 +2001,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             if (ability.life_cost > 0) {
                 auto &activating_player =
                     global_coordinator.GetComponent<Player>(get_player_entity(controller));
-                activating_player.life_total -= ability.life_cost;
-                activating_player.life_lost_this_turn += ability.life_cost;  // CR 119.4: paying life is losing life
+                pay_gated_life_cost(activating_player, ability.life_cost);
                 game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
             }
             // Energy cost (PayEnergy<N>, CR 122.1c): affordability is gated in
@@ -2250,8 +2259,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pay_energy(player, grant.amount);
                         game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
                     } else {
-                        player.life_total -= grant.amount;
-                        player.life_lost_this_turn += grant.amount;  // CR 119.4: paying life is losing life
+                        pay_gated_life_cost(player, grant.amount);
                         game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
                     }
                     // ForgetOnMoved$ Exile / one-shot: the card leaves exile as it's cast, so the
@@ -2592,21 +2600,20 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     // die to SBAs afterward). Re-checked per pip against the running life total,
                     // since an earlier pip's life payment lowers what's left for the next.
                     // (The life is paid at APPLY below, so the NEXT pip's arm re-derives
-                    // can_pay_life against the updated total, exactly like the inline loop;
+                    // life_payable against the updated total, exactly like the inline loop;
                     // between THIS pip's arm and its apply nothing runs, so the recompute at
                     // apply matches the armed menu's option layout.)
-                    bool can_pay_life = phyrex_player.life_total >= 2;
+                    bool life_payable = can_pay_life(phyrex_player, 2);
                     if (resume_choice >= 0) {
                         int phyrex_choice = resume_choice;
                         resume_choice = -1;
                         // The life option occupies index 0 only when it was offered; with it
                         // suppressed the sole option is "Pay {color}", so fall through to mana.
                         // The mana option's own gate (below) never shifts this indexing — life
-                        // is always index 0 when present — so only can_pay_life is recomputed
+                        // is always index 0 when present — so only life_payable is recomputed
                         // here.
-                        if (can_pay_life && phyrex_choice == 0) {
-                            phyrex_player.life_total -= 2;
-                            phyrex_player.life_lost_this_turn += 2;  // CR 119.4: paying life is losing life
+                        if (life_payable && phyrex_choice == 0) {
+                            pay_life(phyrex_player, 2);
                             game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {
                             pc.cost_to_pay.insert(phyrex_color);
@@ -2629,15 +2636,15 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     // Never arm an empty menu. Neither half payable means the cast should not
                     // have been offered (life < 2 AND no source); keep the mana option so the
                     // payment fails through the normal path instead of vanishing here.
-                    if (!can_pay_life && !can_pay_colored) can_pay_colored = true;
+                    if (!life_payable && !can_pay_colored) can_pay_colored = true;
 
                     std::vector<LegalAction> phyrex_actions;
-                    if (can_pay_life) {
-                        LegalAction pay_life(PASS_PRIORITY,
+                    if (life_payable) {
+                        LegalAction pay_life_action(PASS_PRIORITY,
                             "Pay 2 life (instead of {" + color_name + "})");
-                        pay_life.category = ActionCategory::PAYING_COSTS;
-                        pay_life.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
-                        phyrex_actions.push_back(pay_life);
+                        pay_life_action.category = ActionCategory::PAYING_COSTS;
+                        pay_life_action.option_ordinal = 0;  // Phyrexian pip: 0 = pay life
+                        phyrex_actions.push_back(pay_life_action);
                     }
                     if (can_pay_colored) {
                         LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
@@ -3152,13 +3159,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             if (pc.deferred_life_cost > 0 || pc.life_x_announced >= 0) {
                 auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
                 if (pc.deferred_life_cost > 0) {
-                    player.life_total -= pc.deferred_life_cost;
-                    player.life_lost_this_turn += pc.deferred_life_cost;  // CR 119.4: paying life is losing life
+                    pay_gated_life_cost(player, pc.deferred_life_cost);
                     game_log("%s pays %d life\n", player_name(caster).c_str(), pc.deferred_life_cost);
                 }
                 if (pc.life_x_announced >= 0) {
-                    player.life_total -= pc.life_x_announced;
-                    player.life_lost_this_turn += pc.life_x_announced;
+                    pay_gated_life_cost(player, pc.life_x_announced);
                     game_log("%s pays %d life (X = %d)\n", player_name(caster).c_str(),
                              pc.life_x_announced, pc.life_x_announced);
                 }

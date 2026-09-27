@@ -62,6 +62,17 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
 static bool mana_ability_is_painful(const Ability &ab);
+// Life a mana ability's activation takes from its controller: its PayLife cost plus any
+// self-damage / life-loss rider (Ancient Tomb's 2 damage).
+static int mana_ability_life_loss(const Ability &ab);
+// Life the seat's in-flight cast still owes as part of its total cost (a deferred alternative /
+// flashback life cost, an announced X-life cost), paid after the mana (CR 601.2g-h); 0 when that
+// seat is casting nothing.
+static int life_reserved_for_pending_cast(Zone::Ownership seat);
+// Can `pl` (seat `seat`) activate mana ability `ab` as far as life goes? Its life cost must be
+// payable (CR 119.4), and during a cast the activation must leave enough life to pay the cast's own
+// life cost afterward, since a cast whose total cost can't be paid is illegal (CR 601.2h).
+static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab);
 static bool has_nonmana_activated_ability(Entity entity);
 static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
                                             std::shared_ptr<Orderer> orderer);
@@ -284,6 +295,10 @@ static bool mana_ability_available_now(Entity e, const Permanent &permanent, con
     if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) return false;
     // Summoning sickness check for creatures with tap cost
     if (ab.tap_cost && is_summoning_sick(e)) return false;
+    Entity player_entity = get_player_entity(player);
+    if (global_coordinator.entity_has_component<Player>(player_entity) &&
+        !mana_ability_life_payable(global_coordinator.GetComponent<Player>(player_entity), player, ab))
+        return false;
     return true;
 }
 
@@ -779,6 +794,8 @@ bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership cont
                           std::shared_ptr<Orderer> orderer, ManaValue &pool,
                           Player &player, bool commit, ManaLogStyle log_style) {
     auto &perm = global_coordinator.GetComponent<Permanent>(source);
+    // A life cost the player can't pay (CR 119.4) refuses the activation before any effect.
+    if (!mana_ability_life_payable(player, controller, ab)) return false;
     if (!ab.activation_mana_cost.empty()) {
         // pay_from_pool returns the unpayable remainder and drains the pool even on a
         // partial payment, so snapshot the pool and restore it when the cost bounces.
@@ -794,10 +811,11 @@ bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership cont
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
         orderer->add_to_zone(false, source, Zone::GRAVEYARD);
     }
-    if (commit && ab.life_cost > 0) {
-        player.life_total -= ab.life_cost;
-        player.life_lost_this_turn += ab.life_cost;  // CR 119.4: paying life is losing life
-        game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
+    // Paid on the working player in both modes: a simulated payment (auto_pay_mana_attempt)
+    // pays from a copy, so a second life-costing source sees the life already spent.
+    if (ab.life_cost > 0) {
+        pay_life(player, ab.life_cost);
+        if (commit) game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
     produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);
     return true;
@@ -863,6 +881,29 @@ static bool mana_ability_is_painful(const Ability &ab) {
 // the option to use that ability, so the auto-payer prefers plain sources when otherwise
 // equal. Loyalty abilities count too (ability_is_mana excludes them), which only matters
 // if a planeswalker ever taps for mana — also a "save it for its other ability" case.
+// See forward declaration at top of file.
+static int mana_ability_life_loss(const Ability &ab) {
+    int loss = ab.life_cost;
+    for (const auto &sub : ab.subabilities)
+        if ((sub.category == "DealDamage" || sub.category == "LoseLife") && sub.defined_you)
+            loss += static_cast<int>(sub.amount);
+    return loss;
+}
+
+// See forward declaration at top of file.
+static int life_reserved_for_pending_cast(Zone::Ownership seat) {
+    const auto &pc = cur_game.pending_cast;
+    if (!pc.active || pc.caster_is_a != (seat == Zone::PLAYER_A)) return 0;
+    return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
+}
+
+// See forward declaration at top of file.
+static bool mana_ability_life_payable(const Player &pl, Zone::Ownership seat, const Ability &ab) {
+    if (!can_pay_life(pl, ab.life_cost)) return false;
+    int loss = mana_ability_life_loss(ab);
+    return loss <= 0 || pl.life_total - loss >= life_reserved_for_pending_cast(seat);
+}
+
 static bool has_nonmana_activated_ability(Entity entity) {
     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
     for (const auto &ab : perm.abilities)
@@ -955,9 +996,13 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
     // In commit mode the working pool IS the real mana pool; in simulate mode it is a
-    // throwaway copy so the algorithm can drain/refill it without touching real state.
+    // throwaway copy so the algorithm can drain/refill it without touching real state. Life
+    // costs are paid from a throwaway copy of the player the same way.
     ManaValue pool_copy = player.mana;
     ManaValue &pool = commit ? player.mana : pool_copy;
+    Player player_copy;
+    if (!commit) player_copy = player;
+    Player &payer = commit ? player : player_copy;
 
     // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, any mana
     // can pay any colored pip. We keep the colored pips colored (so Delve/Improvise, which reduce
@@ -1100,7 +1145,7 @@ static bool auto_pay_mana_attempt(Zone::Ownership controller, ManaValue &remaini
     // equals si.ability.color (set when the SourceInfo was built), so the shared
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
-        return activate_mana_source(si.entity, si.ability, controller, orderer, pool, player,
+        return activate_mana_source(si.entity, si.ability, controller, orderer, pool, payer,
                                     commit, ManaLogStyle::ACTIVATED);
     };
 

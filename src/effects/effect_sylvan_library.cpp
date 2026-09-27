@@ -89,19 +89,22 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         auto &cd = global_coordinator.GetComponent<CardData>(card);
         if (!ctx.resuming())
             game_log("For %s: pay 4 life or put on top of library?\n", cd.name.c_str());
-        std::vector<LegalAction> pay_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Pay 4 life")),
-            LegalAction(PASS_PRIORITY, std::string("Put on top of library")),
-        };
-        pay_actions[0].category = ActionCategory::SYLVAN_CHOICE;
-        pay_actions[0].option_ordinal = 1;  // 1 = pay 4 life
-        pay_actions[1].category = ActionCategory::SYLVAN_CHOICE;
-        pay_actions[1].option_ordinal = 0;  // 0 = put on top of library
-        int choice = ctx.ask(std::move(pay_actions), ctrl, ab.source);
+        // "Pay 4 life" is offered only when the player can pay it (CR 119.4).
+        std::vector<LegalAction> pay_actions;
+        if (can_pay_life(pl, 4)) {
+            LegalAction pay(PASS_PRIORITY, std::string("Pay 4 life"));
+            pay.category = ActionCategory::SYLVAN_CHOICE;
+            pay.option_ordinal = 1;  // 1 = pay 4 life
+            pay_actions.push_back(pay);
+        }
+        LegalAction top(PASS_PRIORITY, std::string("Put on top of library"));
+        top.category = ActionCategory::SYLVAN_CHOICE;
+        top.option_ordinal = 0;  // 0 = put on top of library
+        pay_actions.push_back(top);
+        int choice = ctx.ask(pay_actions, ctrl, ab.source);
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        if (choice == 0) {
-            pl.life_total -= 4;
-            pl.life_lost_this_turn += 4;  // CR 119.4: paying life is losing life
+        if (pay_actions[static_cast<size_t>(choice)].option_ordinal == 1) {
+            pay_life(pl, 4);
             game_log("%s pays 4 life (now at %d)\n", player_name(ctrl).c_str(), pl.life_total);
         } else {
             orderer->add_to_zone(false, card, Zone::LIBRARY);

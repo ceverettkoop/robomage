@@ -179,7 +179,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
 
     if (alt_cost.life_cost > 0) {
         Entity pp_entity = get_player_entity(priority_player);
-        if (global_coordinator.GetComponent<Player>(pp_entity).life_total < alt_cost.life_cost)
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity), alt_cost.life_cost))
             return false;
     }
 
@@ -816,7 +816,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player), gy_entity, orderer);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
             Entity pp_entity = get_player_entity(priority_player);
-            if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
+            if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity),
+                              gcd.flashback_alt_cost.life_cost))
                 can_afford_fb = false;
         }
         if (!can_afford_fb) continue;
@@ -865,6 +866,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!tgt_ok) continue;
         // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
         if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
+
+        // An escape life cost must be payable (CR 119.4).
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
+                          gcd.escape_alt_cost.life_cost))
+            continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
         if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
@@ -1000,7 +1006,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
                   // legality bar in MTG, but a player won't be forced; require enough life so
                   // the optional cast is sensibly offered.
-            if (ppl.life_total < perm_grant.amount) continue;
+            if (!can_pay_life(ppl, perm_grant.amount)) continue;
         }
 
         // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
@@ -1170,8 +1176,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A
                 // fetch land (Pay 1 life) at 1 life is still legal (you pay down to 0, then die);
                 // only an ability costing MORE life than you have is filtered out here.
-                if (ab.life_cost > 0 &&
-                    global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
+                if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
+                                  ab.life_cost))
                     continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 { auto it = cur_game.payment_fail_counts.find(ab.source);
@@ -1209,8 +1215,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
                 continue;
             // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have.
-            if (ab.life_cost > 0 &&
-                global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
+            if (!can_pay_life(global_coordinator.GetComponent<Player>(get_player_entity(priority_player)),
+                              ab.life_cost))
                 continue;
             // Check target legality. The bare CardData ability carries no source/controller, and
             // ability_perspective_player would fall back to the default-initialized controller

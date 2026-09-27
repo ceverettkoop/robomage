@@ -56,10 +56,11 @@ void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership
 // Activate one mana source: pay its activation mana cost from the working `pool`,
 // tap/sacrifice it, pay its life cost, then produce via produce_mana_from_ability.
 // Pool changes (activation cost paid, mana produced) always apply to the working
-// `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
+// `pool`, and the life cost to `player` (a throwaway copy in simulate mode); the write-only
+// ECS side effects are skipped when !commit (simulate mode).
 // Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
-// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be
-// paid from the working pool. The cost is paid FIRST, before any other effect, so a
+// untouched) — when `player` can't pay the life cost (CR 119.4) or the ability's activation
+// mana cost (Talon Gates' {1}{T}) cannot be paid from the working pool. The cost is paid FIRST, before any other effect, so a
 // refusal cancels cleanly. Shared by the auto-payer (commit per simulate/real), the
 // interactive payer, and the pay-unless loop (both always commit, with pool == the
 // player's real mana pool).

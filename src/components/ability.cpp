@@ -428,7 +428,7 @@ bool run_unless_loop(
 
     if (kind == UnlessPayKind::LIFE) {
         auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        bool can_pay = payer.life_total >= static_cast<int>(cost);  // CR 119.4
+        bool can_pay = can_pay_life(payer, static_cast<int>(cost));
 
         std::vector<LegalAction> unless_actions;
         size_t pay_idx = unless_actions.size();
@@ -442,8 +442,7 @@ bool run_unless_loop(
             return false;
         }
         if (can_pay && choice == static_cast<int>(pay_idx)) {
-            payer.life_total -= static_cast<int>(cost);
-            payer.life_lost_this_turn += static_cast<int>(cost);  // CR 119.4: paying life is losing life
+            pay_life(payer, static_cast<int>(cost));
             game_log("%s pays %zu life — %s\n", player_name(controller).c_str(), cost,
                      unless_outcome_text(subject, /*paid=*/true).c_str());
             return false;

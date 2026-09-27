@@ -1112,19 +1112,33 @@ inline void player_gain_life(Entity player_entity, int32_t amount) {
 // "you may cast this spell for its spectacle cost … if an opponent lost life this turn").
 // Damage dealt to a player IS a loss of life (CR 120.3), so the damage-to-player sites
 // (combat + noncombat DealDamage) and the explicit "lose life" effects route through here
-// so the per-turn counter cannot drift from life_total. Life PAID as a cost is ALSO a loss
-// of life (CR 119.4, "If a player pays life, the player loses that much life"), so the
-// cost-payment sites (fetch/painland PayLife, Phyrexian pips, activation/alt/deferred life
-// costs, "unless you pay N life", Sylvan Library, enters-tapped-unless-pay) increment
-// life_lost_this_turn alongside their subtraction — inline rather than through this helper,
-// since most hold only a Player& and not the entity. That keeps Spectacle (Skewer the
-// Critics / Light Up the Stage) correct when an opponent pays life on your turn. Pass the
-// player's Player-component entity. No-op for amount <= 0.
+// so the per-turn counter cannot drift from life_total. Life PAID as a cost goes through
+// pay_life below. Pass the player's Player-component entity. No-op for amount <= 0.
 inline void player_lose_life(Entity player_entity, int32_t amount) {
     if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     pl.life_total -= amount;
     pl.life_lost_this_turn += amount;
+}
+
+// ── Paying life (CR 119.4) ──────────────────────────────────────────────────
+// The single check and payment path for every life cost (fetch/horizon-land PayLife, Phyrexian
+// pips, activation/alternative/deferred life costs, "unless you pay N life", Sylvan Library,
+// enters-tapped-unless-you-pay-life).
+
+// Can `pl` pay `n` life? Only with a life total of at least `n` (CR 119.4); 0 life can always be
+// paid (CR 119.4b).
+inline bool can_pay_life(const Player &pl, int n) { return n <= 0 || pl.life_total >= n; }
+
+// Pay `n` life from `pl`. Returns false and changes nothing if the player can't pay it;
+// otherwise subtracts it and returns true. Paying life is losing that much life (CR 119.4), so it
+// accumulates life_lost_this_turn like player_lose_life (Spectacle sees an opponent's payment).
+inline bool pay_life(Player &pl, int n) {
+    if (n <= 0) return true;
+    if (!can_pay_life(pl, n)) return false;
+    pl.life_total -= n;
+    pl.life_lost_this_turn += n;
+    return true;
 }
 
 // ── Player energy ({E}, CR 122.1c) ──────────────────────────────────────────
