@@ -194,6 +194,7 @@ struct CharView {
     long entered_on_turn = -1;               // -1 when not on the battlefield
     bool is_attacking = false;               // live combat state (battlefield creatures only)
     bool is_blocking = false;
+    bool is_unblocked = false;               // an unblocked attacker (CR 509.1h)
     bool is_tapped = false;
     bool has_x_cost = false;                 // printed mana cost contains {X} (Gaddock Teeg's hasXCost)
     bool creature_suppressed = false;        // on battlefield, has "Creature" in its type line but
@@ -339,6 +340,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // battlefield permanent can be in these states; a card view leaves them false.
     if (q == "attacking") return v.is_attacking;
     if (q == "blocking")  return v.is_blocking;
+    if (q == "unblocked") return v.is_unblocked;
     if (q == "tapped")    return v.is_tapped;
     if (q == "untapped")  return !v.is_tapped;
     if (q == "Basic")        return v.types && has_basic_supertype(*v.types);
@@ -541,6 +543,7 @@ CharView permanent_view(Entity e, const Permanent &perm) {
         auto &cr = global_coordinator.GetComponent<Creature>(e);
         v.is_attacking = cr.is_attacking;
         v.is_blocking = cr.is_blocking;
+        v.is_unblocked = is_unblocked_attacker(e);
     } else {
         // On the battlefield with no live Creature component: any "Creature" still in the type line
         // is suppressed (CR 702.151b reconfigure-while-attached / 702.175d impending). See
@@ -680,6 +683,14 @@ Zone::Ownership priority_seat() {
 }
 
 Zone::Ownership active_seat() { return cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B; }
+
+// See declaration in game_queries.h.
+bool is_unblocked_attacker(Entity e) {
+    if (!cur_game.blockers_declared || cur_game.cur_step < DECLARE_BLOCKERS ||
+        cur_game.cur_step > END_OF_COMBAT)
+        return false;
+    return is_attacking_creature(e) && !global_coordinator.GetComponent<Creature>(e).is_blocked;
+}
 
 // ── Player targets (declared in game_queries.h) ─────────────────────────────
 // One comma-OR alternative of a ValidTgts$ spec, if it names a player: the seat restriction it

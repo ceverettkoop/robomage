@@ -78,6 +78,8 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SetState:        return &set_state;
         case EffectKind::WarpExile:       return &warp_exile;
         case EffectKind::MiracleCast:     return &miracle_cast;
+        case EffectKind::Unattach:        return &unattach;
+        case EffectKind::Ninjutsu:        return &ninjutsu;
         default:                          return nullptr;
     }
 }

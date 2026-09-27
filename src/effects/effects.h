@@ -254,6 +254,13 @@ HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
 // resolution it opens the miracle-cast window for the source card (so its owner may then cast it for
 // its miracle cost at their following priority). See effect_miracle.cpp.
 HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Reconfigure (CR 702.151a): "Unattach this permanent." Unattaches ab.source from the creature it
+// is attached to, if it is still on the battlefield and attached. See effect_unattach.cpp.
+HandlerResult unattach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Ninjutsu (CR 702.49a/c): "Put this card onto the battlefield from your hand tapped and
+// attacking", attacking what the creature returned as the cost was attacking. A card no longer in
+// its owner's hand stays where it is. See effect_ninjutsu.cpp.
+HandlerResult ninjutsu(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────

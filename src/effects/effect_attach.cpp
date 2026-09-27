@@ -51,10 +51,11 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         game_log("Equipment will attach once the creature finishes entering.\n");
         goto attach_done;
     }
-    if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
+    if (target_creature != 0 && is_battlefield_permanent(equip_entity) &&
         global_coordinator.entity_has_component<Permanent>(target_creature)) {
         // An Equipment attaches only to something it can equip; otherwise it doesn't move
-        // (CR 301.5b/301.5c).
+        // (CR 301.5b/301.5c). One that left the battlefield before an equip ability resolved
+        // stays where it is.
         bool is_equipment = global_coordinator.entity_has_component<CardData>(equip_entity) &&
                             global_coordinator.GetComponent<CardData>(equip_entity).is_equipment;
         if (is_equipment && !equipment_can_equip(equip_entity, target_creature)) goto attach_done;

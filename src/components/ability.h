@@ -162,13 +162,14 @@ struct Ability{
     // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
     bool is_monstrosity = false;
     bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
-    // K:Ninjutsu:<cost> (CR 702.49): a hand-activated ability usable only during the declare-
-    // blockers step (after blockers are declared) while its controller has an unblocked attacker.
-    // Activating it returns one unblocked attacker to hand and pays the ninjutsu mana cost
-    // (activation_mana_cost), then puts THIS card from hand onto the battlefield tapped and
-    // attacking the defender the returned attacker was attacking. Handled by process_ninjutsu;
-    // the offer is gated to DECLARE_BLOCKERS in determine_legal_actions.
+    // K:Ninjutsu:<cost> (CR 702.49a): a hand-activated ability whose cost is the ninjutsu mana
+    // plus returning an unblocked attacker you control to its owner's hand (return_cost_type), so
+    // it is activatable whenever such an attacker exists. On the stack it puts THIS card onto the
+    // battlefield tapped and attacking (effects::ninjutsu).
     bool is_ninjutsu = false;
+    // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
+    // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
+    Entity ninjutsu_attack_target = 0;
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so

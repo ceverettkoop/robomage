@@ -2663,13 +2663,12 @@ def test_activation_x_roundtrip():
 
 
 def test_equip_target_roundtrip():
-    """Batch 12 (activated abilities): the equip creature menu — chosen AFTER
-    the equip cost is paid (machine mode auto-pays), from the candidate list
-    frozen BEFORE payment (run_activation_flow's EQUIP_PAY -> EQUIP_TARGET
-    steps) — is a loop-top pending decision (tag ACTIVATION). A presets
-    Cori-Steel Cutter (Equip {1}{R}) with two creatures and two Mountains, so
-    activating Equip auto-taps the Mountains and reaches a 2-option
-    SELECT_TARGET menu (Grizzly Bears [2/2], Soul Warden [1/1]). At the root:
+    """Batch 12 (activated abilities): the equip ability's target creature —
+    chosen on activation, before the equip cost is paid (CR 601.2c via
+    602.2b; run_activation_flow's TARGET step) — is a loop-top pending
+    decision (tag ACTIVATION). A presets Cori-Steel Cutter (Equip {1}{R})
+    with two creatures and two Mountains, so activating Equip reaches a
+    2-option SELECT_TARGET menu (Grizzly Bears, Soul Warden). At the root:
     safe=1; SNAPSHOT re-emits exactly; the divergent pick (equipping the other
     creature — a different permanent gains the +1/+1) must change the very
     next query; RESTORE returns byte-identically; the resumed real line stays

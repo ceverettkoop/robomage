@@ -265,28 +265,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // Initialize the persisted activation state machine (Game::PendingActivation) from the
     // consumed LegalAction and hand control to run_activation_flow — the extracted
     // ACTIVATE_ABILITY body. The branch's former locals (the ability, the targeted
-    // stack_ab copy, the chosen X, the pre-payment equip/ninjutsu candidate lists) live
-    // in pa; converted prompts suspend as loop-top pending decisions (tag ACTIVATION)
+    // stack_ab copy, the chosen X) live in pa; converted prompts suspend as loop-top pending decisions (tag ACTIVATION)
     // that the main loop emits and resume_activation_flow re-enters with the answer.
     Game::PendingActivation &pa = game.pending_activation;
     if (pa.active) fatal_error("ACTIVATE_ABILITY with an activation flow already in flight");
-
-    // Ninjutsu (CR 702.49): bespoke cost (return an unblocked attacker) and effect (enter tapped
-    // and attacking) — its own step pair (NINJA_PAY / NINJA_RETURN), separate from the generic
-    // hand-activated-ability path.
-    if (ability.is_ninjutsu) {
-        if (!global_coordinator.entity_has_component<Zone>(permanent_entity)) return;
-        Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(permanent_entity).owner;
-        pa = Game::PendingActivation{};
-        pa.active = true;
-        pa.step = Game::PendingActivation::NINJA_PAY;
-        pa.source_entity = permanent_entity;
-        pa.activator_is_a = (ctrl == Zone::PLAYER_A);
-        pa.ability = ability;
-        pa.stack_ab = ability;
-        run_activation_flow(pa, game, orderer, -1);
-        return;
-    }
 
     // ActivationZone$ Hand / Graveyard: card activated from a non-battlefield zone (no Permanent
     // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.
@@ -315,47 +297,6 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // <condition>" gate (e.g. Mox Opal's Metalcraft) isn't met, so it can't be forced illegally.
     if (!activation_condition_met(ability, controller, orderer->mEntities, permanent_entity)) {
         game_log("Activation condition not met.\n");
-        return;
-    }
-
-    // EQUIP: special activated ability — attach equipment to a creature (EQUIP_PAY freezes the
-    // creature menu and pays; EQUIP_TARGET suspends on the menu).
-    if (ability.category == "Equip") {
-        pa = Game::PendingActivation{};
-        pa.active = true;
-        pa.step = Game::PendingActivation::EQUIP_PAY;
-        pa.source_entity = permanent_entity;
-        pa.activator_is_a = (controller == Zone::PLAYER_A);
-        pa.ability = ability;
-        pa.stack_ab = ability;
-        run_activation_flow(pa, game, orderer, -1);
-        return;
-    }
-
-    // UNATTACH: Reconfigure (CR 702.151) — pay the cost to detach this equipment from the creature
-    // it is attached to. Clears the attach link; the continuous-effects pass restores its
-    // creature-ness (a reconfigured permanent isn't a creature only while attached). No menu
-    // prompt exists here — the only interactive read is the mana payment, which machine mode
-    // auto-resolves with zero decisions — so this path stays synchronous (deliberately
-    // unconverted, like the interactive payer itself).
-    if (ability.category == "Unattach") {
-        if (permanent.equipped_to == 0) {
-            game_log("%s is not attached.\n", permanent.name.c_str());
-            return;
-        }
-        ManaValue unattach_cost = effective_activation_mana_cost(ability, controller, orderer);
-        if (!unattach_cost.empty()) {
-            auto mana_snap = snapshot_mana_state(controller, orderer);
-            if (!prompt_mana_payment(controller, unattach_cost, permanent_entity, orderer)) {
-                restore_mana_state(controller, mana_snap, orderer);
-                cur_game.payment_fail_counts[permanent_entity]++;
-                game_log("Payment cancelled.\n");
-                return;
-            }
-        }
-        game_log("%s unattaches.\n", permanent.name.c_str());
-        permanent.equipped_to = 0;
-        game.take_action();
         return;
     }
 
@@ -1691,9 +1632,8 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 // synchronous here; its cancel path fully rewinds (mana restore, untap, fail
 // count) and clears pa, exactly the blocking early-return.
 //
-// Every prompt of the flow (the X ladders, the target selections, the equip
-// creature menu, the secondary sacrifice/return picks, and the ninjutsu return
-// pick) arms with the activated card (pa.source_entity) as the pending-decision
+// Every prompt of the flow (the X ladders, the target selections, and the
+// secondary sacrifice/return picks, including ninjutsu's return) arms with the activated card (pa.source_entity) as the pending-decision
 // source — also for a hand/graveyard-activated ability, whose template
 // ability.source is not yet bound to the card.
 static void run_activation_flow(Game::PendingActivation &pa, Game &game,
@@ -1706,73 +1646,6 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
     bool is_mana_ability = ability_is_mana(ability);
 
     for (;;) switch (pa.step) {
-        case Game::PendingActivation::NINJA_PAY: {
-            // Ninjutsu (CR 702.49e): the source card is in its owner's hand. Pay the ninjutsu
-            // mana cost and return one unblocked attacker the activator controls to its owner's
-            // hand, then put the source card onto the battlefield tapped and attacking the
-            // defender that returned attacker had been attacking. Legality (declare-blockers
-            // step + an unblocked attacker exists + mana affordable) is gated in
-            // determine_legal_actions. The candidate list is frozen BEFORE the payment (the
-            // blocking flow computed it there), the pick suspends after.
-            std::vector<Entity> choices = unblocked_attackers(orderer->mEntities, controller);
-            if (choices.empty()) {
-                game_log("No unblocked attacker to return for ninjutsu.\n");
-                pa = Game::PendingActivation{};
-                return;
-            }
-
-            // Pay the ninjutsu mana cost first (cancellable). The return-an-attacker cost
-            // cannot fail once an unblocked attacker exists, so it is paid after the mana
-            // commit.
-            ManaValue cost = effective_activation_mana_cost(ability, controller, orderer);
-            if (!cost.empty()) {
-                auto mana_snap = snapshot_mana_state(controller, orderer);
-                if (!prompt_mana_payment(controller, cost, permanent_entity, orderer)) {
-                    restore_mana_state(controller, mana_snap, orderer);
-                    cur_game.payment_fail_counts[permanent_entity]++;
-                    game_log("Payment cancelled.\n");
-                    pa = Game::PendingActivation{};
-                    return;
-                }
-            }
-            pa.frozen_choices = std::move(choices);
-            pa.step = Game::PendingActivation::NINJA_RETURN;
-            break;
-        }
-
-        case Game::PendingActivation::NINJA_RETURN: {
-            // Return the chosen unblocked attacker to its owner's hand (the ninjutsu cost).
-            // The menu labels are built at arm time (the blocking prompt built them after
-            // the payment) from the pre-payment candidate list.
-            if (resume_choice < 0) {
-                arm_flow_query(game, PendingQuery::ACTIVATION,
-                               permanent_choice_menu(pa.frozen_choices, "Return ",
-                                                     " to hand (ninjutsu)",
-                                                     ActionCategory::RETURN_PERMANENT),
-                               controller, permanent_entity);
-                return;
-            }
-            Entity returned = pa.frozen_choices[static_cast<size_t>(resume_choice)];
-            resume_choice = -1;
-            Entity attack_target = global_coordinator.GetComponent<Creature>(returned).attack_target;
-            std::string ret_name = entity_name(returned);
-            orderer->add_to_zone(false, returned, Zone::HAND);
-            game_log("%s returns %s to hand (ninjutsu)\n", player_name(controller).c_str(),
-                     ret_name.c_str());
-
-            // Put the ninja onto the battlefield from hand, tapped and attacking the same
-            // defender.
-            cur_game.pending_enters_tapped.insert(permanent_entity);
-            if (attack_target != 0) cur_game.pending_enters_attacking[permanent_entity] = attack_target;
-            std::string ninja_name = entity_name(permanent_entity);
-            orderer->add_to_zone(false, permanent_entity, Zone::BATTLEFIELD);
-            game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",
-                     player_name(controller).c_str(), ninja_name.c_str());
-            game.take_action();
-            pa = Game::PendingActivation{};
-            return;
-        }
-
         case Game::PendingActivation::ZONE_TARGET: {
             // Select targets before paying costs
             if (pa.stack_ab.valid_tgts != "N_A") {
@@ -1803,75 +1676,6 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // Pay remaining costs (life, sacrifice, return-to-hand, discard)
             pa.step = Game::PendingActivation::SECONDARY_PRE;
             break;
-        }
-
-        case Game::PendingActivation::EQUIP_PAY: {
-            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-            // Present list of creatures controlled by the equipment owner — frozen BEFORE the
-            // cost is paid (the blocking flow built the menu here, then prompted with that
-            // exact menu after the payment; a payment made by sacrificing a source for mana
-            // must not change the offered menu or its P/T labels).
-            std::vector<LegalAction> equip_targets;
-            for (auto e : equip_candidates(permanent_entity, controller, orderer->mEntities)) {
-                std::string ename = global_coordinator.GetComponent<Permanent>(e).name;
-                auto &ecr = global_coordinator.GetComponent<Creature>(e);
-                LegalAction la(
-                    PASS_PRIORITY, e, ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
-                la.category = ActionCategory::SELECT_TARGET;
-                equip_targets.push_back(la);
-            }
-            if (equip_targets.empty()) {
-                game_log("No valid creatures to equip.\n");
-                pa = Game::PendingActivation{};
-                return;
-            }
-            // Pay equip cost
-            if (ability.tap_cost) permanent.is_tapped = true;
-            ManaValue equip_cost = effective_activation_mana_cost(ability, controller, orderer);
-            if (!equip_cost.empty()) {
-                auto mana_snap = snapshot_mana_state(controller, orderer);
-                if (!prompt_mana_payment(controller, equip_cost, permanent_entity, orderer)) {
-                    restore_mana_state(controller, mana_snap, orderer);
-                    if (ability.tap_cost) permanent.is_tapped = false;
-                    cur_game.payment_fail_counts[permanent_entity]++;
-                    game_log("Payment cancelled.\n");
-                    pa = Game::PendingActivation{};
-                    return;
-                }
-            }
-            pa.frozen_menu = std::move(equip_targets);
-            pa.step = Game::PendingActivation::EQUIP_TARGET;
-            break;
-        }
-
-        case Game::PendingActivation::EQUIP_TARGET: {
-            if (resume_choice < 0) {
-                game_log("Choose creature to equip:\n");
-                arm_flow_query(game, PendingQuery::ACTIVATION,
-                               std::vector<LegalAction>(pa.frozen_menu), controller,
-                               permanent_entity);
-                return;
-            }
-            Entity target_creature = pa.frozen_menu[static_cast<size_t>(resume_choice)].source_entity;
-            resume_choice = -1;
-            auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-
-            // The creature must still be one this Equipment can equip for its controller (CR
-            // 702.6a / 301.5c); otherwise the Equipment doesn't move (CR 301.5b).
-            if (!is_battlefield_permanent(permanent_entity) ||
-                !is_equip_candidate(permanent_entity, target_creature, controller)) {
-                game_log("%s can't equip %s; it doesn't move.\n", permanent.name.c_str(),
-                         entity_name(target_creature).c_str());
-                game.take_action();
-                pa = Game::PendingActivation{};
-                return;
-            }
-            permanent.equipped_to = target_creature;
-            std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
-            game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
-            game.take_action();
-            pa = Game::PendingActivation{};
-            return;
         }
 
         case Game::PendingActivation::X_LADDER: {
@@ -2084,6 +1888,11 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     if (resume_choice >= 0) {
                         Entity to_ret = choices[static_cast<size_t>(resume_choice)];
                         resume_choice = -1;
+                        // Ninjutsu's ninja attacks what the returned creature was attacking (CR
+                        // 702.49c), read before the return removes it from combat.
+                        if (ability.is_ninjutsu)
+                            pa.stack_ab.ninjutsu_attack_target =
+                                global_coordinator.GetComponent<Creature>(to_ret).attack_target;
                         std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
                         orderer->add_to_zone(false, to_ret, Zone::HAND);
                         game_log("%s returns %s to hand\n", player_name(controller).c_str(),

@@ -54,6 +54,9 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
                              bool sorcery_window, std::shared_ptr<Orderer> orderer);
 static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
                                    int ability_index);
+static void offer_equip_abilities(std::vector<LegalAction> &actions, Entity equipment,
+                                  Zone::Ownership controller, bool sorcery_window,
+                                  std::shared_ptr<Orderer> orderer);
 
 // The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
 // stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
@@ -231,6 +234,46 @@ static LegalAction activate_action(Entity source, const Ability &ab, const std::
     la.category = ActionCategory::ACTIVATE_ABILITY;
     la.option_ordinal = ability_index;
     return la;
+}
+
+// The activated abilities the Equip and Reconfigure keywords represent (CR 702.6a, 702.151a),
+// offered through the shared activation gates. They are not stored on the card, so they carry
+// fixed option ordinals above any stored ability's index (normalizer OPTION_ORDINAL_MAX = 63).
+// Both are sorcery-speed abilities that use the stack: equip ("[Cost]: Attach this permanent to
+// target creature you control", Reconfigure: "another target creature") resolves through
+// effects::attach, which re-checks that the Equipment can still equip the target (CR 301.5c);
+// reconfigure's unattach ("Activate only if this permanent is attached to a creature") resolves
+// through effects::unattach. Equip is offered only while some creature can be equipped (an
+// Equipment that is also a creature, without reconfigure, can equip nothing).
+static void offer_equip_abilities(std::vector<LegalAction> &actions, Entity equipment,
+                                  Zone::Ownership controller, bool sorcery_window,
+                                  std::shared_ptr<Orderer> orderer) {
+    if (!global_coordinator.entity_has_component<CardData>(equipment)) return;
+    const CardData &cd = global_coordinator.GetComponent<CardData>(equipment);
+    if (!cd.is_equipment) return;
+    Ability keyword_ab;
+    keyword_ab.ability_type = Ability::ACTIVATED;
+    keyword_ab.source = equipment;
+    keyword_ab.activation_mana_cost = cd.equip_cost;
+    keyword_ab.sorcery_speed_only = true;
+
+    if (!equip_candidates(equipment, controller, orderer->mEntities).empty()) {
+        Ability equip_ab = keyword_ab;
+        equip_ab.category = "Attach";
+        equip_ab.valid_tgts = "Creature.Other+YouCtrl";
+        if (can_activate_now(equip_ab, equipment, controller, sorcery_window, orderer)) {
+            std::string desc = (cd.is_reconfigure ? "Reconfigure " : "Equip ") + entity_name(equipment);
+            actions.push_back(activate_action(equipment, equip_ab, desc, 32));
+        }
+    }
+    if (cd.is_reconfigure &&
+        global_coordinator.GetComponent<Permanent>(equipment).equipped_to != 0) {
+        Ability unattach_ab = keyword_ab;
+        unattach_ab.category = "Unattach";
+        if (can_activate_now(unattach_ab, equipment, controller, sorcery_window, orderer))
+            actions.push_back(activate_action(equipment, unattach_ab,
+                                              "Unattach " + entity_name(equipment), 33));
+    }
 }
 
 // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
@@ -1033,45 +1076,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
         if (rules_mod::activation_prohibited(entity)) continue;
 
-        // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
-        // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
-        // so synthesise the action here when there is a creature to equip and the cost is payable.
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (cd.is_equipment && sorcery_window) {
-                bool has_creature = !equip_candidates(entity, priority_player, orderer->mEntities).empty();
-                if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
-                    Ability equip_ab;
-                    equip_ab.ability_type = Ability::ACTIVATED;
-                    equip_ab.category = "Equip";
-                    equip_ab.source = entity;
-                    equip_ab.activation_mana_cost = cd.equip_cost;
-                    std::string desc = (cd.is_reconfigure ? "Reconfigure " : "Equip ") + entity_name(entity);
-                    LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
-                    equip_la.category = ActionCategory::ACTIVATE_ABILITY;
-                    // Synthesised activation (no stored Ability): fixed ordinal above
-                    // any plausible ability-list index so it can't collide with the
-                    // per-ability ordinals below (normalizer OPTION_ORDINAL_MAX = 63).
-                    equip_la.option_ordinal = 32;
-                    actions.push_back(equip_la);
-                }
-                // Reconfigure (CR 702.151): while attached, pay the cost to unattach. Sorcery-speed,
-                // same cost as the attach. The unattach makes the permanent a creature again.
-                if (cd.is_reconfigure && permanent.equipped_to != 0 &&
-                    can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
-                    Ability unattach_ab;
-                    unattach_ab.ability_type = Ability::ACTIVATED;
-                    unattach_ab.category = "Unattach";
-                    unattach_ab.source = entity;
-                    unattach_ab.activation_mana_cost = cd.equip_cost;
-                    std::string desc = "Unattach " + entity_name(entity);
-                    LegalAction unattach_la(ACTIVATE_ABILITY, entity, unattach_ab, desc);
-                    unattach_la.category = ActionCategory::ACTIVATE_ABILITY;
-                    unattach_la.option_ordinal = 33;  // synthesised: see equip above
-                    actions.push_back(unattach_la);
-                }
-            }
-        }
+        offer_equip_abilities(actions, entity, priority_player, sorcery_window, orderer);
 
         // ability_index: the ability's stable position in this permanent's ability
         // list, emitted as the action's option_ordinal so the ML observation can
@@ -1114,12 +1119,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ++hand_ability_index;
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
-            // Ninjutsu (CR 702.49e): activatable only during the declare-blockers step, after
-            // blockers are declared, while the activator controls an unblocked attacker.
-            if (ab.is_ninjutsu) {
-                if (game.cur_step != DECLARE_BLOCKERS) continue;
-                if (unblocked_attackers(orderer->mEntities, priority_player).empty()) continue;
-            }
             if (!can_activate_now(ab, card_entity, priority_player, sorcery_window, orderer)) continue;
             std::string desc = ab.is_ninjutsu
                 ? ("Ninjutsu " + card_data.name)

@@ -5,10 +5,9 @@
 
 // Identifies which effect-resolution handler an Ability dispatches to. Mirrors
 // the 32 effect-category strings that Ability::resolve() historically branched
-// on. `None` covers Ability categories that have no resolve-time handler (e.g.
-// "Equip", which is handled at activation time and never reaches resolve), plus
-// any unrecognized string — both fall through to a no-op + subability chaining,
-// matching the legacy if/else chain's behavior for unmatched categories.
+// on. `None` covers any unrecognized category string, which falls through to a
+// no-op + subability chaining, matching the legacy if/else chain's behavior for
+// unmatched categories.
 enum class EffectKind {
     None,
     AddMana,
@@ -80,6 +79,8 @@ enum class EffectKind {
     SetState,
     WarpExile,
     MiracleCast,
+    Unattach,
+    Ninjutsu,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

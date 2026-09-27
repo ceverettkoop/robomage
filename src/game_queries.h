@@ -801,6 +801,13 @@ inline bool is_blocking_creature(Entity e) {
            global_coordinator.GetComponent<Creature>(e).is_blocking;
 }
 
+// True if `e` is an unblocked attacking creature (CR 509.1h): an attacking creature that no
+// creature blocked, from the moment blockers are declared until it is removed from combat or
+// combat ends. Before blockers are declared an attacker is neither blocked nor unblocked. A
+// creature put onto the battlefield attacking after blockers are declared is unblocked. Defined
+// in game_queries.cpp (needs cur_game).
+bool is_unblocked_attacker(Entity e);
+
 // The live battlefield creatures blocking `attacker` (CR 509.1g), in entity order. Shared by the
 // combat-damage step and its damage-assignment prompt so both divide damage among the same set.
 inline std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &entities) {
@@ -809,21 +816,6 @@ inline std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &
         if (is_blocking_creature(b) &&
             global_coordinator.GetComponent<Creature>(b).blocking_target == attacker)
             out.push_back(b);
-    return out;
-}
-
-// Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
-// attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
-// (CR 702.49e) — the offer requires one, and activating returns one to hand.
-inline std::vector<Entity> unblocked_attackers(
-    const std::set<Entity> &entities, Zone::Ownership ctrl) {
-    std::vector<Entity> out;
-    for (auto e : entities) {
-        if (!is_battlefield_permanent(e, ctrl)) continue;
-        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-        auto &cr = global_coordinator.GetComponent<Creature>(e);
-        if (cr.is_attacking && !cr.is_blocked) out.push_back(e);
-    }
     return out;
 }
 

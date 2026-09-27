@@ -530,12 +530,8 @@ struct Game {
             // Where the flow resumes. Steps run in today's exact statement
             // order; steps that never prompt pass through synchronously.
             enum Step {
-                NINJA_PAY,         // ninjutsu mana payment + candidate freeze (sync)
-                NINJA_RETURN,      // ninjutsu return-an-attacker pick
                 ZONE_TARGET,       // hand/graveyard activation: pre-cost target select
                 ZONE_PAY,          // hand/graveyard activation: mana payment (sync)
-                EQUIP_PAY,         // equip: menu freeze + tap + mana payment (sync)
-                EQUIP_TARGET,      // equip: the creature menu (after payment)
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
                 TARGET,            // battlefield pre-cost select_target
@@ -567,14 +563,6 @@ struct Game {
             // TAP_PAY cost). The loyalty-X choice lives only in
             // cur_game.x_paid, exactly like the blocking flow.
             size_t x_activation = 0;
-            // Equip: the creature menu frozen BEFORE the cost is paid (the
-            // blocking flow built it there — paying by sacrificing a source
-            // for mana must not change the offered menu), re-emitted verbatim
-            // at the EQUIP_TARGET arm. Ninjutsu freezes only the candidate
-            // entities (frozen_choices) — its blocking prompt built the menu
-            // labels AFTER payment.
-            std::vector<LegalAction> frozen_menu;
-            std::vector<Entity> frozen_choices;
             // The shared in-flight target pick (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).

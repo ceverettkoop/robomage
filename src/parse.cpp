@@ -854,22 +854,21 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Cycling");
             continue;
         }
-        // K:Ninjutsu:<cost> (CR 702.49) — a hand-activated ability usable only during the
-        // declare-blockers step, after blockers are declared, while you control an unblocked
-        // attacker. Pay <cost> and return that unblocked attacker to its owner's hand, then put
-        // this card from your hand onto the battlefield tapped and attacking. Modeled as a
-        // hand-activated ability flagged is_ninjutsu; process_ninjutsu handles the bespoke cost
-        // (return attacker) and effect (enter tapped + attacking). General over any K:Ninjutsu.
+        // K:Ninjutsu:<cost> (CR 702.49a): "[Cost], Reveal this card from your hand, Return an
+        // unblocked attacking creature you control to its owner's hand: Put this card onto the
+        // battlefield from your hand tapped and attacking." A hand-activated ability whose cost is
+        // the ninjutsu mana plus the return (an ordinary return-to-hand cost over unblocked
+        // attackers), resolved by effects::ninjutsu. It moves its own source (Defined$ Self), so
+        // activating it doesn't consume the card from hand. General over any K:Ninjutsu.
         if (kw_line.rfind("Ninjutsu:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Ninjutsu:"));
             Ability ab;
             ab.ability_type = Ability::ACTIVATED;
             ab.category = "Ninjutsu";
             ab.is_ninjutsu = true;
+            ab.defined_self = true;
             ab.activation_zone = Zone::HAND;
-            // Only the mana portion of the cost is parsed here; the return-an-unblocked-attacker
-            // cost is intrinsic to ninjutsu and paid by process_ninjutsu.
-            parse_activation_cost(cost_str, ab);
+            parse_activation_cost(cost_str + " Return<1/Creature.attacking+unblocked>", ab);
             card.abilities.push_back(ab);
             card.keywords.push_back("Ninjutsu");
             continue;
