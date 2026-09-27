@@ -1967,6 +1967,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
     for (;;) switch (pc.step) {
         case Game::PendingCast::COST: {
+            // A NORMAL play-from-exile grant (Light Up the Stage, warp) casts the card for its
+            // own costs, so it follows the regular branch: kicker, X, hybrid and Phyrexian pips
+            // and additional costs all apply (CR 601.2b, 601.2f).
+            auto grant_it = cur_game.impulse_cast_permission.find(spell_entity);
+            const bool impulse_normal =
+                pc.impulse_cast && grant_it != cur_game.impulse_cast_permission.end() &&
+                grant_it->second.resource == Game::ImpulseCastPermission::NORMAL;
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
             // chosen (601.2c before 601.2g/h; see the deferred_* fields). Paying
             // the sacrifice first leaked information and changed the board before the
@@ -1998,26 +2005,21 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 pc.deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
                 pc.step = Game::PendingCast::GIFT;
 
-            // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
-            // permission, paying its alternative RESOURCE cost (energy or life) instead of any
-            // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
-            // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
-            } else if (pc.impulse_cast) {
+            // CAST FROM EXILE under a play permission, for the cost that replaces its mana cost
+            // (CR 118.9): nothing (FREE: Ugin -11, Dauthi Voidwalker, suspend) or an alternative
+            // resource (ENERGY / LIFE: Amped Raptor's DB$ Play), paid here from the permission's
+            // resolved amount. The permission is consumed as the card is cast. X is 0 for a spell
+            // cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light Up the Stage,
+            // warp) pays the card's own costs, so it takes the regular branch below.
+            } else if (pc.impulse_cast && !impulse_normal) {
                 Entity caster_entity = get_player_entity(caster);
                 auto &player = global_coordinator.GetComponent<Player>(caster_entity);
                 auto it = cur_game.impulse_cast_permission.find(spell_entity);
-                bool normal_play = false;
                 if (it != cur_game.impulse_cast_permission.end()) {
                     const auto &grant = it->second;
                     if (grant.resource == Game::ImpulseCastPermission::FREE) {
-                        // Ugin -11: cast without paying its mana cost (CR 118.9). No cost paid.
                         game_log("%s casts %s without paying its mana cost\n",
                                  player_name(caster).c_str(), card_data.name.c_str());
-                    } else if (grant.resource == Game::ImpulseCastPermission::NORMAL) {
-                        // Light Up the Stage: PLAY the exiled card for its NORMAL cost. Defer the
-                        // full base cost (targets are chosen first, like every other cost); no
-                        // alternative resource is paid.
-                        normal_play = true;
                     } else if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
                         pay_energy(player, grant.amount);
                         game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
@@ -2025,30 +2027,21 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pay_gated_life_cost(player, grant.amount);
                         game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
                     }
-                    // ForgetOnMoved$ Exile / one-shot: the card leaves exile as it's cast, so the
-                    // permission is consumed and can't be reused.
                     cur_game.impulse_cast_permission.erase(it);
                 }
 
                 if (card_data.has_x_cost) cur_game.x_paid = 0;
 
-                if (normal_play) {
-                    // Light Up the Stage: pay the normal mana cost (cost-increase-adjusted).
-                    // X spells played this way resolve with X = 0 (no X prompt on this path).
-                    pc.deferred_mana_cost = effective_base_cost(card_data, caster);
+                // Cost-increase / SetCost-floor statics apply to alternative costs too
+                // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
+                // Trinisphere floor pads it up to its minimum ({3}) and Thalia adds its surcharge
+                // — paid ON TOP of the resource cost (energy/life) that was just paid. Deferred
+                // until after targets like every other cost. Empty (no floor / increase applies)
+                // leaves the cast free of mana.
+                ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+                if (!floor_mana.empty()) {
+                    pc.deferred_mana_cost = floor_mana;
                     pc.deferred_mana_pending = true;
-                } else {
-                    // Cost-increase / SetCost-floor statics apply to alternative costs too
-                    // (CR 118.9d / 601.2f): the impulse/free cast substitutes a {0} mana cost, but
-                    // an active Trinisphere floor pads it up to its minimum ({3}) and Thalia adds
-                    // its surcharge — paid ON TOP of the resource cost (energy/life) that was just
-                    // paid. Deferred until after targets like every other cost. Empty (no floor /
-                    // increase applies) leaves the cast free of mana, exactly as before.
-                    ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
-                    if (!floor_mana.empty()) {
-                        pc.deferred_mana_cost = floor_mana;
-                        pc.deferred_mana_pending = true;
-                    }
                 }
                 pc.step = Game::PendingCast::GIFT;
 
@@ -2058,7 +2051,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 defer_alternate_cost(game, card_data, caster);
                 pc.step = Game::PendingCast::GIFT;
 
-            } else {  // REGULAR COST + DELVE
+            } else {  // REGULAR COST + DELVE (also a NORMAL play-from-exile grant)
+                // A NORMAL grant is consumed as the card is cast (it lapses once the card
+                // leaves exile).
+                if (impulse_normal) cur_game.impulse_cast_permission.erase(spell_entity);
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
                 // caster passed so Affinity for artifacts reduces the generic cost (702.41).
                 pc.cost_to_pay = effective_base_cost(card_data, caster);
