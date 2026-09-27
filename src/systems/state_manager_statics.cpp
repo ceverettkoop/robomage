@@ -2233,8 +2233,11 @@ void StateManager::apply_rules_modifying_effects() {
         if (a.sa()->category != "MustAttack") continue;
         if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
-        cr.must_attack = a.condition_met;
-        a.sa()->applied = a.condition_met;
+        // A creature that lost all abilities (Humility, CR 613.1f) no longer has its
+        // "attacks each combat if able" ability.
+        bool applies = a.condition_met && !a.suppressed;
+        cr.must_attack = applies;
+        a.sa()->applied = applies;
     }
 }
 
