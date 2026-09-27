@@ -380,37 +380,29 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             Zone::ZoneValue tgt_origin = global_coordinator.GetComponent<Zone>(tgt).location;
             std::string tname = entity_name(tgt);
             // A target that is a spell/ability on the stack (Mindbreak Trap: "exile any
-            // number of target spells") is being removed from the stack. Strip its Spell/
-            // Ability components — like effects::counter does — so the stack no longer
-            // treats it as a live object to resolve (CR 701.5a / 702.59c). A standalone
-            // ability entity (no card / CardData) is destroyed after leaving the stack.
-            bool on_stack = global_coordinator.GetComponent<Zone>(tgt).location == Zone::STACK;
-            bool standalone_ability = on_stack &&
-                                      !global_coordinator.entity_has_component<CardData>(tgt) &&
-                                      global_coordinator.entity_has_component<Ability>(tgt);
-            if (on_stack) {
-                if (global_coordinator.entity_has_component<Spell>(tgt))
-                    global_coordinator.RemoveComponent<Spell>(tgt);
-                if (global_coordinator.entity_has_component<Ability>(tgt))
-                    global_coordinator.RemoveComponent<Ability>(tgt);
-            }
-            // Targeted reanimation (Lorehold Charm: graveyard→battlefield). A permanent
-            // entering this way comes under the controller's control (CR 608.2; the spell's
-            // controller is the one returning it from their own graveyard). enters_tapped/
-            // enters_transformed honour the same flags the search/defined paths use.
-            bool transformed_entry = ab.destination == Zone::BATTLEFIELD &&
-                                     ab.origin != Zone::BATTLEFIELD && ab.enters_transformed;
-            if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD &&
-                ab.enters_tapped)
-                cur_game.pending_enters_tapped.insert(tgt);
-            Zone::ZoneValue landed = change_zone_move(orderer, FrameCtx::blocking(), tgt, ab.destination,
-                                                      /*exile_face_down=*/false, transformed_entry);
-            if (landed == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD)
-                global_coordinator.GetComponent<Zone>(tgt).controller = ab.controller;
-            if (standalone_ability) {
-                global_coordinator.DestroyEntity(tgt);
-                game_log("%s is exiled from the stack\n", tname.c_str());
-                continue;
+            // number of target spells") leaves the stack without resolving, through the same
+            // removal a counter uses: a copy of a spell or an ability ceases to exist.
+            Zone::ZoneValue landed;
+            if (tgt_origin == Zone::STACK) {
+                if (!orderer->remove_from_stack(tgt, ab.destination)) {
+                    game_log("%s leaves the stack and ceases to exist\n", tname.c_str());
+                    continue;
+                }
+                landed = global_coordinator.GetComponent<Zone>(tgt).location;
+            } else {
+                // Targeted reanimation (Lorehold Charm: graveyard→battlefield). A permanent
+                // entering this way comes under the controller's control (CR 608.2; the spell's
+                // controller is the one returning it from their own graveyard). enters_tapped/
+                // enters_transformed honour the same flags the search/defined paths use.
+                bool transformed_entry = ab.destination == Zone::BATTLEFIELD &&
+                                         ab.origin != Zone::BATTLEFIELD && ab.enters_transformed;
+                if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD &&
+                    ab.enters_tapped)
+                    cur_game.pending_enters_tapped.insert(tgt);
+                landed = change_zone_move(orderer, FrameCtx::blocking(), tgt, ab.destination,
+                                          /*exile_face_down=*/false, transformed_entry);
+                if (landed == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD)
+                    global_coordinator.GetComponent<Zone>(tgt).controller = ab.controller;
             }
             if (ab.destination == Zone::EXILE && ab.source != 0 &&
                 global_coordinator.entity_has_component<Permanent>(ab.source)) {

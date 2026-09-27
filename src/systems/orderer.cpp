@@ -28,6 +28,7 @@
 #include "../input_logger.h"
 #include "replacement_effects.h"
 #include "../machine_io.h"
+#include "../saga.h"
 #include "../type_constants.h"
 #include "../components/types.h"
 
@@ -231,31 +232,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
-    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
     Zone::ZoneValue origin = target_zone.location;
-    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
-        origin == Zone::EXILE) {
-        size_t departing_pos = target_zone.distance_from_top;
-        Zone::Ownership owner = target_zone.owner;
-        for (auto &&card : mEntities) {
-            if (card == target) continue;
-            auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
-            if (cmp_zone.location != origin) continue;
-            // Library, graveyard, and exile are per-player; stack is shared
-            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
-                cmp_zone.owner != owner)
-                continue;
-            if (cmp_zone.distance_from_top > departing_pos) {
-                cmp_zone.distance_from_top--;
-            }
-        }
-
-        // If a card left the library within the tracked top window, drop it
-        // from the known-top cache and shift the rest up.
-        if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
-            cur_game.known_top_library_remove_pos(owner == Zone::PLAYER_A, static_cast<int>(departing_pos));
-        }
-    }
+    close_zone_gap(target);
 
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
@@ -347,6 +325,60 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
+}
+
+// See declaration in orderer.h.
+void Orderer::close_zone_gap(Entity target) {
+    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
+    const auto &target_zone = global_coordinator.GetComponent<Zone>(target);
+    Zone::ZoneValue origin = target_zone.location;
+    if (origin != Zone::LIBRARY && origin != Zone::STACK && origin != Zone::GRAVEYARD &&
+        origin != Zone::EXILE)
+        return;
+    size_t departing_pos = target_zone.distance_from_top;
+    Zone::Ownership owner = target_zone.owner;
+    for (auto &&card : mEntities) {
+        if (card == target) continue;
+        auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+        if (cmp_zone.location != origin) continue;
+        // Library, graveyard, and exile are per-player; stack is shared
+        if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
+            cmp_zone.owner != owner)
+            continue;
+        if (cmp_zone.distance_from_top > departing_pos) {
+            cmp_zone.distance_from_top--;
+        }
+    }
+
+    // If a card left the library within the tracked top window, drop it
+    // from the known-top cache and shift the rest up.
+    if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
+        cur_game.known_top_library_remove_pos(owner == Zone::PLAYER_A, static_cast<int>(departing_pos));
+    }
+}
+
+// See declaration in orderer.h.
+bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
+    bool is_copy = global_coordinator.entity_has_component<Spell>(target) &&
+                   global_coordinator.GetComponent<Spell>(target).is_copy;
+    bool is_card = global_coordinator.entity_has_component<CardData>(target) && !is_copy;
+    if (spell_cast_with_flashback(target)) destination = Zone::EXILE;
+    if (global_coordinator.entity_has_component<Ability>(target)) {
+        decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(target));
+        global_coordinator.RemoveComponent<Ability>(target);
+    }
+    if (global_coordinator.entity_has_component<Spell>(target))
+        global_coordinator.RemoveComponent<Spell>(target);
+    if (!is_card) {
+        close_zone_gap(target);
+        cur_game.cast_from_hand.erase(target);
+        cur_game.pending_enters_transformed.erase(target);
+        cur_game.pending_aura_target.erase(target);
+        global_coordinator.DestroyEntity(target);
+        return false;
+    }
+    add_to_zone(false, target, destination);
+    return true;
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER

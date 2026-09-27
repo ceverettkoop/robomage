@@ -84,23 +84,6 @@ bool StackManager::aura_spell_target_illegal(Entity spell) {
     return !pending_aura_target_legal(spell, source_controller(spell));
 }
 
-// Take a spell off the stack without resolving it: into its owner's graveyard, or, for a copy
-// of a spell (not a card, CR 707.10a), out of existence.
-void StackManager::remove_unresolved_spell(Entity spell, std::shared_ptr<Orderer> orderer) {
-    bool is_copy = global_coordinator.entity_has_component<Spell>(spell) &&
-                   global_coordinator.GetComponent<Spell>(spell).is_copy;
-    if (global_coordinator.entity_has_component<Spell>(spell))
-        global_coordinator.RemoveComponent<Spell>(spell);
-    if (global_coordinator.entity_has_component<Ability>(spell))
-        global_coordinator.RemoveComponent<Ability>(spell);
-    if (is_copy) {
-        cur_game.pending_aura_target.erase(spell);
-        global_coordinator.DestroyEntity(spell);
-        return;
-    }
-    orderer->add_to_zone(false, spell, Zone::GRAVEYARD);
-}
-
 void StackManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
@@ -164,7 +147,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // from the stack and put into its owner's graveyard.
             game_log("%s doesn't resolve: the object it targets is no longer legal (CR 608.3b)\n",
                      card_data.name.c_str());
-            remove_unresolved_spell(top_entity, orderer);
+            orderer->remove_from_stack(top_entity, Zone::GRAVEYARD);
         } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
             // Capture evoke status before the Spell component (which carries it) is removed;

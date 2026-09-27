@@ -10,7 +10,6 @@
 #include "../ecs/coordinator.h"
 #include "../components/ability.h"
 #include "../game_queries.h"
-#include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 
@@ -142,37 +141,10 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
 
             if (do_counter) {
                 std::string name = entity_name(ab.target);
-                bool is_standalone_ability = !global_coordinator.entity_has_component<Spell>(ab.target) &&
-                                            global_coordinator.entity_has_component<Ability>(ab.target);
-                // A COPY of a spell (CR 707.10c) is not a card: a countered copy ceases to exist
-                // rather than going to a graveyard. Capture before the Spell component is removed.
-                bool target_is_copy = global_coordinator.entity_has_component<Spell>(ab.target) &&
-                                      global_coordinator.GetComponent<Spell>(ab.target).is_copy;
-                // Capture flashback status before the Spell component (which carries it) is removed.
-                bool was_flashback = spell_cast_with_flashback(ab.target);
-                // CR 714.4: if the countered object is a Saga chapter ability, it is leaving the
-                // stack WITHOUT resolving — release the same sacrifice gate the resolve path
-                // releases, so a completed Saga isn't stranded on the battlefield forever. Read it
-                // before the Ability component (which carries is_saga_chapter/source) is removed.
-                if (global_coordinator.entity_has_component<Ability>(ab.target))
-                    decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(ab.target));
-                if (global_coordinator.entity_has_component<Ability>(ab.target))
-                    global_coordinator.RemoveComponent<Ability>(ab.target);
-                if (global_coordinator.entity_has_component<Spell>(ab.target))
-                    global_coordinator.RemoveComponent<Spell>(ab.target);
-                if (is_standalone_ability || target_is_copy) {
-                    // Standalone ability entities (activated/triggered) and copies of spells
-                    // have no card to send to a zone — remove from stack and destroy
-                    // (rule 701.5a / 707.10c).
-                    orderer->add_to_zone(false, ab.target, Zone::EXILE);
-                    global_coordinator.DestroyEntity(ab.target);
-                } else {
-                    // Exile if the counter spell says so (e.g. "counter, then exile")
-                    // or if the countered spell was cast via flashback (it would be
-                    // exiled when it left the stack anyway). Otherwise → graveyard.
-                    bool to_exile = (ab.destination == Zone::EXILE) || was_flashback;
-                    orderer->add_to_zone(false, ab.target, to_exile ? Zone::EXILE : Zone::GRAVEYARD);
-                }
+                // A countered card goes to its owner's graveyard, or to exile when the counter
+                // spell says so ("counter, then exile"); a copy or an ability ceases to exist.
+                orderer->remove_from_stack(ab.target, ab.destination == Zone::EXILE ? Zone::EXILE
+                                                                                   : Zone::GRAVEYARD);
                 game_log("%s is countered\n", name.c_str());
             }
         } else {

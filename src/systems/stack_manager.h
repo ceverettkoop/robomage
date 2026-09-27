@@ -18,7 +18,6 @@ public:
 
 private:
     static bool aura_spell_target_illegal(Entity spell);
-    static void remove_unresolved_spell(Entity spell, std::shared_ptr<Orderer> orderer);
 };
 
 #endif /* STACK_MANAGER_H */

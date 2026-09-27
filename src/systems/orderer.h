@@ -33,6 +33,14 @@ public:
     // an object that was never in that zone. Use for copies/tokens that come into existence on the
     // stack rather than add_to_zone (which models a genuine zone transition).
     void place_created_on_stack(Entity target, Zone::Ownership controller);
+    // Take a spell or ability off the stack without resolving it: countered (CR 701.5a), exiled
+    // from the stack (Mindbreak Trap), or removed as it fails to resolve (CR 608.3b). A card goes
+    // to `destination`, or to exile when it was cast with flashback (CR 702.34a). A copy of a
+    // spell (CR 707.10a) or an activated/triggered ability has no card, so it ceases to exist
+    // without a zone change. A Saga chapter ability leaving this way releases its Saga's
+    // sacrifice gate (CR 714.4). Returns true when a card moved into a zone (its landing zone may
+    // differ from `destination` under a replacement effect).
+    bool remove_from_stack(Entity target, Zone::ZoneValue destination);
     // Create a standalone ability entity and place it on the stack. `ability` must
     // already have source/controller/target populated. Returns the new entity.
     Entity push_ability_onto_stack(const Ability &ability, Zone::Ownership controller);
@@ -98,6 +106,9 @@ public:
                                       Zone::Ownership owner, Zone::ZoneValue zone);
 
 private:
+    // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
+    // leaves, shifting the objects beneath it up one, and drop it from the known-top library cache.
+    void close_zone_gap(Entity target);
     // Draw a single card for `player`, first offering any available dredge
     // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
     // loss if the library is empty.
