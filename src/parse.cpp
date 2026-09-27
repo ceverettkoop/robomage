@@ -2957,10 +2957,27 @@ static std::vector<std::string> find_trigger_lines(const std::string &script) {
 // Returns a default Ability with trigger_on == 0 if the trigger is unrecognised.
 static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name) {
+    // The Execute$ SVar supplies the effect; the trigger metadata parsed from the T: line below is
+    // written directly onto it, so no trigger field has to be carried over by hand.
     Ability ability;
+    auto exec_it = svars.find(param_value(line, "Execute"));
+    if (exec_it != svars.end()) {
+        // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
+        if (exec_it->second.find("ChooseCard") != std::string::npos &&
+            exec_it->second.find("DrawnThisTurn") != std::string::npos)
+            ability.category = "SylvanLibrary";
+        else
+            ability = parse_svar_ability(exec_it->second, Ability::TRIGGERED, svars, card_name);
+    }
     ability.ability_type = Ability::TRIGGERED;
 
-    std::string execute_svar;
+    // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
+    // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
+    // ConditionNotPresent$ Card.Self+escaped) is kept when the line declares none.
+    bool line_intervening_if = false;
+    std::string line_condition_present;
+    std::string line_condition_compare;
+
     bool mode_changes_zone = false;
     bool mode_changes_zone_all = false;
     bool dest_is_battlefield = false;
@@ -3210,10 +3227,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         } else if (key == "IsPresent") {
             // Intervening-if (603.4): "..., if you control a <thing>, ...". Checked both
             // when the trigger would go on the stack and again on resolution.
-            ability.condition_present = value;
-            ability.intervening_if = true;
+            line_condition_present = value;
+            line_intervening_if = true;
         } else if (key == "PresentCompare") {
-            ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+            line_condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
         } else if (key == "CheckSVar") {
             auto it = svars.find(value);
             const std::string svdef = (it != svars.end()) ? it->second : std::string();
@@ -3228,18 +3245,21 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
                 // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
                 // it as the intervening-if condition so the whole trigger fizzles when false.
-                ability.condition_present = (it != svars.end()) ? it->second : value;
-                ability.intervening_if = true;
+                line_condition_present = (it != svars.end()) ? it->second : value;
+                line_intervening_if = true;
             }
         } else if (key == "SVarCompare") {
             // SVarCompare follows CheckSVar on the line; route it to whichever gate CheckSVar set up.
             if (!ability.stored_svar_gate_name.empty())
                 ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
             else
-                ability.condition_compare = value;  // explicit compare for the CheckSVar count gate
-        } else if (key == "Execute") {
-            execute_svar = value;
+                line_condition_compare = value;  // explicit compare for the CheckSVar count gate
         }
+    }
+    if (line_intervening_if) {
+        ability.intervening_if = true;
+        ability.condition_present = line_condition_present;
+        ability.condition_compare = line_condition_compare;
     }
 
     // Map trigger condition to event ID.
@@ -3265,7 +3285,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
         // enters" — the source's own entry must not satisfy it (Kappa Cannoneer's Oracle text
         // reads "another artifact you control"). Exclude the source from this trigger.
-        if (dest_is_battlefield && ability.condition_present == "Card.Self")
+        if (dest_is_battlefield && line_intervening_if && line_condition_present == "Card.Self")
             ability.trigger_self_excluded = true;
     }
 
@@ -3471,75 +3491,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     if (mode_is_always) {
         ability.trigger_state_condition = true;
         ability.trigger_only_self = true;
-    }
-
-    // Resolve effect from Execute$ SVar
-    if (!execute_svar.empty()) {
-        auto it = svars.find(execute_svar);
-        if (it != svars.end()) {
-            // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
-            if (it->second.find("ChooseCard") != std::string::npos &&
-                it->second.find("DrawnThisTurn") != std::string::npos) {
-                ability.category = "SylvanLibrary";
-            } else {
-                Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars, card_name);
-                // Take the effect's full configuration, then restore the trigger
-                // metadata computed above from the T: line. Previously this copied
-                // only a hand-picked subset of effect fields, which silently dropped
-                // Origin$/Destination$/ValidTgts$/TargetMin$/TargetMax$ etc. — e.g.
-                // Endurance's "bottom target player's graveyard into their library"
-                // became a "dump the whole library onto the battlefield", spawning a
-                // landfall trigger storm.
-                effect.ability_type                             = ability.ability_type;
-                effect.trigger_on                               = ability.trigger_on;
-                effect.trigger_on_extra                         = ability.trigger_on_extra;
-                effect.trigger_static_offstack                  = ability.trigger_static_offstack;
-                effect.stored_svar_gate_name                    = ability.stored_svar_gate_name;
-                effect.stored_svar_gate_compare                 = ability.stored_svar_gate_compare;
-                effect.trigger_zone_origin                      = ability.trigger_zone_origin;
-                effect.trigger_zone_destination                 = ability.trigger_zone_destination;
-                effect.trigger_valid_card                       = ability.trigger_valid_card;
-                effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
-                effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
-                effect.trigger_valid_card_untapped              = ability.trigger_valid_card_untapped;
-                effect.trigger_batch_zone_all                   = ability.trigger_batch_zone_all;
-                effect.trigger_optional                         = ability.trigger_optional;
-                effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
-                effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
-                effect.trigger_draw_number_eq                   = ability.trigger_draw_number_eq;
-                effect.trigger_attacker_opp_ctrl                = ability.trigger_attacker_opp_ctrl;
-                effect.trigger_attacked_defender_you            = ability.trigger_attacked_defender_you;
-                effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
-                effect.trigger_valid_player_is_opponent         = ability.trigger_valid_player_is_opponent;
-                effect.trigger_only_self                        = ability.trigger_only_self;
-                effect.trigger_self_excluded                    = ability.trigger_self_excluded;
-                effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
-                effect.trigger_spell_count_noncreature          = ability.trigger_spell_count_noncreature;
-                effect.trigger_valid_card_non_creature          = ability.trigger_valid_card_non_creature;
-                effect.trigger_kicked_index                     = ability.trigger_kicked_index;
-                effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
-                effect.trigger_cmc_op                           = ability.trigger_cmc_op;
-                effect.trigger_mana_spent_op                    = ability.trigger_mana_spent_op;
-                effect.trigger_mana_spent_val                   = ability.trigger_mana_spent_val;
-                effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
-                effect.trigger_state_condition                  = ability.trigger_state_condition;
-                effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
-                effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;
-                effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
-                effect.trigger_damage_source_youctrl            = ability.trigger_damage_source_youctrl;
-                // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
-                // it onto the resolved ability so it is re-checked at resolution. OR (don't
-                // clobber) any intervening-if the Execute SVar itself declared, e.g. Uro's
-                // TrigSac ConditionNotPresent$ Card.Self+escaped, which sets effect.intervening_if
-                // (and condition_present/condition_negate) during SVar parse.
-                effect.intervening_if                           = effect.intervening_if || ability.intervening_if;
-                if (ability.intervening_if) {
-                    effect.condition_present = ability.condition_present;
-                    effect.condition_compare = ability.condition_compare;
-                }
-                ability = effect;
-            }
-        }
     }
 
     return ability;
