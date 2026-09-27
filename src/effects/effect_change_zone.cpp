@@ -12,6 +12,7 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/spell.h"
+#include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
@@ -146,6 +147,13 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
 // exiled card, so each card carries its own origin even when a host exiles several.
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin) {
     if (host == 0 || card == 0) return;
+    // Only a card that is now in exile is linked: a token that left the battlefield ceases to
+    // exist (CR 111.7, 704.5d) and can't return (111.8), and a move a replacement diverted exiled
+    // nothing.
+    if (global_coordinator.entity_has_component<Token>(card) ||
+        !global_coordinator.entity_has_component<Zone>(card) ||
+        global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE)
+        return;
     // Track the exiled card on the host's Permanent (snapshotted into last-known info when the
     // host leaves; also the channel Keen-Eyed Curator-style "cards exiled with this" effects read).
     if (global_coordinator.entity_has_component<Permanent>(host))
@@ -761,12 +769,9 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // exile). The searched cards are public knowledge there (the hand was revealed by the parent
     // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
     // is shown even into a hidden destination and recorded in the belief state.
-    if (ab.chooser_is_controller) {
-        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-        reveal = true;
-    } else {
-        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
-    }
+    const Zone::Ownership chooser = ab.chooser_is_controller ? ab.controller : owner;
+    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    if (ab.chooser_is_controller) reveal = true;
 
     // The chain's targeted CARD, for a ChangeType `targetedBy` filter alternative (Cloak and
     // Dagger, Entwined: the DBPump-chosen creature). A player-entity target names the searched
@@ -809,14 +814,14 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
             }
             // Duration$ UntilHostLeavesPlay on a search-based exile (Cloak and Dagger,
-            // Entwined): register the linked return, like the targeted branch above.
+            // Entwined): register the linked return (which also records exiled_with), like the
+            // targeted branch above. Otherwise record the exiled card against the source's
+            // Permanent (the "cards exiled with this" association a Saga reads for its later
+            // chapters — The Creation of Avacyn's Defined$ ExiledWith).
             if (ab.duration_until_host_leaves && landed == Zone::EXILE)
                 register_exile_until_host_leaves(ab.source, chosen, chosen_origin);
-            // Record the exiled card against the source's Permanent (the "cards exiled with this"
-            // association a Saga reads for its later chapters — The Creation of Avacyn's Defined$
-            // ExiledWith), mirroring the targeted-exile branch above.
-            if (landed == Zone::EXILE && ab.source != 0 &&
-                global_coordinator.entity_has_component<Permanent>(ab.source))
+            else if (landed == Zone::EXILE && ab.source != 0 &&
+                     global_coordinator.entity_has_component<Permanent>(ab.source))
                 global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(chosen);
             // The move above (via change_zone_move → add_to_zone's exile_face_down param) already
             // stamped Zone::is_face_down for a face-down exile; this just mirrors the condition for
@@ -831,26 +836,26 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 // A replacement effect diverted the move (Containment Priest → exile,
                 // Grafdigger's Cage → prevented) and already logged its reason; emit nothing.
             } else if (face_down) {
-                // A face-down exile (CR 708.4): the searcher knows the card; the opponent sees only
+                // A face-down exile (CR 708.4): the chooser knows the card; the opponent sees only
                 // that a card was exiled face down. Report it privately, not as public knowledge.
-                game_log_private(owner, "%s exiles %s face down\n", player_name(owner).c_str(),
+                game_log_private(chooser, "%s exiles %s face down\n", player_name(chooser).c_str(),
                                  chosen_name.c_str());
-                game_log_redacted(owner, "%s exiles a card face down\n", player_name(owner).c_str());
+                game_log_redacted(chooser, "%s exiles a card face down\n", player_name(chooser).c_str());
             } else if (dest_public) {
-                game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_name.c_str(), dest_str);
+                game_log("%s puts %s to %s\n", player_name(chooser).c_str(), chosen_name.c_str(), dest_str);
             } else if (reveal) {
                 // Hidden destination, but the card was revealed — it's public knowledge.
                 // The orderer reveal hook only fires for public zones, so mark it here.
                 mark_card_revealed(chosen, owner);
-                game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_name.c_str(),
+                game_log("%s reveals %s and puts it to %s\n", player_name(chooser).c_str(), chosen_name.c_str(),
                     dest_str);
             } else {
                 game_log_private(
-                    owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_name.c_str(), dest_str);
-                game_log_redacted(owner, "%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
+                    chooser, "%s puts %s to %s\n", player_name(chooser).c_str(), chosen_name.c_str(), dest_str);
+                game_log_redacted(chooser, "%s puts a card to %s\n", player_name(chooser).c_str(), dest_str);
             }
         } else {
-            game_log("%s fails to find\n", player_name(owner).c_str());
+            game_log("%s fails to find\n", player_name(chooser).c_str());
             break;
         }
     }
