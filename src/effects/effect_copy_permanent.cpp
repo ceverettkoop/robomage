@@ -19,30 +19,29 @@ extern Game cur_game;
 
 namespace effects {
 
-// Builds the Token characteristics for a copy of permanent `src`. A token source carries
-// its own Token component (the cleanest copyable snapshot, 707.2); a nontoken permanent is
-// reconstructed from its CardData + Creature so the copy gets the printed (not pumped /
-// countered) P/T and its keywords/types.
+// Builds the Token characteristics for a copy of permanent `src` from its copiable values
+// (CR 707.2): a token source's own Token component; a nontoken permanent's printed card, on the
+// face it shows (CR 712.8e) — name, types, colors, mana value, P/T, keywords, and its triggered,
+// activated and static abilities. Counters, pumps and type- or ability-changing effects are not
+// copiable, so the live Permanent / Creature state is not read.
 static Token copyable_token_of(Entity src) {
     if (global_coordinator.entity_has_component<Token>(src))
         return global_coordinator.GetComponent<Token>(src);
     Token tok;
-    if (global_coordinator.entity_has_component<Permanent>(src)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(src);
-        tok.name = perm.name;
-        tok.types = perm.types;
-    }
-    if (global_coordinator.entity_has_component<CardData>(src)) {
-        auto &cd = global_coordinator.GetComponent<CardData>(src);
-        if (tok.name.empty()) tok.name = cd.name;
-        tok.keywords = cd.keywords;
-    }
-    if (global_coordinator.entity_has_component<Creature>(src)) {
-        auto &cr = global_coordinator.GetComponent<Creature>(src);
-        tok.power = static_cast<uint32_t>(cr.base_power < 0 ? 0 : cr.base_power);
-        tok.toughness = static_cast<uint32_t>(cr.base_toughness < 0 ? 0 : cr.base_toughness);
-        if (tok.keywords.empty()) tok.keywords = cr.keywords;
-    }
+    if (!global_coordinator.entity_has_component<CardData>(src)) return tok;
+    const CardData &card = global_coordinator.GetComponent<CardData>(src);
+    const CardData &face = active_face(src, card);
+    bool transformed = global_coordinator.entity_has_component<Permanent>(src) &&
+                       global_coordinator.GetComponent<Permanent>(src).transformed;
+    tok.name = face.name;
+    tok.types = face.types;
+    tok.explicit_colors = card_colors(face);
+    tok.mana_value = card_mana_value(mana_value_face(card, transformed));
+    tok.power = face.power;
+    tok.toughness = face.toughness;
+    tok.keywords = face.keywords;
+    tok.abilities = face.abilities;
+    tok.static_abilities = face.static_abilities;
     return tok;
 }
 
@@ -56,7 +55,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     if (global_coordinator.entity_has_component<Permanent>(ab.source))
         ctrl = global_coordinator.GetComponent<Permanent>(ab.source).controller;
 
-    // Offspring (CR 702.171c): "create a 1/1 token that's a copy of" the source creature.
+    // Offspring (CR 702.175a): "create a token that's a copy of it, except it's 1/1."
     // Copy the source permanent itself, then override the copy's P/T to 1/1.
     if (ab.is_offspring_token) {
         Token tok = copyable_token_of(ab.source);

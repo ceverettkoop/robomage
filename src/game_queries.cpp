@@ -507,14 +507,16 @@ CharView card_view(Entity e, const CardData &cd) {
     return v;
 }
 
-// Mana value of a permanent (CR 112.7), read from its card: a transformed NONMODAL permanent keeps
-// the front face's (CR 712.8e — Insectile Aberration is MV 1 from Delver's cost), but a face-up
-// MODAL back has entirely its own characteristics (CR 712.8d), so Witch-Blessed Meadow in play is
-// MV 0, not the front spell's 4. A token (no card) is MV 0.
+// Mana value of a permanent (CR 112.7), read from the face mana_value_face picks. A token (no
+// card) has the mana value it copied (Token::mana_value, CR 707.2), 0 for a scripted token.
 void set_permanent_mana_value(CharView &v, Entity e, bool transformed) {
-    if (!global_coordinator.entity_has_component<CardData>(e)) return;
+    if (!global_coordinator.entity_has_component<CardData>(e)) {
+        if (global_coordinator.entity_has_component<Token>(e))
+            v.cmc = global_coordinator.GetComponent<Token>(e).mana_value;
+        return;
+    }
     const auto &cd = global_coordinator.GetComponent<CardData>(e);
-    const CardData &mv_face = (cd.is_modal_dfc && transformed && cd.backside) ? *cd.backside : cd;
+    const CardData &mv_face = mana_value_face(cd, transformed);
     v.cmc = card_mana_value(mv_face);
     v.has_x_cost = mv_face.has_x_cost;
 }

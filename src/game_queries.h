@@ -129,6 +129,14 @@ inline int object_mana_value(Entity e, const CardData &cd) {
     return mv;
 }
 
+// The face whose mana cost gives a permanent its mana value (CR 112.7): a transformed NONMODAL
+// permanent keeps the front face's (CR 712.8e — Insectile Aberration is MV 1 from Delver's cost),
+// but a face-up MODAL back has entirely its own characteristics (CR 712.8d), so Witch-Blessed
+// Meadow in play is MV 0, not the front spell's 4.
+inline const CardData &mana_value_face(const CardData &cd, bool transformed) {
+    return (cd.is_modal_dfc && transformed && cd.backside) ? *cd.backside : cd;
+}
+
 // Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
 // Blast: "target blue permanent", CR 115.1) against an already-resolved color set. Sharing the
 // color set (rather than re-reading printed colors) is what lets battlefield/last-known callers

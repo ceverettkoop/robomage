@@ -33,6 +33,9 @@ struct Token {
     // — a token has no mana cost, so its color comes solely from this indicator. Mirrors
     // CardData::explicit_colors so colorlessness is computed the same way for tokens and cards.
     std::set<Colors> explicit_colors;
+    // Mana value of the mana cost a token copy of a card copied (CR 707.2, 202.3); a scripted
+    // token has no mana cost, so 0.
+    int mana_value = 0;
 };
 
 // Attach the Permanent + Creature + Damage components a token needs on the battlefield,
