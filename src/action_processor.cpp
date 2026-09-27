@@ -83,8 +83,8 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
                                      std::shared_ptr<Orderer> orderer);
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
                                       const std::vector<Entity> &targets);
-static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
-                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer);
+static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
+static std::vector<Entity> chosen_targets_of(Entity targeting_entity);
 static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
                                                   std::shared_ptr<Orderer> orderer);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
@@ -1400,8 +1400,10 @@ void announce_spell_targets(Ability &ability, std::shared_ptr<Orderer> orderer,
 // battlefield permanent with a Ward cost, controlled by an opponent of the targeting object's
 // controller, push a Ward trigger onto the stack ABOVE the targeting object (so it resolves
 // first). The Ward trigger is a Counter ability whose unless_generic_cost is the ward cost —
-// reusing the existing "counter unless pay {N}" resolution. A permanent targeted multiple
-// times (one spell, several targets) fires Ward once per time it became a target.
+// reusing the existing "counter unless pay {N}" resolution. `targets` holds each object the
+// spell/ability targets once (chosen_targets_of), so a permanent chosen by several of its
+// "target" instances (two modes, a mode and a sub-ability) became its target once and fires
+// each of its Ward abilities once.
 // Collect every Ward ability a permanent currently HAS (CR 702.21), honoring ward that is
 // granted by a continuous effect (equipment/aura statics, Pump grants, keyword counters), not
 // just the printed ward. Two storage forms, kept distinct so they are not double-counted:
@@ -1488,8 +1490,7 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
 // these on the next SBA pass, matches each permanent's BecomesTarget trigger (ValidTarget$/
 // ValidSource$ filters), and places the resulting trigger ABOVE the still-resolving spell so it
 // resolves first. General: any becomes-target trigger reuses this; not special-cased to one card.
-// A permanent targeted multiple times by one spell fires its trigger once per time it became a
-// target (one event per (object, target) pair, matching the Ward "once per target" rule).
+// One event per (targeting object, targeted permanent) pair — `targets` is de-duplicated.
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
                                       const std::vector<Entity> &targets) {
     Entity ctrl_entity = get_player_entity(controller);
@@ -1506,14 +1507,40 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
     }
 }
 
-// Shared post-targeting hook point: once a targeting spell/ability entity is on the stack,
-// fire the Ward triggers (CR 702.21) and BECAME_TARGET events (CR 603.2c) for its chosen
-// targets. No-op for a non-targeting ability (ValidTgts$ absent → "N_A").
-static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
-                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer) {
-    if (targeting_ab.valid_tgts == "N_A") return;
-    std::vector<Entity> tgts = targeting_ab.targets.empty()
-        ? std::vector<Entity>{targeting_ab.target} : targeting_ab.targets;
+// Append the targets chosen for one targeting instance of `ab` (CR 115.1) — the ability itself
+// when it targets, every chosen mode (CR 700.2), and every chained sub-ability — to `out`,
+// skipping an object already listed. A non-targeting ability (ValidTgts$ absent, "N_A") adds
+// nothing of its own even if its `target` field carries a bound reference.
+static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
+    if (ab.valid_tgts != "N_A") {
+        std::vector<Entity> mine = ab.targets.empty() ? std::vector<Entity>{ab.target} : ab.targets;
+        for (Entity t : mine)
+            if (t != 0 && std::find(out.begin(), out.end(), t) == out.end()) out.push_back(t);
+    }
+    for (int ci : ab.charm_chosen)
+        if (ci >= 0 && static_cast<size_t>(ci) < ab.charm_choices.size())
+            append_chosen_targets(ab.charm_choices[static_cast<size_t>(ci)], out);
+    for (const Ability &sub : ab.subabilities) append_chosen_targets(sub, out);
+}
+
+// Every object or player the stack object `targeting_entity` targets, each listed once: the
+// targets of its Ability (all modes and sub-abilities), and — for an Aura spell — the object
+// its enchant ability targets (CR 115.1b, recorded in Game::pending_aura_target at cast).
+static std::vector<Entity> chosen_targets_of(Entity targeting_entity) {
+    std::vector<Entity> out;
+    if (global_coordinator.entity_has_component<Ability>(targeting_entity))
+        append_chosen_targets(global_coordinator.GetComponent<Ability>(targeting_entity), out);
+    auto pat = cur_game.pending_aura_target.find(targeting_entity);
+    if (pat != cur_game.pending_aura_target.end() && pat->second.target != 0 &&
+        std::find(out.begin(), out.end(), pat->second.target) == out.end())
+        out.push_back(pat->second.target);
+    return out;
+}
+
+void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                          std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> tgts = chosen_targets_of(targeting_entity);
+    if (tgts.empty()) return;
     trigger_ward_for_targets(targeting_entity, controller, tgts, orderer);
     fire_became_target_events(targeting_entity, controller, tgts);
 }
@@ -2087,7 +2114,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 // abilities too — CR 702.21b triggers on ANY spell or ability an opponent
                 // controls that targets the warded permanent. (Graveyard/non-battlefield
                 // targets are filtered inside the hooks.)
-                fire_targeting_hooks(ability_stack_entity, controller, pa.stack_ab, orderer);
+                fire_targeting_hooks(ability_stack_entity, controller, orderer);
 
                 auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
                 const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
@@ -2126,7 +2153,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
             // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
             // ability sources for BecomesTarget.
-            fire_targeting_hooks(ability_stack_entity, controller, pa.stack_ab, orderer);
+            fire_targeting_hooks(ability_stack_entity, controller, orderer);
 
             if (pa.stack_ab.target != 0) {
                 std::string tgt_names = chosen_targets_display(pa.stack_ab);
@@ -3363,13 +3390,11 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
 
             // Ward (702.21): an opponent's permanent this spell targets may counter it. The
             // spell is already on the stack, so the Ward trigger pushed here lands above it and
-            // resolves first. Read the chosen target(s) off the spell's Ability component.
-            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
-                auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
-                // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
-                // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
-                fire_targeting_hooks(spell_entity, caster, spell_ab, orderer);
-            }
+            // resolves first. Mode$ BecomesTarget triggers (Reality Smasher): a targeted
+            // permanent whose becomes-target trigger matches fires it above this spell (CR
+            // 603.2c/603.3). Every target counts — each chosen mode's, each sub-ability's and an
+            // Aura's enchant target (CR 115.1a/b, 601.2c).
+            fire_targeting_hooks(spell_entity, caster, orderer);
 
             // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
             // its replicate cost." The replicate count was recorded on the Spell as the cost

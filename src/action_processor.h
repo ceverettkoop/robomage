@@ -129,6 +129,16 @@ void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
 void copy_spell_begin(CopySpellRT& rt, Entity original, int count, Zone::Ownership controller);
 TargetStatus run_copy_spell(CopySpellRT& rt, TargetAsker& asker, std::shared_ptr<Orderer> orderer);
 
+// The single "targets were chosen" hook (CR 601.2c / 602.2b / 603.3d / 707.10): call it once
+// the stack object `targeting_entity` (a spell, a copy of a spell, or an activated or triggered
+// ability, controlled by `controller`) is on the stack with all of its targets chosen. Every
+// object it targets — through its own "target", any chosen mode, any chained sub-ability, or an
+// Aura spell's enchant ability (CR 115.1b) — becomes its target once: Ward triggers go on the
+// stack above it (CR 702.21a) and a BECAME_TARGET event fires for each targeted permanent
+// (Mode$ BecomesTarget, CR 603.2c). No-op for an object with no targets.
+void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                          std::shared_ptr<Orderer> orderer);
+
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,
 // unless ability.condition_on_remembered is set, in which case it counts the remembered

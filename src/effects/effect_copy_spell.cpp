@@ -198,9 +198,13 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // first) without firing a zone-change event/replacement it never earned.
         orderer->place_created_on_stack(rt.cur_copy, controller);
         game_log("%s copies %s\n", player_name(controller).c_str(), orig_card.name.c_str());
+        rt.placed.push_back(rt.cur_copy);
         rt.cur_copy = 0;
         rt.remaining--;
     }
+    // Each copy's targets became its targets as it was put on the stack (CR 707.10); the Ward
+    // and becomes-target abilities that triggered meanwhile go on the stack above the copies.
+    for (Entity copy : rt.placed) fire_targeting_hooks(copy, controller, orderer);
     rt = CopySpellRT{};
     return TargetStatus::DONE;
 }

@@ -211,6 +211,8 @@ struct CopySpellRT {
     size_t sub_idx = 0;       // next sub-ability to retarget (phase 1)
     size_t mode_pos = 0;      // next work.charm_chosen position to retarget (phase 2)
     TargetSelectRT tsel;      // the in-flight pick (member field per the Batch 4 finding)
+    std::vector<Entity> placed;   // copies already on the stack; their targeting hooks (Ward,
+                                  // becomes-target) fire once every copy is made (CR 603.3b)
 };
 // ── Batch 14: resolution-time draws (effects::draw) ─────────────────────────
 // The drawing player, the resolved draw count (a dynamic NumCards$ is
@@ -286,6 +288,8 @@ struct TriggerPlacementRT {
     bool saved_priority = false;   // player_a_has_priority to restore at completion
     bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
     TargetSelectRT tsel;           // the front trigger's in-flight target selection
+    std::vector<Entity> placed;    // abilities already put on the stack by this placement; their
+                                   // targeting hooks (Ward, becomes-target) fire once it completes
 };
 
 // One level of the persisted resolve() continuation: the ROOT is the stack

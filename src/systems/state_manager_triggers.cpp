@@ -1132,6 +1132,7 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     tp.target_in_flight = false;
     tp.tsel = TargetSelectRT{};
     tp.queue.clear();
+    tp.placed.clear();
     for (Zone::Ownership owner : apnap)
         for (const auto &pt : pending)
             if (pt.controller == owner) tp.queue.push_back(pt);
@@ -1247,10 +1248,17 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                 tp.target_in_flight = false;
             }
         }
-        orderer->push_ability_onto_stack(pt.ab, pt.controller);
+        tp.placed.push_back(orderer->push_ability_onto_stack(pt.ab, pt.controller));
         game_log("%s\n", pt.log_line.c_str());
         tp.queue.erase(tp.queue.begin());
     }
+
+    // The placed abilities' targets became their targets as each went on the stack (CR 603.3d);
+    // the Ward and becomes-target abilities that triggered meanwhile are put on the stack after
+    // this placement, above every ability it placed (CR 603.3b).
+    for (Entity placed : tp.placed)
+        fire_targeting_hooks(placed, global_coordinator.GetComponent<Ability>(placed).controller,
+                             orderer);
 
     // Placement complete: restore the pre-placement priority seat.
     cur_game.player_a_has_priority = tp.saved_priority;
