@@ -1413,13 +1413,17 @@ void announce_spell_targets(Ability &ability, std::shared_ptr<Orderer> orderer,
 //     "Ward:PayLife<N>" (with a colon and cost arg) onto the effective keyword list — never
 //     the bare "Ward".
 // We therefore take the printed instance from ward_cost, and every granted instance from a
-// "Ward:..." keyword string, deduping identical granted copies so a single granted Ward:1 fires
-// exactly once. Distinct ward costs (e.g. printed Ward 2 plus granted Ward 1) each yield their
-// own instance and each trigger, per CR 702.21h.
+// "Ward:..." keyword string. Each instance functions independently (CR 113.2c), so two
+// Lavaspur Boots on one creature give two Ward {1} triggers; the per-pass keyword rebuild lists
+// each static grant once per granting source. A permanent whose abilities are removed in layer 6
+// (Humility, CR 613.1f — Permanent::abilities_removed) has no printed ward; the rebuilt keyword
+// list already omits the grants the removal erased.
 static std::vector<WardInstance> collect_ward_instances(Entity e) {
     std::vector<WardInstance> wards;
+    bool abilities_removed = global_coordinator.entity_has_component<Permanent>(e) &&
+                             global_coordinator.GetComponent<Permanent>(e).abilities_removed;
     // Printed ward.
-    if (global_coordinator.entity_has_component<CardData>(e)) {
+    if (!abilities_removed && global_coordinator.entity_has_component<CardData>(e)) {
         const auto &cd = global_coordinator.GetComponent<CardData>(e);
         if (cd.ward_cost > 0) wards.push_back({cd.ward_cost, cd.ward_is_life});
     }
@@ -1441,11 +1445,7 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
             // cost, "Ward:PayLife<N>" a life payment (Hexing Squelcher's grant).
             WardInstance inst{1, false};
             parse_ward_cost(kw.substr(5), inst.cost, inst.is_life);
-            // Dedupe identical granted copies (same source granting Ward:1 once must fire once).
-            bool dup = false;
-            for (const auto &w : wards)
-                if (w.cost == inst.cost && w.is_life == inst.is_life) { dup = true; break; }
-            if (!dup) wards.push_back(inst);
+            wards.push_back(inst);
         }
     }
     return wards;
@@ -1459,7 +1459,6 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         if (tgt == 0) continue;
         // The Ward permanent must be controlled by an opponent of the targeting player.
         if (!is_battlefield_permanent(tgt, opp)) continue;
-        if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
 
         std::vector<WardInstance> wards = collect_ward_instances(tgt);
         std::string nm = entity_name(tgt);
