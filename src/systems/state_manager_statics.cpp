@@ -1193,26 +1193,24 @@ static Ability keyword_triggered_ability(const std::string &keyword);
 
 void StateManager::apply_keyword_abilities(Entity entity) {
     auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-    // The keyword triggers this permanent should have right now: one per distinct keyword it
-    // currently has (permanent_keywords, after the layer pass). A keyword that went away — a face
-    // transformed, an effect removed or stopped granting it — takes its triggered ability with it.
-    std::vector<std::string> kws;
-    for (const auto &kw : permanent_keywords(entity)) {
-        if (keyword_triggered_ability(kw).trigger_on == 0) continue;
-        if (std::find(kws.begin(), kws.end(), kw) == kws.end()) kws.push_back(kw);
-    }
+    // The keyword triggers this permanent should have right now: one per instance of each
+    // triggered keyword it currently has (permanent_keywords, after the layer pass; each instance
+    // triggers separately, CR 702.108b / 113.2c). A keyword that went away — a face transformed,
+    // an effect removed or stopped granting it — takes its triggered ability with it.
+    std::vector<std::string> wanted;
+    for (const auto &kw : permanent_keywords(entity))
+        if (keyword_triggered_ability(kw).trigger_on != 0) wanted.push_back(kw);
     perm_abilities.erase(
         std::remove_if(perm_abilities.begin(), perm_abilities.end(),
                        [&](const Ability &ab) {
-                           return !ab.derived_from_keyword.empty() &&
-                                  std::find(kws.begin(), kws.end(), ab.derived_from_keyword) == kws.end();
+                           if (ab.derived_from_keyword.empty()) return false;
+                           auto it = std::find(wanted.begin(), wanted.end(), ab.derived_from_keyword);
+                           if (it == wanted.end()) return true;  // no instance left for it
+                           wanted.erase(it);                     // this instance is kept
+                           return false;
                        }),
         perm_abilities.end());
-    for (const auto &kw : kws) {
-        bool present = false;
-        for (const auto &existing : perm_abilities)
-            if (existing.derived_from_keyword == kw) { present = true; break; }
-        if (present) continue;
+    for (const auto &kw : wanted) {
         Ability ab = keyword_triggered_ability(kw);
         ab.derived_from_keyword = kw;
         ab.source = entity;
@@ -1586,10 +1584,7 @@ void StateManager::gather_active_statics(Game &game) {
             // Re-merge "until end of turn" keyword grants (e.g. Haste from Eldrazi
             // Linebreaker) onto the freshly-rebuilt base keyword list. These persist
             // across the per-pass rebuild and are cleared at cleanup (514.2).
-            for (const auto &kw : cr.eot_keywords) {
-                if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
-                    cr.keywords.push_back(kw);
-            }
+            for (const auto &kw : cr.eot_keywords) add_keyword_instance(cr.keywords, kw);
             // Re-merge permanent keyword grants baked on by DB$ Animate (Duration$ Permanent),
             // which also survive the per-pass base rebuild (these are NOT cleared at cleanup).
             for (const auto &kw : perm.animate_added_keywords) {
@@ -2116,8 +2111,7 @@ static void regrant_later_keywords(Entity entity, const Permanent &perm, Creatur
                                    size_t removal_ts, const std::set<Entity> &entities) {
     auto add = [&](const std::string &kw) {
         if (perm.removed_keywords_eot.count(kw)) return;
-        if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
-            cr.keywords.push_back(kw);
+        add_keyword_instance(cr.keywords, kw);
     };
     if (perm.animate_timestamp > removal_ts)
         for (const auto &kw : perm.animate_added_keywords) add(kw);

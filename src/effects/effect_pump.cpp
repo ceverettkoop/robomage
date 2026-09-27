@@ -45,14 +45,13 @@ void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const Pum
         game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
     // Grant "until end of turn" keyword(s) (e.g. Haste). Stored in the eot_keywords
     // bucket; the static pass re-merges them onto cr.keywords each pass and cleanup
-    // clears them (514.2). De-dup so repeated grants don't pile up.
+    // clears them (514.2). A repeated grant adds a second instance only of a keyword whose
+    // instances function separately (two Ward grants are two Ward triggers, CR 113.2c).
     if (pp) {
         if (!pp->grant_keywords.empty()) cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
         for (const auto &kw : pp->grant_keywords) {
-            if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
-                cr.eot_keywords.push_back(kw);
-            if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
-                cr.keywords.push_back(kw);
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
             game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
         }
     }

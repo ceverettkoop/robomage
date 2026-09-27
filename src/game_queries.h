@@ -842,6 +842,21 @@ inline std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &
     return out;
 }
 
+// Does each instance of keyword `kw` function separately, so a second grant gives a second
+// instance? True for the triggered keywords — Ward (CR 702.21a, 113.2c), Prowess (702.108b),
+// Exalted (702.83a), Mobilize (702.181a): each instance triggers on its own. Other keywords are
+// redundant in multiples, so a repeated grant of one adds nothing.
+inline bool keyword_instances_stack(const std::string &kw) {
+    return kw.rfind("Ward", 0) == 0 || kw == "Prowess" || kw == "Exalted" || kw.rfind("Mobilize", 0) == 0;
+}
+
+// Add one granted instance of keyword `kw` to a keyword list: always for a keyword whose
+// instances stack (keyword_instances_stack), otherwise only if the list lacks it.
+inline void add_keyword_instance(std::vector<std::string> &keywords, const std::string &kw) {
+    if (keyword_instances_stack(kw) || std::find(keywords.begin(), keywords.end(), kw) == keywords.end())
+        keywords.push_back(kw);
+}
+
 // True if the creature carries the given keyword string (exact match).
 inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     for (const auto &k : cr.keywords)
