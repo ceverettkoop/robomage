@@ -87,6 +87,8 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static std::vector<Entity> chosen_targets_of(Entity targeting_entity);
 static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
                                                   std::shared_ptr<Orderer> orderer);
+static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
+                                std::shared_ptr<Orderer> orderer, bool x_announced);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
@@ -971,17 +973,19 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
     return !build_valid_targets(ability, orderer, ability_perspective_player(ability)).empty();
 }
 
-// Effective minimum target count of an ability at cast/activation-legality time. A static
-// TargetMin$ uses its literal value. An xPaid-driven min (Kozilek's Command "up to X target")
-// is treated as 0 here — X is chosen later and may legally be 0, so it must not gate castability.
-// A non-xPaid count-SVar min (Into the Flood Maw: TargetMin$ X = Count$PromisedGift.0.1) is
-// evaluated now against the current game state (which reads the pending gift-promise flag, set by
-// the caller for each reachable mode).
+// The minimum number of targets `ab` requires (CR 601.2c), the one rule behind the cast-legality
+// gate, the charm-mode filter and target selection. A static TargetMin$ is its literal value. A
+// non-xPaid count-SVar min (Into the Flood Maw: TargetMin$ X = Count$PromisedGift.0.1) is
+// evaluated now against the current game state (which reads the pending gift-promise flag).
+// An xPaid-driven min ("exactly X targets", Hide on the Ceiling; "up to X", Kozilek's Command)
+// reads the X announced for the spell when `x_announced`; before X is chosen (the cast-legality
+// gate) it counts as 0 — X may legally be 0, so it must not gate castability.
 static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
-                                std::shared_ptr<Orderer> orderer) {
-    if (ab.target_min_from_xpaid) return 0;
+                                std::shared_ptr<Orderer> orderer, bool x_announced) {
+    if (ab.target_min_from_xpaid) return x_announced ? static_cast<int>(cur_game.x_paid) : 0;
     if (!ab.target_min_count_expr.empty())
-        return static_cast<int>(evaluate_dynamic_amount(ab.target_min_count_expr, perspective, orderer, 0));
+        return static_cast<int>(evaluate_dynamic_amount(ab.target_min_count_expr, perspective,
+                                                        orderer, 0, ab.source));
     return ab.target_min;
 }
 
@@ -1006,7 +1010,7 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
     cur_game.pending_gift_promised = promised;
     bool ok = true;
     for (const Ability *ab : targeting) {
-        if (effective_target_min(*ab, caster, orderer) > 0 &&
+        if (effective_target_min(*ab, caster, orderer, false) > 0 &&
             build_valid_targets(*ab, orderer, caster).empty()) {
             ok = false;
             break;
@@ -1042,7 +1046,7 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
             probe.source = primary.source;
             probe.controller = caster;
             if (mode.valid_tgts == "N_A" ||
-                effective_target_min(probe, caster, orderer) <= 0 ||
+                effective_target_min(probe, caster, orderer, false) <= 0 ||
                 !build_valid_targets(probe, orderer, caster).empty()) {
                 if (++choosable >= needed) return true;
             }
@@ -1185,12 +1189,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         else if (!ability.target_max_count_expr.empty())
             effective_max = static_cast<int>(evaluate_dynamic_amount(
                 ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
-        int effective_min = ability.target_min;
-        if (ability.target_min_from_xpaid)
-            effective_min = static_cast<int>(cur_game.x_paid);
-        else if (!ability.target_min_count_expr.empty())
-            effective_min = static_cast<int>(evaluate_dynamic_amount(
-                ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
+        int effective_min = effective_target_min(ability, priority_player, orderer, true);
         ability.target_min = effective_min;
         ability.target_max = effective_max;
 
@@ -1270,19 +1269,12 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 }
 
 // Can this charm mode be legally chosen right now (CR 601.2b/c)? A mode is unchoosable only
-// when it REQUIRES a target and none exists. The required minimum mirrors select_target's
-// bound resolution: an xPaid-driven min reads the X already paid (X is chosen before modes),
-// a count-SVar min is evaluated against the current state, else the literal TargetMin$.
+// when it REQUIRES a target and none exists. The required minimum is select_target's
+// (effective_target_min, with the X already announced — X is chosen before modes).
 static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster) {
     if (candidate.valid_tgts == "N_A") return true;
-    int min = candidate.target_min;
-    if (candidate.target_min_from_xpaid)
-        min = static_cast<int>(cur_game.x_paid);
-    else if (!candidate.target_min_count_expr.empty())
-        min = static_cast<int>(evaluate_dynamic_amount(
-            candidate.target_min_count_expr, caster, orderer, 0, candidate.source));
-    if (min <= 0) return true;
+    if (effective_target_min(candidate, caster, orderer, true) <= 0) return true;
     return !build_valid_targets(candidate, orderer, caster).empty();
 }
 
