@@ -3,6 +3,8 @@
 
 #include "ecs/entity.h"
 
+struct Ability;
+
 // DFC transform subsystem (711 / 712). A double-faced permanent is a single entity
 // whose front face is its CardData and whose back face is CardData::backside (a full
 // second face: own name, types, P/T, loyalty, abilities). Transforming swaps which
@@ -21,5 +23,14 @@ void set_permanent_face(Entity e, bool show_back);
 
 // Flip to whichever face is not currently shown.
 void transform_permanent(Entity e);
+
+// CR 701.27f: may ability `ab` of a permanent transform that permanent (its source)? Only if the
+// permanent hasn't transformed since the ability was put on the stack (a delayed trigger: since
+// it was created); otherwise the instruction is ignored.
+bool ability_may_transform_source(const Ability &ab);
+
+// Stamp the source's transform count onto an ability being put on the stack or created as a
+// delayed trigger (CR 701.27f); an ability already stamped keeps its stamp.
+void stamp_source_transforms(Ability &ab);
 
 #endif /* TRANSFORM_H */

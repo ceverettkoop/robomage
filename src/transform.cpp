@@ -94,6 +94,7 @@ void set_permanent_face(Entity e, bool show_back) {
     auto &perm = global_coordinator.GetComponent<Permanent>(e);
     const std::string old_name = perm.name;
     perm.transformed = show_back;
+    perm.times_transformed++;
     perm.name = active->name;
     perm.types = active->types;
 
@@ -109,4 +110,17 @@ void transform_permanent(Entity e) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return;
     const bool currently_back = global_coordinator.GetComponent<Permanent>(e).transformed;
     set_permanent_face(e, !currently_back);
+}
+
+bool ability_may_transform_source(const Ability &ab) {
+    if (ab.source_transforms < 0) return true;
+    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return true;
+    return global_coordinator.GetComponent<Permanent>(ab.source).times_transformed ==
+           static_cast<uint32_t>(ab.source_transforms);
+}
+
+void stamp_source_transforms(Ability &ab) {
+    if (ab.source_transforms >= 0) return;
+    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return;
+    ab.source_transforms = global_coordinator.GetComponent<Permanent>(ab.source).times_transformed;
 }

@@ -18,6 +18,7 @@
 #include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../game_queries.h"
+#include "../transform.h"
 #include "../components/player.h"
 #include "../components/effect.h"
 #include "../components/spell.h"
@@ -55,6 +56,7 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     Ability stack_ab = ability;
     stack_ab.controller = controller;
     stack_ab.source_gen = stamp_object_gen(stack_ab.source);
+    stamp_source_transforms(stack_ab);
     global_coordinator.AddComponent(ability_entity, stack_ab);
     return ability_entity;
 }

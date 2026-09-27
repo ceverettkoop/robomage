@@ -125,7 +125,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         }
         if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(ab.source)) {
             auto &src_cd = global_coordinator.GetComponent<CardData>(ab.source);
-            if (src_cd.backside && !src_perm.transformed) {
+            // CR 701.27f: not if Delver already transformed after its trigger went on the stack.
+            if (src_cd.backside && !src_perm.transformed && ability_may_transform_source(ab)) {
                 // Flip to the back face through the shared transform subsystem so
                 // Delver's creature->creature flip and Ajani's creature->planeswalker
                 // flip travel the same code path.

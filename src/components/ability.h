@@ -90,6 +90,9 @@ struct Ability{
     // then; 0 = not stamped). Sub-abilities inherit it with the source. Read where the source's
     // later departure changes the effect (CR 610.3a/b "until [source] leaves the battlefield").
     uint64_t source_gen = 0;
+    // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
+    // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
+    int64_t source_transforms = -1;
     Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
