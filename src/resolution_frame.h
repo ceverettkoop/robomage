@@ -64,12 +64,8 @@ struct DigRt {
     size_t take_count = 0;        // how many may be taken (resolved once)
     bool optional = false;        // "Take nothing" offered
 };
-struct ScryRt {
-    bool init = false;            // slice fetched + "scries N" log emitted
-    std::vector<Entity> lib;      // looked-at top slice, top-first; all pinned
-    size_t idx = 0;               // next per-card keep/bottom decision
-};
-struct SurveilRt {
+// Scry and surveil (effects::look_and_split).
+struct LookSplitRt {
     bool init = false;            // slice fetched + look logs emitted
     std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
     std::vector<Entity> to_top;     // kept on top, in choice order, each placed; pinned
@@ -236,8 +232,8 @@ struct EachPlayerPutRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
     Entity chosen = 0;            // the current player's chosen card, parked on its Aura enchant pick (CR 303.4f)
 };
-using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
-                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
+using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
+                                   RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
                                    CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt>;
 

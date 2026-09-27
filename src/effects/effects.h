@@ -77,6 +77,21 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
 HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult investigate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// Where the cards a look-and-split step doesn't keep on top go: the library bottom (scry) or the
+// graveyard (surveil).
+enum class LookSplitRest { LIBRARY_BOTTOM, GRAVEYARD };
+// The choice step shared by scry (CR 701.22a) and surveil (CR 701.25a) over the looked-at cards in
+// rt.remaining: one interactive loop in which `looker` picks any remaining card and sends it to
+// the top of their library or to `rest`, until none remain. The order cards are sent to the top
+// fixes the final library order (the FIRST one ends up topmost); each is put at its final depth
+// the moment it is chosen, so it sits on the known-top cache for the remaining choices. Cards sent
+// to the bottom go under the ones bottomed before them, so both piles are in any order the looker
+// wants. Menu: "Put X on top of library" (TOP_LIBRARY, option_ordinal = the depth it will sit at)
+// for each remaining card, then one `rest` option per card (BOTTOM_DECK_CARD / CHOOSE_CARD) — the
+// two share the card entity, so they differ by category for the semantic action resolver.
+// Returns SUSPENDED when a pick parked. Defined in effect_surveil.cpp.
+HandlerResult look_and_split(LookSplitRt &rt, Zone::Ownership looker, LookSplitRest rest,
+                             std::shared_ptr<Orderer> orderer, FrameCtx &ctx, Entity source);
 HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

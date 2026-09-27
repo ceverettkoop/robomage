@@ -249,9 +249,7 @@ static void pin_copy_spell_rt(const CopySpellRT &rt, std::set<Entity> &pins) {
 static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) {
     if (const auto *d = std::get_if<DigRt>(&rt)) {
         pin_all(d->lib, pins);
-    } else if (const auto *s = std::get_if<ScryRt>(&rt)) {
-        pin_all(s->lib, pins);
-    } else if (const auto *sv = std::get_if<SurveilRt>(&rt)) {
+    } else if (const auto *sv = std::get_if<LookSplitRt>(&rt)) {
         pin_all(sv->remaining, pins);
         pin_all(sv->to_top, pins);
     } else if (const auto *r = std::get_if<RearrangeRt>(&rt)) {
