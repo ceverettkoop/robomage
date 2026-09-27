@@ -53,6 +53,7 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     // the stack object so every "you" it resolves reads Ability::controller.
     Ability stack_ab = ability;
     stack_ab.controller = controller;
+    stack_ab.source_gen = stamp_object_gen(stack_ab.source);
     global_coordinator.AddComponent(ability_entity, stack_ab);
     return ability_entity;
 }

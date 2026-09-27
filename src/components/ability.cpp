@@ -1279,6 +1279,7 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
             Ability *pp = &parent;
             auto bind = [pp](Ability &sub) {
                 sub.source = pp->source;
+                sub.source_gen = pp->source_gen;
                 bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
                 sub.controller = pp->controller;
             };
@@ -1288,6 +1289,7 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
         } else {
             Ability sub_ab = sub_template;
             sub_ab.source = parent.source;
+            sub_ab.source_gen = parent.source_gen;
             bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = parent.controller;
             sub_ab.resolve(orderer);

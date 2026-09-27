@@ -34,6 +34,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
                                         bool enters_transformed = false);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
 static bool in_declared_origin(const Ability &ab, Entity e);
+static bool linked_exile_host_gone(const Ability &ab);
 static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orderer> orderer,
                                                FrameCtx &fctx);
 
@@ -170,6 +171,16 @@ static bool in_declared_origin(const Ability &ab, Entity e) {
     return std::find(ab.origins.begin(), ab.origins.end(), loc) != ab.origins.end();
 }
 
+// CR 610.3a/b: an "exile ... until [host] leaves the battlefield" whose host already left after
+// the ability was put on the stack (or after it triggered) exiles nothing — the object doesn't
+// move. The host counts as gone once it is off the battlefield or has become a new object there
+// since the ability went on the stack (left and returned, CR 400.7). Phasing out is not leaving
+// (CR 702.26d), so the Zone is read, not the phased-in battlefield accessor.
+static bool linked_exile_host_gone(const Ability &ab) {
+    if (!ab.duration_until_host_leaves || ab.destination != Zone::EXILE) return false;
+    return !on_battlefield(ab.source) || !is_same_object(ab.source, ab.source_gen);
+}
+
 // A library search reveals the chosen card when it must satisfy a restriction
 // more specific than "any card" — the searcher proves the card qualifies (e.g.
 // Personal Tutor: "search for a sorcery card, reveal it"). An unrestricted
@@ -245,6 +256,11 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
 
 HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     PendingDecisionScope pending_scope(ab.source);
+    if (linked_exile_host_gone(ab)) {
+        game_log("%s has already left the battlefield: nothing is exiled (CR 610.3)\n",
+                 entity_name(ab.source).c_str());
+        return HandlerResult::DONE_RUN_SUBS;
+    }
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
     // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)
