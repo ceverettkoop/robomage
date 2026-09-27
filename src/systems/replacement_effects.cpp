@@ -88,7 +88,8 @@ void for_each_battlefield_replacement(Effect::Replacement::Kind kind, Zone::Owne
 // basic land"). `filter` is a "<Type>[.<Supertype>]" spec evaluated controller-relative; the
 // count of `controller`'s matching battlefield permanents is compared via `compare` (e.g. EQ0).
 // An empty filter means unconditional (always tapped). The entering permanent (`entering`) is
-// excluded — it isn't a live battlefield permanent yet during the ENTERS_BATTLEFIELD dispatch.
+// excluded — it isn't a live battlefield permanent yet during the ENTERS_BATTLEFIELD dispatch —
+// and so is every permanent entering together with it (Game::entering_together, CR 614.12).
 static bool tapped_condition_met(const std::string &filter, const std::string &compare,
                                  Zone::Ownership controller, Entity entering) {
     if (filter.empty()) return true;
@@ -98,7 +99,7 @@ static bool tapped_condition_met(const std::string &filter, const std::string &c
     int count = 0;
     Entity max_e = global_coordinator.GetMaxIssuedEntity();
     for (Entity e = 0; e < max_e; e++) {
-        if (e == entering) continue;
+        if (e == entering || cur_game.entering_together.count(e)) continue;
         if (is_battlefield_permanent(e, controller) && permanent_matches_filter(e, filter, ctx)) count++;
     }
     std::string cmp = compare.empty() ? "GE1" : compare;

@@ -809,6 +809,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     }
                 }
                 global_coordinator.AddComponent(entity, perm);
+                game.entering_together.insert(entity);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
                 // are applied in the creature block below so its P/T can be logged.
@@ -1109,7 +1110,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                  tok_name, zone_display_name(dest));
         global_coordinator.DestroyEntity(e);
     }
-
+    game.entering_together.clear();
 }
 
 // Human-readable name of a zone, for narrative logging.

@@ -101,6 +101,7 @@ void Game::forget_entity(Entity e) {
     pending_etb_xpaid.erase(e);
     pending_attach.erase(e);
     pending_aura_target.erase(e);
+    entering_together.erase(e);
 }
 
 void Game::set_monarch(Entity player_entity) {

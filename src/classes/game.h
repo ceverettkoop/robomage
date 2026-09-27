@@ -805,6 +805,11 @@ struct Game {
         std::map<Entity, int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created (→ Permanent::entered_x, CR 107.3m)
         std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
+        // Cards whose Permanent the running apply_permanent_components pass has created (the pass
+        // can suspend and resume): they entered the battlefield together, so none of them is on the
+        // battlefield yet when another one's "as it enters" condition is checked (CR 614.12, e.g.
+        // "enters tapped unless you control a basic land"). Cleared when the pass completes.
+        std::set<Entity> entering_together;
         std::map<Entity, PendingAuraTarget> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
         // Known top-of-library cards (one array per player). Index 0 is the top of the
