@@ -96,6 +96,10 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
+// CounterNum$ at resolution: the static count, or its dynamic Count$ expression (CounterNum$ X)
+// evaluated for the ability's controller. Shared by PutCounter, PutCounterAll and RemoveCounter.
+// Defined in effect_put_counter.cpp.
+int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_ptr<Orderer> orderer);
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);

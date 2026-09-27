@@ -22,7 +22,7 @@ namespace effects {
 HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     std::string ctype = (cp && !cp->type.empty()) ? cp->type : "P1P1";
-    int n = cp ? cp->count : 1;
+    int n = cp ? resolve_counter_num(ab, *cp, orderer) : 1;
     const std::string ctype2 = cp ? cp->type2 : "";
     const int n2 = cp ? cp->count2 : 0;
     if (n <= 0 && ctype2.empty()) return HandlerResult::DONE_RUN_SUBS;

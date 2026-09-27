@@ -36,6 +36,11 @@ static bool apply_monstrosity(Ability &ab) {
     return true;
 }
 
+int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_ptr<Orderer> orderer) {
+    if (cp.count_expr.empty()) return cp.count;
+    return static_cast<int>(evaluate_dynamic_amount(cp.count_expr, ab.controller, orderer, ab.target));
+}
+
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Monstrosity$ (CR 701.37): set the monstrous designation + fire the event first, then fall
     // through to place the N +1/+1 counters on the source via the normal counter path below. If
@@ -48,10 +53,8 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
         if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
         // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the
-        // player gets X {E}) is evaluated at resolution; otherwise use the static count.
-        int n = cp->count;
-        if (!cp->count_expr.empty())
-            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        // player gets X {E}) is evaluated at resolution.
+        int n = resolve_counter_num(ab, *cp, orderer);
         if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
         Entity ctrl_entity = get_player_entity(ab.controller);
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
@@ -60,7 +63,6 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                  n, cp->type.c_str(), total);
         return HandlerResult::DONE_RUN_SUBS;
     }
-    (void)orderer;
     // Use target if set (e.g. from a Pump parent), otherwise put counters on source
     // (Defined$ Self — e.g. Aether Vial's upkeep "put a charge counter on it"). Counters
     // can go on any permanent, not just creatures (CR 122.1), so gate on Permanent: a
@@ -72,11 +74,8 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     if (cp && !cp->type.empty()) {
         // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
-        // resolution; otherwise the static count is used. Mirrors the Defined$ You / PutCounterAll
-        // paths so a targeted counter with a runtime count no longer places zero.
-        int n = cp->count;
-        if (!cp->count_expr.empty())
-            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        // resolution, as in the Defined$ You and PutCounterAll paths.
+        int n = resolve_counter_num(ab, *cp, orderer);
         if (n > 0) {
             int total = add_counters(counter_tgt, cp->type, n);
             if (global_coordinator.entity_has_component<Creature>(counter_tgt)) {
