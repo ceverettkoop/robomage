@@ -138,16 +138,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // Check if it's a spell card (not just an ability)
     if (global_coordinator.entity_has_component<CardData>(top_entity)) {
         auto &card_data = global_coordinator.GetComponent<CardData>(top_entity);
-        // Check if it's a permanent type (Creature, Artifact, Enchantment, Planeswalker)
-        bool is_permanent = false;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE) {
-                if (type.name == "Creature" || type.name == "Artifact" || type.name == "Enchantment" ||
-                    type.name == "Planeswalker") {
-                    is_permanent = true;
-                }
-            }
-        }
+        // A permanent spell (CR 110.4a, any permanent card type incl. Battle) of the face that
+        // was cast (a modal back face / split half, CR 712.8f, 709.3) enters the battlefield.
+        bool is_permanent = is_permanent_card(active_face(top_entity, card_data));
         if (is_permanent && aura_spell_target_illegal(top_entity)) {
             // CR 608.3b: an Aura spell whose target is illegal doesn't resolve; it is removed
             // from the stack and put into its owner's graveyard.

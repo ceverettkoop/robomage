@@ -67,14 +67,20 @@ inline bool card_playable_as_land(const CardData &cd) {
 
 // The CardData face a permanent entity is currently showing: the back face while the
 // permanent is transformed (CR 712.8e — a face-up back face has its own characteristics),
-// else the front. Falls back to the front face for single-faced cards and non-permanents.
+// else the front. A spell cast as its modal back face or as a split card's second half has only
+// that face's characteristics on the stack (CR 712.8f, 709.3). Falls back to the front face for
+// single-faced cards and any other object.
 // Use this instead of reading GetComponent<CardData>(e) directly wherever a transformed
 // permanent's PRINTED characteristics (colors, types, P/T) matter; note that MANA VALUE is
 // the one characteristic that does NOT follow the active face for a nonmodal DFC (712.8e
 // computes it from the front face's cost; only a MODAL back face carries its own, 712.8d).
 inline const CardData &active_face(Entity e, const CardData &cd) {
-    if (cd.backside && global_coordinator.entity_has_component<Permanent>(e) &&
+    if (!cd.backside) return cd;
+    if (global_coordinator.entity_has_component<Permanent>(e) &&
         global_coordinator.GetComponent<Permanent>(e).transformed)
+        return *cd.backside;
+    if (global_coordinator.entity_has_component<Spell>(e) &&
+        global_coordinator.GetComponent<Spell>(e).cast_back_face)
         return *cd.backside;
     return cd;
 }

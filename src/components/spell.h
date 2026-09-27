@@ -18,6 +18,9 @@ struct Spell {
     bool cast_with_impending = false;  // cast for its Impending alternate cost (CR 702.175) — the resulting permanent enters with time counters and isn't a creature until they're gone
     bool cast_with_warp = false;       // cast for its Warp alternate cost — the resulting object is exiled at the next end step (a delayed trigger) and may then be cast from exile later for its normal cost
     bool cant_be_countered = false;
+    // Cast as its modal DFC back face or as a split card's second half: on the stack the spell
+    // has only that face's characteristics (CR 712.8f, 709.3; read through active_face).
+    bool cast_back_face = false;
     int x_paid = 0;  // value chosen for {X} at cast time (Chalice of the Void enters with X charge counters)
     // Kicker (CR 702.33): one flag per CardData::kicker_costs entry — kicked[i] is true iff the
     // (i+1)th kicker's additional cost was paid as this spell was cast. The spell "has been
