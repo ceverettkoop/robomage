@@ -3,7 +3,7 @@
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
 
 extern Coordinator global_coordinator;
 

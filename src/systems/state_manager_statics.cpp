@@ -27,7 +27,16 @@
 #include "../ecs/events.h"
 #include "../cli_output.h"
 #include "../game_driver.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/counters.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/entry.h"
+#include "../queries/filters.h"
+#include "../queries/keywords.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../name_card_choices.h"
@@ -439,7 +448,7 @@ static bool setcolor_filter_matches_token(const std::string &aff, const Permanen
     return true;
 }
 
-// Layer-5 (CR 613.1e / 612) global color-changing override — see game_queries.h. Scans the active-
+// Layer-5 (CR 613.1e / 612) global color-changing override — see queries/characteristics.h. Scans the active-
 // statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
 // `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
 // the match is done against the card's PRINTED characteristics (card_matches_filter) so this never
@@ -609,7 +618,7 @@ static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
     }
 }
 
-// entity_name moved to game_queries.cpp — the single shared display-name resolver.
+// entity_name moved to queries/characteristics.cpp — the single shared display-name resolver.
 
 std::string target_display_name(const Game &game, Entity tgt) {
     if (global_coordinator.entity_has_component<Player>(tgt))
@@ -1106,7 +1115,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
 
         } else {  // off battlefield, check to remove
-            // Shared strip (game_queries.cpp): clears attachment links before
+            // Shared strip (queries/battlefield.cpp): clears attachment links before
             // removing Permanent/Creature/Damage. Same helper add_to_zone uses for the
             // same-resolution-return entry reset (CR 400.7).
             strip_permanent_components(entity, mEntities);
@@ -1149,7 +1158,7 @@ static const char *zone_display_name(Zone::ZoneValue loc) {
 }
 
 // 702.131b Ascend / city's blessing: the grant logic moved to the shared
-// refresh_city_blessing() in game_queries.cpp — the SBA preamble (state_manager.cpp)
+// refresh_city_blessing() in queries/battlefield.cpp — the SBA preamble (state_manager.cpp)
 // and the mid-resolution Condition$ Blessing gate (ability.cpp) both call it, since
 // "any time" means the grant may not lag to the next state-based pass.
 

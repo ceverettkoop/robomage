@@ -8,8 +8,11 @@
 #include "../cli_output.h"
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

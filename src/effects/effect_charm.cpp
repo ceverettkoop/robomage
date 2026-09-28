@@ -7,8 +7,8 @@
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 namespace effects {

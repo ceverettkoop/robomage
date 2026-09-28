@@ -20,7 +20,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
-#include "game_queries.h"
+#include "queries/filters.h"
 #include "str_util.h"
 #include "type_constants.h"
 

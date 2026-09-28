@@ -60,7 +60,7 @@ typedef struct PlayerState_tag {
     int  life_lost_this_turn;
     bool spell_colors_cast_this_turn[5]; // W, U, B, R, G
     // ── Player effects (serialized as the state vector's PLAYER EFFECTS block; filled from
-    // player_effects() in game_queries.h, field meanings documented in machine_io.h) ──
+    // player_effects() in queries/player_effects.h, field meanings documented in machine_io.h) ──
     bool protection_from_everything;
     bool cant_gain_life;
     bool hexproof_from[5];               // W, U, B, R, G
@@ -162,8 +162,8 @@ typedef struct DelayedTriggerEntry_tag {
     bool fires_this_turn;      // a waiting phase trigger scheduled later this turn
 } DelayedTriggerEntry;
 
-// One graveyard or exile card (card_play_permission and exiled_card_counters in
-// game_queries.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
+// One graveyard or exile card (card_play_permission in queries/zones.h, exiled_card_counters in
+// queries/counters.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
 // card_idx -1 and every other field 0.
 typedef struct ZoneCardEntry_tag {
     int  card_idx;               // card_vocab_idx, -1 = empty / hidden

@@ -7,7 +7,8 @@
 #include "../components/entry_info.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
+#include "../queries/entry.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

@@ -115,7 +115,7 @@
 //                       (CR 702.26b), so the model can anticipate the phase-in
 //                  [18] entered_this_turn — the permanent entered the battlefield this
 //                       turn (the ThisTurnEntered filter predicate,
-//                       entered_battlefield_this_turn in game_queries.h; Ocelot Pride,
+//                       entered_battlefield_this_turn in queries/battlefield.h; Ocelot Pride,
 //                       Phelia)
 //                  [19] ability_resolutions_this_turn / PER_TURN_COUNT_NORMALIZER —
 //                       triggered-ability resolutions from this permanent this turn
@@ -133,7 +133,7 @@
 //                  [23] pending_delayed_subject — the permanent is watched by, or is a
 //                       subject of, a delayed trigger still WAITING to fire (e.g. every
 //                       Mobilize token, an earthbent land, a Static Prison host);
-//                       is_waiting_delayed_trigger_subject in game_queries.h
+//                       is_waiting_delayed_trigger_subject in queries/delayed_triggers.h
 //                  [24-39] effective keyword multi-hot x16, OBS_KEYWORDS order
 //                       (post-layer, via permanent_has_keyword)
 //                  [40] chosen_name_id — normalized vocab id of Permanent::chosen_name,
@@ -184,7 +184,7 @@
 //                  [0]  card_id (FIRST, like the decklist slots; sentinel = empty)
 //                  [1]  playable_by_self — the viewer has a permission to play (cast,
 //                       or play as a land) this card from here, ignoring timing and
-//                       cost: card_play_permission (game_queries.h), the same predicate
+//                       cost: card_play_permission (queries/zones.h), the same predicate
 //                       the legal-action enumeration gates its graveyard/exile plays
 //                       on. Covers flashback, escape, Emry's cast-this-turn grant, and
 //                       a play-lands-from-graveyard static (Icetill Explorer, Mole Man)
@@ -203,7 +203,7 @@
 //                a suspend free cast, warp), then
 //                  [4]  counters / ZONE_COUNTER_NORMALIZER — suspend time counters
 //                       (Zone::counters, Rift Bolt) plus a void counter
-//                       (Dauthi Voidwalker); exiled_card_counters in game_queries.h
+//                       (Dauthi Voidwalker); exiled_card_counters in queries/counters.h
 //                Exile is public except an opponent's FACE-DOWN card (CR 708.2, The
 //                Creation of Avacyn chapter I): that slot is filled but hidden — the
 //                card_id sentinel with all four scalars 0.0. A suspended card is not
@@ -429,7 +429,7 @@
 //
 //  ── Pending delayed triggers (CR 603.7) ──────────────────────────────────────
 //  A derived view, built at serialization time, of every delayed trigger from
-//  registration (register_delayed_trigger, game_queries.h) until it resolves:
+//  registration (register_delayed_trigger, queries/delayed_triggers.h) until it resolves:
 //  the records still WAITING in Game::delayed_triggers, plus the stack ability
 //  objects whose DelayedTriggerLink::seq != 0 (fired, now ON THE STACK). An entry
 //  disappears when its record expires unfired or its stack object leaves the
@@ -468,7 +468,7 @@
 //
 //  ── Player effects ───────────────────────────────────────────────────────────
 //  The continuous effects applying to each player as a whole (player_effects(),
-//  game_queries.h), all public. Self half then the opponent half, same fields:
+//  queries/player_effects.h), all public. Self half then the opponent half, same fields:
 //                  [0]  protection_from_everything (The One Ring's ETB grant)
 //                  [1]  cant_gain_life (Roiling Vortex's {R}; player_cant_gain_life)
 //                  [2-6] hexproof_from W, U, B, R, G (Veil of Summer's turn-long grant;

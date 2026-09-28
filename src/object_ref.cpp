@@ -4,7 +4,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "game_driver.h"
-#include "game_queries.h"
+#include "queries/lki.h"
 
 ObjectRef ObjectRef::of(Entity e) {
     ObjectRef r;

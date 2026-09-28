@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
@@ -14,6 +13,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

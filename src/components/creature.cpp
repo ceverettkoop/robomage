@@ -1,6 +1,6 @@
 #include "creature.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
 #include <algorithm>
 
 // Apply layer-7 P/T effects to a single creature in sublayer order (rule 613.4):

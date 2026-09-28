@@ -23,7 +23,7 @@ enum class ResolveStatus;
 class FrameCtx;
 
 // Identity of a delayed triggered ability (CR 603.7), stamped once by
-// register_delayed_trigger (game_queries.h) onto the DelayedTrigger's fire ability. It rides
+// register_delayed_trigger (queries/delayed_triggers.h) onto the DelayedTrigger's fire ability. It rides
 // the fire ability unchanged when the trigger fires onto the stack, so the observation's
 // delayed-trigger block can follow one trigger from registration until its stack object
 // resolves, is countered, or fizzles. seq == 0 marks an ability that is not a delayed trigger.

@@ -17,7 +17,7 @@
 #include "components/effect.h"
 #include "components/token.h"
 #include "classes/colors.h"
-#include "game_queries.h"
+#include "queries/characteristics.h"
 
 extern Coordinator global_coordinator;
 

@@ -4,7 +4,7 @@
 
 #include "../classes/game.h"
 #include "../cli_output.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
 
 extern Game cur_game;
 

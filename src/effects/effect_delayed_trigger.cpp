@@ -9,8 +9,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/players.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

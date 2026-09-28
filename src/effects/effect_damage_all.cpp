@@ -6,7 +6,8 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

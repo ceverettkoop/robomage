@@ -9,7 +9,9 @@
 #include "../components/carddata.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/counters.h"
+#include "../queries/filters.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

@@ -10,7 +10,7 @@
 #include "components/permanent.h"
 #include "components/types.h"
 #include "ecs/coordinator.h"
-#include "game_queries.h"
+#include "queries/characteristics.h"
 
 extern Coordinator global_coordinator;
 

@@ -7,7 +7,11 @@
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
+#include "../queries/counters.h"
+#include "../queries/damage.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
 #include "../mana_system.h"
 
 #include <string>

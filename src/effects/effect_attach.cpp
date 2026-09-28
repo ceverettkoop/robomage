@@ -9,7 +9,10 @@
 #include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/attachments.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/entry.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

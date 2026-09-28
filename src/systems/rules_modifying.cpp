@@ -10,7 +10,11 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/types.h"
-#include "../game_queries.h"  // card_matches_filter, extract_static_cmc_bound, is_creature_card
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
 #include "../mana_system.h"  // get_player_entity
 #include "../svar_eval.h"  // evaluate_sa_svar (CantAttack dynamic-X hand count)
 

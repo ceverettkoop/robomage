@@ -27,7 +27,17 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "game_driver.h"                  // priority_window_open
-#include "game_queries.h"
+#include "queries/activation.h"
+#include "queries/battlefield.h"
+#include "queries/counters.h"
+#include "queries/delayed_triggers.h"
+#include "queries/keywords.h"
+#include "queries/lki.h"
+#include "queries/player_effects.h"
+#include "queries/player_resources.h"
+#include "queries/players.h"
+#include "queries/types.h"
+#include "queries/zones.h"
 #include "mana_system.h"                    // mana_potential (mana-development block)
 #include "parse.h"                          // name_to_uid
 
@@ -292,7 +302,7 @@ static void push_per_turn_block(std::vector<float>& out, const PlayerState& ps) 
         out.push_back(ps.spell_colors_cast_this_turn[i] ? 1.0f : 0.0f);
 }
 
-// Copies player_effects(player) (game_queries.h) into the PlayerState's player-effects fields,
+// Copies player_effects(player) (queries/player_effects.h) into the PlayerState's player-effects fields,
 // keeping the first MAX_EMBLEM_SLOTS emblem card ids. `bf_entities` holds the battlefield
 // permanents the player-level statics are read from.
 static void fill_player_effects(PlayerState& ps, Zone::Ownership player,
@@ -1003,7 +1013,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 break;
 
             case Zone::BATTLEFIELD:
-                // Serialization exception to the phasing rule (see game_queries.h):
+                // Serialization exception to the phasing rule (see queries/battlefield.h):
                 // phased-out permanents ARE collected — their slot stays visible with
                 // is_phased_out set — so the explicit Permanent check replaces
                 // is_battlefield_permanent (the zone is already known from the switch).

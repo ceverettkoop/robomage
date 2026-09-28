@@ -10,8 +10,9 @@
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/battlefield.h"
+#include "../queries/filters.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

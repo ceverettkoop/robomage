@@ -10,7 +10,8 @@
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
+#include "../queries/players.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

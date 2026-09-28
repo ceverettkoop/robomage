@@ -10,7 +10,11 @@
 #include "components/types.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
-#include "game_queries.h"
+#include "queries/battlefield.h"
+#include "queries/counters.h"
+#include "queries/filters.h"
+#include "queries/player_resources.h"
+#include "queries/players.h"
 
 extern Coordinator global_coordinator;
 
@@ -159,7 +163,7 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     // Count$YourCountersEnergy — the controller's current energy ({E}) total (CR 122.1c),
     // stored as an "ENERGY" counter on the Player (Wrath of the Skies: the cap on the amount
     // of energy you may choose to pay). Reads the same counter map every {E} producer/consumer
-    // uses (game_queries.h player_energy / pay_energy).
+    // uses (queries/player_resources.h player_energy / pay_energy).
     if (expr == "Count$YourCountersEnergy") {
         Entity ctrl_entity = get_player_entity(controller);
         if (!global_coordinator.entity_has_component<Player>(ctrl_entity)) return 0;

@@ -12,7 +12,8 @@
 #include "../components/entry_info.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/entry.h"
+#include "../queries/filters.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 

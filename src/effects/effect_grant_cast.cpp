@@ -10,8 +10,10 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../machine_io.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/players.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

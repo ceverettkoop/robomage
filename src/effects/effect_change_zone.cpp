@@ -20,7 +20,14 @@
 #include "../error.h"
 #include "../classes/action.h"
 #include "../action_processor.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/entry.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
@@ -44,7 +51,7 @@ static HandlerResult each_player_put_from_hand(Ability &ab, std::shared_ptr<Orde
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
 // Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
-// shared resolver (game_queries.h), which also names lingering tokens and ability entities.
+// shared resolver (queries/characteristics.h), which also names lingering tokens and ability entities.
 static std::string object_display_name(Entity e) { return entity_name(e); }
 
 // CR 303.4f/g: an Aura entering the battlefield WITHOUT being cast (any ChangeZone move to

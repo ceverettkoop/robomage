@@ -22,8 +22,14 @@
 #include "ecs/events.h"
 #include "effects/effects.h"
 #include "error.h"
-#include "game_queries.h"
 #include "input_logger.h"
+#include "queries/activation.h"
+#include "queries/battlefield.h"
+#include "queries/characteristics.h"
+#include "queries/filters.h"
+#include "queries/player_resources.h"
+#include "queries/players.h"
+#include "queries/types.h"
 #include "systems/orderer.h"
 #include "systems/replacement_effects.h"
 #include "systems/rules_modifying.h"
@@ -222,7 +228,7 @@ static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
     for (auto &t : paid_cd.types)
         if (t.kind == SUBTYPE && t.name == "Eldrazi") { is_eldrazi = true; break; }
     if (!is_eldrazi) return false;
-    // Colorless test (CR 105.2c) shared with the rest of the engine via game_queries.h, so an
+    // Colorless test (CR 105.2c) shared with the rest of the engine via queries/characteristics.h, so an
     // Eldrazi Temple mana restriction and a color-targeting check can never disagree on whether
     // the same spell is colorless.
     return is_colorless(paid_for);

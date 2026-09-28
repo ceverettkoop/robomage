@@ -11,7 +11,9 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 

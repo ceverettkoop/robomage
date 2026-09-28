@@ -16,7 +16,8 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "game_driver.h"
-#include "game_queries.h"
+#include "queries/players.h"
+#include "queries/zones.h"
 #include "machine_io.h"
 #include "search_server.h"
 

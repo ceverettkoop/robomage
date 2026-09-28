@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../game_queries.h"
+#include "../queries/players.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../stable_rng.h"

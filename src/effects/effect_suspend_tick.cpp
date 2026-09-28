@@ -6,7 +6,7 @@
 #include "../components/zone.h"
 #include "../action_processor.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
 #include "../resolution_frame.h"
 
 extern Coordinator global_coordinator;

@@ -9,7 +9,8 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
-#include "game_queries.h"
+#include "queries/battlefield.h"
+#include "queries/counters.h"
 
 extern Coordinator global_coordinator;
 

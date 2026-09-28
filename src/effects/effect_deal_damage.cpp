@@ -12,8 +12,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
+#include "../queries/players.h"
+#include "../queries/zones.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

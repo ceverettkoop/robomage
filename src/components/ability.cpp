@@ -18,7 +18,16 @@
 #include "../ecs/events.h"
 #include "../error.h"
 #include "../action_processor.h"
-#include "../game_queries.h"
+#include "../queries/activation.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/keywords.h"
+#include "../queries/lki.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../parse.h"
@@ -789,7 +798,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
 
     // Match the ValidTgts spec against the permanent through the shared filter evaluator
-    // (game_queries), with the normalized spec and mana-value bound built above.
+    // (queries/filters), with the normalized spec and mana-value bound built above.
     if (!permanent_matches_filter(cand, spec, ctx)) return false;
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't

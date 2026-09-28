@@ -10,7 +10,9 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/counters.h"
+#include "../queries/types.h"
 
 extern Coordinator global_coordinator;
 

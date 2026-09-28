@@ -6,9 +6,9 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "game_driver.h"
-#include "game_queries.h"
 #include "input_logger.h"
 #include "pending_query.h"
+#include "queries/players.h"
 
 extern Game cur_game;
 extern Coordinator global_coordinator;

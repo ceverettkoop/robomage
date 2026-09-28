@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "../game_queries.h"
 #include "../classes/game.h"
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 #include "../systems/replacement_effects.h"
 

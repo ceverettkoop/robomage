@@ -11,7 +11,11 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/keywords.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 

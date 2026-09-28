@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "../game_queries.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../classes/match_state.h"
@@ -14,6 +13,8 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 

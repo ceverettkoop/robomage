@@ -8,7 +8,7 @@
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "ecs/coordinator.h"
-#include "game_queries.h"
+#include "queries/battlefield.h"
 #include "transform.h"
 
 extern Coordinator global_coordinator;

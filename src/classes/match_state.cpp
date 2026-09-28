@@ -7,7 +7,7 @@
 #include "../components/zone.h"
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/players.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

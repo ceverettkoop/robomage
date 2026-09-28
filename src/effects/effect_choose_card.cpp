@@ -11,9 +11,13 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

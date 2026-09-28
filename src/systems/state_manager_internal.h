@@ -11,7 +11,7 @@ struct Game;
 // Helpers shared across the StateManager translation units (state_manager.cpp
 // and its state_manager_*.cpp siblings). Not part of the public System API.
 
-// entity_name — the shared display-name resolver — lives in game_queries.h.
+// entity_name — the shared display-name resolver — lives in queries/characteristics.h.
 
 // Display name for a spell/ability target or attack target: "Player A"/"Player B"
 // when the entity is a player, otherwise entity_name(). Single source for the

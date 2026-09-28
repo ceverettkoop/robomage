@@ -7,7 +7,7 @@
 // battlefield entry before its Permanent exists. These facts shape the entry itself (CR 614.1c-d,
 // 614.12: tapped, transformed, attacking, attached) and the permanent's own "if it was cast / if
 // it escaped / X" gates. Carried on the card as a component: added through entry_info()
-// (game_queries.h), each fact consumed as the entry is built (the ENTERS_BATTLEFIELD replacement
+// (queries/entry.h), each fact consumed as the entry is built (the ENTERS_BATTLEFIELD replacement
 // dispatch, StateManager::apply_permanent_components) and the component removed once nothing is
 // left (drop_entry_info_if_consumed). An entry that doesn't happen takes the record with it: the
 // card entering any other zone (Orderer::add_to_zone), a prevented or impossible move onto the

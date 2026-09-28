@@ -5,7 +5,7 @@
 #include "../components/creature.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
 
 extern Coordinator global_coordinator;
 

@@ -13,8 +13,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
+#include "../queries/keywords.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;

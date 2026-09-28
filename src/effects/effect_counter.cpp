@@ -9,7 +9,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../components/ability.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
+#include "../queries/spells.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 

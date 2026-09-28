@@ -5,7 +5,7 @@
 #include "../action_processor.h"
 #include "../classes/action.h"
 #include "../classes/game.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
 #include "../resolution_frame.h"
 #include "../systems/state_manager.h"
 

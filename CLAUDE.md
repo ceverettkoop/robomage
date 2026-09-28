@@ -11,7 +11,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
 - Try to consolidate iterations through entities within a function, rather than iterating through many times
-- To find battlefield permanents, use the shared accessors in `src/game_queries.h` — the
+- Shared entity queries live in `src/queries/`, one header per concern (list under Key files);
+  include the specific header you use.
+- To find battlefield permanents, use the shared accessors in `src/queries/battlefield.h` — the
   `is_battlefield_permanent(entity, ctrl)` predicate as a loop guard / single-entity check,
   or `battlefield_permanents(mEntities, ctrl)` for the whole list — instead of open-coding
   the `Permanent` + `Zone` + `BATTLEFIELD` (+ controller) scan inline. These bake in the rule
@@ -21,7 +23,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
   and the observation serializer in `machine_io.cpp` (which deliberately includes phased-out
   permanents, flagged).
-  Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
+  Add similar shared accessors (in the `src/queries/` header for their concern) when a new
+  entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`; only the libtorch actor TUs in `src/actor/` enable them)
 - Two interactive front ends, both Python, both sitting on the shared driver in
@@ -251,7 +254,7 @@ standalone stack entity for activated/triggered abilities, `Orderer::push_abilit
 `Token`, `Player` (life, mana, per-turn counters), `EntryInfo` (what a cast or effect recorded
 about a card's next battlefield entry — tapped, transformed, attacking, how it was cast, an Aura's
 chosen object; consumed as its Permanent is built, dropped if it goes elsewhere); an object's color is read through
-`effective_colors` (`src/game_queries.h`). **Tokens have no `CardData`**
+`effective_colors` (`src/queries/characteristics.h`). **Tokens have no `CardData`**
 (Zone + Permanent + Creature + Damage + Token) — guard `CardData` reads on battlefield objects.
 `Effect` is never instantiated; only its nested `Effect::Replacement` (parsed from `R:` lines into
 `CardData::replacement_effects`) is live.
@@ -295,7 +298,7 @@ Targets are chosen before costs are paid and re-checked at resolution.
 
 **Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's
 characteristics AFTER the resolution that moved it (its own leaves/dies triggers, an ability whose
-source it was resolving later) must use `departed_lki_for` (`src/game_queries.h`), not
+source it was resolving later) must use `departed_lki_for` (`src/queries/lki.h`), not
 `effective_power`/`effective_*`: those read `lki_for`, whose snapshot is superseded when that
 resolution ends and at the object's next zone change (tokens excepted, CR 111.7).
 
@@ -496,7 +499,12 @@ sections above are not repeated here.
 - `src/systems/replacement_effects.{h,cpp}` — CR 614/616 dispatcher; `rules_modifying.{h,cpp}` —
   cast/activate/land-play prohibitions
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `Ability::resolve()` to them
-- `src/game_queries.h` — shared entity queries (battlefield accessors, filters, `effective_*`, LKI)
+- `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
+  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
+  `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
+  controller, `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
+  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
+  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a search root)
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS

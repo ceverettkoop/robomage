@@ -5,7 +5,7 @@
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
 #include "../cli_output.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
 #include "../systems/replacement_effects.h"
 
 extern Game cur_game;

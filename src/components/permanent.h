@@ -39,7 +39,7 @@ struct Permanent {
     // 122.1: typed counters on this permanent, keyed by counter type ("P1P1", "M1M1",
     // "LOYALTY", keyword counters). Single store for every counter kind (T2.4) — planeswalker
     // loyalty is just a LOYALTY counter (306.5c). Mutate via the get/add_counters helpers in
-    // game_queries.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
+    // queries/counters.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
     // contribution (layer 7c, 613.4c). An entry is absent (not 0) when it has no counters.
     CounterMap counters;
     // Per-permanent named integer SVars written by a DB$ StoreSVar effect (Forge's
@@ -60,7 +60,7 @@ struct Permanent {
     // stays until the permanent leaves the battlefield (so it resets naturally when a new
     // Permanent is created on re-entry). Internal state only — NOT exposed in the obs/state
     // vector. Set by the Monstrosity$ resolution in effect_put_counter.cpp; read by the
-    // "NotMonstrous" activation gate (game_queries.h). Mutated nowhere else.
+    // "NotMonstrous" activation gate (queries/activation.h). Mutated nowhere else.
     bool is_monstrous = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     // This permanent entered because its spell was cast from the graveyard for its Escape cost
@@ -166,7 +166,7 @@ struct Permanent {
     // AB$ AnimateAll | RemoveKeywords$ ... (Shadowspear: "Permanents your opponents control lose
     // hexproof and indestructible until end of turn"). Keyword(s) this permanent currently has
     // SUPPRESSED until end of turn by a mass continuous effect (CR 613, layer 6 keyword removal).
-    // The effective-keyword accessors (permanent_has_keyword / is_indestructible in game_queries.h)
+    // The effective-keyword accessors (permanent_has_keyword / is_indestructible in queries/keywords.h)
     // treat a keyword in this set as absent, so the loss has a real gameplay consequence — a
     // hexproof creature becomes targetable by opponents again, an indestructible one can be
     // destroyed / die to lethal damage — for the rest of the turn. Cleared at the cleanup step

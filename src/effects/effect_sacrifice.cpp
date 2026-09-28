@@ -9,9 +9,11 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../queries/battlefield.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
