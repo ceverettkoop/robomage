@@ -13,6 +13,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/counters.h"
 #include "../queries/types.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 

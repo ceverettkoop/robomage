@@ -17,6 +17,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -75,7 +76,7 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
 // Register a turn-long "hexproof from <color(s)>" grant for `ctrl` and the permanents they
 // control (Veil of Summer's "You and permanents you control gain hexproof from blue and from
 // black until end of turn"). Player-scoped so it protects the player object and every permanent
-// the player controls; lapses at cleanup (CR 514.2). Consulted in Ability::is_legal_target.
+// the player controls; lapses at cleanup (CR 514.2). Consulted in is_legal_target.
 static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colors> &colors) {
     if (colors.empty()) return;
     Game::HexproofFromColors h;
@@ -137,7 +138,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
 
     // The target was chosen when the spell was cast (CR 601.2c), the ability activated (602.2b)
     // or the trigger put on the stack (603.3d, 603.12 for a reflexive trigger), and its legality
-    // was re-verified in Ability::resolve (608.2b; an illegal target fizzles there and never
+    // was re-verified in resolve_ability (608.2b; an illegal target fizzles there and never
     // reaches this handler). That covers targeted pump spells (Giant Growth, Dismember — whose
     // IsCurse$ AI hint needs no special-casing here), player-targeted curse pumps (Carpet of
     // Flowers: ab.target stays the opponent so the chained DB$ Mana sub's Count$Valid

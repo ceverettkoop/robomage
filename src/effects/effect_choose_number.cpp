@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../input_logger.h"
+#include "../svar_eval.h"
 
 extern Game cur_game;
 

@@ -26,6 +26,7 @@
 #include "../resolution_frame.h"
 #include "../saga.h"
 #include "orderer.h"
+#include "../resolution.h"
 
 extern Game cur_game;
 
@@ -219,7 +220,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
                 // re-enters here as the resume path.
-                if (ab.resolve(orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+                if (resolve_ability(ab, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
                 frame_finish();
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
@@ -252,7 +253,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
         // frame_enter's first-entry block so a resume never recounts.
         frame_enter(top_entity, ability, /*count_triggered=*/true);
-        if (ability.resolve(orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+        if (resolve_ability(ability, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
         frame_finish();
 
         // CR 714.4: a Saga chapter ability has now left the stack — release the sacrifice gate so a

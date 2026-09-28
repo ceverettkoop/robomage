@@ -43,6 +43,8 @@
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
+#include "../resolution.h"
+#include "../targeting.h"
 
 // A triggered ability that has fired and is waiting to be put on the stack. We collect every
 // trigger from the current batch of events first, then place them all in APNAP order (603.3b);
@@ -708,7 +710,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             // when the permanent left) — but routing it here keeps Static$ True triggers off the
             // stack as the rules require, rather than queueing a spurious StoreSVar trigger.
             if (trigger_ab.def->trigger_static_offstack) {
-                trigger_ab.resolve(orderer);
+                resolve_ability(trigger_ab, orderer);
                 continue;
             }
 
@@ -1215,7 +1217,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
             // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
             if (trigger_ab.def->trigger_static_offstack) {
-                trigger_ab.resolve(orderer);
+                resolve_ability(trigger_ab, orderer);
                 continue;
             }
 

@@ -1,5 +1,6 @@
 #include "svar_eval.h"
 
+#include <algorithm>
 #include <cctype>
 #include <set>
 #include <string>
@@ -15,7 +16,12 @@
 #include "queries/filters.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
+#include "queries/characteristics.h"
+#include "queries/lki.h"
 #include "queries/spells.h"
+#include "queries/types.h"
+#include "queries/zones.h"
+#include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
 
@@ -304,4 +310,351 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
             Zone::GRAVEYARD, expr.substr(std::string("Count$ValidGraveyard").size()), controller);
 
     return 0;
+}
+
+// Evaluates a dynamic_amount_expr at runtime for the given controller.
+// Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
+//           Count$Valid Creature.YouCtrl, Targeted$CardPower.
+size_t evaluate_dynamic_amount(
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
+    Entity source) {
+    // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the ability's SOURCE permanent
+    // (The One Ring: X = Count$CardCounters.BURDEN, read by its upkeep life-loss and its draw).
+    // The counter type is the substring after the dot, up to any further qualifier delimiter.
+    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0) {
+        std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
+        size_t end = ctype.find_first_of(".+ ");
+        if (end != std::string::npos) ctype = ctype.substr(0, end);
+        if (global_coordinator.entity_has_component<Permanent>(source)) {
+            const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
+            auto it = counters.find(ctype);
+            return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+        }
+        // LKI fallback (CR 608.2h): the source has left the battlefield (Blast Zone is sacrificed
+        // as part of its own activation cost before this DestroyAll bound resolves) — use the
+        // counter count snapshotted as it left play.
+        // The ability refers to the departed Blast Zone even if the card has since moved again.
+        if (const LastKnownInfo *lki = departed_lki_for(source)) {
+            auto ci = lki->counters.find(ctype);
+            if (ci != lki->counters.end() && ci->second > 0)
+                return static_cast<size_t>(ci->second);
+        }
+        return 0;
+    }
+    if (expr.find("Count$Devotion.") != std::string::npos) {
+        // Count mana symbols of a given color in mana costs of permanents you control
+        Colors devotion_color = NO_COLOR;
+        if (expr.find("Devotion.Blue") != std::string::npos)
+            devotion_color = BLUE;
+        else if (expr.find("Devotion.Black") != std::string::npos)
+            devotion_color = BLACK;
+        else if (expr.find("Devotion.Red") != std::string::npos)
+            devotion_color = RED;
+        else if (expr.find("Devotion.Green") != std::string::npos)
+            devotion_color = GREEN;
+        else if (expr.find("Devotion.White") != std::string::npos)
+            devotion_color = WHITE;
+        // CR 700.5: each mana symbol of that color in the mana costs of permanents you control,
+        // a hybrid or Phyrexian symbol of that color included.
+        size_t count = 0;
+        for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            count += cd.mana_cost.count(devotion_color);
+            for (const auto &pip : cd.hybrid_mana)
+                if (std::find(pip.colors.begin(), pip.colors.end(), devotion_color) != pip.colors.end())
+                    count++;
+            count += static_cast<size_t>(
+                std::count(cd.phyrexian_mana.begin(), cd.phyrexian_mana.end(), devotion_color));
+        }
+        return count;
+    }
+    // Count$xPaid — the value of X chosen for an X cost when this spell/ability was
+    // cast/activated (Kozilek's Command: X = Count$xPaid feeds the token count, scry
+    // count and graveyard-exile cap), read through current_x_paid().
+    if (expr.find("xPaid") != std::string::npos) {
+        return static_cast<size_t>(current_x_paid());
+    }
+    // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
+    // currently resolving (Prismatic Ending: the cmcLEY exile threshold), captured from its
+    // Spell::colors_spent as it starts resolving.
+    if (expr.find("Count$Converge") != std::string::npos) {
+        return static_cast<size_t>(current_converge());
+    }
+    if (expr.find("Count$InYourLibrary") != std::string::npos ||
+        expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
+        size_t lib = orderer->get_library_contents(ctrl).size();
+        // /HalfUp — half the count, rounded up (Tamiyo, Seasoned Scholar's -7: "draw cards
+        // equal to half the number of cards in your library, rounded up"). ceil(N/2).
+        if (expr.find("/HalfUp") != std::string::npos) return (lib + 1) / 2;
+        return lib;
+    }
+    if (expr.find("Count$YourLifeTotal") != std::string::npos) {
+        Entity ctrl_entity = get_player_entity(ctrl);
+        auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
+        int life = player.life_total;
+        if (life < 0) life = 0;
+        if (expr.find("/HalfUp") != std::string::npos) {
+            return static_cast<size_t>((life + 1) / 2);
+        }
+        return static_cast<size_t>(life);
+    }
+    // Count$ValidStack <filter> — number of stack objects matching a card filter (Mindbreak
+    // Trap: TargetMax$ MaxTgts, MaxTgts = Count$ValidStack Card — the cap on "exile any number
+    // of target spells" is the number of spell cards on the stack). Card-shaped filters are
+    // matched through the shared comma-OR card filter against each spell's printed
+    // characteristics; standalone ability entities (no CardData) are not cards and don't count.
+    // The evaluating ability's own source is excluded — a spell can never target itself, so
+    // counting it would only inflate the cap past the real candidate pool.
+    if (expr.rfind("Count$ValidStack ", 0) == 0) {
+        std::string spec = expr.substr(std::string("Count$ValidStack ").size());
+        size_t count = 0;
+        for (auto e : orderer->get_stack()) {
+            if (e == source) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_any(e, spec, MatchCtx{ctrl, source})) continue;
+            count++;
+        }
+        return count;
+    }
+    // Count$Valid <filter>$CardManaCost — the SUM of mana values of battlefield permanents matching
+    // the filter, rather than their count (Summon: Bahamut's Mega Flare: X = Count$Valid
+    // Permanent.YouCtrl+Other$CardManaCost = the total mana value of OTHER permanents you control).
+    // The "+Other" qualifier excludes the ability's own source (the Bahamut); `source` is threaded
+    // into the match context for it. A token / costless permanent contributes mana value 0.
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("$CardManaCost") != std::string::npos) {
+        std::string rest = expr.substr(std::string("Count$Valid ").size());
+        size_t dollar = rest.rfind("$CardManaCost");
+        std::string spec = rest.substr(0, dollar);  // the filter, e.g. "Permanent.YouCtrl+Other"
+        if (!spec.empty()) {
+            MatchCtx mctx;
+            mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl
+            mctx.source = source;    // for the +Other qualifier (exclude the source)
+            size_t total = 0;
+            for (auto e : orderer->mEntities) {
+                if (!is_battlefield_permanent(e)) continue;
+                if (!permanent_matches_filter(e, spec, mctx)) continue;
+                if (global_coordinator.entity_has_component<CardData>(e))
+                    total += static_cast<size_t>(
+                        card_mana_value(global_coordinator.GetComponent<CardData>(e)));
+            }
+            return total;
+        }
+    }
+    // Count$Valid <filter>.TargetedPlayerCtrl — number of battlefield permanents matching the
+    // filter controlled by the PLAYER this ability targets (Carpet of Flowers: Islands the target
+    // opponent controls, via the curse-Pump's ValidTgts$ Opponent inherited by the Mana sub).
+    // `target` is that Player entity; evaluate the filter from its perspective by rewriting
+    // TargetedPlayerCtrl → YouCtrl and counting with the target player's ownership. Handled before
+    // the generic Count$Valid branch (which would treat TargetedPlayerCtrl as an unknown qualifier).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("TargetedPlayerCtrl") != std::string::npos) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());
+        size_t pos = spec.find("TargetedPlayerCtrl");
+        spec.replace(pos, std::string("TargetedPlayerCtrl").size(), "YouCtrl");
+        Zone::Ownership tgt_ctrl = Zone::UNKNOWN;
+        if (target == cur_game.player_a_entity)      tgt_ctrl = Zone::PLAYER_A;
+        else if (target == cur_game.player_b_entity) tgt_ctrl = Zone::PLAYER_B;
+        if (tgt_ctrl == Zone::UNKNOWN) return 0;
+        return static_cast<size_t>(count_battlefield_matching(spec, tgt_ctrl, source));
+    }
+    // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
+    // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
+    // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
+    // It routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
+    // colors) through the shared permanent_matches_filter so supertype/color/etc. qualifiers
+    // are honored, not just the head type. The RememberedPlayerCtrl form is excluded so it
+    // falls through to its dedicated handler below (it needs the remembered-player reference
+    // and the /Times multiplier, neither of which permanent_matches_filter understands).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("RememberedPlayerCtrl") == std::string::npos &&
+        expr.find("$CardManaCost") == std::string::npos) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
+        if (!spec.empty())
+            return static_cast<size_t>(count_battlefield_matching(spec, ctrl, source));
+    }
+    // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
+    if (expr.find("Count$Revolt.") != std::string::npos) {
+        size_t dot1 = expr.find("Revolt.") + 7;
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool revolt = revolt_this_turn(ctrl);
+        return static_cast<size_t>(revolt ? high_val : low_val);
+    }
+    // Count$PromisedGift.high.low — Gift (CR 702.176): returns high if the spell currently being
+    // cast/resolved promised its gift to an opponent, low otherwise. Into the Flood Maw drives its
+    // two ChangeZone abilities' TargetMin$/TargetMax$ off this (X = .0.1, Y = .1.0): not promised →
+    // the creature-bounce targets 1 and the nonland-bounce targets 0; promised → the reverse, so
+    // the spell instead bounces any nonland permanent. Read from the cast-time pending flag (the
+    // target counts are evaluated as targets are chosen, before the Spell component exists).
+    if (expr.find("Count$PromisedGift.") != std::string::npos) {
+        size_t dot1 = expr.find("PromisedGift.") + std::string("PromisedGift.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        return static_cast<size_t>(current_gift_promised() ? high_val : low_val);
+    }
+    // Count$Threshold.high.low — Threshold (CR 702.27 historical keyword action; modern cards
+    // spell the condition out): returns high if the controller has seven or more cards in their
+    // graveyard, low otherwise (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold,
+    // else 3). General for any card scaling a dynamic amount by the threshold condition.
+    if (expr.find("Count$Threshold.") != std::string::npos) {
+        size_t dot1 = expr.find("Threshold.") + std::string("Threshold.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool threshold = orderer->get_graveyard(ctrl).size() >= 7;
+        return static_cast<size_t>(threshold ? high_val : low_val);
+    }
+    // Count$UrzaLands.high.low — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): returns
+    // high if the controller controls at least one Urza's Mine AND one Urza's Power-Plant AND one
+    // Urza's Tower (a complete set), low otherwise. Per CR 205.3i these are LAND TYPES, so the
+    // check reads each permanent's effective type line (Permanent::types — includes types added
+    // by continuous effects, e.g. Planar Nexus's AllNonBasicLandType self-CDA), not card names.
+    // One permanent with several of the subtypes (Nexus) satisfies each it carries. Each land's
+    // own ability scales its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C}
+    // alone; Tower: .3.1 → {C}{C}{C} / {C}). General over any card scaling a dynamic amount by
+    // Tron assembly.
+    if (expr.find("Count$UrzaLands.") != std::string::npos) {
+        size_t dot1 = expr.find("UrzaLands.") + std::string("UrzaLands.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool mine = false, plant = false, tower = false;
+        for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
+            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (!permanent_has_type(perm, "Urza's")) continue;
+            if (permanent_has_type(perm, "Mine")) mine = true;
+            if (permanent_has_type(perm, "Power-Plant")) plant = true;
+            if (permanent_has_type(perm, "Tower")) tower = true;
+        }
+        return static_cast<size_t>((mine && plant && tower) ? high_val : low_val);
+    }
+    if (expr.find("Targeted$CardPower") != std::string::npos) {
+        // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
+        // included), else its last-known value once it has left (e.g. Swords to Plowshares
+        // reads the power of the creature it just exiled). Single unified accessor.
+        int p = effective_power(target);
+        return static_cast<size_t>(p < 0 ? 0 : p);
+    }
+    // ExiledWith$CardManaCost — the mana value of the card the source Saga exiled face down (The
+    // Creation of Avacyn chapter II: "you lose life equal to its mana value"). Resolved from the
+    // source's Permanent::exiled_with; an absent/gone card contributes 0.
+    if (expr.find("ExiledWith$CardManaCost") != std::string::npos) {
+        int mv = 0;
+        Entity ew = exiled_with_card(source);
+        if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew))
+            mv = object_mana_value(ew, global_coordinator.GetComponent<CardData>(ew));
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
+    }
+    if (expr.find("Targeted$CardManaCost") != std::string::npos) {
+        // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
+        // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
+        // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
+        int mv = 0;
+        if (target != 0 && global_coordinator.entity_has_component<CardData>(target))
+            mv = object_mana_value(target, global_coordinator.GetComponent<CardData>(target));
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
+    }
+    // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects
+    // (cur_game.resolution.memory.remembered), regardless of type. Triumph of Saint Katherine's recursion
+    // gates its shuffle-back on "RememberedSize GE7" — the self-exiled card plus the six milled
+    // cards. Distinct from Remembered$Valid, which filters by card characteristics.
+    if (expr == "Count$RememberedSize" || expr == "RememberedSize")
+        return cur_game.resolution.memory.remembered.size();
+    // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
+    // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
+    // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
+    // this way"). These are now in their destination zone (e.g. exile), so match by printed
+    // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
+    if (expr.rfind("Remembered$Valid ", 0) == 0) {
+        std::string filters = expr.substr(std::string("Remembered$Valid ").size());
+        MatchCtx mctx;
+        mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
+        size_t count = 0;
+        for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
+        }
+        return count;
+    }
+    // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
+    // Ritual: X = 1 plus the sacrificed creature's mana value). The RememberedLKI$ variant
+    // reads the same remembered entity, but is populated by a RememberLKI$ ChangeZone that
+    // snapshots the card as last-known info once it has left its origin zone (Reanimate: you
+    // lose life equal to the reanimated creature's mana value — CR 608.2h last-known-info,
+    // since the card left the graveyard as it entered play). Both forms resolve identically
+    // here because the LKI snapshot is pushed to cur_game.resolution.memory.remembered all the same.
+    if (expr.find("Remembered$CardManaCost") != std::string::npos ||
+        expr.find("RememberedLKI$CardManaCost") != std::string::npos) {
+        int base = 0;
+        if (!cur_game.resolution.memory.remembered.empty()) {
+            Entity r = cur_game.resolution.memory.remembered[0].lki_entity();
+            if (global_coordinator.entity_has_component<CardData>(r))
+                base = object_mana_value(r, global_coordinator.GetComponent<CardData>(r));
+        }
+        size_t plus = expr.find("/Plus.");
+        if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));
+        return static_cast<size_t>(base < 0 ? 0 : base);
+    }
+    // Count$Valid Land.nonBasic+RememberedPlayerCtrl[/Times.N] — number of nonbasic
+    // lands controlled by the remembered player (Price of Progress, evaluated once per
+    // player by the RepeatEach loop), optionally multiplied by N. The remembered player
+    // is cur_game.resolution.memory.remembered[0] (a Player entity set by the repeat_each handler).
+    if (expr.find("Count$Valid Land.nonBasic+RememberedPlayerCtrl") != std::string::npos) {
+        Zone::Ownership remembered_ctrl = ctrl;
+        if (!cur_game.resolution.memory.remembered.empty()) {
+            Entity rp = cur_game.resolution.memory.remembered[0].get();
+            if (rp == cur_game.player_a_entity) remembered_ctrl = Zone::PLAYER_A;
+            else if (rp == cur_game.player_b_entity) remembered_ctrl = Zone::PLAYER_B;
+        }
+        size_t count = 0;
+        for (auto e : orderer->mEntities) {
+            if (!is_battlefield_permanent(e, remembered_ctrl)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool is_land = false;
+            for (auto &t : cd.types)
+                if (t.name == "Land") { is_land = true; break; }
+            if (!is_land) continue;
+            if (has_basic_supertype(cd.types)) continue;  // nonBasic only
+            count++;
+        }
+        size_t mult = 1;
+        size_t times_pos = expr.find("/Times.");
+        if (times_pos != std::string::npos)
+            mult = static_cast<size_t>(std::stoi(expr.substr(times_pos + 7)));
+        return count * mult;
+    }
+    // Count$ThisTurnCast_Card.<Ctrl>+<Color>[,Card.<Ctrl>+<Color>...] — has a player (relative to
+    // ctrl) cast a spell of one of the named colors this turn? (Veil of Summer:
+    // Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black, the gate for its conditional draw.)
+    // Reads Player::spell_colors_cast_this_turn (presence-tracked per color); returns 1 if any
+    // requested color was cast by the relevant player this turn, else 0 — sufficient for the GE1
+    // conditions that consume it.
+    if (expr.find("Count$ThisTurnCast_") != std::string::npos) {
+        Zone::Ownership opp = opponent_of(ctrl);
+        // The clause controller token is read per-expression (Veil uses OppCtrl); YouCtrl (or no
+        // controller token) means the source's controller.
+        Zone::Ownership who = (expr.find("OppCtrl") != std::string::npos) ? opp : ctrl;
+        Entity pe = get_player_entity(who);
+        if (global_coordinator.entity_has_component<Player>(pe)) {
+            const auto &colors = global_coordinator.GetComponent<Player>(pe).spell_colors_cast_this_turn;
+            bool hit = (expr.find("Blue") != std::string::npos && colors.count(BLUE)) ||
+                       (expr.find("Black") != std::string::npos && colors.count(BLACK)) ||
+                       (expr.find("Red") != std::string::npos && colors.count(RED)) ||
+                       (expr.find("Green") != std::string::npos && colors.count(GREEN)) ||
+                       (expr.find("White") != std::string::npos && colors.count(WHITE));
+            return hit ? 1 : 0;
+        }
+        return 0;
+    }
+    // Fall back to the shared static-ability SVar evaluator for graveyard-count
+    // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
+    // returns 0 for anything it doesn't recognise, so this preserves the prior
+    // default while making one set of Count$ handlers serve both paths.
+    int sa_val = evaluate_sa_svar(expr, ctrl);
+    return sa_val > 0 ? static_cast<size_t>(sa_val) : 0;
 }

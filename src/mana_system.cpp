@@ -34,6 +34,8 @@
 #include "systems/replacement_effects.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
+#include "resolution.h"
+#include "svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -792,7 +794,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
         for (auto sub_ab : ab.subabilities) {
             sub_ab.source = ObjectRef::of(source);
             sub_ab.controller = controller;
-            sub_ab.resolve(orderer);
+            resolve_ability(sub_ab, orderer);
         }
     }
     if (commit) increment_activation_count(perm, ab);

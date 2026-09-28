@@ -16,6 +16,7 @@
 #include "../queries/players.h"
 #include "../queries/zones.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 

@@ -41,6 +41,8 @@
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
 #include "systems/state_manager_internal.h"
+#include "targeting.h"
+#include "svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -75,8 +77,6 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
 // offer gate's payment_blocked guard and reverse the activation.
 static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer);
-static std::vector<Entity> build_valid_targets(
-    const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ownership caster);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
@@ -120,8 +120,6 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out);
 static std::vector<Entity> chosen_targets_of(Entity targeting_entity);
 static std::vector<LegalAction> escape_exile_menu(Zone::Ownership caster, Entity spell_entity,
                                                   std::shared_ptr<Orderer> orderer);
-static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
-                                std::shared_ptr<Orderer> orderer, bool x_announced);
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
@@ -422,79 +420,6 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     pa.stack_ab = ability;  // not used for mana ability
     begin_activation(pa, controller, orderer);
     run_activation_flow(pa, game, orderer, -1);
-}
-
-//  Build the list of legal targets for an ability.
-//  Targets are sorted from the caster's perspective: opponent entities first (opponent
-//  player, then opponent's permanents in entity-ID order), followed by own entities
-//  (own player, then own permanents in entity-ID order).  This keeps action index 0
-//  pointing at the opponent player for burn spells regardless of which player is casting,
-//  which makes the action space symmetric and simplifies self-play training.
-//
-//  Legality of each candidate is decided by Ability::is_legal_target (the single source
-//  of truth shared with resolution-time re-verification); this function only chooses the
-//  candidate set and the order they are presented in.
-static std::vector<Entity> build_valid_targets(
-    const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
-    std::vector<Entity> valid_targets;
-    const std::string &vt = ability.def->valid_tgts;
-
-    // Stack targets: spells (counterspells) or standalone abilities (Stifle)
-    if (ability.def->target_type == "Spell" ||
-        ability.def->target_type.find("Activated") != std::string::npos ||
-        ability.def->target_type.find("Triggered") != std::string::npos) {
-        for (auto e : orderer->get_stack()) {
-            // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
-            // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
-            // target at resolution, or an activated ability being activated (CR 602.2a).
-            if (e == ability.source.get()) continue;
-            if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
-                continue;
-            if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
-        }
-        return valid_targets;
-    }
-
-    Zone::Ownership opp = opponent_of(priority_player);
-
-    // Target cards in a graveyard (e.g. Faerie Macabre targeting any graveyard card,
-    // Life from the Loam targeting Land.YouCtrl, or targeted reanimation graveyard→
-    // battlefield like Lorehold Charm): opponent's graveyard first, then own.
-    // is_legal_target applies the type/owner/MV filter, so YouOwn effects only keep the
-    // caster's own cards. The destination is irrelevant to where the candidate sits, so
-    // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
-    // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
-    // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
-    if (ability.def->target_in_graveyard ||
-        (ability.def->category == "ChangeZone" && ability.def->origin == Zone::GRAVEYARD)) {
-        for (int pass = 0; pass < 2; pass++) {
-            Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                if (global_coordinator.GetComponent<Zone>(e).owner != slot_owner) continue;
-                if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
-            }
-        }
-        return valid_targets;
-    }
-
-    // Players: opponent first, self second (is_legal_target applies the spec's player clause)
-    if (target_spec_names_players(vt)) {
-        for (Zone::Ownership seat : {opp, priority_player})
-            if (ability.is_legal_target(get_player_entity(seat), priority_player))
-                valid_targets.push_back(get_player_entity(seat));
-    }
-
-    // Permanents: two passes — opponent's first, then own (entity-ID order within each group)
-    for (int pass = 0; pass < 2; pass++) {
-        Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
-        for (auto entity : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            if (global_coordinator.GetComponent<Permanent>(entity).controller != slot_owner) continue;
-            if (ability.is_legal_target(entity, priority_player)) valid_targets.push_back(entity);
-        }
-    }
-    return valid_targets;
 }
 
 // TODO MAKE THIS GENERAL
@@ -1013,21 +938,6 @@ static void finish_blocker_declaration(Game &game) {
     game.priority.player_a_has_priority = game.turn_state.player_a_turn;
 }
 
-// Perspective player for an ability's target search. Ownership-restricted targets
-// (.YouOwn/.YouCtrl/.OppOwn — e.g. Emry's "target artifact card in YOUR graveyard") are
-// relative to the activating/controlling player, so the existence check must use that player
-// rather than a hardcoded placeholder. Derive it from the ability's source: a battlefield
-// permanent's controller, else its owning zone, else the ability's stored controller.
-static Zone::Ownership ability_perspective_player(const Ability &ability) {
-    Entity src = ability.source.get();
-    if (src != 0) {
-        if (global_coordinator.entity_has_component<Permanent>(src))
-            return global_coordinator.GetComponent<Permanent>(src).controller;
-        if (global_coordinator.entity_has_component<Zone>(src))
-            return global_coordinator.GetComponent<Zone>(src).owner;
-    }
-    return ability.controller;
-}
 
 Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership chooser) {
     const std::string &filter = cd.enchant_filter;
@@ -1051,35 +961,7 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
     Entity tgt = entry->aura_target.get();
     if (tgt == 0) return false;
     const auto &cd = global_coordinator.GetComponent<CardData>(aura);
-    return enchant_target_ability(aura, cd, controller).is_legal_target(tgt, controller);
-}
-
-bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
-    if (ability.def->valid_tgts == "N_A") return true;
-    // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
-    // targets must be evaluated from the controlling player's perspective (see above), or a
-    // ".YouOwn" ability could be offered with no legal target and crash on an empty target menu.
-    Zone::Ownership perspective = ability_perspective_player(ability);
-    // optional targeting always has "legal targets"
-    if (effective_target_min(ability, perspective, orderer, /*x_announced=*/false) <= 0) return true;
-    return !build_valid_targets(ability, orderer, perspective).empty();
-}
-
-// The minimum number of targets `ab` requires (CR 601.2c), the one rule behind the cast- and
-// activation-legality gates (has_legal_targets), the charm-mode filter and target selection. A
-// static TargetMin$ is its literal value. A non-xPaid count-SVar min (Into the Flood Maw:
-// TargetMin$ X = Count$PromisedGift.0.1) is evaluated now against the current game state (which
-// reads the pending gift-promise flag).
-// An xPaid-driven min ("exactly X targets", Hide on the Ceiling; "up to X", Kozilek's Command)
-// reads the X announced for the spell when `x_announced`; before X is chosen (the cast-legality
-// gate) it counts as 0 — X may legally be 0, so it must not gate castability.
-static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
-                                std::shared_ptr<Orderer> orderer, bool x_announced) {
-    if (ab.def->target_min_from_xpaid) return x_announced ? current_x_paid() : 0;
-    if (!ab.def->target_min_count_expr.empty())
-        return static_cast<int>(evaluate_dynamic_amount(ab.def->target_min_count_expr, perspective,
-                                                        orderer, 0, ab.source.lki_entity()));
-    return ab.target_min;
+    return is_legal_target(enchant_target_ability(aura, cd, controller), tgt, controller);
 }
 
 // Gather a spell's targeting abilities: the primary spell ability plus any chained sub-ability
@@ -1258,7 +1140,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
         // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
         // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
-        // target_min/target_max so resolution (is_target_valid) sees the same bounds. Stamped
+        // target_min/target_max so resolution (targets_still_legal) sees the same bounds. Stamped
         // ONCE — a resume re-enters with rt.active set and never re-evaluates.
         int effective_max = ability.target_max;
         if (ability.def->target_max_from_xpaid)
@@ -2613,7 +2495,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // opponent. The promise is not a cost — it is decided here (before targets are chosen,
             // CR 601.2c) and it both (a) switches a Count$PromisedGift-driven effect via the
             // pending flag while targets are selected and (b) makes the opponent receive the gift
-            // on resolution (see Spell::gift_promised / Ability::resolve). Optional yes/no.
+            // on resolution (see Spell::gift_promised / resolve_ability). Optional yes/no.
             if (card_data.has_gift) {
                 if (resume_choice >= 0) {
                     bool accepted = (resume_choice == 1);
@@ -2683,7 +2565,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 pc.ability.source = ObjectRef::of(spell_entity);  // the spell on the stack (601.2a)
                 pc.ability.controller = caster;
                 // Carry the Gift keyword's gift effect onto the resolving spell's primary ability;
-                // it fires at resolution only if the gift was promised (Ability::resolve).
+                // it fires at resolution only if the gift was promised (resolve_ability).
                 if (card_data.has_gift)
                     for (const AbilityDef *gift : card_data.gift_abilities)
                         pc.ability.gift_abilities.emplace_back(gift);
@@ -2793,7 +2675,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal Therapy:
             // SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$ Player).
             // Select each targeting sub-ability's target now and store it on the sub-ability
-            // template; resolution preserves it (see Ability::resolve).
+            // template; resolution preserves it (see resolve_ability).
             while (pc.sub_idx < pc.ability.subabilities.size()) {
                 Ability &sub = pc.ability.subabilities[pc.sub_idx];
                 if (sub.def->valid_tgts != "N_A") {

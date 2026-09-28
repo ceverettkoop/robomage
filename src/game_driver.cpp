@@ -37,6 +37,7 @@
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
+#include "resolution.h"
 
 // Per-game seed for a bo3 game. Salt 0 (the real line) reproduces today's exact
 // seed; a nonzero g_sim_seed_salt (set by a sideboard-root DETERMINIZE) folds in
@@ -965,7 +966,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
             cur_game.priority.player_a_has_priority = prev_priority;
             pg.oh_card_idx++;
             if (choice == 1) {
-                // Same instantiation pattern as gift_abilities in Ability::resolve: copy the
+                // Same instantiation pattern as gift_abilities in resolve_ability: copy the
                 // parsed template, wire this card as the source and its holder as controller,
                 // and run it through the normal resolve pipeline so zone-change replacements/
                 // ETB machinery apply.
@@ -973,7 +974,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
                     Ability ab(oh_def);
                     ab.source = ObjectRef::of(card);
                     ab.controller = player;
-                    ab.resolve(sys.orderer);
+                    resolve_ability(ab, sys.orderer);
                 }
                 pg.oh_any_ran = true;
             }

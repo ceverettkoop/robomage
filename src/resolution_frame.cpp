@@ -9,6 +9,7 @@
 #include "input_logger.h"
 #include "pending_query.h"
 #include "queries/players.h"
+#include "resolution.h"
 
 extern Game cur_game;
 extern Coordinator global_coordinator;
@@ -176,7 +177,7 @@ ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel:
                         ", iter " + std::to_string(iter_index) + ")");
     }
     FrameCtx child_ctx(true, child_depth);
-    ResolveStatus st = fr.levels[child_depth].work.resolve(orderer, child_ctx);
+    ResolveStatus st = resolve_ability(fr.levels[child_depth].work, orderer, child_ctx);
     if (st == ResolveStatus::DONE) {
         // The completed child must be the deepest level (its own children pop
         // before it returns DONE).

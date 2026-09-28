@@ -10,6 +10,8 @@
 #include "../queries/characteristics.h"
 #include "../queries/keywords.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 

@@ -14,6 +14,7 @@
 #include "../queries/spells.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -154,7 +155,7 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             // Target still exists but has left the stack (e.g. it was already countered by an
             // earlier counter that resolved first). Its only target is illegal, so the counter
             // does nothing and is put into its graveyard (CR 608.2b). The pre-resolve target check
-            // (Ability::resolve / is_target_valid) normally fizzles this first; this is a defensive
+            // (resolve_ability / targets_still_legal) normally fizzles this first; this is a defensive
             // clean fizzle for any path that reaches the effect with a stale target.
             game_log("Counter fizzles (target no longer on the stack)\n");
         }

@@ -12,6 +12,7 @@
 #include "../ecs/events.h"
 #include "../queries/counters.h"
 #include "../queries/players.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

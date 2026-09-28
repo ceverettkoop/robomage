@@ -12,6 +12,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 

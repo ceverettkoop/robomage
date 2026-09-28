@@ -306,7 +306,7 @@ chosen cards, named card, chosen number/type) is `cur_game.resolution.memory`; X
 are read through `current_x_paid()` / `current_converge()` (`src/queries/spells.h`) — the cast or
 activation in flight, else the resolving object's own values — never a global.
 
-`Ability::resolve()` (`src/components/ability.cpp`) is a phased state machine that maps the
+`resolve_ability()` (`src/resolution.cpp`) is a phased state machine that maps the
 category string to an `EffectKind` (`src/effects/effect_kind.{h,cpp}`), dispatches through
 `effects::handler_for` (`effect_table.cpp`) to a per-effect handler in
 `src/effects/effect_<name>.cpp` (declared in `effects.h`), then chains `SubAbility$`. An unmapped
@@ -516,7 +516,10 @@ sections above are not repeated here.
   `_combat`, `_layers` = CR 613 layer driver, `_statics`, `_triggers` = APNAP placement)
 - `src/systems/replacement_effects.{h,cpp}` — CR 614/616 dispatcher; `rules_modifying.{h,cpp}` —
   cast/activate/land-play prohibitions
-- `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `Ability::resolve()` to them
+- `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
+- `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
+  candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
+  — unless-cost payment; `src/svar_eval.cpp` — SVar (`Count$` …) evaluation
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
   `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,

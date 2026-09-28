@@ -28,7 +28,7 @@ namespace effects {
 using EffectHandler = HandlerResult (*)(Ability &, std::shared_ptr<Orderer>, FrameCtx &);
 
 // Returns the handler for `kind`, or nullptr if no resolve-time handler exists
-// (None, or a category handled at activation such as Equip). Ability::resolve()
+// (None, or a category handled at activation such as Equip). resolve_ability()
 // just chains the subabilities when this returns nullptr.
 EffectHandler handler_for(EffectKind kind);
 
@@ -312,46 +312,5 @@ bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string 
 bool parse_set_state(AbilityDef &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
-
-// ── Shared resolution helpers ───────────────────────────────────────────────
-// De-static'd from ability.cpp so effect handlers in separate translation units
-// can reuse them. Definitions still live in ability.cpp for now.
-size_t evaluate_dynamic_amount(
-    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
-    Entity source = 0);
-// Search a zone for cards matching the comma-separated type list in change_type
-// (empty change_type matches all cards in the zone).
-// When mandatory=true, "fail to find" is suppressed unless the zone is empty.
-// Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
-// reveal=true marks every offered card choice as public knowledge (revealed
-// tutors), so observers may show the chosen card's name even into a hidden zone.
-// cmc_bound (>= 0) plus cmc_op ("EQ"/"LE"/...) additionally gate candidate cards by
-// mana value (Aether Vial: MV == charge-counter count, resolved by the caller); -1 = none.
-// The pick asks through `ctx` (with `decision_source` as the pending-decision
-// context — the calling handler's ab.source); if the ask suspends, `suspended`
-// is set and 0 is returned mutating nothing — the caller must propagate
-// SUSPENDED. The candidate scan and menu rebuild identically on resume.
-// `chain_target` is the resolving chain's card target for a ChangeType `targetedBy` filter
-// alternative (Cloak and Dagger, Entwined); 0 = none.
-Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-    Zone::ZoneValue zone, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal, int cmc_bound, const std::string &cmc_op,
-    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target = 0);
-Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal,
-    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target = 0);
-// Offer an unless-cost (CR 118.12) to `controller`: pay `cost` of `kind` — {cost} generic mana or
-// the exact `cost_pips` (Chain Lightning: {R}{R}), `cost` life (Ward—Pay life, CR 702.21), discard
-// `cost` card(s) from hand (Reality Smasher, CR 701.8), or `cost` energy ({E}, CR 122.1c — Static
-// Prison) — or decline. Returns true if the payer declined or couldn't pay. `subject` names the
-// governed effect and its object, which the shared choice_labels builders word into the pay and
-// decline entries. The LIFE/ENERGY yes-no and the DISCARD flow ask through `ctx` and may suspend
-// (`suspended` set, return value meaningless — check it FIRST); the MANA tap-for-mana loop is a
-// live-menu loop (Shape C). `decision_source` (the resolving ability's source) is the
-// pending-decision context of every ask.
-bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
-                     UnlessPayKind kind = UnlessPayKind::MANA, const ManaValue *cost_pips = nullptr);
 
 #endif /* EFFECTS_H */

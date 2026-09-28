@@ -8,6 +8,7 @@
 #include "../cli_output.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../svar_eval.h"
 
 extern Game cur_game;
 

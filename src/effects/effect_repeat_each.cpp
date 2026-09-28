@@ -11,6 +11,7 @@
 #include "../ecs/coordinator.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../resolution.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -75,7 +76,7 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
                 Ability sub = body;
                 sub.source = ab.source;
                 sub.controller = ab.controller;
-                sub.resolve(orderer);
+                resolve_ability(sub, orderer);
             }
         }
         rt.player_idx++;
@@ -100,7 +101,7 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
             Ability sub = tail;
             sub.source = ab.source;
             sub.controller = ab.controller;
-            sub.resolve(orderer);
+            resolve_ability(sub, orderer);
         }
     }
     return HandlerResult::DONE_NO_SUBS;  // body + trailing subs resolved here; suppress default chaining
@@ -165,7 +166,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     sub.controller = ab.controller;
                     // Defined$ Remembered points the sub-ability at the looped player.
                     if (sub.def->defined_remembered) sub.target = ObjectRef::of(pe);
-                    sub.resolve(orderer);
+                    resolve_ability(sub, orderer);
                 }
             }
         }

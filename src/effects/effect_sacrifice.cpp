@@ -15,6 +15,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../systems/orderer.h"
+#include "../unless_payment.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

@@ -15,6 +15,7 @@
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../systems/orderer.h"
+#include "../resolution.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -99,7 +100,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
             Ability sub = stored;
             sub.source = ab.source;
             sub.controller = ab.controller;
-            sub.resolve(orderer);
+            resolve_ability(sub, orderer);
         }
     }
     return HandlerResult::DONE_NO_SUBS;

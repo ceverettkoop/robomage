@@ -31,6 +31,8 @@
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
+#include "../zone_search.h"
+#include "../targeting.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

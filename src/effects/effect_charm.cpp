@@ -10,6 +10,8 @@
 #include "../input_logger.h"
 #include "../queries/players.h"
 #include "../systems/orderer.h"
+#include "../resolution.h"
+#include "../targeting.h"
 
 namespace effects {
 
@@ -54,7 +56,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
                 if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
                 Ability &chosen = ab.charm_choices[static_cast<size_t>(idx)];
                 stamp_mode(ab, chosen);
-                chosen.resolve(orderer);
+                resolve_ability(chosen, orderer);
             }
         }
         // Skip subabilities — charm handles its own resolution
@@ -144,7 +146,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
                                   orderer) == ResolveStatus::SUSPENDED)
                 return HandlerResult::SUSPENDED;
         } else {
-            chosen.resolve(orderer);
+            resolve_ability(chosen, orderer);
         }
         rt.chosen_idx = -1;
         rt.targets_done = false;

@@ -9,6 +9,7 @@
 #include "../queries/players.h"
 #include "../systems/orderer.h"
 #include "../systems/replacement_effects.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 

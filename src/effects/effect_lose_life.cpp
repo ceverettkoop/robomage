@@ -9,6 +9,7 @@
 #include "../ecs/coordinator.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

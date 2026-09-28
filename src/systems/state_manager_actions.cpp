@@ -41,6 +41,7 @@
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
+#include "../targeting.h"
 
 static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);

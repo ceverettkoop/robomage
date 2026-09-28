@@ -713,7 +713,7 @@ struct Game {
         // control) from being targeted by spells/abilities an opponent controls whose source is
         // one of `colors`. Player-scoped (rather than a per-permanent keyword grant) so it can
         // also protect the player object, and so every permanent the player controls is covered;
-        // cleared at cleanup. Consulted in Ability::is_legal_target.
+        // cleared at cleanup. Consulted in is_legal_target.
         struct HexproofFromColors {
             Zone::Ownership player = Zone::UNKNOWN;
             std::set<Colors> colors;
@@ -724,7 +724,7 @@ struct Game {
         // damage by any source an opponent controls. `until_your_next_turn` selects the duration:
         // when true the grant is reverted at the start of the protected player's next turn (their
         // untap step); when false it lapses at cleanup (end of turn). Consulted in
-        // Ability::is_legal_target and deal_damage.
+        // is_legal_target and deal_damage.
         struct PlayerProtectionFromEverything {
             Zone::Ownership player = Zone::UNKNOWN;
             bool until_your_next_turn = false;

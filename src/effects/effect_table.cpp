@@ -2,7 +2,7 @@
 
 // Dispatch table for effect resolution: each effect category's handler lives in
 // its own src/effects/ translation unit. Categories with no case return nullptr
-// and Ability::resolve() just chains their subabilities.
+// and resolve_ability() just chains their subabilities.
 namespace effects {
 
 EffectHandler handler_for(EffectKind kind) {

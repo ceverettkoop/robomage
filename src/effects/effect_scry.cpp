@@ -15,6 +15,7 @@
 #include "../input_logger.h"
 #include "../queries/players.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;

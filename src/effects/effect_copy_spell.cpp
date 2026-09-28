@@ -39,6 +39,8 @@
 #include "../resolution_frame.h"
 #include "../systems/orderer.h"
 #include "effects.h"
+#include "../unless_payment.h"
+#include "../targeting.h"
 
 extern Coordinator global_coordinator;
 

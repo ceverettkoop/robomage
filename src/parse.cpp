@@ -1122,7 +1122,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
         // receives the gift as the spell resolves, before its other effects. The gift effect is
         // held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
         // card.gift_abilities; the cast path (action_processor) offers the promise choice and the
-        // resolving spell runs these when Spell::gift_promised is set (Ability::resolve).
+        // resolving spell runs these when Spell::gift_promised is set (resolve_ability).
         if (kw_line == "Gift" || kw_line.rfind("Gift", 0) == 0) {
             card.has_gift = true;
             card.keywords.push_back("Gift");

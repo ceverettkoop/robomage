@@ -15,13 +15,6 @@
 #include <variant>
 #include <vector>
 
-class Orderer;
-// Suspension framework (resolution_frame.h; included by resolve() callers, not
-// here — resolution_frame.h needs the complete Ability, so this header only
-// forward-declares). A scoped enum and a class are both fine as incomplete
-// types in the declarations below.
-enum class ResolveStatus;
-class FrameCtx;
 
 // Identity of a delayed triggered ability (CR 603.7), stamped once by
 // register_delayed_trigger (queries/delayed_triggers.h) onto the DelayedTrigger's fire ability. It rides
@@ -759,7 +752,7 @@ struct AbilityDef {
 
     // ConditionPresent$ resolution condition (Edge of Autumn: "If you control four or fewer lands,
     // search..."): count permanents matching the filter and compare to the threshold as the
-    // ability resolves (CR 608.2c); on failure Ability::resolve skips the body and still chains
+    // ability resolves (CR 608.2c); on failure resolve_ability skips the body and still chains
     // the subabilities. It never restricts casting or activating.
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
@@ -777,13 +770,13 @@ struct AbilityDef {
     // ConditionDefined$ Remembered — condition_present/condition_compare are evaluated over
     // cur_game.resolution.memory.remembered (count of remembered cards) rather than battlefield
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
-    // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
+    // at resolution in resolve_ability(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
     // ConditionDefined$ TriggeredCard — condition_present is a property check on the ability's
     // SOURCE object (the card that triggered this ability), not a board-presence count. Used by
     // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor: the dig only happens if the
     // creature that entered was cast from its controller's own hand). Gated at resolution in
-    // Ability::resolve(): on failure the body is skipped, subabilities still chain.
+    // resolve_ability(): on failure the body is skipped, subabilities still chain.
     bool condition_on_triggered_card = false;
 
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
@@ -983,28 +976,8 @@ struct Ability {
     // this ability's own target when it is a player, else the one it inherited.
     Entity player_target_for_subs() const;
 
-    // Resolution entry point. Only StackManager::resolve_top passes
-    // FrameCtx::root() (the suspendable path); every other caller uses the
-    // transitional blocking shim below, which resolves inline exactly as before.
-    ResolveStatus resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx);
-    void resolve(std::shared_ptr<Orderer> orderer);  // blocking shim (discards the status)
     bool identical_activated_ability(const AbilityDef *other) const;
-    // Single source of truth for target legality. Returns true if `cand` is a legal
-    // target for this ability when controlled by `caster`. Used both to enumerate
-    // legal targets (build_valid_targets) and to re-verify chosen targets at
-    // resolution (is_target_valid).
-    bool is_legal_target(Entity cand, Zone::Ownership caster) const;
-private:
-    // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
-    // effects::handler_for(). resolve() keeps only target validity + condition
-    // gating + subability chaining.
-    bool is_target_valid() const;
-    void fizzle(std::shared_ptr<Orderer> orderer);
-
 };
 
-
-// (search_zone / search_multi_zone are declared in effects/effects.h — they
-// thread a FrameCtx, which this header cannot include without a cycle.)
 
 #endif /* ABILITY_H */
