@@ -48,8 +48,15 @@ from env import (
     _GY_START, _GY_SLOT_SIZE, MAX_GY_SLOTS,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE, _OFF_POWER,
     _OFF_IS_LAND, _OFF_IS_PHASED_OUT, _OFF_OTHER_COUNTERS,
-    # per-action entity-reference slots (KEEP_LEGEND duplicate disambiguation)
-    ACT_REFS_START, N_ENTITY_REF_SLOTS,
+    # per-action entity-reference slots (KEEP_LEGEND duplicate disambiguation),
+    # zone refs (player vs permanent targets) and option ordinals (pay/decline,
+    # activated-ability index)
+    ACT_REFS_START, N_ENTITY_REF_SLOTS, ACT_ZONE_START, ACT_ORDS_START,
+    OPTION_ORDINAL_MAX, REF_ZONE_MAX,
+    # stack / mana-pool / permanent-slot / exile layout
+    _STACK_SLOTS, _PB_MANA, _OFF_TOUGHNESS,
+    _OFF_ATTACHED_TO, _EXILE_START, _EXILE_SLOT_SIZE, EXILE_COUNTERS_OFF,
+    ZONE_COUNTER_NORMALIZER,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
@@ -84,7 +91,7 @@ from env import (
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
     # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
-    _KNOWN_TOP_LIB_START,
+    _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOT_SIZE,
     # header flag / step one-hot indices + self player-block offsets
     _SELF_IS_A_IDX, _STEP_FIRST_MAIN_IDX, _STEP_SECOND_MAIN_IDX, _IS_ACTIVE_IDX,
     _SELF_BLOCK_START, _PB_LIFE,
@@ -93,9 +100,17 @@ from env import (
     # unified deck-name identification (same rule as env's shaping opt-outs)
     _deck_named,
 )
-from decode import decode_game_state
-from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX
-from _enums import CAT_BOTTOM_DECK_CARD as _CAT_BOTTOM_CARD
+from decode import decode_game_state, decode_opp_decklist, _card_script_lines
+from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX, _VOCAB_NAMES
+from card_props import _CARD_PROP_MATRIX, _PROP_NAMES
+from _enums import (
+    CAT_BOTTOM_DECK_CARD as _CAT_BOTTOM_CARD, CAT_PAY_UNLESS as _CAT_PAY_UNLESS,
+    CAT_RETURN_PERMANENT as _CAT_RETURN, CAT_BLOCK_TARGET as _CAT_BLOCK_TARGET,
+    CAT_ATTACK_TARGET as _CAT_ATTACK_TARGET, CAT_NAME_CARD as _CAT_NAME_CARD,
+    CAT_SHUFFLE as _CAT_SHUFFLE_YES, CAT_DONT_SHUFFLE as _CAT_SHUFFLE_NO,
+    CAT_SYLVAN_CHOICE as _CAT_SYLVAN, CAT_MANA_W, CAT_MANA_R as _CAT_MANA_R, CAT_MANA_C,
+    REF_PLAYER_OPP, REF_SELF_HAND,
+)
 
 
 class Skill(Enum):
@@ -276,16 +291,83 @@ def _card_mana_value(cid: int) -> float:
 
     ``_CARD_COST_MATRIX`` rows are the 7 pip counts (W/U/B/R/G/C/generic)
     divided by 10, so the row sum times 10 is the card's total mana value
-    (X contributes 0). Unknown/out-of-range ids count as 0.
+    (X contributes 0), rounded back to a whole number (the float32 row sum
+    of a mana value 4 card is 4.00000006, which compares greater than 4).
+    Unknown/out-of-range ids count as 0.
     """
     if 0 <= cid < len(_CARD_COST_MATRIX):
-        return float(_CARD_COST_MATRIX[cid].sum()) * 10.0
+        return float(round(float(_CARD_COST_MATRIX[cid].sum()) * 10.0))
     return 0.0
 
 
 def _action_card_id(card_ids: np.ndarray, i: int) -> int:
     """Decode the card vocab index from the action's card_id float."""
     return int(round(float(card_ids[i]) * N_CARD_TYPES))
+
+
+def _action_ordinal(obs: np.ndarray, i: int) -> int:
+    """Decode action i's option ordinal (-1 = n/a): the X value, pay (1) /
+    decline (0) of an optional payment, or the activated ability's index in
+    its card's ability list (A: lines first, then keyword abilities)."""
+    return int(round(float(obs[ACT_ORDS_START + i]) * (OPTION_ORDINAL_MAX + 1))) - 1
+
+
+def _action_zone(obs: np.ndarray, i: int) -> int:
+    """Decode action i's ActionRefZone (REF_PLAYER_OPP for "target the
+    opponent", REF_NONE for a "No target" slot, ...)."""
+    return int(round(float(obs[ACT_ZONE_START + i]) * REF_ZONE_MAX))
+
+
+# Card name -> vocab id (card_vocab.h, via the generated cost table), so the
+# rules below name the cards they key on instead of spelling bare indices.
+_VOCAB_ID = {name: i for i, name in enumerate(_VOCAB_NAMES) if name}
+
+
+def _vid(name: str) -> int:
+    """Vocab id of a card by its card_vocab.h name (KeyError if absent)."""
+    return _VOCAB_ID[name]
+
+
+_PROP_COL = {name: i for i, name in enumerate(_PROP_NAMES)}
+
+
+def _card_prop(cid: int, prop: str) -> float:
+    """A printed property of a vocab card from the frozen card_props matrix
+    (binary flags; pips / cmc / power / toughness are /10). 0 for ids
+    outside the table (null sentinel, the generic token id)."""
+    if 0 <= cid < len(_CARD_PROP_MATRIX):
+        return float(_CARD_PROP_MATRIX[cid, _PROP_COL[prop]])
+    return 0.0
+
+
+def _card_has_keyword(cid: int, keyword: str) -> bool:
+    """True if the card's script carries ``K:<keyword>`` (e.g. Miracle)."""
+    if cid < 0:
+        return False
+    prefix = "K:" + keyword
+    return any(line.startswith(prefix) for line in (_card_script_lines(cid) or []))
+
+
+def _keyword_ability_ordinal(cid: int, keyword: str) -> int:
+    """Ability index the engine gives a keyword-built activated ability
+    (Equip, Reconfigure's attach, Ninjutsu): the card's A: abilities come
+    first, then the keyword abilities in script order (src/parse.cpp).
+    -1 when the card lacks the keyword."""
+    lines = (_card_script_lines(cid) if cid >= 0 else None) or []
+    ordinal = sum(1 for line in lines if line.startswith("A:"))
+    for line in lines:
+        if not line.startswith("K:"):
+            continue
+        name = line[2:].split(":", 1)[0]
+        if name == keyword:
+            return ordinal
+        ordinal += _KEYWORD_ABILITY_COUNT.get(name, 0)
+    return -1
+
+
+# How many activated abilities each ability-building keyword adds after the
+# A: lines (src/parse.cpp): Reconfigure is an attach plus an unattach.
+_KEYWORD_ABILITY_COUNT = {"Equip": 1, "Reconfigure": 2, "Ninjutsu": 1, "Cycling": 1}
 
 
 def _is_doomsday_deck(obs: np.ndarray) -> bool:
@@ -454,7 +536,7 @@ def _tron_choice(cats, card_ids, cat: int, controlled: set[int]) -> int | None:
 
 def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
     """Return True if at least one spell/ability on the stack is not controlled by self."""
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         ctrl_is_self = obs[base]
         if _slot_card_idx(obs, base + 1) >= 0 and ctrl_is_self < 0.5:
@@ -464,7 +546,7 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
 
 def _self_stack_has_card(obs: np.ndarray, cid: int) -> bool:
     """Return True if self controls a stack object with the given card id."""
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         if obs[base] > 0.5 and _slot_card_idx(obs, base + 1) == cid:
             return True
@@ -476,7 +558,7 @@ def _opponent_threat_on_stack(obs: np.ndarray) -> bool:
     counterspell — anything that is NOT a known pure cantrip
     (_COUNTER_EXEMPT_CANTRIP_IDS). Creatures/planeswalkers/enchantments at any
     MV and every other MV>=2 spell fall through the exemption and count."""
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         if obs[base] >= 0.5:
             continue  # self-controlled
@@ -1349,6 +1431,121 @@ def _keep_legend_choice(obs: np.ndarray, cats, card_ids, num_choices: int) -> in
     return best_i
 
 
+# ── Menu-shape helpers shared by the GREEDY and HEURISTIC tiers ─────────────
+# Mana-ability offers inside an optional-payment menu (tap a source toward an
+# "unless" cost) carry the MANA_<color> categories.
+_MANA_CATS = frozenset(range(CAT_MANA_W, CAT_MANA_C + 1))
+_POOL_RED = 3   # the pool's colour index (W/U/B/R/G/C)
+
+_TOXIC_DELUGE_VOCAB_IDX = _vid("Toxic Deluge")
+_CHAIN_LIGHTNING_VOCAB_IDX = _vid("Chain Lightning")
+
+# Mana an "unless [cost]" payment needs, keyed by the pending-decision source
+# that imposes it (the obs carries the source, not the cost). Unlisted
+# sources (The Tabernacle at Pendrell Vale's upkeep tax on each creature, ...)
+# default to {1}. Chain Lightning's copy costs {R}{R}.
+_UNLESS_MANA_COST = {
+    _vid("Daze"): 1,
+    _vid("Spell Pierce"): 2,
+    _CHAIN_LIGHTNING_VOCAB_IDX: 2,
+}
+
+
+def _floating_mana(obs: np.ndarray, color: int | None = None) -> int:
+    """Mana in the priority player's pool: one colour (index into
+    W/U/B/R/G/C) or the total."""
+    base = _SELF_BLOCK_START + _PB_MANA
+    if color is not None:
+        return int(round(float(obs[base + color]) * 10))
+    return sum(int(round(float(obs[base + k]) * 10)) for k in range(6))
+
+
+def _opp_max_toughness(obs: np.ndarray) -> int:
+    """Highest toughness among the opponent's unphased creatures (0 if none)."""
+    best = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_CREATURE] > 0.5 and not _phased(obs, base):
+            best = max(best, int(round(float(obs[base + _OFF_TOUGHNESS]) * 10)))
+    return best
+
+
+def _x_ladder_choice(obs: np.ndarray, num_choices: int) -> int:
+    """An X-value ladder (CHOOSE_X with the null card id; index == X): the
+    maximum X, the biggest effect the mana buys (Green Sun's Zenith fetches
+    the biggest creature it can instead of the X=0 Dryad Arbor). Toxic
+    Deluge's X is paid in LIFE and shrinks our creatures too: exactly enough
+    to kill the opponent's toughest creature, never our whole life total."""
+    if _slot_card_idx(obs, _PENDING_DECISION_START) == _TOXIC_DELUGE_VOCAB_IDX:
+        want = min(_opp_max_toughness(obs), _self_life(obs) - 1)
+        return max(0, min(num_choices - 1, want))
+    return num_choices - 1
+
+
+def _pay_unless_choice(obs: np.ndarray, cats, num_choices: int) -> int:
+    """An "unless [cost]" payment we are asked to make (Daze / Spell Pierce on
+    our spell, The Tabernacle at Pendrell Vale's upkeep tax, Static Prison's
+    energy, the Chain Lightning copy offer). The menu offers "Don't pay"
+    (ordinal 0) plus the mana abilities that can fund the payment; "Pay"
+    (ordinal 1) appears once the pool covers the cost. Paying keeps our spell
+    or permanent, so we pay whenever we can: take Pay when offered, else tap
+    one more source toward it — but only when the untapped sources on the
+    menu plus the pool can reach the cost (_UNLESS_MANA_COST), so a payment
+    that can never complete doesn't tap every land for nothing."""
+    pay_i = decline_i = None
+    mana: list[int] = []
+    for i in range(num_choices):
+        c = cats[i]
+        if c == _CAT_PAY_UNLESS:
+            if _action_ordinal(obs, i) == 1:
+                pay_i = i
+            else:
+                decline_i = i
+        elif c in _MANA_CATS:
+            mana.append(i)
+    if pay_i is not None:
+        return pay_i
+    pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+    need = _UNLESS_MANA_COST.get(pending, 1)
+    if pending == _CHAIN_LIGHTNING_VOCAB_IDX:
+        mana = [i for i in mana if cats[i] == _CAT_MANA_R]
+        have = _floating_mana(obs, _POOL_RED)
+    else:
+        have = _floating_mana(obs)
+    sources = {_action_slot_ref(obs, i) for i in mana}
+    if mana and have + len(sources) >= need:
+        return mana[0]
+    return decline_i if decline_i is not None else 0
+
+
+def _resolution_cast_ok(obs: np.ndarray, cid: int) -> bool:
+    """Should we take an offer to cast ``cid`` right now, during a resolution
+    (Rift Bolt's suspend cast, a miracle cast, Amped Raptor's energy cast)?
+    The offer is then-or-never and the engine already checked it is castable
+    with legal targets, so take it — unless the only targets are our own:
+    targeted removal with no opposing creature would hit our own creature,
+    and a counterspell with no opposing spell on the stack would counter ours."""
+    if cid in _TARGETED_REMOVAL_IDS and not _opponent_has_creature(obs):
+        return False
+    if cid in _COUNTER_SPELL_VOCAB_IDS and not _opponent_has_spell_on_stack(obs):
+        return False
+    return True
+
+
+def _is_yesno_menu(cats, num_choices: int) -> bool:
+    return num_choices == 2 and all(c == _CAT_YESNO for c in cats)
+
+
+def _is_miracle_reveal(obs: np.ndarray, card_ids) -> bool:
+    """The miracle reveal prompt (CR 702.94a): a yes/no without card ids whose
+    pending source is a miracle card (the card just drawn, still in hand).
+    Accepting only reveals it — the cast itself is offered afterwards by the
+    miracle trigger, as a then-or-never cast offer."""
+    if _action_card_id(card_ids, 1) >= 0:
+        return False
+    return _card_has_keyword(_slot_card_idx(obs, _PENDING_DECISION_START), "Miracle")
+
+
 # ── GREEDY/HEURISTIC fruitless-activation stall guard ───────────────────────
 # Action categories a resolution-time zone search emits (src/components/
 # ability.cpp search_zone): SEARCH_LIBRARY for library searches, TOP_LIBRARY for
@@ -1375,7 +1572,8 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                    fruitless: set[int] | None = None,
                    hold_casts: frozenset | set | None = None,
                    hold_activations: frozenset | set | None = None,
-                   doomsday: bool | None = None) -> int:
+                   doomsday: bool | None = None,
+                   hold_idxs: set[int] | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -1463,7 +1661,7 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
 
     # 4. Select target — prefer non-self-controlled targets.
     #    ctrl_arr[i] == 1.0 means self-controlled; 0.0 = opponent permanent/spell;
-    #    _ACTION_CTRL_NULL (-0.03125) = player target (also non-self).
+    #    _ACTION_CTRL_NULL (-1/N_CARD_TYPES) = player target (also non-self).
     #    The C++ game sorts targets opponent-first so action 0 is usually correct,
     #    but guard against accidentally targeting own spells/permanents.
     for i, c in enumerate(cats):
@@ -1525,6 +1723,24 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
             and card_ids[0] > _ACTION_CARD_ID_NULL + 0.01):
         return num_choices - 1
 
+    # 5c'. X-value ladder (CHOOSE_X with the null card id): see _x_ladder_choice.
+    if num_choices >= 1 and all(c == _CAT_CHOOSE_X for c in cats):
+        return _x_ladder_choice(obs, num_choices)
+
+    # 5c''. An "unless [cost]" payment (see _pay_unless_choice).
+    if any(c == _CAT_PAY_UNLESS for c in cats):
+        return _pay_unless_choice(obs, cats, num_choices)
+
+    # 5c'''. Sylvan Library: the card pick takes the first card offered; the
+    #        pay-4-life-or-put-back prompt (null card ids) puts the card back on
+    #        top (ordinal 0) — never 4 life a card.
+    if all(c == _CAT_SYLVAN for c in cats):
+        if card_ids[0] < _ACTION_CARD_ID_NULL + 0.01:
+            for i in range(num_choices):
+                if _action_ordinal(obs, i) == 0:
+                    return i
+        return 0
+
     # 5d. Zone-change card pick (CHOOSE_CARD). An optional search-style pick (Aether
     #     Vial's put-a-creature-from-hand) leads with a null-id "Fail to find" slot —
     #     take the first REAL card instead, so Vial actually deploys a creature when
@@ -1561,11 +1777,16 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
         return 1
 
     # 5f. An offer to cast a card right now (OPTIONAL_YESNO whose accept option names
-    #     the card): suspend's free cast when the last time counter comes off, or a
-    #     miracle cast. The cast is made then or never, so take it.
-    if (num_choices == 2 and all(c == _CAT_YESNO for c in cats)
-            and _action_card_id(card_ids, 1) >= 0):
-        return 1
+    #     the card): suspend's free cast when the last time counter comes off, a
+    #     miracle cast, or Amped Raptor's energy cast (see _resolution_cast_ok).
+    #     The miracle reveal before it (no card id on accept) is accepted too —
+    #     revealing only opens the cast offer.
+    if _is_yesno_menu(cats, num_choices):
+        cid = _action_card_id(card_ids, 1)
+        if cid >= 0:
+            return 1 if _resolution_cast_ok(obs, cid) else 0
+        if _is_miracle_reveal(obs, card_ids):
+            return 1
 
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
@@ -1779,6 +2000,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                 if hold_activations and cid in hold_activations:
                     continue  # caller-computed hold (e.g. Thespian's Stage with
                               # no Dark Depths to copy — see _heuristic_action)
+                if hold_idxs and i in hold_idxs:
+                    continue  # caller-computed per-option hold (an attached
+                              # Equipment's equip, ... — see _activation_holds)
                 if fruitless and cid in fruitless:
                     continue  # stall guard: this card's search found NOTHING
                               # earlier this game (see _SEARCH_MENU_CATS) —
@@ -1799,17 +2023,7 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     if any(c == _CAT_DIG for c in cats):
         return 1 if num_choices > 1 else 0
 
-    # 10c. X-value ladder (e.g. Green Sun's Zenith): the engine offers the whole
-    #      query as a contiguous run of OTHER_CHOICE actions "X = 0".."X = max".
-    #      Pay the maximum affordable X so GSZ fetches the biggest creature it can,
-    #      never settling for X=0. The only other all-OTHER query in these decks is
-    #      Sylvan Library's pay/return prompt, whose last option ("put on top of
-    #      library") is a safe, no-life-loss pick — so always taking the last
-    #      option here is correct for both.
-    if num_choices >= 2 and all(c == _CAT_OTHER for c in cats):
-        return num_choices - 1
-
-    # 11. Other choice (Sylvan Library pay/return, unless costs): pick randomly.
+    # 11. Other (uncategorized) choice: pick randomly.
     other_idxs = [i for i, c in enumerate(cats) if c == _CAT_OTHER]
     if other_idxs:
         return random.choice(other_idxs)
@@ -1984,6 +2198,395 @@ def _desired_block_count(g: dict, attackers: list) -> int:
                 value += 1
                 break
     return min(len(attackers), max(survival, value))
+
+
+def _perm_by_slot(g: dict, slot: int) -> dict | None:
+    """The decoded permanent at a unified entity-reference slot (0-47 own,
+    48-95 opponent's), or None."""
+    side = g["self_battlefield"] if slot < _PERM_A_SLOTS else g["opp_battlefield"]
+    for p in side:
+        if p["slot"] == slot:
+            return p
+    return None
+
+
+def _is_token_id(cid: int) -> bool:
+    return cid >= _TOKEN_VOCAB_BASE
+
+
+# ── Card desirability (scry / surveil / Ponder / put-backs / bottoming) ─────
+# Cards whose alternative cost (pitch a card, return an Island, sacrifice
+# Mountains, evoke) makes them castable for next to no mana.
+_CHEAP_ALT_COST_IDS = frozenset(_vid(n) for n in (
+    "Force of Will", "Force of Negation", "Daze", "Solitude", "Fireblast"))
+
+
+def _effective_mana_value(cid: int) -> float:
+    """The mana a card really costs to cast: a card with a cheap alternative
+    cost (_CHEAP_ALT_COST_IDS) counts as 1, a delve spell (Murktide Regent)
+    as half its printed mana value."""
+    mv = _card_mana_value(cid)
+    if cid in _CHEAP_ALT_COST_IDS:
+        return min(mv, 1.0)
+    if _card_prop(cid, "kw_delve") > 0.5:
+        return mv / 2
+    return mv
+
+
+def _card_want(cid: int, lands_total: int) -> float:
+    """How much we want to draw ``cid`` soon (> 0 wanted, < 0 not), given
+    ``lands_total`` lands in play plus in hand. Lands are wanted while the
+    mana base is short (under 3, then less so up to 4) and dead weight past
+    5; a spell is wanted
+    when castable within a land drop, cheaper spells a little less (the
+    bigger payoff first), and a card too expensive for now is unwanted.
+    Countermagic (pitch / alternative costs) and delve spells count as cheap."""
+    if cid < 0:
+        return 0.0
+    if cid in _LAND_VOCAB_IDS:
+        if lands_total < 3:
+            return 2.0
+        if lands_total < 4:
+            return 1.0
+        return 0.5 if lands_total < 5 else -1.0
+    mv = _effective_mana_value(cid)
+    if mv > lands_total + 1:
+        return -0.5
+    return 1.0 + 0.1 * mv
+
+
+def _lands_total(obs: np.ndarray) -> int:
+    return _self_land_count(obs) + _hand_land_count(obs)
+
+
+def _look_split_pick(obs: np.ndarray, cats, card_ids, num_choices: int) -> int:
+    """Scry / surveil (CR 701.22 / 701.25): each remaining card is offered
+    twice — "on top" (TOP_LIBRARY; the next kept card goes under the ones
+    already kept) and the other pile (BOTTOM_DECK_CARD for scry, CHOOSE_CARD
+    = graveyard for surveil). Send the least wanted card away first while
+    one falls short of _LOOK_KEEP_WANT, then keep the rest best-first, so
+    the card we most want is drawn next. Surveil also bins reanimation
+    targets — the graveyard is where Reanimate wants them."""
+    keep: dict[int, int] = {}
+    away: dict[int, int] = {}
+    surveil = False
+    for i in range(num_choices):
+        cid = _action_card_id(card_ids, i)
+        if cats[i] == _CAT_TOP_LIBRARY:
+            keep.setdefault(cid, i)
+        elif cats[i] in (_CAT_CHOOSE_CARD, _CAT_BOTTOM_CARD):
+            away.setdefault(cid, i)
+            surveil = cats[i] == _CAT_CHOOSE_CARD
+    lands = _lands_total(obs)
+
+    def want(cid):
+        if surveil and cid in _REANIMATION_FATTY_IDS:
+            return -2.0
+        return _card_want(cid, lands)
+    if not keep:
+        return 0
+    worst = min(keep, key=want)
+    if want(worst) < _LOOK_KEEP_WANT and worst in away:
+        return away[worst]
+    return keep[max(keep, key=want)]
+
+
+# Least _card_want a scried / surveilled card needs to stay on top: a
+# castable spell (>= 1.0) or a land while the mana base is short (>= 1.0)
+# beats a random draw; a spare land (0.5) or a dead card doesn't.
+_LOOK_KEEP_WANT = 0.75
+
+
+def _is_look_split_menu(cats) -> bool:
+    return (any(c == _CAT_TOP_LIBRARY for c in cats)
+            and any(c in (_CAT_CHOOSE_CARD, _CAT_BOTTOM_CARD) for c in cats))
+
+
+def _least_wanted_pick(cats, card_ids, cat: int, lands_total: int) -> int:
+    """The least wanted card among the ``cat`` actions: the one to put back
+    (Brainstorm), bottom (London mulligan), or place deepest (Ponder's
+    rearrange fills the deepest slot first, so the best card ends on top)."""
+    best_i, best_w = 0, None
+    for i, c in enumerate(cats):
+        if c != cat:
+            continue
+        w = _card_want(_action_card_id(card_ids, i), lands_total)
+        if best_w is None or w < best_w:
+            best_i, best_w = i, w
+    return best_i
+
+
+def _known_top_ids(obs: np.ndarray, n: int) -> list[int]:
+    """The first ``n`` known top-of-library card ids (-1 where unknown)."""
+    return [_slot_card_idx(obs, _KNOWN_TOP_LIB_START + k * _KNOWN_TOP_LIB_SLOT_SIZE)
+            for k in range(n)]
+
+
+def _shuffle_pick(obs: np.ndarray, cats) -> int:
+    """Ponder's "you may shuffle": shuffle away a top three that holds
+    nothing we want (none with _card_want >= 0.5), else keep the arranged
+    top. Known top cards come from the belief state the rearrange set."""
+    lands = _lands_total(obs)
+    top = [cid for cid in _known_top_ids(obs, 3) if cid >= 0]
+    want_shuffle = bool(top) and max(_card_want(cid, lands) for cid in top) < 0.5
+    target = _CAT_SHUFFLE_YES if want_shuffle else _CAT_SHUFFLE_NO
+    for i, c in enumerate(cats):
+        if c == target:
+            return i
+    return 0
+
+
+# ── Name-a-card (Cabal Therapy, Pithing Needle, Disruptor Flute) ────────────
+_CABAL_THERAPY_VOCAB_IDX = _vid("Cabal Therapy")
+
+
+def _name_card_pick(obs: np.ndarray, g: dict, cats, card_ids, num_choices: int) -> int:
+    """Pick the name. Cabal Therapy (the candidates are the target's nonland
+    cards) names what is most likely in their hand: a card we saw there
+    (Thoughtseize, Cabal Therapy's own reveal) first, else the card with the
+    most copies left unseen in their registered decklist. A lock piece
+    (Pithing Needle / Disruptor Flute) names an opponent's permanent in play
+    first, never one of ours, then the same unseen-copies rule."""
+    def ids_of(names):
+        return [_VOCAB_ID[n] for n in names if n in _VOCAB_ID]
+    deck: dict[int, int] = {}
+    for cid, ct, _rev in decode_opp_decklist(obs[:STATE_SIZE]):
+        deck[cid] = deck.get(cid, 0) + ct
+    seen: dict[int, int] = {}
+    for cid in (ids_of(g["opp_graveyard"]) + ids_of(g["opp_exile"])
+                + [p["card_idx"] for p in g["opp_battlefield"]]):
+        seen[cid] = seen.get(cid, 0) + 1
+    known_hand = set(ids_of(g["opp_known_hand"]))
+    opp_perms = {p["card_idx"] for p in g["opp_battlefield"]}
+    own_perms = {p["card_idx"] for p in g["self_battlefield"]}
+    therapy = _slot_card_idx(obs, _PENDING_DECISION_START) == _CABAL_THERAPY_VOCAB_IDX
+    best_i, best_key = 0, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_NAME_CARD:
+            continue
+        cid = _action_card_id(card_ids, i)
+        unseen = deck.get(cid, 0) - seen.get(cid, 0)
+        if therapy:
+            key = (cid in known_hand, unseen, _card_mana_value(cid))
+        else:
+            # A lock only stops non-mana activated abilities: naming a land
+            # that just taps for mana locks nothing.
+            key = (_has_nonmana_activation(cid),
+                   cid in opp_perms and cid not in own_perms, cid not in own_perms,
+                   cid in known_hand, unseen)
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+def _has_nonmana_activation(cid: int) -> bool:
+    """True unless ``cid`` is a land whose only activated abilities are mana
+    abilities (basic land types or AB$ Mana lines): Pithing Needle can't stop
+    those (its text exempts mana abilities, CR 605.1a)."""
+    if cid not in _LAND_VOCAB_IDS:
+        return True
+    return any(line.startswith("A:") and "AB$ Mana" not in line
+               for line in (_card_script_lines(cid) or []))
+
+
+# ── Combat sub-choices ──────────────────────────────────────────────────────
+def _block_target_pick(obs: np.ndarray, g: dict, cats, card_ids, num_choices: int) -> int:
+    """Which attacker the just-declared blocker blocks (BLOCK_TARGET; the
+    pending source is the blocker). A block that kills the attacker and
+    survives first, then — when the unblocked damage would be lethal — the
+    biggest attacker (absorb the most damage), then a trade with the biggest
+    attacker it kills, else the biggest attacker."""
+    blocker = _lookup_pt(g["self_battlefield"], _slot_card_idx(obs, _PENDING_DECISION_START))
+    bp, bt = blocker if blocker else (0, 0)
+    attackers = [p for p in _creatures(g["opp_battlefield"]) if p.get("attacking")]
+    lethal = sum(p["power"] for p in attackers) >= g["self"]["life"]
+    best_i, best_key = 0, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_BLOCK_TARGET:
+            continue
+        a = _perm_by_slot(g, _action_slot_ref(obs, i))
+        ap, at = (a["power"], a["toughness"]) if a and "power" in a else (0, 0)
+        kills, survives = bp >= at, bt > ap
+        key = (kills and survives, lethal and ap, kills, ap)
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+def _attack_target_pick(obs: np.ndarray, cats, num_choices: int) -> int:
+    """Attack the opponent (ATTACK_TARGET's player option) rather than a
+    planeswalker: damage to the player ends the game."""
+    for i in range(num_choices):
+        if cats[i] == _CAT_ATTACK_TARGET and _action_zone(obs, i) == REF_PLAYER_OPP:
+            return i
+    return 0
+
+
+# ── Ninjutsu (CR 702.49) ────────────────────────────────────────────────────
+# Ninjas and their attacking power once in play (Kaito is a 3/4 creature
+# during our turn).
+_NINJA_POWER = {_vid("Kaito, Bane of Nightmares"): 3}
+# Creatures worth returning to hand for their enters-the-battlefield value.
+_ETB_VALUE_IDS = frozenset({_vid("Orcish Bowmasters"), _vid("Baleful Strix"),
+                            _vid("Stoneforge Mystic"), _vid("Recruiter of the Guard")})
+
+
+def _ninjutsu_pick(obs: np.ndarray, g: dict, cats, card_ids, num_choices: int) -> int | None:
+    """Ninjutsu offered while blockers are declared (declare-blockers step,
+    our turn): swap an unblocked attacker for the ninja when the ninja hits
+    harder than the weakest unblocked attacker, or that attacker is an ETB
+    creature worth recasting. Only in the declare-blockers step — after
+    combat damage the ninja arrives too late to deal any."""
+    if g["step"] != "Declare Blk" or obs[_IS_ACTIVE_IDX] < 0.5:
+        return None
+    unblocked = [p for p in _creatures(g["self_battlefield"])
+                 if p.get("attacking") and not p.get("blocked")]
+    for i in range(num_choices):
+        if cats[i] != _CAT_ACTIVATE or _action_zone(obs, i) != REF_SELF_HAND:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if _action_ordinal(obs, i) != _keyword_ability_ordinal(cid, "Ninjutsu"):
+            continue
+        power = _NINJA_POWER.get(cid, int(round(_card_prop(cid, "power") * 10)))
+        if any(p["power"] < power or p["card_idx"] in _ETB_VALUE_IDS for p in unblocked):
+            return i
+    return None
+
+
+def _return_pick(obs: np.ndarray, g: dict, cats, num_choices: int) -> int:
+    """A return-to-hand cost pick (RETURN_PERMANENT): Daze's Island, Scryb
+    Ranger's Forest, ninjutsu's unblocked attacker. A tapped land first (it
+    had already made its mana); among creatures an ETB creature we get to
+    recast, then the weakest nontoken — a returned token just vanishes."""
+    best_i, best_key = 0, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_RETURN:
+            continue
+        p = _perm_by_slot(g, _action_slot_ref(obs, i)) or {}
+        cid = p.get("card_idx", -1)
+        key = (bool(p.get("tapped")) and bool(p.get("is_land")),
+               cid in _ETB_VALUE_IDS,
+               not _is_token_id(cid),
+               -p.get("power", 0))
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+# ── Equipment and other own-benefit targeting ───────────────────────────────
+def _is_equipment_id(cid: int) -> bool:
+    return (_card_prop(cid, "sub_equipment") > 0.5 or _card_prop(cid, "kw_equip") > 0.5)
+
+
+def _equip_holds(obs: np.ndarray, cats, card_ids, num_choices: int) -> set[int]:
+    """Menu indices of equip / reconfigure activations to skip: moving an
+    Equipment that is already attached just burns mana (the equip is offered
+    again at every priority), and Reconfigure turns a growing Lion Sash
+    creature back into an Equipment. An unattached
+    Equipment is still equipped (onto the best creature, see
+    _own_benefit_target_pick)."""
+    holds: set[int] = set()
+    for i in range(num_choices):
+        if cats[i] != _CAT_ACTIVATE:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if not _is_equipment_id(cid):
+            continue
+        ordinal = _action_ordinal(obs, i)
+        if ordinal == _keyword_ability_ordinal(cid, "Reconfigure"):
+            holds.add(i)
+        elif ordinal == _keyword_ability_ordinal(cid, "Equip"):
+            ref = _action_slot_ref(obs, i)
+            if 0 <= ref < 2 * _PERM_A_SLOTS:
+                base = _BF_START + ref * _BF_SLOT_SIZE
+                if obs[base + _OFF_ATTACHED_TO] > 1e-6:
+                    holds.add(i)
+    return holds
+
+
+_GUIDE_OF_SOULS_VOCAB_IDX = _vid("Guide of Souls")
+# Sources whose target is helped, not hurt, by the effect: pump / counters on
+# a creature we control, or a card returned to us from our graveyard.
+_OWN_BENEFIT_TARGET_IDS = frozenset({
+    _GUIDE_OF_SOULS_VOCAB_IDX,            # +1/+1 counters and flying on an attacker
+    _vid("Scythecat Cub"),                # +1/+1 counter on a creature we control
+    _vid("Pre-War Formalwear"),           # reanimates a creature card, then attaches
+    _vid("Mystic Sanctuary"),             # an instant / sorcery back on top
+})
+
+
+def _own_benefit_target_pick(obs: np.ndarray, g: dict, cats, card_ids, ctrl_arr,
+                             num_choices: int) -> int | None:
+    """Target pick for an effect that helps its target (equip, Guide of
+    Souls' angel counters, Scythecat Cub's counter, graveyard returns):
+    among our own options, a permanent: the creature that gets the most out
+    of it — untapped and able to attack, highest power, no flying yet for
+    Guide of Souls' flying counter; a card in our graveyard: the highest
+    mana value. None when the pending source isn't such an effect, or when
+    the menu also offers opposing objects — then it is a harmful effect of
+    the same card (Meteor Sword's enters trigger destroys, Skateboard's
+    taps), whose targeting stays with the generic rule."""
+    pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+    if not (_is_equipment_id(pending) or pending in _OWN_BENEFIT_TARGET_IDS):
+        return None
+    if any(cats[i] == _CAT_TARGET and ctrl_arr[i] < 0.5 for i in range(num_choices)):
+        return None
+    best_i, best_key = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_TARGET or ctrl_arr[i] < 0.5:
+            continue
+        cid = _action_card_id(card_ids, i)
+        p = _perm_by_slot(g, _action_slot_ref(obs, i))
+        if p is None:
+            key = (0, _card_mana_value(cid), 0)
+        else:
+            already = (_is_equipment_id(pending) and "attached_by_slot" in p)
+            flying = "Flying" in p.get("keywords", ())
+            key = (not already,
+                   not (p.get("tapped") or p.get("summoning_sick")),
+                   not (pending == _GUIDE_OF_SOULS_VOCAB_IDX and flying),
+                   p.get("power", 0))
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+# ── Activation gates (hard tier) ────────────────────────────────────────────
+_DAUTHI_VOIDWALKER_VOCAB_IDX = _vid("Dauthi Voidwalker")
+_WITCH_ENCHANTER_VOCAB_IDX = _vid("Witch Enchanter")   # its land face pays 3 life
+
+
+def _activation_holds(obs: np.ndarray, g: dict, cats, card_ids,
+                      num_choices: int) -> set[int]:
+    """Menu indices of activations the hard tier must not take this decision
+    (on top of _equip_holds): Dauthi Voidwalker's sacrifice without an
+    exiled void card worth more than the 3/2 itself."""
+    holds = _equip_holds(obs, cats, card_ids, num_choices)
+    for i in range(num_choices):
+        if cats[i] != _CAT_ACTIVATE:
+            continue
+        if _action_card_id(card_ids, i) == _DAUTHI_VOIDWALKER_VOCAB_IDX:
+            if _best_void_card(obs) is None:
+                holds.add(i)
+    return holds
+
+
+def _best_void_card(obs: np.ndarray) -> int | None:
+    """Highest-mana-value nonland card the opponent owns in exile with a
+    counter on it (Dauthi Voidwalker's void counters), if it beats keeping
+    the Voidwalker (mana value 3+)."""
+    best, best_mv = None, 2.0
+    for slot in range(MAX_GY_SLOTS):
+        base = _EXILE_START + (MAX_GY_SLOTS + slot) * _EXILE_SLOT_SIZE
+        cid = _slot_card_idx(obs, base)
+        if cid < 0 or cid in _LAND_VOCAB_IDS:
+            continue
+        if obs[base + EXILE_COUNTERS_OFF] * ZONE_COUNTER_NORMALIZER < 0.5:
+            continue
+        mv = _card_mana_value(cid)
+        if mv > best_mv:
+            best, best_mv = cid, mv
+    return best
 
 
 class ScriptedAgent:
@@ -2178,12 +2781,49 @@ class ScriptedAgent:
             # Declare blockers (SEL_BLK + CONF_BLK offered together)
             if any(c == _CAT_CONF_BLK for c in cats):
                 return self._block_choice(g(), cats, card_ids)
-            # "Which attacker to block" sub-query (OTHER_CHOICE during Declare Blk)
-            if g()["step"] == "Declare Blk" and any(c == _CAT_OTHER for c in cats):
-                return self._block_target_choice(g(), cats, card_ids)
+            # "Which attacker to block" sub-query for the blocker just declared
+            if any(c == _CAT_BLOCK_TARGET for c in cats):
+                return _block_target_pick(obs, g(), cats, card_ids, num_choices)
             # Declare attackers
             if any(c == _CAT_SEL_ATK for c in cats):
                 return self._attack_choice(g(), cats, card_ids)
+        # Which player / planeswalker an attacker attacks
+        if any(c == _CAT_ATTACK_TARGET for c in cats):
+            return _attack_target_pick(obs, cats, num_choices)
+
+        # ── Prompts: optional triggers / costs, names, returns, library order ─
+        dd = self._deck_is_doomsday(obs)
+        pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+        if _is_yesno_menu(cats, num_choices):
+            return self._yesno_choice(obs, g(), card_ids)
+        if any(c == _CAT_NAME_CARD for c in cats):
+            return _name_card_pick(obs, g(), cats, card_ids, num_choices)
+        if any(c == _CAT_RETURN for c in cats):
+            return _return_pick(obs, g(), cats, num_choices)
+        # Scry / surveil, Ponder's rearrange and shuffle, Brainstorm's put-back
+        # and London-mulligan bottoming by card desirability (_card_want). A
+        # Doomsday deck keeps its own pile / put-back / surveil rules.
+        if not dd:
+            if _is_look_split_menu(cats):
+                return _look_split_pick(obs, cats, card_ids, num_choices)
+            if any(c in (_CAT_SHUFFLE_YES, _CAT_SHUFFLE_NO) for c in cats):
+                return _shuffle_pick(obs, cats)
+            if (all(c == _CAT_TOP_LIBRARY for c in cats)
+                    and pending in (_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX)):
+                return _least_wanted_pick(cats, card_ids, _CAT_TOP_LIBRARY,
+                                          _lands_total(obs))
+            if all(c == _CAT_BOTTOM_CARD for c in cats):
+                return _least_wanted_pick(cats, card_ids, _CAT_BOTTOM_CARD,
+                                          _hand_land_count(obs))
+        # Dauthi Voidwalker's pick: the most expensive void card.
+        if pending == _DAUTHI_VOIDWALKER_VOCAB_IDX and any(c == _CAT_CHOOSE_CARD for c in cats):
+            return max(range(num_choices),
+                       key=lambda i: _card_mana_value(_action_card_id(card_ids, i)))
+        # Ninjutsu: swap an unblocked attacker for the ninja (_ninjutsu_pick).
+        if any(c == _CAT_ACTIVATE for c in cats):
+            pick = _ninjutsu_pick(obs, g(), cats, card_ids, num_choices)
+            if pick is not None:
+                return pick
 
         # ── Reanimation / lands-combo interceptions ─────────────────────────
         # All card-id / pending-source gated (no deck-name gate needed): each
@@ -2319,7 +2959,7 @@ class ScriptedAgent:
         # (_dd_sacrifice_pick). First non-protected option, else the generic
         # first pick.
         if any(c == _CAT_SACRIFICE for c in cats):
-            if self._deck_is_doomsday(obs):
+            if dd:
                 pick = _dd_sacrifice_pick(obs, cats, card_ids)
                 if pick is not None:
                     return pick
@@ -2378,66 +3018,11 @@ class ScriptedAgent:
                     if c == _CAT_LAND and _action_card_id(card_ids, i) == want:
                         return i
 
-        # Cast holds, accumulated for the greedy fallback's cast scan. Each is
-        # card-id gated: it only fires when that cast is actually on the menu.
-        hold_casts: set[int] = set()
+        # Cast holds (see _cast_holds), threaded into the greedy fallback's
+        # cast scan.
         cast_ids = {_action_card_id(card_ids, i)
                     for i, c in enumerate(cats) if c == _CAT_CAST}
-        # Reanimate/Animate Dead stay in hand until a creature worth cheating
-        # out is in a graveyard (either side's — the engine only offers the
-        # cast when SOME creature card is there, but a random 2-drop isn't
-        # worth the card).
-        if (cast_ids & _REANIMATION_SPELL_IDS
-                and not _gy_has_any(obs, _REANIMATION_FATTY_IDS)):
-            hold_casts |= _REANIMATION_SPELL_IDS
-        # Counter triage. A Doomsday deck's counters are combo PROTECTION:
-        # hold them until our own Thassa's Oracle — the spell or its win
-        # trigger (both stack slots carry Oracle's card id) — is on the
-        # stack, then counter ANY opponent spell that goes on top of it,
-        # cantrip or not (a "cantrip" there is a response to the kill).
-        # Other decks: an opponent spell is on the stack but nothing
-        # threat-shaped (only exempt cantrips) — let it resolve and keep the
-        # counter for their threat.
-        if cast_ids & _COUNTER_SPELL_VOCAB_IDS:
-            if self._deck_is_doomsday(obs):
-                # ...and likewise fight for Doomsday itself and the Dark
-                # Ritual paying for it — four Doomsdays were countered in one
-                # 30-game sample while Force of Wills sat in hand — but only
-                # while a SECOND counter stays back for Oracle: a countered
-                # Doomsday costs a card, a countered Oracle with the pile
-                # drawn costs the game (two wins turned into deck-outs when
-                # the last counter went to Doomsday).
-                n_counters = sum(
-                    1 for slot in range(MAX_HAND_SLOTS)
-                    if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
-                    in _COUNTER_SPELL_VOCAB_IDS)
-                fight = _opponent_has_spell_on_stack(obs) and (
-                    _self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
-                    or (n_counters >= 2
-                        and any(_self_stack_has_card(obs, cid)
-                                for cid in _DD_PROTECT_ON_STACK_IDS)))
-                if not fight:
-                    hold_casts |= _COUNTER_SPELL_VOCAB_IDS
-            elif not _opponent_threat_on_stack(obs):
-                hold_casts |= _COUNTER_SPELL_VOCAB_IDS
-        # Targeted removal (Swords/Push/Prismatic) waits for a real threat:
-        # power >= 2, or a NONTOKEN 1-power creature (an unflipped Delver /
-        # Dragon's Rage Channeler is worth killing; a 1/1 token is not).
-        if cast_ids & _TARGETED_REMOVAL_IDS:
-            threat = any(p["power"] >= 2
-                         or (p["power"] >= 1
-                             and p.get("card_idx", _TOKEN_VOCAB_BASE) < _TOKEN_VOCAB_BASE)
-                         for p in _creatures(g()["opp_battlefield"]))
-            if not threat:
-                hold_casts |= _TARGETED_REMOVAL_IDS
-        # Wrath of the Skies (symmetric X sweeper) only into a board where the
-        # best energy amount nets a real sweep: 2+ more of their permanents
-        # destroyed than ours, or a 4+ destroyed-power differential.
-        if _WRATH_OF_SKIES_VOCAB_IDX in cast_ids:
-            _, count_net, power_net = _wrath_energy_plan(g())
-            if not (count_net >= 2 or power_net >= 4):
-                hold_casts.add(_WRATH_OF_SKIES_VOCAB_IDX)
-        hold_casts = hold_casts or None
+        hold_casts = self._cast_holds(obs, g(), cast_ids) or None
 
         # Wrath of the Skies X / energy-pay amounts: both arrive as bare
         # number ladders (index == amount), and both should be the planned
@@ -2480,9 +3065,16 @@ class ScriptedAgent:
             if pick is not None:
                 return pick
 
+        # Effects that help their target (equip, Guide of Souls, Scythecat Cub,
+        # graveyard returns) pick our best option.
+        if any(c == _CAT_TARGET for c in cats):
+            pick = _own_benefit_target_pick(obs, g(), cats, card_ids, ctrl_arr, num_choices)
+            if pick is not None:
+                return pick
+
         # Eval-based targeting — skipped for combo decks (R1: never disturb Doomsday).
         if (cfg.use_eval_targeting and any(c == _CAT_TARGET for c in cats)
-                and not self._deck_is_doomsday(obs)):
+                and not dd):
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
@@ -2540,12 +3132,111 @@ class ScriptedAgent:
             if pick is not None:
                 return pick
 
+        # Activations to skip this decision (_activation_holds).
+        hold_idxs = None
+        if any(c == _CAT_ACTIVATE for c in cats):
+            hold_idxs = _activation_holds(obs, g(), cats, card_ids, num_choices)
+
         # Anything not explicitly improved: proven GREEDY behaviour (with the
-        # reanimation/Stage holds computed above threaded through its scans).
+        # holds computed above threaded through its scans).
         return _greedy_action(obs, num_choices, fruitless,
                               hold_casts=hold_casts,
                               hold_activations=hold_activations,
-                              doomsday=self._deck_is_doomsday(obs))
+                              hold_idxs=hold_idxs,
+                              doomsday=dd)
+
+    def _yesno_choice(self, obs: np.ndarray, g: dict, card_ids) -> int:
+        """An optional yes/no (OPTIONAL_YESNO; 0 = decline, 1 = accept).
+
+        * A cast offer during a resolution (the accept option names the card:
+          suspend, miracle, Amped Raptor): cast it unless it would only hit
+          our own things (_resolution_cast_ok) or a cast hold applies to it.
+        * The miracle reveal: accept (it opens the cast offer).
+        * An optional cost while casting our own spell (kicker, replicate, a
+          gift promise — the pending source is our spell on top of the
+          stack): decline, keeping the spell at its plain cost.
+        * "As it enters, you may pay 3 life" (Witch-Blessed Meadow): only with
+          life to spare and in our own turn, when the mana is usable now.
+        * Every other "you may" trigger — tutors (Stoneforge Mystic, Recruiter
+          of the Guard), Uro's land, Aether Vial's counter, Cori-Steel
+          Cutter's attach, Guide of Souls' energy, an opening-hand Leyline:
+          accept; each is optional upside for us.
+        """
+        cid = _action_card_id(card_ids, 1)
+        if cid >= 0:
+            ok = (_resolution_cast_ok(obs, cid)
+                  and cid not in self._cast_holds(obs, g, {cid}))
+            return 1 if ok else 0
+        if _is_miracle_reveal(obs, card_ids):
+            return 1
+        pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+        if (obs[_STACK_START] > 0.5 and obs[_STACK_START + 2] > 0.5
+                and _slot_card_idx(obs, _STACK_START + 1) == pending):
+            return 0
+        if pending == _WITCH_ENCHANTER_VOCAB_IDX:
+            return 1 if (_self_life(obs) >= 12 and obs[_IS_ACTIVE_IDX] > 0.5) else 0
+        return 1
+
+    def _cast_holds(self, obs: np.ndarray, g: dict, cast_ids) -> set[int]:
+        """Card ids among ``cast_ids`` (the casts on offer) the hard tier
+        holds back this decision. Each rule is card-id gated: it only fires
+        when that cast is actually offered."""
+        hold_casts: set[int] = set()
+        # Reanimate/Animate Dead stay in hand until a creature worth cheating
+        # out is in a graveyard (either side's — the engine only offers the
+        # cast when SOME creature card is there, but a random 2-drop isn't
+        # worth the card).
+        if (cast_ids & _REANIMATION_SPELL_IDS
+                and not _gy_has_any(obs, _REANIMATION_FATTY_IDS)):
+            hold_casts |= _REANIMATION_SPELL_IDS
+        # Counter triage. A Doomsday deck's counters are combo PROTECTION:
+        # hold them until our own Thassa's Oracle — the spell or its win
+        # trigger (both stack slots carry Oracle's card id) — is on the
+        # stack, then counter ANY opponent spell that goes on top of it,
+        # cantrip or not (a "cantrip" there is a response to the kill).
+        # Other decks: an opponent spell is on the stack but nothing
+        # threat-shaped (only exempt cantrips) — let it resolve and keep the
+        # counter for their threat.
+        if cast_ids & _COUNTER_SPELL_VOCAB_IDS:
+            if self._deck_is_doomsday(obs):
+                # ...and likewise fight for Doomsday itself and the Dark
+                # Ritual paying for it — four Doomsdays were countered in one
+                # 30-game sample while Force of Wills sat in hand — but only
+                # while a SECOND counter stays back for Oracle: a countered
+                # Doomsday costs a card, a countered Oracle with the pile
+                # drawn costs the game (two wins turned into deck-outs when
+                # the last counter went to Doomsday).
+                n_counters = sum(
+                    1 for slot in range(MAX_HAND_SLOTS)
+                    if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
+                    in _COUNTER_SPELL_VOCAB_IDS)
+                fight = _opponent_has_spell_on_stack(obs) and (
+                    _self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
+                    or (n_counters >= 2
+                        and any(_self_stack_has_card(obs, cid)
+                                for cid in _DD_PROTECT_ON_STACK_IDS)))
+                if not fight:
+                    hold_casts |= _COUNTER_SPELL_VOCAB_IDS
+            elif not _opponent_threat_on_stack(obs):
+                hold_casts |= _COUNTER_SPELL_VOCAB_IDS
+        # Targeted removal (Swords/Push/Prismatic) waits for a real threat:
+        # power >= 2, or a NONTOKEN 1-power creature (an unflipped Delver /
+        # Dragon's Rage Channeler is worth killing; a 1/1 token is not).
+        if cast_ids & _TARGETED_REMOVAL_IDS:
+            threat = any(p["power"] >= 2
+                         or (p["power"] >= 1
+                             and p.get("card_idx", _TOKEN_VOCAB_BASE) < _TOKEN_VOCAB_BASE)
+                         for p in _creatures(g["opp_battlefield"]))
+            if not threat:
+                hold_casts |= _TARGETED_REMOVAL_IDS
+        # Wrath of the Skies (symmetric X sweeper) only into a board where the
+        # best energy amount nets a real sweep: 2+ more of their permanents
+        # destroyed than ours, or a 4+ destroyed-power differential.
+        if _WRATH_OF_SKIES_VOCAB_IDX in cast_ids:
+            _, count_net, power_net = _wrath_energy_plan(g)
+            if not (count_net >= 2 or power_net >= 4):
+                hold_casts.add(_WRATH_OF_SKIES_VOCAB_IDX)
+        return hold_casts
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:
@@ -2628,18 +3319,6 @@ class ScriptedAgent:
                 return (pt[1] * 10 + pt[0]) if pt else 0
             return max(blk, key=quality)[0]
         return self._confirm(cats, _CAT_CONF_BLK)
-
-    def _block_target_choice(self, g: dict, cats, card_ids) -> int:
-        """Assign the just-selected blocker to the biggest offered attacker."""
-        best_i, best_pow = None, -1
-        for i, c in enumerate(cats):
-            if c != _CAT_OTHER:
-                continue
-            pt = _lookup_pt(g["opp_battlefield"], _action_card_id(card_ids, i))
-            pw = pt[0] if pt else 0
-            if pw > best_pow:
-                best_pow, best_i = pw, i
-        return best_i if best_i is not None else 0
 
     def _target_choice(self, g: dict, cats, card_ids, ctrl_arr) -> int:
         """Removal → biggest threat; burn → face only when lethal-ish."""
