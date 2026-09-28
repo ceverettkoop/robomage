@@ -1,0 +1,13 @@
+{
+  "name": "cr603_12_guide_of_souls_reflexive_trigger",
+  "why": "CR 603.12 / 115.1: Guide of Souls' 'when you do' trigger goes on the stack and may target only an attacking creature - d7e5f54 79afc2d",
+  "hand_a": ["Grizzly Bears", "Grizzly Bears", "Grizzly Bears"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Guide of Souls", "Plains", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Kappa Cannoneer"],
+  "play": ["A:keep", "B:keep", "A:cast:Grizzly Bears", "A:cast:Grizzly Bears", "A:cast:Grizzly Bears", "A:attack:Guide of Souls", "A:attack:done", "A:desc:Accept"],
+  "max_decisions": 16,
+  "expect_order": ["Guide of Souls triggered", "Player A pays 3 energy", "Guide of Souls reflexive trigger", "Resolving ability \\(category: Pump\\)", "Put 2 P1P1 counter\\(s\\) on Guide of Souls"],
+  "expect_menu_not": ["^Kappa Cannoneer$"]
+}

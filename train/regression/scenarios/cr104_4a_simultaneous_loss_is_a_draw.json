@@ -1,0 +1,14 @@
+{
+  "name": "cr104_4a_simultaneous_loss_is_a_draw",
+  "why": "CR 704.3 / 104.4a: both players reaching 0 life in one state-based check draw the game - 90ecc34",
+  "life_a": 4,
+  "life_b": 4,
+  "hand_a": ["Price of Progress"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Volcanic Island", "Volcanic Island"],
+  "battlefield_b": ["Tundra", "Tundra"],
+  "play": ["A:keep", "B:keep", "A:cast:Price of Progress"],
+  "max_decisions": 6,
+  "expect": ["Player A has 0 life and Player B has 0 life - the game is a draw"],
+  "expect_result": "draw"
+}

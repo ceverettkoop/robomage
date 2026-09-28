@@ -1,0 +1,11 @@
+{
+  "name": "cr603_10a_super_shredder_sees_simultaneous_departure",
+  "why": "CR 603.10a: Super Shredder dying in the same state-based check as another permanent still triggers on it (leaves-the-battlefield look-back) - 077c3a4",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Delver of Secrets"],
+  "battlefield_b": ["Super Shredder"],
+  "play": ["A:keep", "B:keep", "A:desc:Don't reveal", "A:attack:Delver of Secrets", "A:attack:done", "B:block:Super Shredder", "B:desc:Delver", "B:block:done"],
+  "max_decisions": 14,
+  "expect_order": ["Delver of Secrets is destroyed \\(lethal damage\\)", "Super Shredder is destroyed \\(lethal damage\\)", "Super Shredder triggered"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "cr601_2h_painful_source_reserves_life_cost",
+  "why": "CR 601.2h / 119.4: Deep Analysis' flashback (pay 3 life) is not offered at 4 life when its mana needs Ancient Tomb's 2 damage - e1fc3ac",
+  "life_a": 4,
+  "hand_a": ["Brainstorm"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Ancient Tomb", "Island"],
+  "graveyard_a": ["Deep Analysis"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 6,
+  "expect_menu": ["^Play Island$"],
+  "expect_menu_not": ["Deep Analysis"]
+}

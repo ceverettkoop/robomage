@@ -1,0 +1,15 @@
+{
+  "name": "cr400_7_animate_dead_card_exiled_in_response",
+  "why": "CR 608.3b / 400.7: Animate Dead's target card exiled in response (Surgical Extraction) makes it not resolve; the card is never returned from exile - 72203b1 7e6ae85",
+  "hand_a": ["Animate Dead"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Swamp"],
+  "hand_b": ["Surgical Extraction"],
+  "library_b": ["Swamp"],
+  "battlefield_b": ["Swamp"],
+  "graveyard_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Animate Dead", "A:target:Grizzly Bears", "B:cast:Surgical Extraction", "B:desc:Pay 2 life", "B:target:Grizzly Bears"],
+  "max_decisions": 10,
+  "expect": ["Player B casts Surgical Extraction targeting Grizzly Bears"],
+  "expect_not": ["Grizzly Bears is moved to the battlefield", "Animate Dead enters the battlefield", "Grizzly Bears enters the battlefield"]
+}

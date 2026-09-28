@@ -1,0 +1,13 @@
+{
+  "name": "cr702_21a_ward_charm_mode_target",
+  "why": "CR 702.21a / 115.1: a modal spell's chosen-mode target (Red Elemental Blast destroying Kappa Cannoneer) triggers Ward - 2034d58",
+  "hand_a": ["Red Elemental Blast"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Kappa Cannoneer"],
+  "play": ["A:keep", "B:keep", "A:cast:Red Elemental Blast", "A:desc:Destroy", "A:target:Kappa Cannoneer"],
+  "max_decisions": 8,
+  "expect_not": ["Kappa Cannoneer is destroyed"],
+  "expect_order": ["Player A casts Red Elemental Blast", "Ward \\{4\\}: Kappa Cannoneer", "Red Elemental Blast is countered"]
+}

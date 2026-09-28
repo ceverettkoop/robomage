@@ -1,0 +1,11 @@
+{
+  "name": "cr614_12_nonbasic_under_magus_enters_untapped",
+  "why": "CR 614.12 / 305.7: a land that enters under Magus of the Moon has no 'enters tapped' ability, so Thundering Falls enters untapped (and its mana casts Lightning Bolt) - 570879e",
+  "hand_a": ["Thundering Falls", "Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_b": ["Magus of the Moon"],
+  "play": ["A:keep", "B:keep", "A:play:Thundering Falls", "A:cast:Lightning Bolt", "A:target:Player B"],
+  "max_decisions": 8,
+  "expect_not": ["urveil"],
+  "expect_order": ["Player A played Thundering Falls", "Player A activated Thundering Falls for 1\\(R\\)", "Lightning Bolt deals 3 damage to Player B"]
+}

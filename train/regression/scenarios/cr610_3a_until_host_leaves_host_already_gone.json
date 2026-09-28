@@ -1,0 +1,13 @@
+{
+  "name": "cr610_3a_until_host_leaves_host_already_gone",
+  "why": "CR 610.3a/b: Sheltered by Ghosts' 'exile until it leaves' does nothing if Sheltered already left before its trigger resolves - bf42576",
+  "hand_a": ["Sheltered by Ghosts"],
+  "library_a": ["Plains"],
+  "battlefield_a": ["Plains", "Plains", "Grizzly Bears"],
+  "hand_b": ["Abrupt Decay"],
+  "battlefield_b": ["Bayou", "Swamp", "Scryb Ranger"],
+  "play": ["A:keep", "B:keep", "A:cast:Sheltered by Ghosts", "A:target:Grizzly Bears", "A:target:Scryb Ranger", "B:cast:Abrupt Decay", "B:target:Sheltered by Ghosts"],
+  "max_decisions": 14,
+  "expect_not": ["Scryb Ranger.*exile", "exiles Scryb Ranger"],
+  "expect_order": ["Sheltered by Ghosts triggered", "Player B casts Abrupt Decay targeting Sheltered by Ghosts", "Sheltered by Ghosts is destroyed"]
+}

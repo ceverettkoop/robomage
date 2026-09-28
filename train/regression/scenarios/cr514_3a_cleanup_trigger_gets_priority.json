@@ -1,0 +1,11 @@
+{
+  "name": "cr514_3a_cleanup_trigger_gets_priority",
+  "why": "CR 514.3a: a trigger during cleanup (Emrakul's discard shuffle) goes on the stack and players get priority, so it can be Stifled - 84145d4",
+  "hand_a": ["Stifle"],
+  "battlefield_a": ["Island"],
+  "hand_b": ["Emrakul the Aeons Torn", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "B:desc:Emrakul", "A:cast:Stifle", "A:target:Emrakul"],
+  "max_decisions": 10,
+  "expect_order": ["Player B discards Emrakul, the Aeons Torn", "Emrakul, the Aeons Torn triggered", "Player A casts Stifle targeting Emrakul, the Aeons Torn's ability", "Emrakul, the Aeons Torn's ability is countered", "TURN 3"]
+}

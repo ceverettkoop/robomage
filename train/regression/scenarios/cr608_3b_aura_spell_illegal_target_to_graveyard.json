@@ -1,0 +1,13 @@
+{
+  "name": "cr608_3b_aura_spell_illegal_target_to_graveyard",
+  "why": "CR 608.3b / 303.4: an Aura spell whose target died in response doesn't resolve; it goes to the graveyard without entering - 7e6ae85",
+  "hand_a": ["Sheltered by Ghosts"],
+  "library_a": ["Plains"],
+  "battlefield_a": ["Plains", "Plains", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt"],
+  "battlefield_b": ["Mountain", "Scryb Ranger"],
+  "play": ["A:keep", "B:keep", "A:cast:Sheltered by Ghosts", "A:target:Grizzly Bears", "B:cast:Lightning Bolt", "B:target:Grizzly Bears"],
+  "max_decisions": 8,
+  "expect_not": ["Sheltered by Ghosts enters the battlefield", "Sheltered by Ghosts triggered", "exiles Scryb Ranger"],
+  "expect_order": ["Player B casts Lightning Bolt targeting Grizzly Bears", "Grizzly Bears is destroyed"]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cr120_3_lifelink_sacrificed_source_ability_damage",
+  "why": "CR 120.3 / 702.15c: a sacrificed Stadium Headliner's ability damage uses its last-known lifelink - 358d34b",
+  "hand_a": ["Mountain"],
+  "battlefield_a": ["Stadium Headliner", "Shadowspear", "Grizzly Bears", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip", "A:target:Stadium", "A:pass", "A:activate:Stadium Headliner", "A:target:Grizzly Bears@opp"],
+  "max_decisions": 12,
+  "expect_order": ["Player A sacrifices Stadium Headliner", "Stadium Headliner deals 1 damage to Grizzly Bears", "Player A gains 1 life \\(lifelink\\)"]
+}

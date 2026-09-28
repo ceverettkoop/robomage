@@ -1,0 +1,11 @@
+{
+  "name": "cr608_2c_condition_checked_on_resolution",
+  "why": "CR 608.2c: Edge of Autumn's 'if you control four or fewer lands' is checked on resolution, not as a cast restriction - b45bea1",
+  "hand_a": ["Edge of Autumn"],
+  "library_a": ["Forest", "Forest", "Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Edge of Autumn"],
+  "max_decisions": 6,
+  "expect": ["Player A casts Edge of Autumn"],
+  "expect_not": ["Forest is moved to the battlefield", "search"]
+}

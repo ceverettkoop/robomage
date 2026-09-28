@@ -1,0 +1,10 @@
+{
+  "name": "cr603_2_trigger_filter_uses_current_types",
+  "why": "CR 603.2 / 603.6a: a land that is an artifact under Mycosynth Lattice triggers Kappa Cannoneer's artifact-enters ability - 4443120",
+  "hand_a": ["Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Kappa Cannoneer", "Mycosynth Lattice"],
+  "play": ["A:keep", "B:keep", "A:play:Island"],
+  "max_decisions": 5,
+  "expect_order": ["Player A played Island", "Kappa Cannoneer triggered", "Put 1 \\+1/\\+1 counter"]
+}

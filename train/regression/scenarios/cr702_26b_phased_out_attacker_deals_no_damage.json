@@ -1,0 +1,13 @@
+{
+  "name": "cr702_26b_phased_out_attacker_deals_no_damage",
+  "why": "CR 702.26b / 506.4: an attacker phased out by Talon Gates of Madara is removed from combat and deals no damage - 4bf4979 1540203",
+  "hand_a": ["Talon Gates of Madara"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "B:attack:Grizzly Bears", "B:attack:done", "A:desc:Talon Gates", "A:target:Grizzly Bears"],
+  "max_decisions": 20,
+  "expect_not": ["Grizzly Bears deals"],
+  "expect_order": ["Grizzly Bears attacking Player A", "Talon Gates of Madara is moved to the battlefield", "Grizzly Bears phases out", "TURN 3 "]
+}

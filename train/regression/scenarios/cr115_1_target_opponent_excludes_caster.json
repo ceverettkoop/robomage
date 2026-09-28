@@ -1,0 +1,13 @@
+{
+  "name": "cr115_1_target_opponent_excludes_caster",
+  "why": "CR 115.1: Witherbloom Command's 'target opponent loses 2 life' mode can't target its caster (Player.Opponent) - 31bcef8",
+  "hand_a": ["Witherbloom Command"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp", "Forest", "Grizzly Bears"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Witherbloom Command", "A:desc:Target creature gets", "A:target:Grizzly Bears@opp", "A:desc:Target opponent loses"],
+  "max_decisions": 8,
+  "expect": ["Player B loses 2 life"],
+  "expect_menu": ["^Player B \\("],
+  "expect_menu_not": ["^Player A \\("]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cr707_2_offspring_token_copies_abilities",
+  "why": "CR 707.2 / 702.175a: an Offspring token copies the creature's abilities, so Agate Instigator's token pings for the next creature too - c2354e6",
+  "hand_a": ["Agate Instigator", "Grizzly Bears"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Agate Instigator (offspring)", "A:cast:Grizzly Bears"],
+  "max_decisions": 14,
+  "expect_order": ["Player A casts Agate Instigator", "Player A casts Grizzly Bears", "Agate Instigator deals 1 damage to Player B", "Agate Instigator deals 1 damage to Player B"]
+}

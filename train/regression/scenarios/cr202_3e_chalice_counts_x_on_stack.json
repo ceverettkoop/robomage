@@ -1,0 +1,14 @@
+{
+  "name": "cr202_3e_chalice_counts_x_on_stack",
+  "why": "CR 202.3e / 107.3a: Green Sun's Zenith cast with X=1 has mana value 2 on the stack, so Chalice of the Void on 1 doesn't counter it - 52f7c31",
+  "hand_a": ["Green Suns Zenith", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "library_a": ["Forest", "Birds of Paradise", "Forest"],
+  "battlefield_a": ["Forest", "Forest"],
+  "hand_b": ["Chalice of the Void"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "B:cast:Chalice", "B:desc:X = 1", "A:cast:Green Sun", "A:desc:X = 1", "A:search:Birds of Paradise"],
+  "max_decisions": 24,
+  "expect_not": ["Green Sun's Zenith is countered"],
+  "expect_order": ["Chalice of the Void enters with 1 CHARGE counter", "Player A casts Green Sun's Zenith", "Player A puts Birds of Paradise to the battlefield"]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "cr601_3_teferi_lock_split_back_face",
+  "why": "CR 601.3 / 709.3: Teferi, Time Raveler's sorcery-speed lock applies to a split card's second half (Gone) too - bc43fec",
+  "hand_a": ["Dead Gone"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Goblin Bombardment", "Grizzly Bears"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Teferi Time Raveler", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 3,
+  "expect_menu": ["Activate Goblin Bombardment"],
+  "expect_menu_not": ["Cast Gone"]
+}

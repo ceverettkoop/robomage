@@ -1,0 +1,12 @@
+{
+  "name": "cr731_2_no_day_night_check_on_first_turn",
+  "why": "CR 731.2: day/night is not checked on the game's first turn, so a daybound Outland Liberator put in play before it stays day - c762556",
+  "hand_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Outland Liberator", "Forest"],
+  "hand_b": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 8,
+  "expect_order": ["TURN 1 ", "Outland Liberator deals 2 damage to Player B", "TURN 2 ", "It becomes night", "Outland Liberator transforms into Frenzied Trapbreaker"]
+}

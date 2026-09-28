@@ -207,6 +207,14 @@ train/.venv/bin/python train/test_harness.py --format bo1 \
   --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
+**Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
+`train/regression/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
+the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
+`expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
+`expect_result`; keys in `train/test_scenarios.py`'s docstring). Keep `max_decisions` just past the
+asserted event, check it passes (`train/test_scenarios.py <name>`) and fails without the fix; the
+`scenarios` tier of `make check` runs them all.
+
 `train.py observe --player-a "play:<specs>"` drives one seat by specs against any agent (each list
 drives only its seat, so leave specs unkeyed there).
 

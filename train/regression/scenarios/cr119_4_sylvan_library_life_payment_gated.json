@@ -1,0 +1,12 @@
+{
+  "name": "cr119_4_sylvan_library_life_payment_gated",
+  "why": "CR 119.4: Sylvan Library's 'pay 4 life' is not offered to a player with less than 4 life - 0017149",
+  "life_a": 3,
+  "hand_a": ["Forest"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Sylvan Library", "Forest"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 12,
+  "expect": ["Sylvan Library triggered", "Player A puts Forest on top of library"],
+  "expect_menu_not": ["^Pay 4 life$"]
+}

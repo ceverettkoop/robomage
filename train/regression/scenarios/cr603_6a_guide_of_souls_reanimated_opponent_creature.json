@@ -1,0 +1,12 @@
+{
+  "name": "cr603_6a_guide_of_souls_reanimated_opponent_creature",
+  "why": "CR 603.6a / 603.2: Guide of Souls triggers for a creature entering under your control from an opponent's graveyard - 4443120",
+  "hand_a": ["Reanimate"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Swamp", "Guide of Souls"],
+  "library_b": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "graveyard_b": ["Flying Men"],
+  "play": ["A:keep", "B:keep", "A:cast:Reanimate", "A:target:Flying Men"],
+  "max_decisions": 5,
+  "expect_order": ["Player A casts Reanimate targeting Flying Men", "Flying Men is moved to the battlefield", "Guide of Souls triggered", "Player A gains 1 life", "Player A gets 1 ENERGY"]
+}

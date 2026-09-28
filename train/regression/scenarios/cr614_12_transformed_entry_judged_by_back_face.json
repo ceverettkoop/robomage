@@ -1,0 +1,12 @@
+{
+  "name": "cr614_12_transformed_entry_judged_by_back_face",
+  "why": "CR 614.12 / 712.14a: Ajani returning transformed (a planeswalker) isn't exiled by an opponent's Containment Priest - 51ff1ff",
+  "hand_a": ["Lightning Bolt", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Ajani Nacatl Pariah", "Scythecat Cub", "Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Containment Priest"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Scythecat", "A:desc:Accept"],
+  "max_decisions": 8,
+  "expect_order": ["Scythecat Cub is destroyed", "Ajani, Nacatl Pariah triggered", "Ajani, Nacatl Pariah is moved to the battlefield", "Ajani, Nacatl Avenger enters transformed"]
+}

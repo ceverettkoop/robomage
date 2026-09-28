@@ -1,0 +1,10 @@
+{
+  "name": "cr702_62a_suspend_cast_is_separate_trigger",
+  "why": "CR 702.62a / 608.2g: removing Rift Bolt's last time counter and casting it are separate triggers, and the cast happens while the second resolves - 349dd29 f621485",
+  "hand_a": ["Rift Bolt", "Mountain"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:desc:Suspend", "A:desc:Cast Rift Bolt without", "A:target:Player B"],
+  "max_decisions": 12,
+  "expect_order": ["suspends Rift Bolt", "TURN 3 ", "Removed a time counter from Rift Bolt \\(0 remaining\\)", "the last time counter was removed", "category: SuspendCast", "Player A casts Rift Bolt without paying its mana cost", "Rift Bolt deals 3 damage to Player B"]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "cr107_3a_activated_x_kept_on_stack",
+  "why": "CR 107.3a: an activated ability keeps its announced X when another spell resolves first (Pernicious Deed X=2 answered by Lightning Bolt) - b9d2e4a",
+  "battlefield_a": ["Pernicious Deed", "Forest", "Forest", "Swamp", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt"],
+  "battlefield_b": ["Mountain", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:activate:Pernicious Deed", "A:desc:X = 2", "B:cast:Lightning Bolt", "B:target:Player A"],
+  "max_decisions": 7,
+  "expect_order": ["Player A chooses X = 2", "Lightning Bolt deals 3 damage to Player A", "Resolving ability \\(category: DestroyAll\\)", "Grizzly Bears is destroyed", "Grizzly Bears is destroyed"]
+}

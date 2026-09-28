@@ -1,0 +1,12 @@
+{
+  "name": "cr712_18_transform_keeps_pump",
+  "why": "CR 712.18 / 611.2c: an until-end-of-turn pump stays on a permanent that transforms - 1d7a35a",
+  "hand_a": ["Lorehold Charm", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Brainstorm", "Island"],
+  "battlefield_a": ["Delver of Secrets", "Mountain", "Plains"],
+  "hand_b": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lorehold Charm", "A:desc:get +1/+1", "A:#1", "A:attack:Insectile", "A:attack:done"],
+  "max_decisions": 10,
+  "expect_order": ["Delver of Secrets gets \\+1/\\+1", "Delver of Secrets transforms into Insectile Aberration", "Insectile Aberration deals 4 damage to Player B"]
+}

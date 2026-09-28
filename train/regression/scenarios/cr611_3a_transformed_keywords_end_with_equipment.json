@@ -1,0 +1,14 @@
+{
+  "name": "cr611_3a_transformed_keywords_end_with_equipment",
+  "why": "CR 611.3a / 712.8e: a back-face-up permanent's keywords are rebuilt each pass, so Shadowspear's trample and lifelink leave with it - 5893381",
+  "hand_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Brainstorm", "Island"],
+  "battlefield_a": ["Delver of Secrets", "Shadowspear", "Island", "Island"],
+  "hand_b": ["Abrupt Decay", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Bayou", "Swamp"],
+  "play": ["A:keep", "B:keep", "A:pass", "A:#1", "A:desc:Equip", "A:target:Insectile", "B:pass", "B:cast:Abrupt Decay", "B:target:Shadowspear"],
+  "max_decisions": 20,
+  "expect_not": ["\\(lifelink\\)"],
+  "expect_order": ["Insectile Aberration gains 1/1 Trample & Lifelink", "Player B casts Abrupt Decay targeting Shadowspear", "Insectile Aberration deals 3 damage to Player B"]
+}

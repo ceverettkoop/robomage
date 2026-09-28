@@ -78,6 +78,12 @@ fails, so one invocation reports every finding):
           ends the match with MATCH_RESULT naming the opponent, and the
           sentinel is logged so --replay reproduces the concession
           (train/test_concede.py). Torch-free; needs bin/robomage; ~0.5s.
+  scenarios The rules-regression scenarios (train/regression/scenarios/*.json,
+          run by train/test_scenarios.py): sculpted bo1 test_harness games,
+          each pinning the rules outcome of one fixed engine bug (a narrative
+          line, an offered/withheld action, a game result). Run in parallel;
+          a failure names the missing / forbidden line. Needs bin/robomage;
+          ~2s.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -220,7 +226,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "browser", "modelspec", "concede", "obsinv",
+             "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -361,6 +367,14 @@ def tier_vocab(rep):
         if missing:
             rep.error("vocab", f"{label} decks reference {len(missing)} card(s) "
                                f"not in card_vocab.h: {', '.join(missing)}")
+
+
+def tier_scenarios(rep):
+    """Rules-regression scenarios (train/test_scenarios.py): every
+    train/regression/scenarios/*.json harness game must still show its
+    asserted rules outcome."""
+    _run_test_script(rep, "scenarios", "train/test_scenarios.py",
+                     "rules-regression scenario")
 
 
 def tier_obsinv(rep):
@@ -1078,6 +1092,7 @@ _TIER_FNS = {
     "modelspec": lambda rep, args, out_dir: tier_modelspec(rep),
     "treerebuild": lambda rep, args, out_dir: tier_treerebuild(rep),
     "concede": lambda rep, args, out_dir: tier_concede(rep),
+    "scenarios": lambda rep, args, out_dir: tier_scenarios(rep),
     "obsinv": lambda rep, args, out_dir: tier_obsinv(rep),
     "actorobs": lambda rep, args, out_dir: tier_actorobs(rep),
     "snapshot": lambda rep, args, out_dir: tier_snapshot(rep),
@@ -1130,13 +1145,13 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "scenarios", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "scenarios", "obsinv", "snapshot", "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):

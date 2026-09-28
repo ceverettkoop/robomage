@@ -1,0 +1,11 @@
+{
+  "name": "cr608_2g_amped_raptor_cast_during_resolution",
+  "why": "CR 608.2g / 118.9: Amped Raptor's exiled card is cast during the trigger's resolution for energy, not held for later - d1364a0",
+  "hand_a": ["Amped Raptor"],
+  "library_a": ["Lightning Bolt", "Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "library_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Amped Raptor", "A:desc:Cast", "A:target:Player B"],
+  "max_decisions": 10,
+  "expect_order": ["Player A casts Amped Raptor", "Amped Raptor triggered", "Player A casts Lightning Bolt", "Lightning Bolt deals 3 damage to Player B"]
+}

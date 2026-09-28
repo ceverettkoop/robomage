@@ -1,0 +1,14 @@
+{
+  "name": "cr109_5_reanimated_uro_draws_for_controller",
+  "why": "CR 109.5 / 603.3a: a reanimated opponent's Uro draws, gains life and searches the hand of its new controller - 8d5aa2c",
+  "hand_a": ["Reanimate", "Swamp"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Swamp"],
+  "hand_b": ["Island"],
+  "library_b": ["Island", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "graveyard_b": ["Uro Titan of Natures Wrath"],
+  "play": ["A:keep", "B:keep", "A:cast:Reanimate", "A:target:Uro"],
+  "max_decisions": 8,
+  "expect_not": ["Player B gains 3 life"],
+  "expect_order": ["Uro, Titan of Nature's Wrath is moved to the battlefield", "Uro, Titan of Nature's Wrath triggered", "Player A gains 3 life", "category: Draw", "^Player A draws Swamp", "Player A chooses a card from Player A hand"]
+}

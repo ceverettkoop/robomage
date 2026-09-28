@@ -1,0 +1,10 @@
+{
+  "name": "cr704_5n_equipment_unattached_from_noncreature",
+  "why": "CR 704.5n / 301.5c: Shadowspear on Kaito, Bane of Nightmares becomes unattached when Kaito stops being a creature on the opponent's turn - 98f81a9",
+  "hand_a": ["Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Kaito Bane of Nightmares", "Shadowspear", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip", "A:target:Kaito"],
+  "max_decisions": 10,
+  "expect_order": ["Kaito, Bane of Nightmares gains 1/1 Trample & Lifelink", "TURN 2 ", "Shadowspear becomes unattached"]
+}

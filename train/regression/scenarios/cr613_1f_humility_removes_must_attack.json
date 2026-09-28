@@ -1,0 +1,13 @@
+{
+  "name": "cr613_1f_humility_removes_must_attack",
+  "why": "CR 613.1f: Dragon's Rage Channeler with delirium under Humility has no 'attacks each combat' requirement - ec665e3",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Dragons Rage Channeler"],
+  "graveyard_a": ["Lightning Bolt", "Mountain", "Grizzly Bears", "Mishras Bauble"],
+  "battlefield_b": ["Humility"],
+  "play": ["A:keep", "B:keep", "A:attack:done"],
+  "max_decisions": 6,
+  "expect_not": ["Dragon's Rage Channeler attacking"],
+  "expect_order": ["TURN 1 ", "Declare Attackers \\(Player A\\)", "^\\s*\\(none\\)", "TURN 2 "]
+}
