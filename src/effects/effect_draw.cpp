@@ -10,6 +10,7 @@
 #include "../systems/orderer.h"
 #include "../systems/replacement_effects.h"
 #include "../svar_eval.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 
@@ -55,25 +56,14 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     DrawRt local_rt;
     DrawRt &rt = ctx.can_suspend() ? ctx.rt<DrawRt>() : local_rt;
     if (!rt.init) {
-        // "Target player draws" (e.g. Deep Analysis) draws for the chosen target
-        // player; otherwise the ability's controller draws ("you", CR 109.5).
-        // Redirect to the targeted player ONLY when this Draw itself declared the target —
-        // its own ValidTgts$, or an explicit Defined$ naming the parent's target. A DB$ Draw
-        // with no Defined$ means Forge's default of "You" (the controller) even though
-        // sub-ability chaining copies parent.target into ab.target — Archon of Cruelty's
-        // DBDraw ("You draw a card") must draw for the caster, not the sacrifice/discard
-        // target. Mirrors the same guard in effect_lose_life.cpp.
-        bool targets_player = (ab.def->valid_tgts != "N_A") || ab.def->defined == "Targeted" ||
-                              ab.def->defined == "ParentTarget" || ab.def->defined == "Parent";
-        Zone::Ownership owner;
-        if (targets_player && ab.target.get() != 0 &&
-            global_coordinator.entity_has_component<Player>(ab.target.get()))
-            owner = seat_of_player(ab.target.get());
-        else
-            // The ability's controller, captured when it went on the stack and stable after the
-            // source changes control or leaves play (CR 608.2g) — a reanimated Uro's draw goes to
-            // the reanimating player, not the card's owner.
-            owner = ab.controller;
+        // "Target player draws" (e.g. Deep Analysis) draws for the chosen target player;
+        // otherwise the ability's controller draws ("you", CR 109.5) — captured when it went on
+        // the stack and stable after the source changes control or leaves play (CR 608.2g), so a
+        // reanimated Uro's draw goes to the reanimating player, not the card's owner. A DB$ Draw
+        // with no Defined$ draws for "you" even though sub-ability chaining copies parent.target
+        // into ab.target — Archon of Cruelty's DBDraw ("You draw a card") must draw for the
+        // caster, not the sacrifice/discard target (affected_player).
+        Zone::Ownership owner = affected_player(ab);
         // A Draw with no NumCards$ draws a single card (Forge default), e.g. Kozilek's
         // Command's "then draws a card" rider (DB$ Draw | Defined$ ParentTarget).
         size_t count = ab.def->amount > 0 ? ab.def->amount : 1;

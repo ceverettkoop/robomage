@@ -10,6 +10,7 @@
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
 #include "../svar_eval.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -30,18 +31,11 @@ HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                                       ab.target.get());
     // "Target player/opponent loses N life" (Witherbloom Command): the chosen target
     // player is the one who loses the life. The dynamic-amount reference above stays the
-    // controller's "you"; only the loser is redirected to the targeted player. Redirect
-    // ONLY when this ability itself declared the target — its own ValidTgts$, or an
-    // explicit Defined$ naming the parent's target. A LoseLife with no Defined$ means
-    // Forge's default of "You" (the ability's controller) even though sub-ability
-    // chaining copies parent.target into ab.target — Thoughtseize's DBLoseLife ("You
-    // lose 2 life") must hit the caster, not the discard target.
-    Zone::Ownership loser = lose_controller;
-    bool targets_player = (ab.def->valid_tgts != "N_A") || ab.def->defined == "Targeted" ||
-                          ab.def->defined == "ParentTarget" || ab.def->defined == "Parent";
-    const Entity tgt_player = ab.target.get();
-    if (targets_player && tgt_player != 0 && global_coordinator.entity_has_component<Player>(tgt_player))
-        loser = seat_of_player(tgt_player);
+    // controller's "you"; only the loser is redirected to the targeted player. A LoseLife with
+    // no Defined$ means Forge's default of "You" (the ability's controller) even though
+    // sub-ability chaining copies parent.target into ab.target — Thoughtseize's DBLoseLife ("You
+    // lose 2 life") must hit the caster, not the discard target (affected_player).
+    Zone::Ownership loser = affected_player(ab);
     Entity ctrl_entity = get_player_entity(loser);
     auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
     // Route through the shared helper so Spectacle's life_lost_this_turn tracker stays in sync.

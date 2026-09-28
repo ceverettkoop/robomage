@@ -13,6 +13,7 @@
 #include "../queries/counters.h"
 #include "../queries/players.h"
 #include "../svar_eval.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -66,20 +67,16 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                  n, cp->type.c_str(), total);
         return HandlerResult::DONE_RUN_SUBS;
     }
-    // Use target if set (e.g. from a Pump parent), otherwise put counters on source
-    // (Defined$ Self — e.g. Aether Vial's upkeep "put a charge counter on it"). Counters
-    // can go on any permanent, not just creatures (CR 122.1), so gate on Permanent: a
-    // creature gets +1/+1-style P/T resync via add_counters, a non-creature (Aether Vial,
-    // an artifact) just accrues the typed counter in its counter map.
-    // A target whose object is gone (CR 400.7) gets nothing, and the counters don't fall back
-    // onto the source.
-    if (!ab.target.empty() && ab.target.get() == 0) return HandlerResult::DONE_RUN_SUBS;
-    const Entity t = ab.target.get();
-    Entity counter_tgt =
-        (t != 0 && global_coordinator.entity_has_component<Permanent>(t)) ? t : ab.source.get();
-    if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return HandlerResult::DONE_RUN_SUBS;
+    // The counters go on the affected objects: the target(s) (Defined$ Targeted — Kaito's stun
+    // counters on the creature it tapped), or the source (Defined$ Self, or no Defined$ — Aether
+    // Vial's upkeep "put a charge counter on it"). Counters can go on any permanent, not just
+    // creatures (CR 122.1), so gate on Permanent: a creature gets +1/+1-style P/T resync via
+    // add_counters, a non-creature (Aether Vial, an artifact) just accrues the typed counter in
+    // its counter map. A target whose object is gone (CR 400.7) gets nothing.
     const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
-    if (cp && !cp->type.empty()) {
+    if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
+    for (Entity counter_tgt : affected_objects(ab)) {
+        if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) continue;
         // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
         // resolution, as in the Defined$ You and PutCounterAll paths.
         int n = resolve_counter_num(ab, *cp, orderer);

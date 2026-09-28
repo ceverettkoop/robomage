@@ -14,6 +14,7 @@
 #include "../queries/characteristics.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 
@@ -24,11 +25,7 @@ HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // Swords to Plowshares: gain life goes to the exiled creature's controller, read via
     // last-known info since the creature was exiled earlier this resolution (CR 608.2g/h).
     // Otherwise (and if that can't be resolved) the ability's controller gains the life.
-    Zone::Ownership gain_controller = Zone::UNKNOWN;
-    if (ab.def->defined_targeted_controller && !ab.target.empty())
-        gain_controller = last_known_controller(ab.target.lki_entity());
-    if (gain_controller == Zone::UNKNOWN)
-        gain_controller = ab.controller;  // "you gain" = the ability's controller (CR 109.5)
+    Zone::Ownership gain_controller = affected_player(ab);
     // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). effective_power gives the
     // creature's EFFECTIVE power (counters / continuous buffs included) read live while it is
     // still in play, or its last-known value once it has left — Swords to Plowshares exiles

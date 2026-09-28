@@ -13,6 +13,7 @@
 #include "../queries/battlefield.h"
 #include "../queries/characteristics.h"
 #include "../queries/entry.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -21,11 +22,11 @@ namespace effects {
 
 HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    // Equip the source equipment to the remembered entity
+    // Attach the source to the affected object: the remembered creature (Defined$ Remembered —
+    // Animate Dead's reanimated creature, Cori-Steel Cutter's token) or the target.
     Entity equip_entity = ab.source.get();
-    Entity target_creature = (ab.def->defined_remembered && !cur_game.resolution.memory.remembered.empty())
-                                 ? cur_game.resolution.memory.remembered[0].get()
-                                 : ab.target.get();
+    const std::vector<Entity> affected = affected_objects(ab);
+    Entity target_creature = affected.empty() ? 0 : affected.front();
 
     if (ab.def->optional_choice && target_creature != 0) {
         // Optional$ True — "you MAY attach ..." (Cori-Steel Cutter's DBAttach). The ability's

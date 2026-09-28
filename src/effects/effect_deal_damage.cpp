@@ -17,6 +17,7 @@
 #include "../queries/zones.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 
@@ -52,9 +53,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // player who cast the spell) also routes through resolve_defined_player, which binds the
     // player captured at trigger-fire time. Without this it would fall to the targeted path
     // with an unset target and trip the "should have fizzled" guard.
-    if (ab.def->defined_you || ab.def->defined_each_opponent || ab.def->defined_targeted_controller ||
-        ab.def->defined_triggered_activator || ab.def->defined_triggered_player ||
-        ab.def->defined_triggered_card_controller) {
+    if (names_defined_player(ab)) {
         Zone::Ownership who = resolve_defined_player(ab);
         if (who != Zone::UNKNOWN) ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;

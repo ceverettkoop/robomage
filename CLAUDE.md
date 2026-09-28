@@ -525,7 +525,8 @@ sections above are not repeated here.
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
   `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
-  controller, `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
+  controller, `Defined$` player), `affected` (the objects / player an effect acts on:
+  targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
   exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
