@@ -4,11 +4,16 @@
 #include "damage.h"
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
+#include "../cli_output.h"
+#include "../game_queries.h"
+#include "../systems/replacement_effects.h"
 
 extern Game cur_game;
 
 void bootstrap_token_components(Entity tok_entity, const Token &tok,
                                 Zone::Ownership controller, size_t &timestamp) {
+    int etb_counters = 0;  // "enters with" counters (614.1c), added once the components exist
+    std::string etb_counter_type = "P1P1";
     if (!global_coordinator.entity_has_component<Permanent>(tok_entity)) {
         Permanent perm;
         perm.name = tok.name;
@@ -16,7 +21,19 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         perm.is_token = true;
         perm.controller = controller;
         perm.has_summoning_sickness = true;
-        perm.is_tapped = false;
+        // The replacement effects that shape how a permanent enters apply to a token as to a
+        // card (CR 614.1c-d, 614.12): a token copy of a card has its self-replacements
+        // (CR 707.2) — "enters tapped", "enters with counters".
+        ReplacementEvent rev;
+        rev.type = ReplacementEvent::ENTERS_BATTLEFIELD;
+        rev.entity = tok_entity;
+        rev.affected_player = controller;  // 616.1: the permanent's controller chooses
+        rev.ask_inline = true;
+        replacement::dispatch(rev);
+        perm.is_tapped = rev.enters_tapped;
+        if (perm.is_tapped) game_log("%s enters tapped.\n", tok.name.c_str());
+        etb_counters = rev.etb_p1p1;
+        etb_counter_type = rev.etb_counter_type;
         perm.timestamp_entered_battlefield = timestamp++;
         perm.entered_on_turn = cur_game.turn;
         // Carry the token's intrinsic activated abilities onto the permanent so they are
@@ -55,5 +72,10 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         Damage damage;
         damage.damage_counters = 0;
         global_coordinator.AddComponent(tok_entity, damage);
+    }
+    if (etb_counters > 0) {
+        add_counters(tok_entity, etb_counter_type, etb_counters);
+        game_log("%s enters with %d %s counter(s).\n", tok.name.c_str(), etb_counters,
+                 etb_counter_type.c_str());
     }
 }

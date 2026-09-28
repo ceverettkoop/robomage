@@ -117,14 +117,22 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         // The entering card's own "as it enters" abilities apply only if it would still have
         // them on the battlefield (CR 614.12): Moonshadow cast under Humility enters with no
         // -1/-1 counters, a nonbasic land entering under Magus of the Moon doesn't enter tapped.
-        if (global_coordinator.entity_has_component<CardData>(ev.entity) &&
-            !entering_object_loses_abilities(ev.entity)) {
+        // A card entering as its DFC back face (a transform DFC's transformed entry, or a modal
+        // DFC's back face played from hand) carries the BACK face's self-replacement effects, not
+        // the front's (entering_face); a token carries its own (a token copy has the copied
+        // card's, CR 707.2).
+        const std::vector<Effect::Replacement> *reps = nullptr;
+        const std::vector<StaticAbility> *statics = nullptr;
+        if (global_coordinator.entity_has_component<CardData>(ev.entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
-            // A permanent entering as its DFC back face (a transform DFC's transformed entry, or
-            // a modal DFC's back face played from hand) carries the BACK face's self-replacement
-            // effects, not the front's (entering_face).
-            const std::vector<Effect::Replacement> *reps =
-                &entering_face(ev.entity, cd).replacement_effects;
+            reps = &entering_face(ev.entity, cd).replacement_effects;
+            statics = &cd.static_abilities;
+        } else if (global_coordinator.entity_has_component<Token>(ev.entity)) {
+            auto &tok = global_coordinator.GetComponent<Token>(ev.entity);
+            reps = &tok.replacement_effects;
+            statics = &tok.static_abilities;
+        }
+        if (reps && !entering_object_loses_abilities(ev.entity)) {
             // Self "enters tapped" replacement effect (614.1d / self-replacement 614.15).
             for (size_t i = 0; i < reps->size(); i++) {
                 const Effect::Replacement &r = (*reps)[i];
@@ -147,8 +155,8 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             // "Enters with N counters" replacement effect (614.1c) from an EtbCounter static
             // ability. Count from delve (Hangarback-style) or from X paid at cast (Chalice of
             // the Void's CHARGE counters); the counter kind is whatever the script declared.
-            for (size_t i = 0; i < cd.static_abilities.size(); i++) {
-                const StaticAbility &sa = cd.static_abilities[i];
+            for (size_t i = 0; i < statics->size(); i++) {
+                const StaticAbility &sa = (*statics)[i];
                 if (sa.category != "EtbCounter") continue;
                 int n = 0;
                 if (sa.counter_count_from_delve) {
@@ -403,7 +411,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                                           ev.entity, 2);
                     int choice = -1;
                     if (!pq_take_latched(key, &choice)) {
-                        if (in_main_loop()) {
+                        if (in_main_loop() && !ev.ask_inline) {
                             std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                             // Park the choice and suspend mid-apply: dispatch()
                             // and its SBE caller early-return cooperatively
@@ -412,8 +420,9 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
                                        /*decision_source=*/ev.entity);
                             return;
                         }
-                        // Blocking fallback for an SBE call outside the main loop
-                        // (defensive only since the Batch 13 pregame gate).
+                        // Asked on the spot for an entering token (ask_inline: it enters
+                        // mid-effect, where the SBE pass can't re-run it), and as the
+                        // blocking fallback for an SBE call outside the main loop.
                         choice = request_optional_yesno(ev.affected_player, prompt) ? 1 : 0;
                     }
                     if (choice == 1) {
