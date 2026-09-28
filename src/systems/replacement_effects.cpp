@@ -166,7 +166,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     MatchCtx dctx;
                     dctx.controller = ev.affected_player;
                     dctx.source = ev.entity;
-                    for (Entity ex : cur_game.delve_exiled)
+                    for (Entity ex : lki_entities(cur_game.delve_exiled))
                         if (sa.counter_count_delve_filter.empty() ||
                             card_matches_any(ex, sa.counter_count_delve_filter, dctx))
                             n++;
@@ -448,7 +448,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             ev.destination = Zone::EXILE;
             std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
             if (c.with_void_counter) {
-                cur_game.void_countered.insert(ev.entity);
+                ev.with_void_counter = true;
                 game_log("%s is exiled with a void counter.\n", name.c_str());
             } else {
                 game_log("%s is exiled instead of being put into a graveyard.\n", name.c_str());

@@ -12,6 +12,7 @@
 #include "classes/colors.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "object_ref.h"
 
 class Orderer;
 struct Permanent;
@@ -147,7 +148,7 @@ struct ManaPaymentSnapshot {
     int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
     std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
-    std::vector<Entity> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
+    std::vector<ObjectRef> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
 };
 
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);

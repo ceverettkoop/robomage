@@ -626,8 +626,8 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
     }
     // Undo delve exiles: move cards exiled since snapshot back to graveyard
     for (size_t i = snap.delve_exiled.size(); i < cur_game.delve_exiled.size(); i++) {
-        Entity exiled = cur_game.delve_exiled[i];
-        orderer->add_to_zone(false, exiled, Zone::GRAVEYARD);
+        Entity exiled = cur_game.delve_exiled[i].get();
+        if (exiled != 0) orderer->add_to_zone(false, exiled, Zone::GRAVEYARD);
     }
     cur_game.delve_exiled = snap.delve_exiled;
     cur_game.pending_cant_be_countered = false;
@@ -687,7 +687,7 @@ void delve_exile_one(Entity e, Zone::Ownership controller,
                      std::shared_ptr<Orderer> orderer, ManaValue &remaining) {
     auto &ecd = global_coordinator.GetComponent<CardData>(e);
     orderer->add_to_zone(false, e, Zone::EXILE);
-    cur_game.delve_exiled.push_back(e);
+    cur_game.delve_exiled.push_back(ObjectRef::of(e));
     auto git = remaining.find(GENERIC);
     if (git != remaining.end()) remaining.erase(git);
     game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());

@@ -99,6 +99,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
                           LibraryTopView top_view, bool exile_face_down) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
+    bool with_void_counter = false;
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
     // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
@@ -113,6 +114,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         replacement::dispatch(rev);
         if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
         destination = rev.destination;
+        with_void_counter = rev.with_void_counter;
         // Mox Diamond / Chrome Mox additional cost: the affected player chose to discard a card as
         // this permanent enters (dispatch has no orderer, so the discard is performed here). The
         // land moves to its owner's graveyard; the permanent then enters normally (destination
@@ -302,6 +304,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // An open follow window keeps the old object findable for the rest of the effect (CR 400.7j).
     note_object_moved(target, target_zone.obj_gen);
     target_zone.obj_gen = cur_game.next_obj_gen++;
+    // The void counter a replacement put on the card goes on the object it became in exile.
+    if (with_void_counter && destination == Zone::EXILE) cur_game.void_countered.insert(target);
 
     // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
     // components are normally gone already — stripped by the state-based pass while it was away —

@@ -33,18 +33,14 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (ab.choose_imprinted) {
         Zone::Ownership you = ab.controller;
         std::vector<Entity> cands;
-        for (auto e : cur_game.imprinted_entities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        for (Entity e : live_entities(cur_game.imprinted_entities)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.owner != you || z.location != Zone::LIBRARY) continue;  // YouOwn + still in library
             // A card already chosen for an earlier card type this resolution is no longer "among
             // them" (CR: one card per card type) — exclude it even though it hasn't physically left
             // the library yet (the trailing Defined$ Remembered move runs after the whole type loop).
-            bool already_picked = false;
-            for (auto r : cur_game.remembered_entities)
-                if (r == e) { already_picked = true; break; }
-            if (already_picked) continue;
+            if (refs_contain(cur_game.remembered_entities, e)) continue;
             if (!cur_game.chosen_type.empty() &&
                 !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.chosen_type))
                 continue;
@@ -71,7 +67,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice >= 0 && choice < static_cast<int>(cands.size())) {
             Entity chosen = cands[static_cast<size_t>(choice)];
-            if (ab.remember_chosen) cur_game.remembered_entities.push_back(chosen);
+            if (ab.remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
             game_log("%s chooses %s\n", player_name(you).c_str(),
                      global_coordinator.GetComponent<CardData>(chosen).name.c_str());
         }
@@ -167,7 +163,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
         cur_game.chosen_cards.insert(chosen);
-        if (ab.remember_chosen) cur_game.remembered_entities.push_back(chosen);
+        if (ab.remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
         game_log("%s chooses %s.\n", player_name(ab.controller).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;

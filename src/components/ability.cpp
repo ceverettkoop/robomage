@@ -254,16 +254,8 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     // Exclude already-remembered entities (e.g. Doomsday picking 5 cards one at a time)
     if (!cur_game.remembered_entities.empty()) {
         std::vector<Entity> filtered;
-        for (auto e : zone_contents) {
-            bool already = false;
-            for (auto re : cur_game.remembered_entities) {
-                if (re == e) {
-                    already = true;
-                    break;
-                }
-            }
-            if (!already) filtered.push_back(e);
-        }
+        for (auto e : zone_contents)
+            if (!refs_contain(cur_game.remembered_entities, e)) filtered.push_back(e);
         zone_contents = filtered;
     }
 
@@ -1144,7 +1136,7 @@ size_t evaluate_dynamic_amount(
         MatchCtx mctx;
         mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
         size_t count = 0;
-        for (auto e : cur_game.remembered_entities) {
+        for (Entity e : lki_entities(cur_game.remembered_entities)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
         }
@@ -1161,7 +1153,7 @@ size_t evaluate_dynamic_amount(
         expr.find("RememberedLKI$CardManaCost") != std::string::npos) {
         int base = 0;
         if (!cur_game.remembered_entities.empty()) {
-            Entity r = cur_game.remembered_entities[0];
+            Entity r = cur_game.remembered_entities[0].lki_entity();
             if (global_coordinator.entity_has_component<CardData>(r))
                 base = object_mana_value(r, global_coordinator.GetComponent<CardData>(r));
         }
@@ -1176,7 +1168,7 @@ size_t evaluate_dynamic_amount(
     if (expr.find("Count$Valid Land.nonBasic+RememberedPlayerCtrl") != std::string::npos) {
         Zone::Ownership remembered_ctrl = ctrl;
         if (!cur_game.remembered_entities.empty()) {
-            Entity rp = cur_game.remembered_entities[0];
+            Entity rp = cur_game.remembered_entities[0].get();
             if (rp == cur_game.player_a_entity) remembered_ctrl = Zone::PLAYER_A;
             else if (rp == cur_game.player_b_entity) remembered_ctrl = Zone::PLAYER_B;
         }
@@ -1374,7 +1366,7 @@ int g_blocking_resolve_depth = 0;
 struct BlockingRememberedScope {
     bool participates;
     bool top_level = false;
-    std::vector<Entity> saved;
+    std::vector<ObjectRef> saved;
     explicit BlockingRememberedScope(bool blocking) : participates(blocking) {
         if (!participates) return;  // root resolves: the frame owns the scoping
         top_level = (g_blocking_resolve_depth == 0 && !cur_game.resolution.active);
@@ -1559,9 +1551,9 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 cur_game.remembered_entities.clear();
                 if (!targets.empty()) {
                     for (const ObjectRef &t : targets)
-                        if (Entity te = t.get()) cur_game.remembered_entities.push_back(te);
+                        if (Entity te = t.get()) cur_game.remembered_entities.push_back(ObjectRef::of(te));
                 } else if (Entity te = target.get()) {
-                    cur_game.remembered_entities.push_back(te);
+                    cur_game.remembered_entities.push_back(ObjectRef::of(te));
                 }
             }
             game_log("Resolving ability (category: %s%s)\n", category.c_str(),

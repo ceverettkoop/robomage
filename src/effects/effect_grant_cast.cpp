@@ -85,10 +85,9 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // It lasts this turn, or until the end of the caster's next turn (Light Up the Stage), and
     // lapses once the card leaves exile (ForgetOnMoved$ Exile).
     if (ab.effect_may_play_from_exile) {
-        const std::vector<Entity> cards =
-            ab.effect_remember_chosen_card
-                ? std::vector<Entity>(cur_game.chosen_cards.begin(), cur_game.chosen_cards.end())
-                : cur_game.remembered_entities;
+        const std::vector<Entity> cards = ab.effect_remember_chosen_card
+                                              ? cur_game.chosen_cards.live()
+                                              : live_entities(cur_game.remembered_entities);
         for (Entity card : cards) {
             if (!global_coordinator.entity_has_component<Zone>(card)) continue;
             if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
@@ -150,7 +149,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // Effect (reusable by future fog/prevention cards).
     if (ab.effect_prevent_combat_damage_by_remembered || ab.effect_prevent_combat_damage_to_remembered) {
         Entity who = ab.target.get();
-        if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front();
+        if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front().get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
             Game::CombatDamagePreventionShield shield;
             shield.creature = who;

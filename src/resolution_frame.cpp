@@ -275,7 +275,7 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
         // the cur_game.remembered_entities pin below). CharmRt/ImmediateRt
         // hold no entity state of their own: in-flight mode/sub targets live
         // on the persisted parent work / child levels (pinned generically).
-        pin_all(rp->saved_remembered, pins);
+        pin_refs(rp->saved_remembered, pins);
     } else if (const auto *ep = std::get_if<EachPlayerPutRt>(&rt)) {
         // A Show and Tell card chosen from a hidden hand, parked on its Aura enchant pick.
         if (ep->chosen != 0) pins.insert(ep->chosen);
@@ -372,7 +372,6 @@ std::set<Entity> collect_pending_pins() {
     }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.
-    for (auto e : cur_game.remembered_entities)
-        if (e != 0) pins.insert(e);
+    pin_refs(cur_game.remembered_entities, pins);
     return pins;
 }

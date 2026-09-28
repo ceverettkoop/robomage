@@ -40,7 +40,7 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // left exile, so the card is looked up only for the offer.
     Entity card = 0;
     if (ab.defined_remembered && !cur_game.remembered_entities.empty())
-        card = cur_game.remembered_entities[0];
+        card = cur_game.remembered_entities[0].get();
     else
         card = ab.target.get();  // fallback: a directly-defined/targeted card
     if (card == 0 || !global_coordinator.entity_has_component<CardData>(card) ||

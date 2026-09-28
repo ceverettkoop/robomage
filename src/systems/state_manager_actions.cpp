@@ -547,11 +547,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         // can't be found / is gone yields none either).
         if (ab.condition_present == "Card.ExiledWithSource") {
             size_t still_exiled = 0;
-            for (auto e : cur_game.remembered_entities) {
-                if (global_coordinator.entity_has_component<Zone>(e) &&
-                    global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
-                    still_exiled++;
-            }
+            for (Entity e : live_entities(cur_game.remembered_entities))
+                if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE) still_exiled++;
             return compare_svar(static_cast<int>(still_exiled), compare);
         }
         // A specific filter (other than the bare "Card") counts only the remembered cards that
@@ -565,7 +562,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
             ctx.controller = caster;
             ctx.source = ab.source.lki_entity();
             size_t matching = 0;
-            for (auto e : cur_game.remembered_entities) {
+            for (Entity e : lki_entities(cur_game.remembered_entities)) {
                 if (permanent_matches_filter(e, ab.condition_present, ctx)) {
                     matching++;
                     continue;

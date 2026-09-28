@@ -46,6 +46,13 @@ struct ObjectRef {
 std::vector<ObjectRef> refs_of(const std::vector<Entity> &entities);
 // The entities `refs` still name (get() != 0), in order.
 std::vector<Entity> live_entities(const std::vector<ObjectRef> &refs);
+// The raw ids of `refs` (lki_entity), in order: for last-known-information reads (counts and
+// characteristics of the objects as they last existed, a ceased token included).
+std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs);
+// Refs to the objects `refs` still name, stamped as those objects are now. Used when references
+// are handed on past the current effect (a delayed trigger's remembered objects): an object the
+// effect moved is handed on as the new object it became (CR 400.7j).
+std::vector<ObjectRef> restamp_live(const std::vector<ObjectRef> &refs);
 // True if some ref in `refs` names `e` as the object it is now.
 bool refs_contain(const std::vector<ObjectRef> &refs, Entity e);
 // Remove every ref to entity id `e` (whatever object it named).

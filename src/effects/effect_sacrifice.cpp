@@ -128,7 +128,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
     if (ab.sac_valid.empty() && !ab.defined_each_opponent) {
         Entity sacked = sacrifice_self(ab, orderer);
-        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -147,7 +147,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -166,7 +166,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -176,7 +176,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         bool suspended = false;
         Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer, ctx, suspended);
         if (suspended) return HandlerResult::SUSPENDED;
-        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
         if (sacked == 0) break;
     }
     return HandlerResult::DONE_RUN_SUBS;

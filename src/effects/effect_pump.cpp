@@ -149,7 +149,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
     // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
     if (ab.remember_pumped && ab.target.get() != 0)
-        cur_game.remembered_entities.push_back(ab.target.get());
+        cur_game.remembered_entities.push_back(ObjectRef::of(ab.target.get()));
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.

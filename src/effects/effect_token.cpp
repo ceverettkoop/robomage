@@ -53,7 +53,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // the OWNER of the first remembered card — the exiled permanent's owner — so if Skyclave
     // exiled your permanent, you get the Illusion when Skyclave dies (CR 707/the card text).
     if (tp && tp->owner_is_remembered && !cur_game.remembered_entities.empty()) {
-        Entity r = cur_game.remembered_entities[0];
+        Entity r = cur_game.remembered_entities[0].lki_entity();  // ownership never changes
         if (global_coordinator.entity_has_component<Zone>(r))
             ctrl = global_coordinator.GetComponent<Zone>(r).owner;
     }
@@ -108,7 +108,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
             cr.attack_target = attack_target;
         }
         created.push_back(tok_entity);
-        cur_game.remembered_entities.push_back(tok_entity);
+        cur_game.remembered_entities.push_back(ObjectRef::of(tok_entity));
         game_log("Token created: %u/%u %s%s\n", tok.power, tok.toughness, tok.name.c_str(),
                  (tp && tp->attacking) ? " (tapped and attacking)" : "");
     }

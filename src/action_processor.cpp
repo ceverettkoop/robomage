@@ -3019,7 +3019,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             for (const auto &r : pc.cost_removals) {
                 game_log("%s\n", r.log.c_str());
                 orderer->add_to_zone(false, r.entity, r.dest);
-                if (r.delve) cur_game.delve_exiled.push_back(r.entity);
+                if (r.delve) cur_game.delve_exiled.push_back(ObjectRef::of(r.entity));
             }
             pc.cost_removals.clear();
             pc.step = Game::PendingCast::FINISH;

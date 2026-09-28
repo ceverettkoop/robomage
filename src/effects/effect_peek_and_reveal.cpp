@@ -67,7 +67,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             game_log("%s's library is empty — nothing to reveal.\n", player_name(owner).c_str());
         } else {
             for (auto e : top) {
-                cur_game.imprinted_entities.push_back(e);
+                cur_game.imprinted_entities.push_back(ObjectRef::of(e));
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 mark_card_revealed(e, owner);

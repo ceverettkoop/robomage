@@ -96,7 +96,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "ChangeZone";
     fire_ab.defined_remembered = true;
-    fire_ab.restore_remembered_exiled_with = {entity};  // resolve() seeds the remembered set to this card
+    fire_ab.restore_remembered_exiled_with = {ObjectRef::of(entity)};  // resolve() seeds the remembered set to this card
     fire_ab.source = ObjectRef::of(entity);
     fire_ab.origin = Zone::BATTLEFIELD;
     fire_ab.destination = Zone::EXILE;

@@ -27,7 +27,7 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // restored into cur_game.remembered_entities before this ability resolves (CR 603.7a) — rather
     // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
     if (ab.defined_remembered) {
-        for (auto e : cur_game.remembered_entities)
+        for (Entity e : live_entities(cur_game.remembered_entities))
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)

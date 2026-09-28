@@ -25,14 +25,8 @@
 
 extern Coordinator global_coordinator;
 
-static void erase_entity(std::vector<Entity> &list, Entity e);
 static void known_top_remove(int *arr, int pos);
 static void known_top_insert(int *arr, int pos, int card_vocab_idx);
-
-// Remove every occurrence of `e` from `list`.
-static void erase_entity(std::vector<Entity> &list, Entity e) {
-    list.erase(std::remove(list.begin(), list.end(), e), list.end());
-}
 
 bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
@@ -73,9 +67,9 @@ void Game::forget_entity(Entity e) {
     last_known_info.erase(e);
     combat_damage_assignment.erase(e);
     for (auto &kv : combat_damage_assignment) kv.second.erase(e);
-    erase_entity(remembered_entities, e);
-    erase_entity(imprinted_entities, e);
-    erase_entity(delve_exiled, e);
+    erase_refs_to(remembered_entities, e);
+    erase_refs_to(imprinted_entities, e);
+    erase_refs_to(delve_exiled, e);
     combat_damage_prevention_shields.erase(
         std::remove_if(combat_damage_prevention_shields.begin(),
                        combat_damage_prevention_shields.end(),

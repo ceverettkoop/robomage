@@ -29,7 +29,7 @@ HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     std::vector<Entity> milled = orderer->mill(mill_owner, mill_count);
     if (ab.remember_milled) {
         cur_game.remembered_entities.clear();
-        for (auto e : milled) cur_game.remembered_entities.push_back(e);
+        for (auto e : milled) cur_game.remembered_entities.push_back(ObjectRef::of(e));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

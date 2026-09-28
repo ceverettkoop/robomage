@@ -85,7 +85,7 @@ struct DelayedTrigger {
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
     // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
     // ability resolves so its Defined$ DelayTriggerRememberedLKI acts on those same objects.
-    std::vector<Entity> remembered_objects;
+    std::vector<ObjectRef> remembered_objects;
 };
 
 // Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
@@ -270,7 +270,7 @@ struct Game {
         // the monarch). Serialized into the state vector's global-extras block (per-player
         // is_monarch flags; see machine_io.h).
         Entity monarch_entity = MAX_ENTITIES;
-        std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
+        std::vector<ObjectRef> delve_exiled;  // cards exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
         // Converge (CR 702.90): the number of distinct COLORS of mana spent to cast the spell
         // currently resolving. Restored from the resolving Spell::colors_spent by StackManager
@@ -284,7 +284,7 @@ struct Game {
                                             // A card's entry is superseded once the card is a new
                                             // object (see lki_for); every entry is erased when its
                                             // entity id is issued again
-        std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
+        std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
@@ -758,7 +758,7 @@ struct Game {
         std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
-        std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
+        ObjectSet void_countered;  // cards exiled with void counters (Dauthi Voidwalker)
         // Miracle (CR 702.94): miracle_reveal_pending is a first-of-turn miracle card just drawn,
         // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
         // special action (off the stack, hidden from the opponent until they choose to reveal),
@@ -769,16 +769,16 @@ struct Game {
         // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
         // priority-menu cast (can_afford_alt returns false for it).
         Entity miracle_reveal_pending = 0;
-        std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
+        ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         // Cards revealed while in a library (CR 701.20a: shown to all players for as long as the
         // revealing effect needs them). A revealed card the effect puts into a hand stays known to
         // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
         // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
-        std::set<Entity> revealed_in_library;
-        std::set<Entity> chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
+        ObjectSet revealed_in_library;
+        ObjectSet chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
-        std::vector<Entity> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
+        std::vector<ObjectRef> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
         std::string chosen_type = "";  // the current card type set by a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per card type present among the imprinted cards); read by a ChooseCard Choices$ Card.ChosenType filter, cleared when the loop ends
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
         std::map<Entity, ObjectRef> pending_enters_attacking;  // one-shot: {ninja -> attack target} a K:Ninjutsu (CR 702.49e) put this card onto the battlefield attacking; consumed when its Creature component is created (a non-creature ninja, e.g. a planeswalker, drops the mark — it can't be a combatant)

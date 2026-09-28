@@ -316,17 +316,9 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // "!<qualifier>" negates it (Doomsday's Card.!IsRemembered); "!token" is spelled out below.
     if (q[0] == '!' && q != "!token") return !eval_qualifier(v, ctx, q.substr(1));
     // identity / state keywords ------------------------------------------------
-    if (q == "IsRemembered") {
-        for (auto re : cur_game.remembered_entities)
-            if (re == v.entity) return true;
-        return false;
-    }
+    if (q == "IsRemembered") return refs_contain(cur_game.remembered_entities, v.entity);
     // IsImprinted — one of the cards the resolving ability imprinted (Atraxa's revealed pile).
-    if (q == "IsImprinted") {
-        for (auto ie : cur_game.imprinted_entities)
-            if (ie == v.entity) return true;
-        return false;
-    }
+    if (q == "IsImprinted") return refs_contain(cur_game.imprinted_entities, v.entity);
     // NamedCard — the object has the name chosen by a preceding name-a-card effect (Cabal
     // Therapy's discard, CR 201.4); nothing matches when no name was chosen.
     if (q == "NamedCard")
@@ -871,13 +863,9 @@ Entity returnable_exiled_card(Entity host) {
             // Shape A tags the card in the fire ability's restore_remembered_exiled_with (and
             // watches the host); shape B tags it in the trigger's remembered_objects (and mirrors
             // it into restore_remembered_exiled_with). Either reference means this card returns.
-            bool references_card = false;
-            for (Entity e : fa.restore_remembered_exiled_with)
-                if (e == card) { references_card = true; break; }
-            if (!references_card)
-                for (Entity e : dt.remembered_objects)
-                    if (e == card) { references_card = true; break; }
-            if (references_card) return card;
+            if (refs_contain(fa.restore_remembered_exiled_with, card) ||
+                refs_contain(dt.remembered_objects, card))
+                return card;
         }
     }
     return 0;
@@ -996,13 +984,13 @@ static Step delayed_fire_step(uint32_t fire_on) {
 }
 
 static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt) {
-    if (!dt.remembered_objects.empty()) return dt.remembered_objects;
+    if (!dt.remembered_objects.empty()) return live_entities(dt.remembered_objects);
     std::vector<Entity> targets;
     for (Entity t : live_entities(dt.ability.targets))
         if (!global_coordinator.entity_has_component<Player>(t)) targets.push_back(t);
     if (!targets.empty()) return targets;
     if (!dt.ability.restore_remembered_exiled_with.empty())
-        return dt.ability.restore_remembered_exiled_with;
+        return live_entities(dt.ability.restore_remembered_exiled_with);
     if (dt.watch_entity != 0) return {dt.watch_entity};
     return {};
 }

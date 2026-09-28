@@ -638,7 +638,7 @@ struct Ability{
     // and resolve() restores it into cur_game.remembered_entities so the body's
     // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
     // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
-    std::vector<Entity> restore_remembered_exiled_with;
+    std::vector<ObjectRef> restore_remembered_exiled_with;
 
     // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
     DelayedTriggerLink delayed_link;

@@ -101,7 +101,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             orderer->add_to_zone(false, found, found_dest);
             game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
         }
-        if (ab.dig_until_remember_found) cur_game.remembered_entities.push_back(found);
+        if (ab.dig_until_remember_found) cur_game.remembered_entities.push_back(ObjectRef::of(found));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

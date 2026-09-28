@@ -27,7 +27,7 @@ static std::vector<std::string> imprinted_types(Zone::Ownership owner) {
                                        "Sorcery"};
     std::vector<std::string> present;
     for (const char *t : kCardTypes) {
-        for (auto e : cur_game.imprinted_entities) {
+        for (Entity e : live_entities(cur_game.imprinted_entities)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             if (global_coordinator.entity_has_component<Zone>(e) &&
                 global_coordinator.GetComponent<Zone>(e).owner != owner)
@@ -141,7 +141,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (global_coordinator.entity_has_component<Player>(pe)) {
             if (!rt.player_setup) {
                 cur_game.remembered_entities.clear();
-                cur_game.remembered_entities.push_back(pe);
+                cur_game.remembered_entities.push_back(ObjectRef::of(pe));
                 rt.player_setup = true;
             }
             for (; rt.sub_idx < static_cast<int>(ab.subabilities.size()); ++rt.sub_idx) {

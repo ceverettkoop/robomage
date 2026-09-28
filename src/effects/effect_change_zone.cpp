@@ -172,7 +172,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "ChangeZone";
     fire_ab.defined_remembered = true;
-    fire_ab.restore_remembered_exiled_with = {card};
+    fire_ab.restore_remembered_exiled_with = {ObjectRef::of(card)};
     fire_ab.source = ObjectRef::of(card);
     fire_ab.origin = Zone::EXILE;
     fire_ab.origins = {Zone::EXILE};
@@ -438,7 +438,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
             // leaves-the-battlefield ability (TrigToken sizing/owning the Illusion) can read it.
-            if (ab.remember_changed || ab.remember_lki) cur_game.remembered_entities.push_back(tgt);
+            if (ab.remember_changed || ab.remember_lki) cur_game.remembered_entities.push_back(ObjectRef::of(tgt));
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
@@ -479,7 +479,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     ab.gain_control ? ab.controller
                                     : global_coordinator.GetComponent<Zone>(enchanted).owner;
             if (ab.remember_changed || ab.remember_lki)
-                cur_game.remembered_entities.push_back(enchanted);
+                cur_game.remembered_entities.push_back(ObjectRef::of(enchanted));
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", ename.c_str(), dest_str);
         }
@@ -504,7 +504,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
         // it via Card.IsRemembered / Count$RememberedSize (Triumph of Saint Katherine's self-exile
         // head of its recursion pile, counted by the GE7 shuffle-back condition).
-        if (ab.remember_changed) cur_game.remembered_entities.push_back(self);
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(self));
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -579,8 +579,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
-            for (auto e : cur_game.remembered_entities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            for (Entity e : live_entities(cur_game.remembered_entities)) {
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
                 bool zone_ok = ab.origin_any;
@@ -637,13 +636,12 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // pick may suspend only when a declared Origin$ lets the resumed loop skip the cards it
         // already moved; otherwise it is asked inline.
         FrameCtx remembered_ctx = ab.origins.empty() ? FrameCtx::blocking() : fctx;
-        for (auto e : cur_game.remembered_entities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            // Stale remembered object: only move a card that is actually in the ability's
-            // declared Origin$ zone. A delayed return (Phelia/Flickerwisp's TrigBounce,
-            // Origin$ Exile) must not "return" a card that already left exile — or a
-            // recycled entity id — since the phantom move would emit a false
-            // entered-the-battlefield event (falsely firing ETB watchers like Guide of Souls).
+        for (Entity e : live_entities(cur_game.remembered_entities)) {
+            // Only move a card that is still the remembered object (one that left exile is a new
+            // object, CR 400.7) and is in the ability's declared Origin$ zone. A delayed return
+            // (Phelia/Flickerwisp's TrigBounce, Origin$ Exile) must not "return" a card that
+            // already left exile, since the phantom move would emit a false entered-the-
+            // battlefield event (falsely firing ETB watchers like Guide of Souls).
             if (!in_declared_origin(ab, e)) continue;
             std::string nm = entity_name(e);
             Zone::ZoneValue landed = change_zone_move(orderer, remembered_ctx, ab, e, ab.destination,
@@ -676,7 +674,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Zone::ZoneValue landed = change_zone_move(orderer, fctx, ab, self, ab.destination,
                                                   ab.enters_transformed);
         if (decision_suspended()) return HandlerResult::SUSPENDED;
-        if (ab.remember_changed) cur_game.remembered_entities.push_back(self);
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(self));
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -732,7 +730,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             Entity chosen = cands[static_cast<size_t>(choice)];
             std::string cname = object_display_name(chosen);
             change_zone_move(orderer, FrameCtx::blocking(), ab, chosen, ab.destination);
-            if (ab.remember_changed) cur_game.remembered_entities.push_back(chosen);
+            if (ab.remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -847,7 +845,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // the private-vs-public logging below.
             bool face_down = (ab.exile_face_down && landed == Zone::EXILE);
             if (ab.remember_changed) {
-                cur_game.remembered_entities.push_back(chosen);
+                cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
             }
             bool dest_public =
                 (ab.destination == Zone::BATTLEFIELD || ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE);
@@ -952,7 +950,7 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     if (ab.change_type.find("Targeted") != std::string::npos)
         ref = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
     else
-        ref = !cur_game.remembered_entities.empty() ? cur_game.remembered_entities[0]
+        ref = !cur_game.remembered_entities.empty() ? cur_game.remembered_entities[0].lki_entity()
               : (!ab.targets.empty() ? ab.targets[0].get() : ab.target.get());
     if (ref == 0 || !global_coordinator.entity_has_component<CardData>(ref)) return true;
     std::string name = global_coordinator.GetComponent<CardData>(ref).name;

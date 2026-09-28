@@ -50,7 +50,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         game_log("  %s\n", cd.name.c_str());
         // The whole hand is now public — record each card's identity in the belief state.
         mark_card_revealed(e, hand_owner);
-        if (ab.remember_revealed) cur_game.remembered_entities.push_back(e);
+        if (ab.remember_revealed) cur_game.remembered_entities.push_back(ObjectRef::of(e));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

@@ -42,6 +42,17 @@ std::vector<Entity> live_entities(const std::vector<ObjectRef> &refs) {
     return out;
 }
 
+std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs) {
+    std::vector<Entity> out;
+    out.reserve(refs.size());
+    for (const ObjectRef &r : refs) out.push_back(r.lki_entity());
+    return out;
+}
+
+std::vector<ObjectRef> restamp_live(const std::vector<ObjectRef> &refs) {
+    return refs_of(live_entities(refs));
+}
+
 bool refs_contain(const std::vector<ObjectRef> &refs, Entity e) {
     if (e == 0) return false;
     for (const ObjectRef &r : refs)

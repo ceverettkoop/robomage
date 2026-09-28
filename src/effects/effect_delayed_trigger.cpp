@@ -72,21 +72,24 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // watched object is the remembered target (Searing Blood's IsTriggerRemembered).
         bool watch_self = dp->valid_card.find("Self") != std::string::npos;
         Entity watched = watch_self ? ab.source.get()
-                         : (cur_game.remembered_entities.empty() ? 0
-                                                                 : cur_game.remembered_entities[0]);
+                         : (cur_game.remembered_entities.empty()
+                                ? 0
+                                : cur_game.remembered_entities[0].get());
         if (watched == 0) return HandlerResult::DONE_NO_SUBS;
         // RememberObjects$ RememberedLKI (Animate Dead): the fire ability acts on the objects the
         // preceding RememberChanged$ ChangeZone moved (the reanimated creature) — carry them so
         // Defined$ DelayTriggerRememberedLKI restores exactly those when the trigger fires later.
-        if (dp->remember_objects_lki && !cur_game.remembered_entities.empty())
-            fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
+        // The objects are handed on as they now are (CR 400.7j).
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.remembered_entities);
+        if (dp->remember_objects_lki && !objects.empty())
+            fire_ab.restore_remembered_exiled_with = objects;
         DelayedTrigger dt;
         dt.ability = fire_ab;
         dt.fire_on = Events::CARD_CHANGED_ZONE;
         dt.owner_entity = owner_entity;
         dt.fire_on_turn = cur_game.turn;
         dt.watch_entity = watched;
-        if (dp->remember_objects_lki) dt.remembered_objects = cur_game.remembered_entities;
+        if (dp->remember_objects_lki) dt.remembered_objects = objects;
         dt.fire_on_leave_battlefield = true;
         // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
         // The origin is implicit (leave-battlefield watch); the destination becomes the zone filter
@@ -114,9 +117,12 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // nothing, so do NOT register the delayed return at all. Registering it anyway
         // made the return fire on whatever the global remembered set held at end of turn
         // (a phantom "<unknown>" entering the battlefield, falsely firing ETB watchers).
-        if (cur_game.remembered_entities.empty()) return HandlerResult::DONE_NO_SUBS;
-        dt.remembered_objects = cur_game.remembered_entities;
-        fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
+        // The objects are handed on as they now are (CR 400.7j); one that has ceased to exist
+        // (an exiled token, CR 111.7) is nothing to return.
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.remembered_entities);
+        if (objects.empty()) return HandlerResult::DONE_NO_SUBS;
+        dt.remembered_objects = objects;
+        fire_ab.restore_remembered_exiled_with = objects;
     }
     dt.ability = fire_ab;
     dt.fire_on = event_id;

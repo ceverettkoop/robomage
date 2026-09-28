@@ -175,7 +175,7 @@ struct RepeatRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
     int sub_idx = 0;              // next RepeatSubAbility for the current player/type
     int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
-    std::vector<Entity> saved_remembered;  // outer remembered set to restore at completion
+    std::vector<ObjectRef> saved_remembered;  // outer remembered set to restore at completion
 };
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
@@ -327,7 +327,7 @@ struct ResolutionFrame {
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // player_a_has_priority to restore on completion
     bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
-    std::vector<Entity> saved_remembered;  // remembered set to restore on completion
+    std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
                                            // frame_finish in stack_manager.cpp)
     std::deque<FrameLevel> levels;

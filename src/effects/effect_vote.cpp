@@ -86,7 +86,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
-    cur_game.remembered_entities.push_back(chosen);
+    cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
     game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
              global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
     return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)

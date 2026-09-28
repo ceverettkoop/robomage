@@ -273,7 +273,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // cur_game.remembered_entities so a paired DB$ Effect sub-ability can grant a play
     // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
     if (ab.remember_changed)
-        for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(chosen);
+        for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
 
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;
