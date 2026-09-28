@@ -118,7 +118,7 @@ bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string
     }
     if (key == "CounterNum")  {
         // A numeric CounterNum$ is used directly. A non-numeric value is an SVar key (Wrath
-        // of the Skies: CounterNum$ X, X = Count$xPaid) — stash the raw token; parse_abilities
+        // of the Skies: CounterNum$ X, X = Count$xPaid) — stash the raw token; the parser
         // resolves it through the SVar map into a runtime Count$ expression on count_expr.
         auto &cp = effect_params<CounterParams>(ab);
         if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
