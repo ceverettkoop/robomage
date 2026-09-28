@@ -29,38 +29,31 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **Effect:** a card that is in neither deck can't be named. Naming such a card has no effect except bluffing.
 - **Code:** `src/name_card_choices.cpp`: `build_name_card_choices`; `src/effects/effect_name_card.cpp`.
 
-### 1.3 Ward triggers once per object per spell or ability
-- **CR** 702.21a (interpretation; compare the Heroic/Valiant rulings)
-- **Rules:** Ward triggers when the permanent "becomes the target" of an opponent's spell or ability.
-- **Engine:** the targets of all modes and sub-abilities are de-duplicated, so a permanent targeted by several "target" words becomes the target once. Each of its Ward instances then triggers once.
-- **Effect:** a charm that targets the same warded creature with two modes triggers each Ward ability once, not twice. BecomesTarget triggers work the same way.
-- **Code:** `src/action_processor.cpp`: `chosen_targets_of`, `trigger_ward_for_targets`, `fire_targeting_hooks`.
-
-### 1.4 Drawn games in a bo3 match
+### 1.3 Drawn games in a bo3 match
 - **CR** 104.4a, 103.1 (match procedure is MTR-style policy)
 - **Rules:** a drawn game counts for neither player. After a draw, the player who chose the starting player in that game chooses again.
-- **Engine:** a draw (`GAME_RESULT: <n> draw`) counts for neither player, and the match continues until one player has won two games. The drawn game's starting player starts again, which matches 103.1 under the forced-play policy (3.3). A match that reaches `MAX_MATCH_GAMES` (10) games is a fatal error.
+- **Engine:** a draw (`GAME_RESULT: <n> draw`) counts for neither player, and the match continues until one player has won two games. The drawn game's starting player starts again, which matches 103.1 under the forced-play policy (see 2.1). A match that reaches `MAX_MATCH_GAMES` (10) games is a fatal error.
 - **Code:** `src/game_driver.cpp`: `play_bo3_match`; `MAX_MATCH_GAMES` in `src/game_driver.h`.
 
-### 1.5 Automatic mana payment in machine mode
+### 1.4 Automatic mana payment in machine mode
 - **CR** 601.2g–h, 605, 107.4e
 - **Rules:** the player chooses which mana abilities to activate, which pool mana to spend, and how each hybrid symbol is paid.
 - **Engine:** in machine mode, the part of a cost the pool doesn't cover is paid by a greedy payer. It prefers painless and single-colour sources, and falls back to the highest-yield ability of each source. Hybrid pips are resolved to the first payable assignment, with no decision. A player can still float mana first through mana-ability actions at priority. Generic pips are paid from the pool in enum order (W, U, B, R, G, then C), not colourless first.
 - **Effect:** there are no tapping decisions. With {W}{C} floating, paying {1} spends the {W}, which can strand a later {W} spell in the same step.
 - **Code:** `src/mana_system.cpp`: `auto_pay_mana`, `auto_pay_mana_attempt`, `pay_from_pool`; `src/action_processor.cpp`: `run_cast_flow` (HYBRID step, `resolve_hybrid_cost`).
 
-### 1.6 An illegal menace block is released, not rewound
+### 1.5 An illegal menace block is released, not rewound
 - **CR** 509.1b, 702.111b, 733.1
 - **Rules:** a block that breaks a restriction makes the whole declaration illegal, and it is rewound.
 - **Engine:** when blockers are confirmed, a lone blocker on a menace attacker is removed from the block and the other blocks stand.
 - **Code:** `src/action_processor.cpp`: `release_illegal_menace_blockers`.
 
-### 1.7 Menus are capped at 64 actions, with interchangeable choices collapsed
+### 1.6 Menus are capped at 64 actions, with interchangeable choices collapsed
 - **CR** none (an action-encoding limit)
 - **Engine:** `MAX_ACTIONS` is 64. Before a menu is emitted, entries that make the same choice on interchangeable objects are dropped (for example, two copies of a card in a graveyard). A menu with more than 64 distinct entries is a fatal error in debug builds and is silently truncated in release builds. The largest menu seen in fuzzing is 41, so this is theoretical. If it is ever hit, the user decides whether to raise `MAX_ACTIONS` or split the choice into two stages.
 - **Code:** `src/input_logger.cpp`: `interchangeable_choices`, `distinct_choice_indices`; `src/machine_io.cpp`: `populate_query`; `src/classes/gamestate.h`.
 
-### 1.8 Some prompts block and are never search roots
+### 1.7 Some prompts block and are never search roots
 - **CR** none (a search limitation; the rules outcome is correct)
 - **Engine:** a few prompts inside resolution or a zone move still read input inline and can't suspend:
   - choosing among two or more applicable replacement effects (CR 616.1);
@@ -71,9 +64,10 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
   The search driver sees them with `SEARCHINFO safe=0`, so MCTS never takes a snapshot there. The user accepted this as long as search doesn't break.
 - **Code:** `src/systems/replacement_effects.cpp`: `choose_one`, the MOVE_TO_ZONE discard in `apply_one`; `src/effects/effect_change_zone.cpp` and `effect_dig*.cpp`, `effect_change_zone_all.cpp` (`FrameCtx::blocking()` call sites); `src/search_server.cpp`: `search_loop_safe`.
 
-### 1.9 Rulings the engine follows that are easy to mistake for bugs
+### 1.8 Rulings the engine follows that are easy to mistake for bugs
 - **CR 614.12:** a nonbasic land entering under Blood Moon or Magus of the Moon enters **untapped**. Its own "enters tapped" replacement effect doesn't apply, because the land won't have that ability on the battlefield (the shockland ruling). The same rule means Moonshadow cast under Humility gets no -1/-1 counters. `src/systems/replacement_effects.cpp`: `collect`.
 - **CR 613.1f / 614.12:** Containment Priest under Humility exiles nothing, because the replacement effect comes from an ability Humility removes. `replacement_effects.cpp` (the header comment above `collect`).
+- **CR 702.21a / 601.2c:** a permanent targeted by several "target" words of one spell or ability becomes the target once, so each of its Ward instances (and each BecomesTarget trigger) triggers once. The CR doesn't address repeated targeting directly; this follows the published rulings for other "becomes the target" triggers (Heroic/Valiant trigger once per spell). `src/action_processor.cpp`: `chosen_targets_of`, `trigger_ward_for_targets`, `fire_targeting_hooks`.
 - **CR 603.8:** Dark Depths' Marit Lage is still created after the sacrifice makes the "no ice counters" check read false. It is a state trigger, not an intervening-if. `src/resolution.cpp`: `resolve_ability`.
 
 ---
