@@ -857,17 +857,26 @@ def _run_capturing(out_path, run_fn):
                     fh.write(data)
 
 
-def _play_matchup(task):
-    """Play one smoke/fuzz matchup into its transcript (a process-pool task).
+def _matchup_stem(tier, deck_a, deck_b):
+    """Transcript file stem of one smoke/fuzz matchup: <tier>_<a>__<b>."""
+    return f"{tier}_{_short(deck_a)}__{_short(deck_b)}"
 
-    Runs with its own working directory so the draw_<stamp>.txt logs run_games
-    writes there are attributed to this matchup, then moves them into out_dir.
-    Returns (wins, losses, draws) and the crash message (None if the engine
-    didn't crash)."""
-    tier, deck_a, deck_b, mode, n_games, seed, out_dir = task
-    stem = f"{tier}_{_short(deck_a)}__{_short(deck_b)}"
-    out_path = os.path.join(out_dir, f"{stem}.txt")
-    work_dir = tempfile.mkdtemp(prefix=f".{stem}_", dir=out_dir)
+
+def _play_game(task):
+    """Play one game of a smoke/fuzz matchup (a process-pool task).
+
+    Games are independent — each gets its own engine process, its own seed and
+    fresh controllers — so one task per game plays exactly the games a
+    sequential run_games(n_games=N, seed=S) loop would (game i = seed S+i).
+    Runs in its own working directory so the draw_<stamp>.txt log run_games
+    writes there is attributed to this game, then moves it into out_dir.
+    Returns (wins, losses, draws), the crash message (None if the engine didn't
+    crash) and the path of the game's transcript (Python output plus engine
+    stderr), a hidden file in out_dir that _write_matchup_transcript consumes."""
+    tier, deck_a, deck_b, mode, game_idx, seed, out_dir = task
+    stem = _matchup_stem(tier, deck_a, deck_b)
+    game_path = os.path.join(out_dir, f".{stem}_g{game_idx + 1}.txt")
+    work_dir = tempfile.mkdtemp(prefix=f".{stem}_g{game_idx + 1}_", dir=out_dir)
     os.chdir(work_dir)
     result = {}
 
@@ -875,39 +884,78 @@ def _play_matchup(task):
         result["wld"] = runner.run_games(
             make_controller(mode), make_controller(mode),
             label_a=f"A:{mode}", label_b=f"B:{mode}",
-            deck_a=deck_a, deck_b=deck_b, n_games=n_games, seed=seed,
+            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed,
             verbose=True)
 
     crashed = None
     try:
-        _run_capturing(out_path, run_fn)
+        _run_capturing(game_path, run_fn)
     except Exception as e:  # engine crash: nonzero exit / EOF mid-game
         crashed = str(e) or type(e).__name__
     finally:
         os.chdir(_REPO_ROOT)
         for dl in glob.glob(os.path.join(work_dir, "draw_*.txt")):
-            shutil.move(dl, os.path.join(out_dir, f"{stem}_{os.path.basename(dl)}"))
+            shutil.move(dl, os.path.join(
+                out_dir, f"{stem}_g{game_idx + 1}_{os.path.basename(dl)}"))
         shutil.rmtree(work_dir, ignore_errors=True)
-    return result.get("wld", (0, 0, 0)), crashed
+    return result.get("wld", (0, 0, 0)), crashed, game_path
+
+
+def _write_matchup_transcript(out_path, games, base_seed, mode):
+    """Assemble one matchup's per-game transcripts, in game order, into out_path.
+
+    games is the list of _play_game results for games 0..N-1. Each section opens
+    with a game header naming its seed; a W/L/D summary line closes the file.
+    The per-game files are streamed in and deleted. Returns the summed
+    (wins, losses, draws) and the (game index, crash message) of every crashed
+    game."""
+    n = len(games)
+    wins = losses = draws = 0
+    crashes = []
+    with open(out_path, "w", encoding="utf-8") as fh:
+        for i, ((w, l, d), crashed, game_path) in enumerate(games):
+            fh.write(f"--- Game {i + 1}/{n} [{mode}] seed {base_seed + i} ---\n")
+            fh.flush()
+            try:
+                with open(game_path, encoding="utf-8", errors="replace") as gf:
+                    shutil.copyfileobj(gf, fh)
+                os.remove(game_path)
+            except OSError as e:
+                fh.write(f"(could not read game transcript: {e})")
+            fh.write("\n")
+            if crashed is not None:
+                crashes.append((i, crashed))
+                fh.write(f"=== game {i + 1}/{n}: ENGINE CRASH — {crashed} ===\n")
+            wins, losses, draws = wins + w, losses + l, draws + d
+        fh.write(f"\n{wins}W / {losses}L / {draws}D over {n} games\n")
+    return (wins, losses, draws), crashes
 
 
 def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
     """Run each matchup as scripted games, classify draws, scan transcripts.
 
-    The matchups are independent (own engine processes and seeds), so they run
-    in a process pool; the report is made in matchup order."""
-    tasks = [(tier, deck_a, deck_b, mode, n_games, base_seed + 1000 * k, out_dir)
-             for k, (deck_a, deck_b) in enumerate(pairs)]
-    workers = max(1, min(len(tasks), 16, os.cpu_count() or 4))
+    Matchup k's game i uses seed base_seed + 1000*k + i. Every game is
+    independent (own engine process and seed), so all of them run in one
+    process pool; each matchup's transcript is reassembled in game order and
+    the report is made in matchup order."""
+    seeds = [base_seed + 1000 * k for k in range(len(pairs))]
+    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir)
+             for (deck_a, deck_b), seed in zip(pairs, seeds)
+             for i in range(n_games)]
+    workers = max(1, min(len(tasks), os.cpu_count() or 4))
     with ProcessPoolExecutor(max_workers=workers) as ex:
-        outcomes = list(ex.map(_play_matchup, tasks))
-    for (_tier, deck_a, deck_b, _mode, _n, seed, _dir), ((wins, losses, draws), crashed) \
-            in zip(tasks, outcomes):
-        out_path = os.path.join(out_dir, f"{tier}_{_short(deck_a)}__{_short(deck_b)}.txt")
+        outcomes = list(ex.map(_play_game, tasks))
+    for k, ((deck_a, deck_b), seed) in enumerate(zip(pairs, seeds)):
+        out_path = os.path.join(out_dir, f"{_matchup_stem(tier, deck_a, deck_b)}.txt")
+        (wins, losses, draws), crashes = _write_matchup_transcript(
+            out_path, outcomes[k * n_games:(k + 1) * n_games], seed, mode)
         label = f"{_short(deck_a)} vs {_short(deck_b)} [{mode}] seed {seed}"
-        if crashed is not None:
-            rep.error(tier, f"{label}: engine crashed — {crashed} (see {out_path})")
-            print(f"  {label}: CRASH -> {out_path}", flush=True)
+        if crashes:
+            for i, msg in crashes:
+                rep.error(tier, f"{label}: game {i + 1} (seed {seed + i}) engine "
+                               f"crashed — {msg} (see {out_path})")
+            print(f"  {label}: CRASH in {len(crashes)} game(s) -> {out_path}",
+                  flush=True)
             continue
         if wins + losses + draws < n_games:
             rep.error(tier, f"{label}: only {wins + losses + draws}/{n_games} games "
