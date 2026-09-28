@@ -39,6 +39,13 @@ int current_converge() { return cur_game.resolution.active ? cur_game.resolution
 
 bool current_gift_promised() { return cur_game.pending.cast.gift_promised; }
 
+const Ability &stack_object_ability(Entity stack_object) {
+    const ResolutionFrame &fr = cur_game.resolution;
+    if (fr.active && fr.stack_entity == stack_object && !fr.levels.empty())
+        return fr.levels.front().work;
+    return global_coordinator.GetComponent<Ability>(stack_object);
+}
+
 bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities) {
     if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
     Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)

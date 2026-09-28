@@ -340,7 +340,7 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
     std::vector<Entity> tgts;
     for (Entity e : orderer->get_stack()) {
         if (!global_coordinator.entity_has_component<Ability>(e)) continue;
-        auto &ab = global_coordinator.GetComponent<Ability>(e);
+        const Ability &ab = stack_object_ability(e);
         bool exiles_permanent =
             ab.def->kind == EffectKind::ChangeZone && ab.def->destination == Zone::EXILE &&
             (ab.def->origin == Zone::BATTLEFIELD ||

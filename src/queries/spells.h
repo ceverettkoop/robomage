@@ -8,6 +8,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 
+struct Ability;
 struct CardData;
 
 // ── Spells (CR 112 / 601) ─────────────────────────────────────────────────────
@@ -73,5 +74,11 @@ int current_converge();
 // legality probe sets it on the idle PendingCast while it tests each promise); false when no
 // cast is being proposed.
 bool current_gift_promised();
+
+// ── The ability a stack object resolves with ──────────────────────────────────
+// A stack object's ability as it stands: while it is resolving, the resolution frame's working
+// copy (with the targets and choices its resolution has made so far, CR 608.2); otherwise its
+// Ability component. `stack_object` must have an Ability component.
+const Ability &stack_object_ability(Entity stack_object);
 
 #endif /* QUERIES_SPELLS_H */

@@ -301,9 +301,7 @@ std::set<Entity> collect_pending_pins() {
     }
     const ResolutionFrame &fr = cur_game.resolution;
     if (fr.active) {
-        // In-flight nested levels carry their own by-value ability copies; the
-        // ROOT level's work is unused — the resolving ability lives in the
-        // stack entity's component, so read its targets from there.
+        // Every level, the ROOT included, carries the by-value ability it resolves.
         for (const auto &lv : fr.levels) {
             pin_ref(lv.work.source, pins);
             pin_ref(lv.work.target, pins);
@@ -312,13 +310,6 @@ std::set<Entity> collect_pending_pins() {
             // slices (dig, scry, surveil, rearrange, sylvan) that must survive
             // a world resample in place.
             pin_effect_runtime(lv.rt, pins);
-        }
-        if (fr.stack_entity != 0 &&
-            global_coordinator.entity_has_component<Ability>(fr.stack_entity)) {
-            auto &ab = global_coordinator.GetComponent<Ability>(fr.stack_entity);
-            pin_ref(ab.source, pins);
-            pin_ref(ab.target, pins);
-            pin_refs(ab.targets, pins);
         }
     }
     // A suspended trigger placement: the queued-but-not-yet-offered triggers'

@@ -31,9 +31,9 @@
 extern Game cur_game;
 
 // Arm (first entry) or re-enter (resume after suspension) the persisted
-// resolution frame for the stack object about to resolve. Forward-declared per
-// CLAUDE.md; see definitions below.
-static void frame_enter(Entity top_entity, const Ability &ab, bool count_triggered);
+// resolution frame for the stack object about to resolve; returns the ability to
+// resolve. Forward-declared per CLAUDE.md; see definitions below.
+static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered);
 static void frame_finish();
 
 // First entry: save the incoming priority, count a triggered ability's
@@ -42,15 +42,22 @@ static void frame_finish();
 // resolution gets its own clean Remembered$ scope, CR 608.2 — formerly the
 // RememberedResolutionScope RAII in ability.cpp, moved here so a suspension
 // keeps the mid-resolution accumulations instead of unwinding them), push the
-// ROOT level, and repoint priority at the resolving controller exactly as the
-// old locals did. Re-entry: verify the scanned top is still the suspended
-// object and change nothing.
-static void frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
+// ROOT level holding the working copy of the stack object's ability, and repoint
+// priority at the resolving controller. Re-entry: verify the scanned top is still
+// the suspended object and change nothing.
+//
+// The resolution runs on the ROOT level's copy, never on the Ability component:
+// a handler may remove Ability components mid-resolution (a counterspell
+// countering its target, a stack object changing zones), and ComponentArray's
+// swap-remove would move the resolving component under a reference to it. The
+// levels deque only ever pushes and pops deeper levels, so the ROOT copy stays
+// put until frame_finish.
+static Ability &frame_enter(Entity top_entity, const Ability &ab, bool count_triggered) {
     ResolutionFrame &fr = cur_game.resolution;
     if (fr.active) {
         if (fr.stack_entity != top_entity)
             fatal_error("resolution frame resume: top of stack is not the suspended object");
-        return;
+        return fr.levels.front().work;
     }
     // Each resolution starts with empty memory (the frame reset); the remembered set a top-level
     // blocking resolve left in the idle frame comes back when this resolution finishes.
@@ -79,8 +86,10 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     }
     FrameLevel root;
     root.kind = FrameLevel::ROOT;
-    fr.levels.push_back(root);
+    root.work = ab;
+    fr.levels.push_back(std::move(root));
     cur_game.priority.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+    return fr.levels.front().work;
 }
 
 // Completion epilogue shared by both resolve sites: restore the pre-resolution
@@ -215,8 +224,8 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool was_flashback = spell_cast_with_flashback(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-                auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
-                frame_enter(top_entity, ab, /*count_triggered=*/false);
+                Ability &ab = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
+                                          /*count_triggered=*/false);
                 // On suspension leave EVERYTHING in place (frame armed, spell on
                 // the stack, priority at the chooser) — the next advance_step
                 // re-enters here as the resume path.
@@ -249,16 +258,17 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     }
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-        auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
         // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
         // frame_enter's first-entry block so a resume never recounts.
-        frame_enter(top_entity, ability, /*count_triggered=*/true);
+        Ability &ability = frame_enter(top_entity, global_coordinator.GetComponent<Ability>(top_entity),
+                                       /*count_triggered=*/true);
         if (resolve_ability(ability, orderer, FrameCtx::root()) == ResolveStatus::SUSPENDED) return;
+        const Ability resolved = ability;  // frame_finish clears the frame holding it
         frame_finish();
 
         // CR 714.4: a Saga chapter ability has now left the stack — release the sacrifice gate so a
         // completed Saga can be sacrificed on the next state-based check.
-        decrement_saga_in_flight(ability);
+        decrement_saga_in_flight(resolved);
 
         // Destroy the standalone ability entity — it has no card zone to return to
         global_coordinator.DestroyEntity(top_entity);

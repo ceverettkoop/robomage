@@ -41,6 +41,7 @@
 #include "effects.h"
 #include "../unless_payment.h"
 #include "../targeting.h"
+#include "../queries/spells.h"
 
 extern Coordinator global_coordinator;
 
@@ -77,7 +78,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         cant_be_countered = orig_spell.cant_be_countered;
         x_paid = orig_spell.x_paid;  // copies copy the X chosen for the original (CR 707.10b)
         if (global_coordinator.entity_has_component<Ability>(rt.original))
-            orig_ability = &global_coordinator.GetComponent<Ability>(rt.original);
+            orig_ability = &stack_object_ability(rt.original);
     } else {
         // The original has already left the stack (e.g. a Storm spell countered before its Storm
         // triggered ability resolved — CR 702.40a / 113.7a: the Storm ability is a separate object,

@@ -298,10 +298,10 @@ struct TriggerPlacementRT {
                                    // targeting hooks (Ward, becomes-target) fire once it completes
 };
 
-// One level of the persisted resolve() continuation: the ROOT is the stack
-// object's own ability; nested levels hold the BY-VALUE in-flight copy of a
-// child (sub-abilities resolve as copies today, so the frame must own the copy
-// — resuming must NOT re-bind from mutated parent state). Levels are stored in
+// One level of the persisted resolve() continuation: the ROOT holds the working
+// copy of the stack object's ability (see frame_enter); nested levels hold the
+// BY-VALUE in-flight copy of a child (sub-abilities resolve as copies, so the
+// frame must own the copy — resuming must NOT re-bind from mutated parent state). Levels are stored in
 // a deque, NOT a vector: a parent resolve holds live references into its level
 // (phase/next_sub/rt — and for nested parents `this` IS levels[d].work) across
 // resolve_child's push of the child level, and deque push_back/pop_back never
@@ -311,8 +311,7 @@ struct FrameLevel {
     ChildKind kind = ROOT;
     int child_index = 0;   // index into the parent's child list (subabilities, charm modes, ...)
     int iter_index = 0;    // iteration counter for repeated children (repeat_each, gift loop)
-    Ability work;          // in-flight copy for nested levels (unused at ROOT — the
-                           // component itself is resolved there)
+    Ability work;          // the ability this level resolves (at ROOT, the stack object's)
     int phase = 0;         // resume point in the phase-tagged resolve() (Batch 3+)
     int next_sub = 0;      // next subability to chain after the handler
     EffectRuntime rt;      // handler-specific suspended state
