@@ -62,7 +62,7 @@ Entity returnable_exiled_card(Entity host) {
         for (const auto &dt : cur_game.delayed_triggers) {
             const Ability &fa = dt.ability;
             // A return path is a ChangeZone that would pull the card OUT of exile.
-            if (fa.def->category != "ChangeZone") continue;
+            if (fa.def->kind != EffectKind::ChangeZone) continue;
             if (fa.def->origin != Zone::EXILE || fa.def->destination == Zone::EXILE) continue;
             // Shape A tags the card in the fire ability's restore_remembered_exiled_with (and
             // watches the host); shape B tags it in the trigger's remembered_objects (and mirrors

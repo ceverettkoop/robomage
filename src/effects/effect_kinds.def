@@ -1,0 +1,203 @@
+// The effect categories (the SP$/AB$/DB$ <category> of a card script, or an engine-built
+// ability's category), each with the handler that resolves it. The single list the EffectKind
+// enum, the category-string map (effect_kind.cpp), the handler declarations (effects.h) and the
+// dispatch table (effect_table.cpp) are generated from, so a new category is one line here plus
+// its handler's definition in src/effects/effect_<name>.cpp.
+//
+//   EFFECT_KIND(Kind, "Category", handler)  — resolves through effects::handler, which has the
+//       effects::EffectHandler signature.
+//   EFFECT_KIND_ELSEWHERE(Kind, "Category") — a known category with no resolution handler: the
+//       engine carries it out outside resolve_ability (a mana ability's production, an entry
+//       replacement's choice), so it resolves as a no-op that chains its sub-abilities.
+//
+// Includers define the macros they need; an undefined one expands to nothing.
+#ifndef EFFECT_KIND
+#define EFFECT_KIND(kind, category, handler)
+#endif
+#ifndef EFFECT_KIND_ELSEWHERE
+#define EFFECT_KIND_ELSEWHERE(kind, category)
+#endif
+
+EFFECT_KIND(AddMana, "AddMana", add_mana)
+EFFECT_KIND(GainLife, "GainLife", gain_life)
+EFFECT_KIND(LoseLife, "LoseLife", lose_life)
+EFFECT_KIND(Discard, "Discard", discard)
+EFFECT_KIND(Draw, "Draw", draw)
+EFFECT_KIND(ChangeZone, "ChangeZone", change_zone)
+EFFECT_KIND(ChangeZoneAll, "ChangeZoneAll", change_zone_all)
+EFFECT_KIND(RearrangeTopOfLibrary, "RearrangeTopOfLibrary", rearrange_top_of_library)
+EFFECT_KIND(DealDamage, "DealDamage", deal_damage)
+EFFECT_KIND(PutCounter, "PutCounter", put_counter)
+EFFECT_KIND(RemoveCounter, "RemoveCounter", remove_counter)
+EFFECT_KIND(ProwessBonus, "ProwessBonus", prowess_bonus)
+EFFECT_KIND(ExaltedBonus, "ExaltedBonus", exalted_bonus)
+EFFECT_KIND(Token, "Token", token)
+EFFECT_KIND(Investigate, "Investigate", investigate)
+EFFECT_KIND(Attach, "Attach", attach)
+EFFECT_KIND(Mill, "Mill", mill)
+EFFECT_KIND(Pump, "Pump", pump)
+// DB$ PumpAll (Lorehold Charm's pump mode): mass +P/+T and keyword grant, until end of turn,
+// to every battlefield permanent matching ValidCards$ (controller-scoped by YouCtrl/OppCtrl).
+// General over "creatures you control get +X/+Y and gain <keyword> until end of turn". Reuses
+// the single-target Pump application + amount-resolution helpers in effects.h. See
+// effect_pump_all.cpp.
+EFFECT_KIND(PumpAll, "PumpAll", pump_all)
+EFFECT_KIND(MultiplyCounter, "MultiplyCounter", multiply_counter)
+EFFECT_KIND(ChooseCard, "ChooseCard", choose_card)
+EFFECT_KIND(Cleanup, "Cleanup", cleanup)
+EFFECT_KIND(DelayedTrigger, "DelayedTrigger", delayed_trigger)
+EFFECT_KIND(Untap, "Untap", untap)
+// DB$/AB$ UntapAll (Paradox Engine): untap every battlefield permanent matching ValidCards$
+// (controller-scoped). Mass counterpart of single-target Untap. See effect_untap_all.cpp.
+EFFECT_KIND(UntapAll, "UntapAll", untap_all)
+EFFECT_KIND(Destroy, "Destroy", destroy)
+EFFECT_KIND(DestroyAll, "DestroyAll", destroy_all)
+EFFECT_KIND(DamageAll, "DamageAll", damage_all)
+EFFECT_KIND(Counter, "Counter", counter)
+EFFECT_KIND(Surveil, "Surveil", surveil)
+EFFECT_KIND(Scry, "Scry", scry)
+EFFECT_KIND(PeekAndReveal, "PeekAndReveal", peek_and_reveal)
+// AB$/DB$ Reveal with Random$ True (Urza's Bauble): look at a random card in a
+// player's hand. See effect_reveal.cpp.
+EFFECT_KIND(Reveal, "Reveal", reveal)
+EFFECT_KIND(Phases, "Phases", phases)
+EFFECT_KIND(Dig, "Dig", dig)
+EFFECT_KIND(SylvanLibrary, "SylvanLibrary", sylvan_library)
+EFFECT_KIND(WinsGame, "WinsGame", wins_game)
+EFFECT_KIND(Charm, "Charm", charm)
+EFFECT_KIND(Amass, "Amass", amass)
+EFFECT_KIND(Sacrifice, "Sacrifice", sacrifice)
+EFFECT_KIND(PutCounterAll, "PutCounterAll", put_counter_all)
+EFFECT_KIND(SacrificeAll, "SacrificeAll", sacrifice_all)
+EFFECT_KIND(ImmediateTrigger, "ImmediateTrigger", immediate_trigger)
+EFFECT_KIND(CopyPermanent, "CopyPermanent", copy_permanent)
+// AB$ Clone (Thespian's Stage): the SOURCE permanent becomes a copy of target land in place —
+// the same object acquires the target's copiable characteristics (CR 706.2), keeping its own
+// counters/tapped state/attachments. GainThisAbility$ True retains this Clone ability on the copy.
+EFFECT_KIND(Clone, "Clone", clone)
+// Mobilize N (702.176): create N tapped+attacking 1/1 red Warrior tokens and register a
+// delayed end-step sacrifice of exactly those tokens.
+EFFECT_KIND(Mobilize, "Mobilize", mobilize)
+// Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
+// still on the battlefield (the tokens created when the creature attacked).
+EFFECT_KIND(SacrificeTokens, "SacrificeTokens", sacrifice_tokens)
+// Delayed end-of-combat exile fired by AtEOT$ ExileCombat (Geist of Saint Traft): exile each
+// entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
+EFFECT_KIND(ExileTokens, "ExileTokens", exile_tokens)
+// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
+// player, with cur_game.resolution.memory.remembered set to that player's entity each iteration.
+EFFECT_KIND(RepeatEach, "RepeatEach", repeat_each)
+// AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
+// graveyard card in cur_game.resolved_effects.may_cast_this_turn so the casting path offers it this turn.
+EFFECT_KIND(GrantCast, "Effect", grant_cast)
+// SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
+// chosen name is stored in cur_game.resolution.memory.named_card so a chained Card.NamedCard sub-ability
+// (here a RevealDiscardAll discard) can reference it.
+EFFECT_KIND(NameCard, "NameCard", name_card)
+// DB$ Animate (Guide of Souls): the targeted permanent "becomes ..." — bakes the
+// Duration$ Permanent continuous effect (added types/subtypes, and the extension-point
+// base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
+// it each SBE pass. See effect_animate.cpp.
+EFFECT_KIND(Animate, "Animate", animate)
+// AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+// (RemoveKeywords$) or grants keyword(s) on every battlefield permanent matching ValidCards$.
+// General over "permanents matching <filter> lose/gain <keyword> until end of turn" (CR 613
+// layer 6). See effect_animate_all.cpp.
+EFFECT_KIND(AnimateAll, "AnimateAll", animate_all)
+// DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
+// [0, Max], where Max is the runtime Count$ expression in ab.dynamic_amount_expr (e.g.
+// Count$YourCountersEnergy = their current energy). The pick is recorded in
+// cur_game.resolution.memory.chosen_number for a chained Count$ChosenNumber reference. General over "choose a
+// number up to N" cards. See effect_choose_number.cpp.
+EFFECT_KIND(ChooseNumber, "ChooseNumber", choose_number)
+// DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches Valid$;
+// skipped cards go to RevealedDestination$, the match to FoundDestination$ (both Exile here);
+// RememberFound$ remembers the match for a chained DB$ Play. See effect_dig_until.cpp.
+EFFECT_KIND(DigUntil, "DigUntil", dig_until)
+// DB$ Play (Amped Raptor): grant a one-shot permission to cast a Defined$ card from its
+// current zone this turn, paying an alternative RESOURCE cost (PlayCost$) instead of mana.
+// See effect_play.cpp.
+EFFECT_KIND(Play, "Play", play)
+// DB$/AB$ Earthbend (Badgermole Cub, Ba Sing Se): the targeted land you control becomes a 0/0
+// creature with haste that's still a land (via the Animate extension), gets ab.amount +1/+1
+// counters, and a "when it leaves the battlefield, return it tapped" delayed trigger is
+// registered. See effect_earthbend.cpp.
+EFFECT_KIND(Earthbend, "Earthbend", earthbend)
+// DB$ Tap (Ba Sing Se LandTapped SVar / generic): tap Defined$ Self or the target. The
+// conditional "enters tapped" case is handled by the ENTERS_TAPPED replacement; this resolve
+// handler covers a tap that reaches the stack. See effect_tap.cpp.
+EFFECT_KIND(Tap, "Tap", tap)
+// DB$ RevealHand (Thought-Knot Seer): the targeted player (ValidTgts$ Opponent) reveals their
+// hand to all players (CR 701.16) — logged and recorded in the belief state. General over
+// Duress/Thoughtseize-style "target player reveals their hand". See effect_reveal_hand.cpp.
+EFFECT_KIND(RevealHand, "RevealHand", reveal_hand)
+// DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
+EFFECT_KIND(BecomeMonarch, "BecomeMonarch", become_monarch)
+// SP$/AB$ Vote (Council's Judgment, CR 701.32 will-of-the-council): voters choose among the
+// VoteCard$ permanents and the VoteSubAbility$ effect (a DB$ ChangeZone Battlefield→Exile) is
+// applied to the winner(s). The engine is two-player only (CLAUDE.md scope), so the vote
+// reduces to the spell/ability's controller CHOOSING one permanent matching VoteCard$ — a
+// choice, not a target, so it ignores shroud/hexproof. See effect_vote.cpp.
+EFFECT_KIND(Vote, "Vote", vote)
+// K:Storm (CR 702.40): the synthesized self-cast triggered ability resolves here. ab.amount holds
+// the storm count (spells cast before the storm spell this turn, by either player), locked in when
+// the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
+// targets) via the shared run_copy_spell machine (suspendable). See effect_storm.cpp.
+EFFECT_KIND(Storm, "Storm", storm)
+// DB$ AddTurn (Emrakul, the Aeons Torn): the Defined$ player (You = the ability's controller)
+// takes ab.amount (NumTurns$, default 1) extra turns after the current one, queued onto
+// cur_game.turn_state.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
+// an extra turn" effect. See effect_add_turn.cpp.
+EFFECT_KIND(AddTurn, "AddTurn", add_turn)
+// DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's
+// Permanent::stored_svars[ab.stored_svar_set_name] — the per-permanent named-integer scratch store
+// read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
+// the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
+EFFECT_KIND(StoreSVar, "StoreSVar", store_svar)
+// DB$ CopySpellAbility (Chain Lightning): after the parent spell's effect, the target-or-its-
+// controller may pay an UnlessCost$ ({R}{R}) to copy the parent spell and choose new targets for
+// the copy (UnlessSwitched$ True = copy ONLY IF paid). Reuses run_unless_loop + the shared
+// run_copy_spell machine (suspendable). See effect_copy_spell.cpp. CR 707.10 / 707.12.
+EFFECT_KIND(CopySpellAbility, "CopySpellAbility", copy_spell_ability)
+// Suspend upkeep tick (CR 702.62a, second ability): remove one suspend time counter from
+// ab.source (an exiled suspended card, counted on its Zone::counters — an exiled card is not a
+// permanent, so its counters can't live in Permanent::counters). Removing the last one
+// triggers the third ability (suspend_cast). General over any Suspend card. See
+// effect_suspend_tick.cpp.
+EFFECT_KIND(SuspendTick, "SuspendTick", suspend_tick)
+// DB$ SetState | Mode$ TurnFaceUp | Defined$ ExiledWith (The Creation of Avacyn chapter II):
+// turn the Defined$ card face up by clearing its Zone::is_face_down flag (CR 708.3 / 711.8).
+// Structured so other Mode$ values (e.g. TurnFaceDown, Transform) can be added. See
+// effect_set_state.cpp.
+EFFECT_KIND(SetState, "SetState", set_state)
+// WarpExile (a 2025 keyword; not in the checked-in CR snapshot): the delayed end-step triggered
+// ability set up for a warp-cast permanent (mark_warp_permanent). Exiles ab.source (if it is still
+// on the battlefield as the same object) and grants its owner a lasting cast-from-exile permission
+// so it may be recast on a later turn for its normal cost while it remains exiled. A permanent that
+// already left the battlefield follows normal rules (the exile no-ops). See effect_warp.cpp.
+EFFECT_KIND(WarpExile, "WarpExile", warp_exile)
+// Miracle (CR 702.94a): the linked "when you reveal this card this way, you may cast it" triggered
+// ability. Synthesized and put on the stack when its owner reveals a freshly-drawn miracle card; on
+// resolution it opens the miracle-cast window for the source card (so its owner may then cast it for
+// its miracle cost at their following priority). See effect_miracle.cpp.
+EFFECT_KIND(MiracleCast, "MiracleCast", miracle_cast)
+// Reconfigure (CR 702.151a): "Unattach this permanent." Unattaches ab.source from the creature it
+// is attached to, if it is still on the battlefield and attached. See effect_unattach.cpp.
+EFFECT_KIND(Unattach, "Unattach", unattach)
+// Ninjutsu (CR 702.49a/c): "Put this card onto the battlefield from your hand tapped and
+// attacking", attacking what the creature returned as the cost was attacking. A card no longer in
+// its owner's hand stays where it is. See effect_ninjutsu.cpp.
+EFFECT_KIND(Ninjutsu, "Ninjutsu", ninjutsu)
+// Suspend's third ability (CR 702.62a): "When the last time counter is removed from this card,
+// if it's exiled, you may play it without paying its mana cost if able." Its owner may cast
+// ab.source then, during this resolution (CR 608.2g); if they don't, it remains exiled. See
+// effect_suspend_tick.cpp.
+EFFECT_KIND(SuspendCast, "SuspendCast", suspend_cast)
+
+// AB$ ManaReflected (Mox Amber): a mana ability whose colors are those of the permanents its
+// Valid$ filter matches, computed as mana sources are enumerated; like every mana ability it
+// makes its mana as it is activated (CR 605.3a), in mana_system.
+EFFECT_KIND_ELSEWHERE(ManaReflected, "ManaReflected")
+
+#undef EFFECT_KIND
+#undef EFFECT_KIND_ELSEWHERE

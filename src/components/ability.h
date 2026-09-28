@@ -3,6 +3,7 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "../effects/effect_kind.h"
 #include "../object_ref.h"
 #include "ability_params.h"
 #include "static_ability.h"
@@ -57,6 +58,8 @@ struct AbilityDef {
 
     AbilityType ability_type = SPELL;
     std::string category = "";
+    // The effect `category` names, bound once as the definition is interned (effect_kinds.def).
+    EffectKind kind = EffectKind::None;
     // GainThisAbility$ True on an AB$ Clone (Thespian's Stage: "becomes a copy of target land,
     // except it has this ability."). CR 706.2 in-place copy that RETAINS this very ability on the
     // copy — the clone handler appends the source's own Clone ability(ies) onto the copied

@@ -761,7 +761,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             // cast first), so the both-player total minus this spell is the storm count. Snapshot
             // it now, at trigger-fire time — spells cast in RESPONSE to the storm trigger come
             // after this spell and must not inflate the count.
-            if (trigger_ab.def->category == "Storm") {
+            if (trigger_ab.def->kind == EffectKind::Storm) {
                 const int storm_count = static_cast<int>(storm_count_this_turn(game));
                 trigger_ab.def = derived_ability_def(trigger_ab.def, "storm_count", storm_count,
                                                      [storm_count](AbilityDef &d) {
@@ -1195,7 +1195,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                 trigger_ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));
             }
             // For exalted, target the sole attacker from the event
-            if (trigger_ab.def->category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
+            if (trigger_ab.def->kind == EffectKind::ExaltedBonus && ev.HasParam(Params::ENTITY))
                 trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
             // For combat damage triggers, capture the damage amount
             if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))

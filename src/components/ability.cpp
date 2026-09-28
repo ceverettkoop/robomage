@@ -14,6 +14,8 @@ extern Coordinator global_coordinator;
 
 // The process-wide definition store behind intern_ability_def (see ability.h).
 static std::deque<AbilityDef> &ability_def_store();
+// Bind `d`'s EffectKind from its category, and those of the definitions nested in it.
+static void bind_effect_kinds(AbilityDef &d);
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const AbilityDef *other) const {
@@ -58,7 +60,17 @@ static std::deque<AbilityDef> &ability_def_store() {
     return store;
 }
 
+// An unknown category binds to None; the parser reports it for a script's abilities
+// (normalize_category), and every engine-built category is one of effect_kinds.def's.
+static void bind_effect_kinds(AbilityDef &d) {
+    effect_kind_from_category(d.category, d.kind);
+    for (auto *nested : {&d.subabilities, &d.charm_choices, &d.effect_floating_triggers,
+                         &d.animate_granted_abilities})
+        for (AbilityDef &n : *nested) bind_effect_kinds(n);
+}
+
 const AbilityDef *intern_ability_def(AbilityDef def) {
+    bind_effect_kinds(def);
     ability_def_store().push_back(std::move(def));
     return &ability_def_store().back();
 }

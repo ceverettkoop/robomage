@@ -129,7 +129,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     auto signed_str = [](int v) {
         return (v >= 0 ? std::string("+") : std::string()) + std::to_string(v);
     };
-    if (ab.def->category == "Pump" || ab.def->category == "PumpAll") {
+    if (ab.def->kind == EffectKind::Pump || ab.def->kind == EffectKind::PumpAll) {
         const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
         if (!pp || (pp->att == 0 && pp->def == 0 && pp->att_expr.empty() && pp->def_expr.empty()))
             return "";  // keyword-grant-only pump — no P/T change to report
@@ -139,8 +139,8 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     }
     // Counter effects keep their count in CounterParams (CounterNum$/its SVar), not
     // Ability::amount — read it the way the handlers do.
-    if (ab.def->category == "PutCounter" || ab.def->category == "PutCounterAll" ||
-        ab.def->category == "RemoveCounter") {
+    if (ab.def->kind == EffectKind::PutCounter || ab.def->kind == EffectKind::PutCounterAll ||
+        ab.def->kind == EffectKind::RemoveCounter) {
         const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
         if (!cp) return "";
         int n = cp->count;
@@ -151,20 +151,20 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     }
     // Discard only counts by Ability::amount in Random mode (Hymn to Tourach); the
     // reveal-and-choose / discard-all modes (Thoughtseize, Cabal Therapy) have no fixed count.
-    if (ab.def->category == "Discard") {
+    if (ab.def->kind == EffectKind::Discard) {
         const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def->params);
         if (dp && dp->mode == "Random") return ", amount: " + std::to_string(ab.def->amount);
         return "";
     }
     // Categories where Ability::amount (or its dynamic Count$ expression) is the effect's
     // magnitude, so printing it is informative.
-    static const std::set<std::string> kAmountIsAuthoritative = {
-        "DealDamage", "DamageAll", "Draw", "Mill", "GainLife", "LoseLife",
-        "Scry", "Surveil"};
-    if (kAmountIsAuthoritative.count(ab.def->category)) {
+    static const std::set<EffectKind> kAmountIsAuthoritative = {
+        EffectKind::DealDamage, EffectKind::DamageAll, EffectKind::Draw,     EffectKind::Mill,
+        EffectKind::GainLife,   EffectKind::LoseLife,  EffectKind::Scry,     EffectKind::Surveil};
+    if (kAmountIsAuthoritative.count(ab.def->kind)) {
         size_t amt = ab.def->amount;
         // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
-        if (amt == 0 && (ab.def->category == "Draw" || ab.def->category == "Mill")) amt = 1;
+        if (amt == 0 && (ab.def->kind == EffectKind::Draw || ab.def->kind == EffectKind::Mill)) amt = 1;
         if (!ab.def->dynamic_amount_expr.empty())
             amt = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
         return ", amount: " + std::to_string(amt);
@@ -474,10 +474,10 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     if (phase == 4) {
         // Table-driven dispatch: every effect category resolves through its handler
-        // in src/effects/. handler_for() returns nullptr only for categories with no
-        // resolve-time handler (e.g. "Equip", handled at activation) — those simply
-        // chain subabilities.
-        effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(ab.def->category));
+        // in src/effects/. handler_for() returns nullptr only for kinds with no
+        // resolve-time handler (None, EFFECT_KIND_ELSEWHERE) — those simply chain
+        // subabilities.
+        effects::EffectHandler handler = effects::handler_for(ab.def->kind);
         HandlerResult hres = handler ? handler(ab, orderer, ctx) : HandlerResult::DONE_RUN_SUBS;
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
         // or clearing the named card — the re-entry finishes both.
@@ -503,7 +503,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is
     // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
     // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
-    if (effect_kind_from_string(ab.def->category) == EffectKind::NameCard)
+    if (ab.def->kind == EffectKind::NameCard)
         cur_game.resolution.memory.named_card.clear();
     return ResolveStatus::DONE;
 }

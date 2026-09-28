@@ -342,10 +342,10 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
         if (!global_coordinator.entity_has_component<Ability>(e)) continue;
         auto &ab = global_coordinator.GetComponent<Ability>(e);
         bool exiles_permanent =
-            ab.def->category == "ChangeZone" && ab.def->destination == Zone::EXILE &&
+            ab.def->kind == EffectKind::ChangeZone && ab.def->destination == Zone::EXILE &&
             (ab.def->origin == Zone::BATTLEFIELD ||
              std::find(ab.def->origins.begin(), ab.def->origins.end(), Zone::BATTLEFIELD) != ab.def->origins.end());
-        if (ab.def->category != "Destroy" && !exiles_permanent) continue;
+        if (ab.def->kind != EffectKind::Destroy && !exiles_permanent) continue;
         if (Entity t = ab.target.get()) tgts.push_back(t);
         for (Entity t : live_entities(ab.targets)) tgts.push_back(t);
     }

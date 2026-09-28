@@ -943,7 +943,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
             }
             const AbilityDef &first_ab = *cd.opening_hand_abilities.front();
             std::string prompt =
-                (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
+                (first_ab.kind == EffectKind::ChangeZone && first_ab.destination == Zone::BATTLEFIELD)
                     ? "begin the game with " + cd.name + " on the battlefield"
                     : "use " + cd.name + "'s opening-hand ability";
             // The y/n is seated on `player` with the request_optional_yesno

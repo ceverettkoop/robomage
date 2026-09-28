@@ -211,7 +211,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
-    if (vt == "Card" && ab.def->category == "ChangeZone" && ab.def->origin == Zone::GRAVEYARD) {
+    if (vt == "Card" && ab.def->kind == EffectKind::ChangeZone && ab.def->origin == Zone::GRAVEYARD) {
         return global_coordinator.entity_has_component<Zone>(cand) &&
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
@@ -254,7 +254,7 @@ bool is_legal_target(const Ability &ab, Entity cand, Zone::Ownership caster) {
     // in the graveyard, matched there by its card characteristics regardless of destination; a
     // card's controller there is its owner (CR 108.4a), so YouCtrl/OppCtrl mean YouOwn/OppOwn.
     if (ab.def->target_in_graveyard ||
-        (ab.def->category == "ChangeZone" && ab.def->origin == Zone::GRAVEYARD)) {
+        (ab.def->kind == EffectKind::ChangeZone && ab.def->origin == Zone::GRAVEYARD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         if (global_coordinator.GetComponent<Zone>(cand).location != Zone::GRAVEYARD) return false;
         return card_matches_filter(cand, owner_relative_filter(spec), ctx);
@@ -353,7 +353,7 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
     // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
     if (ability.def->target_in_graveyard ||
-        (ability.def->category == "ChangeZone" && ability.def->origin == Zone::GRAVEYARD)) {
+        (ability.def->kind == EffectKind::ChangeZone && ability.def->origin == Zone::GRAVEYARD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {

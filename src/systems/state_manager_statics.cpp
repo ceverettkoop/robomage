@@ -1184,7 +1184,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         auto &perm_abilities = perm.abilities;
         bool already_present = false;
         for (const auto &ab : perm_abilities) {
-            if (ab.def->category == "AddMana" && ab.color == required_color && ab.def->amount == 1) {
+            if (ab.def->kind == EffectKind::AddMana && ab.color == required_color && ab.def->amount == 1) {
                 already_present = true;
                 break;
             }
@@ -1967,7 +1967,7 @@ void StateManager::apply_layer6_ability_grants() {
             for (auto &existing : abilities) {
                 if (existing.def->ability_type == AbilityDef::TRIGGERED &&
                     existing.granted_by_static == a.entity &&
-                    existing.def->category == granted.def->category &&
+                    existing.def->kind == granted.def->kind &&
                     existing.def->trigger_on == granted.def->trigger_on) {
                     dup = true;
                     break;

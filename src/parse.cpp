@@ -37,7 +37,7 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
-static std::string normalize_category(std::string category);
+static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name = "");
 static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
@@ -2175,9 +2175,16 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     }
 }
 
-// Normalizes script category names to the internal names used throughout the engine.
-static std::string normalize_category(std::string category) {
+// Normalizes script category names to the internal names used throughout the engine. A category
+// with no EffectKind (effect_kinds.def) would resolve as a no-op, so it is reported here.
+static std::string normalize_category(std::string category, const std::string& card_name) {
     if (category == "Mana") category = "AddMana";
+    EffectKind kind;
+    if (!effect_kind_from_category(category, kind)) {
+        std::string msg = "Unknown ability category: " + category + " (resolves as a no-op)";
+        if (!card_name.empty()) msg += " (card: " + card_name + ")";
+        warning(msg);
+    }
     return category;
 }
 
@@ -2312,7 +2319,7 @@ static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::Abi
     size_t cat_end = content.find_first_of(" |", p);
     if (cat_end == std::string::npos) cat_end = content.length();
     if (cat_end > p)
-        sub.category = normalize_category(content.substr(p, cat_end - p));
+        sub.category = normalize_category(content.substr(p, cat_end - p), card_name);
 
     // Earthbend (CR keyword action) inherently targets a land the controller controls; the
     // Forge scripts carry no ValidTgts$, so default it here (overridden if the script ever
@@ -2705,7 +2712,7 @@ static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, c
         // Check if category_end is valid
         if (category_end <= pos) continue;
 
-        ability.category = normalize_category(line.substr(pos, category_end - pos));
+        ability.category = normalize_category(line.substr(pos, category_end - pos), card_name);
 
         // Earthbend (CR keyword action) inherently targets a land the controller controls; the
         // activated form (Ba Sing Se) carries no ValidTgts$, so default it here.

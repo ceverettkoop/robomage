@@ -261,7 +261,7 @@ bool ability_is_mana(const Ability &ab) {
     // gated activated-ability path (state_manager_actions / process_activate_ability), where it
     // resolves off the stack via the AddMana effect handler.
     if (ab.def->is_loyalty_ability) return false;
-    return ab.def->category == "AddMana" || ab.def->category == "ManaReflected";
+    return ab.def->kind == EffectKind::AddMana || ab.def->kind == EffectKind::ManaReflected;
 }
 
 // The producible color set of an AB$ ManaReflected ability (Mox Amber): the UNION of the
@@ -605,7 +605,7 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         snap.tapped_state.push_back({entity, permanent.is_tapped});
         for (size_t i = 0; i < permanent.abilities.size(); i++) {
-            if (permanent.abilities[i].def->category == "AddMana") {
+            if (permanent.abilities[i].def->kind == EffectKind::AddMana) {
                 snap.activation_counts.push_back({entity, i, permanent.abilities[i].activations_this_turn});
             }
         }
@@ -727,9 +727,9 @@ static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &r
 void increment_activation_count(Permanent &perm, const Ability &ability) {
     if (ability.def->activation_limit <= 0) return;
     for (auto &perm_ab : perm.abilities) {
-        if (perm_ab.def->category != ability.def->category) continue;
+        if (perm_ab.def->kind != ability.def->kind) continue;
         // Mana abilities are keyed by tap/color; other activated abilities by return cost.
-        bool match = (ability.def->category == "AddMana")
+        bool match = (ability.def->kind == EffectKind::AddMana)
                          ? (perm_ab.def->tap_cost == ability.def->tap_cost && perm_ab.color == ability.color)
                          : (perm_ab.def->return_cost_type == ability.def->return_cost_type);
         if (match) {
@@ -886,7 +886,7 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
 static bool mana_ability_is_painful(const Ability &ab) {
     if (ab.def->life_cost > 0) return true;
     for (const auto &sub : ab.subabilities)
-        if ((sub.def->category == "DealDamage" || sub.def->category == "LoseLife") && sub.def->defined_you)
+        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) && sub.def->defined_you)
             return true;
     return false;
 }
@@ -900,7 +900,7 @@ static bool mana_ability_is_painful(const Ability &ab) {
 static int mana_ability_life_loss(const Ability &ab) {
     int loss = ab.def->life_cost;
     for (const auto &sub : ab.subabilities)
-        if ((sub.def->category == "DealDamage" || sub.def->category == "LoseLife") && sub.def->defined_you)
+        if ((sub.def->kind == EffectKind::DealDamage || sub.def->kind == EffectKind::LoseLife) && sub.def->defined_you)
             loss += static_cast<int>(sub.def->amount);
     return loss;
 }

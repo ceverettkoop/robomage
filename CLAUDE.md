@@ -306,12 +306,14 @@ chosen cards, named card, chosen number/type) is `cur_game.resolution.memory`; X
 are read through `current_x_paid()` / `current_converge()` (`src/queries/spells.h`) — the cast or
 activation in flight, else the resolving object's own values — never a global.
 
-`resolve_ability()` (`src/resolution.cpp`) is a phased state machine that maps the
-category string to an `EffectKind` (`src/effects/effect_kind.{h,cpp}`), dispatches through
+`resolve_ability()` (`src/resolution.cpp`) is a phased state machine that dispatches on the
+definition's `EffectKind` (bound from its category string when the definition is interned) through
 `effects::handler_for` (`effect_table.cpp`) to a per-effect handler in
-`src/effects/effect_<name>.cpp` (declared in `effects.h`), then chains `SubAbility$`. An unmapped
-category silently resolves as a no-op, so a new category needs all four: enum member, string
-mapping, handler, table case. Mana abilities (`AddMana`) resolve at activation, off the stack.
+`src/effects/effect_<name>.cpp`, then chains `SubAbility$`. Every category is one line in
+`src/effects/effect_kinds.def`, which generates the enum, the category map, the handler
+declarations and the dispatch table: a new category is that line plus its handler. The parser
+warns on a script category with no entry (it would resolve as a no-op). Mana abilities
+(`AddMana`) resolve at activation, off the stack.
 Targets are chosen before costs are paid and re-checked at resolution.
 
 **Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's

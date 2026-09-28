@@ -126,7 +126,7 @@ HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     std::vector<const AbilityDef *> retained;
     if (ab.def->gain_this_ability) {
         for (const auto &a : global_coordinator.GetComponent<CardData>(src).abilities)
-            if (a->category == "Clone") retained.push_back(a);
+            if (a->kind == EffectKind::Clone) retained.push_back(a);
     }
 
     // Build the copy from the target's copiable characteristics (a value copy of its CardData),
