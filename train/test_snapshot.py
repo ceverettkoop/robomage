@@ -2617,13 +2617,13 @@ def test_activation_x_roundtrip():
     exactly-X target picks that read it — Candelabra of Tawnos's {X}, {T}:
     Untap X target lands (Cost$ X T, TargetMin/Max$ X) — are loop-top pending
     decisions (tag ACTIVATION, run_activation_flow's X_LADDER then TARGET
-    steps; the apply sets cur_game.x_paid BEFORE any later cost step runs). A
+    steps; the apply sets the activation's X BEFORE any later cost step runs). A
     presets Candelabra plus a Mountain and a Volcanic Island (two mana
     sources), so the ladder offers X=0/1/2 (nc=3) and the control picks X=1,
     reaching a 2-option exactly-one-land target menu (no Done — the minimum is
     X). Both are SNAPSHOT/RESTORE roots. The X excursion is exercised WITHOUT
     asserting the immediate next payload (a divergent X lives only in the
-    pending activation / cur_game.x_paid, not serialized, and X=1 and X=2
+    pending activation's stack_ab.x_paid, not serialized, and X=1 and X=2
     present an identical first target menu — the charm-mode caveat); the
     target excursion must diverge (a different land id reaches the stack).
     Each round-trip resumes byte-identically to the control with the same

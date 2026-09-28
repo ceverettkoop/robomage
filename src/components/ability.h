@@ -163,7 +163,7 @@ struct AbilityDef {
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
     // X loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate). The
     // magnitude is chosen at activation (X, bounded by current loyalty for a minus ability) and
-    // recorded as cur_game.x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
+    // recorded as the activation's x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
     // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
     bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
@@ -181,7 +181,7 @@ struct AbilityDef {
     // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
     // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
     // resolution and applied as a per-card mana-value gate in the zone search. Empty = no
-    // dynamic cmc filter (the legacy cmcLEX path keys off cur_game.x_paid instead).
+    // dynamic cmc filter (the legacy cmcLEX path keys off current_x_paid() instead).
     std::string change_type_cmc_expr = "";
     std::string change_type_cmc_op = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
@@ -904,11 +904,11 @@ struct Ability {
     Entity granted_by_static = 0;
 
     // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
-    // put on the stack (0 for an activation with no X) and restored into cur_game.x_paid when it
-    // resolves, so its Count$xPaid / cmcLEX reads this ability's X rather than the X of whatever
-    // spell or ability resolved in between. A triggered ability gets its X when it is put on
-    // the stack (CR 107.3m/n; 0 when nothing defines it). -1 = no X recorded with this stack
-    // object: resolution leaves cur_game.x_paid unchanged.
+    // put on the stack (0 for an activation with no X); the resolution frame takes it as the
+    // resolving object's X, so its Count$xPaid / cmcLEX reads this ability's X rather than the X
+    // of whatever spell or ability was cast or resolved in between. A triggered ability gets its
+    // X when it is put on the stack (CR 107.3m/n; 0 when nothing defines it). -1 = no X recorded
+    // with this stack object: it resolves with X = 0.
     int x_paid = -1;
 
     // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's

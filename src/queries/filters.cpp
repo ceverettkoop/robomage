@@ -20,6 +20,7 @@
 #include "counters.h"
 #include "keywords.h"
 #include "lki.h"
+#include "spells.h"
 #include "types.h"
 
 static std::vector<std::pair<std::string, bool>> filter_tokens(const std::string &spec);
@@ -213,7 +214,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q.rfind("cmc", 0) == 0) {
         // cmcLEX reads the X paid, unless the caller resolved X itself and supplied it as the
         // dynamic bound (Birthing Ritual's X = 1 + the sacrificed creature's mana value).
-        if (q == "cmcLEX") return ctx.cmc_bound >= 0 || v.cmc <= static_cast<int>(cur_game.x_paid);
+        if (q == "cmcLEX") return ctx.cmc_bound >= 0 || v.cmc <= current_x_paid();
         return true;  // cmcEQX / cmcLE3 / … enforced via ctx.cmc_bound
     }
     // dynamic power/toughness vs SVar X (Ensnaring Bridge: Creature.powerGTX — "power greater

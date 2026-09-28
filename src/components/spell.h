@@ -34,7 +34,7 @@ struct Spell {
     int replicate_count = 0;
     // Gift (CR 702.176): true iff the spell's controller PROMISED the gift to the opponent as
     // this spell was cast (an optional choice, not a cost — CR 702.176b). Read at resolution to
-    // give the opponent the gift, and (via cur_game.pending_gift_promised at cast time) to switch
+    // give the opponent the gift, and (via current_gift_promised() at cast time) to switch
     // a Count$PromisedGift-driven effect (e.g. Into the Flood Maw widening its bounce target).
     bool gift_promised = false;
     // A COPY of a spell on the stack (CR 707.10): a copy is not a card. When it resolves (or is
@@ -49,7 +49,7 @@ struct Spell {
     int mana_spent = 0;
     // Converge (CR 702.90): the distinct COLORS of mana actually spent to cast this spell (WHITE..
     // GREEN; colorless mana is not a color, CR 105.1). Set at cast time from the payment's spent
-    // colors; its size is the Converge count, restored into cur_game.converge at resolution and read
+    // colors; its size is the Converge count, taken by the resolution frame as it resolves and read
     // by a Count$Converge amount/condition bound (Prismatic Ending). Empty for a free / no-mana cast.
     std::set<Colors> colors_spent;
 };

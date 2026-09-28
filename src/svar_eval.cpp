@@ -15,6 +15,7 @@
 #include "queries/filters.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
+#include "queries/spells.h"
 
 extern Coordinator global_coordinator;
 
@@ -145,10 +146,9 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
 
     // Count$xPaid — the X value paid at cast time for the X-cost spell currently resolving
     // (Green Sun's Zenith: ChangeType$ Creature.Green+cmcLEX with SVar:X:Count$xPaid → the
-    // search's mana-value bound is X). cur_game.x_paid is restored from the resolving spell
-    // before its ability runs (stack_manager), so it holds this spell's X here.
+    // search's mana-value bound is X): the resolving spell's own X (current_x_paid).
     if (expr == "Count$xPaid")
-        return static_cast<int>(cur_game.x_paid);
+        return current_x_paid();
 
     // Count$ChosenNumber — the integer chosen by the most recent DB$ ChooseNumber effect this
     // resolution (Wrath of the Skies: the amount of energy to pay). Stored in cur_game by the

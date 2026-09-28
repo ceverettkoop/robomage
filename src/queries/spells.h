@@ -33,7 +33,7 @@ std::string spell_additional_sac_spec(const CardData &cd);
 // amount of life paid IS the spell's X (Count$xPaid), chosen as an additional cost while casting
 // (Toxic Deluge). Distinct from a fixed PayLife<N>, which is paid as a flat life cost. Reading it
 // off the SPELL ability keeps the parser's real Cost$ tag authoritative (no retag); the cast path
-// prompts for X, sets cur_game.x_paid, and pays that much life.
+// prompts for X, records it as the cast's X, and pays that much life.
 bool spell_has_variable_life_cost(const CardData &cd);
 
 // True if the spell `spell` (an entity on the stack) can't be countered because some live
@@ -58,5 +58,20 @@ bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entitie
 // spells_cant_be_countered flag. `entities` must hold the battlefield permanents (e.g. the
 // iterating system's mEntities). Defined in spells.cpp.
 bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities);
+
+// ── X, Converge and Gift of the spell or ability in hand ──────────────────────
+// The value Count$xPaid / cmcLEX read (CR 107.3): the X announced for the spell being cast
+// (CR 601.2b) or the ability being activated (CR 602.2b), else the resolving spell's or
+// ability's own X (ResolutionFrame::x_paid); 0 when nothing is being cast, activated or
+// resolved. A spell cast while another resolves (a miracle, a suspended card) has its own X,
+// which the resolution never sees.
+int current_x_paid();
+// Count$Converge (CR 702.90): the distinct colors of mana spent to cast the resolving spell;
+// 0 for an ability or when nothing is resolving.
+int current_converge();
+// Count$PromisedGift (CR 702.176): whether the spell being cast promised its gift (the cast
+// legality probe sets it on the idle PendingCast while it tests each promise); false when no
+// cast is being proposed.
+bool current_gift_promised();
 
 #endif /* QUERIES_SPELLS_H */

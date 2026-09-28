@@ -13,6 +13,7 @@
 #include "../queries/filters.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
+#include "../queries/spells.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -115,6 +116,6 @@ static void queue_reflexive_trigger(const Ability &parent, const Ability &execut
     reflexive.controller = parent.controller;
     reflexive.targeted_player = parent.player_target_for_subs();
     // X of the resolving parent, as a delayed trigger it creates would use (CR 107.3n).
-    reflexive.x_paid = static_cast<int>(cur_game.x_paid);
+    reflexive.x_paid = current_x_paid();
     cur_game.queue_trigger(reflexive, entity_name(parent.source.lki_entity()) + " reflexive trigger");
 }

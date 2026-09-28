@@ -26,6 +26,19 @@ bool spell_has_variable_life_cost(const CardData &cd) {
     return false;
 }
 
+int current_x_paid() {
+    if (cur_game.pending.cast.active) return cur_game.pending.cast.x_paid;
+    if (cur_game.pending.activation.active) {
+        const int x = cur_game.pending.activation.stack_ab.x_paid;
+        return x < 0 ? 0 : x;
+    }
+    return cur_game.resolution.active ? cur_game.resolution.x_paid : 0;
+}
+
+int current_converge() { return cur_game.resolution.active ? cur_game.resolution.converge : 0; }
+
+bool current_gift_promised() { return cur_game.pending.cast.gift_promised; }
+
 bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities) {
     if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
     Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)

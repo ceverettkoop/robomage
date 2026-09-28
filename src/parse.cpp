@@ -2907,7 +2907,7 @@ static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, c
                            // single-token default.
                            // Count$Converge (Prismatic Ending) — the distinct colors of mana spent
                            // to cast the spell, resolved at cast/resolution by evaluate_dynamic_amount
-                           // from cur_game.converge. Used as the cmcLEY exile threshold.
+                           // from current_converge(). Used as the cmcLEY exile threshold.
                            sv.find("Count$Converge") != std::string::npos ||
                            sv.find("xPaid") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time

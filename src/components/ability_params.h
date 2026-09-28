@@ -61,7 +61,7 @@ struct DamageParams {
 struct DestroyAllParams {
     std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
     // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
-    // cast (the legacy cmcLEX path keys off cur_game.x_paid). Wrath of the Skies'
+    // cast (the legacy cmcLEX path keys off current_x_paid()). Wrath of the Skies'
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
     // expression and cmc_op the comparator ("LE"). Empty = no dynamic bound.
     std::string cmc_expr = "";

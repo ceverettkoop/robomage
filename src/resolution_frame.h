@@ -327,6 +327,12 @@ struct ResolutionFrame {
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
     bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
     bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
+    // The resolving object's own X (CR 107.3a: the spell's Spell::x_paid, an ability's
+    // Ability::x_paid) and, for a spell, its Converge count (CR 702.90: distinct colors of mana
+    // spent to cast it); captured once as it starts resolving, read by Count$xPaid / cmcLEX /
+    // Count$Converge through current_x_paid() / current_converge().
+    int x_paid = 0;
+    int converge = 0;
     std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
                                            // frame_finish in stack_manager.cpp)

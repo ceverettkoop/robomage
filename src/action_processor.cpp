@@ -232,7 +232,6 @@ static void choose_delve_exile(Game::PendingCast &pc, Entity e, Zone::Ownership 
 // See forward declaration at top of file.
 static void begin_cast(Game::PendingCast &pc, Zone::Ownership caster,
                        std::shared_ptr<Orderer> orderer) {
-    pc.x_paid_before = cur_game.x_paid;
     pc.cast_origin = orderer->begin_cast_move(pc.spell_entity, caster);
     // The spell has the characteristics of the face being cast from the moment it is on the
     // stack (CR 601.2a, 712.8f), so active_face reads them throughout the proposal.
@@ -260,8 +259,6 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
         global_coordinator.RemoveComponent<Spell>(spell_entity);
     orderer->rewind_cast_move(spell_entity, pc.cast_origin);
     drop_entry_info(spell_entity);
-    cur_game.pending_gift_promised = false;
-    cur_game.x_paid = pc.x_paid_before;
     pc = Game::PendingCast{};
 }
 
@@ -340,7 +337,6 @@ static std::string chosen_targets_display(const Ability &ab) {
 // See forward declaration at top of file.
 static void begin_activation(Game::PendingActivation &pa, Zone::Ownership controller,
                              std::shared_ptr<Orderer> orderer) {
-    pa.x_paid_before = cur_game.x_paid;
     if (ability_is_mana(pa.ability)) return;
     Ability proposed = pa.stack_ab;
     proposed.source = ObjectRef::of(pa.source_entity);
@@ -361,7 +357,6 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
     Zone::Ownership controller = pa.activator_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
     if (pa.mana_snap_taken) restore_mana_state(controller, pa.mana_snap, orderer);
     if (pa.stack_entity != 0) orderer->remove_from_stack(pa.stack_entity, Zone::GRAVEYARD);
-    cur_game.x_paid = pa.x_paid_before;
     pa = Game::PendingActivation{};
 }
 
@@ -1080,7 +1075,7 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
 // gate) it counts as 0 — X may legally be 0, so it must not gate castability.
 static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
                                 std::shared_ptr<Orderer> orderer, bool x_announced) {
-    if (ab.def->target_min_from_xpaid) return x_announced ? static_cast<int>(cur_game.x_paid) : 0;
+    if (ab.def->target_min_from_xpaid) return x_announced ? current_x_paid() : 0;
     if (!ab.def->target_min_count_expr.empty())
         return static_cast<int>(evaluate_dynamic_amount(ab.def->target_min_count_expr, perspective,
                                                         orderer, 0, ab.source.lki_entity()));
@@ -1104,8 +1099,9 @@ static std::vector<const Ability *> spell_targeting_abilities(const Ability &pri
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised) {
-    bool saved = cur_game.pending_gift_promised;
-    cur_game.pending_gift_promised = promised;
+    bool &gift_promised = cur_game.pending.cast.gift_promised;
+    bool saved = gift_promised;
+    gift_promised = promised;
     bool ok = true;
     for (const Ability *ab : targeting) {
         if (effective_target_min(*ab, caster, orderer, false) > 0 &&
@@ -1114,7 +1110,7 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
             break;
         }
     }
-    cur_game.pending_gift_promised = saved;
+    gift_promised = saved;
     return ok;
 }
 
@@ -1266,7 +1262,7 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         // ONCE — a resume re-enters with rt.active set and never re-evaluates.
         int effective_max = ability.target_max;
         if (ability.def->target_max_from_xpaid)
-            effective_max = static_cast<int>(cur_game.x_paid);
+            effective_max = current_x_paid();
         else if (!ability.def->target_max_count_expr.empty())
             effective_max = static_cast<int>(evaluate_dynamic_amount(
                 ability.def->target_max_count_expr, priority_player, orderer, 0, ability.source.lki_entity()));
@@ -1735,7 +1731,6 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 if (resume_choice >= 0) {
                     pa.x_activation = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
-                    cur_game.x_paid = pa.x_activation;
                     pa.stack_ab.x_paid = static_cast<int>(pa.x_activation);
                     game_log("%s chooses X = %zu\n", player_name(controller).c_str(),
                              pa.x_activation);
@@ -1779,7 +1774,6 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 if (resume_choice >= 0) {
                     int x_choice = resume_choice;
                     resume_choice = -1;
-                    cur_game.x_paid = static_cast<size_t>(x_choice);
                     pa.stack_ab.x_paid = x_choice;
                     game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
                 } else {
@@ -1917,11 +1911,10 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
                 auto &perm = global_coordinator.GetComponent<Permanent>(permanent_entity);
                 // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at
-                // activation (cur_game.x_paid); loyalty_cost carries only the sign. A fixed
+                // activation (pa.stack_ab.x_paid); loyalty_cost carries only the sign. A fixed
                 // cost uses loyalty_cost as-is.
                 int loyalty_delta = ability.def->loyalty_cost_is_x
-                    ? (ability.def->loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
-                                                :  static_cast<int>(cur_game.x_paid))
+                    ? (ability.def->loyalty_cost < 0 ? -pa.stack_ab.x_paid : pa.stack_ab.x_paid)
                     : ability.def->loyalty_cost;
                 int loyalty = add_counters(permanent_entity, "LOYALTY", loyalty_delta);
                 perm.loyalty_ability_activated_this_turn = true;
@@ -2140,7 +2133,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                         pc.deferred_life_cost = grant.amount;
                 }
 
-                if (card_data.has_x_cost) cur_game.x_paid = 0;
+                if (card_data.has_x_cost) pc.x_paid = 0;
 
                 // Cost-increase / SetCost-floor statics apply to alternative costs too
                 // (CR 118.9d / 601.2f): the cast substitutes a {0} mana cost, but an active
@@ -2363,7 +2356,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
-                    cur_game.x_paid = x_val;
+                    pc.x_paid = static_cast<int>(x_val);
                     // Each {X} in the cost is paid with the one chosen value (CR 107.3a).
                     size_t x_pips = static_cast<size_t>(card_data.x_pip_count);
                     for (size_t i = 0; i < x_val * x_pips; i++) pc.cost_to_pay.insert(GENERIC);
@@ -2556,7 +2549,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 if (resume_choice >= 0) {
                     size_t x_val = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
-                    cur_game.x_paid = x_val;
+                    pc.x_paid = static_cast<int>(x_val);
                     pc.life_x_announced = static_cast<int>(x_val);
                 } else {
                     size_t max_x = max_life_x(pc, caster, spell_entity, orderer);
@@ -2675,7 +2668,6 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     }
                 }
             }
-            cur_game.pending_gift_promised = pc.gift_promised;
             pc.step = Game::PendingCast::ANNOUNCE;
             break;
         }
@@ -3186,20 +3178,18 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             spell.gift_promised = pc.gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
             spell.mana_spent = pc.mana_spent;  // total mana paid (CR 106); read by ValidSA$ Spell.ManaSpent triggers
             // Converge (CR 702.90): the distinct real colors of mana spent (colorless is not a
-            // color). Its size is the Converge count, restored into cur_game.converge at resolution
+            // color). Its size is the Converge count, taken by the resolution frame as it resolves
             // and read by a Count$Converge bound (Prismatic Ending's cmcLEY exile threshold).
             for (Colors c : pc.mana_spent_colors)
                 if (c == WHITE || c == BLUE || c == BLACK || c == RED || c == GREEN)
                     spell.colors_spent.insert(c);
-            cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters) and so the resolving
-            // spell's Count$xPaid amount reads the right X (StackManager restores x_paid from
-            // this). cur_game.x_paid is global and may be overwritten by a later cast before this
-            // spell resolves. A variable-life X spell (Toxic Deluge) has no mana X, so also key
-            // off its PayLife<X> cost.
+            // spell's Count$xPaid amount reads the right X (the resolution frame takes it from
+            // here). A variable-life X spell (Toxic Deluge) has no mana X, so also key off its
+            // PayLife<X> cost.
             if (card_data.has_x_cost || spell_has_variable_life_cost(card_data))
-                spell.x_paid = static_cast<int>(cur_game.x_paid);
+                spell.x_paid = pc.x_paid;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;

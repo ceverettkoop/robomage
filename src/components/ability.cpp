@@ -30,6 +30,7 @@
 #include "../queries/lki.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
+#include "../queries/spells.h"
 #include "../queries/types.h"
 #include "../queries/zones.h"
 #include "../input_logger.h"
@@ -765,7 +766,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
                 cmc_le = std::stoi(bound);
             else
                 // cmcLEX (Kozilek's Command): the bound is the X paid at cast time.
-                cmc_le = static_cast<int>(cur_game.x_paid);
+                cmc_le = current_x_paid();
         }
     }
     // The ValidTgts spec in the shared matcher's grammar: "YouDontCtrl" is Forge's spelling of
@@ -949,15 +950,15 @@ size_t evaluate_dynamic_amount(
     }
     // Count$xPaid — the value of X chosen for an X cost when this spell/ability was
     // cast/activated (Kozilek's Command: X = Count$xPaid feeds the token count, scry
-    // count and graveyard-exile cap). cur_game.x_paid is recorded at cast time.
+    // count and graveyard-exile cap), read through current_x_paid().
     if (expr.find("xPaid") != std::string::npos) {
-        return cur_game.x_paid;
+        return static_cast<size_t>(current_x_paid());
     }
     // Count$Converge (CR 702.90) — the number of distinct colors of mana spent to cast the spell
-    // currently resolving (Prismatic Ending: the cmcLEY exile threshold). Restored into
-    // cur_game.converge by StackManager from the resolving Spell's colors_spent.
+    // currently resolving (Prismatic Ending: the cmcLEY exile threshold), captured from its
+    // Spell::colors_spent as it starts resolving.
     if (expr.find("Count$Converge") != std::string::npos) {
-        return cur_game.converge < 0 ? 0 : static_cast<size_t>(cur_game.converge);
+        return static_cast<size_t>(current_converge());
     }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
@@ -1072,7 +1073,7 @@ size_t evaluate_dynamic_amount(
         size_t dot2 = expr.find('.', dot1);
         int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
         int low_val = std::stoi(expr.substr(dot2 + 1));
-        return static_cast<size_t>(cur_game.pending_gift_promised ? high_val : low_val);
+        return static_cast<size_t>(current_gift_promised() ? high_val : low_val);
     }
     // Count$Threshold.high.low — Threshold (CR 702.27 historical keyword action; modern cards
     // spell the condition out): returns high if the controller has seven or more cards in their

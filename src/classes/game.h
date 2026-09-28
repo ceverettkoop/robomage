@@ -283,13 +283,6 @@ struct Game {
         // is_monarch flags; see machine_io.h).
         Entity monarch_entity = MAX_ENTITIES;
         std::vector<ObjectRef> delve_exiled;  // cards exiled during current delve cast; cleared after ETB
-        size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
-        // Converge (CR 702.90): the number of distinct COLORS of mana spent to cast the spell
-        // currently resolving. Restored from the resolving Spell::colors_spent by StackManager
-        // before its ability runs (mirrors x_paid), so a Count$Converge amount/condition bound
-        // (Prismatic Ending's cmcLEY exile threshold) reads this spell's value. 0 for anything not
-        // cast (abilities, copies) or cast with no colored mana.
-        int converge = 0;
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play.
@@ -299,7 +292,6 @@ struct Game {
         std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
-        bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
         // The persisted resolve() continuation of the resolving spell or ability
         // (resolution_frame.h): a resolution that parked a decision resumes from it.
         ResolutionFrame resolution;
@@ -400,8 +392,9 @@ struct Game {
             // where a reversed proposal returns it (Orderer::rewind_cast_move) and
             // the origin of the zone change reported once it becomes cast.
             Zone cast_origin;
-            // cur_game.x_paid before this cast announced an X, restored by a rewind.
-            size_t x_paid_before = 0;
+            // The X announced for this spell (CR 601.2b / 107.3a; a variable life cost's X
+            // too), recorded on its Spell as the cast finishes.
+            int x_paid = 0;
             // Snapshot of mana state taken as MANA_PAY begins (the first step that
             // can activate a mana ability), restored when the proposal is reversed
             // after it (mana_snap_taken).
@@ -440,7 +433,7 @@ struct Game {
             // Converge (CR 702.90): the exact COLORS of mana actually spent to cast this spell,
             // accumulated by the payment (prompt_mana_payment's spent-sink) as pips leave the pool.
             // The distinct real colors (WHITE..GREEN) are copied onto Spell::colors_spent at FINISH,
-            // then restored into cur_game.converge at resolution. Empty for a free / no-mana cast.
+            // whose size the resolution frame reads as Converge. Empty for a free / no-mana cast.
             ManaValue mana_spent_colors;
             bool deferred_delve = false;
             bool deferred_improvise = false;
@@ -587,11 +580,8 @@ struct Game {
             // activation is proposed; 0 for a mana ability (CR 605.3b).
             Entity stack_entity = 0;
             // X chosen at the X_LADDER step (added as generic pips to the
-            // PAY cost). The loyalty-X choice lives only in cur_game.x_paid.
+            // PAY cost). Every announced X (a loyalty X too) is stack_ab.x_paid.
             size_t x_activation = 0;
-            // cur_game.x_paid before this activation announced an X, restored by
-            // a rewind.
-            size_t x_paid_before = 0;
             // The permanents chosen at COST_SAC / COST_RETURN, moved at PAY_APPLY
             // (0 = none).
             Entity sac_choice = 0;

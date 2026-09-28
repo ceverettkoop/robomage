@@ -58,6 +58,16 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     // (CR 400.7j) until frame_finish.
     open_follow_window();
     fr.prev_priority = cur_game.priority.player_a_has_priority;
+    // The resolving object's own X and Converge (CR 107.3a / 702.90): a spell's were recorded as
+    // it was cast; an ability carries the X announced for it (activated, CR 107.3a) or put on the
+    // stack with it (triggered, CR 107.3m/n), and no mana was spent to cast it.
+    if (global_coordinator.entity_has_component<Spell>(top_entity)) {
+        const Spell &spell = global_coordinator.GetComponent<Spell>(top_entity);
+        fr.x_paid = spell.x_paid;
+        fr.converge = static_cast<int>(spell.colors_spent.size());
+    } else {
+        fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
+    }
     fr.saved_remembered = cur_game.remembered_entities;
     cur_game.remembered_entities.clear();
     if (count_triggered && ab.def->ability_type == AbilityDef::TRIGGERED) {
@@ -200,21 +210,6 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool was_flashback = spell_cast_with_flashback(top_entity);
-            // Restore the X paid at cast time so a Count$xPaid amount in the resolving
-            // ability (Kozilek's Command's token/scry/exile counts) reads the value this
-            // spell was cast with, not a later cast's. cur_game.x_paid is global, so this must
-            // run for every resolving spell — including one cast with X=0 (which still needs to
-            // overwrite a stale nonzero value from an unrelated earlier cast) and a non-X spell
-            // (x_paid == 0) — not only when x_paid > 0.
-            if (global_coordinator.entity_has_component<Spell>(top_entity))
-                cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
-            // Restore Converge (CR 702.90) — distinct colors of mana spent to cast this spell — the
-            // same way as x_paid, so a resolving Count$Converge bound (Prismatic Ending's cmcLEY)
-            // reads THIS spell's value. Set for every resolving spell (0 for a no-colored-mana cast)
-            // so a stale value from an unrelated earlier cast is always overwritten.
-            if (global_coordinator.entity_has_component<Spell>(top_entity))
-                cur_game.converge =
-                    static_cast<int>(global_coordinator.GetComponent<Spell>(top_entity).colors_spent.size());
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 frame_enter(top_entity, ab, /*count_triggered=*/false);
@@ -251,17 +246,6 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
-        // An activated ability carries the X announced when it was activated (CR 107.3a):
-        // restore it the way a resolving spell restores Spell::x_paid, so Count$xPaid / cmcLEX
-        // read this ability's X and not a spell or ability that resolved in between (Pernicious
-        // Deed answered by Lightning Bolt). An ability is not cast, so no mana spent casting it
-        // counts for Converge (CR 702.90). A triggered ability carries the X it was put on the
-        // stack with (CR 107.3m/n, else 0); an ability with none recorded (x_paid < 0) leaves
-        // both as is.
-        if (ability.x_paid >= 0) {
-            cur_game.x_paid = static_cast<size_t>(ability.x_paid);
-            cur_game.converge = 0;
-        }
         // Count$ResolvedThisTurn tracking (Scythecat Cub) happens inside
         // frame_enter's first-entry block so a resume never recounts.
         frame_enter(top_entity, ability, /*count_triggered=*/true);
