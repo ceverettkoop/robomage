@@ -147,6 +147,56 @@ def mana_value_lines(face):
     return face.lines
 
 
+def card_row_lines(face):
+    """The script lines a vocab card's cost and property rows are read from.
+
+    A vocab id names a whole card. The two halves of a split card
+    (`AlternateMode:Split`) share ONE id, and off the stack the card has the
+    combined characteristics of both halves (CR 709.4): its mana cost is the two
+    costs combined (Dead // Gone: {R} + {2}{R} = {2}{R}{R}, mana value 4, CR
+    709.4b), and its colors, types and abilities are both halves'. So for a face
+    of a split card — whichever half the vocab name resolved to — this returns
+    one line set with a combined `ManaCost:`, `Types:` and `Colors:` and both
+    halves' other lines. Any other face's rows describe that face alone: its own
+    lines."""
+    if face.layout != "Split":
+        return face.lines
+    with open(face.path) as f:
+        front, back = split_faces(f.read())
+    halves = [front, back or []]
+    combined = ["ManaCost:" + _combined_mana_cost(
+        [script_field(h, "ManaCost") or "no cost" for h in halves])]
+    for key in ("Types", "Colors"):
+        words = []
+        for h in halves:
+            for w in (script_field(h, key) or "").replace(",", " ").split():
+                if w not in words:
+                    words.append(w)
+        if words:
+            combined.append(f"{key}:{' '.join(words)}")
+    single = ("Name:", "ManaCost:", "Types:", "Colors:")
+    for h in halves:
+        combined.extend(line for line in h if not line.startswith(single))
+    return combined
+
+
+def _combined_mana_cost(costs):
+    """Forge ManaCost values added together (CR 709.4b): the generic amounts
+    summed, every other symbol kept. "no cost" when there is nothing to pay."""
+    generic = 0
+    symbols = []
+    for cost in costs:
+        if cost.strip() == "no cost":
+            continue
+        for tok in cost.split():
+            if tok.isdigit():
+                generic += int(tok)
+            else:
+                symbols.append(tok)
+    parts = ([str(generic)] if generic else []) + symbols
+    return " ".join(parts) if parts else "no cost"
+
+
 def _script_face(path, back):
     """The front (back=False) or back (back=True) CardFace of the script at
     `path`; None when a back face is asked of a single-faced script."""

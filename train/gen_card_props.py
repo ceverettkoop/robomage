@@ -28,7 +28,7 @@ from gen_card_costs import (VOCAB_H, N_TYPES, TOKENS_DIR,
                             get_ability_cost)
 from _enums import _OBS_KEYWORDS
 from gen_util import (write_if_changed, REPO_ROOT, resolve_card_face,
-                      mana_value_lines, script_field, split_faces)
+                      card_row_lines, mana_value_lines, script_field, split_faces)
 
 OUT_FILE = os.path.join(REPO_ROOT, "train/card_props.py")
 
@@ -193,7 +193,7 @@ def build_matrix(vocab):
                 print(f"  WARNING: no card file found for '{name}', "
                       f"zero property row")
                 continue
-            parse_face(face.lines, matrix[idx])
+            parse_face(card_row_lines(face), matrix[idx])
             # A transforming back face's mana value is calculated from the
             # FRONT face's mana cost (CR 712.8e; see mana_value_lines).
             mv_lines = mana_value_lines(face)

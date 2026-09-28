@@ -46,7 +46,7 @@ Accepted ambiguities (documented, not bugs):
 import re, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gen_util import (write_if_changed, REPO_ROOT, resolve_card_face,  # noqa: E402
-                      script_field, split_faces)
+                      card_row_lines, script_field, split_faces)
 
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
 MACHINE_IO_H = os.path.join(REPO_ROOT, "src/machine_io.h")
@@ -135,10 +135,11 @@ def parse_mana_cost(cost_str):
     return counts
 
 def get_mana_cost(face):
-    """Return raw int list for a resolved CardFace's own printed mana cost. A
+    """Return raw int list for a resolved CardFace's printed mana cost: its own,
+    or a split card's combined cost (gen_util.card_row_lines, CR 709.4b). A
     transforming DFC's back face has none (Forge `ManaCost:no cost`), so its row
     is all zero; its mana value is gen_util.mana_value_lines's concern."""
-    cost_str = script_field(face.lines, "ManaCost")
+    cost_str = script_field(card_row_lines(face), "ManaCost")
     if cost_str is None:
         print(f"  WARNING: no ManaCost field in '{face.path}', defaulting to zero cost")
         return [0] * N_FEATS
@@ -146,7 +147,7 @@ def get_mana_cost(face):
 
 def get_is_land(face):
     """Return True if the resolved CardFace's Types line includes the Land type."""
-    types_line = script_field(face.lines, "Types")
+    types_line = script_field(card_row_lines(face), "Types")
     return types_line is not None and "Land" in types_line.split()
 
 def parse_vocab_with_stems(path):
@@ -259,8 +260,10 @@ def main():
                 print(f"  [{idx}] {name} (token): ability {alabel} {acost}")
             continue
         # Every row is read from THIS vocab entry's own face (gen_util's
-        # resolve_card_face), so a DFC back-face or split-half entry describes
-        # that face rather than the front (mirroring gen_card_props.py).
+        # resolve_card_face), so a DFC back-face entry describes that face
+        # rather than the front; a split card's rows describe the whole card,
+        # both halves combined (card_row_lines, CR 709.4; mirroring
+        # gen_card_props.py).
         face = resolve_card_face(name)
         if face is None:
             print(f"  WARNING: no card file found for '{name}', defaulting to zero cost")
@@ -268,7 +271,7 @@ def main():
         cost = get_mana_cost(face)
         cast_matrix[idx] = cost
         is_land[idx] = get_is_land(face)
-        ability_matrix[idx], alabel = get_ability_cost(face.lines)
+        ability_matrix[idx], alabel = get_ability_cost(card_row_lines(face))
         print(f"  [{idx}] {name}: {cost}{' (land)' if is_land[idx] else ''}"
               f"{f'  ability {alabel} {ability_matrix[idx]}' if alabel else ''}")
     if n_tokens:
