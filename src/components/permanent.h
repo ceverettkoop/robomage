@@ -30,7 +30,8 @@ struct Permanent {
     // For an Equipment or Aura: the permanent it is attached to (0 = unattached). This is the
     // one record of an attachment; what is attached to a permanent is derived from it (several
     // Equipment and Auras may share one host, CR 301.5 / 303.4).
-    Entity equipped_to = 0;
+    ObjectRef equipped_to;  // the object this Aura/Equipment is attached to; one that became a new
+                            // object reads 0 (unattached, CR 400.7)
     bool is_phased_out = false;
     // CR 702.26g: this Aura/Equipment phased out "indirectly", along with the permanent it is
     // attached to (equipped_to). It doesn't phase in by itself; it phases in with that permanent.
@@ -95,7 +96,8 @@ struct Permanent {
     int entered_x = 0;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
-    std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)
+    std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,
+                                         // linked "until it leaves" returns)
 
     // DB$ Animate | Duration$ Permanent (CR 613, the "becomes ..." continuous effects a
     // resolved ability bakes onto a permanent for the rest of the game). Stored on the

@@ -822,12 +822,13 @@ PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &ent
 // The card `source` exiled and still tracks via Permanent::exiled_with — the association a Saga
 // records at chapter I so its later chapters can act on "the card exiled with this" (Defined$
 // ExiledWith / ExiledWith$CardManaCost, The Creation of Avacyn). Returns the most-recently exiled
-// entry that still has a live Zone (skipping any that have since left the game), or 0 if none.
+// entry that is still the object it exiled (skipping any that have since become new objects or
+// left the game), or 0 if none.
 inline Entity exiled_with_card(Entity source) {
     if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source)) return 0;
     const auto &ew = global_coordinator.GetComponent<Permanent>(source).exiled_with;
     for (auto it = ew.rbegin(); it != ew.rend(); ++it)
-        if (global_coordinator.entity_has_component<Zone>(*it)) return *it;
+        if (Entity card = it->get()) return card;
     return 0;
 }
 
@@ -1300,7 +1301,7 @@ inline bool activation_condition_met(const Ability &ab, Zone::Ownership controll
     // is attached to a creature".
     if (ab.activation_condition == "Attached")
         return source != 0 && global_coordinator.entity_has_component<Permanent>(source) &&
-               global_coordinator.GetComponent<Permanent>(source).equipped_to != 0;
+               global_coordinator.GetComponent<Permanent>(source).equipped_to.get() != 0;
     return false;
 }
 

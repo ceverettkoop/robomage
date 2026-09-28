@@ -15,7 +15,8 @@
 //   - get() is the entity while it is still that object, else 0: it changed zones (a new object),
 //     ceased to exist, or its id now belongs to something else.
 //   - lki_entity() is the raw id, for last-known-information lookups (lki_for / departed_lki_for,
-//     effective_* on a departed object) and logging ONLY — never to act on the object.
+//     effective_* on a departed object), logging, and matching a reference against the entity it
+//     was taken of (bookkeeping that clears links to an object) — never to act on the object.
 // Every reference kept across a zone change, a resolution boundary or a turn is an ObjectRef;
 // plain Entity is for values that live inside one uninterrupted step.
 //
@@ -34,7 +35,7 @@ struct ObjectRef {
 
     static ObjectRef of(Entity e);  // stamps `e`'s identity now; of(0) is the empty ref
     Entity get() const;             // e if still the same object, else 0
-    Entity lki_entity() const { return e; }  // raw id: last-known-info lookups / logging only
+    Entity lki_entity() const { return e; }  // raw id: LKI lookups, logging, link bookkeeping
     bool empty() const { return e == 0; }    // no object was ever referenced
     explicit operator bool() const { return get() != 0; }
     bool operator==(const ObjectRef &o) const { return e == o.e && gen == o.gen; }

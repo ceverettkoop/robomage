@@ -279,7 +279,7 @@ static bool aura_attached_illegally(Game &game, Entity aura, const CardData &cd,
         if (pending_aura_target_legal(aura, perm.controller)) return false;
         game.pending_aura_target.erase(aura);
     }
-    Entity enchanted = perm.equipped_to;
+    Entity enchanted = perm.equipped_to.get();
     if (enchanted == 0 || enchanted == aura || !is_battlefield_permanent(enchanted) ||
         global_coordinator.entity_has_component<Creature>(aura))
         return true;
@@ -331,8 +331,9 @@ static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, Sb
             if (aura_attached_illegally(game, entity, *cd, perm))
                 out.put_into_graveyard(
                     entity, name + " is put into the graveyard (Aura not attached to a legal object)");
-        } else if (perm.equipped_to != 0 &&
-                   !(cd && cd->is_equipment && equipment_can_equip(entity, perm.equipped_to))) {
+        } else if (!perm.equipped_to.empty() &&
+                   !(cd && cd->is_equipment && perm.equipped_to.get() != 0 &&
+                     equipment_can_equip(entity, perm.equipped_to.get()))) {
             out.unattach.push_back(entity);
         }
 
@@ -437,7 +438,7 @@ static void perform_permanent_sbas(std::shared_ptr<Orderer> orderer, const SbaAc
     for (Entity entity : actions.unattach) {
         if (moving(entity)) continue;
         game_log("%s becomes unattached\n", entity_name(entity).c_str());
-        global_coordinator.GetComponent<Permanent>(entity).equipped_to = 0;
+        global_coordinator.GetComponent<Permanent>(entity).equipped_to = ObjectRef{};
     }
     for (const auto &[entity, line] : actions.to_graveyard) {
         game_log("%s\n", line.c_str());

@@ -162,7 +162,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     // Track the exiled card on the host's Permanent (snapshotted into last-known info when the
     // host leaves; also the channel Keen-Eyed Curator-style "cards exiled with this" effects read).
     if (global_coordinator.entity_has_component<Permanent>(host))
-        global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(card);
+        global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(ObjectRef::of(card));
 
     // The fire ability returns this one card from exile to its origin zone. Seeding
     // restore_remembered_exiled_with makes resolve() set the remembered set to exactly this card,
@@ -433,7 +433,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 if (ab.duration_until_host_leaves)
                     register_exile_until_host_leaves(host, tgt, tgt_origin);
                 else
-                    global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(tgt);
+                    global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(ObjectRef::of(tgt));
             }
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
@@ -461,7 +461,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // this aura does not enchant.
             enchanted = pat->second.target.get();
         } else if (aura != 0 && global_coordinator.entity_has_component<Permanent>(aura)) {
-            enchanted = global_coordinator.GetComponent<Permanent>(aura).equipped_to;
+            enchanted = global_coordinator.GetComponent<Permanent>(aura).equipped_to.get();
         }
         // Origin$ (Animate Dead: Graveyard) names where the enchanted card is returned from; a
         // card no longer there is not moved.
@@ -841,7 +841,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 register_exile_until_host_leaves(host, chosen, chosen_origin);
             else if (landed == Zone::EXILE && host != 0 &&
                      global_coordinator.entity_has_component<Permanent>(host))
-                global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(chosen);
+                global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(ObjectRef::of(chosen));
             // The move above (via change_zone_move → add_to_zone's exile_face_down param) already
             // stamped Zone::is_face_down for a face-down exile; this just mirrors the condition for
             // the private-vs-public logging below.

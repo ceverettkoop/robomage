@@ -172,8 +172,8 @@ void strip_permanent_components(Entity entity, const std::set<Entity> &entities)
         for (auto e : entities) {
             if (e == entity || !global_coordinator.entity_has_component<Permanent>(e)) continue;
             auto &attached = global_coordinator.GetComponent<Permanent>(e);
-            if (attached.equipped_to != entity) continue;
-            attached.equipped_to = 0;
+            if (attached.equipped_to.lki_entity() != entity) continue;
+            attached.equipped_to = ObjectRef{};
             const bool is_aura = global_coordinator.entity_has_component<CardData>(e) &&
                                  !global_coordinator.GetComponent<CardData>(e).enchant_filter.empty();
             if (!is_aura) game_log("%s becomes unattached\n", entity_name(e).c_str());
@@ -858,13 +858,10 @@ Entity returnable_exiled_card(Entity host) {
     // Most-recent-first: cards are push_back'd as they are exiled, so the last entry is the
     // most recently exiled card. Return the first one that still has a live return path.
     for (auto it = exiled.rbegin(); it != exiled.rend(); ++it) {
-        Entity card = *it;
+        // The card must still be the object that was exiled, sitting in the exile zone: one that
+        // left exile, or a ceased token whose id was reissued, is no longer "exiled with" it.
+        Entity card = it->get();
         if (card == 0) continue;
-        // The card must still physically be in the exile zone. A Static-Prison-class host can
-        // exile a TOKEN; the token then ceases to exist (SBA) and its entity id may be recycled
-        // onto an unrelated object — but the delayed trigger persists (it watches the host, not
-        // the card), so without this guard we'd report a phantom/wrong "holding" id.
-        if (!global_coordinator.entity_has_component<Zone>(card)) continue;
         if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
         for (const auto &dt : cur_game.delayed_triggers) {
             const Ability &fa = dt.ability;

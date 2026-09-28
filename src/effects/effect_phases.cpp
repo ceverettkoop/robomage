@@ -29,7 +29,7 @@ static std::vector<Entity> attached_to(Entity host, bool phased_out_indirectly,
         if (e == host || !global_coordinator.entity_has_component<Permanent>(e)) continue;
         if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
         const auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.equipped_to != host) continue;
+        if (perm.equipped_to.get() != host) continue;
         bool indirect = perm.is_phased_out && perm.phased_out_indirectly;
         if (phased_out_indirectly ? indirect : !perm.is_phased_out) out.push_back(e);
     }

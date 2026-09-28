@@ -97,7 +97,7 @@ void dump_entity(Entity e) {
         fprintf(stderr, "    is_token=%d  is_tapped=%d  has_summoning_sickness=%d\n",
                 p.is_token, p.is_tapped, p.has_summoning_sickness);
         fprintf(stderr, "    transformed=%d  is_phased_out=%d\n", p.transformed, p.is_phased_out);
-        fprintf(stderr, "    equipped_to=%u\n", p.equipped_to);
+        fprintf(stderr, "    equipped_to=%u\n", p.equipped_to.lki_entity());
         fprintf(stderr, "    abilities: %zu  static_abilities: %zu\n",
                 p.abilities.size(), p.static_abilities.size());
         fprintf(stderr, "    types:");

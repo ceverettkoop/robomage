@@ -576,7 +576,7 @@ static std::vector<Entity> static_targets(const ActiveStatic &a, const std::set<
     Entity target = a.entity;
     if (affected_is_attached_target(aff)) {
         if (!global_coordinator.entity_has_component<Permanent>(a.entity)) return {};
-        target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+        target = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to.get();
         if (target == 0 || !is_battlefield_permanent(target)) return {};
     }
     if (target == 0) return {};
@@ -676,7 +676,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             bool reconfigured_attached =
                 card_data.is_reconfigure &&
                 global_coordinator.entity_has_component<Permanent>(entity) &&
-                global_coordinator.GetComponent<Permanent>(entity).equipped_to != 0;
+                global_coordinator.GetComponent<Permanent>(entity).equipped_to.get() != 0;
             if (reconfigured_attached) is_creature = false;
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
@@ -775,9 +775,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 {
                     auto pa = game.pending_attach.find(entity);
                     if (pa != game.pending_attach.end()) {
-                        Entity equip = pa->second;
-                        if (global_coordinator.entity_has_component<Permanent>(equip)) {
-                            global_coordinator.GetComponent<Permanent>(equip).equipped_to = entity;
+                        Entity equip = pa->second.get();
+                        if (equip != 0 && global_coordinator.entity_has_component<Permanent>(equip)) {
+                            global_coordinator.GetComponent<Permanent>(equip).equipped_to = ObjectRef::of(entity);
                             game_log("Equipment attached.\n");
                         }
                         game.pending_attach.erase(pa);
@@ -793,7 +793,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     if (pat != game.pending_aura_target.end()) {
                         Entity enchanted = pat->second.target.get();
                         if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
-                            perm.equipped_to = enchanted;
+                            perm.equipped_to = ObjectRef::of(enchanted);
                             game_log("%s is attached to %s.\n", perm.name.c_str(),
                                      entity_name(enchanted).c_str());
                             game.pending_aura_target.erase(pat);

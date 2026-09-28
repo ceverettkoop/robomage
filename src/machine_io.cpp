@@ -451,7 +451,7 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
         if (c.first != "P1P1" && c.first != "M1M1" && c.first != "LOYALTY")
             ps.other_counters += c.second;
 
-    ps.attached_to_ref = slot_ref_of(perm.equipped_to);
+    ps.attached_to_ref = slot_ref_of(perm.equipped_to.get());
     ps.attached_by_ref = -1;  // derived from the attachments' links (fill_attached_by_refs)
     ps.is_phased_out   = perm.is_phased_out;
 

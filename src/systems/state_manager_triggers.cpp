@@ -652,7 +652,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             // exiled_with list lives in the last-known-info snapshot captured at departure. Carry
             // it onto the trigger so resolve() can restore the remembered set (CR 608.2h).
             if (lki && !lki->exiled_with.empty())
-                trigger_ab.restore_remembered_exiled_with = lki->exiled_with;
+                trigger_ab.restore_remembered_exiled_with = live_entities(lki->exiled_with);
 
             if (etb_lookback) {
                 // Parity with the battlefield ETB scan: bind Defined$ TriggeredActivator from the

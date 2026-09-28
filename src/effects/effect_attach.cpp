@@ -47,7 +47,7 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         !global_coordinator.entity_has_component<Permanent>(target_creature) &&
         global_coordinator.entity_has_component<Zone>(target_creature) &&
         global_coordinator.GetComponent<Zone>(target_creature).location == Zone::BATTLEFIELD) {
-        cur_game.pending_attach[target_creature] = equip_entity;
+        cur_game.pending_attach[target_creature] = ObjectRef::of(equip_entity);
         game_log("Equipment will attach once the creature finishes entering.\n");
         goto attach_done;
     }
@@ -59,7 +59,7 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         bool is_equipment = global_coordinator.entity_has_component<CardData>(equip_entity) &&
                             global_coordinator.GetComponent<CardData>(equip_entity).is_equipment;
         if (is_equipment && !equipment_can_equip(equip_entity, target_creature)) goto attach_done;
-        global_coordinator.GetComponent<Permanent>(equip_entity).equipped_to = target_creature;
+        global_coordinator.GetComponent<Permanent>(equip_entity).equipped_to = ObjectRef::of(target_creature);
         game_log("Equipment attached.\n");
     }
 attach_done:;
