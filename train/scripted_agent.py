@@ -109,7 +109,7 @@ from _enums import (
     CAT_ATTACK_TARGET as _CAT_ATTACK_TARGET, CAT_NAME_CARD as _CAT_NAME_CARD,
     CAT_SHUFFLE as _CAT_SHUFFLE_YES, CAT_DONT_SHUFFLE as _CAT_SHUFFLE_NO,
     CAT_SYLVAN_CHOICE as _CAT_SYLVAN, CAT_MANA_W, CAT_MANA_R as _CAT_MANA_R, CAT_MANA_C,
-    REF_PLAYER_OPP, REF_SELF_HAND,
+    REF_NONE, REF_PLAYER_OPP, REF_PLAYER_SELF, REF_SELF_BATTLEFIELD, REF_SELF_HAND,
 )
 
 
@@ -2002,7 +2002,8 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                               # no Dark Depths to copy — see _heuristic_action)
                 if hold_idxs and i in hold_idxs:
                     continue  # caller-computed per-option hold (an attached
-                              # Equipment's equip, ... — see _activation_holds)
+                              # Equipment's equip, Karakas with no opposing
+                              # legend, ... — see _activation_holds)
                 if fruitless and cid in fruitless:
                     continue  # stall guard: this card's search found NOTHING
                               # earlier this game (see _SEARCH_MENU_CATS) —
@@ -2422,6 +2423,12 @@ def _attack_target_pick(obs: np.ndarray, cats, num_choices: int) -> int:
     return 0
 
 
+# Creatures that attack with a mandatory "draw a card" trigger: never swing
+# with them off an empty library (a draw at 0 library is a loss — a draw of
+# the game even when the same trigger kills the opponent).
+_ATTACK_DRAW_IDS = frozenset({_vid("Archon of Cruelty"),
+                              _vid("Uro, Titan of Nature's Wrath")})
+
 # ── Ninjutsu (CR 702.49) ────────────────────────────────────────────────────
 # Ninjas and their attacking power once in play (Kaito is a 3/4 creature
 # during our turn).
@@ -2552,21 +2559,97 @@ def _own_benefit_target_pick(obs: np.ndarray, g: dict, cats, card_ids, ctrl_arr,
 
 
 # ── Activation gates (hard tier) ────────────────────────────────────────────
+_KARAKAS_VOCAB_IDX = _vid("Karakas")
+_GOBLIN_BOMBARDMENT_VOCAB_IDX = _vid("Goblin Bombardment")
+_BLAST_ZONE_VOCAB_IDX = _vid("Blast Zone")
 _DAUTHI_VOIDWALKER_VOCAB_IDX = _vid("Dauthi Voidwalker")
+_KAITO_VOCAB_IDX = _vid("Kaito, Bane of Nightmares")
 _WITCH_ENCHANTER_VOCAB_IDX = _vid("Witch Enchanter")   # its land face pays 3 life
+# Griselbrand: "Pay 7 life: Draw seven cards." Only from a healthy life total
+# (7 life out of 10 hands the opponent the game) and never into a deck-out.
+_GRISELBRAND_VOCAB_IDX = _vid("Griselbrand")
+_GRISELBRAND_DRAW = 7
+_GRISELBRAND_MIN_LIFE = 15
+# Blast Zone's abilities in script order: mana, charge (X), destroy.
+_BLAST_ZONE_CHARGE_ORD = 1
+_BLAST_ZONE_DESTROY_ORD = 2
+# Kaito, Bane of Nightmares' loyalty abilities: +1 emblem, 0 surveil+draw,
+# -2 tap and stun.
+_KAITO_SURVEIL_ORD = 1
+_KAITO_STUN_ORD = 2
+
+
+def _blast_zone_plan(g: dict) -> tuple[int, int] | None:
+    """(current charge counters, the mana value worth blowing up) for our
+    Blast Zone, or None when no mana value is worth it. Destroying every
+    nonland permanent with MV == counters is symmetric, so pick the MV
+    that takes 2+ more of their permanents than ours (or a 3+ power
+    differential)."""
+    zone = next((p for p in g["self_battlefield"]
+                 if p.get("card_idx") == _BLAST_ZONE_VOCAB_IDX), None)
+    if zone is None:
+        return None
+
+    def by_mv(perms):
+        out: dict[int, list[int]] = {}
+        for p in perms:
+            if p.get("is_land"):
+                continue
+            mv = 0 if _is_token_id(p["card_idx"]) else int(_card_mana_value(p["card_idx"]))
+            out.setdefault(mv, []).append(p.get("power", 0))
+        return out
+    opp, own = by_mv(g["opp_battlefield"]), by_mv(g["self_battlefield"])
+    best, best_key = None, None
+    for mv, powers in opp.items():
+        count_net = len(powers) - len(own.get(mv, []))
+        power_net = sum(powers) - sum(own.get(mv, []))
+        if not (count_net >= 2 or (count_net >= 1 and power_net >= 3)):
+            continue
+        key = (count_net, power_net, -mv)
+        if best_key is None or key > best_key:
+            best, best_key = mv, key
+    if best is None:
+        return None
+    return zone.get("other_counters", 0), best
 
 
 def _activation_holds(obs: np.ndarray, g: dict, cats, card_ids,
                       num_choices: int) -> set[int]:
     """Menu indices of activations the hard tier must not take this decision
-    (on top of _equip_holds): Dauthi Voidwalker's sacrifice without an
-    exiled void card worth more than the 3/2 itself."""
+    (on top of _equip_holds): Karakas without a targetable opposing
+    legendary creature (it would bounce our own), Goblin Bombardment short of lethal (each
+    activation sacrifices a creature for 1 damage), Blast Zone off its plan
+    (_blast_zone_plan: charge only toward the target mana value, destroy only
+    at it), Dauthi Voidwalker's sacrifice without an exiled void card
+    worth more than the 3/2 itself, and Griselbrand's pay-7-life draw 7
+    unless the life and the library can both afford it."""
     holds = _equip_holds(obs, cats, card_ids, num_choices)
+    plan = None
     for i in range(num_choices):
         if cats[i] != _CAT_ACTIVATE:
             continue
-        if _action_card_id(card_ids, i) == _DAUTHI_VOIDWALKER_VOCAB_IDX:
+        cid = _action_card_id(card_ids, i)
+        if cid == _KARAKAS_VOCAB_IDX:
+            if not any(_card_prop(p["card_idx"], "legendary") > 0.5
+                       and not {"Hexproof", "Shroud"} & set(p.get("keywords", ()))
+                       for p in _creatures(g["opp_battlefield"])):
+                holds.add(i)
+        elif cid == _GOBLIN_BOMBARDMENT_VOCAB_IDX:
+            if g["opponent"]["life"] > len(_creatures(g["self_battlefield"])):
+                holds.add(i)
+        elif cid == _BLAST_ZONE_VOCAB_IDX:
+            plan = plan or _blast_zone_plan(g) or (0, -1)
+            counters, target = plan
+            ordinal = _action_ordinal(obs, i)
+            if ((ordinal == _BLAST_ZONE_CHARGE_ORD and not (0 <= counters < target))
+                    or (ordinal == _BLAST_ZONE_DESTROY_ORD and counters != target)):
+                holds.add(i)
+        elif cid == _DAUTHI_VOIDWALKER_VOCAB_IDX:
             if _best_void_card(obs) is None:
+                holds.add(i)
+        elif cid == _GRISELBRAND_VOCAB_IDX:
+            if (_self_life(obs) < _GRISELBRAND_MIN_LIFE
+                    or _self_library_count(obs) <= _GRISELBRAND_DRAW + 3):
                 holds.add(i)
     return holds
 
@@ -2587,6 +2670,126 @@ def _best_void_card(obs: np.ndarray) -> int | None:
         if mv > best_mv:
             best, best_mv = cid, mv
     return best
+
+
+def _kaito_ability_pick(obs: np.ndarray, g: dict, cats, card_ids,
+                        num_choices: int) -> int | None:
+    """Kaito, Bane of Nightmares' loyalty ability: -2 (tap and stun) on a
+    real opposing threat (power 3+) while it leaves Kaito alive, else 0
+    (surveil 2, draw if the opponent lost life) — the +1 emblem only pumps
+    Ninjas, and Kaito is our only one."""
+    options = {_action_ordinal(obs, i): i for i in range(num_choices)
+               if cats[i] == _CAT_ACTIVATE
+               and _action_card_id(card_ids, i) == _KAITO_VOCAB_IDX
+               and _action_zone(obs, i) == REF_SELF_BATTLEFIELD}
+    if not options:
+        return None
+    kaito = next((p for p in g["self_battlefield"] if p["card_idx"] == _KAITO_VOCAB_IDX), {})
+    threat = any(p["power"] >= 3 for p in _creatures(g["opp_battlefield"]))
+    if threat and kaito.get("loyalty", 0) > 2 and _KAITO_STUN_ORD in options:
+        return options[_KAITO_STUN_ORD]
+    return options.get(_KAITO_SURVEIL_ORD)
+
+
+# ── Card choices ─────────────────────────────────────────────────────────────
+def _tutor_pick(cats, card_ids, num_choices: int) -> int | None:
+    """A library search for a nonland card (Green Sun's Zenith, Recruiter of
+    the Guard, Stoneforge Mystic): the highest mana value offered — the
+    engine already capped it at what the search may find. None for a
+    land-only search (fetch lands keep their own rules)."""
+    best_i, best_mv = None, -1.0
+    for i in range(num_choices):
+        if cats[i] != _CAT_SEARCH:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid < 0 or cid in _LAND_VOCAB_IDS:
+            continue
+        mv = _card_mana_value(cid) + 0.1 * _card_prop(cid, "power")
+        if mv > best_mv:
+            best_i, best_mv = i, mv
+    return best_i
+
+
+# Colour index (W/U/B/R/G, the cost matrix's pip order) of each basic land type.
+_LAND_TYPE_COLOR = (("land_plains", 0), ("land_island", 1), ("land_swamp", 2),
+                    ("land_mountain", 3), ("land_forest", 4))
+
+
+def _land_colors(cid: int) -> set[int]:
+    """Colours a land taps for through its basic land types (Scrubland: W, B).
+    Lands without a basic type count as colourless here."""
+    return {col for prop, col in _LAND_TYPE_COLOR if _card_prop(cid, prop) > 0.5}
+
+
+def _land_search_pick(g: dict, cats, card_ids, num_choices: int) -> int | None:
+    """A land-only search (fetch lands, Knight of the Reliquary, ...): the land
+    adding the most colours our hand's spells need and our lands don't make
+    yet, then the most colours overall — never a third Plains while black
+    spells wait in hand. None when
+    the menu offers a nonland card or no land at all."""
+    have: set[int] = set()
+    for p in g["self_battlefield"]:
+        if p.get("is_land"):
+            have |= _land_colors(p["card_idx"])
+    need: set[int] = set()
+    for c in g["self_hand"]:
+        cid = c["card_idx"]
+        if 0 <= cid < len(_CARD_COST_MATRIX) and cid not in _LAND_VOCAB_IDS:
+            need |= {col for col in range(5) if _CARD_COST_MATRIX[cid][col] > 0}
+    need -= have
+    best_i, best_key = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_SEARCH:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid < 0:
+            continue
+        if cid not in _LAND_VOCAB_IDS:
+            return None
+        colors = _land_colors(cid)
+        key = (len(colors & need), len(colors))
+        if best_key is None or key > best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+def _sacrifice_pick(obs: np.ndarray, g: dict, cats, num_choices: int) -> int | None:
+    """Sacrifice the least valuable permanent offered: a token before a card,
+    a tapped land before an untapped one, the weakest creature; never a
+    _SAC_LAST_LAND_IDS utility land while anything else is offered."""
+    best_i, best_key = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_SACRIFICE:
+            continue
+        p = _perm_by_slot(g, _action_slot_ref(obs, i)) or {}
+        cid = p.get("card_idx", -1)
+        key = (cid in _SAC_LAST_LAND_IDS,
+               not _is_token_id(cid),
+               not p.get("tapped", False),
+               p.get("power", 0) + p.get("toughness", 0) + _card_mana_value(cid))
+        if best_key is None or key < best_key:
+            best_i, best_key = i, key
+    return best_i
+
+
+# Opponent spells that win or dominate on resolution: countered on sight even
+# by a Doomsday deck that otherwise saves its counters for its own kill.
+_COMBO_THREAT_IDS = frozenset({_DOOMSDAY_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX}
+                              | _REANIMATION_SPELL_IDS)
+
+
+def _opponent_stack_has_any(obs: np.ndarray, ids) -> bool:
+    for i in range(_STACK_SLOTS):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        if obs[base] < 0.5 and _slot_card_idx(obs, base + 1) in ids:
+            return True
+    return False
+
+
+# Damage dealt by targeted burn, keyed by source (default 3): a burn spell
+# goes at a creature only if it kills it.
+_BURN_DAMAGE = {_GOBLIN_BOMBARDMENT_VOCAB_IDX: 1, _vid("Fireblast"): 4,
+                _vid("Exquisite Firecraft"): 4}
 
 
 class ScriptedAgent:
@@ -2815,6 +3018,11 @@ class ScriptedAgent:
             if all(c == _CAT_BOTTOM_CARD for c in cats):
                 return _least_wanted_pick(cats, card_ids, _CAT_BOTTOM_CARD,
                                           _hand_land_count(obs))
+        # Blast Zone's charge X: exactly the counters its plan still needs.
+        if pending == _BLAST_ZONE_VOCAB_IDX and all(c == _CAT_CHOOSE_X for c in cats):
+            plan = _blast_zone_plan(g())
+            if plan is not None:
+                return max(0, min(num_choices - 1, plan[1] - plan[0]))
         # Dauthi Voidwalker's pick: the most expensive void card.
         if pending == _DAUTHI_VOIDWALKER_VOCAB_IDX and any(c == _CAT_CHOOSE_CARD for c in cats):
             return max(range(num_choices),
@@ -2890,6 +3098,8 @@ class ScriptedAgent:
         #   3. the highest-MV card not castable any time soon
         #      (MV > lands in play + 1);
         #   4. the highest-MV card (lands are MV 0, so a spell goes first).
+        # MV here is what the card really costs (_effective_mana_value: Force
+        # of Will is a free spell, Murktide Regent delves).
         # A menu of OPPONENT-owned cards (our Thoughtseize-style pick) takes
         # their highest-MV card instead — strip the biggest threat. A
         # Doomsday deck instead strips whatever can disrupt the combo:
@@ -2911,11 +3121,11 @@ class ScriptedAgent:
                         if cid in _LAND_VOCAB_IDS:
                             return i
                 castable_mv = _self_land_count(obs) + 1
-                uncastable = [(_card_mana_value(cid), i) for i, cid in own_dc
-                              if _card_mana_value(cid) > castable_mv]
+                uncastable = [(_effective_mana_value(cid), i) for i, cid in own_dc
+                              if _effective_mana_value(cid) > castable_mv]
                 if uncastable:
                     return max(uncastable)[1]
-                return max((_card_mana_value(cid), i) for i, cid in own_dc)[1]
+                return max((_effective_mana_value(cid), i) for i, cid in own_dc)[1]
             if opp_dc:
                 if self._deck_is_doomsday(obs):
                     for i, cid in opp_dc:
@@ -2956,17 +3166,16 @@ class ScriptedAgent:
         # utility land while any other option exists (Crop Rotation sacking
         # the Dark Depths it plays around defeats itself). A Doomsday deck
         # keeps Thassa's Oracle's UU and its black source on the board
-        # (_dd_sacrifice_pick). First non-protected option, else the generic
-        # first pick.
+        # (_dd_sacrifice_pick). Otherwise the least valuable permanent
+        # (_sacrifice_pick: tokens, tapped lands, the weakest creature).
         if any(c == _CAT_SACRIFICE for c in cats):
             if dd:
                 pick = _dd_sacrifice_pick(obs, cats, card_ids)
                 if pick is not None:
                     return pick
-            for i, c in enumerate(cats):
-                if (c == _CAT_SACRIFICE
-                        and _action_card_id(card_ids, i) not in _SAC_LAST_LAND_IDS):
-                    return i
+            pick = _sacrifice_pick(obs, g(), cats, num_choices)
+            if pick is not None:
+                return pick
 
         # Land-search preference (Crop Rotation, Expedition Map, any land
         # tutor — self-gating, the options only exist when the search can
@@ -3066,16 +3275,21 @@ class ScriptedAgent:
                 return pick
 
         # Effects that help their target (equip, Guide of Souls, Scythecat Cub,
-        # graveyard returns) pick our best option.
+        # graveyard returns) pick our best option; Goblin Bombardment (only
+        # activated for lethal, see _activation_holds) goes face.
         if any(c == _CAT_TARGET for c in cats):
             pick = _own_benefit_target_pick(obs, g(), cats, card_ids, ctrl_arr, num_choices)
             if pick is not None:
                 return pick
+            if pending == _GOBLIN_BOMBARDMENT_VOCAB_IDX:
+                for i in range(num_choices):
+                    if cats[i] == _CAT_TARGET and _action_zone(obs, i) == REF_PLAYER_OPP:
+                        return i
 
         # Eval-based targeting — skipped for combo decks (R1: never disturb Doomsday).
         if (cfg.use_eval_targeting and any(c == _CAT_TARGET for c in cats)
                 and not dd):
-            return self._target_choice(g(), cats, card_ids, ctrl_arr)
+            return self._target_choice(obs, g(), cats, card_ids, ctrl_arr)
 
         # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
         # sideboard/exile into hand. Grab Mycosynth Lattice first — with Karn in play
@@ -3132,18 +3346,43 @@ class ScriptedAgent:
             if pick is not None:
                 return pick
 
-        # Activations to skip this decision (_activation_holds).
+        # A tutor for a nonland card: the best card it may find (_tutor_pick);
+        # a land search: the colours the hand needs (_land_search_pick).
+        if not dd and any(c == _CAT_SEARCH for c in cats):
+            pick = _tutor_pick(cats, card_ids, num_choices)
+            if pick is None:
+                pick = _land_search_pick(g(), cats, card_ids, num_choices)
+            if pick is not None:
+                return pick
+
+        # Activations to skip this decision (_activation_holds), and Kaito's
+        # preferred loyalty ability (_kaito_ability_pick) — the others held.
         hold_idxs = None
         if any(c == _CAT_ACTIVATE for c in cats):
             hold_idxs = _activation_holds(obs, g(), cats, card_ids, num_choices)
+            kaito = _kaito_ability_pick(obs, g(), cats, card_ids, num_choices)
+            if kaito is not None:
+                hold_idxs |= {i for i in range(num_choices)
+                              if i != kaito and cats[i] == _CAT_ACTIVATE
+                              and _action_card_id(card_ids, i) == _KAITO_VOCAB_IDX
+                              and _action_zone(obs, i) == REF_SELF_BATTLEFIELD}
 
         # Anything not explicitly improved: proven GREEDY behaviour (with the
         # holds computed above threaded through its scans).
-        return _greedy_action(obs, num_choices, fruitless,
-                              hold_casts=hold_casts,
-                              hold_activations=hold_activations,
-                              hold_idxs=hold_idxs,
-                              doomsday=dd)
+        choice = _greedy_action(obs, num_choices, fruitless,
+                                hold_casts=hold_casts,
+                                hold_activations=hold_activations,
+                                hold_idxs=hold_idxs,
+                                doomsday=dd)
+        # With nothing better to do in our own main phase, put the companion
+        # into hand (it is cast like any other card afterwards).
+        if (cats[choice] == _CAT_PASS and _stack_is_empty(obs)
+                and obs[_IS_ACTIVE_IDX] > 0.5
+                and (obs[_STEP_FIRST_MAIN_IDX] > 0.5 or obs[_STEP_SECOND_MAIN_IDX] > 0.5)):
+            for i, c in enumerate(cats):
+                if c == _CAT_COMPANION:
+                    return i
+        return choice
 
     def _yesno_choice(self, obs: np.ndarray, g: dict, card_ids) -> int:
         """An optional yes/no (OPTIONAL_YESNO; 0 = decline, 1 = accept).
@@ -3210,8 +3449,12 @@ class ScriptedAgent:
                     1 for slot in range(MAX_HAND_SLOTS)
                     if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
                     in _COUNTER_SPELL_VOCAB_IDS)
+                # An opposing combo spell (their Doomsday, Oracle or
+                # reanimation) is countered on sight: letting it resolve
+                # loses the game before our own kill matters.
                 fight = _opponent_has_spell_on_stack(obs) and (
                     _self_stack_has_card(obs, _THASSAS_ORACLE_VOCAB_IDX)
+                    or _opponent_stack_has_any(obs, _COMBO_THREAT_IDS)
                     or (n_counters >= 2
                         and any(_self_stack_has_card(obs, cid)
                                 for cid in _DD_PROTECT_ON_STACK_IDS)))
@@ -3276,7 +3519,14 @@ class ScriptedAgent:
                 return 0
         lands = sum(1 for c in g["self_hand"] if c["card_idx"] in _LAND_VOCAB_IDS)
         has_dig = any(c["card_idx"] in _KEEP_ONE_LANDER_IDS for c in g["self_hand"])
-        keepable = 2 <= lands <= 4 or (lands == 1 and has_dig)
+        # Each mulligan costs a card, so the bar drops as they add up: a
+        # 5-lander is kept going to six, any hand with a land going to five,
+        # and anything at all below that.
+        mulls = g["extras"].get("self_mulligans", 0)
+        keepable = (2 <= lands <= 4 or (lands == 1 and has_dig)
+                    or (mulls >= 1 and lands == 5)
+                    or (mulls >= 2 and lands >= 1)
+                    or mulls >= 3)
         # Mulligan query: index 0 = keep, any other index = mulligan.
         if keepable:
             for i, c in enumerate(cats):
@@ -3294,9 +3544,12 @@ class ScriptedAgent:
                         if not p.get("tapped") and not p.get("summoning_sick")]
         total_power = sum(p["power"] for p in my_attackers)
         alpha = total_power > 0 and total_power >= g["opponent"]["life"]
+        library_empty = g["self_library"] == 0
         for i, c in enumerate(cats):
             if c != _CAT_SEL_ATK:
                 continue
+            if library_empty and _action_card_id(card_ids, i) in _ATTACK_DRAW_IDS:
+                continue  # its attack trigger would draw from an empty library
             pt = _lookup_pt(g["self_battlefield"], _action_card_id(card_ids, i),
                             exclude_attacking=True, require_untapped=True, require_unsick=True)
             if pt is None or _should_attack(pt[0], pt[1], opp_blockers, alpha):
@@ -3320,24 +3573,42 @@ class ScriptedAgent:
             return max(blk, key=quality)[0]
         return self._confirm(cats, _CAT_CONF_BLK)
 
-    def _target_choice(self, g: dict, cats, card_ids, ctrl_arr) -> int:
-        """Removal → biggest threat; burn → face only when lethal-ish."""
-        opp_creatures, player_targets = [], []
+    def _target_choice(self, obs: np.ndarray, g: dict, cats, card_ids, ctrl_arr) -> int:
+        """Removal → biggest threat; burn → face only when lethal-ish.
+
+        Targets are classified by the action's zone ref: the opponent player
+        (REF_PLAYER_OPP), a "No target" slot / ourselves (REF_NONE /
+        REF_PLAYER_SELF — never preferred), or an opposing object (resolved
+        through its slot ref to read its power). Burn (a damage source that
+        can also hit the player) goes face unless it kills a creature worth
+        the card — power 3+ (_BURN_DAMAGE) — since face burn is the faster
+        clock (in the burn mirror, burning 2-power creatures loses more
+        matches than going face)."""
+        pending = _slot_card_idx(obs, _PENDING_DECISION_START)
+        burn = (_card_prop(pending, "cat_dealdamage") > 0.5
+                and any(cats[i] == _CAT_TARGET and _action_zone(obs, i) == REF_PLAYER_OPP
+                        for i in range(len(cats))))
+        damage = _BURN_DAMAGE.get(pending, 3)
+        opp_objects, player_targets = [], []
         for i, c in enumerate(cats):
             if c != _CAT_TARGET:
                 continue
-            ctrl = ctrl_arr[i]
-            if ctrl >= 0.5:
-                continue  # self-controlled — avoid
-            if ctrl < _ACTION_CTRL_NULL + 0.005:
-                player_targets.append(i)  # player / non-entity target (burn to face)
-            else:
-                pt = _lookup_pt(g["opp_battlefield"], _action_card_id(card_ids, i))
-                opp_creatures.append((i, pt[0] if pt else 0))
+            zone = _action_zone(obs, i)
+            if zone == REF_PLAYER_OPP:
+                player_targets.append(i)
+                continue
+            if zone in (REF_NONE, REF_PLAYER_SELF) or ctrl_arr[i] >= 0.5:
+                continue  # no target / ourselves / our own object — avoid
+            p = _perm_by_slot(g, _action_slot_ref(obs, i))
+            power = p.get("power", 0) if p else 0
+            if burn and (p is None or "power" not in p or p["toughness"] > damage
+                         or power < 3):
+                continue  # not a creature this burn kills and should kill
+            opp_objects.append((i, power))
         if player_targets and g["opponent"]["life"] <= _BURN_FACE_LIFE:
             return player_targets[0]
-        if opp_creatures:
-            return max(opp_creatures, key=lambda x: x[1])[0]
+        if opp_objects:
+            return max(opp_objects, key=lambda x: x[1])[0]
         if player_targets:
             return player_targets[0]
         # Fallback: first non-self target, mirroring GREEDY.
