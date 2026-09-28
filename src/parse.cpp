@@ -64,6 +64,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
+static std::string svar_key_param(const std::string& line, const std::string& want_key);
 static void parse_card_face(const std::string& front_script, CardData& card);
 static Ability equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label);
@@ -125,6 +126,15 @@ static std::string param_value(const std::string& line, const std::string& want_
     while (next_param(line, pos, key, value))
         if (key == want_key) return value;
     return "";
+}
+
+// The value of `want_key` in an ability line when it names an SVar (a non-numeric token such as
+// "X"); empty when the param is absent or a literal number.
+static std::string svar_key_param(const std::string& line, const std::string& want_key) {
+    std::string value = param_value(line, want_key);
+    if (value.empty() || std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-')
+        return "";
+    return value;
 }
 
 // Parse a Ward cost argument (the text after "Ward:") into its amount and payment kind
@@ -1644,7 +1654,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         else
             ability.unless_switched = (value == "True");
     } else if (key == "MayChooseTarget") {
-        ability.unless_may_choose_target = (value == "True");
+        // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets.
+        // The shared copy machine (effect_copy_spell.cpp) re-runs target selection for every copy
+        // (CR 707.10c), so the flag needs no field.
     } else if (key == "LifeAmount") {
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
@@ -1784,8 +1796,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // when it is Count$xPaid, sets target_min_from_xpaid so select_target requires X targets.
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
             ability.target_min = std::stoi(value);
-        else
-            ability.target_min_svar = value;
     } else if (key == "TargetMax") {
         // A numeric cap (TargetMax$ 3) is used directly. A count-SVar cap means there is no
         // fixed upper bound, so fall back to "effectively unlimited" (MAX_ENTITIES); the
@@ -1796,7 +1806,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.target_max = std::stoi(value);
         } else {
-            ability.target_max_svar = value;
             ability.target_max = MAX_ENTITIES;
         }
     } else if (key == "ActivationZone") {
@@ -1846,8 +1855,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ETB") {
         // ETB$ True on a DB$ Tap (Ba Sing Se's LandTapped replacement SVar): the tap happens as
         // the permanent enters the battlefield. The conditional "enters tapped" is realized via
-        // the ENTERS_TAPPED replacement; this flag marks the resolve-time Tap as an ETB tap.
-        ability.tap_on_etb = (value == "True");
+        // the ENTERS_TAPPED replacement, so the flag needs no field.
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
     } else if (key == "Cost") {
@@ -1962,11 +1970,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // X = Targeted$CardManaCost → the target's mana value).
         ability.animate_has_pt = true;
         int *base = (key == "Power") ? &ability.animate_base_power : &ability.animate_base_toughness;
-        std::string *tok = (key == "Power") ? &ability.animate_power_token : &ability.animate_toughness_token;
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
             *base = std::stoi(value);
-        else
-            *tok = value;
     } else if (key == "Duration" && value == "UntilHostLeavesPlay") {
         // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e): the
         // exiled card(s) return when the ability's host leaves the battlefield. See
@@ -2127,17 +2132,20 @@ static std::string normalize_category(std::string category) {
     return category;
 }
 
-// Resolves a TargetMin$/TargetMax$ that was given as an SVar key (stashed during param parsing)
-// to its runtime meaning. When the SVar resolves to Count$xPaid the bound equals the X paid at
+// Resolves a TargetMin$/TargetMax$ that was given as an SVar key (read back from the ability's
+// script `line`) to its runtime meaning. When the SVar resolves to Count$xPaid the bound equals the X paid at
 // cast/activation (CR 601.2b chooses X before targets, so x_paid is known when targets are
 // selected). Setting BOTH target_min_from_xpaid and target_max_from_xpaid yields EXACTLY-X
 // targeting (Candelabra of Tawnos, Hide on the Ceiling); a lone TargetMax$ X gives "up to X"
 // (Kozilek's Command). Other count-SVar caps keep the "effectively unlimited" fallback already
 // stored by apply_param_to_ability. Shared by the top-level and sub-ability parse paths.
 static void resolve_xpaid_target_counts(Ability& ability,
-                                        const std::map<std::string, std::string>& svars) {
-    if (!ability.target_min_svar.empty()) {
-        auto it = svars.find(ability.target_min_svar);
+                                        const std::map<std::string, std::string>& svars,
+                                        const std::string& line) {
+    const std::string min_key = svar_key_param(line, "TargetMin");
+    const std::string max_key = svar_key_param(line, "TargetMax");
+    if (!min_key.empty()) {
+        auto it = svars.find(min_key);
         if (it != svars.end()) {
             if (it->second.find("xPaid") != std::string::npos)
                 ability.target_min_from_xpaid = true;
@@ -2148,8 +2156,8 @@ static void resolve_xpaid_target_counts(Ability& ability,
                 { ability.target_min_count_expr = it->second; ability.target_min = 0; }
         }
     }
-    if (!ability.target_max_svar.empty()) {
-        auto it = svars.find(ability.target_max_svar);
+    if (!max_key.empty()) {
+        auto it = svars.find(max_key);
         if (it != svars.end()) {
             if (it->second.find("xPaid") != std::string::npos)
                 ability.target_max_from_xpaid = true;
@@ -2396,11 +2404,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             auto it = svars.find(value);
             if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
                 sub.target_max_from_xpaid = true;
+            // resolve_xpaid_target_counts also resolves a non-xPaid count-SVar cap (Into the
+            // Flood Maw's DBChangeZone: TargetMax$ Y = Count$PromisedGift) into
+            // target_max_count_expr, evaluated at cast (0 → targets nothing).
             sub.target_max = MAX_ENTITIES;
-            // Stash the SVar key so resolve_xpaid_target_counts can also resolve a non-xPaid
-            // count-SVar cap (Into the Flood Maw's DBChangeZone: TargetMax$ Y = Count$PromisedGift)
-            // into target_max_count_expr, evaluated at cast (0 → targets nothing).
-            sub.target_max_svar = value;
         } else {
             apply_param_to_ability(sub, key, value, card_name);
         }
@@ -2487,7 +2494,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     // Eldrazi.YouCtrl) to its runtime Count$ expression (Eldrazi Linebreaker), and a
     // TargetMin$/TargetMax$ SVar to its exactly-X / up-to-X meaning.
     resolve_pump_exprs(sub, svars);
-    resolve_xpaid_target_counts(sub, svars);
+    resolve_xpaid_target_counts(sub, svars, content);
     // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
     if (!sub.dig_num_expr.empty()) {
         auto it = svars.find(sub.dig_num_expr);
@@ -2878,19 +2885,20 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // sub-ability path resolves these in parse_svar_ability; do the same for primary SP$/AB$
         // abilities whose effect/targeting scales by X (Toxic Deluge, Candelabra, Hide on the Ceiling).
         resolve_pump_exprs(ability, svars);
-        resolve_xpaid_target_counts(ability, svars);
+        resolve_xpaid_target_counts(ability, svars, line);
 
         // Resolve AB$ Animate Power$/Toughness$ SVar tokens (Karn: Power$ X, X =
         // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
         // the animate target at resolution. A token that is not an SVar key is left as no dynamic
         // expr (the numeric base, parsed above, stands).
-        for (int which = 0; which < 2; which++) {
-            std::string &tok = which == 0 ? ability.animate_power_token : ability.animate_toughness_token;
-            std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
-            if (tok.empty()) continue;
-            auto it = svars.find(tok);
-            if (it != svars.end()) expr = it->second;
-            tok.clear();
+        if (ability.category == "Animate") {
+            for (int which = 0; which < 2; which++) {
+                const std::string tok = svar_key_param(line, which == 0 ? "Power" : "Toughness");
+                std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
+                if (tok.empty()) continue;
+                auto it = svars.find(tok);
+                if (it != svars.end()) expr = it->second;
+            }
         }
 
         // Emblem (CR 114): an AB$ Effect that grants a permanent continuous static to its
@@ -3070,7 +3078,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool exclude_first_draw_step = false;
     bool trigger_optional_local = false;
     size_t draw_number_eq = 0;          // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
-    bool attacked_defender_you = false; // Attacked$ You,Planeswalker.YouCtrl (the attack hits you/your PW)
     size_t activator_this_turn_cast_eq = 0;
     int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
 
@@ -3264,9 +3271,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (!value.empty() && isdigit((unsigned char)value[0]))
                 draw_number_eq = static_cast<size_t>(std::stoi(value));
         } else if (key == "Attacked") {
-            // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's
-            // controller or a planeswalker they control (Tamiyo, Seasoned Scholar's +2 trigger).
-            if (value.find("You") != std::string::npos) attacked_defender_you = true;
+            // Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned Scholar's +2 trigger): in a
+            // two-player game an opponent's attacker can only be attacking the trigger's
+            // controller or a planeswalker they control (CR 508.1), so it needs no gate.
         } else if (key == "CombatDamage") {
             if (value == "True") damage_combat_only = true;
         } else if (key == "ActivatorThisTurnCast") {
@@ -3489,7 +3496,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         // Scholar's +2 hosted trigger): an opponent's creature attacking you/your planeswalker.
         // Matched at fire time against the attacker's controller (the trigger has no source perm).
         ability.trigger_attacker_opp_ctrl = valid_card_opp_ctrl;
-        ability.trigger_attacked_defender_you = attacked_defender_you;
     }
 
     // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).

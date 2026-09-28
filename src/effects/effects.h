@@ -28,8 +28,8 @@ namespace effects {
 using EffectHandler = HandlerResult (*)(Ability &, std::shared_ptr<Orderer>, FrameCtx &);
 
 // Returns the handler for `kind`, or nullptr if no resolve-time handler exists
-// (None / not-yet-migrated). Ability::resolve() falls back to its legacy chain
-// when this returns nullptr.
+// (None, or a category handled at activation such as Equip). Ability::resolve()
+// just chains the subabilities when this returns nullptr.
 EffectHandler handler_for(EffectKind kind);
 
 // Per-effect handlers (defined one per src/effects/effect_*.cpp).

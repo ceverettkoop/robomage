@@ -68,8 +68,6 @@ struct Ability{
     bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
     bool target_min_from_xpaid = false;  // TargetMin$ X (X = Count$xPaid): lower bound = X paid — with the
                                          // matching max gives EXACTLY-X targeting (Candelabra, Hide on the Ceiling)
-    std::string target_min_svar = "";    // raw TargetMin$ token when non-numeric (an SVar key); resolved post-parse
-    std::string target_max_svar = "";    // raw TargetMax$ token when non-numeric (an SVar key); resolved post-parse
     // TargetMin$/TargetMax$ given as a count-SVar that resolves to a runtime Count$ expression
     // OTHER than Count$xPaid (e.g. Into the Flood Maw: TargetMin$ X = TargetMax$ X, X =
     // Count$PromisedGift.0.1). Evaluated by select_target at cast time (when the count's inputs —
@@ -168,7 +166,6 @@ struct Ability{
     // At resolution put_counter() places the counters, sets Permanent::is_monstrous, and fires the
     // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
     bool is_monstrosity = false;
-    bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     // K:Ninjutsu:<cost> (CR 702.49a): a hand-activated ability whose cost is the ninjutsu mana
     // plus returning an unblocked attacker you control to its owner's hand (return_cost_type), so
     // it is activatable whenever such an attacker exists. On the stack it puts THIS card onto the
@@ -297,14 +294,9 @@ struct Ability{
     // is paid" (paying {R}{R} ENABLES the copy). (DestroyAll's switched energy cost rides on
     // DestroyAllParams::energy_unless_switched instead — see parse.cpp.)
     bool unless_switched = false;
-    // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets for the
-    // copy. The shared copy machine (effect_copy_spell.cpp) already re-runs target selection for
-    // every copy (CR 707.12), so this flag is informational — recorded for parse fidelity.
-    bool unless_may_choose_target = false;
     Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
-    // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     // Raw Defined$/DefinedPlayer$ token verbatim from the script (e.g. "Targeted", "ParentTarget",
@@ -427,8 +419,6 @@ struct Ability{
     bool animate_has_pt = false;
     int animate_base_power = 0;
     int animate_base_toughness = 0;
-    std::string animate_power_token;       // raw Power$ token, pre-SVar-resolution
-    std::string animate_toughness_token;   // raw Toughness$ token, pre-SVar-resolution
     std::string animate_power_expr;        // resolved runtime expr (empty when numeric)
     std::string animate_toughness_expr;
 
@@ -456,12 +446,6 @@ struct Ability{
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
                  DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
-
-    // Counter abilities (PutCounter category) now live in CounterParams (params variant).
-
-    // Peek variant (Mishra's Bauble) now lives in PeekParams (params variant).
-
-    // Delayed trigger params (Mishra's Bauble) now live in DelayedTriggerParams (params variant).
 
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
@@ -553,11 +537,6 @@ struct Ability{
     // this trigger's controller. Matched at fire time (the trigger is hosted on a command-zone
     // Effect with no source permanent to self-reference).
     bool trigger_attacker_opp_ctrl = false;
-    // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's controller or a
-    // planeswalker they control. In the two-player engine the only defender an opponent's attacker
-    // can have IS this controller (or their planeswalker), so this is satisfied whenever an
-    // opponent's creature attacks; the flag records the script's stated intent (CR 508.1).
-    bool trigger_attacked_defender_you = false;
 
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
@@ -581,8 +560,6 @@ struct Ability{
     // system, not the stack-trigger scan. The Execute$ SVar's AddMana effect lives in subabilities
     // (the produced color/amount); ValidCard$ Creature gates which tapped source it watches.
     bool trigger_taps_for_mana_static = false;
-
-    // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
@@ -835,8 +812,6 @@ struct Ability{
     std::string cond_amount_compare = "";        // e.g. "GE2"
     size_t cond_amount_if_true = 0;              // count when the compare passes
 
-    // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
-
     // Conditional subability execution (Scythecat Cub, Thassa's Oracle)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
     std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1", or "LEX" with SVar RHS
@@ -890,8 +865,6 @@ struct Ability{
     // (see Permanent::stored_svars). Parsed from SVar$ NAME / Expression$ N (Type$ Number).
     std::string stored_svar_set_name = "";
     int stored_svar_set_value = 0;
-
-    // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order

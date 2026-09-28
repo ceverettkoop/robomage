@@ -1650,7 +1650,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // Table-driven dispatch: every effect category resolves through its handler
         // in src/effects/. handler_for() returns nullptr only for categories with no
         // resolve-time handler (e.g. "Equip", handled at activation) — those simply
-        // chain subabilities, matching the legacy chain's fall-through behavior.
+        // chain subabilities.
         effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(category));
         HandlerResult hres = handler ? handler(*this, orderer, ctx) : HandlerResult::DONE_RUN_SUBS;
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
