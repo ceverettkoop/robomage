@@ -741,6 +741,14 @@ struct CardPlayPermission {
 };
 CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
 
+// Whether `a` and `b` are interchangeable cards to choose between: two copies of the same card in
+// the same player's graveyard, playable from there by the same players on the same terms
+// (card_play_permission), or in the same player's library (a search, a Doomsday pile), neither of
+// them revealed there or known to the opponent at its place (Game::KnownLibraryTop). Choosing one
+// or the other makes no difference to the game, and the observation encodes the choices
+// identically, so a choice menu offers one of them. Defined in game_queries.cpp.
+bool interchangeable_cards(Entity a, Entity b);
+
 // Counters on a card in exile: its suspend time counters (Game::suspend_time_counters) plus
 // 1 for a void counter (Game::void_countered, Dauthi Voidwalker). An exiled card is not a
 // permanent, so these live in Game rather than Permanent::counters. Defined in

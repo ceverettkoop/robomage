@@ -28,6 +28,8 @@ static int get_int_input();
 static Zone::Ownership deciding_player();
 static int apply_concede_input(int choice);
 static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
+static bool interchangeable_choices(const LegalAction &a, const LegalAction &b);
+static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction> &actions);
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
@@ -300,7 +302,51 @@ void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int cho
     }
 }
 
+// Two menu entries that make the same choice: the same kind of action on interchangeable objects
+// (two copies of a card in a graveyard or library — Surgical Extraction targeting one of several
+// copies, a search finding one) with the same label and cast / activation variant.
+static bool interchangeable_choices(const LegalAction &a, const LegalAction &b) {
+    return a.type == b.type && a.category == b.category && a.description == b.description &&
+           a.option_ordinal == b.option_ordinal && a.target_entity == b.target_entity &&
+           a.use_alt_cost == b.use_alt_cost && a.use_flashback == b.use_flashback &&
+           a.use_offspring == b.use_offspring && a.use_escape == b.use_escape &&
+           a.impulse_cast == b.impulse_cast && a.play_back_face == b.play_back_face &&
+           a.cast_back_face == b.cast_back_face && a.companion_to_hand == b.companion_to_hand &&
+           a.suspend_action == b.suspend_action && a.card_is_public == b.card_is_public &&
+           a.source_entity != b.source_entity &&
+           interchangeable_cards(a.source_entity, b.source_entity);
+}
+
+// Indices of the menu entries kept when every entry interchangeable with an earlier one is left
+// out, in menu order.
+static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction> &actions) {
+    std::vector<size_t> kept;
+    kept.reserve(actions.size());
+    for (size_t i = 0; i < actions.size(); i++) {
+        bool duplicate = false;
+        for (size_t k : kept)
+            if (interchangeable_choices(actions[k], actions[i])) {
+                duplicate = true;
+                break;
+            }
+        if (!duplicate) kept.push_back(i);
+    }
+    return kept;
+}
+
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
+    std::vector<size_t> kept = distinct_choice_indices(actions);
+    if (kept.size() == actions.size()) return choose(actions);
+    std::vector<LegalAction> menu;
+    menu.reserve(kept.size());
+    for (size_t i : kept) menu.push_back(actions[i]);
+    int choice = choose(menu);
+    return (choice >= 0 && choice < static_cast<int>(kept.size()))
+               ? static_cast<int>(kept[static_cast<size_t>(choice)])
+               : choice;
+}
+
+int InputLogger::choose(const std::vector<LegalAction> &actions) {
     extern bool has_human_player;
     extern bool human_player_is_a;
     bool human_has_priority = has_human_player && (human_player_is_a == cur_game.player_a_has_priority);

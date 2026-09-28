@@ -1415,6 +1415,58 @@ def check_public_known_top():
     return seen_reveal, seen_bauble, unseen
 
 
+def check_graveyard_target_collapse():
+    """A target menu offers one of several identical graveyard cards: Surgical
+    Extraction ("target card in a graveyard other than a basic land card") with
+    75 nonbasic cards in the two graveyards — four distinct cards, 15-20 copies
+    each — gets a four-entry SELECT_TARGET menu, one per (owner, card), within
+    MAX_ACTIONS (the uncollapsed 75 would be cut to 64, silently dropping legal
+    choices). Returns the menu size."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    surgical = names["Surgical Extraction"]
+    stem = "obsinv_gycollapse_a"
+    path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write("1 Surgical Extraction\n29 Swamp\n")
+    gy_a = ",".join(["Lightning Bolt"] * 20 + ["Brainstorm"] * 20)
+    gy_b = ",".join(["Ponder"] * 20 + ["Counterspell"] * 15)
+    env = RoboMageEnv(deck_a="temp/" + stem, deck_b="league/ur_delver", no_shuffle=True,
+                      battlefield_a="Swamp", graveyard_a=gy_a, graveyard_b=gy_b, bo3=False)
+    cast = False
+    try:
+        env.reset(options={"engine_seed": 1})
+        for i in range(60):
+            num = env._num_choices
+            obs = env._obs
+            cats = decode.action_categories(obs, num)
+            ids = [_decode_card_id(v) for v in decode.action_card_ids(obs)[:num]]
+            priority_is_a = obs[_SELF_IS_A_IDX] > 0.5
+            if cast and all(int(c) == CAT_SELECT_TARGET for c in cats):
+                picks = {(int(z), cid) for z, cid in
+                         zip(decode.action_zone_refs(obs, num), ids)}
+                if num != 4 or len(picks) != num:
+                    raise InvariantError(
+                        f"Surgical Extraction target menu has {num} entries "
+                        f"({len(picks)} distinct (zone, card) picks), expected one per "
+                        f"distinct graveyard card (4)")
+                return num
+            choice = 0
+            if priority_is_a and not cast:
+                for a in range(num):
+                    if int(cats[a]) == CAT_CAST_SPELL and ids[a] == surgical:
+                        choice, cast = a, True
+                        break
+            env.step(choice)
+        raise InvariantError(f"no Surgical Extraction target menu (cast={cast})")
+    finally:
+        env.close()
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+
+
 def check_face_down_exile_hidden():
     """A face-down exiled card is hidden from the opponent (CR 406.3): seat A
     casts The Creation of Avacyn and its chapter I exiles the searched Lightning
@@ -2538,6 +2590,14 @@ def main():
         return 1
     print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
           f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
+
+    try:
+        n_gy_menu = check_graveyard_target_collapse()
+    except InvariantError as e:
+        print(f"FAIL  graveyard target collapse\n  {e}", flush=True)
+        return 1
+    print(f"ok    graveyard target collapse: 75 graveyard cards -> a {n_gy_menu}-entry "
+          f"target menu (one per distinct card)", flush=True)
 
     try:
         kt_reveal, kt_bauble, kt_hidden = check_public_known_top()

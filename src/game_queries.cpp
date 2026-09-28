@@ -875,6 +875,38 @@ Entity returnable_exiled_card(Entity host) {
     return 0;
 }
 
+bool interchangeable_cards(Entity a, Entity b) {
+    if (a == b) return true;
+    for (Entity e : {a, b})
+        if (!global_coordinator.entity_has_component<Zone>(e) ||
+            !global_coordinator.entity_has_component<CardData>(e))
+            return false;
+    const Zone &za = global_coordinator.GetComponent<Zone>(a);
+    const Zone &zb = global_coordinator.GetComponent<Zone>(b);
+    if (za.location != zb.location || za.owner != zb.owner ||
+        global_coordinator.GetComponent<CardData>(a).name !=
+            global_coordinator.GetComponent<CardData>(b).name)
+        return false;
+    if (za.location == Zone::GRAVEYARD) {
+        for (Zone::Ownership player : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+            CardPlayPermission pa = card_play_permission(a, player);
+            CardPlayPermission pb = card_play_permission(b, player);
+            if (pa.sources != pb.sources || pa.expires_this_turn != pb.expires_this_turn)
+                return false;
+        }
+        return true;
+    }
+    if (za.location == Zone::LIBRARY) {
+        const int *opp_knows = cur_game.known_top_library_seen_by(za.owner, opponent_of(za.owner));
+        for (const Zone *z : {&za, &zb})
+            if (z->distance_from_top < KNOWN_TOP_LIBRARY_SIZE &&
+                opp_knows[z->distance_from_top] != -1)
+                return false;
+        return !cur_game.revealed_in_library.count(a) && !cur_game.revealed_in_library.count(b);
+    }
+    return false;
+}
+
 CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
     CardPlayPermission out;
     if (!global_coordinator.entity_has_component<Zone>(card)) return out;

@@ -1115,14 +1115,17 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
     memset(q, 0, sizeof(*q));
     int n = std::min(static_cast<int>(actions.size()), MAX_ACTIONS);
 #ifndef NDEBUG
-    if (static_cast<int>(actions.size()) > MAX_ACTIONS)
-        // Machine-mode agents can never pick a truncated action, so an
-        // over-wide menu silently restricts the policy — make it observable.
-        fprintf(stderr,
-                "WARNING: legal-action menu has %zu entries; machine query "
-                "truncated to MAX_ACTIONS=%d — choices beyond that are "
-                "unreachable for machine-mode agents\n",
-                actions.size(), MAX_ACTIONS);
+    // A machine-mode agent can never pick an action past MAX_ACTIONS, so a wider menu (after
+    // InputLogger::get_input left out its interchangeable choices) would silently take legal
+    // choices away from the policy. Debug builds stop on it.
+    if (static_cast<int>(actions.size()) > MAX_ACTIONS) {
+        std::string menu;
+        for (size_t i = 0; i < actions.size(); i++)
+            menu += "\n  [" + std::to_string(i) + "] " + actions[i].description;
+        fatal_error("legal-action menu has " + std::to_string(actions.size()) +
+                    " distinct choices, more than MAX_ACTIONS=" + std::to_string(MAX_ACTIONS) +
+                    " — the machine query cannot represent them all:" + menu);
+    }
 #endif
     q->num_choices = n;
 

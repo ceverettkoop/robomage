@@ -389,8 +389,11 @@ int32  [MAX_ACTIONS] zone   (ActionRefZone)
 int32  [MAX_ACTIONS] refs   (entity-reference slot, -1 = none)
 int32  [MAX_ACTIONS] ords   (mode/X/color/ability index, -1 = n/a)
 ```
-Arrays are padded to `MAX_ACTIONS`. The header's sizes are a layout handshake the Python driver
-asserts. Under `--narrative` the frame also carries per-action description strings and
+Arrays are padded to `MAX_ACTIONS`. Every menu goes through `InputLogger::get_input`, which leaves
+out a choice interchangeable with an earlier one (two identical cards in the same graveyard or
+library — `interchangeable_cards`), so a menu never needs more than `MAX_ACTIONS` slots; a debug
+build stops on a wider one (`populate_query`). The header's sizes are a layout handshake the
+Python driver asserts. Under `--narrative` the frame also carries per-action description strings and
 per-permanent counter / token-name strings (display only). `--broadcast-steps` emits the same
 payload as `BSTATE:` frames that take no reply.
 
