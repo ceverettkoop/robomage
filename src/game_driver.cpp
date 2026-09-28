@@ -605,9 +605,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             (cur_game.pending.cast.active || cur_game.pending.activation.active ||
              cur_game.pending.draw.active)) {
             std::string which;
-            if (cur_game.pending.cast.active) which += " pending_cast";
-            if (cur_game.pending.activation.active) which += " pending_activation";
-            if (cur_game.pending.draw.active) which += " pending_draw";
+            if (cur_game.pending.cast.active) which += " pending.cast";
+            if (cur_game.pending.activation.active) which += " pending.activation";
+            if (cur_game.pending.draw.active) which += " pending.draw";
             fatal_error("stranded suspended-flow flag at quiescent loop point:" + which +
                         " (turn=" + std::to_string(cur_game.turn_state.turn) +
                         " step=" + std::to_string(static_cast<int>(cur_game.turn_state.step)) + ")");
@@ -666,10 +666,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         std::string which;
         if (cur_game.resolution.active) which += " resolution";
         if (cur_game.pending.query.active)
-            which += " pending_query(tag=" + std::to_string(static_cast<int>(cur_game.pending.query.tag)) + ")";
-        if (cur_game.pending.cast.active) which += " pending_cast";
-        if (cur_game.pending.activation.active) which += " pending_activation";
-        if (cur_game.pending.draw.active) which += " pending_draw";
+            which += " pending.query(tag=" + std::to_string(static_cast<int>(cur_game.pending.query.tag)) + ")";
+        if (cur_game.pending.cast.active) which += " pending.cast";
+        if (cur_game.pending.activation.active) which += " pending.activation";
+        if (cur_game.pending.draw.active) which += " pending.draw";
         if (cur_game.pregame.stage != Game::PregameState::DONE) which += " pregame";
         fatal_error("game ended with a suspended resolution/pending query still parked:" + which);
     }
