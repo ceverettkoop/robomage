@@ -46,6 +46,9 @@ DECK = "league/ur_delver"
 SEED = 1
 GAMES = 2
 SIMS = 16
+# The playout cap's fast-root budget (most in-game roots draw it) for both runs.
+# Left at the shipped default (128) it dominated the test's run time.
+FAST_SIMS = 4
 WORLDS = 2
 # bo3 mini-run: a small in-game + sideboard plan budget just to exercise the
 # actor's bo3 selfplay path (plan-searched sideboard roots + next-game flush).
@@ -86,6 +89,7 @@ def _run_actor(cmd, tag):
 def _run_selfplay(ts_path, out_dir):
     cmd = [ACTOR_BIN, "--selfplay", "--deck", DECK, "--seed", str(SEED),
            "--games", str(GAMES), "--sims", str(SIMS), "--worlds", str(WORLDS),
+           "--fast-sims", str(FAST_SIMS),
            "--model", ts_path, "--out-dir", out_dir,
            "--max-decisions", str(PARITY_MAX_DECISIONS)]
     return _run_actor(cmd, "")
@@ -95,7 +99,8 @@ def _run_selfplay_bo3(ts_path, out_dir):
     """Run the actor in bo3 selfplay with a small in-game + sideboard budget."""
     cmd = [ACTOR_BIN, "--selfplay", "--bo3", "--deck", DECK, "--seed", str(SEED),
            "--games", str(GAMES), "--sims", str(BO3_SIMS), "--worlds",
-           str(BO3_WORLDS), "--sb-branches", str(BO3_SB_BRANCHES),
+           str(BO3_WORLDS), "--fast-sims", str(FAST_SIMS),
+           "--sb-branches", str(BO3_SB_BRANCHES),
            "--sb-worlds", str(BO3_SB_WORLDS),
            "--sb-rollout-turns", str(BO3_SB_ROLLOUT_TURNS),
            "--model", ts_path, "--out-dir", out_dir,
