@@ -690,29 +690,18 @@
    2: Blast Zone
    3: Bojuka Bog
    4: Boseiju, Who Endures
-   5: Boseiju, Who Endures
-   6: Dark Depths
-   7: Forest
-   8: Ghost Quarter
-   9: Karakas
-  10: Maze of Ith
-  11: Rishadan Port
-  12: Rishadan Port
-  13: Savannah
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Thespian's Stage
-  17: Urza's Saga
-  18: Urza's Saga
-  19: Urza's Saga
-  20: Urza's Saga
-  21: Wasteland
-  22: Wasteland
-  23: Wasteland
-  24: Wasteland
-  25: Yavimaya, Cradle of Growth
-  26: Yavimaya, Cradle of Growth
-  >> B/B: 17 (Urza's Saga)
+   5: Dark Depths
+   6: Forest
+   7: Ghost Quarter
+   8: Karakas
+   9: Maze of Ith
+  10: Rishadan Port
+  11: Savannah
+  12: Thespian's Stage
+  13: Urza's Saga
+  14: Wasteland
+  15: Yavimaya, Cradle of Growth
+  >> B/B: 13 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Urza's Saga to the battlefield

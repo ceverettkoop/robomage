@@ -187,12 +187,9 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Mystic Sanctuary
-   4: Plains
-   5: Tundra
-   6: Tundra
-   7: Tundra
+   2: Mystic Sanctuary
+   3: Plains
+   4: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -841,7 +838,6 @@
    2: Meticulous Archive
    3: Mystic Sanctuary
    4: Tundra
-   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -2113,13 +2109,12 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Polluted Delta (Delve)
-   6: Exile Swords to Plowshares (Delve)
-   7: Exile Tundra (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Polluted Delta (Delve)
+   5: Exile Swords to Plowshares (Delve)
+   6: Exile Tundra (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -3254,11 +3249,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -4680,7 +4671,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Meticulous Archive)
 --- Narrative ---
   Player B shuffles their library

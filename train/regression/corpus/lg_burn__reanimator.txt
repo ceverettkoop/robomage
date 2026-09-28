@@ -158,11 +158,7 @@
    0: Fail to find
    1: Swamp
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
+   3: Underground Sea
   >> B/B: 1 (Swamp)
 --- Narrative ---
   Player B shuffles their library
@@ -621,11 +617,7 @@
    0: Fail to find
    1: Island
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
+   3: Underground Sea
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1481,10 +1473,7 @@
   Actions:
    0: Fail to find
    1: Undercity Sewers
-   2: Undercity Sewers
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
+   2: Underground Sea
   >> B/B: 1 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library

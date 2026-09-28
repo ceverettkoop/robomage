@@ -112,8 +112,7 @@
    3: Plains
    4: Plateau
    5: Scrubland
-   6: Scrubland
-   7: Shadowy Backstreet
+   6: Shadowy Backstreet
   >> A/A: 1 (Badlands)
 --- Narrative ---
   Player A shuffles their library
@@ -255,9 +254,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -554,9 +552,8 @@
    1: Elegant Parlor
    2: Plains
    3: Plateau
-   4: Plateau
-   5: Scrubland
-   6: Shadowy Backstreet
+   4: Scrubland
+   5: Shadowy Backstreet
   >> B/B: 1 (Elegant Parlor)
 --- Narrative ---
   Player B shuffles their library
@@ -2272,8 +2269,7 @@
    0: Fail to find
    1: Plains
    2: Plateau
-   3: Plateau
-   4: Scrubland
+   3: Scrubland
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library

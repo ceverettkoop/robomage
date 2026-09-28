@@ -109,7 +109,6 @@
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
-   4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
   Player A reveals Badgermole Cub and puts it into hand.
@@ -197,11 +196,7 @@
    0: Fail to find
    1: Swamp
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
+   3: Underground Sea
   >> B/B: 1 (Swamp)
 --- Narrative ---
   Player B shuffles their library
@@ -598,11 +593,7 @@
    0: Fail to find
    1: Island
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
+   3: Underground Sea
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -752,8 +743,7 @@
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
-   4: Thalia, Guardian of Thraben
-   5: Noble Hierarch
+   4: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
   Player A reveals Thalia, Guardian of Thraben and puts it into hand.
@@ -1314,7 +1304,7 @@
   Self GY: Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Atraxa, Grand Unifier
-  Known top: Thoughtseize, Ponder, ?, ?, ?
+  Known top: Thoughtseize, Ponder, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty
   Known opp hand: Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
@@ -1342,7 +1332,7 @@
   Self GY: Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Atraxa, Grand Unifier
-  Known top: Thoughtseize, Ponder, ?, ?, ?
+  Known top: Thoughtseize, Ponder, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty
   Known opp hand: Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
@@ -1368,7 +1358,7 @@
   Self GY: Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Atraxa, Grand Unifier
-  Known top: Thoughtseize, Ponder, ?, ?, ?
+  Known top: Thoughtseize, Ponder, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty
   Known opp hand: Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
@@ -1395,7 +1385,7 @@
   Self GY: Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Self exile: Atraxa, Grand Unifier
-  Known top: Thoughtseize, Ponder, ?, ?, ?
+  Known top: Thoughtseize, Ponder, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty
   Known opp hand: Thalia, Guardian of Thraben, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
@@ -1997,10 +1987,7 @@
   Actions:
    0: Fail to find
    1: Undercity Sewers
-   2: Undercity Sewers
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
+   2: Underground Sea
   >> B/B: 1 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library
@@ -3423,8 +3410,6 @@
    0: Fail to find
    1: Undercity Sewers
    2: Underground Sea
-   3: Underground Sea
-   4: Underground Sea
   >> B/B: 1 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library
@@ -3525,7 +3510,6 @@
    0: Fail to find
    1: Plains
    2: Savannah
-   3: Savannah
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library

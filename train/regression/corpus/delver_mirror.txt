@@ -110,10 +110,7 @@
    0: Fail to find
    1: Island
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-   6: Thundering Falls
+   3: Thundering Falls
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -358,9 +355,7 @@
    0: Fail to find
    1: Island
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Thundering Falls
+   3: Thundering Falls
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -563,10 +558,7 @@
    0: Fail to find
    1: Mountain
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-   6: Thundering Falls
+   3: Thundering Falls
   >> A/A: 1 (Mountain)
 --- Narrative ---
   Player A shuffles their library
@@ -1066,7 +1058,6 @@
   Actions:
    0: Murktide Regent  [#2]
    1: Lightning Bolt  [#2]
-   2: Lightning Bolt  [#2]
   >> B/B: 0 (Murktide Regent)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -1088,7 +1079,6 @@
   Extras: not_priority_window
   Actions:
    0: Lightning Bolt  [#1]
-   1: Lightning Bolt  [#1]
   >> B/B: 0 (Lightning Bolt)
 
 --- Decision 49 ---
@@ -1177,9 +1167,7 @@
   Actions:
    0: Fail to find
    1: Volcanic Island
-   2: Volcanic Island
-   3: Volcanic Island
-   4: Thundering Falls
+   2: Thundering Falls
   >> B/B: 1 (Volcanic Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1564,6 +1552,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp top: Mishra's Bauble, ?, ?, ?, ?
   Opp revealed: Volcanic Island, Flooded Strand, Polluted Delta, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble
   This turn: self spells=2 noncreature=1 drawn=1 colors=R
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -1781,6 +1770,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
+  Known opp top: Dragon's Rage Channeler, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Misty Rainforest, Ponder, Daze, Island, Dragon's Rage Channeler, Mishra's Bauble
   This turn: self spells=3 noncreature=2 instant_sorcery=1 drawn=1 colors=R | opp drawn=1 life_lost=3
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -1883,9 +1873,7 @@
   Actions:
    0: Fail to find
    1: Volcanic Island
-   2: Volcanic Island
-   3: Volcanic Island
-   4: Thundering Falls
+   2: Thundering Falls
   >> A/A: 1 (Volcanic Island)
 --- Narrative ---
   Player A shuffles their library
@@ -2292,8 +2280,7 @@
    0: Fail to find
    1: Mountain
    2: Volcanic Island
-   3: Volcanic Island
-   4: Thundering Falls
+   3: Thundering Falls
   >> B/B: 1 (Mountain)
 --- Narrative ---
   Player B shuffles their library
@@ -2369,7 +2356,7 @@
    0: Pass priority
    1: Play Wasteland
    2: Cast Mishra's Bauble  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
   >> A/A: 2 (Cast Mishra's Bauble)
 --- Narrative ---
   Player A casts Mishra's Bauble
@@ -2508,7 +2495,7 @@
    0: Pass priority
    1: Play Wasteland
    2: Activate Mishra's Bauble (PeekAndReveal)  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Play Wasteland)
 --- Narrative ---
   Player A played Wasteland
@@ -2528,7 +2515,7 @@
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
    3: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
@@ -2617,12 +2604,13 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Wasteland, Mishra's Bauble, Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Volcanic Island, Scalding Tarn, Mishra's Bauble, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp top: Lightning Bolt, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:
@@ -2638,6 +2626,7 @@
   Pending: Cori-Steel Cutter (self)
   Self GY: Wasteland, Mishra's Bauble, Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Volcanic Island, Scalding Tarn, Mishra's Bauble, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp top: Lightning Bolt, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
@@ -2672,6 +2661,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Wasteland, Mishra's Bauble, Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Volcanic Island, Scalding Tarn, Mishra's Bauble, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
+  Known opp top: Lightning Bolt, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Volcanic Island, Scalding Tarn, Flooded Strand, Polluted Delta, Wasteland, Ponder, Daze, Delver of Secrets, Island, Dragon's Rage Channeler, Brainstorm, Mishra's Bauble, Cori-Steel Cutter
   This turn: self spells=1 noncreature=1 drawn=1
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk

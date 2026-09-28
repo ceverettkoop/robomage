@@ -141,7 +141,6 @@
    2: Knight of the Reliquary
    3: Endurance
    4: Ignoble Hierarch
-   5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
   Player B reveals Wasteland and puts it into hand.
@@ -1407,8 +1406,6 @@
    1: Forest
    2: Plains
    3: Savannah
-   4: Savannah
-   5: Savannah
   >> B/B: 1 (Forest)
 --- Narrative ---
   Player B shuffles their library
@@ -2362,16 +2359,9 @@
    3: Karakas
    4: Plains
    5: Savannah
-   6: Savannah
-   7: Wasteland
-   8: Wasteland
-   9: Windswept Heath
-  10: Windswept Heath
-  11: Windswept Heath
-  12: Wooded Foothills
-  13: Wooded Foothills
-  14: Wooded Foothills
-  15: Wooded Foothills
+   6: Wasteland
+   7: Windswept Heath
+   8: Wooded Foothills
   >> B/B: 1 (Gaea's Cradle)
 --- Narrative ---
   Player B shuffles their library
@@ -2872,7 +2862,6 @@
   Actions:
    0: Fail to find
    1: Savannah
-   2: Savannah
   >> B/B: 1 (Savannah)
 --- Narrative ---
   Player B shuffles their library
@@ -2926,13 +2915,8 @@
    3: Plains
    4: Savannah
    5: Wasteland
-   6: Wasteland
-   7: Windswept Heath
-   8: Windswept Heath
-   9: Windswept Heath
-  10: Wooded Foothills
-  11: Wooded Foothills
-  12: Wooded Foothills
+   6: Windswept Heath
+   7: Wooded Foothills
   >> B/B: 1 (Horizon Canopy)
 --- Narrative ---
   Player B shuffles their library

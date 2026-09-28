@@ -209,9 +209,6 @@
    2: Swamp
    3: Undercity Sewers
    4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -363,9 +360,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -529,9 +525,6 @@
    0: Fail to find
    1: Undercity Sewers
    2: Underground Sea
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
   >> A/A: 1 (Undercity Sewers)
 --- Narrative ---
   Player A shuffles their library
@@ -1605,10 +1598,9 @@
    1: Ocelot Pride
    2: Voice of Victory
    3: Archon of Cruelty
-   4: Archon of Cruelty
-   5: Atraxa, Grand Unifier
-   6: Raph & Mikey, Troublemakers
-  >> A/A: 6 (Raph & Mikey, Troublemakers)
+   4: Atraxa, Grand Unifier
+   5: Raph & Mikey, Troublemakers
+  >> A/A: 5 (Raph & Mikey, Troublemakers)
 --- Narrative ---
   Targeting choice 6
   Player A activated Undercity Sewers for 1(B)

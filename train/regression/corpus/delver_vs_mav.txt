@@ -95,7 +95,6 @@
    2: Knight of the Reliquary
    3: Endurance
    4: Ignoble Hierarch
-   5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
   Player B reveals Wasteland and puts it into hand.
@@ -158,10 +157,7 @@
    0: Fail to find
    1: Island
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-   6: Thundering Falls
+   3: Thundering Falls
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -499,10 +495,7 @@
    0: Fail to find
    1: Mountain
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-   6: Thundering Falls
+   3: Thundering Falls
   >> A/A: 1 (Mountain)
 --- Narrative ---
   Player A shuffles their library
@@ -1831,10 +1824,7 @@
   Actions:
    0: Fail to find
    1: Volcanic Island
-   2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Thundering Falls
+   2: Thundering Falls
   >> A/A: 1 (Volcanic Island)
 --- Narrative ---
   Player A shuffles their library

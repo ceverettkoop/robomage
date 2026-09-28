@@ -1062,7 +1062,6 @@
    4: Tropical Island
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -1605,7 +1604,6 @@
    2: Tropical Island
    3: Undercity Sewers
    4: Underground Sea
-   5: Underground Sea
   >> A/A: 1 (Forest)
 --- Narrative ---
   Player A shuffles their library
@@ -1771,8 +1769,7 @@
    1: Expedition Map
    2: Grafdigger's Cage
    3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
+   4: Pithing Needle
   >> B/B: 1 (Expedition Map)
 --- Narrative ---
   Player B shuffles their library
@@ -2202,25 +2199,16 @@
    3: Bojuka Bog
    4: Boseiju, Who Endures
    5: Dark Depths
-   6: Dark Depths
-   7: Forest
-   8: Karakas
-   9: Maze of Ith
-  10: Rishadan Port
-  11: Savannah
-  12: Savannah
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Urza's Saga
-  17: Urza's Saga
-  18: Urza's Saga
-  19: Wasteland
-  20: Wasteland
-  21: Wasteland
-  22: Wasteland
-  23: Yavimaya, Cradle of Growth
-  >> B/B: 16 (Urza's Saga)
+   6: Forest
+   7: Karakas
+   8: Maze of Ith
+   9: Rishadan Port
+  10: Savannah
+  11: Thespian's Stage
+  12: Urza's Saga
+  13: Wasteland
+  14: Yavimaya, Cradle of Growth
+  >> B/B: 12 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Urza's Saga to the battlefield
@@ -2301,24 +2289,16 @@
    3: Bojuka Bog
    4: Boseiju, Who Endures
    5: Dark Depths
-   6: Dark Depths
-   7: Forest
-   8: Karakas
-   9: Maze of Ith
-  10: Rishadan Port
-  11: Savannah
-  12: Savannah
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Urza's Saga
-  17: Urza's Saga
-  18: Wasteland
-  19: Wasteland
-  20: Wasteland
-  21: Wasteland
-  22: Yavimaya, Cradle of Growth
-  >> B/B: 16 (Urza's Saga)
+   6: Forest
+   7: Karakas
+   8: Maze of Ith
+   9: Rishadan Port
+  10: Savannah
+  11: Thespian's Stage
+  12: Urza's Saga
+  13: Wasteland
+  14: Yavimaya, Cradle of Growth
+  >> B/B: 12 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B reveals Urza's Saga and puts it to hand
@@ -2366,7 +2346,7 @@
   Extras: self_lands_played=1, self_revolt, self_mulligans=2, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:
@@ -3003,8 +2983,7 @@
    0: Fail to find
    1: Grafdigger's Cage
    2: Mox Diamond
-   3: Mox Diamond
-   4: Pithing Needle
+   3: Pithing Needle
   >> B/B: 1 (Grafdigger's Cage)
 --- Narrative ---
   Player B shuffles their library
@@ -3167,6 +3146,7 @@
   Player A casts Fatal Push targeting Construct token
   Resolving ability (category: Destroy)
   Construct token is destroyed
+  Skateboard becomes unattached
   Construct (token) is put into the graveyard and ceases to exist.
 
 --- Decision 126 ---
@@ -3273,8 +3253,7 @@
   Actions:
    0: Fail to find
    1: Mox Diamond
-   2: Mox Diamond
-   3: Pithing Needle
+   2: Pithing Needle
   >> B/B: 1 (Mox Diamond)
 --- Narrative ---
   Player B shuffles their library
@@ -3325,7 +3304,7 @@
    3: Cast Life from the Loam  [#0]
    4: Cast Malevolent Rumble  [#0]
    5: Cast Sphere of Resistance  [#0]
-   6: Equip Skateboard  [#32]
+   6: Equip Skateboard  [#0]
   >> B/B: 1 (Cast Life from the Loam)
 --- Narrative ---
   Choose target for Life from the Loam:
@@ -3354,9 +3333,7 @@
    5: The Tabernacle at Pendrell Vale
    6: Thespian's Stage
    7: Urza's Saga
-   8: Urza's Saga
-   9: Urza's Saga
-  10: Yavimaya, Cradle of Growth
+   8: Yavimaya, Cradle of Growth
   >> B/B: 7 (Urza's Saga)
 --- Narrative ---
   Targeting choice 7
@@ -3386,8 +3363,7 @@
    5: The Tabernacle at Pendrell Vale
    6: Thespian's Stage
    7: Urza's Saga
-   8: Urza's Saga
-   9: Yavimaya, Cradle of Growth
+   8: Yavimaya, Cradle of Growth
   >> B/B: 7 (Urza's Saga)
 --- Narrative ---
   Targeting choice 7
@@ -3472,7 +3448,7 @@
   Extras: self_lands_played=1, self_revolt, self_mulligans=2, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:
@@ -3839,7 +3815,6 @@
   Actions:
    0: Ponder
    1: Brainstorm
-   2: Brainstorm
   >> A/A: 1 (Brainstorm)
 
 --- Decision 151 ---
@@ -4344,7 +4319,7 @@
    5: Cast Life from the Loam  [#0]
    6: Cast Malevolent Rumble  [#0]
    7: Cast Sphere of Resistance  [#0]
-   8: Equip Skateboard  [#32]
+   8: Equip Skateboard  [#0]
   >> B/B: 1 (Play Urza's Saga)
 --- Narrative ---
   Player B played Urza's Saga
@@ -4373,7 +4348,7 @@
    3: Cast Life from the Loam  [#0]
    4: Cast Malevolent Rumble  [#0]
    5: Cast Sphere of Resistance  [#0]
-   6: Equip Skateboard  [#32]
+   6: Equip Skateboard  [#0]
   >> B/B: 1 (Cast Life from the Loam)
 --- Narrative ---
   Choose target for Life from the Loam:
@@ -4404,7 +4379,6 @@
    8: Thespian's Stage
    9: Urza's Saga
   10: Yavimaya, Cradle of Growth
-  11: Yavimaya, Cradle of Growth
   >> B/B: 9 (Urza's Saga)
 --- Narrative ---
   Targeting choice 9
@@ -4435,7 +4409,6 @@
    7: The Tabernacle at Pendrell Vale
    8: Thespian's Stage
    9: Yavimaya, Cradle of Growth
-  10: Yavimaya, Cradle of Growth
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -4461,7 +4434,7 @@
   Extras: self_lands_played=1, self_mulligans=2, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:

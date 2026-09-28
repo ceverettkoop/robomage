@@ -141,7 +141,6 @@
    2: Knight of the Reliquary
    3: Endurance
    4: Ignoble Hierarch
-   5: Knight of the Reliquary
   >> B/B: 1 (Wasteland)
 --- Narrative ---
   Player B reveals Wasteland and puts it into hand.
@@ -205,9 +204,7 @@
    1: Swamp
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
-   6: Island
+   4: Island
   >> A/A: 3 (Underground Sea)
 --- Narrative ---
   Player A shuffles their library
@@ -540,8 +537,7 @@
    1: Swamp
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
-   5: Island
+   4: Island
   >> A/A: 3 (Underground Sea)
 --- Narrative ---
   Player A shuffles their library
@@ -1835,14 +1831,11 @@
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
-   1: Thoughtseize
-   2: Thoughtseize
-   3: Polluted Delta
-   4: Polluted Delta
-   5: Misty Rainforest
-   6: Knight of the Reliquary
-   7: Once Upon a Time
-   8: Swords to Plowshares
+   1: Polluted Delta
+   2: Misty Rainforest
+   3: Knight of the Reliquary
+   4: Once Upon a Time
+   5: Swords to Plowshares
   >> B/B: 0 (Thoughtseize)
 --- Narrative ---
   Targeting choice 0
@@ -2104,16 +2097,13 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Thoughtseize
-   1: Thoughtseize
-   2: Polluted Delta
-   3: Polluted Delta
-   4: Underground Sea
-   5: Misty Rainforest
-   6: Knight of the Reliquary
-   7: Once Upon a Time
-   8: Swords to Plowshares
-   9: Wasteland
-  10: Wasteland
+   1: Polluted Delta
+   2: Underground Sea
+   3: Misty Rainforest
+   4: Knight of the Reliquary
+   5: Once Upon a Time
+   6: Swords to Plowshares
+   7: Wasteland
   >> B/B: 0 (Thoughtseize)
 --- Narrative ---
   Targeting choice 0
@@ -2199,14 +2189,12 @@
   Actions:
    0: Thoughtseize
    1: Polluted Delta
-   2: Polluted Delta
-   3: Underground Sea
-   4: Misty Rainforest
-   5: Knight of the Reliquary
-   6: Once Upon a Time
-   7: Swords to Plowshares
-   8: Wasteland
-   9: Wasteland
+   2: Underground Sea
+   3: Misty Rainforest
+   4: Knight of the Reliquary
+   5: Once Upon a Time
+   6: Swords to Plowshares
+   7: Wasteland
   >> B/B: 0 (Thoughtseize)
 --- Narrative ---
   Targeting choice 0
@@ -2291,14 +2279,12 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Polluted Delta
-   1: Polluted Delta
-   2: Underground Sea
-   3: Misty Rainforest
-   4: Knight of the Reliquary
-   5: Once Upon a Time
-   6: Swords to Plowshares
-   7: Wasteland
-   8: Wasteland
+   1: Underground Sea
+   2: Misty Rainforest
+   3: Knight of the Reliquary
+   4: Once Upon a Time
+   5: Swords to Plowshares
+   6: Wasteland
   >> B/B: 0 (Polluted Delta)
 --- Narrative ---
   Targeting choice 0
@@ -2949,7 +2935,6 @@
    4: Once Upon a Time
    5: Swords to Plowshares
    6: Wasteland
-   7: Wasteland
   >> B/B: 0 (Polluted Delta)
 --- Narrative ---
   Targeting choice 0
@@ -3041,8 +3026,6 @@
    1: Forest
    2: Plains
    3: Savannah
-   4: Savannah
-   5: Savannah
   >> B/B: 1 (Forest)
 --- Narrative ---
   Player B shuffles their library
@@ -3130,8 +3113,7 @@
    3: Once Upon a Time
    4: Swords to Plowshares
    5: Wasteland
-   6: Wasteland
-   7: Windswept Heath
+   6: Windswept Heath
   >> B/B: 0 (Underground Sea)
 --- Narrative ---
   Targeting choice 0
@@ -3219,8 +3201,7 @@
    2: Once Upon a Time
    3: Swords to Plowshares
    4: Wasteland
-   5: Wasteland
-   6: Windswept Heath
+   5: Windswept Heath
   >> B/B: 0 (Misty Rainforest)
 --- Narrative ---
   Targeting choice 0
@@ -3804,8 +3785,7 @@
    1: Once Upon a Time
    2: Swords to Plowshares
    3: Wasteland
-   4: Wasteland
-   5: Windswept Heath
+   4: Windswept Heath
   >> B/B: 0 (Knight of the Reliquary)
 --- Narrative ---
   Targeting choice 0
@@ -3892,8 +3872,6 @@
   Actions:
    0: Fail to find
    1: Savannah
-   2: Savannah
-   3: Savannah
   >> B/B: 1 (Savannah)
 --- Narrative ---
   Player B shuffles their library
@@ -3977,9 +3955,8 @@
    0: Once Upon a Time
    1: Swords to Plowshares
    2: Wasteland
-   3: Wasteland
-   4: Windswept Heath
-   5: Wooded Foothills
+   3: Windswept Heath
+   4: Wooded Foothills
   >> B/B: 0 (Once Upon a Time)
 --- Narrative ---
   Targeting choice 0
@@ -4066,9 +4043,8 @@
   Actions:
    0: Swords to Plowshares
    1: Wasteland
-   2: Wasteland
-   3: Windswept Heath
-   4: Wooded Foothills
+   2: Windswept Heath
+   3: Wooded Foothills
   >> B/B: 0 (Swords to Plowshares)
 --- Narrative ---
   Targeting choice 0
@@ -4153,9 +4129,8 @@
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Wasteland
-   1: Wasteland
-   2: Windswept Heath
-   3: Wooded Foothills
+   1: Windswept Heath
+   2: Wooded Foothills
   >> B/B: 0 (Wasteland)
 --- Narrative ---
   Targeting choice 0

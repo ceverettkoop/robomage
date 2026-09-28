@@ -263,9 +263,7 @@
    0: Fail to find
    1: Island
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Thundering Falls
+   3: Thundering Falls
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -382,6 +380,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
+  Known opp top: Once Upon a Time, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=4 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -403,6 +402,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
+  Known opp top: Once Upon a Time, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -423,6 +423,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
+  Known opp top: Once Upon a Time, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -444,6 +445,7 @@
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
+  Known opp top: Once Upon a Time, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   This turn: self spells=3 noncreature=3 instant_sorcery=1 drawn=4 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -476,6 +478,7 @@
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble, Brainstorm, Polluted Delta, Mishra's Bauble
   Known top: Volcanic Island, Volcanic Island, ?, ?, ?
+  Known opp top: Once Upon a Time, ?, ?, ?, ?
   Opp revealed: Talon Gates of Madara
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -1581,7 +1584,6 @@
    0: Fail to find
    1: Mountain
    2: Volcanic Island
-   3: Volcanic Island
   >> B/B: 1 (Mountain)
 --- Narrative ---
   Player B shuffles their library
@@ -1705,9 +1707,6 @@
    1: Dryad Arbor
    2: Forest
    3: Savannah
-   4: Savannah
-   5: Savannah
-   6: Savannah
   >> A/A: 1 (Dryad Arbor)
 --- Narrative ---
   Player A shuffles their library
@@ -2035,23 +2034,15 @@
    0: Exile Delver of Secrets (Delve)
    1: Exile Dragon's Rage Channeler (Delve)
    2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Cori-Steel Cutter (Delve)
-   6: Exile Cori-Steel Cutter (Delve)
-   7: Exile Force of Will (Delve)
-   8: Exile Force of Will (Delve)
-   9: Exile Brainstorm (Delve)
-  10: Exile Brainstorm (Delve)
-  11: Exile Lightning Bolt (Delve)
-  12: Exile Daze (Delve)
-  13: Exile Daze (Delve)
-  14: Exile Unholy Heat (Delve)
-  15: Exile Ponder (Delve)
-  16: Exile Polluted Delta (Delve)
-  17: Exile Scalding Tarn (Delve)
-  18: Exile Scalding Tarn (Delve)
-  19: Exile Scalding Tarn (Delve)
+   3: Exile Cori-Steel Cutter (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Brainstorm (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Daze (Delve)
+   8: Exile Unholy Heat (Delve)
+   9: Exile Ponder (Delve)
+  10: Exile Polluted Delta (Delve)
+  11: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Delver of Secrets (Delve))
 --- Narrative ---
   Player B exiles Delver of Secrets via Delve.
@@ -2075,23 +2066,15 @@
   Actions:
    0: Exile Dragon's Rage Channeler (Delve)
    1: Exile Mishra's Bauble (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Cori-Steel Cutter (Delve)
-   5: Exile Cori-Steel Cutter (Delve)
-   6: Exile Force of Will (Delve)
-   7: Exile Force of Will (Delve)
-   8: Exile Brainstorm (Delve)
-   9: Exile Brainstorm (Delve)
-  10: Exile Lightning Bolt (Delve)
-  11: Exile Daze (Delve)
-  12: Exile Daze (Delve)
-  13: Exile Unholy Heat (Delve)
-  14: Exile Ponder (Delve)
-  15: Exile Polluted Delta (Delve)
-  16: Exile Scalding Tarn (Delve)
-  17: Exile Scalding Tarn (Delve)
-  18: Exile Scalding Tarn (Delve)
+   2: Exile Cori-Steel Cutter (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Brainstorm (Delve)
+   5: Exile Lightning Bolt (Delve)
+   6: Exile Daze (Delve)
+   7: Exile Unholy Heat (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Polluted Delta (Delve)
+  10: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Dragon's Rage Channeler (Delve))
 --- Narrative ---
   Player B exiles Dragon's Rage Channeler via Delve.
@@ -2114,23 +2097,15 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Mishra's Bauble (Delve)
-   1: Exile Mishra's Bauble (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Cori-Steel Cutter (Delve)
-   4: Exile Cori-Steel Cutter (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Force of Will (Delve)
-   7: Exile Brainstorm (Delve)
-   8: Exile Brainstorm (Delve)
-   9: Exile Lightning Bolt (Delve)
-  10: Exile Daze (Delve)
-  11: Exile Daze (Delve)
-  12: Exile Unholy Heat (Delve)
-  13: Exile Ponder (Delve)
-  14: Exile Polluted Delta (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Scalding Tarn (Delve)
-  17: Exile Scalding Tarn (Delve)
+   1: Exile Cori-Steel Cutter (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Brainstorm (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Daze (Delve)
+   6: Exile Unholy Heat (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Polluted Delta (Delve)
+   9: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
   Player B exiles Mishra's Bauble via Delve.
@@ -2153,22 +2128,15 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Mishra's Bauble (Delve)
-   1: Exile Mishra's Bauble (Delve)
-   2: Exile Cori-Steel Cutter (Delve)
-   3: Exile Cori-Steel Cutter (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Brainstorm (Delve)
-   7: Exile Brainstorm (Delve)
-   8: Exile Lightning Bolt (Delve)
-   9: Exile Daze (Delve)
-  10: Exile Daze (Delve)
-  11: Exile Unholy Heat (Delve)
-  12: Exile Ponder (Delve)
-  13: Exile Polluted Delta (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Scalding Tarn (Delve)
+   1: Exile Cori-Steel Cutter (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Brainstorm (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Daze (Delve)
+   6: Exile Unholy Heat (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Polluted Delta (Delve)
+   9: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
   Player B exiles Mishra's Bauble via Delve.
@@ -2192,20 +2160,14 @@
   Actions:
    0: Exile Mishra's Bauble (Delve)
    1: Exile Cori-Steel Cutter (Delve)
-   2: Exile Cori-Steel Cutter (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Brainstorm (Delve)
-   6: Exile Brainstorm (Delve)
-   7: Exile Lightning Bolt (Delve)
-   8: Exile Daze (Delve)
-   9: Exile Daze (Delve)
-  10: Exile Unholy Heat (Delve)
-  11: Exile Ponder (Delve)
-  12: Exile Polluted Delta (Delve)
-  13: Exile Scalding Tarn (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Scalding Tarn (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Brainstorm (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Daze (Delve)
+   6: Exile Unholy Heat (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Polluted Delta (Delve)
+   9: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
   Player B exiles Mishra's Bauble via Delve.
@@ -2425,20 +2387,14 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
-   1: Exile Cori-Steel Cutter (Delve)
-   2: Exile Force of Will (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Brainstorm (Delve)
-   5: Exile Brainstorm (Delve)
-   6: Exile Lightning Bolt (Delve)
-   7: Exile Daze (Delve)
-   8: Exile Daze (Delve)
-   9: Exile Unholy Heat (Delve)
-  10: Exile Ponder (Delve)
-  11: Exile Polluted Delta (Delve)
-  12: Exile Scalding Tarn (Delve)
-  13: Exile Scalding Tarn (Delve)
-  14: Exile Scalding Tarn (Delve)
+   1: Exile Force of Will (Delve)
+   2: Exile Brainstorm (Delve)
+   3: Exile Lightning Bolt (Delve)
+   4: Exile Daze (Delve)
+   5: Exile Unholy Heat (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Cori-Steel Cutter (Delve))
 --- Narrative ---
   Player B exiles Cori-Steel Cutter via Delve.
@@ -2461,18 +2417,13 @@
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
    1: Exile Force of Will (Delve)
-   2: Exile Force of Will (Delve)
-   3: Exile Brainstorm (Delve)
-   4: Exile Brainstorm (Delve)
-   5: Exile Lightning Bolt (Delve)
-   6: Exile Daze (Delve)
-   7: Exile Daze (Delve)
-   8: Exile Unholy Heat (Delve)
-   9: Exile Ponder (Delve)
-  10: Exile Polluted Delta (Delve)
-  11: Exile Scalding Tarn (Delve)
-  12: Exile Scalding Tarn (Delve)
-  13: Exile Scalding Tarn (Delve)
+   2: Exile Brainstorm (Delve)
+   3: Exile Lightning Bolt (Delve)
+   4: Exile Daze (Delve)
+   5: Exile Unholy Heat (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Cori-Steel Cutter (Delve))
 --- Narrative ---
   Player B exiles Cori-Steel Cutter via Delve.
@@ -2494,18 +2445,13 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Force of Will (Delve)
-   1: Exile Force of Will (Delve)
-   2: Exile Brainstorm (Delve)
-   3: Exile Brainstorm (Delve)
-   4: Exile Lightning Bolt (Delve)
-   5: Exile Daze (Delve)
-   6: Exile Daze (Delve)
-   7: Exile Unholy Heat (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Polluted Delta (Delve)
-  10: Exile Scalding Tarn (Delve)
-  11: Exile Scalding Tarn (Delve)
-  12: Exile Scalding Tarn (Delve)
+   1: Exile Brainstorm (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Daze (Delve)
+   4: Exile Unholy Heat (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player B exiles Force of Will via Delve.
@@ -2528,16 +2474,12 @@
   Actions:
    0: Exile Force of Will (Delve)
    1: Exile Brainstorm (Delve)
-   2: Exile Brainstorm (Delve)
-   3: Exile Lightning Bolt (Delve)
-   4: Exile Daze (Delve)
-   5: Exile Daze (Delve)
-   6: Exile Unholy Heat (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Polluted Delta (Delve)
-   9: Exile Scalding Tarn (Delve)
-  10: Exile Scalding Tarn (Delve)
-  11: Exile Scalding Tarn (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Daze (Delve)
+   4: Exile Unholy Heat (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player B exiles Force of Will via Delve.
@@ -2559,16 +2501,12 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Lightning Bolt (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Daze (Delve)
-   5: Exile Unholy Heat (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Polluted Delta (Delve)
-   8: Exile Scalding Tarn (Delve)
-   9: Exile Scalding Tarn (Delve)
-  10: Exile Scalding Tarn (Delve)
+   1: Exile Lightning Bolt (Delve)
+   2: Exile Daze (Delve)
+   3: Exile Unholy Heat (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Polluted Delta (Delve)
+   6: Exile Scalding Tarn (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.

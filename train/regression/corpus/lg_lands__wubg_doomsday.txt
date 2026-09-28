@@ -554,7 +554,6 @@
    4: Tundra
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> B/B: 6 (Underground Sea)
 --- Narrative ---
   Player B shuffles their library
@@ -907,56 +906,29 @@
    1: Lotus Petal (graveyard)
    2: Tropical Island (graveyard)
    3: Brainstorm (library)
-   4: Brainstorm (library)
-   5: Brainstorm (library)
-   6: Brainstorm (library)
-   7: Cavern of Souls (library)
-   8: Consider (library)
-   9: Dark Ritual (library)
-  10: Dark Ritual (library)
-  11: Dark Ritual (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Daze (library)
-  16: Doomsday (library)
-  17: Doomsday (library)
-  18: Doomsday (library)
-  19: Edge of Autumn (library)
-  20: Flooded Strand (library)
-  21: Flooded Strand (library)
-  22: Flooded Strand (library)
-  23: Flooded Strand (library)
-  24: Force of Will (library)
-  25: Force of Will (library)
-  26: Force of Will (library)
-  27: Island (library)
-  28: Lion's Eye Diamond (library)
-  29: Lotus Petal (library)
-  30: Lotus Petal (library)
-  31: Lotus Petal (library)
-  32: Polluted Delta (library)
-  33: Polluted Delta (library)
-  34: Polluted Delta (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Ponder (library)
-  39: Scrubland (library)
-  40: Street Wraith (library)
-  41: Tamiyo, Inquisitive Student (library)
-  42: Tamiyo, Inquisitive Student (library)
-  43: Tamiyo, Inquisitive Student (library)
-  44: Teferi, Time Raveler (library)
-  45: Teferi, Time Raveler (library)
-  46: Thassa's Oracle (library)
-  47: Tundra (library)
-  48: Undercity Sewers (library)
-  49: Underground Sea (library)
-  50: Veil of Summer (library)
-  51: Veil of Summer (library)
-  52: Veil of Summer (library)
-  >> B/B: 46 (Thassa's Oracle (library))
+   4: Cavern of Souls (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Daze (library)
+   8: Doomsday (library)
+   9: Edge of Autumn (library)
+  10: Flooded Strand (library)
+  11: Force of Will (library)
+  12: Island (library)
+  13: Lion's Eye Diamond (library)
+  14: Lotus Petal (library)
+  15: Polluted Delta (library)
+  16: Ponder (library)
+  17: Scrubland (library)
+  18: Street Wraith (library)
+  19: Tamiyo, Inquisitive Student (library)
+  20: Teferi, Time Raveler (library)
+  21: Thassa's Oracle (library)
+  22: Tundra (library)
+  23: Undercity Sewers (library)
+  24: Underground Sea (library)
+  25: Veil of Summer (library)
+  >> B/B: 21 (Thassa's Oracle (library))
 --- Narrative ---
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
@@ -981,55 +953,28 @@
    1: Lotus Petal (graveyard)
    2: Tropical Island (graveyard)
    3: Brainstorm (library)
-   4: Brainstorm (library)
-   5: Brainstorm (library)
-   6: Brainstorm (library)
-   7: Cavern of Souls (library)
-   8: Consider (library)
-   9: Dark Ritual (library)
-  10: Dark Ritual (library)
-  11: Dark Ritual (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Daze (library)
-  16: Doomsday (library)
-  17: Doomsday (library)
-  18: Doomsday (library)
-  19: Edge of Autumn (library)
-  20: Flooded Strand (library)
-  21: Flooded Strand (library)
-  22: Flooded Strand (library)
-  23: Flooded Strand (library)
-  24: Force of Will (library)
-  25: Force of Will (library)
-  26: Force of Will (library)
-  27: Island (library)
-  28: Lion's Eye Diamond (library)
-  29: Lotus Petal (library)
-  30: Lotus Petal (library)
-  31: Lotus Petal (library)
-  32: Polluted Delta (library)
-  33: Polluted Delta (library)
-  34: Polluted Delta (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Ponder (library)
-  39: Scrubland (library)
-  40: Street Wraith (library)
-  41: Tamiyo, Inquisitive Student (library)
-  42: Tamiyo, Inquisitive Student (library)
-  43: Tamiyo, Inquisitive Student (library)
-  44: Teferi, Time Raveler (library)
-  45: Teferi, Time Raveler (library)
-  46: Tundra (library)
-  47: Undercity Sewers (library)
-  48: Underground Sea (library)
-  49: Veil of Summer (library)
-  50: Veil of Summer (library)
-  51: Veil of Summer (library)
-  >> B/B: 19 (Edge of Autumn (library))
+   4: Cavern of Souls (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Daze (library)
+   8: Doomsday (library)
+   9: Edge of Autumn (library)
+  10: Flooded Strand (library)
+  11: Force of Will (library)
+  12: Island (library)
+  13: Lion's Eye Diamond (library)
+  14: Lotus Petal (library)
+  15: Polluted Delta (library)
+  16: Ponder (library)
+  17: Scrubland (library)
+  18: Street Wraith (library)
+  19: Tamiyo, Inquisitive Student (library)
+  20: Teferi, Time Raveler (library)
+  21: Tundra (library)
+  22: Undercity Sewers (library)
+  23: Underground Sea (library)
+  24: Veil of Summer (library)
+  >> B/B: 9 (Edge of Autumn (library))
 --- Narrative ---
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
@@ -1054,54 +999,27 @@
    1: Lotus Petal (graveyard)
    2: Tropical Island (graveyard)
    3: Brainstorm (library)
-   4: Brainstorm (library)
-   5: Brainstorm (library)
-   6: Brainstorm (library)
-   7: Cavern of Souls (library)
-   8: Consider (library)
-   9: Dark Ritual (library)
-  10: Dark Ritual (library)
-  11: Dark Ritual (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Daze (library)
-  16: Doomsday (library)
-  17: Doomsday (library)
-  18: Doomsday (library)
-  19: Flooded Strand (library)
-  20: Flooded Strand (library)
-  21: Flooded Strand (library)
-  22: Flooded Strand (library)
-  23: Force of Will (library)
-  24: Force of Will (library)
-  25: Force of Will (library)
-  26: Island (library)
-  27: Lion's Eye Diamond (library)
-  28: Lotus Petal (library)
-  29: Lotus Petal (library)
-  30: Lotus Petal (library)
-  31: Polluted Delta (library)
-  32: Polluted Delta (library)
-  33: Polluted Delta (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Scrubland (library)
-  39: Street Wraith (library)
-  40: Tamiyo, Inquisitive Student (library)
-  41: Tamiyo, Inquisitive Student (library)
-  42: Tamiyo, Inquisitive Student (library)
-  43: Teferi, Time Raveler (library)
-  44: Teferi, Time Raveler (library)
-  45: Tundra (library)
-  46: Undercity Sewers (library)
-  47: Underground Sea (library)
-  48: Veil of Summer (library)
-  49: Veil of Summer (library)
-  50: Veil of Summer (library)
-  >> B/B: 39 (Street Wraith (library))
+   4: Cavern of Souls (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Daze (library)
+   8: Doomsday (library)
+   9: Flooded Strand (library)
+  10: Force of Will (library)
+  11: Island (library)
+  12: Lion's Eye Diamond (library)
+  13: Lotus Petal (library)
+  14: Polluted Delta (library)
+  15: Ponder (library)
+  16: Scrubland (library)
+  17: Street Wraith (library)
+  18: Tamiyo, Inquisitive Student (library)
+  19: Teferi, Time Raveler (library)
+  20: Tundra (library)
+  21: Undercity Sewers (library)
+  22: Underground Sea (library)
+  23: Veil of Summer (library)
+  >> B/B: 17 (Street Wraith (library))
 --- Narrative ---
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
@@ -1126,52 +1044,25 @@
    1: Lotus Petal (graveyard)
    2: Tropical Island (graveyard)
    3: Brainstorm (library)
-   4: Brainstorm (library)
-   5: Brainstorm (library)
-   6: Brainstorm (library)
-   7: Cavern of Souls (library)
-   8: Consider (library)
-   9: Dark Ritual (library)
-  10: Dark Ritual (library)
-  11: Dark Ritual (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Daze (library)
-  16: Doomsday (library)
-  17: Doomsday (library)
-  18: Doomsday (library)
-  19: Flooded Strand (library)
-  20: Flooded Strand (library)
-  21: Flooded Strand (library)
-  22: Flooded Strand (library)
-  23: Force of Will (library)
-  24: Force of Will (library)
-  25: Force of Will (library)
-  26: Island (library)
-  27: Lion's Eye Diamond (library)
-  28: Lotus Petal (library)
-  29: Lotus Petal (library)
-  30: Lotus Petal (library)
-  31: Polluted Delta (library)
-  32: Polluted Delta (library)
-  33: Polluted Delta (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Scrubland (library)
-  39: Tamiyo, Inquisitive Student (library)
-  40: Tamiyo, Inquisitive Student (library)
-  41: Tamiyo, Inquisitive Student (library)
-  42: Teferi, Time Raveler (library)
-  43: Teferi, Time Raveler (library)
-  44: Tundra (library)
-  45: Undercity Sewers (library)
-  46: Underground Sea (library)
-  47: Veil of Summer (library)
-  48: Veil of Summer (library)
-  49: Veil of Summer (library)
+   4: Cavern of Souls (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Daze (library)
+   8: Doomsday (library)
+   9: Flooded Strand (library)
+  10: Force of Will (library)
+  11: Island (library)
+  12: Lion's Eye Diamond (library)
+  13: Lotus Petal (library)
+  14: Polluted Delta (library)
+  15: Ponder (library)
+  16: Scrubland (library)
+  17: Tamiyo, Inquisitive Student (library)
+  18: Teferi, Time Raveler (library)
+  19: Tundra (library)
+  20: Undercity Sewers (library)
+  21: Underground Sea (library)
+  22: Veil of Summer (library)
   >> B/B: 3 (Brainstorm (library))
 --- Narrative ---
   Player B puts Brainstorm to top of library
@@ -1197,51 +1088,25 @@
    1: Lotus Petal (graveyard)
    2: Tropical Island (graveyard)
    3: Brainstorm (library)
-   4: Brainstorm (library)
-   5: Brainstorm (library)
-   6: Cavern of Souls (library)
-   7: Consider (library)
-   8: Dark Ritual (library)
-   9: Dark Ritual (library)
-  10: Dark Ritual (library)
-  11: Daze (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Doomsday (library)
-  16: Doomsday (library)
-  17: Doomsday (library)
-  18: Flooded Strand (library)
-  19: Flooded Strand (library)
-  20: Flooded Strand (library)
-  21: Flooded Strand (library)
-  22: Force of Will (library)
-  23: Force of Will (library)
-  24: Force of Will (library)
-  25: Island (library)
-  26: Lion's Eye Diamond (library)
-  27: Lotus Petal (library)
-  28: Lotus Petal (library)
-  29: Lotus Petal (library)
-  30: Polluted Delta (library)
-  31: Polluted Delta (library)
-  32: Polluted Delta (library)
-  33: Ponder (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Scrubland (library)
-  38: Tamiyo, Inquisitive Student (library)
-  39: Tamiyo, Inquisitive Student (library)
-  40: Tamiyo, Inquisitive Student (library)
-  41: Teferi, Time Raveler (library)
-  42: Teferi, Time Raveler (library)
-  43: Tundra (library)
-  44: Undercity Sewers (library)
-  45: Underground Sea (library)
-  46: Veil of Summer (library)
-  47: Veil of Summer (library)
-  48: Veil of Summer (library)
+   4: Cavern of Souls (library)
+   5: Consider (library)
+   6: Dark Ritual (library)
+   7: Daze (library)
+   8: Doomsday (library)
+   9: Flooded Strand (library)
+  10: Force of Will (library)
+  11: Island (library)
+  12: Lion's Eye Diamond (library)
+  13: Lotus Petal (library)
+  14: Polluted Delta (library)
+  15: Ponder (library)
+  16: Scrubland (library)
+  17: Tamiyo, Inquisitive Student (library)
+  18: Teferi, Time Raveler (library)
+  19: Tundra (library)
+  20: Undercity Sewers (library)
+  21: Underground Sea (library)
+  22: Veil of Summer (library)
   >> B/B: 3 (Brainstorm (library))
 --- Narrative ---
   Player B puts Brainstorm to top of library
@@ -1316,10 +1181,9 @@
   Extras: not_priority_window
   Actions:
    0: Brainstorm  [#4]
-   1: Brainstorm  [#4]
-   2: Street Wraith  [#4]
-   3: Edge of Autumn  [#4]
-   4: Thassa's Oracle  [#4]
+   1: Street Wraith  [#4]
+   2: Edge of Autumn  [#4]
+   3: Thassa's Oracle  [#4]
   >> B/B: 0 (Brainstorm)
 --- Narrative ---
   Choose which card goes 4 from top:
@@ -1512,8 +1376,7 @@
    1: Expedition Map
    2: Grafdigger's Cage
    3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
+   4: Pithing Needle
   >> A/A: 1 (Expedition Map)
 --- Narrative ---
   Player A shuffles their library
@@ -1952,7 +1815,7 @@
    0: Pass priority
    1: Cast Sphere of Resistance  [#0]
    2: Activate Expedition Map (ChangeZone)  [#0]
-   3: Equip Skateboard  [#32]
+   3: Equip Skateboard  [#0]
   >> A/A: 1 (Cast Sphere of Resistance)
 --- Narrative ---
   Player A activated Mox Diamond for 1(W)
@@ -2460,7 +2323,7 @@
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
-   2: Equip Skateboard  [#32]
+   2: Equip Skateboard  [#0]
   >> A/A: 1 (Activate Expedition Map (ChangeZone))
 --- Narrative ---
   Player A activated Mox Diamond for 1(W)
@@ -2518,22 +2381,13 @@
    7: Karakas
    8: Maze of Ith
    9: Rishadan Port
-  10: Rishadan Port
-  11: Savannah
-  12: Savannah
-  13: The Tabernacle at Pendrell Vale
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Thespian's Stage
-  17: Thespian's Stage
-  18: Urza's Saga
-  19: Urza's Saga
-  20: Wasteland
-  21: Wasteland
-  22: Wasteland
-  23: Yavimaya, Cradle of Growth
-  24: Yavimaya, Cradle of Growth
-  >> A/A: 14 (Thespian's Stage)
+  10: Savannah
+  11: The Tabernacle at Pendrell Vale
+  12: Thespian's Stage
+  13: Urza's Saga
+  14: Wasteland
+  15: Yavimaya, Cradle of Growth
+  >> A/A: 12 (Thespian's Stage)
 --- Narrative ---
   Player A shuffles their library
   Player A reveals Thespian's Stage and puts it to hand
@@ -2573,7 +2427,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:

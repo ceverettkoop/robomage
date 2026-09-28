@@ -185,9 +185,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -2354,7 +2353,6 @@
    2: Tropical Island
    3: Undercity Sewers
    4: Underground Sea
-   5: Underground Sea
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -2385,7 +2383,6 @@
    3: Tropical Island
    4: Undercity Sewers
    5: Underground Sea
-   6: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library

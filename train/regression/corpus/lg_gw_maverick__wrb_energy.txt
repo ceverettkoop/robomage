@@ -94,7 +94,6 @@
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
-   4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
   Player A reveals Badgermole Cub and puts it into hand.
@@ -184,9 +183,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -358,8 +356,7 @@
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
-   4: Thalia, Guardian of Thraben
-   5: Noble Hierarch
+   4: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
   Player A reveals Thalia, Guardian of Thraben and puts it into hand.
@@ -1183,7 +1180,6 @@
   Actions:
    0: Fail to find
    1: Savannah
-   2: Savannah
   >> A/A: 1 (Savannah)
 --- Narrative ---
   Player A shuffles their library
@@ -1708,15 +1704,12 @@
    3: Scrubland
    4: Swords to Plowshares
    5: Thoughtseize
-   6: Thoughtseize
-   7: Badgermole Cub
-   8: Misty Rainforest
-   9: Once Upon a Time
-  10: Once Upon a Time
-  11: Swords to Plowshares
-  12: Thalia, Guardian of Thraben
-  13: Wasteland
-  14: Wasteland
+   6: Badgermole Cub
+   7: Misty Rainforest
+   8: Once Upon a Time
+   9: Swords to Plowshares
+  10: Thalia, Guardian of Thraben
+  11: Wasteland
   >> A/A: 0 (Badlands)
 --- Narrative ---
   Targeting choice 0
@@ -1839,16 +1832,13 @@
    2: Scrubland
    3: Swords to Plowshares
    4: Thoughtseize
-   5: Thoughtseize
-   6: Badgermole Cub
-   7: Misty Rainforest
-   8: Once Upon a Time
-   9: Once Upon a Time
-  10: Swords to Plowshares
-  11: Thalia, Guardian of Thraben
-  12: Wasteland
-  13: Wasteland
-  14: Windswept Heath
+   5: Badgermole Cub
+   6: Misty Rainforest
+   7: Once Upon a Time
+   8: Swords to Plowshares
+   9: Thalia, Guardian of Thraben
+  10: Wasteland
+  11: Windswept Heath
   >> A/A: 0 (Marsh Flats)
 --- Narrative ---
   Targeting choice 0
@@ -2096,16 +2086,13 @@
    1: Scrubland
    2: Swords to Plowshares
    3: Thoughtseize
-   4: Thoughtseize
-   5: Badgermole Cub
-   6: Misty Rainforest
-   7: Once Upon a Time
-   8: Once Upon a Time
-   9: Swords to Plowshares
-  10: Thalia, Guardian of Thraben
-  11: Wasteland
-  12: Wasteland
-  13: Windswept Heath
+   4: Badgermole Cub
+   5: Misty Rainforest
+   6: Once Upon a Time
+   7: Swords to Plowshares
+   8: Thalia, Guardian of Thraben
+   9: Wasteland
+  10: Windswept Heath
   >> A/A: 0 (Ocelot Pride)
 --- Narrative ---
   Targeting choice 0
@@ -2474,16 +2461,13 @@
    0: Scrubland
    1: Swords to Plowshares
    2: Thoughtseize
-   3: Thoughtseize
-   4: Badgermole Cub
-   5: Misty Rainforest
-   6: Once Upon a Time
-   7: Once Upon a Time
-   8: Swords to Plowshares
-   9: Thalia, Guardian of Thraben
-  10: Wasteland
-  11: Wasteland
-  12: Windswept Heath
+   3: Badgermole Cub
+   4: Misty Rainforest
+   5: Once Upon a Time
+   6: Swords to Plowshares
+   7: Thalia, Guardian of Thraben
+   8: Wasteland
+   9: Windswept Heath
   >> A/A: 0 (Scrubland)
 --- Narrative ---
   Targeting choice 0
@@ -3019,16 +3003,13 @@
   Actions:
    0: Swords to Plowshares
    1: Thoughtseize
-   2: Thoughtseize
-   3: Badgermole Cub
-   4: Misty Rainforest
-   5: Once Upon a Time
-   6: Once Upon a Time
-   7: Swords to Plowshares
-   8: Thalia, Guardian of Thraben
-   9: Wasteland
-  10: Wasteland
-  11: Windswept Heath
+   2: Badgermole Cub
+   3: Misty Rainforest
+   4: Once Upon a Time
+   5: Swords to Plowshares
+   6: Thalia, Guardian of Thraben
+   7: Wasteland
+   8: Windswept Heath
   >> A/A: 0 (Swords to Plowshares)
 --- Narrative ---
   Targeting choice 0

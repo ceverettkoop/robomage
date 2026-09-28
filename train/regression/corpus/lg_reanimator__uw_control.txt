@@ -194,9 +194,6 @@
    1: Swamp
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
   >> A/A: 1 (Swamp)
 --- Narrative ---
   Player A shuffles their library
@@ -343,13 +340,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -527,9 +521,6 @@
    1: Island
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -687,8 +678,6 @@
    2: Meticulous Archive
    3: Mystic Sanctuary
    4: Tundra
-   5: Tundra
-   6: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1547,9 +1536,6 @@
    0: Fail to find
    1: Undercity Sewers
    2: Underground Sea
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
   >> A/A: 1 (Undercity Sewers)
 --- Narrative ---
   Player A shuffles their library
@@ -1910,7 +1896,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Meticulous Archive)
 --- Narrative ---
   Player B shuffles their library
@@ -1939,7 +1924,6 @@
    1: Mystic Sanctuary
    2: Plains
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -2117,9 +2101,6 @@
   Actions:
    0: Fail to find
    1: Underground Sea
-   2: Underground Sea
-   3: Underground Sea
-   4: Underground Sea
   >> A/A: 1 (Underground Sea)
 --- Narrative ---
   Player A shuffles their library
@@ -2761,7 +2742,6 @@
   Actions:
    0: Fail to find
    1: Tundra
-   2: Tundra
   >> B/B: 1 (Tundra)
 --- Narrative ---
   Player B shuffles their library
@@ -7195,26 +7175,18 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Brainstorm (Delve)
-   3: Exile Flooded Strand (Delve)
-   4: Exile Flooded Strand (Delve)
-   5: Exile Flow State (Delve)
-   6: Exile Flow State (Delve)
-   7: Exile Force of Negation (Delve)
-   8: Exile Force of Will (Delve)
-   9: Exile Lórien Revealed (Delve)
-  10: Exile Misty Rainforest (Delve)
-  11: Exile Misty Rainforest (Delve)
-  12: Exile Polluted Delta (Delve)
-  13: Exile Polluted Delta (Delve)
-  14: Exile Spell Snare (Delve)
-  15: Exile Tamiyo, Inquisitive Student (Delve)
-  16: Exile The One Ring (Delve)
-  17: Exile Tune the Narrative (Delve)
-  18: Exile Wasteland (Delve)
-  19: Exile Wasteland (Delve)
-  20: Exile Wasteland (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Negation (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Lórien Revealed (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Spell Snare (Delve)
+   9: Exile Tamiyo, Inquisitive Student (Delve)
+  10: Exile The One Ring (Delve)
+  11: Exile Tune the Narrative (Delve)
+  12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -7239,25 +7211,18 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Flooded Strand (Delve)
-   4: Exile Flow State (Delve)
-   5: Exile Flow State (Delve)
-   6: Exile Force of Negation (Delve)
-   7: Exile Force of Will (Delve)
-   8: Exile Lórien Revealed (Delve)
-   9: Exile Misty Rainforest (Delve)
-  10: Exile Misty Rainforest (Delve)
-  11: Exile Polluted Delta (Delve)
-  12: Exile Polluted Delta (Delve)
-  13: Exile Spell Snare (Delve)
-  14: Exile Tamiyo, Inquisitive Student (Delve)
-  15: Exile The One Ring (Delve)
-  16: Exile Tune the Narrative (Delve)
-  17: Exile Wasteland (Delve)
-  18: Exile Wasteland (Delve)
-  19: Exile Wasteland (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Negation (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Lórien Revealed (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Spell Snare (Delve)
+   9: Exile Tamiyo, Inquisitive Student (Delve)
+  10: Exile The One Ring (Delve)
+  11: Exile Tune the Narrative (Delve)
+  12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -7283,23 +7248,17 @@
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Flooded Strand (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Flow State (Delve)
-   5: Exile Force of Negation (Delve)
-   6: Exile Force of Will (Delve)
-   7: Exile Lórien Revealed (Delve)
-   8: Exile Misty Rainforest (Delve)
-   9: Exile Misty Rainforest (Delve)
-  10: Exile Polluted Delta (Delve)
-  11: Exile Polluted Delta (Delve)
-  12: Exile Spell Snare (Delve)
-  13: Exile Tamiyo, Inquisitive Student (Delve)
-  14: Exile The One Ring (Delve)
-  15: Exile Tune the Narrative (Delve)
-  16: Exile Wasteland (Delve)
-  17: Exile Wasteland (Delve)
-  18: Exile Wasteland (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Negation (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Lórien Revealed (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Spell Snare (Delve)
+   9: Exile Tamiyo, Inquisitive Student (Delve)
+  10: Exile The One Ring (Delve)
+  11: Exile Tune the Narrative (Delve)
+  12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -7324,23 +7283,17 @@
   Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Exile Flooded Strand (Delve)
-   1: Exile Flooded Strand (Delve)
-   2: Exile Flow State (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Force of Negation (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Lórien Revealed (Delve)
-   7: Exile Misty Rainforest (Delve)
-   8: Exile Misty Rainforest (Delve)
-   9: Exile Polluted Delta (Delve)
-  10: Exile Polluted Delta (Delve)
-  11: Exile Spell Snare (Delve)
-  12: Exile Tamiyo, Inquisitive Student (Delve)
-  13: Exile The One Ring (Delve)
-  14: Exile Tune the Narrative (Delve)
-  15: Exile Wasteland (Delve)
-  16: Exile Wasteland (Delve)
-  17: Exile Wasteland (Delve)
+   1: Exile Flow State (Delve)
+   2: Exile Force of Negation (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lórien Revealed (Delve)
+   5: Exile Misty Rainforest (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Spell Snare (Delve)
+   8: Exile Tamiyo, Inquisitive Student (Delve)
+   9: Exile The One Ring (Delve)
+  10: Exile Tune the Narrative (Delve)
+  11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.
@@ -7366,21 +7319,16 @@
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Flow State (Delve)
-   2: Exile Flow State (Delve)
-   3: Exile Force of Negation (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Lórien Revealed (Delve)
-   6: Exile Misty Rainforest (Delve)
-   7: Exile Misty Rainforest (Delve)
-   8: Exile Polluted Delta (Delve)
-   9: Exile Polluted Delta (Delve)
-  10: Exile Spell Snare (Delve)
-  11: Exile Tamiyo, Inquisitive Student (Delve)
-  12: Exile The One Ring (Delve)
-  13: Exile Tune the Narrative (Delve)
-  14: Exile Wasteland (Delve)
-  15: Exile Wasteland (Delve)
-  16: Exile Wasteland (Delve)
+   2: Exile Force of Negation (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lórien Revealed (Delve)
+   5: Exile Misty Rainforest (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Spell Snare (Delve)
+   8: Exile Tamiyo, Inquisitive Student (Delve)
+   9: Exile The One Ring (Delve)
+  10: Exile Tune the Narrative (Delve)
+  11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.

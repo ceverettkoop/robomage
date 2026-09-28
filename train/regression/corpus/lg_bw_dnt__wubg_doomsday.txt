@@ -4232,7 +4232,7 @@
    4: Cast White Orchid Phantom  [#0]
    5: Activate Aether Vial (ChangeZone)  [#0]
    6: Activate Aether Vial (ChangeZone)  [#0]
-   7: Equip Pre-War Formalwear  [#32]
+   7: Equip Pre-War Formalwear  [#0]
    8: Activate Wasteland (Destroy)  [#1]
   >> A/A: 3 (Cast White Orchid Phantom)
 --- Narrative ---
@@ -4552,11 +4552,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -5675,7 +5671,6 @@
    2: Tropical Island
    3: Tundra
    4: Underground Sea
-   5: Underground Sea
   >> B/B: 4 (Underground Sea)
 --- Narrative ---
   Player B shuffles their library
@@ -6219,7 +6214,7 @@
    3: Cast White Orchid Phantom  [#0]
    4: Activate Aether Vial (ChangeZone)  [#0]
    5: Activate Aether Vial (ChangeZone)  [#0]
-   6: Equip Pre-War Formalwear  [#32]
+   6: Equip Pre-War Formalwear  [#0]
   >> A/A: 3 (Cast White Orchid Phantom)
 --- Narrative ---
   Player A activated Plains for 1(W)
@@ -6444,13 +6439,8 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Scrubland
-   6: Scrubland
-   7: Shadowy Backstreet
-   8: Shadowy Backstreet
+   2: Scrubland
+   3: Shadowy Backstreet
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -7953,7 +7943,7 @@
    2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
    3: Activate Aether Vial (ChangeZone)  [#0]
    4: Activate Aether Vial (ChangeZone)  [#0]
-   5: Equip Pre-War Formalwear  [#32]
+   5: Equip Pre-War Formalwear  [#0]
   >> A/A: 1 (Play Wasteland)
 --- Narrative ---
   Player A played Wasteland
@@ -7976,7 +7966,7 @@
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
    2: Activate Aether Vial (ChangeZone)  [#0]
    3: Activate Aether Vial (ChangeZone)  [#0]
-   4: Equip Pre-War Formalwear  [#32]
+   4: Equip Pre-War Formalwear  [#0]
    5: Activate Wasteland (Destroy)  [#1]
   >> A/A: 4 (Equip Pre-War Formalwear)
 --- Narrative ---
@@ -9689,7 +9679,7 @@
    2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
    3: Activate Aether Vial (ChangeZone)  [#0]
    4: Activate Aether Vial (ChangeZone)  [#0]
-   5: Equip Pre-War Formalwear  [#32]
+   5: Equip Pre-War Formalwear  [#0]
   >> A/A: 1 (Play Plains)
 --- Narrative ---
   Player A played Plains
@@ -9712,7 +9702,7 @@
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
    2: Activate Aether Vial (ChangeZone)  [#0]
    3: Activate Aether Vial (ChangeZone)  [#0]
-   4: Equip Pre-War Formalwear  [#32]
+   4: Equip Pre-War Formalwear  [#0]
   >> A/A: 4 (Equip Pre-War Formalwear)
 --- Narrative ---
   Choose target for Pre-War Formalwear:

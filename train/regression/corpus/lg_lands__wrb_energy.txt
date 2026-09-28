@@ -262,9 +262,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -444,9 +443,8 @@
    1: Elegant Parlor
    2: Plains
    3: Plateau
-   4: Plateau
-   5: Scrubland
-   6: Shadowy Backstreet
+   4: Scrubland
+   5: Shadowy Backstreet
   >> B/B: 1 (Elegant Parlor)
 --- Narrative ---
   Player B shuffles their library
@@ -608,9 +606,8 @@
    0: Fail to find
    1: Plains
    2: Plateau
-   3: Plateau
-   4: Scrubland
-   5: Shadowy Backstreet
+   3: Scrubland
+   4: Shadowy Backstreet
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -790,8 +787,7 @@
    1: Expedition Map
    2: Grafdigger's Cage
    3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
+   4: Pithing Needle
   >> A/A: 1 (Expedition Map)
 --- Narrative ---
   Player A shuffles their library
@@ -1259,21 +1255,13 @@
    6: Karakas
    7: Maze of Ith
    8: Rishadan Port
-   9: Rishadan Port
-  10: Savannah
-  11: Savannah
-  12: The Tabernacle at Pendrell Vale
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Urza's Saga
-  17: Urza's Saga
-  18: Wasteland
-  19: Wasteland
-  20: Wasteland
-  21: Yavimaya, Cradle of Growth
-  22: Yavimaya, Cradle of Growth
-  >> A/A: 16 (Urza's Saga)
+   9: Savannah
+  10: The Tabernacle at Pendrell Vale
+  11: Thespian's Stage
+  12: Urza's Saga
+  13: Wasteland
+  14: Yavimaya, Cradle of Growth
+  >> A/A: 12 (Urza's Saga)
 --- Narrative ---
   Player A shuffles their library
   Player A reveals Urza's Saga and puts it to hand
@@ -1685,20 +1673,13 @@
    6: Karakas
    7: Maze of Ith
    8: Rishadan Port
-   9: Rishadan Port
-  10: Savannah
-  11: Savannah
-  12: The Tabernacle at Pendrell Vale
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Urza's Saga
-  17: Wasteland
-  18: Wasteland
-  19: Wasteland
-  20: Yavimaya, Cradle of Growth
-  21: Yavimaya, Cradle of Growth
-  >> A/A: 12 (The Tabernacle at Pendrell Vale)
+   9: Savannah
+  10: The Tabernacle at Pendrell Vale
+  11: Thespian's Stage
+  12: Urza's Saga
+  13: Wasteland
+  14: Yavimaya, Cradle of Growth
+  >> A/A: 10 (The Tabernacle at Pendrell Vale)
 --- Narrative ---
   Player A shuffles their library
   Player A puts The Tabernacle at Pendrell Vale to the battlefield
@@ -2052,7 +2033,6 @@
    0: Fail to find
    1: Grafdigger's Cage
    2: Mox Diamond
-   3: Mox Diamond
   >> A/A: 1 (Grafdigger's Cage)
 --- Narrative ---
   Player A shuffles their library
@@ -2094,7 +2074,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:
@@ -3062,7 +3042,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:

@@ -182,13 +182,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -408,8 +405,6 @@
    2: Meticulous Archive
    3: Mystic Sanctuary
    4: Tundra
-   5: Tundra
-   6: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1012,8 +1007,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
-   5: Tundra
   >> B/B: 1 (Meticulous Archive)
 --- Narrative ---
   Player B shuffles their library
@@ -1719,7 +1712,6 @@
    4: Tropical Island
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -3835,24 +3827,17 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Force of Negation (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Force of Will (Delve)
-   7: Exile Meticulous Archive (Delve)
-   8: Exile Misty Rainforest (Delve)
-   9: Exile Misty Rainforest (Delve)
-  10: Exile Ponder (Delve)
-  11: Exile Swords to Plowshares (Delve)
-  12: Exile Swords to Plowshares (Delve)
-  13: Exile The One Ring (Delve)
-  14: Exile Tune the Narrative (Delve)
-  15: Exile Tune the Narrative (Delve)
-  16: Exile Wasteland (Delve)
-  17: Exile Wasteland (Delve)
-  18: Exile Wasteland (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Negation (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Meticulous Archive (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Swords to Plowshares (Delve)
+   9: Exile The One Ring (Delve)
+  10: Exile Tune the Narrative (Delve)
+  11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -3881,19 +3866,13 @@
    2: Exile Flow State (Delve)
    3: Exile Force of Negation (Delve)
    4: Exile Force of Will (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Meticulous Archive (Delve)
-   7: Exile Misty Rainforest (Delve)
-   8: Exile Misty Rainforest (Delve)
-   9: Exile Ponder (Delve)
-  10: Exile Swords to Plowshares (Delve)
-  11: Exile Swords to Plowshares (Delve)
-  12: Exile The One Ring (Delve)
-  13: Exile Tune the Narrative (Delve)
-  14: Exile Tune the Narrative (Delve)
-  15: Exile Wasteland (Delve)
-  16: Exile Wasteland (Delve)
-  17: Exile Wasteland (Delve)
+   5: Exile Meticulous Archive (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Swords to Plowshares (Delve)
+   9: Exile The One Ring (Delve)
+  10: Exile Tune the Narrative (Delve)
+  11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -3921,19 +3900,13 @@
    1: Exile Flow State (Delve)
    2: Exile Force of Negation (Delve)
    3: Exile Force of Will (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Meticulous Archive (Delve)
-   6: Exile Misty Rainforest (Delve)
-   7: Exile Misty Rainforest (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Swords to Plowshares (Delve)
-  10: Exile Swords to Plowshares (Delve)
-  11: Exile The One Ring (Delve)
-  12: Exile Tune the Narrative (Delve)
-  13: Exile Tune the Narrative (Delve)
-  14: Exile Wasteland (Delve)
-  15: Exile Wasteland (Delve)
-  16: Exile Wasteland (Delve)
+   4: Exile Meticulous Archive (Delve)
+   5: Exile Misty Rainforest (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Swords to Plowshares (Delve)
+   8: Exile The One Ring (Delve)
+   9: Exile Tune the Narrative (Delve)
+  10: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.
@@ -3960,19 +3933,13 @@
    0: Exile Flow State (Delve)
    1: Exile Force of Negation (Delve)
    2: Exile Force of Will (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Meticulous Archive (Delve)
-   5: Exile Misty Rainforest (Delve)
-   6: Exile Misty Rainforest (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Swords to Plowshares (Delve)
-   9: Exile Swords to Plowshares (Delve)
-  10: Exile The One Ring (Delve)
-  11: Exile Tune the Narrative (Delve)
-  12: Exile Tune the Narrative (Delve)
-  13: Exile Wasteland (Delve)
-  14: Exile Wasteland (Delve)
-  15: Exile Wasteland (Delve)
+   3: Exile Meticulous Archive (Delve)
+   4: Exile Misty Rainforest (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Swords to Plowshares (Delve)
+   7: Exile The One Ring (Delve)
+   8: Exile Tune the Narrative (Delve)
+   9: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flow State (Delve))
 --- Narrative ---
   Player B exiles Flow State via Delve.
@@ -3998,19 +3965,13 @@
   Actions:
    0: Exile Force of Negation (Delve)
    1: Exile Force of Will (Delve)
-   2: Exile Force of Will (Delve)
-   3: Exile Meticulous Archive (Delve)
-   4: Exile Misty Rainforest (Delve)
-   5: Exile Misty Rainforest (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Swords to Plowshares (Delve)
-   8: Exile Swords to Plowshares (Delve)
-   9: Exile The One Ring (Delve)
-  10: Exile Tune the Narrative (Delve)
-  11: Exile Tune the Narrative (Delve)
-  12: Exile Wasteland (Delve)
-  13: Exile Wasteland (Delve)
-  14: Exile Wasteland (Delve)
+   2: Exile Meticulous Archive (Delve)
+   3: Exile Misty Rainforest (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Swords to Plowshares (Delve)
+   6: Exile The One Ring (Delve)
+   7: Exile Tune the Narrative (Delve)
+   8: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Force of Negation (Delve))
 --- Narrative ---
   Player B exiles Force of Negation via Delve.

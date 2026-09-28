@@ -109,11 +109,9 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Tundra
-   6: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Tundra
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -260,9 +258,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -475,7 +472,6 @@
    3: Mystic Sanctuary
    4: Plains
    5: Tundra
-   6: Tundra
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -722,9 +718,8 @@
    1: Elegant Parlor
    2: Plains
    3: Plateau
-   4: Plateau
-   5: Scrubland
-   6: Shadowy Backstreet
+   4: Scrubland
+   5: Shadowy Backstreet
   >> B/B: 1 (Elegant Parlor)
 --- Narrative ---
   Player B shuffles their library
@@ -2483,7 +2478,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
   >> A/A: 1 (Meticulous Archive)
 --- Narrative ---
   Player A shuffles their library
@@ -3074,7 +3068,6 @@
    1: Mystic Sanctuary
    2: Plains
    3: Tundra
-   4: Tundra
   >> A/A: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player A shuffles their library
@@ -3100,12 +3093,9 @@
   Actions:
    0: Brainstorm
    1: Force of Will
-   2: Force of Will
-   3: Ponder
-   4: Ponder
-   5: Swords to Plowshares
-   6: Tune the Narrative
-   7: Tune the Narrative
+   2: Ponder
+   3: Swords to Plowshares
+   4: Tune the Narrative
   >> A/A: 0 (Brainstorm)
 --- Narrative ---
   Targeting choice 0
@@ -3397,23 +3387,16 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Flooded Strand (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Meticulous Archive (Delve)
-   7: Exile Murktide Regent (Delve)
-   8: Exile Polluted Delta (Delve)
-   9: Exile Polluted Delta (Delve)
-  10: Exile Ponder (Delve)
-  11: Exile Ponder (Delve)
-  12: Exile Swords to Plowshares (Delve)
-  13: Exile Tamiyo, Inquisitive Student (Delve)
-  14: Exile Tune the Narrative (Delve)
-  15: Exile Tune the Narrative (Delve)
-  16: Exile Wasteland (Delve)
-  17: Exile Wasteland (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Meticulous Archive (Delve)
+   4: Exile Murktide Regent (Delve)
+   5: Exile Polluted Delta (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Swords to Plowshares (Delve)
+   8: Exile Tamiyo, Inquisitive Student (Delve)
+   9: Exile Tune the Narrative (Delve)
+  10: Exile Wasteland (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -3439,21 +3422,15 @@
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Flooded Strand (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Meticulous Archive (Delve)
-   6: Exile Murktide Regent (Delve)
-   7: Exile Polluted Delta (Delve)
-   8: Exile Polluted Delta (Delve)
-   9: Exile Ponder (Delve)
-  10: Exile Ponder (Delve)
-  11: Exile Swords to Plowshares (Delve)
-  12: Exile Tamiyo, Inquisitive Student (Delve)
-  13: Exile Tune the Narrative (Delve)
-  14: Exile Tune the Narrative (Delve)
-  15: Exile Wasteland (Delve)
-  16: Exile Wasteland (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Meticulous Archive (Delve)
+   4: Exile Murktide Regent (Delve)
+   5: Exile Polluted Delta (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Swords to Plowshares (Delve)
+   8: Exile Tamiyo, Inquisitive Student (Delve)
+   9: Exile Tune the Narrative (Delve)
+  10: Exile Wasteland (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -3478,21 +3455,15 @@
   Extras: not_priority_window
   Actions:
    0: Exile Flooded Strand (Delve)
-   1: Exile Flooded Strand (Delve)
-   2: Exile Force of Will (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Meticulous Archive (Delve)
-   5: Exile Murktide Regent (Delve)
-   6: Exile Polluted Delta (Delve)
-   7: Exile Polluted Delta (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Ponder (Delve)
-  10: Exile Swords to Plowshares (Delve)
-  11: Exile Tamiyo, Inquisitive Student (Delve)
-  12: Exile Tune the Narrative (Delve)
-  13: Exile Tune the Narrative (Delve)
-  14: Exile Wasteland (Delve)
-  15: Exile Wasteland (Delve)
+   1: Exile Force of Will (Delve)
+   2: Exile Meticulous Archive (Delve)
+   3: Exile Murktide Regent (Delve)
+   4: Exile Polluted Delta (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Swords to Plowshares (Delve)
+   7: Exile Tamiyo, Inquisitive Student (Delve)
+   8: Exile Tune the Narrative (Delve)
+   9: Exile Wasteland (Delve)
   >> A/A: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player A exiles Flooded Strand via Delve.
@@ -3518,19 +3489,14 @@
   Actions:
    0: Exile Flooded Strand (Delve)
    1: Exile Force of Will (Delve)
-   2: Exile Force of Will (Delve)
-   3: Exile Meticulous Archive (Delve)
-   4: Exile Murktide Regent (Delve)
-   5: Exile Polluted Delta (Delve)
-   6: Exile Polluted Delta (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Swords to Plowshares (Delve)
-  10: Exile Tamiyo, Inquisitive Student (Delve)
-  11: Exile Tune the Narrative (Delve)
-  12: Exile Tune the Narrative (Delve)
-  13: Exile Wasteland (Delve)
-  14: Exile Wasteland (Delve)
+   2: Exile Meticulous Archive (Delve)
+   3: Exile Murktide Regent (Delve)
+   4: Exile Polluted Delta (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Swords to Plowshares (Delve)
+   7: Exile Tamiyo, Inquisitive Student (Delve)
+   8: Exile Tune the Narrative (Delve)
+   9: Exile Wasteland (Delve)
   >> A/A: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player A exiles Flooded Strand via Delve.
@@ -3555,19 +3521,14 @@
   Extras: not_priority_window
   Actions:
    0: Exile Force of Will (Delve)
-   1: Exile Force of Will (Delve)
-   2: Exile Meticulous Archive (Delve)
-   3: Exile Murktide Regent (Delve)
-   4: Exile Polluted Delta (Delve)
-   5: Exile Polluted Delta (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Swords to Plowshares (Delve)
-   9: Exile Tamiyo, Inquisitive Student (Delve)
-  10: Exile Tune the Narrative (Delve)
-  11: Exile Tune the Narrative (Delve)
-  12: Exile Wasteland (Delve)
-  13: Exile Wasteland (Delve)
+   1: Exile Meticulous Archive (Delve)
+   2: Exile Murktide Regent (Delve)
+   3: Exile Polluted Delta (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Swords to Plowshares (Delve)
+   6: Exile Tamiyo, Inquisitive Student (Delve)
+   7: Exile Tune the Narrative (Delve)
+   8: Exile Wasteland (Delve)
   >> A/A: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player A exiles Force of Will via Delve.

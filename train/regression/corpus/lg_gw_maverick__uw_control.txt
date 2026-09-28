@@ -109,7 +109,6 @@
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
-   4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
   Player A reveals Badgermole Cub and puts it into hand.
@@ -196,13 +195,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -537,8 +533,6 @@
    3: Mystic Sanctuary
    4: Plains
    5: Tundra
-   6: Tundra
-   7: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -614,8 +608,7 @@
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
-   4: Thalia, Guardian of Thraben
-   5: Noble Hierarch
+   4: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
   Player A reveals Thalia, Guardian of Thraben and puts it into hand.
@@ -881,8 +874,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
-   5: Tundra
   >> B/B: 1 (Meticulous Archive)
 --- Narrative ---
   Player B shuffles their library
@@ -1585,8 +1576,6 @@
    0: Fail to find
    1: Mystic Sanctuary
    2: Tundra
-   3: Tundra
-   4: Tundra
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -2139,7 +2128,6 @@
   Actions:
    0: Misty Rainforest  [#2]
    1: Wasteland  [#2]
-   2: Wasteland  [#2]
   >> B/B: 0 (Misty Rainforest)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -2163,7 +2151,6 @@
   Extras: not_priority_window
   Actions:
    0: Wasteland  [#1]
-   1: Wasteland  [#1]
   >> B/B: 0 (Wasteland)
 
 --- Decision 98 ---
@@ -3527,7 +3514,6 @@
    0: Fail to find
    1: Dryad Arbor
    2: Savannah
-   3: Savannah
   >> A/A: 1 (Dryad Arbor)
 --- Narrative ---
   Player A shuffles their library
@@ -3847,7 +3833,6 @@
   Actions:
    0: Fail to find
    1: Tundra
-   2: Tundra
   >> B/B: 1 (Tundra)
 --- Narrative ---
   Player B shuffles their library
@@ -5257,10 +5242,7 @@
    4: Talon Gates of Madara
    5: Verdant Catacombs
    6: Wasteland
-   7: Wasteland
-   8: Windswept Heath
-   9: Windswept Heath
-  10: Windswept Heath
+   7: Windswept Heath
   >> A/A: 1 (Horizon Canopy)
 --- Narrative ---
   Player A shuffles their library
@@ -6070,8 +6052,6 @@
    4: Verdant Catacombs
    5: Wasteland
    6: Windswept Heath
-   7: Windswept Heath
-   8: Windswept Heath
   >> A/A: 1 (Karakas)
 --- Narrative ---
   Player A shuffles their library

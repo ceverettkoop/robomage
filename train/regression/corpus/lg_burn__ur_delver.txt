@@ -225,8 +225,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -246,6 +244,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt [1 ctr]
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -272,6 +271,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt [1 ctr]
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -296,6 +296,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -317,6 +318,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Daze, Lightning Bolt, Unholy Heat, ?, ?
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -395,6 +397,7 @@
   Stack: Rift Bolt (spell, opponent) -> self (player)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: opp_passed
@@ -416,6 +419,7 @@
   Pending: Daze (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
@@ -436,6 +440,7 @@
   Pending: Daze (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
@@ -745,8 +750,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -1052,8 +1055,6 @@
    0: Fail to find
    1: Thundering Falls
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
   >> B/B: 1 (Thundering Falls)
 --- Narrative ---
   Player B shuffles their library

@@ -3169,11 +3169,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library

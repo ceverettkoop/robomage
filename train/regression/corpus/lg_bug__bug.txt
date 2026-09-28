@@ -186,10 +186,7 @@
    2: Forest
    3: Island
    4: Tropical Island
-   5: Tropical Island
-   6: Tropical Island
-   7: Underground Sea
-   8: Underground Sea
+   5: Underground Sea
   >> B/B: 1 (Bayou)
 --- Narrative ---
   Player B shuffles their library
@@ -360,10 +357,7 @@
    1: Island
    2: Swamp
    3: Tropical Island
-   4: Tropical Island
-   5: Tropical Island
-   6: Underground Sea
-   7: Underground Sea
+   4: Underground Sea
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -2314,11 +2308,9 @@
    0: Done selecting targets
    1: Misty Rainforest
    2: Polluted Delta
-   3: Polluted Delta
-   4: Tropical Island
-   5: Tropical Island
-   6: Wasteland
-  >> B/B: 6 (Wasteland)
+   3: Tropical Island
+   4: Wasteland
+  >> B/B: 4 (Wasteland)
 --- Narrative ---
   Targeting choice 6
   Choose target for Life from the Loam:
@@ -2341,9 +2333,7 @@
    0: Done selecting targets
    1: Misty Rainforest
    2: Polluted Delta
-   3: Polluted Delta
-   4: Tropical Island
-   5: Tropical Island
+   3: Tropical Island
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -2663,7 +2653,6 @@
    4: Tropical Island
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -2715,7 +2704,6 @@
    2: Tropical Island
    3: Undercity Sewers
    4: Underground Sea
-   5: Underground Sea
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -2833,12 +2821,10 @@
    0: Done selecting targets
    1: Misty Rainforest
    2: Polluted Delta
-   3: Polluted Delta
-   4: Tropical Island
-   5: Tropical Island
-   6: Underground Sea
-   7: Wasteland
-  >> B/B: 7 (Wasteland)
+   3: Tropical Island
+   4: Underground Sea
+   5: Wasteland
+  >> B/B: 5 (Wasteland)
 --- Narrative ---
   Targeting choice 7
   Choose target for Life from the Loam:
@@ -2861,10 +2847,8 @@
    0: Done selecting targets
    1: Misty Rainforest
    2: Polluted Delta
-   3: Polluted Delta
-   4: Tropical Island
-   5: Tropical Island
-   6: Underground Sea
+   3: Tropical Island
+   4: Underground Sea
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -3235,13 +3219,10 @@
    1: Forest
    2: Misty Rainforest
    3: Polluted Delta
-   4: Polluted Delta
-   5: Tropical Island
-   6: Tropical Island
-   7: Underground Sea
-   8: Underground Sea
-   9: Wasteland
-  >> B/B: 9 (Wasteland)
+   4: Tropical Island
+   5: Underground Sea
+   6: Wasteland
+  >> B/B: 6 (Wasteland)
 --- Narrative ---
   Targeting choice 9
   Choose target for Life from the Loam:
@@ -3265,11 +3246,8 @@
    1: Forest
    2: Misty Rainforest
    3: Polluted Delta
-   4: Polluted Delta
-   5: Tropical Island
-   6: Tropical Island
-   7: Underground Sea
-   8: Underground Sea
+   4: Tropical Island
+   5: Underground Sea
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -3784,14 +3762,10 @@
    1: Forest
    2: Misty Rainforest
    3: Polluted Delta
-   4: Polluted Delta
-   5: Tropical Island
-   6: Tropical Island
-   7: Tropical Island
-   8: Underground Sea
-   9: Underground Sea
-  10: Wasteland
-  >> B/B: 10 (Wasteland)
+   4: Tropical Island
+   5: Underground Sea
+   6: Wasteland
+  >> B/B: 6 (Wasteland)
 --- Narrative ---
   Targeting choice 10
   Choose target for Life from the Loam:
@@ -3816,12 +3790,8 @@
    1: Forest
    2: Misty Rainforest
    3: Polluted Delta
-   4: Polluted Delta
-   5: Tropical Island
-   6: Tropical Island
-   7: Tropical Island
-   8: Underground Sea
-   9: Underground Sea
+   4: Tropical Island
+   5: Underground Sea
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -4118,7 +4088,6 @@
    1: Forest
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
   >> A/A: 1 (Forest)
 --- Narrative ---
   Player A shuffles their library
@@ -4283,18 +4252,12 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Polluted Delta
-   6: Polluted Delta
-   7: Tropical Island
-   8: Tropical Island
-   9: Tropical Island
-  10: Underground Sea
-  11: Underground Sea
-  12: Verdant Catacombs
-  13: Wasteland
-  >> B/B: 13 (Wasteland)
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
+   7: Wasteland
+  >> B/B: 7 (Wasteland)
 --- Narrative ---
   Targeting choice 13
   Choose target for Life from the Loam:
@@ -4316,16 +4279,10 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Polluted Delta
-   6: Polluted Delta
-   7: Tropical Island
-   8: Tropical Island
-   9: Tropical Island
-  10: Underground Sea
-  11: Underground Sea
-  12: Verdant Catacombs
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -5009,10 +4966,7 @@
   Actions:
    0: Bayou
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Tropical Island
-   4: Tropical Island
-   5: Tropical Island
+   2: Tropical Island
   >> A/A: 0 (Bayou)
 --- Narrative ---
   Player A puts Bayou to hand
@@ -5227,18 +5181,12 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Polluted Delta
-   6: Polluted Delta
-   7: Tropical Island
-   8: Tropical Island
-   9: Tropical Island
-  10: Underground Sea
-  11: Underground Sea
-  12: Verdant Catacombs
-  13: Wasteland
-  >> B/B: 13 (Wasteland)
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
+   7: Wasteland
+  >> B/B: 7 (Wasteland)
 --- Narrative ---
   Targeting choice 13
   Choose target for Life from the Loam:
@@ -5263,16 +5211,10 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Polluted Delta
-   6: Polluted Delta
-   7: Tropical Island
-   8: Tropical Island
-   9: Tropical Island
-  10: Underground Sea
-  11: Underground Sea
-  12: Verdant Catacombs
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -5745,10 +5687,7 @@
   Actions:
    0: Bayou
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Tropical Island
-   4: Tropical Island
-   5: Tropical Island
+   2: Tropical Island
   >> A/A: 0 (Bayou)
 --- Narrative ---
   Player A puts Bayou to hand
@@ -6066,20 +6005,12 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Misty Rainforest
-   6: Polluted Delta
-   7: Polluted Delta
-   8: Polluted Delta
-   9: Tropical Island
-  10: Tropical Island
-  11: Tropical Island
-  12: Underground Sea
-  13: Underground Sea
-  14: Verdant Catacombs
-  15: Wasteland
-  >> B/B: 15 (Wasteland)
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
+   7: Wasteland
+  >> B/B: 7 (Wasteland)
 --- Narrative ---
   Targeting choice 15
   Choose target for Life from the Loam:
@@ -6105,18 +6036,10 @@
    0: Done selecting targets
    1: Forest
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Misty Rainforest
-   5: Misty Rainforest
-   6: Polluted Delta
-   7: Polluted Delta
-   8: Polluted Delta
-   9: Tropical Island
-  10: Tropical Island
-  11: Tropical Island
-  12: Underground Sea
-  13: Underground Sea
-  14: Verdant Catacombs
+   3: Polluted Delta
+   4: Tropical Island
+   5: Underground Sea
+   6: Verdant Catacombs
   >> B/B: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -6396,7 +6319,6 @@
   Actions:
    0: Fail to find
    1: Underground Sea
-   2: Underground Sea
   >> A/A: 1 (Underground Sea)
 --- Narrative ---
   Player A shuffles their library

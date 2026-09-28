@@ -141,7 +141,6 @@
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
-   4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
   Player A reveals Badgermole Cub and puts it into hand.
@@ -356,8 +355,7 @@
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
-   4: Thalia, Guardian of Thraben
-   5: Noble Hierarch
+   4: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
   Player A reveals Thalia, Guardian of Thraben and puts it into hand.
@@ -1316,7 +1314,6 @@
    0: Fail to find
    1: Plains
    2: Savannah
-   3: Savannah
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -3596,28 +3593,18 @@
    1: Ancient Tomb
    2: Bojuka Bog
    3: Boseiju, Who Endures
-   4: Boseiju, Who Endures
-   5: Dark Depths
-   6: Forest
-   7: Ghost Quarter
-   8: Karakas
-   9: Maze of Ith
-  10: Rishadan Port
-  11: Rishadan Port
-  12: Savannah
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Urza's Saga
-  17: Urza's Saga
-  18: Urza's Saga
-  19: Urza's Saga
-  20: Wasteland
-  21: Wasteland
-  22: Wasteland
-  23: Wasteland
-  24: Yavimaya, Cradle of Growth
-  >> B/B: 5 (Dark Depths)
+   4: Dark Depths
+   5: Forest
+   6: Ghost Quarter
+   7: Karakas
+   8: Maze of Ith
+   9: Rishadan Port
+  10: Savannah
+  11: Thespian's Stage
+  12: Urza's Saga
+  13: Wasteland
+  14: Yavimaya, Cradle of Growth
+  >> B/B: 4 (Dark Depths)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Dark Depths to the battlefield
@@ -7106,15 +7093,10 @@
    5: Karakas
    6: Rishadan Port
    7: Thespian's Stage
-   8: Thespian's Stage
-   9: Thespian's Stage
-  10: Urza's Saga
-  11: Urza's Saga
-  12: Urza's Saga
-  13: Wasteland
-  14: Wasteland
-  15: Yavimaya, Cradle of Growth
-  >> B/B: 10 (Urza's Saga)
+   8: Urza's Saga
+   9: Wasteland
+  10: Yavimaya, Cradle of Growth
+  >> B/B: 8 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B reveals Urza's Saga and puts it to hand
@@ -7807,14 +7789,10 @@
    5: Karakas
    6: Rishadan Port
    7: Thespian's Stage
-   8: Thespian's Stage
-   9: Thespian's Stage
-  10: Urza's Saga
-  11: Urza's Saga
-  12: Wasteland
-  13: Wasteland
-  14: Yavimaya, Cradle of Growth
-  >> B/B: 10 (Urza's Saga)
+   8: Urza's Saga
+   9: Wasteland
+  10: Yavimaya, Cradle of Growth
+  >> B/B: 8 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Urza's Saga to the battlefield
@@ -7900,11 +7878,8 @@
    0: Fail to find
    1: Grafdigger's Cage
    2: Mox Diamond
-   3: Mox Diamond
-   4: Mox Diamond
-   5: Mox Diamond
-   6: Pithing Needle
-   7: Skateboard
+   3: Pithing Needle
+   4: Skateboard
   >> B/B: 1 (Grafdigger's Cage)
 --- Narrative ---
   Player B shuffles their library
@@ -8591,11 +8566,8 @@
   Actions:
    0: Fail to find
    1: Mox Diamond
-   2: Mox Diamond
-   3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
-   6: Skateboard
+   2: Pithing Needle
+   3: Skateboard
   >> B/B: 1 (Mox Diamond)
 --- Narrative ---
   Player B shuffles their library
@@ -8648,10 +8620,8 @@
   Actions:
    0: Fail to find
    1: Mox Diamond
-   2: Mox Diamond
-   3: Mox Diamond
-   4: Pithing Needle
-   5: Skateboard
+   2: Pithing Needle
+   3: Skateboard
   >> B/B: 1 (Mox Diamond)
 --- Narrative ---
   Player B shuffles their library
@@ -11384,14 +11354,9 @@
    4: Maze of Ith
    5: Savannah
    6: Thespian's Stage
-   7: Thespian's Stage
-   8: Urza's Saga
-   9: Urza's Saga
-  10: Urza's Saga
-  11: Wasteland
-  12: Wasteland
-  13: Wasteland
-  >> B/B: 8 (Urza's Saga)
+   7: Urza's Saga
+   8: Wasteland
+  >> B/B: 7 (Urza's Saga)
 --- Narrative ---
   Targeting choice 8
   Choose target for Life from the Loam:
@@ -11420,13 +11385,9 @@
    4: Maze of Ith
    5: Savannah
    6: Thespian's Stage
-   7: Thespian's Stage
-   8: Urza's Saga
-   9: Urza's Saga
-  10: Wasteland
-  11: Wasteland
-  12: Wasteland
-  >> B/B: 8 (Urza's Saga)
+   7: Urza's Saga
+   8: Wasteland
+  >> B/B: 7 (Urza's Saga)
 --- Narrative ---
   Targeting choice 8
   Choose target for Life from the Loam:
@@ -11455,12 +11416,9 @@
    4: Maze of Ith
    5: Savannah
    6: Thespian's Stage
-   7: Thespian's Stage
-   8: Urza's Saga
-   9: Wasteland
-  10: Wasteland
-  11: Wasteland
-  >> B/B: 8 (Urza's Saga)
+   7: Urza's Saga
+   8: Wasteland
+  >> B/B: 7 (Urza's Saga)
 --- Narrative ---
   Targeting choice 8
   Player B activated The Tabernacle at Pendrell Vale for 1(G)
@@ -13423,7 +13381,7 @@
   Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:
@@ -14154,7 +14112,7 @@
   Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> B/B: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:

@@ -1767,24 +1767,13 @@
    8: Karakas
    9: Maze of Ith
   10: Rishadan Port
-  11: Rishadan Port
-  12: Savannah
-  13: Savannah
-  14: The Tabernacle at Pendrell Vale
-  15: Thespian's Stage
-  16: Thespian's Stage
-  17: Thespian's Stage
-  18: Urza's Saga
-  19: Urza's Saga
-  20: Urza's Saga
-  21: Urza's Saga
-  22: Wasteland
-  23: Wasteland
-  24: Wasteland
-  25: Wasteland
-  26: Yavimaya, Cradle of Growth
-  27: Yavimaya, Cradle of Growth
-  >> B/B: 14 (The Tabernacle at Pendrell Vale)
+  11: Savannah
+  12: The Tabernacle at Pendrell Vale
+  13: Thespian's Stage
+  14: Urza's Saga
+  15: Wasteland
+  16: Yavimaya, Cradle of Growth
+  >> B/B: 12 (The Tabernacle at Pendrell Vale)
 --- Narrative ---
   Player B shuffles their library
   Player B puts The Tabernacle at Pendrell Vale to the battlefield
@@ -2665,23 +2654,12 @@
    8: Karakas
    9: Maze of Ith
   10: Rishadan Port
-  11: Rishadan Port
-  12: Savannah
-  13: Savannah
-  14: Thespian's Stage
-  15: Thespian's Stage
-  16: Thespian's Stage
-  17: Urza's Saga
-  18: Urza's Saga
-  19: Urza's Saga
-  20: Urza's Saga
-  21: Wasteland
-  22: Wasteland
-  23: Wasteland
-  24: Wasteland
-  25: Yavimaya, Cradle of Growth
-  26: Yavimaya, Cradle of Growth
-  >> B/B: 17 (Urza's Saga)
+  11: Savannah
+  12: Thespian's Stage
+  13: Urza's Saga
+  14: Wasteland
+  15: Yavimaya, Cradle of Growth
+  >> B/B: 13 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Urza's Saga to the battlefield
@@ -3265,11 +3243,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -3698,10 +3672,8 @@
   Actions:
    0: Fail to find
    1: Mox Diamond
-   2: Mox Diamond
-   3: Mox Diamond
-   4: Pithing Needle
-   5: Skateboard
+   2: Pithing Needle
+   3: Skateboard
   >> B/B: 1 (Mox Diamond)
 --- Narrative ---
   Player B shuffles their library
@@ -4111,14 +4083,9 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Scrubland
-   6: Scrubland
-   7: Shadowy Backstreet
-   8: Shadowy Backstreet
-   9: Swamp
+   2: Scrubland
+   3: Shadowy Backstreet
+   4: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -4383,22 +4350,12 @@
    6: Karakas
    7: Maze of Ith
    8: Rishadan Port
-   9: Rishadan Port
-  10: Savannah
-  11: Savannah
-  12: Thespian's Stage
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Urza's Saga
-  16: Urza's Saga
-  17: Urza's Saga
-  18: Wasteland
-  19: Wasteland
-  20: Wasteland
-  21: Wasteland
-  22: Yavimaya, Cradle of Growth
-  23: Yavimaya, Cradle of Growth
-  >> B/B: 15 (Urza's Saga)
+   9: Savannah
+  10: Thespian's Stage
+  11: Urza's Saga
+  12: Wasteland
+  13: Yavimaya, Cradle of Growth
+  >> B/B: 11 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B puts Urza's Saga to the battlefield
@@ -4534,21 +4491,12 @@
    6: Karakas
    7: Maze of Ith
    8: Rishadan Port
-   9: Rishadan Port
-  10: Savannah
-  11: Savannah
-  12: Thespian's Stage
-  13: Thespian's Stage
-  14: Thespian's Stage
-  15: Urza's Saga
-  16: Urza's Saga
-  17: Wasteland
-  18: Wasteland
-  19: Wasteland
-  20: Wasteland
-  21: Yavimaya, Cradle of Growth
-  22: Yavimaya, Cradle of Growth
-  >> B/B: 15 (Urza's Saga)
+   9: Savannah
+  10: Thespian's Stage
+  11: Urza's Saga
+  12: Wasteland
+  13: Yavimaya, Cradle of Growth
+  >> B/B: 11 (Urza's Saga)
 --- Narrative ---
   Player B shuffles their library
   Player B reveals Urza's Saga and puts it to hand
@@ -4996,7 +4944,7 @@
    3: Cast White Orchid Phantom  [#0]
    4: Activate Aether Vial (ChangeZone)  [#0]
    5: Activate Aether Vial (ChangeZone)  [#0]
-   6: Equip Pre-War Formalwear  [#32]
+   6: Equip Pre-War Formalwear  [#0]
    7: Activate Wasteland (Destroy)  [#1]
   >> A/A: 3 (Cast White Orchid Phantom)
 --- Narrative ---
@@ -6039,7 +5987,7 @@
    3: Cast Witch Enchanter  [#0]
    4: Activate Aether Vial (ChangeZone)  [#0]
    5: Activate Aether Vial (ChangeZone)  [#0]
-   6: Equip Pre-War Formalwear  [#32]
+   6: Equip Pre-War Formalwear  [#0]
   >> A/A: 3 (Cast Witch Enchanter)
 --- Narrative ---
   Player A activated Plains for 1(W)

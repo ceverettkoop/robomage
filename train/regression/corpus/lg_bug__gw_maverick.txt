@@ -258,8 +258,6 @@
    0: Fail to find
    1: Forest
    2: Savannah
-   3: Savannah
-   4: Savannah
   >> B/B: 1 (Forest)
 --- Narrative ---
   Player B shuffles their library
@@ -1632,7 +1630,6 @@
    4: Tropical Island
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -1849,17 +1846,16 @@
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Fatal Push
-   1: Fatal Push
-   2: Force of Will
-   3: Misty Rainforest
-   4: Tropical Island
-   5: Badgermole Cub
-   6: Dryad Arbor
-   7: Misty Rainforest
-   8: Once Upon a Time
-   9: Scryb Ranger
-  10: Thalia, Guardian of Thraben
-  11: Wasteland
+   1: Force of Will
+   2: Misty Rainforest
+   3: Tropical Island
+   4: Badgermole Cub
+   5: Dryad Arbor
+   6: Misty Rainforest
+   7: Once Upon a Time
+   8: Scryb Ranger
+   9: Thalia, Guardian of Thraben
+  10: Wasteland
   >> B/B: 0 (Fatal Push)
 --- Narrative ---
   Targeting choice 0

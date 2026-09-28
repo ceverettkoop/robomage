@@ -94,7 +94,6 @@
    1: Badgermole Cub
    2: Endurance
    3: Collector Ouphe
-   4: Badgermole Cub
   >> A/A: 1 (Badgermole Cub)
 --- Narrative ---
   Player A reveals Badgermole Cub and puts it into hand.
@@ -252,8 +251,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -273,6 +270,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
+  Known opp top: Swords to Plowshares, ?, ?, ?, ?
   Known opp hand: Badgermole Cub
   Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
@@ -300,6 +298,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
+  Known opp top: Swords to Plowshares, ?, ?, ?, ?
   Known opp hand: Badgermole Cub
   Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -325,6 +324,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Lightning Bolt, ?, ?, ?, ?
+  Known opp top: Swords to Plowshares, ?, ?, ?, ?
   Known opp hand: Badgermole Cub
   Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -347,6 +347,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Once Upon a Time
   Known top: Ponder, Cori-Steel Cutter, Lightning Bolt, ?, ?
+  Known opp top: Swords to Plowshares, ?, ?, ?, ?
   Known opp hand: Badgermole Cub
   Opp revealed: Forest, Once Upon a Time, Badgermole Cub
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -574,8 +575,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -630,8 +629,7 @@
    1: Thalia, Guardian of Thraben
    2: Verdant Catacombs
    3: Talon Gates of Madara
-   4: Thalia, Guardian of Thraben
-   5: Noble Hierarch
+   4: Noble Hierarch
   >> A/A: 1 (Thalia, Guardian of Thraben)
 --- Narrative ---
   Player A reveals Thalia, Guardian of Thraben and puts it into hand.
@@ -1872,8 +1870,6 @@
   Actions:
    0: Fail to find
    1: Volcanic Island
-   2: Volcanic Island
-   3: Volcanic Island
   >> B/B: 1 (Volcanic Island)
 --- Narrative ---
   Player B shuffles their library
@@ -2113,18 +2109,12 @@
    1: Bojuka Bog
    2: Horizon Canopy
    3: Misty Rainforest
-   4: Misty Rainforest
-   5: Plains
-   6: Savannah
-   7: Savannah
-   8: Talon Gates of Madara
-   9: Verdant Catacombs
-  10: Wasteland
-  11: Wasteland
-  12: Windswept Heath
-  13: Windswept Heath
-  14: Windswept Heath
-  15: Windswept Heath
+   4: Plains
+   5: Savannah
+   6: Talon Gates of Madara
+   7: Verdant Catacombs
+   8: Wasteland
+   9: Windswept Heath
   >> A/A: 1 (Bojuka Bog)
 --- Narrative ---
   Player A shuffles their library
@@ -2494,18 +2484,12 @@
    0: Fail to find
    1: Horizon Canopy
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Plains
-   5: Savannah
-   6: Savannah
-   7: Talon Gates of Madara
-   8: Verdant Catacombs
-   9: Wasteland
-  10: Wasteland
-  11: Windswept Heath
-  12: Windswept Heath
-  13: Windswept Heath
-  14: Windswept Heath
+   3: Plains
+   4: Savannah
+   5: Talon Gates of Madara
+   6: Verdant Catacombs
+   7: Wasteland
+   8: Windswept Heath
   >> A/A: 1 (Horizon Canopy)
 --- Narrative ---
   Player A shuffles their library
@@ -3070,17 +3054,12 @@
   Actions:
    0: Fail to find
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Plains
-   4: Savannah
-   5: Savannah
-   6: Talon Gates of Madara
-   7: Verdant Catacombs
-   8: Wasteland
-   9: Windswept Heath
-  10: Windswept Heath
-  11: Windswept Heath
-  12: Windswept Heath
+   2: Plains
+   3: Savannah
+   4: Talon Gates of Madara
+   5: Verdant Catacombs
+   6: Wasteland
+   7: Windswept Heath
   >> A/A: 1 (Misty Rainforest)
 --- Narrative ---
   Player A shuffles their library
@@ -3131,7 +3110,6 @@
   Actions:
    0: Fail to find
    1: Savannah
-   2: Savannah
   >> A/A: 1 (Savannah)
 --- Narrative ---
   Player A shuffles their library
@@ -3239,9 +3217,6 @@
    5: Verdant Catacombs
    6: Wasteland
    7: Windswept Heath
-   8: Windswept Heath
-   9: Windswept Heath
-  10: Windswept Heath
   >> A/A: 1 (Misty Rainforest)
 --- Narrative ---
   Player A shuffles their library
@@ -3790,9 +3765,6 @@
    3: Verdant Catacombs
    4: Wasteland
    5: Windswept Heath
-   6: Windswept Heath
-   7: Windswept Heath
-   8: Windswept Heath
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -3865,9 +3837,6 @@
    2: Verdant Catacombs
    3: Wasteland
    4: Windswept Heath
-   5: Windswept Heath
-   6: Windswept Heath
-   7: Windswept Heath
   >> A/A: 1 (Talon Gates of Madara)
 --- Narrative ---
   Player A shuffles their library

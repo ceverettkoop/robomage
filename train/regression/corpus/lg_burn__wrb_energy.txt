@@ -160,9 +160,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -1037,9 +1036,8 @@
    1: Elegant Parlor
    2: Plains
    3: Plateau
-   4: Plateau
-   5: Scrubland
-   6: Shadowy Backstreet
+   4: Scrubland
+   5: Shadowy Backstreet
   >> B/B: 1 (Elegant Parlor)
 --- Narrative ---
   Player B shuffles their library

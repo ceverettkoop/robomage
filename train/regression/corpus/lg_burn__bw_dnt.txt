@@ -499,10 +499,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Swamp
+   2: Swamp
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -868,9 +865,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Swamp
+   2: Swamp
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library

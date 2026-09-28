@@ -157,13 +157,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -609,7 +606,6 @@
    1: Island
    2: Meticulous Archive
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1451,10 +1447,9 @@
    1: Exile Force of Will (Delve)
    2: Exile Misty Rainforest (Delve)
    3: Exile Ponder (Delve)
-   4: Exile Ponder (Delve)
-   5: Exile Swords to Plowshares (Delve)
-   6: Exile Tamiyo, Inquisitive Student (Delve)
-   7: Exile Tune the Narrative (Delve)
+   4: Exile Swords to Plowshares (Delve)
+   5: Exile Tamiyo, Inquisitive Student (Delve)
+   6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.
@@ -1479,10 +1474,9 @@
    0: Exile Force of Will (Delve)
    1: Exile Misty Rainforest (Delve)
    2: Exile Ponder (Delve)
-   3: Exile Ponder (Delve)
-   4: Exile Swords to Plowshares (Delve)
-   5: Exile Tamiyo, Inquisitive Student (Delve)
-   6: Exile Tune the Narrative (Delve)
+   3: Exile Swords to Plowshares (Delve)
+   4: Exile Tamiyo, Inquisitive Student (Delve)
+   5: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player B exiles Force of Will via Delve.
@@ -1506,10 +1500,9 @@
   Actions:
    0: Exile Misty Rainforest (Delve)
    1: Exile Ponder (Delve)
-   2: Exile Ponder (Delve)
-   3: Exile Swords to Plowshares (Delve)
-   4: Exile Tamiyo, Inquisitive Student (Delve)
-   5: Exile Tune the Narrative (Delve)
+   2: Exile Swords to Plowshares (Delve)
+   3: Exile Tamiyo, Inquisitive Student (Delve)
+   4: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Misty Rainforest (Delve))
 --- Narrative ---
   Player B exiles Misty Rainforest via Delve.
@@ -1532,10 +1525,9 @@
   Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
-   1: Exile Ponder (Delve)
-   2: Exile Swords to Plowshares (Delve)
-   3: Exile Tamiyo, Inquisitive Student (Delve)
-   4: Exile Tune the Narrative (Delve)
+   1: Exile Swords to Plowshares (Delve)
+   2: Exile Tamiyo, Inquisitive Student (Delve)
+   3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
   Player B exiles Ponder via Delve.

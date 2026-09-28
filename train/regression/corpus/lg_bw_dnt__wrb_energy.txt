@@ -236,10 +236,8 @@
    2: Elegant Parlor
    3: Plains
    4: Plateau
-   5: Plateau
-   6: Scrubland
-   7: Scrubland
-   8: Shadowy Backstreet
+   5: Scrubland
+   6: Shadowy Backstreet
   >> B/B: 1 (Badlands)
 --- Narrative ---
   Player B shuffles their library
@@ -786,10 +784,8 @@
    1: Elegant Parlor
    2: Plains
    3: Plateau
-   4: Plateau
-   5: Scrubland
-   6: Scrubland
-   7: Shadowy Backstreet
+   4: Scrubland
+   5: Shadowy Backstreet
   >> B/B: 1 (Elegant Parlor)
 --- Narrative ---
   Player B shuffles their library
@@ -2089,10 +2085,8 @@
    0: Fail to find
    1: Plains
    2: Plateau
-   3: Plateau
-   4: Scrubland
-   5: Scrubland
-   6: Shadowy Backstreet
+   3: Scrubland
+   4: Shadowy Backstreet
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -3505,11 +3499,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -5765,13 +5755,8 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Scrubland
-   6: Scrubland
-   7: Shadowy Backstreet
-   8: Shadowy Backstreet
+   2: Scrubland
+   3: Shadowy Backstreet
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -6424,12 +6409,8 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Scrubland
-   5: Scrubland
-   6: Shadowy Backstreet
-   7: Shadowy Backstreet
+   2: Scrubland
+   3: Shadowy Backstreet
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library
@@ -8466,10 +8447,8 @@
   Actions:
    0: Fail to find
    1: Plateau
-   2: Plateau
-   3: Scrubland
-   4: Scrubland
-   5: Shadowy Backstreet
+   2: Scrubland
+   3: Shadowy Backstreet
   >> B/B: 1 (Plateau)
 --- Narrative ---
   Player B shuffles their library

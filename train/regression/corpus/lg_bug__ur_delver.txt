@@ -248,8 +248,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -268,6 +266,7 @@
   Opp BF:   Tropical Island
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Opp revealed: Tropical Island
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
@@ -293,6 +292,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Opp revealed: Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -316,6 +316,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Known top: Wasteland, ?, ?, ?, ?
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Opp revealed: Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -336,6 +337,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Known top: Daze, Scalding Tarn, Wasteland, ?, ?
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Opp revealed: Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
@@ -420,8 +422,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -1186,7 +1186,7 @@
    2: Play Wasteland
    3: Cast Dragon's Rage Channeler  [#0]
    4: Cast Flow State  [#0]
-   5: Equip Cori-Steel Cutter  [#32]
+   5: Equip Cori-Steel Cutter  [#0]
   >> B/B: 3 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Volcanic Island for 1(R)
@@ -1235,7 +1235,7 @@
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Cast Flow State)
 --- Narrative ---
   Player B activated Mystic Sanctuary for 1(U)
@@ -1671,7 +1671,6 @@
    4: Tropical Island
    5: Undercity Sewers
    6: Underground Sea
-   7: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -1958,7 +1957,7 @@
    1: Play Wasteland
    2: Cast Mishra's Bauble  [#0]
    3: Cast Murktide Regent  [#0]
-   4: Equip Cori-Steel Cutter  [#32]
+   4: Equip Cori-Steel Cutter  [#0]
   >> B/B: 2 (Cast Mishra's Bauble)
 --- Narrative ---
   Player B casts Mishra's Bauble
@@ -1986,7 +1985,7 @@
    0: Pass priority
    1: Play Wasteland
    2: Cast Murktide Regent  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
    4: Activate Mishra's Bauble (PeekAndReveal)  [#0]
   >> B/B: 2 (Cast Murktide Regent)
 --- Narrative ---
@@ -2010,23 +2009,17 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Cori-Steel Cutter (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Daze (Delve)
-   5: Exile Dragon's Rage Channeler (Delve)
-   6: Exile Dragon's Rage Channeler (Delve)
-   7: Exile Flow State (Delve)
-   8: Exile Into the Flood Maw (Delve)
-   9: Exile Lightning Bolt (Delve)
-  10: Exile Lightning Bolt (Delve)
-  11: Exile Lightning Bolt (Delve)
-  12: Exile Mishra's Bauble (Delve)
-  13: Exile Polluted Delta (Delve)
-  14: Exile Ponder (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Scalding Tarn (Delve)
-  17: Exile Volcanic Island (Delve)
+   1: Exile Cori-Steel Cutter (Delve)
+   2: Exile Daze (Delve)
+   3: Exile Dragon's Rage Channeler (Delve)
+   4: Exile Flow State (Delve)
+   5: Exile Into the Flood Maw (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Mishra's Bauble (Delve)
+   8: Exile Polluted Delta (Delve)
+   9: Exile Ponder (Delve)
+  10: Exile Scalding Tarn (Delve)
+  11: Exile Volcanic Island (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -2053,20 +2046,15 @@
    0: Exile Brainstorm (Delve)
    1: Exile Cori-Steel Cutter (Delve)
    2: Exile Daze (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Dragon's Rage Channeler (Delve)
-   5: Exile Dragon's Rage Channeler (Delve)
-   6: Exile Flow State (Delve)
-   7: Exile Into the Flood Maw (Delve)
-   8: Exile Lightning Bolt (Delve)
-   9: Exile Lightning Bolt (Delve)
-  10: Exile Lightning Bolt (Delve)
-  11: Exile Mishra's Bauble (Delve)
-  12: Exile Polluted Delta (Delve)
-  13: Exile Ponder (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Volcanic Island (Delve)
+   3: Exile Dragon's Rage Channeler (Delve)
+   4: Exile Flow State (Delve)
+   5: Exile Into the Flood Maw (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Mishra's Bauble (Delve)
+   8: Exile Polluted Delta (Delve)
+   9: Exile Ponder (Delve)
+  10: Exile Scalding Tarn (Delve)
+  11: Exile Volcanic Island (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -2092,20 +2080,15 @@
   Actions:
    0: Exile Cori-Steel Cutter (Delve)
    1: Exile Daze (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Dragon's Rage Channeler (Delve)
-   4: Exile Dragon's Rage Channeler (Delve)
-   5: Exile Flow State (Delve)
-   6: Exile Into the Flood Maw (Delve)
-   7: Exile Lightning Bolt (Delve)
-   8: Exile Lightning Bolt (Delve)
-   9: Exile Lightning Bolt (Delve)
-  10: Exile Mishra's Bauble (Delve)
-  11: Exile Polluted Delta (Delve)
-  12: Exile Ponder (Delve)
-  13: Exile Scalding Tarn (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Volcanic Island (Delve)
+   2: Exile Dragon's Rage Channeler (Delve)
+   3: Exile Flow State (Delve)
+   4: Exile Into the Flood Maw (Delve)
+   5: Exile Lightning Bolt (Delve)
+   6: Exile Mishra's Bauble (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Scalding Tarn (Delve)
+  10: Exile Volcanic Island (Delve)
   >> B/B: 0 (Exile Cori-Steel Cutter (Delve))
 --- Narrative ---
   Player B exiles Cori-Steel Cutter via Delve.
@@ -2130,20 +2113,15 @@
   Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Exile Daze (Delve)
-   1: Exile Daze (Delve)
-   2: Exile Dragon's Rage Channeler (Delve)
-   3: Exile Dragon's Rage Channeler (Delve)
-   4: Exile Flow State (Delve)
-   5: Exile Into the Flood Maw (Delve)
-   6: Exile Lightning Bolt (Delve)
-   7: Exile Lightning Bolt (Delve)
-   8: Exile Lightning Bolt (Delve)
-   9: Exile Mishra's Bauble (Delve)
-  10: Exile Polluted Delta (Delve)
-  11: Exile Ponder (Delve)
-  12: Exile Scalding Tarn (Delve)
-  13: Exile Scalding Tarn (Delve)
-  14: Exile Volcanic Island (Delve)
+   1: Exile Dragon's Rage Channeler (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Into the Flood Maw (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Mishra's Bauble (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Scalding Tarn (Delve)
+   9: Exile Volcanic Island (Delve)
   >> B/B: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player B exiles Daze via Delve.
@@ -2169,18 +2147,14 @@
   Actions:
    0: Exile Daze (Delve)
    1: Exile Dragon's Rage Channeler (Delve)
-   2: Exile Dragon's Rage Channeler (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Into the Flood Maw (Delve)
-   5: Exile Lightning Bolt (Delve)
-   6: Exile Lightning Bolt (Delve)
-   7: Exile Lightning Bolt (Delve)
-   8: Exile Mishra's Bauble (Delve)
-   9: Exile Polluted Delta (Delve)
-  10: Exile Ponder (Delve)
-  11: Exile Scalding Tarn (Delve)
-  12: Exile Scalding Tarn (Delve)
-  13: Exile Volcanic Island (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Into the Flood Maw (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Mishra's Bauble (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Scalding Tarn (Delve)
+   9: Exile Volcanic Island (Delve)
   >> B/B: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player B exiles Daze via Delve.
@@ -2258,6 +2232,7 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Known top: Island, ?, ?, ?, ?
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
@@ -2282,6 +2257,7 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Known top: Island, ?, ?, ?, ?
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
@@ -2307,6 +2283,7 @@
   Self exile: Daze, Daze, Cori-Steel Cutter, Brainstorm, Brainstorm
   Opp exile:  Baleful Strix
   Known top: Island, ?, ?, ?, ?
+  Known opp top: Orcish Bowmasters, ?, ?, ?, ?
   Known opp hand: Orcish Bowmasters
   Opp revealed: Misty Rainforest, Force of Will, Swamp, Fatal Push, Orcish Bowmasters, Bayou, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=4 noncreature=3 instant_sorcery=2 drawn=4 colors=UR | opp life_lost=3
@@ -2474,7 +2451,7 @@
   Actions:
    0: Pass priority
    1: Play Island
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Play Island)
 --- Narrative ---
   Player B played Island
@@ -2495,7 +2472,7 @@
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:
@@ -2544,7 +2521,7 @@
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:
@@ -2897,7 +2874,7 @@
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Cast Flow State)
 --- Narrative ---
   Player B activated Island for 1(U)
@@ -2974,7 +2951,7 @@
    0: Pass priority
    1: Play Flooded Strand
    2: Play Polluted Delta
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Play Flooded Strand)
 --- Narrative ---
   Player B played Flooded Strand
@@ -2995,7 +2972,7 @@
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
    2: Activate Flooded Strand (ChangeZone)  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
@@ -3094,7 +3071,7 @@
   Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:

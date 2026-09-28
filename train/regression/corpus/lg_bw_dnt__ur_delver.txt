@@ -286,9 +286,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
-   7: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -651,9 +648,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -974,9 +968,6 @@
    0: Fail to find
    1: Thundering Falls
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Thundering Falls)
 --- Narrative ---
   Player B shuffles their library
@@ -2046,11 +2037,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Plains
-   6: Swamp
+   2: Swamp
   >> A/A: 1 (Plains)
 --- Narrative ---
   Player A shuffles their library

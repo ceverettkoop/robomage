@@ -313,13 +313,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -502,7 +499,6 @@
    1: Island
    2: Meticulous Archive
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -607,8 +603,7 @@
    1: Expedition Map
    2: Grafdigger's Cage
    3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
+   4: Pithing Needle
   >> A/A: 1 (Expedition Map)
 --- Narrative ---
   Player A shuffles their library
@@ -652,7 +647,7 @@
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:
@@ -854,8 +849,7 @@
    0: Fail to find
    1: Grafdigger's Cage
    2: Mox Diamond
-   3: Mox Diamond
-   4: Pithing Needle
+   3: Pithing Needle
   >> A/A: 1 (Grafdigger's Cage)
 --- Narrative ---
   Player A shuffles their library
@@ -1141,7 +1135,6 @@
    0: Fail to find
    1: Meticulous Archive
    2: Tundra
-   3: Tundra
   >> B/B: 1 (Meticulous Archive)
 --- Narrative ---
   Player B shuffles their library
@@ -1254,7 +1247,7 @@
    2: Cast Exploration  [#0]
    3: Cast Exploration  [#0]
    4: Activate Expedition Map (ChangeZone)  [#0]
-   5: Equip Skateboard  [#32]
+   5: Equip Skateboard  [#0]
   >> A/A: 2 (Cast Exploration)
 --- Narrative ---
   Player A activated Boseiju, Who Endures for 1(G)
@@ -1277,7 +1270,7 @@
    0: Pass priority
    1: Play Wasteland
    2: Cast Exploration  [#0]
-   3: Equip Skateboard  [#32]
+   3: Equip Skateboard  [#0]
   >> A/A: 2 (Cast Exploration)
 --- Narrative ---
   Player A activated Mox Diamond for 1(G)
@@ -1318,7 +1311,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---

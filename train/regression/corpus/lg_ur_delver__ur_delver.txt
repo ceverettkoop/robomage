@@ -146,6 +146,7 @@
   Self BF:  Mishra's Bauble (NEW)
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  Known opp top: Scalding Tarn, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_revolt
   Actions:
@@ -169,6 +170,7 @@
   Stack: Thundering Falls (ability, self) [amt=1]
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  Known opp top: Scalding Tarn, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -188,6 +190,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
+  Known opp top: Scalding Tarn, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -216,6 +219,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Pending: Thundering Falls (self)
   Self GY: Mishra's Bauble, Mishra's Bauble
+  Known opp top: Scalding Tarn, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -239,6 +243,7 @@
   Self BF:  Thundering Falls (T)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Known opp top: Scalding Tarn, ?, ?, ?, ?
   Extras: not_priority_window
   Actions:
    0: Delayed trigger  [#0]
@@ -394,8 +399,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -415,6 +418,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Known opp top: Cori-Steel Cutter, ?, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1 | opp drawn=2
   Extras: self_lands_played=1, self_revolt
@@ -462,6 +466,7 @@
   Pending: Ponder (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Known opp top: Cori-Steel Cutter, ?, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -486,6 +491,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Unholy Heat, ?, ?, ?, ?
+  Known opp top: Cori-Steel Cutter, ?, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -507,6 +513,7 @@
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known top: Daze, Lightning Bolt, Unholy Heat, ?, ?
+  Known opp top: Cori-Steel Cutter, ?, ?, ?, ?
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
   This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U | opp drawn=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -1155,8 +1162,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -1498,8 +1503,6 @@
    0: Fail to find
    1: Thundering Falls
    2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
   >> B/B: 1 (Thundering Falls)
 --- Narrative ---
   Player B shuffles their library
@@ -1830,8 +1833,6 @@
   Actions:
    0: Fail to find
    1: Volcanic Island
-   2: Volcanic Island
-   3: Volcanic Island
   >> B/B: 1 (Volcanic Island)
 --- Narrative ---
   Player B shuffles their library
@@ -2119,7 +2120,6 @@
    1: Island
    2: Mystic Sanctuary
    3: Volcanic Island
-   4: Volcanic Island
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -2380,6 +2380,7 @@
   Self GY: Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Known top: Ponder, ?, ?, ?, ?
+  Known opp top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=4 noncreature=4 instant_sorcery=2 drawn=5 life_lost=1 colors=UR
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -2404,6 +2405,7 @@
   Self GY: Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Known top: Ponder, ?, ?, ?, ?
+  Known opp top: Flow State, ?, ?, ?, ?
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=4 noncreature=4 instant_sorcery=2 drawn=5 life_lost=1 colors=UR
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -2681,7 +2683,7 @@
    1: Cast Cori-Steel Cutter  [#0]
    2: Cast Murktide Regent  [#0]
    3: Cast Ponder  [#0]
-   4: Equip Cori-Steel Cutter  [#32]
+   4: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Thundering Falls for 1(R)
@@ -2707,8 +2709,8 @@
    0: Pass priority
    1: Cast Murktide Regent  [#0]
    2: Cast Ponder  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
-   4: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
+   4: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Murktide Regent)
 --- Narrative ---
   Choose a card to exile via Delve (1 of 5):
@@ -2728,25 +2730,17 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Brainstorm (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Daze (Delve)
-   5: Exile Dragon's Rage Channeler (Delve)
-   6: Exile Dragon's Rage Channeler (Delve)
-   7: Exile Flow State (Delve)
-   8: Exile Force of Will (Delve)
-   9: Exile Into the Flood Maw (Delve)
-  10: Exile Lightning Bolt (Delve)
-  11: Exile Mishra's Bauble (Delve)
-  12: Exile Mishra's Bauble (Delve)
-  13: Exile Mishra's Bauble (Delve)
-  14: Exile Mishra's Bauble (Delve)
-  15: Exile Ponder (Delve)
-  16: Exile Preordain (Delve)
-  17: Exile Scalding Tarn (Delve)
-  18: Exile Scalding Tarn (Delve)
-  19: Exile Unholy Heat (Delve)
+   1: Exile Daze (Delve)
+   2: Exile Dragon's Rage Channeler (Delve)
+   3: Exile Flow State (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Into the Flood Maw (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Mishra's Bauble (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Preordain (Delve)
+  10: Exile Scalding Tarn (Delve)
+  11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -2768,24 +2762,17 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Dragon's Rage Channeler (Delve)
-   5: Exile Dragon's Rage Channeler (Delve)
-   6: Exile Flow State (Delve)
-   7: Exile Force of Will (Delve)
-   8: Exile Into the Flood Maw (Delve)
-   9: Exile Lightning Bolt (Delve)
-  10: Exile Mishra's Bauble (Delve)
-  11: Exile Mishra's Bauble (Delve)
-  12: Exile Mishra's Bauble (Delve)
-  13: Exile Mishra's Bauble (Delve)
-  14: Exile Ponder (Delve)
-  15: Exile Preordain (Delve)
-  16: Exile Scalding Tarn (Delve)
-  17: Exile Scalding Tarn (Delve)
-  18: Exile Unholy Heat (Delve)
+   1: Exile Daze (Delve)
+   2: Exile Dragon's Rage Channeler (Delve)
+   3: Exile Flow State (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Into the Flood Maw (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Mishra's Bauble (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Preordain (Delve)
+  10: Exile Scalding Tarn (Delve)
+  11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -2808,22 +2795,16 @@
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Dragon's Rage Channeler (Delve)
-   4: Exile Dragon's Rage Channeler (Delve)
-   5: Exile Flow State (Delve)
-   6: Exile Force of Will (Delve)
-   7: Exile Into the Flood Maw (Delve)
-   8: Exile Lightning Bolt (Delve)
-   9: Exile Mishra's Bauble (Delve)
-  10: Exile Mishra's Bauble (Delve)
-  11: Exile Mishra's Bauble (Delve)
-  12: Exile Mishra's Bauble (Delve)
-  13: Exile Ponder (Delve)
-  14: Exile Preordain (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Scalding Tarn (Delve)
-  17: Exile Unholy Heat (Delve)
+   2: Exile Dragon's Rage Channeler (Delve)
+   3: Exile Flow State (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Into the Flood Maw (Delve)
+   6: Exile Lightning Bolt (Delve)
+   7: Exile Mishra's Bauble (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Preordain (Delve)
+  10: Exile Scalding Tarn (Delve)
+  11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -2845,22 +2826,16 @@
   Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
-   1: Exile Daze (Delve)
-   2: Exile Dragon's Rage Channeler (Delve)
-   3: Exile Dragon's Rage Channeler (Delve)
-   4: Exile Flow State (Delve)
-   5: Exile Force of Will (Delve)
-   6: Exile Into the Flood Maw (Delve)
-   7: Exile Lightning Bolt (Delve)
-   8: Exile Mishra's Bauble (Delve)
-   9: Exile Mishra's Bauble (Delve)
-  10: Exile Mishra's Bauble (Delve)
-  11: Exile Mishra's Bauble (Delve)
-  12: Exile Ponder (Delve)
-  13: Exile Preordain (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Scalding Tarn (Delve)
-  16: Exile Unholy Heat (Delve)
+   1: Exile Dragon's Rage Channeler (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Into the Flood Maw (Delve)
+   5: Exile Lightning Bolt (Delve)
+   6: Exile Mishra's Bauble (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Preordain (Delve)
+   9: Exile Scalding Tarn (Delve)
+  10: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player A exiles Daze via Delve.
@@ -2883,20 +2858,15 @@
   Actions:
    0: Exile Daze (Delve)
    1: Exile Dragon's Rage Channeler (Delve)
-   2: Exile Dragon's Rage Channeler (Delve)
-   3: Exile Flow State (Delve)
-   4: Exile Force of Will (Delve)
-   5: Exile Into the Flood Maw (Delve)
-   6: Exile Lightning Bolt (Delve)
-   7: Exile Mishra's Bauble (Delve)
-   8: Exile Mishra's Bauble (Delve)
-   9: Exile Mishra's Bauble (Delve)
-  10: Exile Mishra's Bauble (Delve)
-  11: Exile Ponder (Delve)
-  12: Exile Preordain (Delve)
-  13: Exile Scalding Tarn (Delve)
-  14: Exile Scalding Tarn (Delve)
-  15: Exile Unholy Heat (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Into the Flood Maw (Delve)
+   5: Exile Lightning Bolt (Delve)
+   6: Exile Mishra's Bauble (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Preordain (Delve)
+   9: Exile Scalding Tarn (Delve)
+  10: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player A exiles Daze via Delve.
@@ -3024,7 +2994,7 @@
    0: Pass priority
    1: Play Volcanic Island
    2: Cast Dragon's Rage Channeler  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
   >> B/B: 2 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player B activated Thundering Falls for 1(R)
@@ -3047,7 +3017,7 @@
   Actions:
    0: Pass priority
    1: Play Volcanic Island
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Play Volcanic Island)
 --- Narrative ---
   Player B played Volcanic Island
@@ -3067,7 +3037,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:
@@ -3115,7 +3085,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> B/B: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:
@@ -3251,6 +3221,7 @@
     Dragon's Rage Channeler deals 3 damage to Player A (now at 13 life)
   --- End Combat Damage ---
   Dragon's Rage Channeler is destroyed (lethal damage)
+  Cori-Steel Cutter becomes unattached
   -------- TURN 15 (Player A) --------
   Player A draws Daze
 --- Turn 15 (Player A) ---
@@ -3272,8 +3243,8 @@
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
-   3: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
+   3: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Ponder)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -3433,8 +3404,7 @@
   Extras: not_priority_window
   Actions:
    0: Wasteland  [#2]
-   1: Wasteland  [#2]
-   2: Cori-Steel Cutter  [#2]
+   1: Cori-Steel Cutter  [#2]
   >> A/A: 0 (Wasteland)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -3500,8 +3470,8 @@
   Actions:
    0: Pass priority
    1: Cast Cori-Steel Cutter  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
-   3: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
+   3: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Cori-Steel Cutter)
 --- Narrative ---
   Player A activated Thundering Falls for 1(R)

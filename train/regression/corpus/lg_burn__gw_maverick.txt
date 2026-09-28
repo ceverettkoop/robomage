@@ -407,8 +407,6 @@
    0: Fail to find
    1: Forest
    2: Savannah
-   3: Savannah
-   4: Savannah
   >> B/B: 1 (Forest)
 --- Narrative ---
   Player B shuffles their library
@@ -1074,10 +1072,9 @@
    2: Fiery Islet
    3: Price of Progress
    4: Rift Bolt
-   5: Rift Bolt
-   6: Misty Rainforest
-   7: Once Upon a Time
-   8: Wasteland
+   5: Misty Rainforest
+   6: Once Upon a Time
+   7: Wasteland
   >> B/B: 0 (Chain Lightning)
 --- Narrative ---
   Targeting choice 0
@@ -1144,10 +1141,9 @@
    1: Fiery Islet
    2: Price of Progress
    3: Rift Bolt
-   4: Rift Bolt
-   5: Misty Rainforest
-   6: Once Upon a Time
-   7: Wasteland
+   4: Misty Rainforest
+   5: Once Upon a Time
+   6: Wasteland
   >> B/B: 0 (Exquisite Firecraft)
 --- Narrative ---
   Targeting choice 0
@@ -1214,10 +1210,9 @@
    0: Fiery Islet
    1: Price of Progress
    2: Rift Bolt
-   3: Rift Bolt
-   4: Misty Rainforest
-   5: Once Upon a Time
-   6: Wasteland
+   3: Misty Rainforest
+   4: Once Upon a Time
+   5: Wasteland
   >> B/B: 0 (Fiery Islet)
 --- Narrative ---
   Targeting choice 0
@@ -1282,10 +1277,9 @@
   Actions:
    0: Price of Progress
    1: Rift Bolt
-   2: Rift Bolt
-   3: Misty Rainforest
-   4: Once Upon a Time
-   5: Wasteland
+   2: Misty Rainforest
+   3: Once Upon a Time
+   4: Wasteland
   >> B/B: 0 (Price of Progress)
 --- Narrative ---
   Targeting choice 0
@@ -1553,10 +1547,9 @@
   Extras: not_priority_window
   Actions:
    0: Rift Bolt
-   1: Rift Bolt
-   2: Misty Rainforest
-   3: Once Upon a Time
-   4: Wasteland
+   1: Misty Rainforest
+   2: Once Upon a Time
+   3: Wasteland
   >> B/B: 0 (Rift Bolt)
 --- Narrative ---
   Targeting choice 0

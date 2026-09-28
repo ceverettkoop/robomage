@@ -327,8 +327,6 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -417,7 +415,7 @@
    1: Play Boseiju, Who Endures
    2: Play Wasteland
    3: Cast Mox Diamond  [#0]
-   4: Equip Skateboard  [#32]
+   4: Equip Skateboard  [#0]
   >> A/A: 3 (Cast Mox Diamond)
 --- Narrative ---
   Player A casts Mox Diamond
@@ -459,7 +457,7 @@
   Actions:
    0: Pass priority
    1: Play Wasteland
-   2: Equip Skateboard  [#32]
+   2: Equip Skateboard  [#0]
    3: Activate Urza's Saga (Token)  [#1]
   >> A/A: 3 (Activate Urza's Saga (Token))
 --- Narrative ---
@@ -502,7 +500,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
    2: Activate Wasteland (Destroy)  [#1]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
@@ -736,8 +734,6 @@
    1: Mystic Sanctuary
    2: Thundering Falls
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
   >> B/B: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player B shuffles their library
@@ -891,8 +887,7 @@
    1: Expedition Map
    2: Grafdigger's Cage
    3: Mox Diamond
-   4: Mox Diamond
-   5: Pithing Needle
+   4: Pithing Needle
   >> A/A: 1 (Expedition Map)
 --- Narrative ---
   Player A shuffles their library
@@ -1034,7 +1029,6 @@
   Actions:
    0: Force of Will  [#2]
    1: Mishra's Bauble  [#2]
-   2: Force of Will  [#2]
   >> B/B: 0 (Force of Will)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -1199,7 +1193,7 @@
    0: Pass priority
    1: Play Ancient Tomb
    2: Activate Expedition Map (ChangeZone)  [#0]
-   3: Equip Skateboard  [#32]
+   3: Equip Skateboard  [#0]
   >> A/A: 1 (Play Ancient Tomb)
 --- Narrative ---
   Player A played Ancient Tomb
@@ -1220,7 +1214,7 @@
    0: Pass priority
    1: Activate Dark Depths (RemoveCounter)  [#0]
    2: Activate Expedition Map (ChangeZone)  [#0]
-   3: Equip Skateboard  [#32]
+   3: Equip Skateboard  [#0]
   >> A/A: 1 (Activate Dark Depths (RemoveCounter))
 --- Narrative ---
   Player A activated Mox Diamond for 1(W)
@@ -1246,7 +1240,7 @@
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
-   1: Equip Skateboard  [#32]
+   1: Equip Skateboard  [#0]
   >> A/A: 1 (Equip Skateboard)
 --- Narrative ---
   Choose target for Skateboard:

@@ -209,6 +209,7 @@
   Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self exile: Rift Bolt
+  Known top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Mountain, Goblin Guide
   Extras: not_priority_window
   Actions:
@@ -229,6 +230,7 @@
   Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self exile: Rift Bolt
+  Known top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Mountain, Goblin Guide
   Extras: not_priority_window
   Actions:
@@ -527,6 +529,7 @@
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
   Self exile: Rift Bolt [1 ctr]
+  Known top: Exquisite Firecraft, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   Actions:
    0: Pass priority
@@ -559,6 +562,7 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
   Self exile: Rift Bolt
+  Known top: Exquisite Firecraft, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
   Extras: not_priority_window
@@ -582,6 +586,7 @@
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
   Self exile: Rift Bolt
+  Known top: Exquisite Firecraft, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
   Extras: not_priority_window

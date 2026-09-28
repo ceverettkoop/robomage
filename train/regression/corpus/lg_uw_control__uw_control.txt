@@ -109,11 +109,9 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Tundra
-   6: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Tundra
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -274,13 +272,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -669,7 +664,6 @@
    3: Mystic Sanctuary
    4: Plains
    5: Tundra
-   6: Tundra
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -869,8 +863,6 @@
    2: Meticulous Archive
    3: Mystic Sanctuary
    4: Tundra
-   5: Tundra
-   6: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -2421,14 +2413,12 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Flooded Strand (Delve)
-   3: Exile Force of Will (Delve)
-   4: Exile Misty Rainforest (Delve)
-   5: Exile Mystic Sanctuary (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Tune the Narrative (Delve)
-   8: Exile Tune the Narrative (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Misty Rainforest (Delve)
+   4: Exile Mystic Sanctuary (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -2459,7 +2449,6 @@
    4: Exile Mystic Sanctuary (Delve)
    5: Exile Ponder (Delve)
    6: Exile Tune the Narrative (Delve)
-   7: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player B exiles Brainstorm via Delve.
@@ -2489,7 +2478,6 @@
    3: Exile Mystic Sanctuary (Delve)
    4: Exile Ponder (Delve)
    5: Exile Tune the Narrative (Delve)
-   6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.
@@ -2518,7 +2506,6 @@
    2: Exile Mystic Sanctuary (Delve)
    3: Exile Ponder (Delve)
    4: Exile Tune the Narrative (Delve)
-   5: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player B exiles Force of Will via Delve.
@@ -2546,7 +2533,6 @@
    1: Exile Mystic Sanctuary (Delve)
    2: Exile Ponder (Delve)
    3: Exile Tune the Narrative (Delve)
-   4: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Misty Rainforest (Delve))
 --- Narrative ---
   Player B exiles Misty Rainforest via Delve.
@@ -2995,7 +2981,6 @@
    1: Meticulous Archive
    2: Mystic Sanctuary
    3: Tundra
-   4: Tundra
   >> A/A: 1 (Meticulous Archive)
 --- Narrative ---
   Player A shuffles their library
@@ -3700,7 +3685,6 @@
    0: Fail to find
    1: Mystic Sanctuary
    2: Tundra
-   3: Tundra
   >> A/A: 1 (Mystic Sanctuary)
 --- Narrative ---
   Player A shuffles their library
@@ -3729,11 +3713,8 @@
    2: Force of Negation
    3: Force of Will
    4: Ponder
-   5: Ponder
-   6: Swords to Plowshares
-   7: Swords to Plowshares
-   8: Tune the Narrative
-   9: Tune the Narrative
+   5: Swords to Plowshares
+   6: Tune the Narrative
   >> A/A: 0 (Brainstorm)
 --- Narrative ---
   Targeting choice 0
@@ -3986,10 +3967,8 @@
    1: Exile Meticulous Archive (Delve)
    2: Exile Mystic Sanctuary (Delve)
    3: Exile Ponder (Delve)
-   4: Exile Ponder (Delve)
-   5: Exile Tune the Narrative (Delve)
-   6: Exile Tune the Narrative (Delve)
-   7: Exile Wasteland (Delve)
+   4: Exile Tune the Narrative (Delve)
+   5: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flow State (Delve))
 --- Narrative ---
   Player B exiles Flow State via Delve.
@@ -4016,10 +3995,8 @@
    0: Exile Meticulous Archive (Delve)
    1: Exile Mystic Sanctuary (Delve)
    2: Exile Ponder (Delve)
-   3: Exile Ponder (Delve)
-   4: Exile Tune the Narrative (Delve)
-   5: Exile Tune the Narrative (Delve)
-   6: Exile Wasteland (Delve)
+   3: Exile Tune the Narrative (Delve)
+   4: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Meticulous Archive (Delve))
 --- Narrative ---
   Player B exiles Meticulous Archive via Delve.
@@ -4045,10 +4022,8 @@
   Actions:
    0: Exile Mystic Sanctuary (Delve)
    1: Exile Ponder (Delve)
-   2: Exile Ponder (Delve)
-   3: Exile Tune the Narrative (Delve)
-   4: Exile Tune the Narrative (Delve)
-   5: Exile Wasteland (Delve)
+   2: Exile Tune the Narrative (Delve)
+   3: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Mystic Sanctuary (Delve))
 --- Narrative ---
   Player B exiles Mystic Sanctuary via Delve.
@@ -4073,10 +4048,8 @@
   Extras: not_priority_window
   Actions:
    0: Exile Ponder (Delve)
-   1: Exile Ponder (Delve)
-   2: Exile Tune the Narrative (Delve)
-   3: Exile Tune the Narrative (Delve)
-   4: Exile Wasteland (Delve)
+   1: Exile Tune the Narrative (Delve)
+   2: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
   Player B exiles Ponder via Delve.
@@ -4102,8 +4075,7 @@
   Actions:
    0: Exile Ponder (Delve)
    1: Exile Tune the Narrative (Delve)
-   2: Exile Tune the Narrative (Delve)
-   3: Exile Wasteland (Delve)
+   2: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
   Player B exiles Ponder via Delve.
@@ -4188,7 +4160,6 @@
   Actions:
    0: Fail to find
    1: Tundra
-   2: Tundra
   >> B/B: 1 (Tundra)
 --- Narrative ---
   Player B shuffles their library

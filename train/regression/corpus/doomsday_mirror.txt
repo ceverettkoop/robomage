@@ -431,8 +431,7 @@
    1: Swamp
    2: Undercity Sewers
    3: Underground Sea
-   4: Underground Sea
-   5: Island
+   4: Island
   >> B/B: 3 (Underground Sea)
 --- Narrative ---
   Player B shuffles their library
@@ -519,21 +518,12 @@
   Actions:
    0: Fail to find
    1: Doomsday
-   2: Doomsday
-   3: Doomsday
-   4: Doomsday
-   5: Thoughtseize
-   6: Thoughtseize
-   7: Thoughtseize
-   8: Personal Tutor
-   9: Personal Tutor
-  10: Personal Tutor
-  11: Edge of Autumn
-  12: Ponder
-  13: Ponder
-  14: Ponder
-  15: Deep Analysis
-  >> B/B: 11 (Edge of Autumn)
+   2: Thoughtseize
+   3: Personal Tutor
+   4: Edge of Autumn
+   5: Ponder
+   6: Deep Analysis
+  >> B/B: 4 (Edge of Autumn)
 --- Narrative ---
   Player B shuffles their library
   Player B reveals Edge of Autumn and puts it to top of library
@@ -565,6 +555,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -602,6 +593,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -641,6 +633,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -678,6 +671,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -715,6 +709,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -752,6 +747,7 @@
   Opp BF:   Underground Sea (T,NEW)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -776,6 +772,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   Actions:
@@ -812,6 +809,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self drawn=1
@@ -848,6 +846,7 @@
   Opp BF:   Underground Sea (T)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self drawn=1
@@ -873,6 +872,7 @@
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
@@ -916,6 +916,7 @@
   Pending: Ponder (self)
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
@@ -940,6 +941,7 @@
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Thoughtseize, ?, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
@@ -961,6 +963,7 @@
   Self GY: Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Edge of Autumn, Force of Will, Thoughtseize, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
@@ -983,6 +986,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1007,6 +1011,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1046,6 +1051,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1087,6 +1093,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1126,6 +1133,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1165,6 +1173,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1204,6 +1213,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
@@ -1265,6 +1275,7 @@
   Self GY: Ponder, Thoughtseize
   Opp GY:  Personal Tutor, Polluted Delta, Force of Will
   Known top: Force of Will, Thoughtseize, ?, ?, ?
+  Known opp top: Edge of Autumn, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn, Ponder, Verdant Catacombs
   Opp revealed: Polluted Delta, Ponder, Force of Will, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   Extras: opp_passed
@@ -2032,7 +2043,6 @@
    0: Fail to find
    1: Undercity Sewers
    2: Underground Sea
-   3: Underground Sea
   >> A/A: 2 (Underground Sea)
 --- Narrative ---
   Player A shuffles their library
@@ -2445,18 +2455,11 @@
   Actions:
    0: Fail to find
    1: Doomsday
-   2: Doomsday
-   3: Doomsday
-   4: Doomsday
-   5: Thoughtseize
-   6: Thoughtseize
-   7: Personal Tutor
-   8: Personal Tutor
-   9: Ponder
-  10: Ponder
-  11: Ponder
-  12: Deep Analysis
-  >> B/B: 9 (Ponder)
+   2: Thoughtseize
+   3: Personal Tutor
+   4: Ponder
+   5: Deep Analysis
+  >> B/B: 4 (Ponder)
 --- Narrative ---
   Player B shuffles their library
   Player B reveals Ponder and puts it to top of library
@@ -2542,6 +2545,7 @@
   Stack: Verdant Catacombs (ability, opponent)
   Self GY: Misty Rainforest, Street Wraith, Ponder, Thoughtseize
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Known opp top: Ponder, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
   Opp revealed: Polluted Delta, Ponder, Force of Will, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
@@ -3689,53 +3693,29 @@
    3: Ponder (graveyard)
    4: Misty Rainforest (graveyard)
    5: Doomsday (library)
-   6: Doomsday (library)
-   7: Doomsday (library)
-   8: Force of Will (library)
-   9: Force of Will (library)
-  10: Force of Will (library)
-  11: Thoughtseize (library)
-  12: Thoughtseize (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Dark Ritual (library)
-  16: Dark Ritual (library)
-  17: Dark Ritual (library)
-  18: Lotus Petal (library)
-  19: Lotus Petal (library)
-  20: Lotus Petal (library)
-  21: Lotus Petal (library)
-  22: Lion's Eye Diamond (library)
-  23: Thassa's Oracle (library)
-  24: Personal Tutor (library)
-  25: Personal Tutor (library)
-  26: Personal Tutor (library)
-  27: Personal Tutor (library)
-  28: Street Wraith (library)
-  29: Street Wraith (library)
-  30: Street Wraith (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Brainstorm (library)
-  34: Brainstorm (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Swamp (library)
-  39: Undercity Sewers (library)
-  40: Polluted Delta (library)
-  41: Polluted Delta (library)
-  42: Polluted Delta (library)
-  43: Polluted Delta (library)
-  44: Underground Sea (library)
-  45: Bloodstained Mire (library)
-  46: Verdant Catacombs (library)
-  47: Flooded Strand (library)
-  48: Cavern of Souls (library)
-  49: Barrowgoyf (library)
-  50: Dauthi Voidwalker (library)
-  51: Deep Analysis (library)
-  >> A/A: 23 (Thassa's Oracle (library))
+   6: Force of Will (library)
+   7: Thoughtseize (library)
+   8: Daze (library)
+   9: Dark Ritual (library)
+  10: Lotus Petal (library)
+  11: Lion's Eye Diamond (library)
+  12: Thassa's Oracle (library)
+  13: Personal Tutor (library)
+  14: Street Wraith (library)
+  15: Brainstorm (library)
+  16: Ponder (library)
+  17: Swamp (library)
+  18: Undercity Sewers (library)
+  19: Polluted Delta (library)
+  20: Underground Sea (library)
+  21: Bloodstained Mire (library)
+  22: Verdant Catacombs (library)
+  23: Flooded Strand (library)
+  24: Cavern of Souls (library)
+  25: Barrowgoyf (library)
+  26: Dauthi Voidwalker (library)
+  27: Deep Analysis (library)
+  >> A/A: 12 (Thassa's Oracle (library))
 --- Narrative ---
   Player A puts Thassa's Oracle to top of library
   Searching Player A's graveyard and library:
@@ -3763,51 +3743,27 @@
    3: Ponder (graveyard)
    4: Misty Rainforest (graveyard)
    5: Doomsday (library)
-   6: Doomsday (library)
-   7: Doomsday (library)
-   8: Force of Will (library)
-   9: Force of Will (library)
-  10: Force of Will (library)
-  11: Thoughtseize (library)
-  12: Thoughtseize (library)
-  13: Daze (library)
-  14: Daze (library)
-  15: Dark Ritual (library)
-  16: Dark Ritual (library)
-  17: Dark Ritual (library)
-  18: Lotus Petal (library)
-  19: Lotus Petal (library)
-  20: Lotus Petal (library)
-  21: Lotus Petal (library)
-  22: Lion's Eye Diamond (library)
-  23: Personal Tutor (library)
-  24: Personal Tutor (library)
-  25: Personal Tutor (library)
-  26: Personal Tutor (library)
-  27: Street Wraith (library)
-  28: Street Wraith (library)
-  29: Street Wraith (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Brainstorm (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Swamp (library)
-  38: Undercity Sewers (library)
-  39: Polluted Delta (library)
-  40: Polluted Delta (library)
-  41: Polluted Delta (library)
-  42: Polluted Delta (library)
-  43: Underground Sea (library)
-  44: Bloodstained Mire (library)
-  45: Verdant Catacombs (library)
-  46: Flooded Strand (library)
-  47: Cavern of Souls (library)
-  48: Barrowgoyf (library)
-  49: Dauthi Voidwalker (library)
-  50: Deep Analysis (library)
+   6: Force of Will (library)
+   7: Thoughtseize (library)
+   8: Daze (library)
+   9: Dark Ritual (library)
+  10: Lotus Petal (library)
+  11: Lion's Eye Diamond (library)
+  12: Personal Tutor (library)
+  13: Street Wraith (library)
+  14: Brainstorm (library)
+  15: Ponder (library)
+  16: Swamp (library)
+  17: Undercity Sewers (library)
+  18: Polluted Delta (library)
+  19: Underground Sea (library)
+  20: Bloodstained Mire (library)
+  21: Verdant Catacombs (library)
+  22: Flooded Strand (library)
+  23: Cavern of Souls (library)
+  24: Barrowgoyf (library)
+  25: Dauthi Voidwalker (library)
+  26: Deep Analysis (library)
   >> A/A: 2 (Street Wraith (graveyard))
 --- Narrative ---
   Player A puts Street Wraith to top of library
@@ -3835,52 +3791,28 @@
    2: Ponder (graveyard)
    3: Misty Rainforest (graveyard)
    4: Doomsday (library)
-   5: Doomsday (library)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Force of Will (library)
-   9: Force of Will (library)
-  10: Thoughtseize (library)
-  11: Thoughtseize (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Dark Ritual (library)
-  15: Dark Ritual (library)
-  16: Dark Ritual (library)
-  17: Lotus Petal (library)
-  18: Lotus Petal (library)
-  19: Lotus Petal (library)
-  20: Lotus Petal (library)
-  21: Lion's Eye Diamond (library)
-  22: Personal Tutor (library)
-  23: Personal Tutor (library)
-  24: Personal Tutor (library)
-  25: Personal Tutor (library)
-  26: Street Wraith (library)
-  27: Street Wraith (library)
-  28: Street Wraith (library)
-  29: Brainstorm (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Ponder (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Swamp (library)
-  37: Undercity Sewers (library)
-  38: Polluted Delta (library)
-  39: Polluted Delta (library)
-  40: Polluted Delta (library)
-  41: Polluted Delta (library)
-  42: Underground Sea (library)
-  43: Bloodstained Mire (library)
-  44: Verdant Catacombs (library)
-  45: Flooded Strand (library)
-  46: Cavern of Souls (library)
-  47: Barrowgoyf (library)
-  48: Dauthi Voidwalker (library)
-  49: Deep Analysis (library)
-  >> A/A: 26 (Street Wraith (library))
+   5: Force of Will (library)
+   6: Thoughtseize (library)
+   7: Daze (library)
+   8: Dark Ritual (library)
+   9: Lotus Petal (library)
+  10: Lion's Eye Diamond (library)
+  11: Personal Tutor (library)
+  12: Street Wraith (library)
+  13: Brainstorm (library)
+  14: Ponder (library)
+  15: Swamp (library)
+  16: Undercity Sewers (library)
+  17: Polluted Delta (library)
+  18: Underground Sea (library)
+  19: Bloodstained Mire (library)
+  20: Verdant Catacombs (library)
+  21: Flooded Strand (library)
+  22: Cavern of Souls (library)
+  23: Barrowgoyf (library)
+  24: Dauthi Voidwalker (library)
+  25: Deep Analysis (library)
+  >> A/A: 12 (Street Wraith (library))
 --- Narrative ---
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
@@ -3907,51 +3839,28 @@
    2: Ponder (graveyard)
    3: Misty Rainforest (graveyard)
    4: Doomsday (library)
-   5: Doomsday (library)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Force of Will (library)
-   9: Force of Will (library)
-  10: Thoughtseize (library)
-  11: Thoughtseize (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Dark Ritual (library)
-  15: Dark Ritual (library)
-  16: Dark Ritual (library)
-  17: Lotus Petal (library)
-  18: Lotus Petal (library)
-  19: Lotus Petal (library)
-  20: Lotus Petal (library)
-  21: Lion's Eye Diamond (library)
-  22: Personal Tutor (library)
-  23: Personal Tutor (library)
-  24: Personal Tutor (library)
-  25: Personal Tutor (library)
-  26: Street Wraith (library)
-  27: Street Wraith (library)
-  28: Brainstorm (library)
-  29: Brainstorm (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Ponder (library)
-  33: Ponder (library)
-  34: Ponder (library)
-  35: Swamp (library)
-  36: Undercity Sewers (library)
-  37: Polluted Delta (library)
-  38: Polluted Delta (library)
-  39: Polluted Delta (library)
-  40: Polluted Delta (library)
-  41: Underground Sea (library)
-  42: Bloodstained Mire (library)
-  43: Verdant Catacombs (library)
-  44: Flooded Strand (library)
-  45: Cavern of Souls (library)
-  46: Barrowgoyf (library)
-  47: Dauthi Voidwalker (library)
-  48: Deep Analysis (library)
-  >> A/A: 26 (Street Wraith (library))
+   5: Force of Will (library)
+   6: Thoughtseize (library)
+   7: Daze (library)
+   8: Dark Ritual (library)
+   9: Lotus Petal (library)
+  10: Lion's Eye Diamond (library)
+  11: Personal Tutor (library)
+  12: Street Wraith (library)
+  13: Brainstorm (library)
+  14: Ponder (library)
+  15: Swamp (library)
+  16: Undercity Sewers (library)
+  17: Polluted Delta (library)
+  18: Underground Sea (library)
+  19: Bloodstained Mire (library)
+  20: Verdant Catacombs (library)
+  21: Flooded Strand (library)
+  22: Cavern of Souls (library)
+  23: Barrowgoyf (library)
+  24: Dauthi Voidwalker (library)
+  25: Deep Analysis (library)
+  >> A/A: 12 (Street Wraith (library))
 --- Narrative ---
   Player A puts Street Wraith to top of library
   Searching Player A's graveyard and library:
@@ -3978,50 +3887,28 @@
    2: Ponder (graveyard)
    3: Misty Rainforest (graveyard)
    4: Doomsday (library)
-   5: Doomsday (library)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Force of Will (library)
-   9: Force of Will (library)
-  10: Thoughtseize (library)
-  11: Thoughtseize (library)
-  12: Daze (library)
-  13: Daze (library)
-  14: Dark Ritual (library)
-  15: Dark Ritual (library)
-  16: Dark Ritual (library)
-  17: Lotus Petal (library)
-  18: Lotus Petal (library)
-  19: Lotus Petal (library)
-  20: Lotus Petal (library)
-  21: Lion's Eye Diamond (library)
-  22: Personal Tutor (library)
-  23: Personal Tutor (library)
-  24: Personal Tutor (library)
-  25: Personal Tutor (library)
-  26: Street Wraith (library)
-  27: Brainstorm (library)
-  28: Brainstorm (library)
-  29: Brainstorm (library)
-  30: Brainstorm (library)
-  31: Ponder (library)
-  32: Ponder (library)
-  33: Ponder (library)
-  34: Swamp (library)
-  35: Undercity Sewers (library)
-  36: Polluted Delta (library)
-  37: Polluted Delta (library)
-  38: Polluted Delta (library)
-  39: Polluted Delta (library)
-  40: Underground Sea (library)
-  41: Bloodstained Mire (library)
-  42: Verdant Catacombs (library)
-  43: Flooded Strand (library)
-  44: Cavern of Souls (library)
-  45: Barrowgoyf (library)
-  46: Dauthi Voidwalker (library)
-  47: Deep Analysis (library)
-  >> A/A: 26 (Street Wraith (library))
+   5: Force of Will (library)
+   6: Thoughtseize (library)
+   7: Daze (library)
+   8: Dark Ritual (library)
+   9: Lotus Petal (library)
+  10: Lion's Eye Diamond (library)
+  11: Personal Tutor (library)
+  12: Street Wraith (library)
+  13: Brainstorm (library)
+  14: Ponder (library)
+  15: Swamp (library)
+  16: Undercity Sewers (library)
+  17: Polluted Delta (library)
+  18: Underground Sea (library)
+  19: Bloodstained Mire (library)
+  20: Verdant Catacombs (library)
+  21: Flooded Strand (library)
+  22: Cavern of Souls (library)
+  23: Barrowgoyf (library)
+  24: Dauthi Voidwalker (library)
+  25: Deep Analysis (library)
+  >> A/A: 12 (Street Wraith (library))
 --- Narrative ---
   Player A puts Street Wraith to top of library
   Resolving ability (category: ChangeZoneAll)
@@ -4096,10 +3983,8 @@
   Actions:
    0: Street Wraith  [#4]
    1: Street Wraith  [#4]
-   2: Street Wraith  [#4]
-   3: Street Wraith  [#4]
-   4: Thassa's Oracle  [#4]
-  >> A/A: 4 (Thassa's Oracle)
+   2: Thassa's Oracle  [#4]
+  >> A/A: 2 (Thassa's Oracle)
 --- Narrative ---
   Choose which card goes 4 from top:
 
@@ -4122,8 +4007,6 @@
   Actions:
    0: Street Wraith  [#3]
    1: Street Wraith  [#3]
-   2: Street Wraith  [#3]
-   3: Street Wraith  [#3]
   >> A/A: 0 (Street Wraith)
 --- Narrative ---
   Choose which card goes 3 from top:
@@ -4147,7 +4030,6 @@
   Actions:
    0: Street Wraith  [#2]
    1: Street Wraith  [#2]
-   2: Street Wraith  [#2]
   >> A/A: 0 (Street Wraith)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -4926,56 +4808,33 @@
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
    2: Personal Tutor (graveyard)
-   3: Personal Tutor (graveyard)
-   4: Ponder (graveyard)
-   5: Polluted Delta (graveyard)
-   6: Verdant Catacombs (graveyard)
-   7: Doomsday (library)
-   8: Doomsday (library)
-   9: Doomsday (library)
-  10: Force of Will (library)
-  11: Force of Will (library)
-  12: Force of Will (library)
-  13: Thoughtseize (library)
-  14: Thoughtseize (library)
-  15: Daze (library)
-  16: Daze (library)
-  17: Daze (library)
-  18: Dark Ritual (library)
-  19: Dark Ritual (library)
-  20: Dark Ritual (library)
-  21: Lotus Petal (library)
-  22: Lotus Petal (library)
-  23: Lotus Petal (library)
-  24: Lotus Petal (library)
-  25: Lion's Eye Diamond (library)
-  26: Thassa's Oracle (library)
-  27: Personal Tutor (library)
-  28: Personal Tutor (library)
-  29: Street Wraith (library)
-  30: Street Wraith (library)
-  31: Street Wraith (library)
-  32: Brainstorm (library)
-  33: Brainstorm (library)
-  34: Brainstorm (library)
-  35: Brainstorm (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Ponder (library)
-  39: Swamp (library)
-  40: Undercity Sewers (library)
-  41: Polluted Delta (library)
-  42: Polluted Delta (library)
-  43: Polluted Delta (library)
-  44: Bloodstained Mire (library)
-  45: Island (library)
-  46: Flooded Strand (library)
-  47: Misty Rainforest (library)
-  48: Cavern of Souls (library)
-  49: Barrowgoyf (library)
-  50: Dauthi Voidwalker (library)
-  51: Deep Analysis (library)
-  >> B/B: 26 (Thassa's Oracle (library))
+   3: Ponder (graveyard)
+   4: Polluted Delta (graveyard)
+   5: Verdant Catacombs (graveyard)
+   6: Doomsday (library)
+   7: Force of Will (library)
+   8: Thoughtseize (library)
+   9: Daze (library)
+  10: Dark Ritual (library)
+  11: Lotus Petal (library)
+  12: Lion's Eye Diamond (library)
+  13: Thassa's Oracle (library)
+  14: Personal Tutor (library)
+  15: Street Wraith (library)
+  16: Brainstorm (library)
+  17: Ponder (library)
+  18: Swamp (library)
+  19: Undercity Sewers (library)
+  20: Polluted Delta (library)
+  21: Bloodstained Mire (library)
+  22: Island (library)
+  23: Flooded Strand (library)
+  24: Misty Rainforest (library)
+  25: Cavern of Souls (library)
+  26: Barrowgoyf (library)
+  27: Dauthi Voidwalker (library)
+  28: Deep Analysis (library)
+  >> B/B: 13 (Thassa's Oracle (library))
 --- Narrative ---
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
@@ -5001,55 +4860,32 @@
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
    2: Personal Tutor (graveyard)
-   3: Personal Tutor (graveyard)
-   4: Ponder (graveyard)
-   5: Polluted Delta (graveyard)
-   6: Verdant Catacombs (graveyard)
-   7: Doomsday (library)
-   8: Doomsday (library)
-   9: Doomsday (library)
-  10: Force of Will (library)
-  11: Force of Will (library)
-  12: Force of Will (library)
-  13: Thoughtseize (library)
-  14: Thoughtseize (library)
-  15: Daze (library)
-  16: Daze (library)
-  17: Daze (library)
-  18: Dark Ritual (library)
-  19: Dark Ritual (library)
-  20: Dark Ritual (library)
-  21: Lotus Petal (library)
-  22: Lotus Petal (library)
-  23: Lotus Petal (library)
-  24: Lotus Petal (library)
-  25: Lion's Eye Diamond (library)
-  26: Personal Tutor (library)
-  27: Personal Tutor (library)
-  28: Street Wraith (library)
-  29: Street Wraith (library)
-  30: Street Wraith (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Brainstorm (library)
-  34: Brainstorm (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Ponder (library)
-  38: Swamp (library)
-  39: Undercity Sewers (library)
-  40: Polluted Delta (library)
-  41: Polluted Delta (library)
-  42: Polluted Delta (library)
-  43: Bloodstained Mire (library)
-  44: Island (library)
-  45: Flooded Strand (library)
-  46: Misty Rainforest (library)
-  47: Cavern of Souls (library)
-  48: Barrowgoyf (library)
-  49: Dauthi Voidwalker (library)
-  50: Deep Analysis (library)
-  >> B/B: 28 (Street Wraith (library))
+   3: Ponder (graveyard)
+   4: Polluted Delta (graveyard)
+   5: Verdant Catacombs (graveyard)
+   6: Doomsday (library)
+   7: Force of Will (library)
+   8: Thoughtseize (library)
+   9: Daze (library)
+  10: Dark Ritual (library)
+  11: Lotus Petal (library)
+  12: Lion's Eye Diamond (library)
+  13: Personal Tutor (library)
+  14: Street Wraith (library)
+  15: Brainstorm (library)
+  16: Ponder (library)
+  17: Swamp (library)
+  18: Undercity Sewers (library)
+  19: Polluted Delta (library)
+  20: Bloodstained Mire (library)
+  21: Island (library)
+  22: Flooded Strand (library)
+  23: Misty Rainforest (library)
+  24: Cavern of Souls (library)
+  25: Barrowgoyf (library)
+  26: Dauthi Voidwalker (library)
+  27: Deep Analysis (library)
+  >> B/B: 14 (Street Wraith (library))
 --- Narrative ---
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
@@ -5075,54 +4911,32 @@
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
    2: Personal Tutor (graveyard)
-   3: Personal Tutor (graveyard)
-   4: Ponder (graveyard)
-   5: Polluted Delta (graveyard)
-   6: Verdant Catacombs (graveyard)
-   7: Doomsday (library)
-   8: Doomsday (library)
-   9: Doomsday (library)
-  10: Force of Will (library)
-  11: Force of Will (library)
-  12: Force of Will (library)
-  13: Thoughtseize (library)
-  14: Thoughtseize (library)
-  15: Daze (library)
-  16: Daze (library)
-  17: Daze (library)
-  18: Dark Ritual (library)
-  19: Dark Ritual (library)
-  20: Dark Ritual (library)
-  21: Lotus Petal (library)
-  22: Lotus Petal (library)
-  23: Lotus Petal (library)
-  24: Lotus Petal (library)
-  25: Lion's Eye Diamond (library)
-  26: Personal Tutor (library)
-  27: Personal Tutor (library)
-  28: Street Wraith (library)
-  29: Street Wraith (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Brainstorm (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Ponder (library)
-  37: Swamp (library)
-  38: Undercity Sewers (library)
-  39: Polluted Delta (library)
-  40: Polluted Delta (library)
-  41: Polluted Delta (library)
-  42: Bloodstained Mire (library)
-  43: Island (library)
-  44: Flooded Strand (library)
-  45: Misty Rainforest (library)
-  46: Cavern of Souls (library)
-  47: Barrowgoyf (library)
-  48: Dauthi Voidwalker (library)
-  49: Deep Analysis (library)
-  >> B/B: 28 (Street Wraith (library))
+   3: Ponder (graveyard)
+   4: Polluted Delta (graveyard)
+   5: Verdant Catacombs (graveyard)
+   6: Doomsday (library)
+   7: Force of Will (library)
+   8: Thoughtseize (library)
+   9: Daze (library)
+  10: Dark Ritual (library)
+  11: Lotus Petal (library)
+  12: Lion's Eye Diamond (library)
+  13: Personal Tutor (library)
+  14: Street Wraith (library)
+  15: Brainstorm (library)
+  16: Ponder (library)
+  17: Swamp (library)
+  18: Undercity Sewers (library)
+  19: Polluted Delta (library)
+  20: Bloodstained Mire (library)
+  21: Island (library)
+  22: Flooded Strand (library)
+  23: Misty Rainforest (library)
+  24: Cavern of Souls (library)
+  25: Barrowgoyf (library)
+  26: Dauthi Voidwalker (library)
+  27: Deep Analysis (library)
+  >> B/B: 14 (Street Wraith (library))
 --- Narrative ---
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
@@ -5148,53 +4962,32 @@
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
    2: Personal Tutor (graveyard)
-   3: Personal Tutor (graveyard)
-   4: Ponder (graveyard)
-   5: Polluted Delta (graveyard)
-   6: Verdant Catacombs (graveyard)
-   7: Doomsday (library)
-   8: Doomsday (library)
-   9: Doomsday (library)
-  10: Force of Will (library)
-  11: Force of Will (library)
-  12: Force of Will (library)
-  13: Thoughtseize (library)
-  14: Thoughtseize (library)
-  15: Daze (library)
-  16: Daze (library)
-  17: Daze (library)
-  18: Dark Ritual (library)
-  19: Dark Ritual (library)
-  20: Dark Ritual (library)
-  21: Lotus Petal (library)
-  22: Lotus Petal (library)
-  23: Lotus Petal (library)
-  24: Lotus Petal (library)
-  25: Lion's Eye Diamond (library)
-  26: Personal Tutor (library)
-  27: Personal Tutor (library)
-  28: Street Wraith (library)
-  29: Brainstorm (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Brainstorm (library)
-  33: Ponder (library)
-  34: Ponder (library)
-  35: Ponder (library)
-  36: Swamp (library)
-  37: Undercity Sewers (library)
-  38: Polluted Delta (library)
-  39: Polluted Delta (library)
-  40: Polluted Delta (library)
-  41: Bloodstained Mire (library)
-  42: Island (library)
-  43: Flooded Strand (library)
-  44: Misty Rainforest (library)
-  45: Cavern of Souls (library)
-  46: Barrowgoyf (library)
-  47: Dauthi Voidwalker (library)
-  48: Deep Analysis (library)
-  >> B/B: 28 (Street Wraith (library))
+   3: Ponder (graveyard)
+   4: Polluted Delta (graveyard)
+   5: Verdant Catacombs (graveyard)
+   6: Doomsday (library)
+   7: Force of Will (library)
+   8: Thoughtseize (library)
+   9: Daze (library)
+  10: Dark Ritual (library)
+  11: Lotus Petal (library)
+  12: Lion's Eye Diamond (library)
+  13: Personal Tutor (library)
+  14: Street Wraith (library)
+  15: Brainstorm (library)
+  16: Ponder (library)
+  17: Swamp (library)
+  18: Undercity Sewers (library)
+  19: Polluted Delta (library)
+  20: Bloodstained Mire (library)
+  21: Island (library)
+  22: Flooded Strand (library)
+  23: Misty Rainforest (library)
+  24: Cavern of Souls (library)
+  25: Barrowgoyf (library)
+  26: Dauthi Voidwalker (library)
+  27: Deep Analysis (library)
+  >> B/B: 14 (Street Wraith (library))
 --- Narrative ---
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
@@ -5220,52 +5013,31 @@
    0: Force of Will (graveyard)
    1: Thoughtseize (graveyard)
    2: Personal Tutor (graveyard)
-   3: Personal Tutor (graveyard)
-   4: Ponder (graveyard)
-   5: Polluted Delta (graveyard)
-   6: Verdant Catacombs (graveyard)
-   7: Doomsday (library)
-   8: Doomsday (library)
-   9: Doomsday (library)
-  10: Force of Will (library)
-  11: Force of Will (library)
-  12: Force of Will (library)
-  13: Thoughtseize (library)
-  14: Thoughtseize (library)
-  15: Daze (library)
-  16: Daze (library)
-  17: Daze (library)
-  18: Dark Ritual (library)
-  19: Dark Ritual (library)
-  20: Dark Ritual (library)
-  21: Lotus Petal (library)
-  22: Lotus Petal (library)
-  23: Lotus Petal (library)
-  24: Lotus Petal (library)
-  25: Lion's Eye Diamond (library)
-  26: Personal Tutor (library)
-  27: Personal Tutor (library)
-  28: Brainstorm (library)
-  29: Brainstorm (library)
-  30: Brainstorm (library)
-  31: Brainstorm (library)
-  32: Ponder (library)
-  33: Ponder (library)
-  34: Ponder (library)
-  35: Swamp (library)
-  36: Undercity Sewers (library)
-  37: Polluted Delta (library)
-  38: Polluted Delta (library)
-  39: Polluted Delta (library)
-  40: Bloodstained Mire (library)
-  41: Island (library)
-  42: Flooded Strand (library)
-  43: Misty Rainforest (library)
-  44: Cavern of Souls (library)
-  45: Barrowgoyf (library)
-  46: Dauthi Voidwalker (library)
-  47: Deep Analysis (library)
-  >> B/B: 4 (Ponder (graveyard))
+   3: Ponder (graveyard)
+   4: Polluted Delta (graveyard)
+   5: Verdant Catacombs (graveyard)
+   6: Doomsday (library)
+   7: Force of Will (library)
+   8: Thoughtseize (library)
+   9: Daze (library)
+  10: Dark Ritual (library)
+  11: Lotus Petal (library)
+  12: Lion's Eye Diamond (library)
+  13: Personal Tutor (library)
+  14: Brainstorm (library)
+  15: Ponder (library)
+  16: Swamp (library)
+  17: Undercity Sewers (library)
+  18: Polluted Delta (library)
+  19: Bloodstained Mire (library)
+  20: Island (library)
+  21: Flooded Strand (library)
+  22: Misty Rainforest (library)
+  23: Cavern of Souls (library)
+  24: Barrowgoyf (library)
+  25: Dauthi Voidwalker (library)
+  26: Deep Analysis (library)
+  >> B/B: 3 (Ponder (graveyard))
 --- Narrative ---
   Player B puts Ponder to top of library
   Resolving ability (category: ChangeZoneAll)
@@ -5341,9 +5113,7 @@
   Actions:
    0: Ponder  [#4]
    1: Street Wraith  [#4]
-   2: Street Wraith  [#4]
-   3: Street Wraith  [#4]
-   4: Thassa's Oracle  [#4]
+   2: Thassa's Oracle  [#4]
   >> B/B: 0 (Ponder)
 --- Narrative ---
   Choose which card goes 4 from top:
@@ -5367,10 +5137,8 @@
   Extras: not_priority_window
   Actions:
    0: Street Wraith  [#3]
-   1: Street Wraith  [#3]
-   2: Street Wraith  [#3]
-   3: Thassa's Oracle  [#3]
-  >> B/B: 3 (Thassa's Oracle)
+   1: Thassa's Oracle  [#3]
+  >> B/B: 1 (Thassa's Oracle)
 --- Narrative ---
   Choose which card goes 3 from top:
 
@@ -5393,8 +5161,6 @@
   Extras: not_priority_window
   Actions:
    0: Street Wraith  [#2]
-   1: Street Wraith  [#2]
-   2: Street Wraith  [#2]
   >> B/B: 0 (Street Wraith)
 --- Narrative ---
   Choose which card goes 2 from top:
@@ -5418,7 +5184,6 @@
   Extras: not_priority_window
   Actions:
    0: Street Wraith  [#1]
-   1: Street Wraith  [#1]
   >> B/B: 0 (Street Wraith)
 --- Narrative ---
   Resolving ability (category: LoseLife, amount: 8)

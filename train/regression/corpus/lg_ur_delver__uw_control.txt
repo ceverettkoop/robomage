@@ -194,6 +194,7 @@
   Self BF:  Mishra's Bauble (NEW)
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  Known opp top: The One Ring, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_revolt
   Actions:
@@ -217,6 +218,7 @@
   Stack: Thundering Falls (ability, self) [amt=1]
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
+  Known opp top: The One Ring, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -236,6 +238,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
+  Known opp top: The One Ring, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -264,6 +267,7 @@
   Delayed: Mishra's Bauble (self, upkeep, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Pending: Thundering Falls (self)
   Self GY: Mishra's Bauble, Mishra's Bauble
+  Known opp top: The One Ring, ?, ?, ?, ?
   This turn: self spells=2 noncreature=2
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
@@ -287,6 +291,7 @@
   Self BF:  Thundering Falls (T)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Known opp top: The One Ring, ?, ?, ?, ?
   Extras: not_priority_window
   Actions:
    0: Delayed trigger  [#0]
@@ -356,13 +361,10 @@
   Actions:
    0: Fail to find
    1: Island
-   2: Island
-   3: Meticulous Archive
-   4: Mystic Sanctuary
-   5: Plains
-   6: Tundra
-   7: Tundra
-   8: Tundra
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Plains
+   5: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1001,7 +1003,6 @@
    1: Island
    2: Meticulous Archive
    3: Tundra
-   4: Tundra
   >> B/B: 1 (Island)
 --- Narrative ---
   Player B shuffles their library
@@ -1954,11 +1955,9 @@
    1: Exile Force of Will (Delve)
    2: Exile Misty Rainforest (Delve)
    3: Exile Ponder (Delve)
-   4: Exile Ponder (Delve)
-   5: Exile Swords to Plowshares (Delve)
-   6: Exile Tamiyo, Inquisitive Student (Delve)
-   7: Exile Tamiyo, Inquisitive Student (Delve)
-   8: Exile Tune the Narrative (Delve)
+   4: Exile Swords to Plowshares (Delve)
+   5: Exile Tamiyo, Inquisitive Student (Delve)
+   6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
   Player B exiles Flooded Strand via Delve.
@@ -1983,11 +1982,9 @@
    0: Exile Force of Will (Delve)
    1: Exile Misty Rainforest (Delve)
    2: Exile Ponder (Delve)
-   3: Exile Ponder (Delve)
-   4: Exile Swords to Plowshares (Delve)
-   5: Exile Tamiyo, Inquisitive Student (Delve)
-   6: Exile Tamiyo, Inquisitive Student (Delve)
-   7: Exile Tune the Narrative (Delve)
+   3: Exile Swords to Plowshares (Delve)
+   4: Exile Tamiyo, Inquisitive Student (Delve)
+   5: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
   Player B exiles Force of Will via Delve.
@@ -2011,11 +2008,9 @@
   Actions:
    0: Exile Misty Rainforest (Delve)
    1: Exile Ponder (Delve)
-   2: Exile Ponder (Delve)
-   3: Exile Swords to Plowshares (Delve)
-   4: Exile Tamiyo, Inquisitive Student (Delve)
-   5: Exile Tamiyo, Inquisitive Student (Delve)
-   6: Exile Tune the Narrative (Delve)
+   2: Exile Swords to Plowshares (Delve)
+   3: Exile Tamiyo, Inquisitive Student (Delve)
+   4: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Misty Rainforest (Delve))
 --- Narrative ---
   Player B exiles Misty Rainforest via Delve.
@@ -2038,11 +2033,9 @@
   Extras: opp_revolt, not_priority_window
   Actions:
    0: Exile Ponder (Delve)
-   1: Exile Ponder (Delve)
-   2: Exile Swords to Plowshares (Delve)
-   3: Exile Tamiyo, Inquisitive Student (Delve)
-   4: Exile Tamiyo, Inquisitive Student (Delve)
-   5: Exile Tune the Narrative (Delve)
+   1: Exile Swords to Plowshares (Delve)
+   2: Exile Tamiyo, Inquisitive Student (Delve)
+   3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
   Player B exiles Ponder via Delve.
@@ -2067,8 +2060,7 @@
    0: Exile Ponder (Delve)
    1: Exile Swords to Plowshares (Delve)
    2: Exile Tamiyo, Inquisitive Student (Delve)
-   3: Exile Tamiyo, Inquisitive Student (Delve)
-   4: Exile Tune the Narrative (Delve)
+   3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
   Player B exiles Ponder via Delve.
@@ -2123,7 +2115,7 @@
    1: Play Scalding Tarn
    2: Cast Murktide Regent  [#0]
    3: Cast Preordain  [#0]
-   4: Equip Cori-Steel Cutter  [#32]
+   4: Equip Cori-Steel Cutter  [#0]
   >> A/A: 2 (Cast Murktide Regent)
 --- Narrative ---
   Choose how many cards to exile via Delve (4-5):
@@ -2167,16 +2159,12 @@
   Extras: not_priority_window
   Actions:
    0: Exile Brainstorm (Delve)
-   1: Exile Brainstorm (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Daze (Delve)
-   4: Exile Lightning Bolt (Delve)
-   5: Exile Mishra's Bauble (Delve)
-   6: Exile Mishra's Bauble (Delve)
-   7: Exile Mishra's Bauble (Delve)
-   8: Exile Ponder (Delve)
-   9: Exile Scalding Tarn (Delve)
-  10: Exile Unholy Heat (Delve)
+   1: Exile Daze (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Mishra's Bauble (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Scalding Tarn (Delve)
+   6: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -2200,14 +2188,11 @@
   Actions:
    0: Exile Brainstorm (Delve)
    1: Exile Daze (Delve)
-   2: Exile Daze (Delve)
-   3: Exile Lightning Bolt (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Mishra's Bauble (Delve)
-   6: Exile Mishra's Bauble (Delve)
-   7: Exile Ponder (Delve)
-   8: Exile Scalding Tarn (Delve)
-   9: Exile Unholy Heat (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Mishra's Bauble (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Scalding Tarn (Delve)
+   6: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
   Player A exiles Brainstorm via Delve.
@@ -2230,14 +2215,11 @@
   Extras: not_priority_window
   Actions:
    0: Exile Daze (Delve)
-   1: Exile Daze (Delve)
-   2: Exile Lightning Bolt (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Mishra's Bauble (Delve)
-   6: Exile Ponder (Delve)
-   7: Exile Scalding Tarn (Delve)
-   8: Exile Unholy Heat (Delve)
+   1: Exile Lightning Bolt (Delve)
+   2: Exile Mishra's Bauble (Delve)
+   3: Exile Ponder (Delve)
+   4: Exile Scalding Tarn (Delve)
+   5: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player A exiles Daze via Delve.
@@ -2262,11 +2244,9 @@
    0: Exile Daze (Delve)
    1: Exile Lightning Bolt (Delve)
    2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Mishra's Bauble (Delve)
-   5: Exile Ponder (Delve)
-   6: Exile Scalding Tarn (Delve)
-   7: Exile Unholy Heat (Delve)
+   3: Exile Ponder (Delve)
+   4: Exile Scalding Tarn (Delve)
+   5: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
   Player A exiles Daze via Delve.
@@ -2290,11 +2270,9 @@
   Actions:
    0: Exile Lightning Bolt (Delve)
    1: Exile Mishra's Bauble (Delve)
-   2: Exile Mishra's Bauble (Delve)
-   3: Exile Mishra's Bauble (Delve)
-   4: Exile Ponder (Delve)
-   5: Exile Scalding Tarn (Delve)
-   6: Exile Unholy Heat (Delve)
+   2: Exile Ponder (Delve)
+   3: Exile Scalding Tarn (Delve)
+   4: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Lightning Bolt (Delve))
 --- Narrative ---
   Player A exiles Lightning Bolt via Delve.
@@ -2527,7 +2505,6 @@
    1: Island
    2: Mystic Sanctuary
    3: Volcanic Island
-   4: Volcanic Island
   >> A/A: 1 (Island)
 --- Narrative ---
   Player A shuffles their library
@@ -2682,7 +2659,7 @@
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
    2: Cast Flow State  [#0]
-   3: Equip Cori-Steel Cutter  [#32]
+   3: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
   Player A activated Thundering Falls for 1(R)
@@ -2780,7 +2757,7 @@
   Actions:
    0: Pass priority
    1: Cast Flow State  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Flow State)
 --- Narrative ---
   Player A activated Island for 1(U)
@@ -3563,7 +3540,6 @@
   Actions:
    0: Fail to find
    1: Tundra
-   2: Tundra
   >> B/B: 1 (Tundra)
 --- Narrative ---
   Player B shuffles their library
@@ -3749,7 +3725,7 @@
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
-   2: Equip Cori-Steel Cutter  [#32]
+   2: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Cast Tamiyo, Inquisitive Student)
 --- Narrative ---
   Player A activated Thundering Falls for 1(U)
@@ -3801,7 +3777,7 @@
   Extras: opp_revolt
   Actions:
    0: Pass priority
-   1: Equip Cori-Steel Cutter  [#32]
+   1: Equip Cori-Steel Cutter  [#0]
   >> A/A: 1 (Equip Cori-Steel Cutter)
 --- Narrative ---
   Choose target for Cori-Steel Cutter:

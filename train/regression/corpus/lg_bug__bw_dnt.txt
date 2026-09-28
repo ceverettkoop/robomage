@@ -162,9 +162,7 @@
    2: Island
    3: Swamp
    4: Tropical Island
-   5: Tropical Island
-   6: Underground Sea
-   7: Underground Sea
+   5: Underground Sea
   >> A/A: 1 (Bayou)
 --- Narrative ---
   Player A shuffles their library
@@ -487,10 +485,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Plains
-   5: Swamp
+   2: Swamp
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -913,9 +908,7 @@
   Actions:
    0: Fail to find
    1: Plains
-   2: Plains
-   3: Plains
-   4: Swamp
+   2: Swamp
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -1795,8 +1788,7 @@
    1: Forest
    2: Island
    3: Tropical Island
-   4: Tropical Island
-   5: Underground Sea
+   4: Underground Sea
   >> A/A: 1 (Forest)
 --- Narrative ---
   Player A shuffles their library
@@ -1894,9 +1886,8 @@
    0: Fail to find
    1: Plains
    2: Scrubland
-   3: Scrubland
-   4: Shadowy Backstreet
-   5: Swamp
+   3: Shadowy Backstreet
+   4: Swamp
   >> B/B: 1 (Plains)
 --- Narrative ---
   Player B shuffles their library
@@ -2569,8 +2560,7 @@
   Actions:
    0: Fail to find
    1: Scrubland
-   2: Scrubland
-   3: Shadowy Backstreet
+   2: Shadowy Backstreet
   >> B/B: 1 (Scrubland)
 --- Narrative ---
   Player B shuffles their library
@@ -2789,11 +2779,9 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
-   4: Wasteland
-   5: Wasteland
-  >> A/A: 4 (Wasteland)
+   2: Polluted Delta
+   3: Wasteland
+  >> A/A: 3 (Wasteland)
 --- Narrative ---
   Targeting choice 4
   Choose target for Life from the Loam:
@@ -2814,10 +2802,9 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
-   4: Wasteland
-  >> A/A: 4 (Wasteland)
+   2: Polluted Delta
+   3: Wasteland
+  >> A/A: 3 (Wasteland)
 --- Narrative ---
   Targeting choice 4
   Choose target for Life from the Loam:
@@ -2838,8 +2825,7 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
+   2: Polluted Delta
   >> A/A: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -3522,11 +3508,9 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
-   4: Wasteland
-   5: Wasteland
-  >> A/A: 4 (Wasteland)
+   2: Polluted Delta
+   3: Wasteland
+  >> A/A: 3 (Wasteland)
 --- Narrative ---
   Targeting choice 4
   Choose target for Life from the Loam:
@@ -3546,10 +3530,9 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
-   4: Wasteland
-  >> A/A: 4 (Wasteland)
+   2: Polluted Delta
+   3: Wasteland
+  >> A/A: 3 (Wasteland)
 --- Narrative ---
   Targeting choice 4
   Choose target for Life from the Loam:
@@ -3569,8 +3552,7 @@
   Actions:
    0: Done selecting targets
    1: Misty Rainforest
-   2: Misty Rainforest
-   3: Polluted Delta
+   2: Polluted Delta
   >> A/A: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -4138,10 +4120,9 @@
    0: Done selecting targets
    1: Island
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Polluted Delta
-   5: Wasteland
-  >> A/A: 5 (Wasteland)
+   3: Polluted Delta
+   4: Wasteland
+  >> A/A: 4 (Wasteland)
 --- Narrative ---
   Targeting choice 5
   Choose target for Life from the Loam:
@@ -4162,8 +4143,7 @@
    0: Done selecting targets
    1: Island
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Polluted Delta
+   3: Polluted Delta
   >> A/A: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -4845,10 +4825,9 @@
    0: Done selecting targets
    1: Island
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Polluted Delta
-   5: Wasteland
-  >> A/A: 5 (Wasteland)
+   3: Polluted Delta
+   4: Wasteland
+  >> A/A: 4 (Wasteland)
 --- Narrative ---
   Targeting choice 5
   Choose target for Life from the Loam:
@@ -4869,8 +4848,7 @@
    0: Done selecting targets
    1: Island
    2: Misty Rainforest
-   3: Misty Rainforest
-   4: Polluted Delta
+   3: Polluted Delta
   >> A/A: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
@@ -5490,7 +5468,7 @@
   Actions:
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-   2: Equip Meteor Sword  [#32]
+   2: Equip Meteor Sword  [#0]
   >> B/B: 2 (Equip Meteor Sword)
 --- Narrative ---
   Choose target for Meteor Sword:
@@ -5899,10 +5877,9 @@
    2: Forest
    3: Island
    4: Misty Rainforest
-   5: Misty Rainforest
-   6: Polluted Delta
-   7: Tropical Island
-   8: Underground Sea
+   5: Polluted Delta
+   6: Tropical Island
+   7: Underground Sea
   >> A/A: 0 (Done selecting targets)
 --- Narrative ---
   Targeting choice 0
