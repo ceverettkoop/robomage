@@ -1167,15 +1167,17 @@ def tier_actor(rep):
              "train/test_actor_trains.py",   # M8: trainer-interchangeable shards
              "train/test_az_gate.py"]        # az_eval actor-backend gate driver
     for t in tests:
+        t0 = time.monotonic()
         r = subprocess.run([sys.executable, t], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
+        dt = time.monotonic() - t0
         print(r.stdout, end="", flush=True)
         name = os.path.basename(t)
         if r.returncode != 0:
-            rep.error("actor", f"{name} failed (exit {r.returncode}):\n"
+            rep.error("actor", f"{name} failed (exit {r.returncode}, {dt:.0f}s):\n"
                                f"{r.stdout}{r.stderr}")
         else:
-            print(f"  {name}: PASS", flush=True)
+            print(f"  {name}: PASS ({dt:.0f}s)", flush=True)
 
 
 # Tier name -> runner(rep, args, out_dir). Only smoke/fuzz read args/out_dir.
