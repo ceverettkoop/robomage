@@ -42,6 +42,7 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stderr, redirect_stdout
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -668,24 +669,31 @@ def run_script(*argv):
     return r.returncode, r.stdout + r.stderr
 
 
+def run_scripts(argvs):
+    """run_script over every argv concurrently (each is its own process, and
+    most of the time is interpreter + import start-up); results in input order."""
+    with ThreadPoolExecutor(max_workers=min(16, os.cpu_count() or 4)) as ex:
+        return list(ex.map(lambda argv: run_script(*argv), argvs))
+
+
 def test_scripts():
     print("scripts reject --bo1/--bo3 with the hint and hide them from --help")
-    cases = [
+    cases = [p for p in [
         ("train/test_harness.py",),
         ("train/train.py", "observe"), ("train/train.py", "league"),
         ("train/play.py",),
-    ]
+    ] if can_run(p[0])]
+    results = iter(run_scripts([(*prefix, flag) for prefix in cases
+                                for flag in ("--bo3", "--bo1", "--help")]))
     for prefix in cases:
-        if not can_run(prefix[0]):
-            continue
         name = " ".join(prefix)
-        rc, out = run_script(*prefix, "--bo3")
+        rc, out = next(results)
         check(rc == 2 and "--bo3 was removed; use --format bo3" in out,
               f"{name} --bo3 should error with the hint (rc={rc}):\n{out[-600:]}")
-        rc, out = run_script(*prefix, "--bo1")
+        rc, out = next(results)
         check(rc == 2 and "--bo1 was removed; use --format bo1" in out,
               f"{name} --bo1 should error with the hint (rc={rc}):\n{out[-600:]}")
-        rc, out = run_script(*prefix, "--help")
+        rc, out = next(results)
         check(rc == 0 and "--format" in out and "--bo1" not in out
               and "--bo3" not in out,
               f"{name} --help should list --format and not --bo1/--bo3 "
@@ -723,10 +731,9 @@ def test_scripts():
         (("train/play.py", "--deck-a", "d", "--deck-b", "d", "--player-a", "human",
           "--player-b", "human"), "both 'human'"),
     ]
-    for argv, needle in seat_cases:
-        if not can_run(argv[0]):
-            continue
-        rc, out = run_script(*argv)
+    seat_cases = [(argv, needle) for argv, needle in seat_cases if can_run(argv[0])]
+    for (argv, needle), (rc, out) in zip(seat_cases,
+                                         run_scripts([a for a, _ in seat_cases])):
         check(rc == 2 and needle in out,
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
               f"{out[-600:]}")
@@ -738,10 +745,10 @@ def test_scripts():
         (("train/train.py", "observe", "--n-games", "3"),
          "--n-games was removed; use --games"),
     ]
-    for argv, needle in vocab_cases:
-        if not can_run(argv[0]):
-            continue
-        rc, out = run_script(*argv)
+    vocab_cases = [(argv, needle) for argv, needle in vocab_cases
+                   if can_run(argv[0])]
+    for (argv, needle), (rc, out) in zip(vocab_cases,
+                                         run_scripts([a for a, _ in vocab_cases])):
         check(rc == 2 and needle in out,
               f"{' '.join(argv)} should error with {needle!r} (rc={rc}):\n"
               f"{out[-600:]}")
