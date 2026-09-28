@@ -29,8 +29,8 @@ extern std::string RESOURCE_DIR;
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
-static std::string value_from_script(std::string script, std::string key);
-static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
+static std::string value_from_script(const std::string &script, const std::string &key);
+static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
                                              std::vector<HybridPip> *hybrid_out = nullptr);
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
@@ -54,7 +54,6 @@ static bool take_direct_amount_expr(AbilityDef& ability);
 static void warn_unresolved_amount_svar(const AbilityDef& ability, const std::string& card_name);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
-static std::vector<std::string> find_trigger_lines(const std::string &script);
 static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name);
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
@@ -763,19 +762,12 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     // Parse S: lines for alternate costs
     for (auto& line : multi_values_from_script(front_script, "S")) {
         if (line.find("AlternativeCost") == std::string::npos) continue;
-        size_t cost_pos = line.find("Cost$");
-        if (cost_pos == std::string::npos) continue;
-        cost_pos += 5;
-        while (cost_pos < line.size() && line[cost_pos] == ' ') cost_pos++;
-        size_t cost_end = line.find('|', cost_pos);
-        if (cost_end == std::string::npos) cost_end = line.size();
-        std::string cost_str = line.substr(cost_pos, cost_end - cost_pos);
-        while (!cost_str.empty() && cost_str.back() == ' ') cost_str.pop_back();
+        std::string cost_str = param_value(line, "Cost");
+        if (cost_str.empty()) continue;
         AltCost ac;
         parse_alt_cost_tokens(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
-        // Walk remaining pipe-separated params for condition fields
-        size_t pp = cost_end;
+        size_t pp = 0;
         std::string key, value;
         while (next_param(line, pp, key, value)) {
             if (key == "CheckSVar") {
@@ -1403,7 +1395,7 @@ static bool parse_token_file(const std::string &script_name, Token &tok) {
 }
 
 // private util functions
-static std::string value_from_script(std::string script, std::string key) {
+static std::string value_from_script(const std::string &script, const std::string &key) {
     // Match the key only as a line-start field header ("Key:value"), never as a substring inside
     // a later line. Top-level fields are one per line, so the key must begin the script or follow
     // a '\n' AND be immediately followed by ':'. Without this, a short key like "PT" would match
@@ -1425,7 +1417,7 @@ static std::string value_from_script(std::string script, std::string key) {
     }
 }
 
-static std::vector<std::string> multi_values_from_script(std::string script, std::string key) {
+static std::vector<std::string> multi_values_from_script(const std::string &script, const std::string &key) {
     // Match the key only as a line-start field header ("Key:value"), same rule as
     // value_from_script above. The old bare substring find leaked SVar bodies into the "A"
     // scan: on Urza's Saga, the 'A' inside "SVar:ABMana:AB$ Mana | ..." matched, the tail of
@@ -2923,31 +2915,6 @@ static std::vector<AbilityDef> parse_abilities(const std::vector<std::string> &l
     return ret_val;
 }
 
-// Finds all lines that start with "T:" (trigger lines) in the card script.
-static std::vector<std::string> find_trigger_lines(const std::string &script) {
-    std::vector<std::string> result;
-    size_t pos = 0;
-    // Check if the script itself starts with "T:"
-    if (script.size() >= 2 && script[0] == 'T' && script[1] == ':') {
-        size_t end = script.find('\n', 0);
-        if (end == std::string::npos) end = script.size();
-        std::string line = script.substr(2, end - 2);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        result.push_back(line);
-        pos = end;
-    }
-    while ((pos = script.find("\nT:", pos)) != std::string::npos) {
-        pos += 3;  // skip "\nT:"
-        size_t end = script.find('\n', pos);
-        if (end == std::string::npos) end = script.size();
-        std::string line = script.substr(pos, end - pos);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        result.push_back(line);
-        pos = end;
-    }
-    return result;
-}
-
 // Parses a single T: trigger line and its Execute$ SVar into a triggered Ability.
 // Returns a default Ability with trigger_on == 0 if the trigger is unrecognised.
 static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
@@ -3402,7 +3369,7 @@ static std::vector<AbilityDef> parse_triggered_abilities(const std::string &scri
                                                       const std::map<std::string, std::string> &svars,
                                                       const std::string& card_name) {
     std::vector<AbilityDef> result;
-    for (const auto &line : find_trigger_lines(script)) {
+    for (const auto &line : multi_values_from_script(script, "T")) {
         AbilityDef ab = parse_one_trigger(line, svars, card_name);
         // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
         // (Mode$ Always, CR 603.8), which have no event but are fired by the state-trigger scan.
@@ -3684,28 +3651,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                                                                    const std::map<std::string, std::string>& svars) {
     std::vector<Effect::Replacement> result;
 
-    // Collect all R: lines
-    std::vector<std::string> lines;
-    size_t pos = 0;
-    if (script.size() >= 2 && script[0] == 'R' && script[1] == ':') {
-        size_t end = script.find('\n', 0);
-        if (end == std::string::npos) end = script.size();
-        std::string line = script.substr(2, end - 2);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        lines.push_back(line);
-        pos = end;
-    }
-    while ((pos = script.find("\nR:", pos)) != std::string::npos) {
-        pos += 3;
-        size_t end = script.find('\n', pos);
-        if (end == std::string::npos) end = script.size();
-        std::string line = script.substr(pos, end - pos);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        lines.push_back(line);
-        pos = end;
-    }
-
-    for (const auto& line : lines) {
+    for (const auto& line : multi_values_from_script(script, "R")) {
         bool event_is_moved       = false;
         bool event_is_counter     = false;
         bool event_is_untap       = false;
