@@ -678,8 +678,8 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // A ChangeZone leaving the battlefield with no target and no search filter operates
     // on the ability's own source (Forge's Defined$ Self default; e.g. Ajani's TrigExile
-    // exiles himself). search_zone can't enumerate the battlefield, so a self-move is the
-    // only sensible reading of a battlefield origin here.
+    // exiles himself). With no filter there is nothing to search the battlefield for, so a
+    // self-move is the only sensible reading of a battlefield origin here.
     if (ab.def->origin == Zone::BATTLEFIELD && ab.def->change_type.empty() && !ab.source.empty()) {
         const Entity self = ab.source.get();
         if (self == 0) return HandlerResult::DONE_RUN_SUBS;  // a new object now (CR 400.7)
@@ -808,17 +808,22 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             ? bound_target
             : 0;
 
+    ZoneSearch search;
+    search.owner = owner;
+    search.zones = multi_zone ? ab.def->origins : std::vector<Zone::ZoneValue>{ab.def->origin};
+    search.change_type = ab.def->change_type;
+    search.mandatory = ab.def->mandatory;
+    search.destination = ab.def->destination;
+    search.reveal = reveal;
+    search.cmc_bound = rt.cmc_bound;
+    search.cmc_op = ab.def->change_type_cmc_op;
+    search.chain_target = chain_target;
+    // A multi-zone search picks its cards one at a time from pools the picks don't leave
+    // (Doomsday), so a card already chosen is not offered again.
+    search.exclude_remembered = multi_zone;
     for (; rt.iter < rt.num_to_move; rt.iter++) {
         bool suspended = false;
-        Entity chosen = 0;
-        if (multi_zone) {
-            chosen = search_multi_zone(orderer, owner, ab.def->origins, ab.def->change_type, ab.def->mandatory, ab.def->destination,
-                reveal, fctx, ab.source.lki_entity(), suspended, chain_target);
-        } else {
-            chosen = search_zone(orderer, owner, ab.def->origin, ab.def->change_type, ab.def->mandatory, ab.def->destination,
-                reveal, rt.cmc_bound, ab.def->change_type_cmc_op, fctx, ab.source.lki_entity(), suspended,
-                chain_target);
-        }
+        Entity chosen = search_zones(orderer, search, fctx, ab.source.lki_entity(), suspended);
         // Suspended: the seat stays persisted at the chooser (the parked query
         // holds it); rt.prev_priority is restored by the completion epilogue.
         if (suspended) return HandlerResult::SUSPENDED;

@@ -1,12 +1,12 @@
 #include "zone_search.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
-#include "components/carddata.h"
 #include "ecs/coordinator.h"
 #include "input_logger.h"
 #include "queries/battlefield.h"
@@ -19,93 +19,117 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static bool search_candidate_matches(Entity entity, const std::string &change_type, int cmc_bound,
-                                     const std::string &cmc_op, Zone::Ownership you,
-                                     Entity chain_target);
+static std::vector<Entity> zone_contents(const std::shared_ptr<Orderer> &orderer,
+                                         Zone::Ownership owner, Zone::ZoneValue zone);
+static bool search_candidate_matches(Entity entity, const ZoneSearch &search);
+static const char *zone_word(Zone::ZoneValue zone);
+static bool searches_zone(const ZoneSearch &search, Zone::ZoneValue zone);
+static void log_search(const ZoneSearch &search);
+static ActionCategory search_menu_category(const ZoneSearch &search);
 
+// The cards `owner` has in `zone`, in the zone's own order. Graveyard / face-up exile / sideboard
+// ("outside the game") cards are enumerated by Zone owner (Karn, the Great Creator -2: choose an
+// artifact card you own in exile or your sideboard; sideboard entities are instantiated at game
+// start by generate_libraries from the deck's SIDEBOARD: section, plus any test-harness
+// --sideboard presets). A Battlefield origin (Cloak and Dagger, Entwined: exile the chosen
+// creature OR a nonland hand card) offers the searched player's battlefield permanents.
+static std::vector<Entity> zone_contents(const std::shared_ptr<Orderer> &orderer,
+                                         Zone::Ownership owner, Zone::ZoneValue zone) {
+    if (zone == Zone::LIBRARY) return orderer->get_library_contents(owner);
+    if (zone == Zone::HAND) return orderer->get_hand(owner);
+    if (zone == Zone::BATTLEFIELD) return battlefield_permanents(orderer->mEntities, owner);
+    std::vector<Entity> out;
+    if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location == zone && z.owner == owner) out.push_back(e);
+        }
+    }
+    return out;
+}
 
 // Does a zone-search candidate match the search's ChangeType$ (a comma-OR filter spec)? Matched
 // through the shared filter matcher in whatever zone the candidate sits: a card by its printed
 // characteristics, a battlefield permanent (a multi-zone search's Battlefield origin) by its live
 // ones. An empty spec or the catch-all "Card" (a bare "search for a card", Demonic Tutor) matches
-// every candidate. `you` is the YouOwn/YouCtrl reference, `chain_target` the targetedBy card, and
-// a dynamic mana-value bound (Aether Vial) flows in through cmc_bound / cmc_op.
-static bool search_candidate_matches(Entity entity, const std::string &change_type, int cmc_bound,
-                                     const std::string &cmc_op, Zone::Ownership you,
-                                     Entity chain_target) {
-    if (change_type.empty() || change_type == "Card") return true;
+// every candidate. The owner is the YouOwn/YouCtrl reference, `chain_target` the targetedBy card,
+// and a dynamic mana-value bound (Aether Vial) flows in through cmc_bound / cmc_op.
+static bool search_candidate_matches(Entity entity, const ZoneSearch &search) {
+    if (search.change_type.empty() || search.change_type == "Card") return true;
     MatchCtx ctx;
-    ctx.cmc_bound = cmc_bound;
-    ctx.cmc_op = cmc_op;
-    ctx.controller = you;
-    ctx.chain_target = chain_target;
-    return object_matches_filter(entity, change_type, ctx);
+    ctx.cmc_bound = search.cmc_bound;
+    ctx.cmc_op = search.cmc_op;
+    ctx.controller = search.owner;
+    ctx.chain_target = search.chain_target;
+    return object_matches_filter(entity, search.change_type, ctx);
 }
 
-// Searches a zone for cards whose types match any entry in the comma-separated
-// change_type string. Presents all matches plus a "fail to find" option (index 0).
-// Returns the chosen Entity, or 0 for fail to find.
-// 0 is a valid entity but will always be player a  so is never correct
-Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
-    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
-    int cmc_bound, const std::string &cmc_op,
-    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target) {
+static const char *zone_word(Zone::ZoneValue zone) {
+    switch (zone) {
+    case Zone::LIBRARY:     return "library";
+    case Zone::HAND:        return "hand";
+    case Zone::GRAVEYARD:   return "graveyard";
+    case Zone::EXILE:       return "exile";
+    case Zone::SIDEBOARD:   return "sideboard";
+    case Zone::BATTLEFIELD: return "battlefield";
+    default:                return "zone";
+    }
+}
+
+static bool searches_zone(const ZoneSearch &search, Zone::ZoneValue zone) {
+    return std::find(search.zones.begin(), search.zones.end(), zone) != search.zones.end();
+}
+
+// The narrative line opening the search: a library search (or several zones searched together)
+// is "Searching <player>'s <zones>", a pick from one other zone "<player> chooses a card from
+// <player> <zone>".
+static void log_search(const ZoneSearch &search) {
+    const std::string who = player_name(search.owner);
+    if (search.zones.size() == 1 && search.zones[0] != Zone::LIBRARY) {
+        game_log("%s chooses a card from %s %s:\n", who.c_str(), who.c_str(), zone_word(search.zones[0]));
+        return;
+    }
+    std::string zone_list;
+    for (auto zone : search.zones) {
+        if (!zone_list.empty()) zone_list += " and ";
+        zone_list += zone_word(zone);
+    }
+    game_log("Searching %s's %s:\n", who.c_str(), zone_list.c_str());
+}
+
+// Library searches putting the card on top of a library (from the library or a hand) are
+// TOP_LIBRARY decisions, other library searches SEARCH_LIBRARY, and a pick from only non-library
+// zones (Karn's -2 over Sideboard,Exile) a CHOOSE_CARD decision.
+static ActionCategory search_menu_category(const ZoneSearch &search) {
+    bool library = searches_zone(search, Zone::LIBRARY);
+    if (search.destination == Zone::LIBRARY && (library || searches_zone(search, Zone::HAND)))
+        return ActionCategory::TOP_LIBRARY;
+    return library ? ActionCategory::SEARCH_LIBRARY : ActionCategory::CHOOSE_CARD;
+}
+
+Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, FrameCtx &ctx,
+                    Entity decision_source, bool &suspended) {
     suspended = false;
-    // Collect zone contents
-    std::vector<Entity> zone_contents;
-    if (zone == Zone::LIBRARY) {
-        zone_contents = orderer->get_library_contents(owner);
-    } else if (zone == Zone::HAND) {
-        zone_contents = orderer->get_hand(owner);
-    } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
-        // Graveyard / face-up exile / sideboard ("outside the game") picks (Karn, the Great
-        // Creator -2: choose an artifact card you own in exile or your sideboard). These zones
-        // hold their cards as entities tagged by Zone owner, so enumerate by owner like the
-        // graveyard. (Sideboard entities are instantiated at game start by generate_libraries
-        // from the deck's SIDEBOARD: section, plus any test-harness --sideboard presets.)
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
-        }
-    }
-
+    const std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
     std::vector<Entity> choices;
-    for (auto entity : zone_contents)
-        if (search_candidate_matches(entity, change_type, cmc_bound, cmc_op, owner, chain_target))
-            choices.push_back(entity);
+    for (auto zone : search.zones)
+        for (auto entity : zone_contents(orderer, search.owner, zone)) {
+            if (search.exclude_remembered && refs_contain(remembered, entity)) continue;
+            if (search_candidate_matches(entity, search)) choices.push_back(entity);
+        }
 
-    const char *zone_name = (zone == Zone::LIBRARY)     ? "library"
-                            : (zone == Zone::HAND)      ? "hand"
-                            : (zone == Zone::GRAVEYARD) ? "graveyard"
-                            : (zone == Zone::EXILE)     ? "exile"
-                            : (zone == Zone::SIDEBOARD) ? "sideboard"
-                                                        : "zone";
-    // Determine category: library searches going to top of library use TOP_LIBRARY,
-    // other library searches use SEARCH_LIBRARY, non-library zone picks use CHOOSE_CARD
-    ActionCategory cat = (destination == Zone::LIBRARY && (zone == Zone::LIBRARY || zone == Zone::HAND))
-                             ? ActionCategory::TOP_LIBRARY
-                         : (zone == Zone::LIBRARY) ? ActionCategory::SEARCH_LIBRARY
-                                                   : ActionCategory::CHOOSE_CARD;
-
+    // Nothing left to move; return immediately without prompting
+    if (search.mandatory && choices.empty()) return 0;
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
-    bool show_fail_to_find = !mandatory || choices.empty();
-
-    if (mandatory && choices.empty()) {
-        // Nothing left to move; return immediately without prompting
-        return 0;
-    }
+    bool show_fail_to_find = !search.mandatory || choices.empty();
 
     // Arm-only log: the resume rebuilds the identical menu (the candidates are
     // covered by the parked menu's determinize pins) without re-logging.
-    if (!ctx.resuming()) {
-        if (zone == Zone::LIBRARY) {
-            game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
-        } else {
-            game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
-        }
-    }
+    if (!ctx.resuming()) log_search(search);
 
+    ActionCategory cat = search_menu_category(search);
+    const bool label_zone = search.zones.size() > 1;
     std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
         LegalAction ftf(PASS_PRIORITY, Entity(0), std::string("Fail to find"));
@@ -113,10 +137,14 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         search_actions.push_back(ftf);
     }
     for (auto entity : choices) {
-        auto &cd = global_coordinator.GetComponent<CardData>(entity);
-        LegalAction la(PASS_PRIORITY, entity, cd.name);
+        // entity_name, not CardData: a battlefield candidate may be a token (no CardData).
+        std::string label = entity_name(entity);
+        if (label_zone)
+            label += std::string(" (") +
+                     zone_word(global_coordinator.GetComponent<Zone>(entity).location) + ")";
+        LegalAction la(PASS_PRIORITY, entity, label);
         la.category = cat;
-        la.card_is_public = reveal;
+        la.card_is_public = search.reveal;
         search_actions.push_back(la);
     }
 
@@ -131,121 +159,8 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
     }
     // Map choice back: if fail-to-find is shown, index 0 = fail-to-find, 1..N = choices
     // If fail-to-find suppressed, index 0..N-1 = choices directly
-    if (show_fail_to_find) {
-        if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
-        return 0;
-    } else {
-        if (choice >= 0 && choice < static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice)];
-        return 0;
-    }
-}
-
-// Searches multiple zones combined for cards matching change_type.
-// Used by Doomsday (Origin$ Graveyard,Library).
-Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination, bool reveal,
-    FrameCtx &ctx, Entity decision_source, bool &suspended, Entity chain_target) {
-    suspended = false;
-    // Collect contents from all zones
-    std::vector<Entity> zone_contents;
-    for (auto zone : zones) {
-        if (zone == Zone::LIBRARY) {
-            auto lib = orderer->get_library_contents(owner);
-            zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
-        } else if (zone == Zone::HAND) {
-            auto hand = orderer->get_hand(owner);
-            zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
-        } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
-            // Graveyard / face-up exile / sideboard ("outside the game"), enumerated by Zone
-            // owner — Karn, the Great Creator -2 searches Origin$ Sideboard,Exile.
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
-            }
-        } else if (zone == Zone::BATTLEFIELD) {
-            // Origin$ ...,Battlefield (Cloak and Dagger, Entwined: exile the chosen creature OR
-            // a nonland hand card): candidates are the searched player's battlefield permanents.
-            auto bf = battlefield_permanents(orderer->mEntities, owner);
-            zone_contents.insert(zone_contents.end(), bf.begin(), bf.end());
-        }
-    }
-
-    // Exclude already-remembered entities (e.g. Doomsday picking 5 cards one at a time)
-    if (!cur_game.resolution.memory.remembered.empty()) {
-        std::vector<Entity> filtered;
-        for (auto e : zone_contents)
-            if (!refs_contain(cur_game.resolution.memory.remembered, e)) filtered.push_back(e);
-        zone_contents = filtered;
-    }
-
-    std::vector<Entity> choices;
-    for (auto entity : zone_contents)
-        if (search_candidate_matches(entity, change_type, -1, "", owner, chain_target))
-            choices.push_back(entity);
-
-    bool show_fail_to_find = !mandatory || choices.empty();
-    if (mandatory && choices.empty()) return 0;
-
-    bool searches_library = false;
-    std::string zone_list;
-    for (auto zone : zones) {
-        if (zone == Zone::LIBRARY) searches_library = true;
-        const char *zn = (zone == Zone::LIBRARY)      ? "library"
-                         : (zone == Zone::GRAVEYARD)   ? "graveyard"
-                         : (zone == Zone::HAND)        ? "hand"
-                         : (zone == Zone::EXILE)       ? "exile"
-                         : (zone == Zone::SIDEBOARD)   ? "sideboard"
-                         : (zone == Zone::BATTLEFIELD) ? "battlefield"
-                                                       : "zone";
-        if (!zone_list.empty()) zone_list += " and ";
-        zone_list += zn;
-    }
-    // Arm-only log (see search_zone above).
-    if (!ctx.resuming())
-        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
-
-    // A library search uses SEARCH_LIBRARY/TOP_LIBRARY; a pick from only non-library
-    // zones (e.g. Karn's -2 over Sideboard,Exile) is a CHOOSE_CARD decision.
-    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
-                         : searches_library             ? ActionCategory::SEARCH_LIBRARY
-                                                        : ActionCategory::CHOOSE_CARD;
-
-    std::vector<LegalAction> search_actions;
-    if (show_fail_to_find) {
-        LegalAction ftf(PASS_PRIORITY, Entity(0), std::string("Fail to find"));
-        ftf.category = cat;
-        search_actions.push_back(ftf);
-    }
-    for (auto entity : choices) {
-        auto &z = global_coordinator.GetComponent<Zone>(entity);
-        const char *zone_label = (z.location == Zone::GRAVEYARD)    ? " (graveyard)"
-                                 : (z.location == Zone::EXILE)       ? " (exile)"
-                                 : (z.location == Zone::SIDEBOARD)   ? " (sideboard)"
-                                 : (z.location == Zone::HAND)        ? " (hand)"
-                                 : (z.location == Zone::BATTLEFIELD) ? " (battlefield)"
-                                                                     : " (library)";
-        // entity_name, not CardData: a battlefield candidate may be a token (no CardData).
-        LegalAction la(PASS_PRIORITY, entity, entity_name(entity) + zone_label);
-        la.category = cat;
-        la.card_is_public = reveal;
-        search_actions.push_back(la);
-    }
-
-    // Seat convention identical to search_zone: the caller already repointed
-    // priority at the choosing player.
-    Zone::Ownership chooser = priority_seat();
-    int choice = ctx.ask(search_actions, chooser, decision_source);
-    if (choice < 0 && decision_suspended()) {
-        suspended = true;
-        return 0;
-    }
-    if (show_fail_to_find) {
-        if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
-        return 0;
-    } else {
-        if (choice >= 0 && choice < static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice)];
-        return 0;
-    }
+    int first = show_fail_to_find ? 1 : 0;
+    int idx = choice - first;
+    if (idx >= 0 && idx < static_cast<int>(choices.size())) return choices[static_cast<size_t>(idx)];
+    return 0;
 }

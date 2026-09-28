@@ -956,7 +956,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
             ab.activation_zone = Zone::HAND;
             ab.origin = Zone::LIBRARY;
             ab.destination = Zone::HAND;
-            ab.change_type = subtype;       // subtype filter (search_zone matches card subtypes)
+            ab.change_type = subtype;       // subtype filter (search_zones matches card subtypes)
             ab.mandatory = false;           // searches may fail to find (CR 701.19c)
             // Shared Cost$ token grammar (the mana portion of the cycling cost).
             parse_activation_cost(cost_str, ab);
