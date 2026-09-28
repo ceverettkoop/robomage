@@ -100,13 +100,14 @@ from env import (
     # unified deck-name identification (same rule as env's shaping opt-outs)
     _deck_named,
 )
-from decode import decode_game_state, decode_opp_decklist, _card_script_lines
+from decode import card_types, decode_game_state, decode_opp_decklist, _card_script_lines
 from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX, _VOCAB_NAMES
 from card_props import _CARD_PROP_MATRIX, _PROP_NAMES
 from _enums import (
     CAT_BOTTOM_DECK_CARD as _CAT_BOTTOM_CARD, CAT_PAY_UNLESS as _CAT_PAY_UNLESS,
     CAT_RETURN_PERMANENT as _CAT_RETURN, CAT_BLOCK_TARGET as _CAT_BLOCK_TARGET,
     CAT_ATTACK_TARGET as _CAT_ATTACK_TARGET, CAT_NAME_CARD as _CAT_NAME_CARD,
+    CAT_CHOOSE_MODE as _CAT_CHOOSE_MODE,
     CAT_SHUFFLE as _CAT_SHUFFLE_YES, CAT_DONT_SHUFFLE as _CAT_SHUFFLE_NO,
     CAT_SYLVAN_CHOICE as _CAT_SYLVAN, CAT_MANA_W, CAT_MANA_R as _CAT_MANA_R, CAT_MANA_C,
     REF_NONE, REF_PLAYER_OPP, REF_PLAYER_SELF, REF_SELF_BATTLEFIELD, REF_SELF_HAND,
@@ -2578,6 +2579,40 @@ _BLAST_ZONE_DESTROY_ORD = 2
 _KAITO_SURVEIL_ORD = 1
 _KAITO_STUN_ORD = 2
 
+# Knight of Autumn's ETB modes in script order: two +1/+1 counters, destroy
+# target artifact or enchantment, gain 4 life.
+_KNIGHT_OF_AUTUMN_VOCAB_IDX = _vid("Knight of Autumn")
+_KNIGHT_COUNTERS_ORD = 0
+_KNIGHT_DESTROY_ORD = 1
+_KNIGHT_LIFE_ORD = 2
+# At or below this life the Knight takes the 4 life over the counters.
+_KNIGHT_LIFE_THRESHOLD = 8
+
+
+def _is_artifact_or_enchantment(cid: int) -> bool:
+    """True if the card (or token) is an artifact or an enchantment."""
+    types = card_types(cid).split()
+    return "Artifact" in types or "Enchantment" in types
+
+
+def _knight_of_autumn_mode_pick(obs: np.ndarray, g: dict, num_choices: int) -> int | None:
+    """Knight of Autumn's mode, announced as its ETB trigger goes on the
+    stack (CR 603.3c): destroy an opposing artifact or enchantment when there
+    is one (the mode is offered whenever ANY is on the battlefield, ours
+    included); else the 4 life when low or when the Knight has already left
+    the battlefield (its counters would go nowhere); else the counters."""
+    by_ord = {_action_ordinal(obs, i): i for i in range(num_choices)}
+    if (_KNIGHT_DESTROY_ORD in by_ord
+            and any(_is_artifact_or_enchantment(p["card_idx"])
+                    for p in g["opp_battlefield"])):
+        return by_ord[_KNIGHT_DESTROY_ORD]
+    knight_here = any(p["card_idx"] == _KNIGHT_OF_AUTUMN_VOCAB_IDX
+                      for p in g["self_battlefield"])
+    if _KNIGHT_LIFE_ORD in by_ord and (not knight_here
+                                       or _self_life(obs) <= _KNIGHT_LIFE_THRESHOLD):
+        return by_ord[_KNIGHT_LIFE_ORD]
+    return by_ord.get(_KNIGHT_COUNTERS_ORD, by_ord.get(_KNIGHT_LIFE_ORD))
+
 
 def _blast_zone_plan(g: dict) -> tuple[int, int] | None:
     """(current charge counters, the mana value worth blowing up) for our
@@ -3023,6 +3058,11 @@ class ScriptedAgent:
             plan = _blast_zone_plan(g())
             if plan is not None:
                 return max(0, min(num_choices - 1, plan[1] - plan[0]))
+        # Knight of Autumn's ETB mode (_knight_of_autumn_mode_pick).
+        if pending == _KNIGHT_OF_AUTUMN_VOCAB_IDX and all(c == _CAT_CHOOSE_MODE for c in cats):
+            pick = _knight_of_autumn_mode_pick(obs, g(), num_choices)
+            if pick is not None:
+                return pick
         # Dauthi Voidwalker's pick: the most expensive void card.
         if pending == _DAUTHI_VOIDWALKER_VOCAB_IDX and any(c == _CAT_CHOOSE_CARD for c in cats):
             return max(range(num_choices),
