@@ -63,19 +63,18 @@ enum class ActionCategory {
     ATTACK_TARGET = 39,        // choose what a creature attacks (player or planeswalker)
     BLOCK_TARGET = 40,         // choose which attacker a blocker blocks
     OPTIONAL_YESNO = 41,       // optional yes/no confirmation
-    PLAY_FREE = 42,            // play a card for free (e.g. cast from exile)
-    SYLVAN_CHOICE = 43,        // Sylvan Library card pick / pay-4-life-or-top choice
-    CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
-    ASSIGN_DAMAGE = 45,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
-    COMPANION = 46,            // CR 702.139: pay {3} to put your chosen companion from the sideboard into hand
-    DONT_SHUFFLE = 47,         // decline the optional shuffle after a rearrange-top effect (Ponder etc.);
+    SYLVAN_CHOICE = 42,        // Sylvan Library card pick / pay-4-life-or-top choice
+    CHOOSE_CARD = 43,          // choose a card from a zone for a non-library zone-change
+    ASSIGN_DAMAGE = 44,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
+    COMPANION = 45,            // CR 702.139: pay {3} to put your chosen companion from the sideboard into hand
+    DONT_SHUFFLE = 46,         // decline the optional shuffle after a rearrange-top effect (Ponder etc.);
                                // paired with SHUFFLE so the two choices are distinct to the model
-    KEEP_HAND = 48,            // opening mulligan: keep the current hand (paired with MULLIGAN's take-a-mulligan)
-    EXILE_FROM_YARD = 49,      // exile a card from the graveyard to pay a cost (Escape); distinct from
+    KEEP_HAND = 47,            // opening mulligan: keep the current hand (paired with MULLIGAN's take-a-mulligan)
+    EXILE_FROM_YARD = 48,      // exile a card from the graveyard to pay a cost (Escape); distinct from
                                // SACRIFICE_PERMANENT (a permanent leaving the battlefield)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 49;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 48;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

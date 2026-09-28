@@ -57,6 +57,7 @@ from cli_spec import (HUMAN_SPEC, apply_search_knobs, is_bo3, is_search_spec,
                       smoke_leg)
 import launcher_config
 import decode
+from _enums import CAT_PASS_PRIORITY
 import scryfall_cache
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
@@ -1585,7 +1586,7 @@ class PlayPane(QWidget):
         the TUI). Otherwise a no-op, so it can never fire a non-pass action."""
         if not self._awaiting:
             return
-        if self._actions and self._actions[0]["category"] == 0:
+        if self._actions and self._actions[0]["category"] == CAT_PASS_PRIORITY:
             self._submit(0)
 
     def _action_autopass(self):
@@ -1603,7 +1604,7 @@ class PlayPane(QWidget):
     def _submit(self, idx):
         if not self._awaiting:
             return
-        if 0 <= idx < len(self._actions) and self._actions[idx]["category"] != 0:
+        if 0 <= idx < len(self._actions) and self._actions[idx]["category"] != CAT_PASS_PRIORITY:
             self._append_log(f"[You] {self._actions[idx]['description']}")
         self._awaiting = False
         self._menu.clear()

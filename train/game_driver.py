@@ -28,7 +28,9 @@ from env import (NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX,
                  CONCEDE_GAME, CONCEDE_MATCH)
 import decode
 from _enums import (CAT_BOTTOM_DECK_CARD, CAT_DIG_CHOICE, CAT_SEARCH_LIBRARY,
-                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_TOP_LIBRARY)
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_TOP_LIBRARY,
+                    CAT_PASS_PRIORITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS)
 
 # Abbreviations for the step phase strip (index aligns with the step one-hot).
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
@@ -265,7 +267,7 @@ def prompt_text(obs, num, gs):
     if decode.is_search(cats):
         return "Search your library (pick a card, or 'fail to find')."
     cset = set(int(c) for c in cats)
-    if 8 in cset:
+    if CAT_SELECT_TARGET in cset:
         # Name the spell/ability asking for the target (its source may not be
         # on the stack yet — targets are announced first), so the prompt says
         # WHAT you're targeting for, not just "Choose a target."
@@ -273,9 +275,9 @@ def prompt_text(obs, num, gs):
         if pend and pend.get("name"):
             return f"Choose a target for {pend['name']}."
         return "Choose a target."
-    if cset & {2, 3}:
+    if cset & {CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS}:
         return "Declare attackers — pick creatures, then Confirm attackers."
-    if cset & {4, 5}:
+    if cset & {CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS}:
         return "Declare blockers — pick creatures, then Confirm blockers."
     active = "A" if gs["active_is_a"] else "B"
     return f"Player {active}'s turn — {gs['step']}: choose an action."
@@ -304,9 +306,9 @@ def decode_human_frame(u):
 # ── Autopass helpers ──────────────────────────────────────────────────────────
 
 def _pass_index(actions):
-    """Index of the 'pass priority' action (category 0) in a menu, else None."""
+    """Index of the 'pass priority' action (CAT_PASS_PRIORITY) in a menu, else None."""
     for a in actions:
-        if a["category"] == 0:
+        if a["category"] == CAT_PASS_PRIORITY:
             return a["index"]
     return None
 
@@ -588,7 +590,7 @@ class GameDriver:
                     finally:
                         if self._is_model:
                             self._sink.on_opp_thinking(False)
-                    if 0 <= action < len(actions) and actions[action]["category"] != 0:
+                    if 0 <= action < len(actions) and actions[action]["category"] != CAT_PASS_PRIORITY:
                         self._sink.on_log(
                             [_opp_event_text(actions[action], self._opp_label)])
                         opp_acted = True

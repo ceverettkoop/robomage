@@ -1456,11 +1456,11 @@ def is_mulligan(cats):
 
 
 def is_bottom(cats):
-    return len(cats) > 0 and all(c == 12 for c in cats)
+    return len(cats) > 0 and all(c == CAT_BOTTOM_DECK_CARD for c in cats)
 
 
 def is_search(cats):
-    return len(cats) > 0 and all(c == 19 for c in cats)
+    return len(cats) > 0 and all(c == CAT_SEARCH_LIBRARY for c in cats)
 
 
 def menu_is_interchangeable(obs, num_choices):
@@ -1527,7 +1527,7 @@ def menu_is_interchangeable(obs, num_choices):
 # per-action metadata blocks.
 #
 # Deliberately EXCLUDED:
-#   - CAST_SPELL / PLAY_FREE @ exile: two same-name exile cards can carry
+#   - CAST_SPELL @ exile: two same-name exile cards can carry
 #     different hidden ImpulseCastPermissions (free vs pay-life vs energy,
 #     from_suspend timing) that the obs cannot distinguish.
 #   - CAT_OTHER_CHOICE and null card ids: text-only prompts whose options only
