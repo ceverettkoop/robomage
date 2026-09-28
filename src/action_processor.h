@@ -53,8 +53,9 @@ void resume_combat_target_choice(Game& game);
 // CAST): consumes the latched answer and re-enters run_cast_flow — the
 // persisted CAST_SPELL state machine in Game::pending_cast. The resume may arm
 // the NEXT cast prompt (the caller must loop back to the pending-query branch
-// while pending_query.active), cancel the cast (payment rewind), or complete it
-// (spell on the stack + game.take_action(), exactly the blocking branch's end).
+// while pending_query.active), reverse the cast (a failed payment, or the
+// --offer-cancel "Cancel" answer; CR 733.1), or complete it (the spell becomes
+// cast + game.take_action()).
 void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked activated-ability prompt (PendingQuery
@@ -62,9 +63,9 @@ void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 // run_activation_flow — the persisted ACTIVATE_ABILITY state machine in
 // Game::pending_activation. The resume may arm the NEXT activation prompt (the
 // caller must loop back to the pending-query branch while pending_query.active),
-// cancel the activation (payment rewind), or complete it (mana produced
-// off-stack, or the ability on the stack + game.take_action(), exactly the
-// blocking branch's end).
+// reverse the activation (a failed payment, or the --offer-cancel "Cancel"
+// answer; CR 733.1), or complete it (mana produced off-stack, or the ability
+// becomes activated + game.take_action()).
 void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat damage-assignment pick

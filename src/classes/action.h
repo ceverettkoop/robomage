@@ -111,6 +111,9 @@ struct LegalAction {
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).
         bool card_is_public = false;
+        // The "Cancel" choice --offer-cancel adds to a cast or activation prompt: taking it
+        // reverses the spell or ability being proposed (CR 733.1).
+        bool cancel_proposal = false;
         // Per-action ordinal/value scalar, serialized to ML ALONGSIDE `category`.
         // Disambiguates options that share a category and reference no distinct
         // entity (so they'd otherwise serialize identically): the mode index of a

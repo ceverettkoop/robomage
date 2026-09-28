@@ -317,7 +317,7 @@ def run_games(controller_a, controller_b, *,
               sideboard_a=None, sideboard_b=None, no_shuffle=False,
               life_a=None, life_b=None,
               max_decisions=None, log_decisions=False, coverage=None,
-              on_query=None, on_action=None, on_game_end=None,
+              offer_cancel=False, on_query=None, on_action=None, on_game_end=None,
               narrative=True):
     """Run ``n_games`` between two controllers and render the transcript.
 
@@ -401,7 +401,7 @@ def run_games(controller_a, controller_b, *,
                       sideboard_a=sideboard_a, sideboard_b=sideboard_b,
                       life_a=life_a, life_b=life_b,
                       no_shuffle=no_shuffle, log_decisions=log_decisions,
-                      narrative=narrative)
+                      narrative=narrative, offer_cancel=offer_cancel)
         # Hand search controllers the live env (per game — a fresh env/process
         # is created for each one). Duck-typed like new_game below.
         for ctrl in (controller_a, controller_b):

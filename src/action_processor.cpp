@@ -19,6 +19,7 @@
 #include "ecs/events.h"
 #include "effects/effects.h"
 #include "error.h"
+#include "game_driver.h"
 #include "game_queries.h"
 #include "input_logger.h"
 #include "mana_system.h"
@@ -1578,6 +1579,12 @@ static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalA
     PendingQuery &pq = game.pending_query;
     pq.tag = tag;
     pq.menu = std::move(menu);
+    if (offer_cast_cancel) {
+        LegalAction cancel(PASS_PRIORITY, "Cancel");
+        cancel.category = ActionCategory::PAYING_COSTS;
+        cancel.cancel_proposal = true;
+        pq.menu.push_back(cancel);
+    }
     pq.chooser_is_a = (chooser == Zone::PLAYER_A);
     pq.decision_source = decision_source;
     pq.answered = false;
@@ -1641,7 +1648,13 @@ void resume_cast_flow(Game &game, std::shared_ptr<Orderer> orderer) {
     if (!game.pending_cast.active || pq.tag != PendingQuery::CAST || !pq.answered)
         fatal_error("resume_cast_flow without a parked cast query");
     int answer = pq.answer;
+    bool cancel = pq.menu[static_cast<size_t>(answer)].cancel_proposal;
     pq = PendingQuery{};
+    if (cancel) {
+        game_log("Casting cancelled.\n");
+        rewind_cast(game.pending_cast, orderer);
+        return;
+    }
     run_cast_flow(game.pending_cast, game, orderer, answer);
 }
 
@@ -1654,7 +1667,13 @@ void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
     if (!game.pending_activation.active || pq.tag != PendingQuery::ACTIVATION || !pq.answered)
         fatal_error("resume_activation_flow without a parked activation query");
     int answer = pq.answer;
+    bool cancel = pq.menu[static_cast<size_t>(answer)].cancel_proposal;
     pq = PendingQuery{};
+    if (cancel) {
+        game_log("Activation cancelled.\n");
+        rewind_activation(game.pending_activation, orderer);
+        return;
+    }
     run_activation_flow(game.pending_activation, game, orderer, answer);
 }
 

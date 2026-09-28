@@ -418,6 +418,7 @@ def main():
             sideboard_a=sb_a, sideboard_b=sb_b, no_shuffle=no_shuffle,
             life_a=life_a, life_b=life_b,
             max_decisions=max_decisions, log_decisions=args.log_decisions,
+            offer_cancel=args.offer_cancel,
             coverage=coverage)
         winner = bool(wins or losses)
         if coverage is not None:

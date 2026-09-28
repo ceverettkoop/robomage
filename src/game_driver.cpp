@@ -88,6 +88,10 @@ std::string deck_b_name = "delver";
 bool seed_override = false;
 unsigned int seed_value = 0;
 bool no_shuffle = false;
+// --offer-cancel: every cast-time and activation-time prompt also offers "Cancel", which reverses
+// the proposal (CR 733.1). A testing aid for the rewind; off by default, so the machine action
+// space is unchanged.
+bool offer_cast_cancel = false;
 bool narrative_mode = false;
 bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training

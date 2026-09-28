@@ -2984,6 +2984,10 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
             help="Don't shuffle libraries — deck-file order = draw order (first "
                  "7 cards = opening hand). Implied by --hand-a/--hand-b; without "
                  "it libraries shuffle with the seeded RNG"),
+        Arg("--offer-cancel", "flag",
+            help="Offer \"Cancel\" at every cast and activation prompt; taking "
+                 "it reverses the spell or ability being proposed (CR 733.1). "
+                 "Scripts it with --play desc:Cancel"),
         Arg("--coverage-json", "str", metavar="PATH",
             help="Accumulate per-action-category and per-card offered/taken "
                  "counters and write them as JSON to PATH at exit (with a "

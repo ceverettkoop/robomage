@@ -914,7 +914,7 @@ class RoboMageEnv(gym.Env):
                  sideboard_a: str | None = None, sideboard_b: str | None = None,
                  life_a: int | None = None, life_b: int | None = None,
                  log_viewer: str | None = None, log_decisions: bool = False,
-                 broadcast_steps: bool = False):
+                 broadcast_steps: bool = False, offer_cancel: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -952,6 +952,9 @@ class RoboMageEnv(gym.Env):
         # episodes); log_decisions=True passes --log-decisions so a harness/observe
         # run can produce a self-contained RMLOG v2 replay log on request.
         self._log_decisions = log_decisions
+        # --offer-cancel: every cast/activation prompt also offers "Cancel", which
+        # reverses the spell or ability being proposed (a testing aid for the rewind).
+        self._offer_cancel = offer_cancel
         # broadcast_steps=True passes --broadcast-steps: the engine emits a passive
         # BSTATE frame (BQUERY payload, no response read) at every forced auto-pass
         # window. The frames accumulate in _passive_frames as
@@ -1018,6 +1021,8 @@ class RoboMageEnv(gym.Env):
             cmd += ["--deck-b", self._deck_b]
         if self._no_shuffle:
             cmd += ["--no-shuffle"]
+        if self._offer_cancel:
+            cmd += ["--offer-cancel"]
         if self._battlefield_a:
             cmd += ["--battlefield-a", self._battlefield_a]
         if self._battlefield_b:

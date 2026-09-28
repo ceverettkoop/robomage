@@ -234,6 +234,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --seed <n>          RNG seed (default: current time)\n");
     printf("  --no-shuffle        Skip the initial library shuffle; cards are drawn in\n");
     printf("                      deck-file order\n");
+    printf("  --offer-cancel      Offer \"Cancel\" at every cast and activation prompt; it\n");
+    printf("                      reverses the spell or ability being proposed (CR 733.1).\n");
+    printf("                      A testing aid (default: off)\n");
     printf("\nInput and output:\n");
     printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
     printf("                      B); hidden information is shown from that seat's view.\n");

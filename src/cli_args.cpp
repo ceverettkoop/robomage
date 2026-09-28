@@ -80,6 +80,10 @@ static const CliOption OPTIONS[] = {
         [](DecisionLogHeader &h, const std::string &k) {
             if (life_b_override >= 0) h.add_flag(k, std::to_string(life_b_override));
         }},
+    {"--offer-cancel", nullptr, false, true, [](const char *) { offer_cast_cancel = true; },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (offer_cast_cancel) h.add_flag(k);
+        }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
     {"--deck", nullptr, true, true,

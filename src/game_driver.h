@@ -46,6 +46,7 @@ extern std::string deck_b_name;
 extern bool seed_override;
 extern unsigned int seed_value;
 extern bool no_shuffle;
+extern bool offer_cast_cancel;
 extern bool narrative_mode;
 extern bool bo3_mode;
 extern bool log_decisions_flag;
