@@ -527,7 +527,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // other naturally no-ops — declining the battlefield put (or a noncreature skipping the gated
     // first leg) leaves it in exile for the hand leg.
     if (ab.defined_exiled_with) {
-        Entity card = exiled_with_card(ab.source.lki_entity());
+        Entity card = exiled_with_card(ab.source.get());
         if (card == 0 || !global_coordinator.entity_has_component<Zone>(card))
             return HandlerResult::DONE_RUN_SUBS;
         Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(card).location;

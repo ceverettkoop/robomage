@@ -16,7 +16,7 @@ namespace effects {
 // card the source Saga chapter I exiled face down); Defined$ Self falls back to the source. A
 // future SetState on a target would read ab.target here.
 static Entity set_state_subject(const Ability &ab) {
-    if (ab.defined_exiled_with) return exiled_with_card(ab.source.lki_entity());
+    if (ab.defined_exiled_with) return exiled_with_card(ab.source.get());
     if (ab.defined_self) return ab.source.get();
     return ab.target.get();
 }

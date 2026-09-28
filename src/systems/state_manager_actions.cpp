@@ -527,7 +527,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // PRINTED characteristics against condition_present (card_matches_filter is battlefield-agnostic;
     // the exiled card sits in exile). Absent card ⇒ 0 matches (condition unmet).
     if (ab.condition_on_exiled_with) {
-        Entity ew = exiled_with_card(ab.source.lki_entity());
+        Entity ew = exiled_with_card(ab.source.get());
         int matches = 0;
         if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew)) {
             MatchCtx ctx;
