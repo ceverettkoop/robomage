@@ -431,8 +431,11 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.location = Zone::STACK;
     z.distance_from_top = 0;
     z.controller = caster;
-    note_object_moved(card, z.obj_gen);  // CR 400.7h: a cast made by an effect stays findable
+    const uint64_t origin_gen = z.obj_gen;
+    note_object_moved(card, origin_gen);  // CR 400.7h: a cast made by an effect stays findable
     z.obj_gen = cur_game.next_obj_gen++;
+    // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
+    cur_game.impulse_cast_permission.follow(card, origin_gen);
     z.identity_known = false;
     z.is_face_down = false;
     // A spell on the stack is public (CR 400.2).
@@ -467,8 +470,12 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
         }
     }
     auto &z = global_coordinator.GetComponent<Zone>(card);
+    const uint64_t stack_gen = z.obj_gen;
     z = origin;
     if (origin.location == Zone::HAND) z.identity_known = true;
+    // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
+    // permission that followed it onto the stack is back on it.
+    cur_game.impulse_cast_permission.follow(card, stack_gen);
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER
@@ -783,7 +790,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // Inquisitive Student's "your third card in a turn") never matches, and Sylvan Library would
     // treat the opening hand as cards drawn this turn. This mirrors the fire_draw_event gate the
     // miracle/event logic below already uses.
-    if (fire_draw_event) pl.cards_drawn_this_turn.push_back(top);
+    if (fire_draw_event) pl.cards_drawn_this_turn.push_back(ObjectRef::of(top));
 
     // Miracle (CR 702.94): if this is the FIRST card its controller has drawn this turn and it
     // carries the Miracle keyword, its owner may reveal it and cast it for its miracle

@@ -55,7 +55,7 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     fr.saved_remembered = cur_game.remembered_entities;
     cur_game.remembered_entities.clear();
     if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
-        cur_game.ability_resolution_counts[ab.source.lki_entity()]++;
+        cur_game.ability_resolution_counts[ab.source]++;
         fr.counted_resolution = true;
     }
     FrameLevel root;

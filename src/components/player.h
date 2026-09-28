@@ -8,6 +8,7 @@
 #include <vector>
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "../object_ref.h"
 #include "counter_map.h"
 
 struct Player {
@@ -32,7 +33,7 @@ struct Player {
     // card if an opponent has cast a blue or black spell this turn." Presence-tracking (0/1 per
     // color) suffices for the GE1 conditions that consume it.
     std::set<Colors> spell_colors_cast_this_turn;
-    std::vector<Entity> cards_drawn_this_turn;
+    std::vector<ObjectRef> cards_drawn_this_turn;
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
     // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
     // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes

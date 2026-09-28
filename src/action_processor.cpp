@@ -2059,10 +2059,10 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // A NORMAL play-from-exile grant (Light Up the Stage, warp) casts the card for its
             // own costs, so it follows the regular branch: kicker, X, hybrid and Phyrexian pips
             // and additional costs all apply (CR 601.2b, 601.2f).
-            auto grant_it = cur_game.impulse_cast_permission.find(spell_entity);
-            const bool impulse_normal =
-                pc.impulse_cast && grant_it != cur_game.impulse_cast_permission.end() &&
-                grant_it->second.resource == Game::ImpulseCastPermission::NORMAL;
+            const Game::ImpulseCastPermission *grant_p =
+                cur_game.impulse_cast_permission.find(spell_entity);
+            const bool impulse_normal = pc.impulse_cast && grant_p &&
+                                        grant_p->resource == Game::ImpulseCastPermission::NORMAL;
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
             // chosen (601.2c before 601.2g/h; see the deferred_* fields). Paying
             // the sacrifice first leaked information and changed the board before the
@@ -2102,8 +2102,8 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // for a spell cast without paying its mana cost (CR 107.3b). A NORMAL grant (Light
             // Up the Stage, warp) pays the card's own costs, so it takes the regular branch below.
             } else if (pc.impulse_cast && !impulse_normal) {
-                if (grant_it != cur_game.impulse_cast_permission.end()) {
-                    const auto &grant = grant_it->second;
+                if (grant_p) {
+                    const auto &grant = *grant_p;
                     if (grant.resource == Game::ImpulseCastPermission::FREE)
                         game_log("%s casts %s without paying its mana cost\n",
                                  player_name(caster).c_str(), card_data.name.c_str());

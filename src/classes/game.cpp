@@ -34,9 +34,10 @@ bool Game::ready_to_resolve() {
 
 bool Game::combat_damage_prevented(Entity source, Entity target) const {
     for (const auto &shield : combat_damage_prevention_shields) {
-        if (shield.creature == 0) continue;
-        if (shield.prevent_as_source && shield.creature == source) return true;
-        if (shield.prevent_as_target && shield.creature == target) return true;
+        const Entity creature = shield.creature.get();
+        if (creature == 0) continue;
+        if (shield.prevent_as_source && creature == source) return true;
+        if (shield.prevent_as_target && creature == target) return true;
     }
     return false;
 }
@@ -44,7 +45,7 @@ bool Game::combat_damage_prevented(Entity source, Entity target) const {
 bool Game::combat_damage_shielded(Entity creature) const {
     if (creature == 0) return false;
     for (const auto &shield : combat_damage_prevention_shields)
-        if (shield.creature == creature && (shield.prevent_as_source || shield.prevent_as_target))
+        if (shield.creature.get() == creature && (shield.prevent_as_source || shield.prevent_as_target))
             return true;
     return false;
 }
@@ -70,11 +71,6 @@ void Game::forget_entity(Entity e) {
     erase_refs_to(remembered_entities, e);
     erase_refs_to(imprinted_entities, e);
     erase_refs_to(delve_exiled, e);
-    combat_damage_prevention_shields.erase(
-        std::remove_if(combat_damage_prevention_shields.begin(),
-                       combat_damage_prevention_shields.end(),
-                       [e](const CombatDamagePreventionShield &s) { return s.creature == e; }),
-        combat_damage_prevention_shields.end());
     ability_resolution_counts.erase(e);
     payment_fail_counts.erase(e);
     void_countered.erase(e);
@@ -291,24 +287,15 @@ void Game::end_cleanup_effects() {
     // "until the end of your next turn") survives this cleanup and is removed at the
     // caster's NEXT turn's cleanup instead — detected as a later cleanup (turn >
     // grant_turn) whose active player is the grant's caster.
-    for (auto pit = impulse_cast_permission.begin(); pit != impulse_cast_permission.end();) {
-        const ImpulseCastPermission &g = pit->second;
-        // A warp recast permission persists across turns for as long as the card
-        // remains in exile; it lapses only once the card has left exile (cast, or
-        // moved by another effect). It is never expired by the per-turn cleanup.
-        if (g.warp) {
-            bool in_exile =
-                global_coordinator.entity_has_component<Zone>(pit->first) &&
-                global_coordinator.GetComponent<Zone>(pit->first).location == Zone::EXILE;
-            if (in_exile) { ++pit; continue; }
-            pit = impulse_cast_permission.erase(pit);
-            continue;
-        }
-        bool expire = !g.persist_until_end_of_next_turn ||
-                      (g.caster == active_player && turn > g.grant_turn);
-        if (expire) pit = impulse_cast_permission.erase(pit);
-        else ++pit;
-    }
+    // A permission whose card left exile (cast, or moved by another effect) is gone with the
+    // object it was granted to (CR 400.7). A warp recast permission persists across turns for as
+    // long as the card remains in exile; it is never expired by the per-turn cleanup.
+    impulse_cast_permission.purge_stale();
+    impulse_cast_permission.erase_if([&](Entity, const ImpulseCastPermission &g) {
+        if (g.warp) return false;
+        return !g.persist_until_end_of_next_turn ||
+               (g.caster == active_player && turn > g.grant_turn);
+    });
     // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
     // "Spells you control can't be countered this turn" + "hexproof from blue and
     // from black until end of turn") lapse at cleanup (CR 514.2).

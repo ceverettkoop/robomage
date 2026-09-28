@@ -42,8 +42,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         game_log("%s draws 2 cards (Sylvan Library)\n", player_name(ctrl).c_str());
 
         // Get cards drawn this turn that are still in hand
-        for (auto e : pl.cards_drawn_this_turn) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        for (Entity e : live_entities(pl.cards_drawn_this_turn)) {
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location == Zone::HAND && z.owner == ctrl) {
                 rt.drawn_in_hand.push_back(e);

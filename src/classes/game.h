@@ -285,8 +285,10 @@ struct Game {
                                             // object (see lki_for); every entry is erased when its
                                             // entity id is issued again
         std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
-        std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
-        std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
+        ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
+        // Machine mode: block casting after 2 failed payments. Keyed by the card's entity id, not
+        // by object: a cancelled cast returns the card to its origin as a restored object.
+        std::map<Entity, int> payment_fail_counts;
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
         // The source entity of the spell/ability currently making a mid-resolution choice
@@ -751,7 +753,7 @@ struct Game {
         // via combat_damage_prevented() and cleared at cleanup. General over any DamageDone/Prevent
         // Effect keyed on a remembered object (reusable by future fog/prevention cards).
         struct CombatDamagePreventionShield {
-            Entity creature = 0;
+            ObjectRef creature;
             bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
             bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
         };
@@ -794,8 +796,10 @@ struct Game {
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution
         // only (Amped Raptor's DB$ Play, suspend's last time counter; during_resolution, CR
-        // 608.2g). Keyed by the card entity. The casting path reads it for the cost that
-        // replaces the card's mana cost (CR 118.9) and consumes it as the card is cast.
+        // 608.2g). Keyed by the exiled card as an object: it lapses once the card becomes a new
+        // object, except that it follows the card onto the stack as it is cast (CR 400.7g). The
+        // casting path reads it for the cost that replaces the card's mana cost (CR 118.9) and
+        // consumes it as the card is cast.
         struct ImpulseCastPermission {
             // FREE = cast without paying its mana cost (Ugin, Eye of the Storms' -11: "cast those
             // cards without paying their mana costs"; Dauthi Voidwalker: "play it ... without
@@ -826,7 +830,7 @@ struct Game {
             // effect_warp.cpp.
             bool warp = false;
         };
-        std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
+        ObjectMap<ImpulseCastPermission> impulse_cast_permission;
         // Warp (a 2025 keyword): cards cast for their warp cost, pending the delayed end-step exile.
         // Set from Spell::cast_with_warp as the spell resolves onto the battlefield (stack_manager),
         // consumed when the permanent is created (apply_permanent_components) to register the
@@ -838,9 +842,9 @@ struct Game {
         // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
         // its owner's upkeep (effects::suspend_tick); removing the last counter triggers the free
         // cast (CR 702.62a third ability, effects::suspend_cast).
-        std::map<Entity, int> suspend_time_counters;
+        ObjectMap<int> suspend_time_counters;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created (→ Permanent::entered_x, CR 107.3m)
-        std::map<Entity, ObjectRef> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
+        ObjectMap<ObjectRef> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass
         // can suspend and resume): they entered the battlefield together, so none of them is on the
         // battlefield yet when another one's "as it enters" condition is checked (CR 614.12, e.g.

@@ -924,9 +924,9 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
             all_expire = false;
         }
     } else if (zone.location == Zone::EXILE) {
-        auto it = cur_game.impulse_cast_permission.find(card);
-        if (it == cur_game.impulse_cast_permission.end()) return out;
-        const Game::ImpulseCastPermission &g = it->second;
+        const Game::ImpulseCastPermission *grant = cur_game.impulse_cast_permission.find(card);
+        if (grant == nullptr) return out;
+        const Game::ImpulseCastPermission &g = *grant;
         if (g.caster != player) return out;
         // A permission for a cast made during a resolution (CR 608.2g) is used only there.
         if (g.during_resolution) return out;
@@ -946,8 +946,8 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
 
 int exiled_card_counters(Entity card) {
     int n = 0;
-    auto it = cur_game.suspend_time_counters.find(card);
-    if (it != cur_game.suspend_time_counters.end() && it->second > 0) n += it->second;
+    const int *time = cur_game.suspend_time_counters.find(card);
+    if (time && *time > 0) n += *time;
     if (cur_game.void_countered.count(card)) n += 1;
     return n;
 }
@@ -959,8 +959,8 @@ int object_counters(Entity e, const std::string &type) {
         return 0;
     if (type == "VOID") return cur_game.void_countered.count(e) ? 1 : 0;
     if (type == "TIME") {
-        auto it = cur_game.suspend_time_counters.find(e);
-        return it == cur_game.suspend_time_counters.end() ? 0 : std::max(it->second, 0);
+        const int *time = cur_game.suspend_time_counters.find(e);
+        return time ? std::max(*time, 0) : 0;
     }
     return 0;
 }
@@ -1097,8 +1097,8 @@ bool entered_battlefield_this_turn(long entered_on_turn) {
 }
 
 int ability_resolutions_this_turn(Entity source) {
-    auto it = cur_game.ability_resolution_counts.find(source);
-    return it != cur_game.ability_resolution_counts.end() ? it->second : 0;
+    const int *n = cur_game.ability_resolution_counts.find(source);
+    return n ? *n : 0;
 }
 
 // CR 702.131b: Ascend on a permanent — any time its controller controls ten or more

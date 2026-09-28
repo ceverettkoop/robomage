@@ -95,8 +95,28 @@ class ObjectMap {
                 it = entries.insert_or_assign(e, Entry{ObjectRef::of(e), T{}}).first;
             return it->second.value;
         }
+        // The entry of the object `ref` names (as it was when the ref was taken), created fresh
+        // when `ref`'s entity holds none or holds another object's.
+        T &operator[](const ObjectRef &ref) {
+            auto it = entries.find(ref.e);
+            if (it == entries.end() || it->second.ref != ref)
+                it = entries.insert_or_assign(ref.e, Entry{ref, T{}}).first;
+            return it->second.value;
+        }
         void erase(Entity e) { entries.erase(e); }
         void clear() { entries.clear(); }
+        // Drop every entry whose object is gone.
+        void purge_stale() {
+            erase_if_entry([](Entity e, const Entry &en) { return en.ref.get() != e; });
+        }
+        // CR 400.7g: the entry of `e` follows it into its new zone — when it was recorded for the
+        // object stamped `from_gen`, it now belongs to the object `e` is (a card cast under a
+        // permission it grants keeps the permission while the cast is proposed).
+        void follow(Entity e, uint64_t from_gen) {
+            auto it = entries.find(e);
+            if (it != entries.end() && it->second.ref.gen == from_gen)
+                it->second.ref = ObjectRef::of(e);
+        }
         // Keys still naming the object they were recorded for, in entity-id order.
         std::vector<Entity> live_keys() const {
             std::vector<Entity> out;
@@ -107,12 +127,7 @@ class ObjectMap {
         // Erase every entry (live or not) for which pred(entity, value) is true.
         template <class Pred>
         void erase_if(Pred pred) {
-            for (auto it = entries.begin(); it != entries.end();) {
-                if (pred(it->first, it->second.value))
-                    it = entries.erase(it);
-                else
-                    ++it;
-            }
+            erase_if_entry([&pred](Entity e, Entry &en) { return pred(e, en.value); });
         }
 
     private:
@@ -120,6 +135,15 @@ class ObjectMap {
             ObjectRef ref;
             T value;
         };
+        template <class Pred>
+        void erase_if_entry(Pred pred) {
+            for (auto it = entries.begin(); it != entries.end();) {
+                if (pred(it->first, it->second))
+                    it = entries.erase(it);
+                else
+                    ++it;
+            }
+        }
         std::map<Entity, Entry> entries;
 };
 

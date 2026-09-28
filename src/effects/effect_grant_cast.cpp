@@ -152,7 +152,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front().get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
             Game::CombatDamagePreventionShield shield;
-            shield.creature = who;
+            shield.creature = ObjectRef::of(who);
             shield.prevent_as_source = ab.effect_prevent_combat_damage_by_remembered;
             shield.prevent_as_target = ab.effect_prevent_combat_damage_to_remembered;
             cur_game.combat_damage_prevention_shields.push_back(shield);

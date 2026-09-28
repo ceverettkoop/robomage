@@ -491,9 +491,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                              : (upkeep_player == game.player_b_entity) ? Zone::PLAYER_B
                                                                        : Zone::UNKNOWN;
         if (ctrl == Zone::UNKNOWN) continue;
-        for (const auto &[card, count] : game.suspend_time_counters) {
-            if (count <= 0) continue;
-            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        for (Entity card : game.suspend_time_counters.live_keys()) {
+            if (*game.suspend_time_counters.find(card) <= 0) continue;
             auto &cz = global_coordinator.GetComponent<Zone>(card);
             if (cz.location != Zone::EXILE || cz.owner != ctrl) continue;  // still suspended, this player's
             std::string cname = global_coordinator.entity_has_component<CardData>(card)

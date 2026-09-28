@@ -773,14 +773,13 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // (reanimate-then-attach, Pre-War Formalwear): finalize the equip link now
                 // that the Permanent is being created. The equipment kept its own Permanent.
                 {
-                    auto pa = game.pending_attach.find(entity);
-                    if (pa != game.pending_attach.end()) {
-                        Entity equip = pa->second.get();
+                    if (const ObjectRef *pa = game.pending_attach.find(entity)) {
+                        Entity equip = pa->get();
                         if (equip != 0 && global_coordinator.entity_has_component<Permanent>(equip)) {
                             global_coordinator.GetComponent<Permanent>(equip).equipped_to = ObjectRef::of(entity);
                             game_log("Equipment attached.\n");
                         }
-                        game.pending_attach.erase(pa);
+                        game.pending_attach.erase(entity);
                     }
                 }
                 // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it

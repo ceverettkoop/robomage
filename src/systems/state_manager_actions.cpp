@@ -224,9 +224,9 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
 // See declaration in state_manager.h.
 bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
                           std::shared_ptr<Orderer> orderer) {
-    auto grant_it = cur_game.impulse_cast_permission.find(card);
-    if (grant_it == cur_game.impulse_cast_permission.end()) return false;
-    const Game::ImpulseCastPermission &perm_grant = grant_it->second;
+    const Game::ImpulseCastPermission *grant = cur_game.impulse_cast_permission.find(card);
+    if (grant == nullptr) return false;
+    const Game::ImpulseCastPermission &perm_grant = *grant;
     const CardData &ecd = global_coordinator.GetComponent<CardData>(card);
 
     // A cast made during a resolution (CR 608.2g) ignores the card's type-based timing.
@@ -1011,7 +1011,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // only under a "play" grant that allows lands).
     for (const auto &[ex_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
-        const auto &perm_grant = cur_game.impulse_cast_permission.at(ex_entity);
+        const auto &perm_grant = *cur_game.impulse_cast_permission.find(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
         // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may

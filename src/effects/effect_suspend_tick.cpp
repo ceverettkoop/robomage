@@ -29,20 +29,16 @@ namespace effects {
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
+    // The card must still be the suspended object in exile (one that left exile is a new object
+    // with no time counters, CR 400.7 / 122.2).
     Entity card = ab.source.get();
-    auto it = cur_game.suspend_time_counters.find(card);
-    if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
-    // The card must still be a suspended card (in exile). If it left exile some other way, drop
-    // the stale tracking and do nothing.
-    if (!is_exiled(card)) {
-        cur_game.suspend_time_counters.erase(it);
-        return HandlerResult::DONE_RUN_SUBS;
-    }
-    it->second -= 1;
+    int *counters = cur_game.suspend_time_counters.find(card);
+    if (counters == nullptr || !is_exiled(card)) return HandlerResult::DONE_RUN_SUBS;
+    *counters -= 1;
     game_log("Removed a time counter from %s (%d remaining).\n", entity_name(card).c_str(),
-             it->second);
-    if (it->second > 0) return HandlerResult::DONE_RUN_SUBS;
-    cur_game.suspend_time_counters.erase(it);
+             *counters);
+    if (*counters > 0) return HandlerResult::DONE_RUN_SUBS;
+    cur_game.suspend_time_counters.erase(card);
     Ability cast_trigger;
     cast_trigger.ability_type = Ability::TRIGGERED;
     cast_trigger.category = "SuspendCast";
