@@ -84,7 +84,10 @@ bool snapshot_save(int slot) {
     s.scope = sideboard_phase ? SnapScope::MATCH : SnapScope::GAME;
     s.game = cur_game;
     global_coordinator.snapshot_to(s.ecs);
-    s.card_db_copy = card_db;
+    // card_db is add-only within a generation (see snapshot_restore), so a slot that already
+    // holds this generation's map at the same size holds an identical copy.
+    if (s.card_db_generation != g_card_db_generation || s.card_db_copy.size() != card_db.size())
+        s.card_db_copy = card_db;
     s.card_db_generation = g_card_db_generation;
     for (int i = 0; i < REVEALED_SIZE; ++i) {
         s.revealed_a[i] = g_revealed_by_a[i];

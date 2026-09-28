@@ -110,7 +110,7 @@ class Coordinator {
         // manager's own snapshot/restore. Restore writes back into the existing
         // managers (no re-registration), so component type ids stay valid.
         void snapshot_to(EcsSnapshot &out) const {
-            out.component_arrays = mComponentManager->SnapshotArrays();
+            mComponentManager->SnapshotArraysInto(out.component_arrays);
             out.entity_state = mEntityManager->snapshot_state();
             out.system_entities = mSystemManager->snapshot_systems();
             out.pending_events = mEventManager->snapshot_pending();
