@@ -955,10 +955,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     // Stack objects that are fired delayed triggers (any depth, not only the displayed 12).
     std::vector<Entity> stack_delayed;
 
-    // Use high-water-mark instead of MAX_ENTITIES to skip unallocated slots.
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; ++e) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+    for (Entity e : zoned_entities()) {
         auto& zone = global_coordinator.GetComponent<Zone>(e);
         bool is_self = (zone.owner == viewer);
 

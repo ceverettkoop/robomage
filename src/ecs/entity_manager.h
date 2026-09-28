@@ -34,10 +34,8 @@ class EntityManager {
             mAlive.set(id);
             ++mIssueCount[id];
             ++mLivingEntityCount;
-            if (id >= mMaxIssuedEntity) mMaxIssuedEntity = id + 1;
             return id;
         }
-        Entity GetMaxIssuedEntity() const { return mMaxIssuedEntity; }
         // How many times `entity` has been issued: its current holder is the id's
         // GetIssueCount(entity)'th. A reference taken of one holder compares it to tell a later
         // holder of the same id apart (the id was destroyed and issued again).
@@ -81,11 +79,9 @@ class EntityManager {
             std::bitset<MAX_ENTITIES> alive;
             std::array<uint32_t, MAX_ENTITIES> issueCount;
             uint32_t livingEntityCount;
-            Entity maxIssuedEntity;
         };
         EntityManagerState snapshot_state() const {
-            return {mAvailableEntities, mSignatures, mAlive, mIssueCount, mLivingEntityCount,
-                    mMaxIssuedEntity};
+            return {mAvailableEntities, mSignatures, mAlive, mIssueCount, mLivingEntityCount};
         }
         void restore_state(const EntityManagerState &s) {
             mAvailableEntities = s.availableEntities;
@@ -93,7 +89,6 @@ class EntityManager {
             mAlive = s.alive;
             mIssueCount = s.issueCount;
             mLivingEntityCount = s.livingEntityCount;
-            mMaxIssuedEntity = s.maxIssuedEntity;
         }
     private:
         // Queue of unused entity IDs
@@ -106,7 +101,5 @@ class EntityManager {
         std::array<uint32_t, MAX_ENTITIES> mIssueCount{};
         // Total living entities - used to keep limits on how many exist
         uint32_t mLivingEntityCount{};
-        // Highest entity ID ever issued + 1; used to bound linear scans
-        Entity mMaxIssuedEntity{};
 };
 #endif /* ENTITY_MANAGER_H */

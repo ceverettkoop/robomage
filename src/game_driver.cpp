@@ -30,6 +30,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "queries/players.h"
+#include "queries/zones.h"
 #include "input_logger.h"
 #include "machine_io.h"
 #include "search_server.h"
@@ -264,6 +265,7 @@ EcsSystems init_ecs() {
     Orderer::init();
     StateManager::init();
     StackManager::init();
+    bind_zoned_entities(orderer->mEntities);
 
     // A snapshot restore must re-derive the rule-613 derived state
     // (g_active_statics) before a restored parked decision resumes — the parked

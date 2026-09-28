@@ -37,7 +37,6 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
                          Entity target);
 static int unrecognized(const std::string &expr);
 static const Player *player_of(Zone::Ownership seat);
-static std::vector<Entity> zone_cards(Zone::ZoneValue zone, Zone::Ownership owner);
 static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
                                      Zone::Ownership controller);
 static int count_players_with_property(const std::string &expr, Zone::Ownership controller);
@@ -192,7 +191,7 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
     if (expr == "Count$YouCastThisGame") return you ? static_cast<int>(you->spells_cast_this_game) : 0;
     // Count$InYourLibrary — the number of cards in the controller's library.
     if (expr == "Count$InYourLibrary")
-        return static_cast<int>(zone_cards(Zone::LIBRARY, controller).size());
+        return static_cast<int>(zone_objects(zoned_entities(), Zone::LIBRARY, controller).size());
 
     if (starts_with(expr, "Count$CardCounters.")) return card_counters(source, expr);
     if (starts_with(expr, "Count$Devotion.")) return devotion(expr, controller);
@@ -211,8 +210,8 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
     if (high_low(expr, "Count$PromisedGift.", current_gift_promised(), high_or_low)) return high_or_low;
     // Count$Threshold.high.low — Threshold: high if the controller has seven or more cards in their
     // graveyard (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold, else 3).
-    if (high_low(expr, "Count$Threshold.", zone_cards(Zone::GRAVEYARD, controller).size() >= 7,
-                 high_or_low))
+    if (high_low(expr, "Count$Threshold.",
+                 zone_objects(zoned_entities(), Zone::GRAVEYARD, controller).size() >= 7, high_or_low))
         return high_or_low;
     // Count$UrzaLands.high.low — high if the controller controls an Urza's Mine, an Urza's
     // Power-Plant and an Urza's Tower (the Tron lands; Mine/Power Plant: .2.1, Tower: .3.1).
@@ -233,7 +232,7 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
     if (starts_with(expr, "Count$TypeInYourYard.")) {
         std::string type_name = expr.substr(std::string("Count$TypeInYourYard.").size());
         int count = 0;
-        for (Entity e : zone_cards(Zone::GRAVEYARD, controller)) {
+        for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, controller)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
                 if (t.name == type_name) { count++; break; }
@@ -308,18 +307,6 @@ static int evaluate_base(const std::string &expr, Zone::Ownership controller, En
     return unrecognized(expr);
 }
 
-// The cards `owner` has in `zone` (any owner when UNKNOWN), in entity order.
-static std::vector<Entity> zone_cards(Zone::ZoneValue zone, Zone::Ownership owner) {
-    std::vector<Entity> out;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; ++e) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        const Zone &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location == zone && (owner == Zone::UNKNOWN || z.owner == owner)) out.push_back(e);
-    }
-    return out;
-}
-
 // The number of cards in `zone` (either player's) matching a Count$Valid<Zone> filter. A card
 // there is controlled by its owner (CR 108.4a), so YouCtrl/OppCtrl read as YouOwn/OppOwn against
 // `controller`; an empty filter counts every card.
@@ -332,7 +319,7 @@ static int count_zone_cards_matching(Zone::ZoneValue zone, std::string spec,
     MatchCtx ctx;
     ctx.controller = controller;
     int count = 0;
-    for (Entity e : zone_cards(zone, Zone::UNKNOWN))
+    for (Entity e : zone_objects(zoned_entities(), zone, Zone::UNKNOWN))
         if (card_matches_filter(e, filter, ctx)) count++;
     return count;
 }
@@ -418,7 +405,7 @@ static int devotion(const std::string &expr, Zone::Ownership controller) {
                                                : NO_COLOR;
     if (devotion_color == NO_COLOR) return unrecognized(expr);
     int count = 0;
-    for (Entity e : battlefield_permanents_scan(controller)) {
+    for (Entity e : battlefield_permanents(zoned_entities(), controller)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         count += static_cast<int>(cd.mana_cost.count(devotion_color));
@@ -436,7 +423,7 @@ static int devotion(const std::string &expr, Zone::Ownership controller) {
 // names. One permanent with several of the subtypes (Nexus) satisfies each it carries.
 static bool urza_lands_assembled(Zone::Ownership controller) {
     bool mine = false, plant = false, tower = false;
-    for (Entity e : battlefield_permanents_scan(controller)) {
+    for (Entity e : battlefield_permanents(zoned_entities(), controller)) {
         const auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (!permanent_has_type(perm, "Urza's")) continue;
         if (permanent_has_type(perm, "Mine")) mine = true;
@@ -492,7 +479,7 @@ static int count_valid(std::string spec, Zone::Ownership controller, Entity sour
         mctx.controller = controller;
         mctx.source = source;
         int total = 0;
-        for (Entity e : battlefield_permanents_scan(Zone::UNKNOWN)) {
+        for (Entity e : battlefield_permanents(zoned_entities())) {
             if (!permanent_matches_filter(e, spec, mctx)) continue;
             if (global_coordinator.entity_has_component<CardData>(e))
                 total += card_mana_value(global_coordinator.GetComponent<CardData>(e));
@@ -527,7 +514,7 @@ static int count_valid(std::string spec, Zone::Ownership controller, Entity sour
 // real candidate pool.
 static int count_valid_stack(const std::string &spec, Zone::Ownership controller, Entity source) {
     int count = 0;
-    for (Entity e : zone_cards(Zone::STACK, Zone::UNKNOWN)) {
+    for (Entity e : zone_objects(zoned_entities(), Zone::STACK, Zone::UNKNOWN)) {
         if (e == source) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         if (card_matches_any(e, spec, MatchCtx{controller, source})) count++;
@@ -604,7 +591,7 @@ static int graveyard_card_types(const std::string &expr, Zone::Ownership control
     }
     std::string sub_spec = (sub.empty() && sub_ctx.cmc_bound < 0) ? "" : ("Card+" + sub);
     std::set<std::string> type_names;
-    for (Entity e : zone_cards(Zone::GRAVEYARD, Zone::UNKNOWN)) {
+    for (Entity e : zone_objects(zoned_entities(), Zone::GRAVEYARD, Zone::UNKNOWN)) {
         const Zone &z = global_coordinator.GetComponent<Zone>(e);
         if (you_own && z.owner != controller) continue;
         if (opp_own && z.owner == controller) continue;

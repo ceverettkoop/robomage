@@ -16,6 +16,7 @@
 #include "error.h"
 #include "mana_system.h"
 #include "queries/players.h"
+#include "queries/zones.h"
 #include "resolution_frame.h"
 #include "snapshot.h"
 #include "stable_rng.h"
@@ -320,9 +321,7 @@ void determinize_hidden_state(unsigned int world_seed) {
     // they never enter the exchange pools below.
     std::set<Entity> decision_pins = collect_pending_pins();
 
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+    for (Entity e : zoned_entities()) {
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location == Zone::LIBRARY && (z.owner == p || z.owner == opp)) {
             const int *p_knows = (z.owner == p) ? p_knows_own : p_knows_opp;
@@ -416,11 +415,8 @@ static void resample_face_down_identities(const std::vector<Entity> &face_down,
 // so each player's view is consistent with the world without carrying the real identities into
 // the search. (A position the searcher knows is pinned, so its entries are unchanged.)
 static void resample_known_tops() {
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e) ||
-            !global_coordinator.entity_has_component<CardData>(e))
-            continue;
+    for (Entity e : zoned_entities()) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         const auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location != Zone::LIBRARY || z.distance_from_top >= KNOWN_TOP_LIBRARY_SIZE) continue;
         const size_t pos = z.distance_from_top;
@@ -436,14 +432,8 @@ static void resample_known_tops() {
 // observation reads) is re-split to the sampled sideboard.
 static void resplit_opp_live_deck(Zone::Ownership opp) {
     std::vector<int> side;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e) ||
-            !global_coordinator.entity_has_component<CardData>(e))
-            continue;
-        const auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location == Zone::SIDEBOARD && z.owner == opp)
+    for (Entity e : zone_objects(zoned_entities(), Zone::SIDEBOARD, opp))
+        if (global_coordinator.entity_has_component<CardData>(e))
             side.push_back(card_name_to_index(global_coordinator.GetComponent<CardData>(e).name));
-    }
     deck_state_resplit_live(opp, side);
 }

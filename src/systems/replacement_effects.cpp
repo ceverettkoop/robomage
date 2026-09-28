@@ -24,6 +24,7 @@
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../svar_eval.h"
 #include "state_manager.h"
@@ -57,19 +58,6 @@ struct Candidate {
     std::string discard_filter;     // DISCARD_ELSE_GRAVEYARD: type filter of the card the owner may discard
 };
 
-// Number of cards in a player's library / graveyard scan helpers mirror the
-// battlefield scan in Orderer (entity-id order, matching get_graveyard()).
-size_t library_size(Zone::Ownership owner) {
-    size_t n = 0;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location == Zone::LIBRARY && z.owner == owner) n++;
-    }
-    return n;
-}
-
 bool already_applied(const std::set<std::pair<Entity, int>> &applied, const Candidate &c) {
     return applied.count({c.source, c.index}) != 0;
 }
@@ -81,8 +69,7 @@ bool already_applied(const std::set<std::pair<Entity, int>> &applied, const Cand
 // Containment Priest under Humility exiles nothing.
 template <typename Fn>
 void for_each_battlefield_replacement(Effect::Replacement::Kind kind, Zone::Ownership ctrl, Fn fn) {
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
+    for (Entity e : zoned_entities()) {
         if (!is_battlefield_permanent(e, ctrl)) continue;
         if (global_coordinator.GetComponent<Permanent>(e).abilities_removed) continue;
         const auto &reps = permanent_replacement_effects(e);
@@ -104,8 +91,7 @@ static bool tapped_condition_met(const std::string &filter, const std::string &c
     ctx.controller = controller;
     ctx.source = entering;
     int count = 0;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
+    for (Entity e : zoned_entities()) {
         if (e == entering || cur_game.entering_together.count(e)) continue;
         if (is_battlefield_permanent(e, controller) && permanent_matches_filter(e, filter, ctx)) count++;
     }
@@ -493,12 +479,8 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             dctx.controller = ev.affected_player;
             dctx.source = ev.entity;
             std::vector<Entity> discardable;
-            Entity max_e = global_coordinator.GetMaxIssuedEntity();
-            for (Entity e = 0; e < max_e; e++) {
+            for (Entity e : zone_objects(zoned_entities(), Zone::HAND, ev.affected_player)) {
                 if (e == ev.entity) continue;  // the entering card is not in hand
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location != Zone::HAND || z.owner != ev.affected_player) continue;
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 if (card_matches_any(e, c.discard_filter, dctx)) discardable.push_back(e);
             }
@@ -644,12 +626,9 @@ std::vector<LegalAction> collect_draw_replacements(Zone::Ownership player,
                                                    std::vector<DrawReplacementOption> *opts) {
     opts->clear();
     std::vector<LegalAction> actions;
-    size_t lib = library_size(player);
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::GRAVEYARD || z.owner != player) continue;
+    const std::set<Entity> &entities = zoned_entities();
+    size_t lib = zone_objects(entities, Zone::LIBRARY, player).size();
+    for (Entity e : zone_objects(entities, Zone::GRAVEYARD, player)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib)

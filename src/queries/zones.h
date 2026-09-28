@@ -2,8 +2,31 @@
 #define QUERIES_ZONES_H
 
 #include <set>
+#include <vector>
 #include "../components/zone.h"
 #include "../ecs/entity.h"
+
+// ── Zoned objects ─────────────────────────────────────────────────────────────
+
+// Every zoned object: each entity carrying a Zone component — cards in every zone (sideboard
+// included), tokens, and the ability objects on the stack — in entity-id order. It is the
+// systems' shared entity set (Orderer, StateManager and StackManager all have the {Zone}
+// signature), exposed for free functions that have no system's mEntities in reach (the SVar
+// evaluator, the replacement dispatcher, the observation serializer, search determinization).
+// Code in a system, or handed an orderer, passes its own mEntities instead. Player entities and
+// the card_db template entities carry no Zone and are not in it (reach a player through
+// cur_game's player entities). Bound by init_ecs (bind_zoned_entities); defined in zones.cpp.
+const std::set<Entity> &zoned_entities();
+
+// Makes `entities` (a {Zone}-signature system's mEntities) the set zoned_entities() returns.
+// Called once per init_ecs, as each game's ECS registers its systems.
+void bind_zoned_entities(const std::set<Entity> &entities);
+
+// The objects `owner` has in `zone` (any owner when UNKNOWN), among `entities`, in entity-id
+// order — not the zone's own order (Orderer::get_library_contents / get_graveyard give that).
+// For the battlefield use battlefield_permanents, which applies the phasing rule.
+std::vector<Entity> zone_objects(const std::set<Entity> &entities, Zone::ZoneValue zone,
+                                 Zone::Ownership owner = Zone::UNKNOWN);
 
 // ── Cards outside the battlefield ─────────────────────────────────────────────
 

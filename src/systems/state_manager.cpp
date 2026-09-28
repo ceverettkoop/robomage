@@ -169,7 +169,7 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
         // effects end.
         if (!game.turn_state.cleanup_effects_ended) {
             game.turn_state.cleanup_effects_ended = true;
-            game.end_cleanup_effects();
+            game.end_cleanup_effects(mEntities);
         }
     }
 }

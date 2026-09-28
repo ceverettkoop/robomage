@@ -904,8 +904,8 @@ struct Game {
         bool ready_to_resolve();
         // CR 514.2: all damage marked on permanents is removed and all "until end of turn" and
         // "this turn" effects end, simultaneously. Run once per cleanup step, after the 514.1
-        // discard (process_turn_based_actions).
-        void end_cleanup_effects();
+        // discard (process_turn_based_actions). `entities` is the calling system's mEntities.
+        void end_cleanup_effects(const std::set<Entity> &entities);
         // Begin the end of combat step (CR 511) for the active player `active_player_entity`.
         void begin_end_of_combat_step(Entity active_player_entity);
         // Begin a cleanup step (CR 514) for the active player `active_player_entity`.

@@ -52,10 +52,6 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
-// battlefield_permanents for code that runs outside a system (an SVar evaluation, a count helper)
-// and so has no mEntities: scans every issued entity id. Defined in battlefield.cpp.
-std::vector<Entity> battlefield_permanents_scan(Zone::Ownership ctrl = Zone::UNKNOWN);
-
 // True if the ability's source is still the object it was when the ability was created (CR
 // 400.7) and is a battlefield permanent (phased-in). Defined in battlefield.cpp.
 bool ability_source_on_battlefield(const Ability &ab);
@@ -72,6 +68,8 @@ bool entered_battlefield_this_turn(long entered_on_turn);
 // `source` reference (for source-relative qualifiers like +Other / sameName), and the
 // battlefield/phasing guard are identical on both. `filter_spec` is the bare filter (the text after
 // "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.
+// Its callers (SVar evaluation, cast-cost and presence checks) sit outside any system, so it
+// walks zoned_entities() (zones.h).
 int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
                                Entity source);
 

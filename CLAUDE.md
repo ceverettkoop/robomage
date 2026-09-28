@@ -10,6 +10,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Avoid inline logic for anything that will be repeated; write new functions that are reusable
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
+  Never scan entity ids. Free code with no system's set in reach (SVar evaluation, replacement
+  dispatch, the observation serializer) walks `zoned_entities()` (`src/queries/zones.h`), the
+  systems' shared `{Zone}` set; players are reached through `cur_game`'s player entities.
 - Try to consolidate iterations through entities within a function, rather than iterating through many times
 - Shared entity queries live in `src/queries/`, one header per concern (list under Key files);
   include the specific header you use.

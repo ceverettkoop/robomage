@@ -190,10 +190,10 @@ void Game::take_action() {
     priority.payment_fail_counts.clear();
 }
 
-void Game::end_cleanup_effects() {
+void Game::end_cleanup_effects(const std::set<Entity> &entities) {
     Zone::Ownership active_player = active_seat();
     // Clear damage from all creatures; reset prowess bonus
-    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
+    for (Entity entity : entities) {
         if (global_coordinator.entity_has_component<Damage>(entity)) {
             auto &damage = global_coordinator.GetComponent<Damage>(entity);
             damage.damage_counters = 0;
@@ -382,9 +382,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
             switch (turn_state.step) {
                 case UNTAP: {
-                    // Lapse any "until your next turn" Animate (Karn +1) this player created —
-                    // its longer continuous-effect duration ends as their next turn begins.
-                    effects::revert_until_turn_animates(active_player);
                     // Lapse any "until your next turn" player protection-from-everything grant
                     // protecting this player (The One Ring) — its duration ends as the protected
                     // player's next turn begins.
@@ -424,6 +421,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         std::vector<Entity> phasing_in;
                         for (auto entity : orderer->mEntities) {
                             if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                            // Lapse any "until your next turn" Animate (Karn +1) this player created —
+                            // its longer continuous-effect duration ends as their next turn begins.
+                            effects::revert_until_turn_animate(entity, active_player);
                             auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
                             if (perm_phase.controller == active_player && perm_phase.is_phased_out &&
                                 !perm_phase.phased_out_indirectly)
@@ -439,7 +439,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // battlefield permanent: "each turn" includes the opponent's turns. A
                     // phased-out permanent is skipped; it phases in only at its controller's
                     // untap step, where this loop then resets it.
-                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
+                    for (Entity entity : orderer->mEntities) {
                         if (!is_battlefield_permanent(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -570,7 +570,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures
-                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
+                    for (Entity entity : orderer->mEntities) {
                         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                         auto &creature = global_coordinator.GetComponent<Creature>(entity);
                         creature.is_attacking = false;

@@ -210,37 +210,34 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-// Lapse every "until your next turn" Animate (Karn, the Great Creator +1) created by
-// `active_player`, called from that player's untap step (CR 514/613 — the grant ends as their
-// next turn begins). Erases exactly the granted types, drops the snapshotted base P/T, and strips
-// the bootstrapped Creature/Damage components unless the permanent is a creature by a permanent
-// means (its printed face). General over any UntilYourNextTurn Animate, not just Karn.
-void revert_until_turn_animates(Zone::Ownership active_player) {
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (!perm.animate_until_my_turn || perm.animate_until_turn_controller != active_player) continue;
+// Lapse the "until your next turn" Animate (Karn, the Great Creator +1) on permanent `e` if
+// `active_player` created it, called from that player's untap step (CR 514/613 — the grant ends as
+// their next turn begins). Erases exactly the granted types, drops the snapshotted base P/T, and
+// strips the bootstrapped Creature/Damage components unless the permanent is a creature by a
+// permanent means (its printed face). General over any UntilYourNextTurn Animate, not just Karn.
+void revert_until_turn_animate(Entity e, Zone::Ownership active_player) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (!perm.animate_until_my_turn || perm.animate_until_turn_controller != active_player) return;
 
-        for (const auto &t : perm.animate_added_types_until_turn) perm.types.erase(t);
-        perm.animate_added_types_until_turn.clear();
-        perm.animate_until_my_turn = false;
-        perm.animate_until_turn_controller = Zone::UNKNOWN;
-        perm.animate_make_creature = false;
-        perm.animate_set_pt = false;
-        perm.animate_power = 0;
-        perm.animate_toughness = 0;
+    for (const auto &t : perm.animate_added_types_until_turn) perm.types.erase(t);
+    perm.animate_added_types_until_turn.clear();
+    perm.animate_until_my_turn = false;
+    perm.animate_until_turn_controller = Zone::UNKNOWN;
+    perm.animate_make_creature = false;
+    perm.animate_set_pt = false;
+    perm.animate_power = 0;
+    perm.animate_toughness = 0;
 
-        bool still_creature = false;
-        if (global_coordinator.entity_has_component<CardData>(e))
-            still_creature = is_creature_card(global_coordinator.GetComponent<CardData>(e));
-        if (!still_creature) {
-            if (global_coordinator.entity_has_component<Creature>(e))
-                global_coordinator.RemoveComponent<Creature>(e);
-            if (global_coordinator.entity_has_component<Damage>(e))
-                global_coordinator.RemoveComponent<Damage>(e);
-        }
-        game_log("%s is no longer a creature.\n", perm.name.c_str());
+    bool still_creature = false;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        still_creature = is_creature_card(global_coordinator.GetComponent<CardData>(e));
+    if (!still_creature) {
+        if (global_coordinator.entity_has_component<Creature>(e))
+            global_coordinator.RemoveComponent<Creature>(e);
+        if (global_coordinator.entity_has_component<Damage>(e))
+            global_coordinator.RemoveComponent<Damage>(e);
     }
+    game_log("%s is no longer a creature.\n", perm.name.c_str());
 }
 
 }  // namespace effects
