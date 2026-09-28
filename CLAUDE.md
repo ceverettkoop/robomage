@@ -240,6 +240,8 @@ components and systems are listed in `init_ecs()` (`src/game_driver.cpp`).
 Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared in
 `src/game_driver.h`), `card_db` (uid → loaded card entity, `src/card_db.h`), and `RESOURCE_DIR`
 (`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the Python drivers do).
+**Per-object state lives on components; `Game` holds only game-scoped state and cross-object
+registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
 
 **Components:** `CardData` (printed card: name, types, cost, P/T, ability/static/replacement
 templates), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
@@ -263,10 +265,14 @@ and rules-modifying prohibitions (`rules_mod::`, `rules_modifying.*`).
 
 ### Game flow
 
-`Game` (`src/classes/game.h`; the `Step` enum UNTAP … CLEANUP) holds turn/step, active player,
-timestamp, seed + `mt19937`, delayed triggers, and every suspended-decision state. `main.cpp` only
-parses flags; the loop is `play_single_game` in `src/game_driver.cpp` (shared with `az_actor`;
-bo3 sequencing is `play_bo3_match`). Each iteration: emit a parked `pending_query` → pregame stage
+`Game` (`src/classes/game.h`; the `Step` enum UNTAP … CLEANUP) groups its state by concern:
+`turn_state` (turn, step, active player, extra turns, cleanup progress), `priority` (holder, pass
+flags), `combat`, `pending` (every suspended-decision state), `resolved_effects` (effects that
+belong to no permanent, emblems), `rng`, `identity` (object stamps), plus the timestamp, delayed
+triggers and last-known information; `reset_turn_counters` is the one turn-end reset of "this
+turn" counts. `main.cpp` only parses flags; the loop is `play_single_game` in
+`src/game_driver.cpp` (shared with `az_actor`; bo3 sequencing is `play_bo3_match`). Each
+iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
 auto-taken) → `InputLogger::get_input` → `process_action`.

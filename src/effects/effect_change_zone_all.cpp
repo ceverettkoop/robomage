@@ -140,7 +140,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // per game seed, platform-stable — see stable_rng.h). Used for "in a random
     // order" library placement (Endurance).
     if (ab.rest_random_order) {
-        stable_shuffle(to_move, cur_game.gen);
+        stable_shuffle(to_move, cur_game.rng.engine);
     }
 
     // Library destinations honor LibraryPosition$ (-1 / unset = bottom).

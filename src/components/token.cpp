@@ -35,7 +35,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         etb_counters = rev.etb_p1p1;
         etb_counter_type = rev.etb_counter_type;
         perm.timestamp_entered_battlefield = timestamp++;
-        perm.entered_on_turn = cur_game.turn;
+        perm.entered_on_turn = cur_game.turn_state.turn;
         // Carry the token's intrinsic activated abilities onto the permanent so they are
         // offered as legal actions (a card's activated abilities are read from
         // Permanent::abilities, not the source component). The Eldrazi Spawn token's

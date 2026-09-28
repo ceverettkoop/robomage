@@ -54,7 +54,7 @@ struct AltCost {
     // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
     // AltCost (mana portion = <cost>) with the is_miracle flag. Unlike other alt costs it is NOT
     // offered by can_afford_alt as a priority-menu cast — the qualifying draw offers a private
-    // reveal (Game::miracle_reveal_pending), and the revealed card is cast, if at all, as its
+    // reveal (Game::pending.miracle_reveal), and the revealed card is cast, if at all, as its
     // miracle trigger resolves (effect_miracle.cpp).
     bool is_miracle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)

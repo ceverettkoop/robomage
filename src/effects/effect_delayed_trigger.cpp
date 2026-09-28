@@ -87,7 +87,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         dt.ability = fire_ab;
         dt.fire_on = Events::CARD_CHANGED_ZONE;
         dt.owner_entity = owner_entity;
-        dt.fire_on_turn = cur_game.turn;
+        dt.fire_on_turn = cur_game.turn_state.turn;
         dt.watched = ObjectRef::of(watched);
         if (dp->remember_objects_lki) dt.remembered_objects = objects;
         dt.fire_on_leave_battlefield = true;
@@ -137,7 +137,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         else if (dp->valid_player == "Opponent")
             dt.restrict_player = get_player_entity(opponent_of(owner));
     }
-    dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
+    dt.fire_on_turn = next_turn ? cur_game.turn_state.turn + 1 : cur_game.turn_state.turn;
     register_delayed_trigger(dt, ab.source);
     game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());

@@ -22,7 +22,7 @@ struct Zone {
         ZoneValue location;
         size_t distance_from_top = 0; //0 is top, stored for all zones but only relevant in the ordered zones: library, graveyard, and exile (all per-owner, recency-ordered so 0 is newest/top). Not meaningful for hand, battlefield, or sideboard.
         // CR 400.7 object identity: a globally-unique generation stamped every time this entity
-        // ENTERS a zone (assigned in Orderer::add_to_zone from Game::next_obj_gen). A card that
+        // ENTERS a zone (assigned in Orderer::add_to_zone from Game::identity.next_obj_gen). A card that
         // leaves and re-enters a zone becomes a NEW object; because the engine reuses the same
         // entity id across that move (Tamiyo/Ajani exile-and-return-transformed, any flicker), a
         // stamp is the only way a spell/ability that targeted the OLD object can tell that the

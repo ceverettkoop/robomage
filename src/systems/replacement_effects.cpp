@@ -518,14 +518,14 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             // Blocking decision seated on the owner — this MOVE_TO_ZONE dispatch fires inside
             // Orderer::add_to_zone, the one remaining blocking replacement site (see choose_one).
             // The entering card is the pending-decision source.
-            bool prev_priority = cur_game.player_a_has_priority;
-            cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
+            bool prev_priority = cur_game.priority.player_a_has_priority;
+            cur_game.priority.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
             int pick;
             {
                 PendingDecisionScope pending(ev.entity);
                 pick = InputLogger::instance().get_input(choices);
             }
-            cur_game.player_a_has_priority = prev_priority;
+            cur_game.priority.player_a_has_priority = prev_priority;
             if (pick >= 0 && pick < static_cast<int>(discardable.size())) {
                 ev.pending_discard = discardable[static_cast<size_t>(pick)];  // caller discards it
                 game_log("%s discards %s.\n", player_name(ev.affected_player).c_str(),
@@ -596,10 +596,10 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
     g_choose_one_prompts++;
     // Point priority at the chooser so the query routes/observes/records from
     // their perspective (they may not be the priority holder).
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    bool prev_priority = cur_game.priority.player_a_has_priority;
+    cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
     int pick = InputLogger::instance().get_input(choices);
-    cur_game.player_a_has_priority = prev_priority;
+    cur_game.priority.player_a_has_priority = prev_priority;
     return eligible[static_cast<size_t>(pick)];
 }
 
@@ -618,10 +618,10 @@ void dispatch_draw(ReplacementEvent &ev) {
     // The drawing player makes the dredge decision — route/observe/record from
     // their perspective, which may differ from the current priority holder (a
     // draw can be forced by an opponent's effect).
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
+    bool prev_priority = cur_game.priority.player_a_has_priority;
+    cur_game.priority.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
     int choice = InputLogger::instance().get_input(actions);
-    cur_game.player_a_has_priority = prev_priority;
+    cur_game.priority.player_a_has_priority = prev_priority;
     if (choice == 0) return;  // chose to draw normally
 
     const replacement::DrawReplacementOption &chosen = opts[static_cast<size_t>(choice - 1)];
@@ -705,7 +705,7 @@ void dispatch(ReplacementEvent &ev) {
         // being UNANSWERED (the arm we just created): an answered latch still
         // in flight belongs to a site downstream of a resumed pass and must
         // not truncate an unrelated dispatch.
-        if (cur_game.pending_query.active && !cur_game.pending_query.answered) return;
+        if (cur_game.pending.query.active && !cur_game.pending.query.answered) return;
         applied.insert({cands[pick].source, cands[pick].index});
     }
 }

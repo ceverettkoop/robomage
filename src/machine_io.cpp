@@ -780,8 +780,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     Entity viewer_entity = get_player_entity(viewer);
     Entity opp_entity    = get_player_entity(opponent_of(viewer));
 
-    gs->cur_step            = cur_game.cur_step;
-    gs->turn                = static_cast<int>(cur_game.turn);
+    gs->cur_step            = cur_game.turn_state.step;
+    gs->turn                = static_cast<int>(cur_game.turn_state.turn);
     gs->is_active_player    = (viewer == active_owner);
     gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
@@ -790,10 +790,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     // populate_query derives per-action controller_is_self.
     gs->pending_decision_card = -1;
     gs->pending_decision_ctrl_is_self = false;
-    if (cur_game.pending_decision_source != 0) {
+    if (cur_game.pending.decision_source != 0) {
         extern bool sideboard_phase;
         extern Zone::Ownership sideboard_phase_player;
-        Entity pd = cur_game.pending_decision_source;
+        Entity pd = cur_game.pending.decision_source;
         gs->pending_decision_card = action_card_vocab_idx(pd);
         Zone::Ownership pd_ctrl = source_controller(pd);
         if (pd_ctrl != Zone::UNKNOWN)
@@ -879,21 +879,21 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     bool viewer_is_player_a = (viewer == Zone::PLAYER_A);
     gs->self.revolt     = revolt_this_turn(viewer_is_player_a ? Zone::PLAYER_A : Zone::PLAYER_B);
     gs->opponent.revolt = revolt_this_turn(viewer_is_player_a ? Zone::PLAYER_B : Zone::PLAYER_A);
-    for (Zone::Ownership et : cur_game.extra_turns) {
+    for (Zone::Ownership et : cur_game.turn_state.extra_turns) {
         if (et == viewer) gs->self.extra_turns_pending++;
         else              gs->opponent.extra_turns_pending++;
     }
     gs->is_day   = (cur_game.day_night == Game::DN_DAY);
     gs->is_night = (cur_game.day_night == Game::DN_NIGHT);
-    gs->pending_choice_kind = static_cast<int>(cur_game.pending_choice);
+    gs->pending_choice_kind = static_cast<int>(cur_game.pending.choice);
 
     // Priority-window context: the pass flags are meaningful only in an ordinary
     // priority window (UNTAP/CLEANUP set both as a step-advance device, and a mid-flow
     // prompt leaves whatever the interrupted round had), so outside one all three stay 0.
     if (priority_window_open()) {
         gs->is_priority_window = true;
-        gs->self_has_passed = viewer_is_player_a ? cur_game.a_has_passed : cur_game.b_has_passed;
-        gs->opp_has_passed  = viewer_is_player_a ? cur_game.b_has_passed : cur_game.a_has_passed;
+        gs->self_has_passed = viewer_is_player_a ? cur_game.priority.a_has_passed : cur_game.priority.b_has_passed;
+        gs->opp_has_passed  = viewer_is_player_a ? cur_game.priority.b_has_passed : cur_game.priority.a_has_passed;
     }
 
     // Mulligan state. Game::pregame is the game this observation's board belongs to,

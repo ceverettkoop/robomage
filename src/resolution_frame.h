@@ -114,7 +114,7 @@ struct DiscardRt {
 // (the searchable pool IS the parked menu, so the menu pins cover it).
 struct ChangeZoneSearchRt {
     bool init = false;            // counts resolved + prev seat saved
-    bool prev_priority = false;   // player_a_has_priority to restore after the loop
+    bool prev_priority = false;   // priority.player_a_has_priority to restore after the loop
     size_t num_to_move = 0;       // resolved ChangeNum (may be a count-SVar)
     int cmc_bound = -1;           // resolved dynamic mana-value bound (Aether Vial)
     size_t iter = 0;              // next pick index
@@ -238,7 +238,7 @@ struct EachPlayerPutRt {
 struct ResolutionCastRt {
     enum Stage { OFFER, CASTING, DONE };
     Stage stage = OFFER;
-    bool prev_priority = false;   // player_a_has_priority to restore once the cast completes
+    bool prev_priority = false;   // priority.player_a_has_priority to restore once the cast completes
 };
 using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
                                    RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
@@ -254,7 +254,7 @@ enum class TargetStatus { DONE, SUSPENDED };
 // The one-decision primitive run_target_select asks through, so the SAME
 // machine serves every family: an implementation either reads the choice
 // inline (blocking — today's select_target behavior) or arms
-// cur_game.pending_query with its family's tag and reports suspension by
+// cur_game.pending.query with its family's tag and reports suspension by
 // returning a negative value. resuming() is true when re-entering with a
 // latched answer pending — the next ask consumes it, and arm-time side effects
 // (the "Choose target for ..." log) already ran, so they are guarded on it.
@@ -290,7 +290,7 @@ struct PendingTriggerRT {
 struct TriggerPlacementRT {
     bool active = false;
     std::vector<PendingTriggerRT> queue;
-    bool saved_priority = false;   // player_a_has_priority to restore at completion
+    bool saved_priority = false;   // priority.player_a_has_priority to restore at completion
     bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
     TargetSelectRT tsel;           // the front trigger's in-flight target selection
     size_t sub_idx = 0;            // next of the front trigger's sub-abilities to target (603.3d)
@@ -325,7 +325,7 @@ struct FrameLevel {
 struct ResolutionFrame {
     bool active = false;
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
-    bool prev_priority = false;      // player_a_has_priority to restore on completion
+    bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
     bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
     std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by

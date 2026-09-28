@@ -33,9 +33,9 @@ Entity ObjectRef::get() const {
     if (!has_zone) return 0;
     const uint64_t cur = global_coordinator.GetComponent<Zone>(e).obj_gen;
     if (cur == gen) return e;
-    if (cur_game.follow_window_open) {
-        auto it = cur_game.follow_window_origins.find(e);
-        if (it != cur_game.follow_window_origins.end() && gen >= it->second && gen < cur) return e;
+    if (cur_game.identity.follow_window_open) {
+        auto it = cur_game.identity.follow_window_origins.find(e);
+        if (it != cur_game.identity.follow_window_origins.end() && gen >= it->second && gen < cur) return e;
     }
     return 0;
 }
@@ -87,18 +87,18 @@ std::vector<Entity> ObjectSet::live() const {
 }
 
 void open_follow_window() {
-    cur_game.follow_window_open = true;
-    cur_game.follow_window_origins.clear();
+    cur_game.identity.follow_window_open = true;
+    cur_game.identity.follow_window_origins.clear();
 }
 
 void close_follow_window() {
-    cur_game.follow_window_open = false;
-    cur_game.follow_window_origins.clear();
+    cur_game.identity.follow_window_open = false;
+    cur_game.identity.follow_window_origins.clear();
 }
 
-bool follow_window_open() { return cur_game.follow_window_open; }
+bool follow_window_open() { return cur_game.identity.follow_window_open; }
 
 void note_object_moved(Entity e, uint64_t old_gen) {
-    if (!cur_game.follow_window_open || old_gen == 0) return;
-    cur_game.follow_window_origins.emplace(e, old_gen);
+    if (!cur_game.identity.follow_window_open || old_gen == 0) return;
+    cur_game.identity.follow_window_origins.emplace(e, old_gen);
 }

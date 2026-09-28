@@ -11,7 +11,7 @@
 // The raw mt19937 output stream is exactly specified by the C++ standard, but
 // std::shuffle and std::uniform_int_distribution are implementation-defined:
 // libstdc++ (Linux / CI) and libc++ (macOS) map the same stream to DIFFERENT
-// permutations and draws. Every gameplay use of cur_game.gen must go through
+// permutations and draws. Every gameplay use of cur_game.rng.engine must go through
 // these helpers instead, so a seed reproduces the identical game on every
 // platform — replay logs, the regression corpus (train/regression/), and
 // bug-repro seeds stay portable between Mac and Linux.

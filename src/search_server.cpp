@@ -259,7 +259,7 @@ void determinize_hidden_state(unsigned int world_seed) {
     std::mt19937 world_gen(world_seed);
 
     // Salt the game's own RNG per world. Every shuffle a simulated line performs
-    // (a mulligan redraw, a fetch/tutor search) draws from cur_game.gen — the
+    // (a mulligan redraw, a fetch/tutor search) draws from cur_game.rng.engine — the
     // snapshotted LIVE stream, identical in every world and identical to what
     // the real game will actually roll. Left unsalted, the first in-sim shuffle
     // collapses all worlds onto one deal AND makes the search an oracle of the
@@ -271,8 +271,8 @@ void determinize_hidden_state(unsigned int world_seed) {
     // freshly restored to the snapshot state (the Python client RESTOREs first;
     // the C++ actor's first sim runs on the untouched just-snapshotted state),
     // and the final RESTORE puts the real line's gen back untouched.
-    unsigned int gen_base = static_cast<unsigned int>(cur_game.gen());
-    cur_game.gen.seed(gen_base ^ (0x9e3779b9u * world_seed));
+    unsigned int gen_base = static_cast<unsigned int>(cur_game.rng.engine());
+    cur_game.rng.engine.seed(gen_base ^ (0x9e3779b9u * world_seed));
 
     Zone::Ownership p = priority_seat();
     Zone::Ownership opp = opponent_of(p);

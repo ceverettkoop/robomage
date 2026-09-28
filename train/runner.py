@@ -428,7 +428,7 @@ def run_games(controller_a, controller_b, *,
                 new_game()
 
         # Per-game transcript state. Turn headers mirror the engine's sequential
-        # 1-based narrative headers (A=1, B=2, A=3, ...) by decoding Game::turn
+        # 1-based narrative headers (A=1, B=2, A=3, ...) by decoding Game::turn_state.turn
         # from the state vector — a local flip counter drifts when a turn yields
         # no decision query (or the same player takes consecutive turns).
         # Mulligan/bottoming decisions happen before turn 1; mark them PREGAME

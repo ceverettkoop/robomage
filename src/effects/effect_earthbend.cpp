@@ -87,7 +87,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     dt.ability = fire_ab;
     dt.fire_on = Events::CARD_CHANGED_ZONE;
     dt.owner_entity = get_player_entity(perm.controller);
-    dt.fire_on_turn = cur_game.turn;
+    dt.fire_on_turn = cur_game.turn_state.turn;
     dt.watched = ObjectRef::of(tgt);
     dt.fire_on_leave_battlefield = true;
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};

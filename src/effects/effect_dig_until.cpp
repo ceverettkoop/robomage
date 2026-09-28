@@ -66,7 +66,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // seeded RNG (deterministic, platform-stable — see stable_rng.h); a Library destination honors
     // RevealedLibraryPosition$ (-1 / unset = bottom, 0 = top).
     if (!revealed.empty()) {
-        if (ab.rest_random_order) stable_shuffle(revealed, cur_game.gen);
+        if (ab.rest_random_order) stable_shuffle(revealed, cur_game.rng.engine);
         bool on_bottom = (revealed_dest == Zone::LIBRARY && ab.dig_library_position != 0);
         for (Entity card : revealed)
             orderer->add_to_zone(on_bottom, card, revealed_dest);

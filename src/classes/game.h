@@ -56,7 +56,7 @@ struct DelayedTrigger {
     Ability ability;        // what to push onto the stack when it fires
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
-    size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+    size_t fire_on_turn;    // game.turn_state.turn value at which to fire (cur_game.turn_state.turn + 1 at registration)
     // Phase restriction (script ValidPlayer$): the player whose phase this trigger may fire on,
     // or 0 = any player's phase. "At the beginning of the next turn's upkeep" / "the next end
     // step" fires at the NEXT occurrence of that phase whoever's turn it is (Mishra's Bauble,
@@ -185,84 +185,99 @@ struct Emblem {
 struct Game {
         Game() {};
         Game(size_t _seed) {
-            seed = _seed;
-            gen = std::mt19937(seed);
+            rng.seed = _seed;
+            rng.engine = std::mt19937(rng.seed);
         };
         // Day/Night designation the game itself can have (CR 731.1). Starts at "neither" and, once
         // set, is always exactly one of day/night. Driven by the daybound/nightbound subsystem
         // (src/day_night.*); read by day-/night-conditional effects. A fresh Game starts neither.
         enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
         DayNight day_night = DN_NEITHER;
-        // Spells cast by the previous turn's active player DURING that turn (CR 502.2 / 731.2),
-        // read by the untap-step day/night turn-based check on the following turn. Snapshotted at
-        // cleanup from Player::spells_cast_this_turn before that per-turn counter is reset. Because
-        // cleanup resets BOTH players' spells_cast_this_turn to 0 (so a player's instants cast on
-        // the opponent's turn never leak into their own-turn count), the snapshot is just the active
-        // player's spells_cast_this_turn at cleanup. -1 until a turn has ended: on the game's first
-        // turn there is no previous turn to check (CR 731.2).
-        int prev_turn_active_spell_count = -1;
-        size_t seed;
         size_t timestamp = 0;
-        // Monotonic source for Zone::obj_gen (CR 400.7 object identity). Handed out and
-        // post-incremented on every Orderer::add_to_zone, so each zone entry gets a
-        // globally-unique stamp that no recycled entity id can collide with. Starts at 1 so
-        // 0 stays reserved for "never stamped". Purely internal (not serialized into the ML
-        // observation); deterministic because the add_to_zone call sequence is deterministic.
-        uint64_t next_obj_gen = 1;
-        // CR 400.7j follow window (object_ref.h): open while one effect resolves; maps each object
-        // the effect moved to the identity stamp it had before its first move in the window.
-        bool follow_window_open = false;
-        std::map<Entity, uint64_t> follow_window_origins;
-        size_t turn = 0;
-        Step cur_step = UNTAP;
+        // The game's seeded random number generator (every shuffle and random choice).
+        struct Rng {
+            size_t seed;
+            std::mt19937 engine;
+        };
+        Rng rng;
+        // Object identity (CR 400.7, object_ref.h).
+        struct ObjectIdentity {
+            // Monotonic source for Zone::obj_gen (CR 400.7 object identity). Handed out and
+            // post-incremented on every Orderer::add_to_zone, so each zone entry gets a
+            // globally-unique stamp that no recycled entity id can collide with. Starts at 1 so
+            // 0 stays reserved for "never stamped". Purely internal (not serialized into the ML
+            // observation); deterministic because the add_to_zone call sequence is deterministic.
+            uint64_t next_obj_gen = 1;
+            // CR 400.7j follow window (object_ref.h): open while one effect resolves; maps each object
+            // the effect moved to the identity stamp it had before its first move in the window.
+            bool follow_window_open = false;
+            std::map<Entity, uint64_t> follow_window_origins;
+        };
+        ObjectIdentity identity;
         Entity player_a_entity;
         Entity player_b_entity;
-        std::mt19937 gen;
         bool ended = false;
         int winner = 0;  // 0=none (or a draw once `ended`), 1=PLAYER_A, 2=PLAYER_B (Zone::Ownership values)
-        bool player_a_turn = true;
-        bool player_a_has_priority = true;
-        bool a_has_passed = false;
-        bool b_has_passed = false;
-        MandatoryChoice pending_choice = NONE;
-        bool attackers_declared = false;
-        bool blockers_declared = false;
-        bool combat_damage_dealt = false;
-        bool has_first_strikers = false;
-        // Cleanup step (CR 514): the 514.2 actions (damage removal, "until end of turn" and
-        // "this turn" effects end) have happened in this cleanup step; a state-based action was
-        // performed in it; and players received priority in it (CR 514.3a), so another cleanup
-        // step follows once the stack is empty and all players pass in succession.
-        bool cleanup_effects_ended = false;
-        bool cleanup_sba_performed = false;
-        bool cleanup_priority_round = false;
-        // T3.10: attacker -> (blocker -> damage assigned). Populated by assign_combat_damage()
-        // only for attackers that required a controller choice this strike step; deal_combat_damage()
-        // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
-        // (per strike step) and in the END_OF_COMBAT cleanup.
-        std::map<Entity, std::map<Entity, uint32_t>> combat_damage_assignment;
-        // Pending extra turns (CR 500.7 / 720). Each entry is the player who will take an extra
-        // turn, treated as a LIFO stack: the most recently added extra turn is taken first (CR
-        // 500.7, "The most recently created turn will be taken first"). Consulted at turn hand-off
-        // (advance_step's cleanup → next turn) before flipping the active player; a non-empty stack
-        // makes the player on top take the next turn instead of passing to the opponent. General
-        // over any "take an extra turn" effect (effects::add_turn pushes onto it). Persists across
-        // turns; empty in a fresh Game.
-        std::vector<Zone::Ownership> extra_turns;
+        // The turn: its number, step and active player, the extra turns owed, and the progress of
+        // its cleanup step.
+        struct TurnState {
+            size_t turn = 0;
+            Step step = UNTAP;
+            bool player_a_turn = true;  // Player A is the active player
+            // Pending extra turns (CR 500.7 / 720). Each entry is the player who will take an extra
+            // turn, treated as a LIFO stack: the most recently added extra turn is taken first (CR
+            // 500.7, "The most recently created turn will be taken first"). Consulted at turn hand-off
+            // (advance_step's cleanup → next turn) before flipping the active player; a non-empty stack
+            // makes the player on top take the next turn instead of passing to the opponent. General
+            // over any "take an extra turn" effect (effects::add_turn pushes onto it). Persists across
+            // turns; empty in a fresh Game.
+            std::vector<Zone::Ownership> extra_turns;
+            // Cleanup step (CR 514): the 514.2 actions (damage removal, "until end of turn" and
+            // "this turn" effects end) have happened in this cleanup step; a state-based action was
+            // performed in it; and players received priority in it (CR 514.3a), so another cleanup
+            // step follows once the stack is empty and all players pass in succession.
+            bool cleanup_effects_ended = false;
+            bool cleanup_sba_performed = false;
+            bool cleanup_priority_round = false;
+            // Spells cast by the previous turn's active player DURING that turn (CR 502.2 / 731.2),
+            // read by the untap-step day/night turn-based check on the following turn. Snapshotted at
+            // cleanup from Player::spells_cast_this_turn before that per-turn counter is reset. Because
+            // cleanup resets BOTH players' spells_cast_this_turn to 0 (so a player's instants cast on
+            // the opponent's turn never leak into their own-turn count), the snapshot is just the active
+            // player's spells_cast_this_turn at cleanup. -1 until a turn has ended: on the game's first
+            // turn there is no previous turn to check (CR 731.2).
+            int prev_turn_active_spell_count = -1;
+        };
+        TurnState turn_state;
+        // Priority (CR 117): who holds it and who has passed in succession since the last action
+        // (both passing resolves the top of the stack or ends the step).
+        struct PriorityState {
+            bool player_a_has_priority = true;
+            bool a_has_passed = false;
+            bool b_has_passed = false;
+            // Machine mode: block casting a spell or activating an ability after 2 failed payments
+            // for it since the last action taken. Keyed by the card or source as the object it is at
+            // its origin: a cancelled cast returns the card there as its restored object.
+            ObjectMap<int> payment_fail_counts;
+        };
+        PriorityState priority;
+        // The current combat's progress (CR 506-511).
+        struct CombatState {
+            bool attackers_declared = false;
+            bool blockers_declared = false;
+            bool damage_dealt = false;
+            bool has_first_strikers = false;
+            // T3.10: attacker -> (blocker -> damage assigned). Populated by assign_combat_damage()
+            // only for attackers that required a controller choice this strike step; deal_combat_damage()
+            // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
+            // (per strike step) and in the END_OF_COMBAT cleanup.
+            std::map<Entity, std::map<Entity, uint32_t>> damage_assignment;
+        };
+        CombatState combat;
         std::vector<DelayedTrigger> delayed_triggers;
         // Next DelayedTriggerLink::seq register_delayed_trigger hands out (monotonic per game,
         // starting at 1 so 0 stays "not a delayed trigger").
         uint32_t next_delayed_seq = 1;
-        // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
-        // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
-        // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
-        // the trigger scan (collect_triggered_abilities) tests them against drained events just like
-        // a permanent's triggered ability. Cleared at the cleanup step so they last only their
-        // turn of creation. General over any until-end-of-turn floating triggered ability.
-        std::vector<Ability> floating_triggers;
-        // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
-        // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
-        std::vector<Emblem> emblems;
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
         // the monarch). Serialized into the state vector's global-extras block (per-player
         // is_monarch flags; see machine_io.h).
@@ -283,40 +298,19 @@ struct Game {
                                             // entity id is issued again (LastKnownInfo::issue)
         std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
-        // Machine mode: block casting a spell or activating an ability after 2 failed payments
-        // for it since the last action taken. Keyed by the card or source as the object it is at
-        // its origin: a cancelled cast returns the card there as its restored object.
-        ObjectMap<int> payment_fail_counts;
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
-        // The source entity of the spell/ability currently making a mid-resolution choice
-        // (target select, dig/scry/surveil pick, search, discard, modal, ...). Serialized into
-        // the state vector's pending-decision context block so the ML observation shows WHAT is
-        // asking for the current choice (a mid-resolution choice's source need not be on the
-        // stack). Managed exclusively via PendingDecisionScope; 0 = no ability-driven choice
-        // pending.
-        Entity pending_decision_source = 0;
-        // Suspension framework (see pending_query.h / resolution_frame.h): a
-        // mid-flow decision parked for the main loop to emit, and the persisted
-        // resolve() continuation it belongs to. Value members so a cur_game
-        // copy (snapshot_save) covers the whole suspended state for free.
-        PendingQuery pending_query;
+        // The persisted resolve() continuation of the resolving spell or ability
+        // (resolution_frame.h): a resolution that parked a decision resumes from it.
         ResolutionFrame resolution;
-        // Combat sub-prompt suspension state (pending_query tags ATTACK_TARGET /
-        // BLOCK_TARGET): the creature whose target sub-prompt is currently parked.
-        // Set when declare_attackers/declare_blockers suspends on the target menu,
-        // consumed and cleared by the loop-top resume. Value members so a snapshot
-        // covers the parked selection. 0 = no sub-prompt parked.
-        Entity pending_attacker = 0;
-        Entity pending_blocker = 0;
-        // Combat damage-assignment suspension state (pending_query tag
+        // Combat damage-assignment suspension state (pending.query tag
         // DAMAGE_ASSIGN): the attacker whose lethal-order division is mid-prompt,
         // plus the former inner-loop locals of assign_combat_damage (remaining
         // power to assign, blockers not yet assigned lethal, last blocker picked
         // — the 510.1a leftover-dump target). Value member so a snapshot covers
         // the in-flight division. active == true iff a DAMAGE_ASSIGN query is
         // parked; completed attackers are tracked by their (possibly partial)
-        // combat_damage_assignment map entries, the outer scan's re-entrancy guard.
+        // combat.damage_assignment map entries, the outer scan's re-entrancy guard.
         struct PendingDamageAssign {
             bool active = false;
             Entity attacker = 0;
@@ -324,15 +318,6 @@ struct Game {
             std::vector<Entity> pool;  // blockers not yet assigned lethal
             Entity last_assigned = 0;
         };
-        PendingDamageAssign pending_damage;
-        // Trigger-placement suspension state (pending_query tag TRIGGER_PLACE):
-        // the APNAP-flattened queue of collected triggers still to be put on
-        // the stack, plus the front trigger's in-flight target selection. Set
-        // by place_triggers_apnap, driven by resume_trigger_placement, cleared
-        // at placement completion (which also restores saved_priority). Value
-        // member so a snapshot covers the
-        // parked placement. See resolution_frame.h.
-        TriggerPlacementRT trigger_placement;
         // Triggered abilities that have triggered (CR 603.2) and wait to be put on the stack the
         // next time a player would receive priority (CR 603.3): those the trigger scan collected
         // from events (collect_triggered_abilities, run before each state-based-action check)
@@ -341,7 +326,7 @@ struct Game {
         // queued through queue_trigger. place_waiting_triggers puts them all on the stack in
         // APNAP order (CR 603.3b).
         std::vector<PendingTriggerRT> waiting_triggers;
-        // Cast-time suspension state (pending_query tag CAST): the persisted
+        // Cast-time suspension state (pending.query tag CAST): the persisted
         // state machine of process_action's CAST_SPELL branch (run_cast_flow,
         // action_processor.cpp). The branch's former locals — the accumulating
         // cost, per-kicker flags, deferred payment pieces, the half-built
@@ -549,8 +534,7 @@ struct Game {
             std::set<std::string> escape_exiled_types;
             int escape_exiled_count = 0;
         };
-        PendingCast pending_cast;
-        // Activated-ability suspension state (pending_query tag ACTIVATION):
+        // Activated-ability suspension state (pending.query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY
         // branch (run_activation_flow, action_processor.cpp). The activated
         // ability, the in-flight targeted copy, the chosen X and the chosen
@@ -621,7 +605,6 @@ struct Game {
             // alternative).
             TargetSelectRT tsel;
         };
-        PendingActivation pending_activation;
         // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
         // actions run as loop-top decisions driven by the main loop's pregame
         // gate (run_pregame_step, game_driver.cpp) instead of a synchronous
@@ -672,7 +655,7 @@ struct Game {
             bool oh_any_ran = false;
         };
         PregameState pregame;
-        // Turn-based draw suspension state (pending_query tag TURN_DRAW): the
+        // Turn-based draw suspension state (pending.query tag TURN_DRAW): the
         // draw step's draw batch with the dredge draw-replacement question
         // (CR 702.52a) parked as a loop-top decision. advance_step's
         // UPKEEP→DRAW case arms it and calls resume_pending_draws; while a
@@ -688,22 +671,53 @@ struct Game {
             Zone::Ownership player = Zone::UNKNOWN;
             int remaining = 0;
         };
-        PendingDrawRT pending_draw;
+        // Suspended decisions (see pending_query.h / resolution_frame.h): the decision parked for
+        // the main loop to emit, and the persisted state of each flow that can park one midway.
+        // Value members so a cur_game copy (snapshot_save) covers the whole suspended state for
+        // free.
+        struct PendingDecisions {
+            // The mandatory choice (a decision other than priority) the next decision is.
+            MandatoryChoice choice = NONE;
+            PendingQuery query;  // the decision parked for the main loop to emit
+            // The source entity of the spell/ability currently making a mid-resolution choice
+            // (target select, dig/scry/surveil pick, search, discard, modal, ...). Serialized into
+            // the state vector's pending-decision context block so the ML observation shows WHAT is
+            // asking for the current choice (a mid-resolution choice's source need not be on the
+            // stack). Managed exclusively via PendingDecisionScope; 0 = no ability-driven choice
+            // pending.
+            Entity decision_source = 0;
+            // Combat sub-prompt suspension state (pending.query tags ATTACK_TARGET /
+            // BLOCK_TARGET): the creature whose target sub-prompt is currently parked.
+            // Set when declare_attackers/declare_blockers suspends on the target menu,
+            // consumed and cleared by the loop-top resume. Value members so a snapshot
+            // covers the parked selection. 0 = no sub-prompt parked.
+            Entity attacker = 0;
+            Entity blocker = 0;
+            PendingDamageAssign damage;  // pending.query tag DAMAGE_ASSIGN
+            // Trigger-placement suspension state (pending.query tag TRIGGER_PLACE):
+            // the APNAP-flattened queue of collected triggers still to be put on
+            // the stack, plus the front trigger's in-flight target selection. Set
+            // by place_triggers_apnap, driven by resume_trigger_placement, cleared
+            // at placement completion (which also restores saved_priority). Value
+            // member so a snapshot covers the
+            // parked placement. See resolution_frame.h.
+            TriggerPlacementRT trigger_placement;
+            PendingCast cast;  // pending.query tag CAST
+            PendingActivation activation;  // pending.query tag ACTIVATION
+            PendingDrawRT draw;  // pending.query tag TURN_DRAW
+            // Miracle (CR 702.94): miracle_reveal is a first-of-turn miracle card just drawn,
+            // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
+            // special action (off the stack, hidden from the opponent until they choose to reveal),
+            // riding the mandatory-choice channel (proc_mandatory_choice). Set in
+            // Orderer::perform_draw; 0 when nothing is pending, and cleared each cleanup. On reveal
+            // the card becomes public and the linked "you may cast it" triggered ability (category
+            // MiracleCast) is put on the stack; the owner decides whether to cast it as that trigger
+            // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
+            // priority-menu cast (can_afford_alt returns false for it).
+            Entity miracle_reveal = 0;
+        };
+        PendingDecisions pending;
 
-        // Turn-long "spells you control can't be countered" grant created by a resolving spell/
-        // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
-        // CantHappen). A player here means every spell that player controls can't be countered
-        // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
-        // permanent (the instant is in the graveyard), so it is recorded here and cleared at
-        // cleanup. Consulted at counter-resolution time (effects::counter).
-        std::set<Zone::Ownership> cant_counter_spells_of;
-        // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
-        // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
-        // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
-        // in the set has all life gain replaced with nothing until cleanup. A sourceless turn-long
-        // grant (the effect belongs to no permanent), consulted centrally in player_gain_life and
-        // cleared at cleanup. General over any CantGainLife effect.
-        std::set<Zone::Ownership> cant_gain_life_this_turn;
         // Turn-long "hexproof from <color(s)>" grant for a player and the permanents they control
         // (Veil of Summer: "You and permanents you control gain hexproof from blue and from black
         // until end of turn", CR 702.11e). Each entry protects `player` (and any permanent they
@@ -715,7 +729,6 @@ struct Game {
             Zone::Ownership player = Zone::UNKNOWN;
             std::set<Colors> colors;
         };
-        std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
         // Player-scoped "protection from everything" grant (CR 702.16; The One Ring's ETB: "you
         // gain protection from everything until your next turn"). While active the protected
         // `player` can't be the target of a spell/ability an opponent controls, and isn't dealt
@@ -727,7 +740,6 @@ struct Game {
             Zone::Ownership player = Zone::UNKNOWN;
             bool until_your_next_turn = false;
         };
-        std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
         // Cast-timing permission "you may cast <filter> spells as though they had flash" (CR 702.8 /
         // 601.3a; Teferi, Time Raveler's +1 "Until your next turn, you may cast sorcery spells as
         // though they had flash."). While an entry is active, `controller` may cast a spell matching
@@ -740,7 +752,6 @@ struct Game {
             std::string filter = "";  // ValidCard$ filter the flash permission applies to
             bool until_your_next_turn = false;
         };
-        std::vector<CastWithFlashPermission> cast_with_flash_permissions;
         // Turn-scoped combat-damage prevention shield (CR 615) created by a resolving DB$ Effect |
         // ReplacementEffects$ <Event$ DamageDone | Prevent$ True | IsCombat$ True | ValidSource$/
         // ValidTarget$ Card.IsRemembered> (Maze of Ith's "Prevent all combat damage that would be
@@ -755,18 +766,6 @@ struct Game {
             bool prevent_as_source = false;  // ValidSource$ Card.IsRemembered — damage BY the creature
             bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
         };
-        std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
-        // Miracle (CR 702.94): miracle_reveal_pending is a first-of-turn miracle card just drawn,
-        // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
-        // special action (off the stack, hidden from the opponent until they choose to reveal),
-        // riding the mandatory-choice channel (proc_mandatory_choice). Set in
-        // Orderer::perform_draw; 0 when nothing is pending, and cleared each cleanup. On reveal
-        // the card becomes public and the linked "you may cast it" triggered ability (category
-        // MiracleCast) is put on the stack; the owner decides whether to cast it as that trigger
-        // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
-        // priority-menu cast (can_afford_alt returns false for it).
-        Entity miracle_reveal_pending = 0;
-        ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         // Cards revealed while in a library (CR 701.20a: shown to all players for as long as the
         // revealing effect needs them). A revealed card the effect puts into a hand stays known to
         // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
@@ -797,7 +796,7 @@ struct Game {
             bool allow_land = false;   // a "play" grant may also play a LAND card from exile (CR 305.1)
             // persist_until_end_of_next_turn: the permission survives the cleanup of the turn it was
             // granted; it is removed at the caster's NEXT turn's cleanup (CR "until the end of your
-            // next turn"). grant_turn records cur_game.turn at grant so game.cpp can detect that
+            // next turn"). grant_turn records cur_game.turn_state.turn at grant so game.cpp can detect that
             // next-turn cleanup. Default (false) = the Forge default "this turn" (cleared every cleanup).
             bool persist_until_end_of_next_turn = false;
             size_t grant_turn = 0;
@@ -815,7 +814,43 @@ struct Game {
             // effect_warp.cpp.
             bool warp = false;
         };
-        ObjectMap<ImpulseCastPermission> impulse_cast_permission;
+        // Continuous effects and floating triggered abilities that belong to no permanent: created
+        // by resolved spells and abilities (CR 611.2), and emblems (CR 114). Each lasts as its
+        // entry says ("this turn", "until your next turn", for the game); end_cleanup_effects and
+        // the untap step end them.
+        struct ResolvedEffects {
+            // Turn-long "spells you control can't be countered" grant created by a resolving spell/
+            // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
+            // CantHappen). A player here means every spell that player controls can't be countered
+            // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
+            // permanent (the instant is in the graveyard), so it is recorded here and cleared at
+            // cleanup. Consulted at counter-resolution time (effects::counter).
+            std::set<Zone::Ownership> cant_counter_spells_of;
+            // Turn-long "can't gain life" prohibition (CR 119.x) created by a resolving activated
+            // ability (Roiling Vortex's {R}: AB$ Effect | StaticAbilities$ Mode$ CantGainLife |
+            // ValidPlayer$ Player.Opponent — "your opponents can't gain life this turn"). Each player
+            // in the set has all life gain replaced with nothing until cleanup. A sourceless turn-long
+            // grant (the effect belongs to no permanent), consulted centrally in player_gain_life and
+            // cleared at cleanup. General over any CantGainLife effect.
+            std::set<Zone::Ownership> cant_gain_life_this_turn;
+            std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
+            std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
+            std::vector<CastWithFlashPermission> cast_with_flash_permissions;
+            std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
+            ObjectSet may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
+            ObjectMap<ImpulseCastPermission> impulse_cast_permission;
+            // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
+            // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
+            // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
+            // the trigger scan (collect_triggered_abilities) tests them against drained events just like
+            // a permanent's triggered ability. Cleared at the cleanup step so they last only their
+            // turn of creation. General over any until-end-of-turn floating triggered ability.
+            std::vector<Ability> floating_triggers;
+            // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
+            // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
+            std::vector<Emblem> emblems;
+        };
+        ResolvedEffects resolved_effects;
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass
         // can suspend and resume): they entered the battlefield together, so none of them is on the
         // battlefield yet when another one's "as it enters" condition is checked (CR 614.12, e.g.
@@ -918,25 +953,25 @@ struct Game {
         Entity gen_player(const Deck &deck);
 };
 
-// RAII marker for Game::pending_decision_source: constructed at the top of an effect/target
+// RAII marker for Game::pending.decision_source: constructed at the top of an effect/target
 // handler that is about to prompt a choice on behalf of a spell/ability, so every get_input
 // within the scope serializes that ability's source card into the observation's
 // pending-decision context. Saves/restores the previous value, so nested choices (a
 // sub-ability's target chosen during a parent's resolution) unwind correctly.
 struct PendingDecisionScope {
     Entity prev_source;
-    explicit PendingDecisionScope(Entity source) : prev_source(cur_game.pending_decision_source) {
-        cur_game.pending_decision_source = source;
+    explicit PendingDecisionScope(Entity source) : prev_source(cur_game.pending.decision_source) {
+        cur_game.pending.decision_source = source;
     }
-    ~PendingDecisionScope() { cur_game.pending_decision_source = prev_source; }
+    ~PendingDecisionScope() { cur_game.pending.decision_source = prev_source; }
 };
 
 // True while a suspended decision is parked for the main loop to emit (see
 // pending_query.h). Later batches gate cooperative early-returns on it
 // (`if (decision_suspended()) return;` in suspendable callees).
-inline bool decision_suspended() { return cur_game.pending_query.active; }
+inline bool decision_suspended() { return cur_game.pending.query.active; }
 
-// Drive the turn-based draw batch (Game::pending_draw): consume a latched
+// Drive the turn-based draw batch (Game::pending.draw): consume a latched
 // TURN_DRAW answer if one is parked, then draw / dredge one card at a time
 // until the batch completes or the next dredge question arms a fresh query
 // (tag TURN_DRAW). Called synchronously by advance_step's UPKEEP→DRAW case

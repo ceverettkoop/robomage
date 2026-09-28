@@ -179,7 +179,7 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.ability = fire_ab;
     dt.fire_on = Events::CARD_CHANGED_ZONE;
     dt.owner_entity = get_player_entity(source_controller(host));
-    dt.fire_on_turn = cur_game.turn;
+    dt.fire_on_turn = cur_game.turn_state.turn;
     dt.watched = ObjectRef::of(host);
     dt.fire_on_leave_battlefield = true;
     register_delayed_trigger(dt, dt.watched);
@@ -765,7 +765,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         rt.cmc_bound = -1;
         if (!ab.change_type_cmc_expr.empty())
             rt.cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source.lki_entity());
-        rt.prev_priority = cur_game.player_a_has_priority;
+        rt.prev_priority = cur_game.priority.player_a_has_priority;
         rt.init = true;
     }
 
@@ -774,7 +774,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // TargetedController search (White Orchid Phantom / Erode: the destroyed land's controller
     // may search THEIR library) belongs to that player, not the caster whose trigger is resolving
     // (the resolve seat is the controller's, set in stack_manager). The input/BQUERY seat follows
-    // cur_game.player_a_has_priority, so set it here and restore rt.prev_priority after the loop
+    // cur_game.priority.player_a_has_priority, so set it here and restore rt.prev_priority after the loop
     // (the set is idempotent on resume: a suspension persisted priority at this same seat).
     //
     // Chooser$ You overrides: the ability's CONTROLLER makes the selection from `owner`'s zone
@@ -783,7 +783,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
     // is shown even into a hidden destination and recorded in the belief state.
     const Zone::Ownership chooser = ab.chooser_is_controller ? ab.controller : owner;
-    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
     if (ab.chooser_is_controller) reveal = true;
 
     // The chain's targeted CARD, for a ChangeType `targetedBy` filter alternative (Cloak and
@@ -876,7 +876,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             break;
         }
     }
-    cur_game.player_a_has_priority = rt.prev_priority;
+    cur_game.priority.player_a_has_priority = rt.prev_priority;
     return HandlerResult::DONE_RUN_SUBS;
 }
 

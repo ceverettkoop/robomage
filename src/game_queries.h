@@ -476,7 +476,7 @@ bool player_matches_target_spec(const std::string &valid_tgts, Entity player, Zo
 Zone::Ownership source_controller(Entity source);
 
 // CR 702.16: is `player_entity` currently under a "protection from everything" grant
-// (cur_game.player_protection_from_everything)? Protection from everything is protection from ALL
+// (cur_game.resolved_effects.player_protection_from_everything)? Protection from everything is protection from ALL
 // sources — including the protected player's OWN sources — so this returns true whenever the grant
 // is active for that player, regardless of who controls `source`. True means damage from `source`
 // to that player is prevented. Consulted by the shared damage path (deal_damage) so the prevention
@@ -506,7 +506,7 @@ Zone::Ownership last_known_controller(Entity e);
 Zone::Ownership resolve_defined_player(const Ability &ab);
 
 // True if a turn-long "can't gain life" prohibition (CR 119.x) currently applies to this player
-// (Roiling Vortex's {R} ability, cur_game.cant_gain_life_this_turn). Defined out-of-line in
+// (Roiling Vortex's {R} ability, cur_game.resolved_effects.cant_gain_life_this_turn). Defined out-of-line in
 // game_queries.cpp (needs cur_game). Consulted by player_gain_life so every life-gain site obeys
 // the prohibition.
 bool player_cant_gain_life(Entity player_entity);
@@ -725,11 +725,11 @@ Entity returnable_exiled_card(Entity host);
 // Sources covered:
 //   FLASHBACK         a graveyard card its owner may cast with flashback (CR 702.34)
 //   ESCAPE            a graveyard card its owner may cast with escape (CR 702.139)
-//   GRAVEYARD_CAST    a nonland graveyard card in Game::may_cast_this_turn (Emry's grant;
+//   GRAVEYARD_CAST    a nonland graveyard card in Game::resolved_effects.may_cast_this_turn (Emry's grant;
 //                     the owner, this turn)
 //   GRAVEYARD_LAND    a land card in its owner's graveyard while a static lets the owner play
 //                     lands from the graveyard (Icetill Explorer, Mole Man)
-//   EXILE_GRANT       an exiled card with a Game::impulse_cast_permission whose caster is
+//   EXILE_GRANT       an exiled card with a Game::resolved_effects.impulse_cast_permission whose caster is
 //                     `player` (Light Up the Stage, Ugin's -11, Dauthi Voidwalker, warp); a land
 //                     only under a "play" grant that allows lands
 // Not covered: a suspended card still carrying time counters (no permission until the last
@@ -797,15 +797,15 @@ bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt);
 // ── Player-scoped effects (the observation's PLAYER EFFECTS block) ───────────
 // The continuous effects currently applying to one player as a whole, each read from the
 // same state the rules consult:
-//   protection_from_everything  — a Game::player_protection_from_everything grant (The One Ring)
+//   protection_from_everything  — a Game::resolved_effects.player_protection_from_everything grant (The One Ring)
 //   cant_gain_life              — player_cant_gain_life (Roiling Vortex's {R})
-//   hexproof_from[W,U,B,R,G]    — the colors of this player's Game::hexproof_from_colors_this_turn
+//   hexproof_from[W,U,B,R,G]    — the colors of this player's Game::resolved_effects.hexproof_from_colors_this_turn
 //                                 grants (Veil of Summer)
 //   spells_cant_be_countered    — player_spells_cant_be_countered(): a Veil of Summer grant or an
 //                                 unfiltered "spells you control can't be countered" battlefield
 //                                 static (Hexing Squelcher). A per-card or type-filtered form covers
 //                                 only some spells and stays on its visible card/permanent.
-//   may_cast_sorceries_as_flash — a Game::cast_with_flash_permissions entry the player controls
+//   may_cast_sorceries_as_flash — a Game::resolved_effects.cast_with_flash_permissions entry the player controls
 //                                 (Teferi, Time Raveler's +1)
 //   restricted_to_sorcery_speed — rules_mod::opponent_sorcery_speed_locked, derived from the live
 //                                 static (Teferi, Time Raveler on the opponent's battlefield)
@@ -1055,7 +1055,7 @@ inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &
 
 // True if EVERY spell `player` controls is protected from being countered by an effect covering
 // the player as a whole (CR 614.13/CantHappen, "spells you control can't be countered"): a
-// Game::cant_counter_spells_of grant (Veil of Summer), or a live battlefield CANT_BE_COUNTERED
+// Game::resolved_effects.cant_counter_spells_of grant (Veil of Summer), or a live battlefield CANT_BE_COUNTERED
 // replacement whose ValidSA$ filter is the bare controller-scoped spell filter — "Spell.YouCtrl" on
 // a permanent `player` controls (Hexing Squelcher) or "Spell.OppCtrl" on one the opponent controls.
 // A spell's own "This spell can't be countered" and a type/color-narrowed filter cover only some

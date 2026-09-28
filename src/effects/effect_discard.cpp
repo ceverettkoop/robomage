@@ -64,7 +64,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
         // stable_shuffle, not std::shuffle: platform-stable given the seed
         // (see stable_rng.h).
-        stable_shuffle(hand, cur_game.gen);
+        stable_shuffle(hand, cur_game.rng.engine);
         for (size_t i = 0; i < count; ++i) {
             Entity chosen = hand[i];
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);

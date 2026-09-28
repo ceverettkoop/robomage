@@ -155,7 +155,7 @@ changed files. What it covers:
   The corpus is **platform-portable**: all gameplay randomness goes through `src/stable_rng.h`
   (hand-rolled Fisher–Yates + rejection sampling over the raw mt19937 stream), so Mac and Linux
   produce byte-identical transcripts from a seed. Never call `std::shuffle`,
-  `std::uniform_int_distribution` or `rand()` with `cur_game.gen` (or for any gameplay
+  `std::uniform_int_distribution` or `rand()` with `cur_game.rng.engine` (or for any gameplay
   decision): their output is implementation-defined and differs between libstdc++ (CI) and
   libc++ (macOS), which would lock the corpus, RMLOG replays and bug-repro seeds to one platform.
 - **`pygen` staleness** after editing a C++/JSON codegen input: `make pygen` (every generator,

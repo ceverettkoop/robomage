@@ -80,7 +80,7 @@ static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colo
     Game::HexproofFromColors h;
     h.player = ctrl;
     h.colors = colors;
-    cur_game.hexproof_from_colors_this_turn.push_back(h);
+    cur_game.resolved_effects.hexproof_from_colors_this_turn.push_back(h);
     game_log("%s and the permanents they control gain hexproof from the chosen color(s) until end of turn.\n",
              player_name(ctrl).c_str());
 }
@@ -93,7 +93,7 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
     Game::PlayerProtectionFromEverything p;
     p.player = ctrl;
     p.until_your_next_turn = until_next_turn;
-    cur_game.player_protection_from_everything.push_back(p);
+    cur_game.resolved_effects.player_protection_from_everything.push_back(p);
     game_log("%s gains protection from everything%s.\n", player_name(ctrl).c_str(),
              until_next_turn ? " until their next turn" : " until end of turn");
 }
@@ -228,7 +228,7 @@ bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
                 } else if (token.rfind("Protection from everything", 0) == 0) {
                     // "Protection from everything" granted to a player (Defined$ You) — The One
                     // Ring's ETB. Not a per-creature keyword: the Pump handler makes a player-
-                    // scoped grant (cur_game.player_protection_from_everything) for the controller.
+                    // scoped grant (cur_game.resolved_effects.player_protection_from_everything) for the controller.
                     pp.grant_protection_from_everything = true;
                 } else {
                     pp.grant_keywords.push_back(token);

@@ -294,7 +294,7 @@ void cli_print_pregame_header() {
 
 void cli_print_turn_header(size_t turn, bool player_a_turn) {
     const char* name = player_a_turn ? "Player A" : "Player B";
-    // Game::turn counts from 0; display 1-based so the first header reads "TURN 1"
+    // Game::turn_state.turn counts from 0; display 1-based so the first header reads "TURN 1"
     // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
     game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
 }

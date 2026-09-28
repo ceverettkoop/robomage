@@ -109,7 +109,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     dt.ability = fire_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
-    dt.fire_on_turn = cur_game.turn;
+    dt.fire_on_turn = cur_game.turn_state.turn;
     register_delayed_trigger(dt, fire_ab.source);
     game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
 }
@@ -134,7 +134,7 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
     dt.ability = fire_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
-    dt.fire_on_turn = cur_game.turn;
+    dt.fire_on_turn = cur_game.turn_state.turn;
     register_delayed_trigger(dt, fire_ab.source);
     game_log("%s was cast with warp (exiled at the next end step; castable from exile later).\n",
              perm.name.c_str());
@@ -293,8 +293,8 @@ int active_cost_floor_for(const CardData &card_data) {
 StaticAbility *ActiveStatic::sa() const {
     static StaticAbility inert;
     if (emblem >= 0) {
-        if (static_cast<size_t>(emblem) < cur_game.emblems.size()) {
-            auto &list = cur_game.emblems[static_cast<size_t>(emblem)].statics;
+        if (static_cast<size_t>(emblem) < cur_game.resolved_effects.emblems.size()) {
+            auto &list = cur_game.resolved_effects.emblems[static_cast<size_t>(emblem)].statics;
             if (index < list.size()) return &list[index];
         }
     } else if (is_battlefield_permanent(entity)) {
@@ -822,7 +822,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     // created — nothing about this entity has been mutated,
                     // so the resumed pass re-reaches it, re-dispatches, and
                     // consumes the latch at the same ask.
-                    if (cur_game.pending_query.active && !cur_game.pending_query.answered)
+                    if (cur_game.pending.query.active && !cur_game.pending.query.answered)
                         return;
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
@@ -834,7 +834,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // the printed loyalty of the face it enters with.
                 if (is_planeswalker_card(*face)) perm.counters["LOYALTY"] = face->starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
-                perm.entered_on_turn = game.turn;
+                perm.entered_on_turn = game.turn_state.turn;
                 // Attachments chosen before it entered (EntryInfo): an Equipment a DB$ Attach
                 // attached to it, an Aura's enchant object.
                 if (EntryInfo *entry = find_entry_info(entity)) attach_on_entry(entity, *entry, perm);
@@ -1049,10 +1049,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         // SBE pass runs inside the loop (a preplaced Cavern's choice
                         // rides SBE_LATCHED through the gate), so this is defensive
                         // only.
-                        bool prev_priority = cur_game.player_a_has_priority;
-                        cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                        bool prev_priority = cur_game.priority.player_a_has_priority;
+                        cur_game.priority.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                         choice = InputLogger::instance().get_input(type_choices);
-                        cur_game.player_a_has_priority = prev_priority;
+                        cur_game.priority.player_a_has_priority = prev_priority;
                     }
                     perm_ref.chosen_type = subtype_names[order[static_cast<size_t>(choice)]];
                     game_log("%s chose creature type: %s\n",
@@ -1093,10 +1093,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             }
                             // Blocking fallback for an SBE call outside the main
                             // loop (defensive only since the Batch 13 pregame gate).
-                            bool prev_priority = cur_game.player_a_has_priority;
-                            cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                            bool prev_priority = cur_game.priority.player_a_has_priority;
+                            cur_game.priority.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                             choice = InputLogger::instance().get_input(name_choices);
-                            cur_game.player_a_has_priority = prev_priority;
+                            cur_game.priority.player_a_has_priority = prev_priority;
                         }
                         perm_ref.chosen_name = names[static_cast<size_t>(choice)];
                         game_log("%s names card: %s\n",
@@ -1460,7 +1460,7 @@ static void sync_self_animate_creature(const ActiveStatic &a) {
     // attack only if its controller has controlled it continuously since their most
     // recent turn began. Approximate with "entered this turn" — sick the turn it enters,
     // able to attack thereafter (untap clears it for permanents that keep their Creature).
-    perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn);
+    perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn_state.turn);
 
     // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
     // attacking" had its enters-attacking mark left pending by apply_permanent_components
@@ -1637,10 +1637,10 @@ void StateManager::gather_active_statics(Game &game) {
     // statics are gathered with entity 0 (no Permanent) and the emblem owner as controller, so the
     // layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through the same
     // path as a battlefield anthem.
-    for (size_t e = 0; e < game.emblems.size(); e++)
-        for (size_t i = 0; i < game.emblems[e].statics.size(); i++)
+    for (size_t e = 0; e < game.resolved_effects.emblems.size(); e++)
+        for (size_t i = 0; i < game.resolved_effects.emblems[e].statics.size(); i++)
             g_active_statics.push_back(
-                {0, static_cast<int>(e), i, game.emblems[e].controller, false, false});
+                {0, static_cast<int>(e), i, game.resolved_effects.emblems[e].controller, false, false});
 
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
@@ -1664,7 +1664,7 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
         } else if (a.sa()->condition == "PlayerTurn") {
             // Active during the source controller's own turn (Voice of Victory).
-            bool a_turn = cur_game.player_a_turn;
+            bool a_turn = cur_game.turn_state.player_a_turn;
             a.condition_met = (a.controller == Zone::PLAYER_A) ? a_turn : !a_turn;
         } else if (!a.sa()->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types

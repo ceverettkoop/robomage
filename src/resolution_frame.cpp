@@ -28,7 +28,7 @@ bool FrameCtx::can_suspend() const {
     return root_mode && in_main_loop();
 }
 
-bool FrameCtx::resuming() const { return can_suspend() && cur_game.pending_query.active; }
+bool FrameCtx::resuming() const { return can_suspend() && cur_game.pending.query.active; }
 
 FrameLevel &FrameCtx::current_level() {
     if (!root_mode || !cur_game.resolution.active ||
@@ -39,7 +39,7 @@ FrameLevel &FrameCtx::current_level() {
 
 int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity decision_source) {
     if (can_suspend()) {
-        PendingQuery &pq = cur_game.pending_query;
+        PendingQuery &pq = cur_game.pending.query;
         if (pq.active) {
             // Consume the latched answer for THIS ask. The re-entered handler
             // must have rebuilt the identical menu (menu builds are pure and
@@ -55,7 +55,7 @@ int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity
             // Restore the pre-prompt priority, exactly as the blocking path's
             // post-get_input restore does, so code after the resumed ask sees
             // the same ambient priority it would have inline.
-            cur_game.player_a_has_priority = pq.prev_priority;
+            cur_game.priority.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
             return answer;
         }
@@ -69,21 +69,21 @@ int FrameCtx::ask(std::vector<LegalAction> menu, Zone::Ownership chooser, Entity
         pq.menu = std::move(menu);
         pq.chooser_is_a = (chooser == Zone::PLAYER_A);
         pq.decision_source = decision_source;
-        pq.prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = pq.chooser_is_a;
+        pq.prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = pq.chooser_is_a;
         return -1;
     }
     // Blocking path — exactly today's mid-resolution prompt convention: repoint
     // priority at the chooser, expose the asking source as the pending-decision
     // context, read one choice inline, restore priority.
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    bool prev_priority = cur_game.priority.player_a_has_priority;
+    cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
     int choice;
     {
         PendingDecisionScope pending(decision_source);
         choice = InputLogger::instance().get_input(menu);
     }
-    cur_game.player_a_has_priority = prev_priority;
+    cur_game.priority.player_a_has_priority = prev_priority;
     return choice;
 }
 
@@ -102,7 +102,7 @@ uint64_t pq_key(SbeSite site, bool chooser_is_a, uint64_t context, size_t menu_s
 }
 
 bool pq_take_latched(uint64_t key, int *choice) {
-    PendingQuery &pq = cur_game.pending_query;
+    PendingQuery &pq = cur_game.pending.query;
     if (!pq.active) return false;  // first arrival — the site arms (or blocks)
     // An SBE prompt site is only ever reached with a query parked when the
     // main loop's SBE_LATCHED dispatch fell into the normal flow carrying an
@@ -114,14 +114,14 @@ bool pq_take_latched(uint64_t key, int *choice) {
     *choice = pq.answer;
     // Restore the pre-arm priority, exactly as the blocking path's
     // post-get_input restore does — the site never self-restores.
-    cur_game.player_a_has_priority = pq.prev_priority;
+    cur_game.priority.player_a_has_priority = pq.prev_priority;
     pq = PendingQuery{};
     return true;
 }
 
 void pq_arm_sbe(uint64_t key, std::vector<LegalAction> menu, Zone::Ownership chooser,
                 Entity decision_source) {
-    PendingQuery &pq = cur_game.pending_query;
+    PendingQuery &pq = cur_game.pending.query;
     if (pq.active)
         fatal_error("pq_arm_sbe: a pending query is already parked");
     pq = PendingQuery{};
@@ -133,8 +133,8 @@ void pq_arm_sbe(uint64_t key, std::vector<LegalAction> menu, Zone::Ownership cho
     pq.key = key;
     // Persist priority at the chooser (the loop-top emitter asserts it); the
     // pre-arm seat is restored by pq_take_latched at consume time.
-    pq.prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = pq.chooser_is_a;
+    pq.prev_priority = cur_game.priority.player_a_has_priority;
+    cur_game.priority.player_a_has_priority = pq.chooser_is_a;
 }
 
 ResolveStatus FrameCtx::resolve_child(const Ability &child_template, FrameLevel::ChildKind kind,
@@ -238,7 +238,7 @@ static void pin_ability_tree_targets(const Ability &ab, std::set<Entity> &pins) 
 }
 
 // A suspended spell-copy machine (replicate at cast FINISH via
-// pending_cast.copy_rt, storm at resolution via its EffectRuntime): the
+// pending.cast.copy_rt, storm at resolution via its EffectRuntime): the
 // original whose copiable characteristics the resume re-reads, the partially
 // built copy entity, and any targets already bound onto the in-flight work
 // ability.
@@ -288,7 +288,7 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
 
 std::set<Entity> collect_pending_pins() {
     std::set<Entity> pins;
-    const PendingQuery &pq = cur_game.pending_query;
+    const PendingQuery &pq = cur_game.pending.query;
     if (pq.active) {
         // The parked menu's entities: a determinized world must keep them where
         // the menu (and the handler's pure rebuild on resume) expects them —
@@ -325,7 +325,7 @@ std::set<Entity> collect_pending_pins() {
     // targets included (the parked menu's pins cover only the currently offered
     // choices; the rest of the queue is what the resumed placement will
     // 603.3d-check, target, and push).
-    const TriggerPlacementRT &tp = cur_game.trigger_placement;
+    const TriggerPlacementRT &tp = cur_game.pending.trigger_placement;
     if (tp.active) {
         for (const auto &pt : tp.queue) {
             if (pt.source != 0) pins.insert(pt.source);
@@ -350,7 +350,7 @@ std::set<Entity> collect_pending_pins() {
     // or escape graveyard card, a permanent to sacrifice or return) — the
     // spell, its bound targets and its chosen costs are what must additionally
     // hold still.
-    const Game::PendingCast &pcst = cur_game.pending_cast;
+    const Game::PendingCast &pcst = cur_game.pending.cast;
     if (pcst.active) {
         if (pcst.spell_entity != 0) pins.insert(pcst.spell_entity);
         if (pcst.have_ability) pin_ability_tree_targets(pcst.ability, pins);
@@ -363,7 +363,7 @@ std::set<Entity> collect_pending_pins() {
     // survive a world resample so the resumed flow finds it where it left it —
     // plus every target the pre-cost selection has bound so far and the cost
     // items already chosen.
-    const Game::PendingActivation &pact = cur_game.pending_activation;
+    const Game::PendingActivation &pact = cur_game.pending.activation;
     if (pact.active) {
         if (pact.source_entity != 0) pins.insert(pact.source_entity);
         pin_ability_tree_targets(pact.stack_ab, pins);

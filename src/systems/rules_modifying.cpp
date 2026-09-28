@@ -185,7 +185,7 @@ bool opponent_sorcery_speed_locked(Zone::Ownership caster) {
 }
 
 bool cast_with_flash_active(Zone::Ownership caster, const CardData &card) {
-    for (const auto &perm : cur_game.cast_with_flash_permissions) {
+    for (const auto &perm : cur_game.resolved_effects.cast_with_flash_permissions) {
         if (perm.controller != caster) continue;
         // Empty filter = every spell; otherwise the spell's printed characteristics must match
         // (Teferi's grant: ValidCard$ Sorcery). MatchCtx.controller is the caster for any

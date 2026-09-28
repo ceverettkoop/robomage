@@ -29,12 +29,12 @@ class StackManager;
 // index) plus its position in that source's static list — and resolved by sa() at every read,
 // never as a pointer into component storage: a Permanent removed or added between gathers
 // moves other permanents' components (the component array's swap-remove), and a new emblem can
-// reallocate Game::emblems. A static whose source has left the battlefield (or phased out)
+// reallocate Game::resolved_effects.emblems. A static whose source has left the battlefield (or phased out)
 // since the gather resolves to an inert, empty StaticAbility, so its effect stops at once
 // (CR 611.3b: a static ability's effect applies only while its source is on the battlefield).
 struct ActiveStatic {
     Entity            entity = 0;              // source permanent (0 for an emblem)
-    int               emblem = -1;             // index into Game::emblems when the source is an emblem
+    int               emblem = -1;             // index into Game::resolved_effects.emblems when the source is an emblem
     size_t            index = 0;               // position in the source's static list
     Zone::Ownership   controller = Zone::PLAYER_A;
     bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
@@ -120,7 +120,7 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 ManaValue effective_base_cost(const CardData &card_data,
                               Zone::Ownership caster = Zone::UNKNOWN);
 
-// Drive the persisted APNAP trigger placement (Game::trigger_placement) to
+// Drive the persisted APNAP trigger placement (Game::pending.trigger_placement) to
 // completion: each ordering pick / trigger target selection is parked as a
 // loop-top pending decision (PendingQuery tag TRIGGER_PLACE) instead of
 // blocking on get_input, so a batch of simultaneous triggers spreads over
@@ -130,7 +130,7 @@ ManaValue effective_base_cost(const CardData &card_data,
 void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Whether `caster` may cast the exiled `card` now under its cast permission
-// (Game::impulse_cast_permission): the spell's timing — ignored for a permission granted for a
+// (Game::resolved_effects.impulse_cast_permission): the spell's timing — ignored for a permission granted for a
 // cast during resolution (CR 608.2g) — its targets and cast prohibitions (can_cast_now), and the
 // permission's alternative cost with any cost floor (CR 118.9d, 601.2f). Shared by the priority
 // offer of granted exile casts and cast_during_resolution's offer.

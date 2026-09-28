@@ -60,8 +60,8 @@ static LegalAction activate_action(Entity source, const Ability &ab, const std::
 // ability (CR 606.3) or any "activate only as a sorcery" ability, and the companion special
 // action (CR 702.139a) all wait for it.
 static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty) {
-    return stack_empty && (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-           game.player_a_turn == (seat == Zone::PLAYER_A);
+    return stack_empty && (game.turn_state.step == FIRST_MAIN || game.turn_state.step == SECOND_MAIN) &&
+           game.turn_state.player_a_turn == (seat == Zone::PLAYER_A);
 }
 
 // May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
@@ -80,9 +80,9 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
 }
 
 // Machine mode: stop offering a spell or ability whose payment already failed twice (the payer
-// bumps payment_fail_counts on each cancelled payment), so an agent can't loop on it.
+// bumps priority.payment_fail_counts on each cancelled payment), so an agent can't loop on it.
 static bool payment_blocked(Entity paid_for) {
-    const int *fails = cur_game.payment_fail_counts.find(paid_for);
+    const int *fails = cur_game.priority.payment_fail_counts.find(paid_for);
     return fails && *fails >= 2;
 }
 
@@ -223,7 +223,7 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
 // See declaration in state_manager.h.
 bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
                           std::shared_ptr<Orderer> orderer) {
-    const Game::ImpulseCastPermission *grant = cur_game.impulse_cast_permission.find(card);
+    const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(card);
     if (grant == nullptr) return false;
     const Game::ImpulseCastPermission &perm_grant = *grant;
     const CardData &ecd = global_coordinator.GetComponent<CardData>(card);
@@ -457,7 +457,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
 
     // Condition: not your turn (Force of Negation, Force of Vigor)
     if (alt_cost.condition_not_your_turn) {
-        bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.player_a_turn : !cur_game.player_a_turn;
+        bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.turn_state.player_a_turn
+                                                              : !cur_game.turn_state.player_a_turn;
         if (is_my_turn) return false;
     }
 
@@ -1010,7 +1011,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // only under a "play" grant that allows lands).
     for (const auto &[ex_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
-        const auto &perm_grant = *cur_game.impulse_cast_permission.find(ex_entity);
+        const auto &perm_grant = *cur_game.resolved_effects.impulse_cast_permission.find(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
         // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may

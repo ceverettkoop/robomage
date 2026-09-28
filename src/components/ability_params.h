@@ -37,13 +37,13 @@ struct PumpParams {
     std::vector<std::string> grant_keywords;
     // KW$ Hexproof:Card.<Color>:<desc> — "hexproof from <color>" (Veil of Summer). Parsed out of
     // the keyword list into this color set; the Pump handler turns it into a turn-long player-
-    // scoped grant (cur_game.hexproof_from_colors_this_turn) covering the controller and the
+    // scoped grant (cur_game.resolved_effects.hexproof_from_colors_this_turn) covering the controller and the
     // permanents they control, rather than a per-creature keyword (which couldn't protect the
     // player or non-creature permanents). Empty = no hexproof-from-color grant.
     std::set<Colors> grant_hexproof_from_colors;
     // KW$ Protection from everything with Defined$ You (The One Ring's ETB Pump) — "you gain
     // protection from everything". Parsed out of the keyword list into this flag; the Pump handler
-    // turns it into a player-scoped grant (cur_game.player_protection_from_everything) for the
+    // turns it into a player-scoped grant (cur_game.resolved_effects.player_protection_from_everything) for the
     // controller rather than a per-creature keyword. False = no player-protection grant.
     bool grant_protection_from_everything = false;
 };

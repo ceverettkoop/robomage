@@ -61,7 +61,7 @@ void supersede_departed_cards() {
 uint64_t stamp_object_gen(Entity e) {
     if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return 0;
     auto &z = global_coordinator.GetComponent<Zone>(e);
-    if (z.obj_gen == 0) z.obj_gen = cur_game.next_obj_gen++;
+    if (z.obj_gen == 0) z.obj_gen = cur_game.identity.next_obj_gen++;
     return z.obj_gen;
 }
 
@@ -730,15 +730,15 @@ Zone::Ownership seat_of_player(Entity player_entity) {
 }
 
 Zone::Ownership priority_seat() {
-    return cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    return cur_game.priority.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
 }
 
-Zone::Ownership active_seat() { return cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B; }
+Zone::Ownership active_seat() { return cur_game.turn_state.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B; }
 
 // See declaration in game_queries.h.
 bool is_unblocked_attacker(Entity e) {
-    if (!cur_game.blockers_declared || cur_game.cur_step < DECLARE_BLOCKERS ||
-        cur_game.cur_step > END_OF_COMBAT)
+    if (!cur_game.combat.blockers_declared || cur_game.turn_state.step < DECLARE_BLOCKERS ||
+        cur_game.turn_state.step > END_OF_COMBAT)
         return false;
     return is_attacking_creature(e) && !global_coordinator.GetComponent<Creature>(e).is_blocked;
 }
@@ -838,10 +838,10 @@ Zone::Ownership source_controller(Entity source) {
 }
 
 bool player_protected_from_source(Entity player_entity, Entity /*source*/) {
-    if (cur_game.player_protection_from_everything.empty()) return false;
+    if (cur_game.resolved_effects.player_protection_from_everything.empty()) return false;
     Zone::Ownership prot =
         (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-    for (const auto &p : cur_game.player_protection_from_everything) {
+    for (const auto &p : cur_game.resolved_effects.player_protection_from_everything) {
         if (p.player != prot) continue;
         // CR 702.16: "protection from everything" is protection from ALL sources, including the
         // protected player's OWN sources — not only an opponent's. So the grant prevents the
@@ -946,14 +946,14 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
         bool land = is_land_card(cd);
         if (cd.has_flashback) { out.sources |= CardPlayPermission::FLASHBACK; all_expire = false; }
         if (cd.has_escape) { out.sources |= CardPlayPermission::ESCAPE; all_expire = false; }
-        if (!land && cur_game.may_cast_this_turn.count(card))
+        if (!land && cur_game.resolved_effects.may_cast_this_turn.count(card))
             out.sources |= CardPlayPermission::GRAVEYARD_CAST;
         if (land && rules_mod::may_play_lands_from_graveyard(player)) {
             out.sources |= CardPlayPermission::GRAVEYARD_LAND;
             all_expire = false;
         }
     } else if (zone.location == Zone::EXILE) {
-        const Game::ImpulseCastPermission *grant = cur_game.impulse_cast_permission.find(card);
+        const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(card);
         if (grant == nullptr) return out;
         const Game::ImpulseCastPermission &g = *grant;
         if (g.caster != player) return out;
@@ -964,9 +964,9 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
         // Mirrors the cleanup expiry in game.cpp: a warp grant lasts while the card stays
         // in exile; an until-the-end-of-your-next-turn grant lapses at a later turn's cleanup
         // whose active player is its caster; every other grant lapses at this cleanup.
-        Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership active = cur_game.turn_state.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
         bool expires = !g.warp && (!g.persist_until_end_of_next_turn ||
-                                   (g.caster == active && cur_game.turn > g.grant_turn));
+                                   (g.caster == active && cur_game.turn_state.turn > g.grant_turn));
         if (!expires) all_expire = false;
     }
     out.expires_this_turn = out.playable() && all_expire;
@@ -1049,10 +1049,10 @@ bool is_waiting_delayed_trigger_subject(Entity e) {
 
 bool delayed_trigger_fires_this_turn(const DelayedTrigger &dt) {
     if (dt.fire_on_leave_battlefield) return false;
-    if (dt.fire_on_turn > cur_game.turn) return false;
-    Entity active = cur_game.player_a_turn ? cur_game.player_a_entity : cur_game.player_b_entity;
+    if (dt.fire_on_turn > cur_game.turn_state.turn) return false;
+    Entity active = cur_game.turn_state.player_a_turn ? cur_game.player_a_entity : cur_game.player_b_entity;
     if (dt.restrict_player != 0 && dt.restrict_player != active) return false;
-    return cur_game.cur_step < delayed_fire_step(dt.fire_on);
+    return cur_game.turn_state.step < delayed_fire_step(dt.fire_on);
 }
 
 // True if `r` is a battlefield CANT_BE_COUNTERED replacement whose ValidSA$ filter is the bare
@@ -1068,7 +1068,7 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
 }
 
 bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Entity> &entities) {
-    if (cur_game.cant_counter_spells_of.count(player) > 0) return true;
+    if (cur_game.resolved_effects.cant_counter_spells_of.count(player) > 0) return true;
     for (auto e : battlefield_permanents(entities)) {
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
         for (const auto &r : permanent_replacement_effects(e))
@@ -1079,26 +1079,26 @@ bool player_spells_cant_be_countered(Zone::Ownership player, const std::set<Enti
 
 PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &entities) {
     PlayerEffects fx;
-    for (const auto &p : cur_game.player_protection_from_everything)
+    for (const auto &p : cur_game.resolved_effects.player_protection_from_everything)
         if (p.player == player) fx.protection_from_everything = true;
     fx.cant_gain_life = player_cant_gain_life(get_player_entity(player));
     const Colors wubrg[5] = {WHITE, BLUE, BLACK, RED, GREEN};
-    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+    for (const auto &h : cur_game.resolved_effects.hexproof_from_colors_this_turn) {
         if (h.player != player) continue;
         for (int i = 0; i < 5; i++)
             if (h.colors.count(wubrg[i])) fx.hexproof_from[i] = true;
     }
     fx.spells_cant_be_countered = player_spells_cant_be_countered(player, entities);
-    for (const auto &perm : cur_game.cast_with_flash_permissions)
+    for (const auto &perm : cur_game.resolved_effects.cast_with_flash_permissions)
         if (perm.controller == player) fx.may_cast_sorceries_as_flash = true;
     fx.restricted_to_sorcery_speed = rules_mod::opponent_sorcery_speed_locked(player);
-    for (const auto &emb : cur_game.emblems) {
+    for (const auto &emb : cur_game.resolved_effects.emblems) {
         if (emb.controller != player || emb.source_vocab_idx < 0) continue;
         if (std::find(fx.emblem_vocab_idx.begin(), fx.emblem_vocab_idx.end(),
                       emb.source_vocab_idx) == fx.emblem_vocab_idx.end())
             fx.emblem_vocab_idx.push_back(emb.source_vocab_idx);
     }
-    for (const auto &ft : cur_game.floating_triggers) {
+    for (const auto &ft : cur_game.resolved_effects.floating_triggers) {
         if (ft.controller != player || ft.floating_creator_vocab_idx < 0) continue;
         fx.floating_trigger_vocab_idx = ft.floating_creator_vocab_idx;
         break;
@@ -1120,7 +1120,7 @@ Zone::Ownership resolve_defined_player(const Ability &ab) {
 }
 
 bool entered_battlefield_this_turn(long entered_on_turn) {
-    return entered_on_turn == static_cast<long>(cur_game.turn);
+    return entered_on_turn == static_cast<long>(cur_game.turn_state.turn);
 }
 
 int ability_resolutions_this_turn(Entity source) {
@@ -1164,9 +1164,9 @@ void refresh_city_blessing(const std::set<Entity> &entities) {
 }
 
 bool player_cant_gain_life(Entity player_entity) {
-    if (cur_game.cant_gain_life_this_turn.empty()) return false;
+    if (cur_game.resolved_effects.cant_gain_life_this_turn.empty()) return false;
     Zone::Ownership who = (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A
                         : (player_entity == cur_game.player_b_entity) ? Zone::PLAYER_B
                                                                       : Zone::UNKNOWN;
-    return who != Zone::UNKNOWN && cur_game.cant_gain_life_this_turn.count(who) > 0;
+    return who != Zone::UNKNOWN && cur_game.resolved_effects.cant_gain_life_this_turn.count(who) > 0;
 }

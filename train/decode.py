@@ -601,7 +601,7 @@ def _decode_player(state, offset):
 def decode_turn(state):
     """Decode the current turn as the sequential 1-based display number.
 
-    The state vector carries the engine's internal ``Game::turn`` (0-based,
+    The state vector carries the engine's internal ``Game::turn_state.turn`` (0-based,
     incremented once per player-turn) as ``turn / 50``; the engine's narrative
     ``-------- TURN N --------`` headers display it 1-based (A=1, B=2, A=3, ...),
     so add 1 here to keep every Python-side turn display in agreement.

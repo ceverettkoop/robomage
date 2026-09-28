@@ -41,7 +41,7 @@ static std::vector<Entity> attached_to(Entity host, bool phased_out_indirectly,
 // creature that blocks nothing. A planeswalker removed from combat stops being attacked; its
 // attackers keep attacking and, if unblocked, deal no combat damage (CR 506.4c).
 static void remove_from_combat(Entity e, const std::set<Entity> &entities) {
-    cur_game.combat_damage_assignment.erase(e);
+    cur_game.combat.damage_assignment.erase(e);
     if (!global_coordinator.entity_has_component<Creature>(e)) return;
     auto &cr = global_coordinator.GetComponent<Creature>(e);
     bool was_attacking = cr.is_attacking;

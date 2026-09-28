@@ -297,7 +297,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // even when the same entity id re-enters its former zone as a same-type object. See Zone::obj_gen.
     // An open follow window keeps the old object findable for the rest of the effect (CR 400.7j).
     note_object_moved(target, target_zone.obj_gen);
-    target_zone.obj_gen = cur_game.next_obj_gen++;
+    target_zone.obj_gen = cur_game.identity.next_obj_gen++;
     // Counters on the card (a void counter, time counters) don't follow it: the object it became
     // has none (CR 122.2). The void counter a replacement put on it goes on that new object.
     target_zone.counters.clear();
@@ -426,9 +426,9 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.controller = caster;
     const uint64_t origin_gen = z.obj_gen;
     note_object_moved(card, origin_gen);  // CR 400.7h: a cast made by an effect stays findable
-    z.obj_gen = cur_game.next_obj_gen++;
+    z.obj_gen = cur_game.identity.next_obj_gen++;
     // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
-    cur_game.impulse_cast_permission.follow(card, origin_gen);
+    cur_game.resolved_effects.impulse_cast_permission.follow(card, origin_gen);
     z.identity_known = false;
     z.is_face_down = false;
     // A spell on the stack is public (CR 400.2).
@@ -469,7 +469,7 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     if (origin.location == Zone::HAND) z.identity_known = true;
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.
-    cur_game.impulse_cast_permission.follow(card, stack_gen);
+    cur_game.resolved_effects.impulse_cast_permission.follow(card, stack_gen);
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER
@@ -540,7 +540,7 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     std::iota(placements.begin(), placements.end(), 0);
     // stable_shuffle, not std::shuffle: std::shuffle output differs between
     // libstdc++ and libc++ for the same seed (see stable_rng.h).
-    stable_shuffle(placements, cur_game.gen);
+    stable_shuffle(placements, cur_game.rng.engine);
 
     size_t i = 0;
     for (auto &&card : contents) {
@@ -803,7 +803,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // presented to the owner before they proceed (proc_mandatory_choice's miracle-reveal
         // branch). The card is NOT made public and NO cast window opens yet — only on reveal does
         // the card become public and the linked "you may cast it" trigger go on the stack.
-        cur_game.miracle_reveal_pending = top;
+        cur_game.pending.miracle_reveal = top;
     }
 
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
@@ -811,7 +811,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // ignore the turn-based draw while punishing every extra draw.
     Zone::Ownership active = active_seat();
     bool first_in_draw_step = false;
-    if (cur_game.cur_step == DRAW && player == active) {
+    if (cur_game.turn_state.step == DRAW && player == active) {
         first_in_draw_step = (pl.cards_drawn_this_draw_step == 0);
         pl.cards_drawn_this_draw_step++;
     }

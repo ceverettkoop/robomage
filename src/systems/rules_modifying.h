@@ -53,7 +53,7 @@ bool opponent_sorcery_speed_locked(Zone::Ownership caster);
 
 // Cast-with-flash permission (Teferi, Time Raveler's +1 "you may cast sorcery spells as though they
 // had flash"): may `caster` cast `card` as though it had flash right now? True when an active
-// cur_game.cast_with_flash_permissions entry owned by `caster` covers the spell (its ValidCard$
+// cur_game.resolved_effects.cast_with_flash_permissions entry owned by `caster` covers the spell (its ValidCard$
 // filter matches, e.g. "Sorcery"). Lifts the sorcery-speed timing restriction for a matching spell
 // (CR 702.8). An opponent sorcery-speed lock, if also active against the caster, still overrides
 // this (the lock is applied after in the gate).

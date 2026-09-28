@@ -72,8 +72,8 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             // blocker), apply their stored per-blocker assignment; otherwise auto-assign lethal
             // in order. Either way lethal accounts for damage already marked on the blocker
             // (the T3.11 fix) and treats deathtouch as lethal-1 (702.2c) — see lethal_needed_for_blocker.
-            auto assign_it = game.combat_damage_assignment.find(entity);
-            bool have_assignment = (assign_it != game.combat_damage_assignment.end());
+            auto assign_it = game.combat.damage_assignment.find(entity);
+            bool have_assignment = (assign_it != game.combat.damage_assignment.end());
             bool has_trample = creature_has_keyword(cr, "Trample");
             // An attacker that doesn't deal damage this step assigns nothing to its
             // blockers (and tramples nothing) — its blockers still deal their own damage.
@@ -116,7 +116,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
         }
     }
 
-    game.combat_damage_dealt = true;
+    game.combat.damage_dealt = true;
     game_log("--- End %sCombat Damage ---\n\n", first_strike_only ? "First Strike " : "");
 }
 

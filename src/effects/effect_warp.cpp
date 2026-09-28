@@ -47,7 +47,7 @@ HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     perm.amount = 0;
     perm.caster = owner;
     perm.warp = true;
-    cur_game.impulse_cast_permission[card] = perm;
+    cur_game.resolved_effects.impulse_cast_permission[card] = perm;
 
     game_log("%s is exiled with warp; %s may cast it from exile for its normal cost.\n",
              nm.c_str(), player_name(owner).c_str());

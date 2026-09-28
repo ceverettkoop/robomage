@@ -165,7 +165,7 @@ HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
 // player, with cur_game.remembered_entities set to that player's entity each iteration.
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
-// graveyard card in cur_game.may_cast_this_turn so the casting path offers it this turn.
+// graveyard card in cur_game.resolved_effects.may_cast_this_turn so the casting path offers it this turn.
 HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
 HandlerResult become_monarch(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
@@ -232,7 +232,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ AddTurn (Emrakul, the Aeons Torn): the Defined$ player (You = the ability's controller)
 // takes ab.amount (NumTurns$, default 1) extra turns after the current one, queued onto
-// cur_game.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
+// cur_game.turn_state.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
 // an extra turn" effect. See effect_add_turn.cpp.
 HandlerResult add_turn(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's

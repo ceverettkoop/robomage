@@ -106,12 +106,12 @@ bool snapshot_save(int slot) {
     // slot (a save between a root's sims) is visible in the log.
     fprintf(stderr, "[save] slot=%d scope=%s step=%d lifeA=%d lifeB=%d mir=%u\n",
             slot, s.scope == SnapScope::MATCH ? "MATCH" : "GAME",
-            static_cast<int>(cur_game.cur_step),
+            static_cast<int>(cur_game.turn_state.step),
             global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
             global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
-            cur_game.miracle_reveal_pending);
+            cur_game.pending.miracle_reveal);
 #endif
     return true;
 }
@@ -155,19 +155,19 @@ bool snapshot_restore(int slot) {
     fprintf(stderr,
             "[restore] slot=%d pq(tag=%d act=%d ans=%d) pc=%d pa=%d pd=%d res=%d "
             "step=%d lifeA=%d lifeB=%d mir=%u\n",
-            slot, static_cast<int>(cur_game.pending_query.tag),
-            cur_game.pending_query.active ? 1 : 0,
-            cur_game.pending_query.answered ? 1 : 0,
-            cur_game.pending_cast.active ? 1 : 0,
-            cur_game.pending_activation.active ? 1 : 0,
-            cur_game.pending_draw.active ? 1 : 0,
+            slot, static_cast<int>(cur_game.pending.query.tag),
+            cur_game.pending.query.active ? 1 : 0,
+            cur_game.pending.query.answered ? 1 : 0,
+            cur_game.pending.cast.active ? 1 : 0,
+            cur_game.pending.activation.active ? 1 : 0,
+            cur_game.pending.draw.active ? 1 : 0,
             cur_game.resolution.active ? 1 : 0,
-            static_cast<int>(cur_game.cur_step),
+            static_cast<int>(cur_game.turn_state.step),
             global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
             global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
-            cur_game.miracle_reveal_pending);
+            cur_game.pending.miracle_reveal);
 #endif
     return true;
 }

@@ -23,7 +23,7 @@ namespace effects {
 // Forge models this as a transient continuous Effect object whose static ability
 // (MayPlay$ True, AffectedZone$ Graveyard) lets the remembered card be cast from the
 // graveyard until end of turn. Rather than instantiate a stack/effect object, we record
-// the targeted card in cur_game.may_cast_this_turn — a per-turn cast-permission set
+// the targeted card in cur_game.resolved_effects.may_cast_this_turn — a per-turn cast-permission set
 // (CR 601.3e) consumed by the casting path in determine_legal_actions and cleared each
 // cleanup. The target's legality (an artifact card in the controller's own graveyard) is
 // already enforced when the ability is put on the stack and re-verified at resolution;
@@ -43,7 +43,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         emblem.statics = ab.effect_emblem_statics;
         emblem.source = ab.source.lki_entity();
         emblem.source_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
-        cur_game.emblems.push_back(std::move(emblem));
+        cur_game.resolved_effects.emblems.push_back(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
@@ -51,7 +51,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
     // ability (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage
     // to one or more players this turn, you become the monarch", CR 603.7e-style). Each parsed
-    // trigger is bound to this effect's controller and pushed into cur_game.floating_triggers,
+    // trigger is bound to this effect's controller and pushed into cur_game.resolved_effects.floating_triggers,
     // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
     // over any DB$ Effect that names a Triggers$ SVar.
     if (!ab.effect_floating_triggers.empty()) {
@@ -65,7 +65,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             ft.duration_until_your_next_turn = until_next_turn;
             ft.floating_creator = ab.source.lki_entity();
             ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
-            cur_game.floating_triggers.push_back(ft);
+            cur_game.resolved_effects.floating_triggers.push_back(ft);
         }
         game_log("A floating triggered ability is created%s.\n",
                  until_next_turn ? " until your next turn" : " until end of turn");
@@ -77,7 +77,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // RememberChanged$ exile just moved (RememberObjects$ Remembered: Light Up the Stage, Ugin -11)
     // or the card a preceding ChooseCard chose (RememberObjects$ ChosenCard: Dauthi Voidwalker).
     // Rather than instantiate a continuous-effect object, record a play-from-exile permission for
-    // each such card still in exile in cur_game.impulse_cast_permission (CR 601.2, 305.1). The
+    // each such card still in exile in cur_game.resolved_effects.impulse_cast_permission (CR 601.2, 305.1). The
     // permission is used at priority through the ordinary cast and land-play actions, so the card's
     // timing, the land-drop limit and every cast trigger apply as usual (CR 601.3, 305.2). With
     // MayPlayWithoutManaCost$ it is cast without paying its mana cost (CR 118.9), otherwise for its
@@ -98,8 +98,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             perm.caster = ab.controller;
             perm.allow_land = ab.effect_may_play_lands;
             perm.persist_until_end_of_next_turn = ab.duration_until_end_of_your_next_turn;
-            perm.grant_turn = cur_game.turn;
-            cur_game.impulse_cast_permission[card] = perm;
+            perm.grant_turn = cur_game.turn_state.turn;
+            cur_game.resolved_effects.impulse_cast_permission[card] = perm;
             game_log("%s may %s %s from exile%s%s.\n", player_name(ab.controller).c_str(),
                      perm.allow_land ? "play" : "cast",
                      global_coordinator.GetComponent<CardData>(card).name.c_str(),
@@ -135,7 +135,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // A sourceless turn-long grant (the instant resolves to the graveyard), unlike Hexing
     // Squelcher's battlefield static.
     if (ab.effect_spells_uncounterable_this_turn) {
-        cur_game.cant_counter_spells_of.insert(ab.controller);
+        cur_game.resolved_effects.cant_counter_spells_of.insert(ab.controller);
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
@@ -155,7 +155,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             shield.creature = ObjectRef::of(who);
             shield.prevent_as_source = ab.effect_prevent_combat_damage_by_remembered;
             shield.prevent_as_target = ab.effect_prevent_combat_damage_to_remembered;
-            cur_game.combat_damage_prevention_shields.push_back(shield);
+            cur_game.resolved_effects.combat_damage_prevention_shields.push_back(shield);
             game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n",
                      entity_name(who).c_str());
         }
@@ -172,16 +172,16 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         Zone::Ownership opp = opponent_of(me);
         switch (ab.effect_cant_gain_life) {
             case Ability::CantGainLifeScope::OPPONENTS:
-                cur_game.cant_gain_life_this_turn.insert(opp);
+                cur_game.resolved_effects.cant_gain_life_this_turn.insert(opp);
                 game_log("%s can't gain life this turn.\n", player_name(opp).c_str());
                 break;
             case Ability::CantGainLifeScope::YOU:
-                cur_game.cant_gain_life_this_turn.insert(me);
+                cur_game.resolved_effects.cant_gain_life_this_turn.insert(me);
                 game_log("%s can't gain life this turn.\n", player_name(me).c_str());
                 break;
             case Ability::CantGainLifeScope::ALL:
-                cur_game.cant_gain_life_this_turn.insert(me);
-                cur_game.cant_gain_life_this_turn.insert(opp);
+                cur_game.resolved_effects.cant_gain_life_this_turn.insert(me);
+                cur_game.resolved_effects.cant_gain_life_this_turn.insert(opp);
                 game_log("No player can gain life this turn.\n");
                 break;
             default:
@@ -201,7 +201,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         perm.controller = ab.controller;
         perm.filter = ab.effect_cast_with_flash_filter;
         perm.until_your_next_turn = ab.duration_until_your_next_turn;
-        cur_game.cast_with_flash_permissions.push_back(std::move(perm));
+        cur_game.resolved_effects.cast_with_flash_permissions.push_back(std::move(perm));
         game_log("%s may cast %s spells as though they had flash%s.\n",
                  player_name(ab.controller).c_str(),
                  ab.effect_cast_with_flash_filter.empty() ? "" : ab.effect_cast_with_flash_filter.c_str(),
@@ -213,7 +213,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return HandlerResult::DONE_RUN_SUBS;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return HandlerResult::DONE_RUN_SUBS;
 
-    cur_game.may_cast_this_turn.insert(tgt);
+    cur_game.resolved_effects.may_cast_this_turn.insert(tgt);
 
     std::string tname = global_coordinator.entity_has_component<CardData>(tgt)
         ? global_coordinator.GetComponent<CardData>(tgt).name : "card";

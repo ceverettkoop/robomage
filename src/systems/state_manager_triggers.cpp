@@ -41,7 +41,7 @@
 // trigger from the current batch of events first, then place them all in APNAP order (603.3b);
 // the old code pushed each trigger the instant it was found (raw entity-ID order), which is not
 // APNAP and gave no player a chance to order their own simultaneous triggers. The persisted
-// struct lives in resolution_frame.h (Game::trigger_placement holds the flattened queue while
+// struct lives in resolution_frame.h (Game::pending.trigger_placement holds the flattened queue while
 // a placement decision is parked); this alias keeps the collection code unchanged.
 using PendingTrigger = PendingTriggerRT;
 
@@ -55,7 +55,7 @@ namespace {
 class TriggerPlaceTargetAsker final : public TargetAsker {
     public:
         int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
-            PendingQuery &pq = cur_game.pending_query;
+            PendingQuery &pq = cur_game.pending.query;
             if (pq.active) {
                 // Consume the latched answer for THIS ask. The re-entered
                 // machine must have rebuilt the identical menu (pure builds,
@@ -67,7 +67,7 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
                                 std::to_string(pq.menu.size()) + " vs " +
                                 std::to_string(menu.size()) + ")");
                 int answer = pq.answer;
-                cur_game.player_a_has_priority = pq.prev_priority;
+                cur_game.priority.player_a_has_priority = pq.prev_priority;
                 pq = PendingQuery{};
                 return answer;
             }
@@ -76,13 +76,13 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
             pq.tag = PendingQuery::TRIGGER_PLACE;
             pq.active = true;
             pq.menu = menu;
-            pq.chooser_is_a = cur_game.player_a_has_priority;
+            pq.chooser_is_a = cur_game.priority.player_a_has_priority;
             pq.decision_source = decision_source;
-            pq.prev_priority = cur_game.player_a_has_priority;
+            pq.prev_priority = cur_game.priority.player_a_has_priority;
             return -1;
         }
         bool resuming() const override {
-            return cur_game.pending_query.active && cur_game.pending_query.answered;
+            return cur_game.pending.query.active && cur_game.pending.query.answered;
         }
 };
 }  // namespace
@@ -199,7 +199,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // completion, and this scan must not drain events or collect a second
     // batch underneath it. (Belt-and-braces — the main loop never reaches a
     // state_based_effects call while a pending query is parked.)
-    if (game.trigger_placement.active) return;
+    if (game.pending.trigger_placement.active) return;
     auto events = global_coordinator.drain_pending_events();
 
     // Every ability that triggers off this batch of events is collected here, then recorded as
@@ -240,7 +240,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                     matched = true;
                     break;
                 }
-                if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
+                if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn_state.turn < dt.fire_on_turn) continue;
                 // Phase-player restriction: only an explicit ValidPlayer$ restriction pins the
                 // trigger to one player's phase. Unrestricted (restrict_player == 0), "the next
                 // turn's upkeep" / "the next end step" fires at the next occurrence of the phase
@@ -295,7 +295,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // one supported floating trigger is "Mode$ DamageAll | ValidSource$ Creature.YouCtrl |
     // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
     // more creatures the trigger's controller controls deal combat damage to one or more players.
-    for (const auto &ft : game.floating_triggers) {
+    for (const auto &ft : game.resolved_effects.floating_triggers) {
         // Mode$ Attacks hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2:
         // "whenever a creature an opponent controls attacks you or a planeswalker you control, it
         // gets -1/-0"). Fires once per matching attacker (CREATURE_ATTACKED), binding the attacker
@@ -857,7 +857,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
 }
 
 void StateManager::place_waiting_triggers(Game &game, std::shared_ptr<Orderer> orderer) {
-    if (game.trigger_placement.active) return;
+    if (game.pending.trigger_placement.active) return;
     std::vector<PendingTrigger> pending;
     for (PendingTrigger &pt : game.waiting_triggers) {
         // A trigger queued outside the event scan (Ward, a reflexive trigger) is labeled here
@@ -1231,7 +1231,7 @@ static std::string trigger_label(const std::string &name, const Ability &ab) {
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending) {
     if (pending.empty()) return;
-    if (game.trigger_placement.active)
+    if (game.pending.trigger_placement.active)
         fatal_error("place_triggers_apnap re-entered with a placement already in flight");
 
     Zone::Ownership active = active_seat();
@@ -1244,9 +1244,9 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     // needed mid-queue, resume_trigger_placement parks it as a loop-top
     // pending decision and returns; the main loop dispatches the answer back
     // into it until the queue empties.
-    TriggerPlacementRT &tp = game.trigger_placement;
+    TriggerPlacementRT &tp = game.pending.trigger_placement;
     tp.active = true;
-    tp.saved_priority = cur_game.player_a_has_priority;
+    tp.saved_priority = cur_game.priority.player_a_has_priority;
     tp.target_in_flight = false;
     tp.tsel = TargetSelectRT{};
     tp.sub_idx = 0;
@@ -1318,7 +1318,7 @@ static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementR
 }
 
 void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
-    TriggerPlacementRT &tp = game.trigger_placement;
+    TriggerPlacementRT &tp = game.pending.trigger_placement;
     if (!tp.active)
         fatal_error("resume_trigger_placement without an active trigger placement");
     // Pre-game placements (test-harness preplaced permanents) have no loop top
@@ -1330,9 +1330,9 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // Placement-time decisions (the 603.3b ordering pick and 603.3d target selection)
         // belong to the TRIGGER'S controller, who need not be the player holding priority
         // (e.g. the opponent's draw fired our Orcish Bowmasters). The input/BQUERY seat
-        // follows cur_game.player_a_has_priority, so seat the queries on the owner;
+        // follows cur_game.priority.player_a_has_priority, so seat the queries on the owner;
         // tp.saved_priority is restored when the whole placement completes.
-        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+        cur_game.priority.player_a_has_priority = (owner == Zone::PLAYER_A);
 
         // The current group: the leading run of queue entries sharing the front's controller.
         size_t group_size = 1;
@@ -1344,7 +1344,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // bottom of the stack (resolves last). A single trigger needs no choice.
         size_t pick = 0;  // position within the group
         if (!tp.target_in_flight && group_size > 1) {
-            PendingQuery &pq = game.pending_query;
+            PendingQuery &pq = game.pending.query;
             if (suspendable && pq.active) {
                 // Consume the latched ordering answer (the queue is untouched between
                 // arm and resume, so the group it indexes is identical).
@@ -1383,7 +1383,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                     pq.menu = std::move(choices);
                     pq.chooser_is_a = (owner == Zone::PLAYER_A);
                     pq.decision_source = order_source;
-                    pq.prev_priority = cur_game.player_a_has_priority;
+                    pq.prev_priority = cur_game.priority.player_a_has_priority;
                     pq.answered = false;
                     pq.answer = -1;
                     pq.active = true;
@@ -1426,6 +1426,6 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         fire_targeting_hooks(placed, global_coordinator.GetComponent<Ability>(placed).controller);
 
     // Placement complete: restore the pre-placement priority seat.
-    cur_game.player_a_has_priority = tp.saved_priority;
+    cur_game.priority.player_a_has_priority = tp.saved_priority;
     tp = TriggerPlacementRT{};
 }

@@ -29,11 +29,11 @@ static void known_top_remove(int *arr, int pos);
 static void known_top_insert(int *arr, int pos, int card_vocab_idx);
 
 bool Game::ready_to_resolve() {
-    return a_has_passed && b_has_passed;
+    return priority.a_has_passed && priority.b_has_passed;
 }
 
 bool Game::combat_damage_prevented(Entity source, Entity target) const {
-    for (const auto &shield : combat_damage_prevention_shields) {
+    for (const auto &shield : resolved_effects.combat_damage_prevention_shields) {
         const Entity creature = shield.creature.get();
         if (creature == 0) continue;
         if (shield.prevent_as_source && creature == source) return true;
@@ -44,7 +44,7 @@ bool Game::combat_damage_prevented(Entity source, Entity target) const {
 
 bool Game::combat_damage_shielded(Entity creature) const {
     if (creature == 0) return false;
-    for (const auto &shield : combat_damage_prevention_shields)
+    for (const auto &shield : resolved_effects.combat_damage_prevention_shields)
         if (shield.creature.get() == creature && (shield.prevent_as_source || shield.prevent_as_target))
             return true;
     return false;
@@ -169,16 +169,16 @@ static void known_top_insert(int *arr, int pos, int card_vocab_idx) {
 }
 
 void Game::pass_priority() {
-    if (player_a_has_priority) a_has_passed = true;
-    if (!player_a_has_priority) b_has_passed = true;
-    player_a_has_priority = !player_a_has_priority;
+    if (priority.player_a_has_priority) priority.a_has_passed = true;
+    if (!priority.player_a_has_priority) priority.b_has_passed = true;
+    priority.player_a_has_priority = !priority.player_a_has_priority;
 }
 
 void Game::take_action() {
     // When a player takes an action, reset the pass tracking
-    a_has_passed = false;
-    b_has_passed = false;
-    payment_fail_counts.clear();
+    priority.a_has_passed = false;
+    priority.b_has_passed = false;
+    priority.payment_fail_counts.clear();
 }
 
 void Game::end_cleanup_effects() {
@@ -241,15 +241,17 @@ void Game::end_cleanup_effects() {
     }
 
     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
-    may_cast_this_turn.clear();
+    resolved_effects.may_cast_this_turn.clear();
     // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
     // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
     // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
     // survives cleanup — it is removed at its controller's next untap step instead.
-    floating_triggers.erase(
-        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
-                       [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
-        floating_triggers.end());
+    {
+        auto &floating = resolved_effects.floating_triggers;
+        floating.erase(std::remove_if(floating.begin(), floating.end(),
+                                      [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
+                       floating.end());
+    }
     // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
     // cleared here. A persist_until_end_of_next_turn grant (Light Up the Stage's
     // "until the end of your next turn") survives this cleanup and is removed at the
@@ -258,42 +260,42 @@ void Game::end_cleanup_effects() {
     // A permission whose card left exile (cast, or moved by another effect) is gone with the
     // object it was granted to (CR 400.7). A warp recast permission persists across turns for as
     // long as the card remains in exile; it is never expired by the per-turn cleanup.
-    impulse_cast_permission.purge_stale();
-    impulse_cast_permission.erase_if([&](Entity, const ImpulseCastPermission &g) {
+    resolved_effects.impulse_cast_permission.purge_stale();
+    resolved_effects.impulse_cast_permission.erase_if([&](Entity, const ImpulseCastPermission &g) {
         if (g.warp) return false;
         return !g.persist_until_end_of_next_turn ||
-               (g.caster == active_player && turn > g.grant_turn);
+               (g.caster == active_player && turn_state.turn > g.grant_turn);
     });
     // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
     // "Spells you control can't be countered this turn" + "hexproof from blue and
     // from black until end of turn") lapse at cleanup (CR 514.2).
-    cant_counter_spells_of.clear();
+    resolved_effects.cant_counter_spells_of.clear();
     // "Can't gain life this turn" (Roiling Vortex's {R}) lapses at cleanup (514.2).
-    cant_gain_life_this_turn.clear();
+    resolved_effects.cant_gain_life_this_turn.clear();
     // Combat-damage prevention shields (Maze of Ith, CR 615) are "this turn" and
     // lapse at cleanup (514.2).
-    combat_damage_prevention_shields.clear();
-    hexproof_from_colors_this_turn.clear();
+    resolved_effects.combat_damage_prevention_shields.clear();
+    resolved_effects.hexproof_from_colors_this_turn.clear();
     // An "until end of turn" player protection-from-everything grant lapses at
     // cleanup; an "until your next turn" grant persists (reverted at that player's
     // untap step instead — see the UNTAP case above).
-    player_protection_from_everything.erase(
-        std::remove_if(player_protection_from_everything.begin(),
-                       player_protection_from_everything.end(),
+    resolved_effects.player_protection_from_everything.erase(
+        std::remove_if(resolved_effects.player_protection_from_everything.begin(),
+                       resolved_effects.player_protection_from_everything.end(),
                        [](const PlayerProtectionFromEverything &p) {
                            return !p.until_your_next_turn;
                        }),
-        player_protection_from_everything.end());
+        resolved_effects.player_protection_from_everything.end());
     // An "until end of turn" cast-with-flash permission (a bare CastWithFlash
     // Effect) lapses at cleanup; an "until your next turn" grant (Teferi, Time
     // Raveler's +1) persists, reverted at that player's untap step instead.
-    cast_with_flash_permissions.erase(
-        std::remove_if(cast_with_flash_permissions.begin(),
-                       cast_with_flash_permissions.end(),
+    resolved_effects.cast_with_flash_permissions.erase(
+        std::remove_if(resolved_effects.cast_with_flash_permissions.begin(),
+                       resolved_effects.cast_with_flash_permissions.end(),
                        [](const CastWithFlashPermission &p) {
                            return !p.until_your_next_turn;
                        }),
-        cast_with_flash_permissions.end());
+        resolved_effects.cast_with_flash_permissions.end());
     // "This turn" leave-battlefield delayed triggers (Searing Blood's "when that
     // creature dies this turn") expire unfired at cleanup if the watched object
     // never left the battlefield (CR 603.7b). Reached after the end step, so any
@@ -308,20 +310,20 @@ void Game::end_cleanup_effects() {
 // step event so end-of-combat delayed triggers (Geist of Saint Traft's "exile that token at end
 // of combat") can fire before the combat state is cleared as the step ends.
 void Game::begin_end_of_combat_step(Entity active_player_entity) {
-    cur_step = END_OF_COMBAT;
+    turn_state.step = END_OF_COMBAT;
     Event end_of_combat_event(Events::END_OF_COMBAT_BEGAN);
     end_of_combat_event.SetParam(Params::PLAYER, active_player_entity);
     global_coordinator.SendEvent(end_of_combat_event);
 }
 
-// Begin a cleanup step (CR 514): cur_step becomes CLEANUP with no player holding priority, its
+// Begin a cleanup step (CR 514): turn_state.step becomes CLEANUP with no player holding priority, its
 // 514.2 actions still to happen, and CLEANUP_BEGAN fired for "at the beginning of the cleanup
 // step" abilities.
 void Game::begin_cleanup_step(Entity active_player_entity) {
-    cur_step = CLEANUP;
-    cleanup_effects_ended = false;
-    cleanup_sba_performed = false;
-    cleanup_priority_round = false;
+    turn_state.step = CLEANUP;
+    turn_state.cleanup_effects_ended = false;
+    turn_state.cleanup_sba_performed = false;
+    turn_state.cleanup_priority_round = false;
     Event cleanup_event(Events::CLEANUP_BEGAN);
     cleanup_event.SetParam(Params::PLAYER, active_player_entity);
     global_coordinator.SendEvent(cleanup_event);
@@ -334,24 +336,24 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
     // turn-based actions (phasing, day/night check, untapping) run in the UNTAP
     // case below and the step advances straight to upkeep without a decision
     // window, regardless of pass tracking — this also covers the start of the
-    // game, where cur_step begins at UNTAP with neither player having passed.
+    // game, where turn_state.step begins at UNTAP with neither player having passed.
     // Nothing is resolved off the stack here either: an ability that triggers
     // during the untap step waits until a player would receive priority during
     // the upkeep (CR 603.3b), so it stays on the stack for the normal upkeep
     // priority round after the step change.
-    if (ready_to_resolve() || cur_step == UNTAP) {
+    if (ready_to_resolve() || turn_state.step == UNTAP) {
         // CR 514.3a: a state-based action performed or a triggered ability put on the stack
         // during the cleanup step gives the active player priority (the step began with no
         // player holding it); another cleanup step follows once that priority round ends.
-        if (cur_step == CLEANUP && !cleanup_priority_round && !resolution.active &&
-            (cleanup_sba_performed || !stack_manager->is_empty())) {
-            cleanup_priority_round = true;
-            player_a_has_priority = player_a_turn;
-            a_has_passed = false;
-            b_has_passed = false;
+        if (turn_state.step == CLEANUP && !turn_state.cleanup_priority_round && !resolution.active &&
+            (turn_state.cleanup_sba_performed || !stack_manager->is_empty())) {
+            turn_state.cleanup_priority_round = true;
+            priority.player_a_has_priority = turn_state.player_a_turn;
+            priority.a_has_passed = false;
+            priority.b_has_passed = false;
             return false;
         }
-        if (!stack_manager->is_empty() && cur_step != UNTAP) {
+        if (!stack_manager->is_empty() && turn_state.step != UNTAP) {
             stack_manager->resolve_top(orderer);
             // A suspended resolution parked its decision for the loop top:
             // LEAVE the pass flags set, so the next iteration's advance_step
@@ -359,17 +361,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             // until a handler is flipped suspendable.)
             if (resolution.active) return true;
             // reset pass tracking when something has resolved
-            a_has_passed = false;
-            b_has_passed = false;
+            priority.a_has_passed = false;
+            priority.b_has_passed = false;
             // remaining in current step
             return false;
         } else {
             // stack is empty and both players have passed
             //  step is changing
-            Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
+            Entity active_player_entity = turn_state.player_a_turn ? player_a_entity : player_b_entity;
             Zone::Ownership active_player = active_seat();
 
-            switch (cur_step) {
+            switch (turn_state.step) {
                 case UNTAP: {
                     // Lapse any "until your next turn" Animate (Karn +1) this player created —
                     // its longer continuous-effect duration ends as their next turn begins.
@@ -377,33 +379,35 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // Lapse any "until your next turn" player protection-from-everything grant
                     // protecting this player (The One Ring) — its duration ends as the protected
                     // player's next turn begins.
-                    player_protection_from_everything.erase(
-                        std::remove_if(player_protection_from_everything.begin(),
-                                       player_protection_from_everything.end(),
+                    resolved_effects.player_protection_from_everything.erase(
+                        std::remove_if(resolved_effects.player_protection_from_everything.begin(),
+                                       resolved_effects.player_protection_from_everything.end(),
                                        [active_player](const PlayerProtectionFromEverything &p) {
                                            return p.until_your_next_turn && p.player == active_player;
                                        }),
-                        player_protection_from_everything.end());
+                        resolved_effects.player_protection_from_everything.end());
                     // Lapse any "until your next turn" cast-with-flash permission this player was
                     // granted (Teferi, Time Raveler's +1) — its duration ends as the controller's
                     // next turn begins (CR 611.2).
-                    cast_with_flash_permissions.erase(
-                        std::remove_if(cast_with_flash_permissions.begin(),
-                                       cast_with_flash_permissions.end(),
+                    resolved_effects.cast_with_flash_permissions.erase(
+                        std::remove_if(resolved_effects.cast_with_flash_permissions.begin(),
+                                       resolved_effects.cast_with_flash_permissions.end(),
                                        [active_player](const CastWithFlashPermission &p) {
                                            return p.until_your_next_turn && p.controller == active_player;
                                        }),
-                        cast_with_flash_permissions.end());
+                        resolved_effects.cast_with_flash_permissions.end());
                     // Lapse any "until your next turn" floating triggered ability this player
                     // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
                     // — its duration ends as the controller's next turn begins (CR 611.2).
-                    floating_triggers.erase(
-                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
-                                       [active_player](const Ability &ft) {
-                                           return ft.duration_until_your_next_turn &&
-                                                  ft.controller == active_player;
-                                       }),
-                        floating_triggers.end());
+                    {
+                        auto &floating = resolved_effects.floating_triggers;
+                        floating.erase(std::remove_if(floating.begin(), floating.end(),
+                                                      [active_player](const Ability &ft) {
+                                                          return ft.duration_until_your_next_turn &&
+                                                                 ft.controller == active_player;
+                                                      }),
+                                       floating.end());
+                    }
                     // Phase in phased-out permanents controlled by active player (CR 702.26a).
                     // An Aura or Equipment that phased out indirectly phases in only along with
                     // the permanent it is attached to (CR 702.26g), inside effects::phase_in.
@@ -457,7 +461,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                         }
                     }
-                    cur_step = UPKEEP;
+                    turn_state.step = UPKEEP;
                     {
                         Event upkeep_event(Events::UPKEEP_BEGAN);
                         upkeep_event.SetParam(Params::PLAYER, active_player_entity);
@@ -466,7 +470,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 }
                 case UPKEEP:
-                    cur_step = DRAW;
+                    turn_state.step = DRAW;
                     // Fire DRAW_STEP_BEGAN before drawing
                     {
                         Event draw_step_event(Events::DRAW_STEP_BEGAN);
@@ -474,15 +478,15 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         global_coordinator.SendEvent(draw_step_event);
                     }
                     // first turn first player skips draw!
-                    if (turn == 0) break;
+                    if (turn_state.turn == 0) break;
                     // PLAYER_DREW_CARD is fired per-card inside the draw batch
                     // (with the first-card-in-draw-step flag), so no emit here.
-                    // The turn-based draw runs as a resumable batch (pending_query
+                    // The turn-based draw runs as a resumable batch (pending.query
                     // tag TURN_DRAW): a dredge draw-replacement question (CR
                     // 702.52a) parks as a loop-top decision instead of blocking.
-                    pending_draw.active = true;
-                    pending_draw.player = active_player;
-                    pending_draw.remaining = 1;
+                    pending.draw.active = true;
+                    pending.draw.player = active_player;
+                    pending.draw.remaining = 1;
                     resume_pending_draws(*this, orderer);
                     // A dredge question parked the draw: return with the pass
                     // flags left true and the post-switch epilogue below DEFERRED
@@ -491,10 +495,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // pass flags set, mana pools not yet emptied). The loop-top
                     // TURN_DRAW dispatch runs the epilogue via
                     // finish_suspended_turn_draw once the batch completes.
-                    if (pending_draw.active) return true;
+                    if (pending.draw.active) return true;
                     break;
                 case DRAW:
-                    cur_step = FIRST_MAIN;
+                    turn_state.step = FIRST_MAIN;
                     {
                         Event first_main_event(Events::FIRST_MAIN_BEGAN);
                         first_main_event.SetParam(Params::PLAYER, active_player_entity);
@@ -506,7 +510,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     saga_put_precombat_lore_counters(active_player, orderer->mEntities);
                     break;
                 case FIRST_MAIN:
-                    cur_step = BEGIN_COMBAT;
+                    turn_state.step = BEGIN_COMBAT;
                     {
                         Event begin_combat_event(Events::BEGIN_COMBAT_BEGAN);
                         begin_combat_event.SetParam(Params::PLAYER, active_player_entity);
@@ -514,11 +518,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     break;
                 case BEGIN_COMBAT:
-                    cur_step = DECLARE_ATTACKERS;
-                    attackers_declared = false;  // Reset for new combat
+                    turn_state.step = DECLARE_ATTACKERS;
+                    combat.attackers_declared = false;  // Reset for new combat
                     break;
                 case DECLARE_ATTACKERS:
-                    blockers_declared = false;  // Reset for new combat
+                    combat.blockers_declared = false;  // Reset for new combat
                     // CR 508.8: with no creature attacking (none declared or put onto the
                     // battlefield attacking), the declare blockers and combat damage steps are
                     // skipped.
@@ -527,30 +531,30 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         begin_end_of_combat_step(active_player_entity);
                         break;
                     }
-                    cur_step = DECLARE_BLOCKERS;
+                    turn_state.step = DECLARE_BLOCKERS;
                     break;
                 case DECLARE_BLOCKERS: {
                     // Scan for first strikers / double strikers
-                    has_first_strikers = false;
+                    combat.has_first_strikers = false;
                     for (auto e : orderer->mEntities) {
                         if (!is_attacking_creature(e) && !is_blocking_creature(e)) continue;
                         if (creature_deals_first_strike_damage(global_coordinator.GetComponent<Creature>(e))) {
-                            has_first_strikers = true;
+                            combat.has_first_strikers = true;
                             break;
                         }
                     }
-                    if (has_first_strikers) {
-                        cur_step = FIRST_STRIKE_DAMAGE;
+                    if (combat.has_first_strikers) {
+                        turn_state.step = FIRST_STRIKE_DAMAGE;
                     } else {
-                        cur_step = COMBAT_DAMAGE;
+                        turn_state.step = COMBAT_DAMAGE;
                     }
-                    combat_damage_dealt = false;
+                    combat.damage_dealt = false;
                     break;
                 }
                 case FIRST_STRIKE_DAMAGE:
-                    cur_step = COMBAT_DAMAGE;
-                    combat_damage_dealt = false;
-                    combat_damage_assignment.clear();  // T3.10: regular step re-decides for survivors
+                    turn_state.step = COMBAT_DAMAGE;
+                    combat.damage_dealt = false;
+                    combat.damage_assignment.clear();  // T3.10: regular step re-decides for survivors
                     break;
                 case COMBAT_DAMAGE:
                     begin_end_of_combat_step(active_player_entity);
@@ -566,8 +570,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         creature.blocking_target = ObjectRef{};
                         creature.is_blocked = false;
                     }
-                    combat_damage_assignment.clear();  // T3.10: drop any per-attacker assignments
-                    cur_step = SECOND_MAIN;
+                    combat.damage_assignment.clear();  // T3.10: drop any per-attacker assignments
+                    turn_state.step = SECOND_MAIN;
                     {
                         Event second_main_event(Events::SECOND_MAIN_BEGAN);
                         second_main_event.SetParam(Params::PLAYER, active_player_entity);
@@ -575,7 +579,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     break;
                 case SECOND_MAIN:
-                    cur_step = END_STEP;
+                    turn_state.step = END_STEP;
                     {
                         Event end_step_event(Events::END_STEP_BEGAN);
                         end_step_event.SetParam(Params::PLAYER, active_player_entity);
@@ -591,7 +595,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 case CLEANUP:
                     // CR 514.3a: players received priority during this cleanup step, so once
                     // the stack is empty and all players pass, another cleanup step begins.
-                    if (cleanup_priority_round) {
+                    if (turn_state.cleanup_priority_round) {
                         begin_cleanup_step(active_player_entity);
                         break;
                     }
@@ -605,28 +609,28 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // priority over the normal active-player flip: if a player is owed an extra
                     // turn, that player (the most recently added — extra_turns is a LIFO stack)
                     // takes the next turn instead of passing to the opponent.
-                    cur_step = UNTAP;
-                    turn++;
-                    if (!extra_turns.empty()) {
-                        Zone::Ownership next_active = extra_turns.back();
-                        extra_turns.pop_back();
-                        player_a_turn = (next_active == Zone::PLAYER_A);
+                    turn_state.step = UNTAP;
+                    turn_state.turn++;
+                    if (!turn_state.extra_turns.empty()) {
+                        Zone::Ownership next_active = turn_state.extra_turns.back();
+                        turn_state.extra_turns.pop_back();
+                        turn_state.player_a_turn = (next_active == Zone::PLAYER_A);
                     } else {
-                        player_a_turn = !player_a_turn;
+                        turn_state.player_a_turn = !turn_state.player_a_turn;
                     }
                     break;
             }
             // if the new step is untap or cleanup, we pretend both players passed
             // hacky
-            if (cur_step == UNTAP || cur_step == CLEANUP) {
-                a_has_passed = true;
-                b_has_passed = true;
+            if (turn_state.step == UNTAP || turn_state.step == CLEANUP) {
+                priority.a_has_passed = true;
+                priority.b_has_passed = true;
             } else {
                 // otherwise we now get active player priority
-                player_a_has_priority = player_a_turn;
+                priority.player_a_has_priority = turn_state.player_a_turn;
                 // Reset pass tracking
-                a_has_passed = false;
-                b_has_passed = false;
+                priority.a_has_passed = false;
+                priority.b_has_passed = false;
             }
             // any case where we are returning true, mana pool is now emptied
             empty_mana_pool(Zone::PLAYER_A);
@@ -643,7 +647,7 @@ void Game::reset_turn_counters(Entity active_player_entity) {
     // Snapshot the ending turn's active player's spell count before it resets, for the next
     // turn's untap day/night check (CR 502.2 / 731.2). Both players' counts are reset every
     // turn, so it holds only the spells cast during this turn.
-    prev_turn_active_spell_count = static_cast<int>(
+    turn_state.prev_turn_active_spell_count = static_cast<int>(
         global_coordinator.GetComponent<Player>(active_player_entity).spells_cast_this_turn);
     global_coordinator.GetComponent<Player>(player_a_entity).reset_turn_counters();
     global_coordinator.GetComponent<Player>(player_b_entity).reset_turn_counters();
@@ -651,35 +655,35 @@ void Game::reset_turn_counters(Entity active_player_entity) {
     // Miracle (CR 702.94) is a "first card drawn this turn" concept — the reveal opportunity
     // lapses at end of turn, so a never-answered pending reveal decision (e.g. the game ended
     // first) lapses each cleanup.
-    miracle_reveal_pending = 0;
+    pending.miracle_reveal = 0;
 }
 
 bool Game::is_mandatory_choice_pending() const {
     // A pending miracle reveal (CR 702.94) is a forced decision the drawing player must make
     // before proceeding, so it rides the mandatory-choice channel alongside pending_choice.
-    return pending_choice != NONE || miracle_reveal_pending != 0;
+    return pending.choice != NONE || pending.miracle_reveal != 0;
 }
 
 void Game::finish_suspended_turn_draw() {
-    // Exactly the post-switch epilogue for a priority-bearing step (cur_step
+    // Exactly the post-switch epilogue for a priority-bearing step (turn_state.step
     // is DRAW here, never UNTAP/CLEANUP): active player gets priority, pass
     // tracking resets, mana pools empty across the step change.
-    player_a_has_priority = player_a_turn;
-    a_has_passed = false;
-    b_has_passed = false;
+    priority.player_a_has_priority = turn_state.player_a_turn;
+    priority.a_has_passed = false;
+    priority.b_has_passed = false;
     empty_mana_pool(Zone::PLAYER_A);
     empty_mana_pool(Zone::PLAYER_B);
 }
 
 void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
-    Game::PendingDrawRT &pd = game.pending_draw;
+    Game::PendingDrawRT &pd = game.pending.draw;
     while (pd.active) {
         // A latched TURN_DRAW answer from the previous arm: apply it first —
         // draw normally (option 0) or one dredge — restoring the pre-arm
         // priority seat exactly as the blocking prompt's post-get_input
         // restore did.
-        if (game.pending_query.active) {
-            PendingQuery &pq = game.pending_query;
+        if (game.pending.query.active) {
+            PendingQuery &pq = game.pending.query;
             if (pq.tag != PendingQuery::TURN_DRAW || !pq.answered)
                 fatal_error("resume_pending_draws: foreign or unanswered pending query parked");
             std::vector<replacement::DrawReplacementOption> opts;
@@ -690,7 +694,7 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
             if (menu.size() != pq.menu.size())
                 fatal_error("resume_pending_draws: menu size changed between arm and resume");
             int choice = pq.answer;
-            game.player_a_has_priority = pq.prev_priority;
+            game.priority.player_a_has_priority = pq.prev_priority;
             pq = PendingQuery{};
             if (choice == 0) {
                 // The base draw plus any additive-draw-replacement bonus (CR 614.1/614.5,
@@ -723,15 +727,15 @@ void resume_pending_draws(Game &game, std::shared_ptr<Orderer> orderer) {
         // priority at the drawing player (the blocking prompt's repoint) and
         // arm with the ambient pending-decision source (0: a turn-based draw
         // has no asking card; each dredge entry names its own card).
-        PendingQuery &pq = game.pending_query;
+        PendingQuery &pq = game.pending.query;
         pq = PendingQuery{};
         pq.tag = PendingQuery::TURN_DRAW;
         pq.active = true;
         pq.menu = std::move(menu);
         pq.chooser_is_a = (pd.player == Zone::PLAYER_A);
-        pq.decision_source = game.pending_decision_source;
-        pq.prev_priority = game.player_a_has_priority;
-        game.player_a_has_priority = pq.chooser_is_a;
+        pq.decision_source = game.pending.decision_source;
+        pq.prev_priority = game.priority.player_a_has_priority;
+        game.priority.player_a_has_priority = pq.chooser_is_a;
         return;
     }
 }

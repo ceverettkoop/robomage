@@ -900,11 +900,11 @@ static int mana_ability_life_loss(const Ability &ab) {
 // See forward declaration at top of file.
 static int life_reserved_for_pending_payment(Zone::Ownership seat) {
     bool seat_is_a = (seat == Zone::PLAYER_A);
-    const auto &pc = cur_game.pending_cast;
+    const auto &pc = cur_game.pending.cast;
     if (pc.active && pc.caster_is_a == seat_is_a)
         return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
     // An activation pays its mana before its life (PAY_APPLY pays the life).
-    const auto &pa = cur_game.pending_activation;
+    const auto &pa = cur_game.pending.activation;
     if (pa.active && pa.activator_is_a == seat_is_a &&
         pa.step < Game::PendingActivation::PAY_APPLY)
         return pa.ability.life_cost;

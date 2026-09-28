@@ -122,7 +122,7 @@ bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>
 // takes it (the {T} is already spent, so the source cannot also be tapped for mana).
 // NOTE: a coarse upper bound — ignores color feasibility of the base cost's pips and counts
 // one ability per source entity. An overestimated X fails at payment and is absorbed by the
-// payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
+// priority.payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
 size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
                           std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 

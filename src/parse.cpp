@@ -812,7 +812,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
         // for <cost> instead of its normal mana cost. Encoded on the shared AltCost (mana portion
         // = <cost>) with the is_miracle flag. The qualifying-draw gate lives in orderer.cpp (arms
-        // Game::miracle_reveal_pending); miracle then runs as two mandatory-choice decisions — a
+        // Game::pending.miracle_reveal); miracle then runs as two mandatory-choice decisions — a
         // private reveal and an immediate cast/do-not-cast — rather than a priority-menu alt cost.
         // General over any Miracle card.
         if (kw_line.rfind("Miracle", 0) == 0) {
@@ -2328,7 +2328,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line
             // (Mode$ ... | Execute$ ...); parse it like a card's T: line so it carries the same
             // trigger metadata and its Execute$ effect, and store it on the Effect to be
-            // registered (controller-bound) into cur_game.floating_triggers at resolution.
+            // registered (controller-bound) into cur_game.resolved_effects.floating_triggers at resolution.
             for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
                 auto it = svars.find(svar_name);
                 if (it != svars.end()) {
@@ -2341,7 +2341,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // effects the transient Effect carries. Two forms are recognized:
             //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
             //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
-            //    GrantCast handler records the controller in cur_game.cant_counter_spells_of.
+            //    GrantCast handler records the controller in cur_game.resolved_effects.cant_counter_spells_of.
             //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
             //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
             //    combat damage dealt by/to the remembered creature this turn (CR 615); the
@@ -2934,7 +2934,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // You)> (Teferi, Time Raveler's +1): a cast-timing PERMISSION — the controller may cast
         // matching (sorcery) spells as though they had flash for the effect's Duration. Resolve the
         // named static SVar; if it is a CastWithFlash mode, capture its ValidCard$ filter. The
-        // GrantCast handler records a cur_game.cast_with_flash_permissions entry for the effect's
+        // GrantCast handler records a cur_game.resolved_effects.cast_with_flash_permissions entry for the effect's
         // Duration (duration_until_your_next_turn). General over any CastWithFlash-granting Effect.
         if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
             !ability.effect_cast_with_flash) {

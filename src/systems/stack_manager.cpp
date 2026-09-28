@@ -52,7 +52,7 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     // The resolution is one effect: the objects it moves stay findable by the rest of it
     // (CR 400.7j) until frame_finish.
     open_follow_window();
-    fr.prev_priority = cur_game.player_a_has_priority;
+    fr.prev_priority = cur_game.priority.player_a_has_priority;
     fr.saved_remembered = cur_game.remembered_entities;
     cur_game.remembered_entities.clear();
     if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
@@ -62,7 +62,7 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     FrameLevel root;
     root.kind = FrameLevel::ROOT;
     fr.levels.push_back(root);
-    cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+    cur_game.priority.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
 }
 
 // Completion epilogue shared by both resolve sites: restore the pre-resolution
@@ -70,7 +70,7 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
 // existing component-removal / zone-move / saga / DestroyEntity code unchanged.
 static void frame_finish() {
     ResolutionFrame &fr = cur_game.resolution;
-    cur_game.player_a_has_priority = fr.prev_priority;
+    cur_game.priority.player_a_has_priority = fr.prev_priority;
     cur_game.remembered_entities = fr.saved_remembered;
     // A ChooseCard's chosen cards belong to the resolution that chose them (Ajani's kept
     // permanents, Dauthi Voidwalker's card), so they don't leak into a later nonChosenCard filter.

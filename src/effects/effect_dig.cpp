@@ -282,7 +282,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     }
     if (ab.rest_random_order) {
         // Shuffle remaining with game RNG (platform-stable — see stable_rng.h)
-        stable_shuffle(remaining, cur_game.gen);
+        stable_shuffle(remaining, cur_game.rng.engine);
     }
     // DestinationZone2$ routes the unchosen remainder somewhere other than the library
     // (Malevolent Rumble: "Put the rest into your graveyard"). Default (-1) stays the library.

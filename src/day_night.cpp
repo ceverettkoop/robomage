@@ -68,11 +68,11 @@ void day_night_untap_transition(const std::set<Entity> &entities) {
     // prev_turn_active_spell_count is the previous turn's active player's spell count during that
     // turn (captured at that turn's cleanup, before the per-turn reset); on the first turn there
     // is no previous turn (-1), so nothing changes.
-    if (cur_game.prev_turn_active_spell_count < 0) return;
+    if (cur_game.turn_state.prev_turn_active_spell_count < 0) return;
     if (cur_game.day_night == Game::DN_DAY) {
-        if (cur_game.prev_turn_active_spell_count == 0) become_night(entities);      // 731.2a
+        if (cur_game.turn_state.prev_turn_active_spell_count == 0) become_night(entities);      // 731.2a
     } else if (cur_game.day_night == Game::DN_NIGHT) {
-        if (cur_game.prev_turn_active_spell_count >= 2) become_day(entities);        // 731.2b
+        if (cur_game.turn_state.prev_turn_active_spell_count >= 2) become_day(entities);        // 731.2b
     }
     // DN_NEITHER: 731.2c — the check doesn't happen and it remains neither.
 }

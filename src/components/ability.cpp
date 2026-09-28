@@ -625,16 +625,16 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
 }
 
 // "Hexproof from <color>" (CR 702.11e): a candidate protected by a turn-long
-// cur_game.hexproof_from_colors_this_turn grant can't be targeted by a spell/ability an OPPONENT
+// cur_game.resolved_effects.hexproof_from_colors_this_turn grant can't be targeted by a spell/ability an OPPONENT
 // of the protected player controls whose SOURCE is one of the granted colors. Covers both the
 // protected player (the player object) and any permanent that player controls. `source` is the
 // targeting object (a spell card on the stack, or an ability's source permanent) whose
 // effective colors give the color of the spell/ability for the comparison; `caster` is its
 // controller. Returns true when the candidate is protected (so the target is illegal).
 static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster) {
-    if (cur_game.hexproof_from_colors_this_turn.empty()) return false;
+    if (cur_game.resolved_effects.hexproof_from_colors_this_turn.empty()) return false;
     const std::set<Colors> src_colors = effective_colors(source);
-    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+    for (const auto &h : cur_game.resolved_effects.hexproof_from_colors_this_turn) {
         // Only protects against an opponent's spell/ability (two-player: caster != protected player).
         if (caster == h.player) continue;
         // The candidate must be the protected player, or a permanent that player controls.
@@ -650,12 +650,12 @@ static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownershi
 }
 
 // "Protection from everything" for a player (CR 702.16; The One Ring). A player covered by a
-// cur_game.player_protection_from_everything grant can't be the target of a spell/ability an
+// cur_game.resolved_effects.player_protection_from_everything grant can't be the target of a spell/ability an
 // OPPONENT controls. `caster` is the targeting object's controller. Returns true when the
 // candidate is the protected player and the targeting object belongs to their opponent.
 static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster) {
-    if (cur_game.player_protection_from_everything.empty()) return false;
-    for (const auto &p : cur_game.player_protection_from_everything) {
+    if (cur_game.resolved_effects.player_protection_from_everything.empty()) return false;
+    for (const auto &p : cur_game.resolved_effects.player_protection_from_everything) {
         if (caster == p.player) continue;  // own spells/abilities can still target the player
         if (cand == get_player_entity(p.player)) return true;
     }

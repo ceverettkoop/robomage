@@ -126,7 +126,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         dt.ability = exile_ab;
         dt.fire_on = Events::END_OF_COMBAT_BEGAN;
         dt.owner_entity = get_player_entity(ctrl);
-        dt.fire_on_turn = cur_game.turn;
+        dt.fire_on_turn = cur_game.turn_state.turn;
         register_delayed_trigger(dt, ab.source);
     }
     return HandlerResult::DONE_RUN_SUBS;

@@ -48,10 +48,10 @@ HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    // Choose one card at random using the game's seeded RNG (cur_game.gen) so replays are
+    // Choose one card at random using the game's seeded RNG (cur_game.rng.engine) so replays are
     // deterministic — the same generator used for library shuffling in orderer.cpp,
     // drawn platform-stably (see stable_rng.h).
-    Entity chosen = hand[stable_rand_below(cur_game.gen, hand.size())];
+    Entity chosen = hand[stable_rand_below(cur_game.rng.engine, hand.size())];
     auto &cd = global_coordinator.GetComponent<CardData>(chosen);
     game_log_private(ab.controller, "%s looks at a random card in %s's hand: %s\n",
         player_name(ab.controller).c_str(), player_name(hand_owner).c_str(), cd.name.c_str());

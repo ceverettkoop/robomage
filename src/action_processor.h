@@ -37,7 +37,7 @@ ResolutionCastStatus cast_during_resolution(const LegalAction& cast, Zone::Owner
                                             std::shared_ptr<Orderer> orderer);
 // The exile form: `caster` may cast the exiled `card` for the cost `grant` puts in place of its
 // mana cost (FREE = "without paying its mana cost"), checked by exile_grant_castable. The grant
-// is a Game::impulse_cast_permission that lasts only while the offer and the cast are open.
+// is a Game::resolved_effects.impulse_cast_permission that lasts only while the offer and the cast are open.
 ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
                                             Game::ImpulseCastPermission grant,
                                             ResolutionCastRt& rt, FrameCtx& ctx,
@@ -45,15 +45,15 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
 
 // Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
 // tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
-// creature persisted in Game::pending_attacker / pending_blocker and clears the
+// creature persisted in Game::pending.attacker / pending.blocker and clears the
 // pending query. Called from the main loop's pending-query branch.
 void resume_combat_target_choice(Game& game);
 
 // Loop-top dispatcher entry for a parked cast-time prompt (PendingQuery tag
 // CAST): consumes the latched answer and re-enters run_cast_flow — the
-// persisted CAST_SPELL state machine in Game::pending_cast. The resume may arm
+// persisted CAST_SPELL state machine in Game::pending.cast. The resume may arm
 // the NEXT cast prompt (the caller must loop back to the pending-query branch
-// while pending_query.active), reverse the cast (a failed payment, or the
+// while pending.query.active), reverse the cast (a failed payment, or the
 // --offer-cancel "Cancel" answer; CR 733.1), or complete it (the spell becomes
 // cast + game.take_action()).
 void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
@@ -61,8 +61,8 @@ void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 // Loop-top dispatcher entry for a parked activated-ability prompt (PendingQuery
 // tag ACTIVATION): consumes the latched answer and re-enters
 // run_activation_flow — the persisted ACTIVATE_ABILITY state machine in
-// Game::pending_activation. The resume may arm the NEXT activation prompt (the
-// caller must loop back to the pending-query branch while pending_query.active),
+// Game::pending.activation. The resume may arm the NEXT activation prompt (the
+// caller must loop back to the pending-query branch while pending.query.active),
 // reverse the activation (a failed payment, or the --offer-cancel "Cancel"
 // answer; CR 733.1), or complete it (mana produced off-stack, or the ability
 // becomes activated + game.take_action()).
@@ -70,9 +70,9 @@ void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
-// attacker persisted in Game::pending_damage, then either arms the next pick's
+// attacker persisted in Game::pending.damage, then either arms the next pick's
 // query (same or next attacker — the caller must loop back to the pending-query
-// branch when pending_query.active is still set) or completes the assignment,
+// branch when pending.query.active is still set) or completes the assignment,
 // after which process_turn_based_actions proceeds to deal_combat_damage.
 void resume_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer);
 

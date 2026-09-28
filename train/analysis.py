@@ -1200,7 +1200,7 @@ def _replay_sim_game(game, game_idx, verbose=False):
         print_opp_actions(i)
         step = _step_name_from_feat(feat)
         mana_total = feat[_FEAT["self_total_mana"]]
-        # Game::turn counts from 0; display 1-based like the engine's turn header
+        # Game::turn_state.turn counts from 0; display 1-based like the engine's turn header
         turn_no = 1 + (int(round(feat[_FEAT["turn"]])) if len(feat) > _FEAT["turn"] else 0)
         whose = "self" if feat[_FEAT["is_active_player"]] > 0.5 else "opp"
         print(f"  [{i:3d}] T{turn_no:<2d} {whose:<4} {step:<14}  "
@@ -1590,7 +1590,7 @@ def _decode_board_state(obs, value=None):
         return " ".join(parts) if parts else "—"
 
     # "self" = the priority player in this decode, so the active-player flag says whose turn it is.
-    # Game::turn counts from 0; display 1-based like the engine's turn header.
+    # Game::turn_state.turn counts from 0; display 1-based like the engine's turn header.
     turn_no = int(round(obs[_CUR_TURN_IDX] * 50.0)) + 1
     whose = self_label if priority_is_active else opp_label
     print(f"Turn {turn_no} ({whose}'s turn) — Step: {step_name}  (priority: {self_label}){val_str}")

@@ -28,7 +28,7 @@ void become_night(const std::set<Entity> &entities);
 // Turn-based check run as the second part of the untap step (CR 502.2 / 731.2), based on the turn
 // that just ended: if it's day and the previous turn's active player cast no spells, it becomes
 // night; if it's night and they cast two or more, it becomes day. Reads the spell count captured
-// at the previous turn's cleanup (Game::prev_turn_active_spell_count). No-op when it's neither, or
+// at the previous turn's cleanup (Game::turn_state.prev_turn_active_spell_count). No-op when it's neither, or
 // on the game's first turn (no previous turn).
 void day_night_untap_transition(const std::set<Entity> &entities);
 

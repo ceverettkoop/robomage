@@ -698,7 +698,7 @@ struct Ability{
     // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
     // its controller an emblem carrying the named continuous static ("Ninjas you control get
     // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
-    // GrantCast handler creates a player-owned Emblem (cur_game.emblems) carrying them — an
+    // GrantCast handler creates a player-owned Emblem (cur_game.resolved_effects.emblems) carrying them — an
     // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
     std::vector<StaticAbility> effect_emblem_statics;
 
@@ -708,7 +708,7 @@ struct Ability{
     // end of turn, you may cast those cards without paying their mana costs"; Dauthi Voidwalker:
     // "You may play it this turn without paying its mana cost"). The StaticAbilities$ SVar is
     // resolved at parse time. The GrantCast handler records a play-from-exile permission
-    // (cur_game.impulse_cast_permission) for each affected card still in exile, used at priority
+    // (cur_game.resolved_effects.impulse_cast_permission) for each affected card still in exile, used at priority
     // through the normal cast / land-play actions (CR 601.2, 305.1). The duration (this turn vs
     // until the end of your next turn) is carried on duration_until_end_of_your_next_turn.
     bool effect_may_play_from_exile = false;
@@ -726,13 +726,13 @@ struct Ability{
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
     // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
     // a full TRIGGERED Ability and held here; the GrantCast handler registers a copy in
-    // cur_game.floating_triggers (controller bound) so the trigger scan fires it through the
+    // cur_game.resolved_effects.floating_triggers (controller bound) so the trigger scan fires it through the
     // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<Ability> effect_floating_triggers;
     // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
     // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
-    // GrantCast handler on the copy it pushes into cur_game.floating_triggers, with its vocab idx
+    // GrantCast handler on the copy it pushes into cur_game.resolved_effects.floating_triggers, with its vocab idx
     // captured at that moment. 0 / -1 on every other ability. Read by the observation's
     // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
     // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
@@ -742,7 +742,7 @@ struct Ability{
     // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
     // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
     // "Spells you control can't be countered this turn"). Set at parse time; the GrantCast
-    // handler records the effect's controller in cur_game.cant_counter_spells_of for the rest
+    // handler records the effect's controller in cur_game.resolved_effects.cant_counter_spells_of for the rest
     // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
     // Squelcher's battlefield static).
     bool effect_spells_uncounterable_this_turn = false;
@@ -751,7 +751,7 @@ struct Ability{
     // Card.IsRemembered" (prevent all combat damage dealt BY the remembered creature) and/or
     // "... | ValidTarget$ Card.IsRemembered" (prevent all combat damage dealt TO it) — Maze of
     // Ith. Set at parse time from the SVar bodies; the GrantCast handler registers a turn-scoped
-    // shield on the remembered creature in cur_game.combat_damage_prevention_shields (CR 615).
+    // shield on the remembered creature in cur_game.resolved_effects.combat_damage_prevention_shields (CR 615).
     // General over any such DamageDone/Prevent Effect keyed on a remembered object.
     bool effect_prevent_combat_damage_by_remembered = false;  // ValidSource$ Card.IsRemembered
     bool effect_prevent_combat_damage_to_remembered = false;  // ValidTarget$ Card.IsRemembered
@@ -759,7 +759,7 @@ struct Ability{
     // life-gain prohibition (CR 119.x, Roiling Vortex's {R} ability). The scope names whose life
     // gain is prohibited relative to the effect's controller. NONE = not a CantGainLife effect.
     // Set at parse time; the GrantCast handler registers the affected player(s) into
-    // cur_game.cant_gain_life_this_turn at resolution. General over any CantGainLife effect.
+    // cur_game.resolved_effects.cant_gain_life_this_turn at resolution. General over any CantGainLife effect.
     enum class CantGainLifeScope { NONE, OPPONENTS, YOU, ALL };
     CantGainLifeScope effect_cant_gain_life = CantGainLifeScope::NONE;
 
@@ -768,7 +768,7 @@ struct Ability{
     // had flash."). A cast-timing PERMISSION: while active, the effect's controller may cast a
     // matching spell (effect_cast_with_flash_filter, e.g. "Sorcery") as though it had flash — i.e.
     // ignore the sorcery-speed timing restriction (CR 702.8 "as though" / 601.3a). Set at parse
-    // time; the GrantCast handler records a cur_game.cast_with_flash_permissions entry bound to the
+    // time; the GrantCast handler records a cur_game.resolved_effects.cast_with_flash_permissions entry bound to the
     // controller for the effect's Duration (until their next turn), consulted by the cast-speed
     // gate (rules_mod::cast_with_flash_active). General over any CastWithFlash-granting Effect.
     bool effect_cast_with_flash = false;

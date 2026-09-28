@@ -102,38 +102,38 @@ void StateManager::init() {
 
 // Turn-based actions happen at the start of specific steps (rules 508, 509, 510, 514)
 void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Orderer> orderer) {
-    game.pending_choice = NONE;
+    game.pending.choice = NONE;
 
     // First strike combat damage (rule 510.1)
-    if (game.cur_step == FIRST_STRIKE_DAMAGE && !game.combat_damage_dealt) {
+    if (game.turn_state.step == FIRST_STRIKE_DAMAGE && !game.combat.damage_dealt) {
         // T3.10: let a controller divide damage among blockers it can't all kill before dealing.
         if (any_attacker_needs_damage_assignment(game, orderer, /*first_strike_only=*/true)) {
-            game.pending_choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
+            game.pending.choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
             return;
         }
         deal_combat_damage(game, true);
     }
     // Regular combat damage (rule 510.2)
-    if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
+    if (game.turn_state.step == COMBAT_DAMAGE && !game.combat.damage_dealt) {
         if (any_attacker_needs_damage_assignment(game, orderer, /*first_strike_only=*/false)) {
-            game.pending_choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
+            game.pending.choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
             return;
         }
         deal_combat_damage(game, false);
     }
 
     // Declare attackers (rule 508.1)
-    if (game.cur_step == DECLARE_ATTACKERS && !game.attackers_declared) {
-        game.pending_choice = DECLARE_ATTACKERS_CHOICE;
+    if (game.turn_state.step == DECLARE_ATTACKERS && !game.combat.attackers_declared) {
+        game.pending.choice = DECLARE_ATTACKERS_CHOICE;
         return;
     }
     // Declare blockers (rule 509.1)
-    if (game.cur_step == DECLARE_BLOCKERS && !game.blockers_declared) {
-        game.pending_choice = DECLARE_BLOCKERS_CHOICE;
+    if (game.turn_state.step == DECLARE_BLOCKERS && !game.combat.blockers_declared) {
+        game.pending.choice = DECLARE_BLOCKERS_CHOICE;
         return;
     }
     // Cleanup discard (rule 514.1)
-    if (game.cur_step == CLEANUP) {
+    if (game.turn_state.step == CLEANUP) {
         Zone::Ownership active_player = active_seat();
         size_t hand_size = 0;
         for (auto entity : mEntities) {
@@ -155,13 +155,13 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
             if (as.sa()->set_max_hand_size > max_hand_size) max_hand_size = as.sa()->set_max_hand_size;
         }
         if (!unlimited && hand_size > static_cast<size_t>(max_hand_size)) {
-            game.pending_choice = CLEANUP_DISCARD;
+            game.pending.choice = CLEANUP_DISCARD;
             return;
         }
         // CR 514.2, after the discard: damage wears off and "until end of turn" / "this turn"
         // effects end.
-        if (!game.cleanup_effects_ended) {
-            game.cleanup_effects_ended = true;
+        if (!game.turn_state.cleanup_effects_ended) {
+            game.turn_state.cleanup_effects_ended = true;
             game.end_cleanup_effects();
         }
     }
@@ -187,7 +187,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // the same mid-apply site re-finds the question and consumes the latch.
         // (An ACTIVE-and-ANSWERED query is that resume in flight — fall
         // through so the deriving scan below can reach its site.)
-        if (game.pending_query.active && !game.pending_query.answered) return;
+        if (game.pending.query.active && !game.pending.query.answered) return;
         apply_continuous_effects(game);
         refresh_city_blessing(mEntities);  // 702.131: ascend grants the city's blessing at 10+ permanents
 
@@ -209,15 +209,15 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         if (actions.empty()) break;
         perform_permanent_sbas(orderer, actions);
         // CR 514.3a: an SBA performed during the cleanup step gives players priority.
-        if (game.cur_step == CLEANUP) game.cleanup_sba_performed = true;
+        if (game.turn_state.step == CLEANUP) game.turn_state.cleanup_sba_performed = true;
     }
 
     // Latched-answer tripwire: a re-run entered with an answered SBE_LATCHED
     // query must have consumed it at the site that armed it (pass 1 re-derives
     // the question — the state is frozen while the answer is latched). Settling
     // without consuming means the re-run failed to re-find the question.
-    if (game.pending_query.active && game.pending_query.answered &&
-        game.pending_query.tag == PendingQuery::SBE_LATCHED)
+    if (game.pending.query.active && game.pending.query.answered &&
+        game.pending.query.tag == PendingQuery::SBE_LATCHED)
         fatal_error("SBE re-run did not re-derive the latched question");
 
     // SBA loop settled; triggered abilities go on the stack (rule 704.3)
@@ -225,7 +225,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     // CR 603.3b: abilities that triggered while that batch was put on the stack (Ward on a
     // placed trigger's target) go on the stack before any player receives priority, after the
     // game checks state-based actions again.
-    if (!game.waiting_triggers.empty() && !game.trigger_placement.active)
+    if (!game.waiting_triggers.empty() && !game.pending.trigger_placement.active)
         state_based_effects(game, orderer);
 }
 
@@ -408,10 +408,10 @@ static bool choose_legend_rule_keep(Game &game, const std::set<Entity> &entities
                 // point priority at them so the query routes/observes/records
                 // from their perspective (SBAs run regardless of who
                 // currently holds priority).
-                bool prev_priority = game.player_a_has_priority;
-                game.player_a_has_priority = (owner == Zone::PLAYER_A);
+                bool prev_priority = game.priority.player_a_has_priority;
+                game.priority.player_a_has_priority = (owner == Zone::PLAYER_A);
                 keep = InputLogger::instance().get_input(choices);
-                game.player_a_has_priority = prev_priority;
+                game.priority.player_a_has_priority = prev_priority;
             }
             Entity kept = grp.second[static_cast<size_t>(keep)];
             for (auto e : grp.second)

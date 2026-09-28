@@ -239,7 +239,7 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
         player.life_total += pc.phyrexian_life_paid;
         player.life_lost_this_turn -= pc.phyrexian_life_paid;
     }
-    if (pc.delve_seat_held) cur_game.player_a_has_priority = pc.delve_prev_priority_a;
+    if (pc.delve_seat_held) cur_game.priority.player_a_has_priority = pc.delve_prev_priority_a;
     if (global_coordinator.entity_has_component<Ability>(spell_entity))
         global_coordinator.RemoveComponent<Ability>(spell_entity);
     if (global_coordinator.entity_has_component<Spell>(spell_entity))
@@ -257,7 +257,7 @@ static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> or
     game_log("Payment cancelled.\n");
     rewind_cast(pc, orderer);
     // Counted against the card as the object it is again at its origin.
-    cur_game.payment_fail_counts[spell_entity]++;
+    cur_game.priority.payment_fail_counts[spell_entity]++;
 }
 
 // Drop already-chosen entities from a re-derived cost menu (see already_chosen_as_cost).
@@ -354,7 +354,7 @@ static void rewind_activation(Game::PendingActivation &pa, std::shared_ptr<Order
 // See forward declaration at top of file.
 static void fail_activation_payment(Game::PendingActivation &pa,
                                     std::shared_ptr<Orderer> orderer) {
-    cur_game.payment_fail_counts[pa.source_entity]++;
+    cur_game.priority.payment_fail_counts[pa.source_entity]++;
     game_log("Payment cancelled.\n");
     rewind_activation(pa, orderer);
 }
@@ -368,7 +368,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // ACTIVATE_ABILITY body. The branch's former locals (the ability, the targeted
     // stack_ab copy, the chosen X) live in pa; converted prompts suspend as loop-top pending decisions (tag ACTIVATION)
     // that the main loop emits and resume_activation_flow re-enters with the answer.
-    Game::PendingActivation &pa = game.pending_activation;
+    Game::PendingActivation &pa = game.pending.activation;
     if (pa.active) fatal_error("ACTIVATE_ABILITY with an activation flow already in flight");
 
     // ActivationZone$ Hand / Graveyard: card activated from a non-battlefield zone (no Permanent
@@ -439,7 +439,7 @@ static std::vector<Entity> build_valid_targets(
             // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
             // target at resolution, or an activated ability being activated (CR 602.2a).
             if (e == ability.source.get()) continue;
-            if (cur_game.pending_activation.active && e == cur_game.pending_activation.stack_entity)
+            if (cur_game.pending.activation.active && e == cur_game.pending.activation.stack_entity)
                 continue;
             if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
         }
@@ -506,7 +506,7 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // with no mana component (Force of Will, Daze) leaves this 0, which a ValidSA$
     // Spell.ManaSpent EQ0 trigger (Roiling Vortex) reads at cast time. MANA_PAY recomputes it
     // from the deferred cost when there IS one, so the two agree.
-    game.pending_cast.mana_spent = static_cast<int>(alt_mana.size());
+    game.pending.cast.mana_spent = static_cast<int>(alt_mana.size());
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.is_free && alt_mana.empty()) {
@@ -517,16 +517,16 @@ static void defer_alternate_cost(Game &game, const CardData &card_data, Zone::Ow
     // Affordability is pre-verified by can_afford_alt (against the same floored cost),
     // so in machine mode the deferred payment always succeeds.
     if (!alt_mana.empty()) {
-        game.pending_cast.deferred_mana_cost = alt_mana;
-        game.pending_cast.deferred_mana_pending = true;
+        game.pending.cast.deferred_mana_cost = alt_mana;
+        game.pending.cast.deferred_mana_pending = true;
     }
     if (card_data.alt_cost.life_cost != 0)
-        game.pending_cast.deferred_life_cost += card_data.alt_cost.life_cost;
+        game.pending.cast.deferred_life_cost += card_data.alt_cost.life_cost;
 }
 
 // Park a combat target sub-prompt (attack target / block target) as a loop-top
 // pending decision (pending_query.h). The chosen-but-uncommitted creature is
-// persisted in pending_attacker/pending_blocker; the main loop emits the stored
+// persisted in pending.attacker/pending.blocker; the main loop emits the stored
 // menu loop-safely (a legal SNAPSHOT/DETERMINIZE root) and dispatches the answer
 // to resume_attack_target/resume_block_target. Priority already sits with the
 // chooser at both call sites (advance_step seats the active player for declare
@@ -536,10 +536,10 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
                                      std::vector<LegalAction> &&menu, bool chooser_is_a,
                                      Entity chosen_creature) {
     if (tag == PendingQuery::ATTACK_TARGET)
-        game.pending_attacker = chosen_creature;
+        game.pending.attacker = chosen_creature;
     else
-        game.pending_blocker = chosen_creature;
-    PendingQuery &pq = game.pending_query;
+        game.pending.blocker = chosen_creature;
+    PendingQuery &pq = game.pending.query;
     pq.tag = tag;
     pq.menu = std::move(menu);
     pq.chooser_is_a = chooser_is_a;
@@ -558,14 +558,14 @@ static void park_combat_target_query(Game &game, PendingQuery::Tag tag,
 // re-derives DECLARE_ATTACKERS_CHOICE (attackers_declared is still false) and
 // re-enters declare_attackers to continue the declaration.
 static void resume_attack_target(Game &game) {
-    PendingQuery &pq = game.pending_query;
-    Entity chosen_attacker = game.pending_attacker;
+    PendingQuery &pq = game.pending.query;
+    Entity chosen_attacker = game.pending.attacker;
     auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
     cr.is_attacking = true;
     cr.attack_target = ObjectRef::of(pq.menu[static_cast<size_t>(pq.answer)].source_entity);
     game_log("%s attacking %s.\n", entity_name(chosen_attacker).c_str(),
         target_display_name(game, cr.attack_target.lki_entity()).c_str());
-    game.pending_attacker = 0;
+    game.pending.attacker = 0;
     pq = PendingQuery{};
 }
 
@@ -573,8 +573,8 @@ static void resume_attack_target(Game &game) {
 // sub-prompt (block flag + target + attacker's is_blocked + narrative). Menace
 // legality is still resolved at confirm time (release_illegal_menace_blockers).
 static void resume_block_target(Game &game) {
-    PendingQuery &pq = game.pending_query;
-    Entity chosen = game.pending_blocker;
+    PendingQuery &pq = game.pending.query;
+    Entity chosen = game.pending.blocker;
     auto &cr = global_coordinator.GetComponent<Creature>(chosen);
     cr.is_blocking = true;
     const Entity attacker = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
@@ -585,13 +585,13 @@ static void resume_block_target(Game &game) {
     if (global_coordinator.entity_has_component<Creature>(attacker))
         global_coordinator.GetComponent<Creature>(attacker).is_blocked = true;
     game_log("%s blocking %s.\n", entity_name(chosen).c_str(), entity_name(attacker).c_str());
-    game.pending_blocker = 0;
+    game.pending.blocker = 0;
     pq = PendingQuery{};
 }
 
 // Loop-top dispatcher entry (game_driver.cpp) for both combat target tags.
 void resume_combat_target_choice(Game &game) {
-    if (game.pending_query.tag == PendingQuery::ATTACK_TARGET)
+    if (game.pending.query.tag == PendingQuery::ATTACK_TARGET)
         resume_attack_target(game);
     else
         resume_block_target(game);
@@ -600,7 +600,7 @@ void resume_combat_target_choice(Game &game) {
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = active_seat();
     Entity defending_entity = get_player_entity(opponent_of(active_player));
-    if (game.pending_attacker != 0)
+    if (game.pending.attacker != 0)
         fatal_error("declare_attackers entered with an attack-target sub-prompt parked");
 
     // Collect eligible attackers with stable indices
@@ -619,8 +619,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
 
     if (eligible.empty()) {
         game_log("No creatures eligible to attack.\n");
-        game.attackers_declared = true;
-        game.pending_choice = NONE;
+        game.combat.attackers_declared = true;
+        game.pending.choice = NONE;
         return;
     }
 
@@ -681,7 +681,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         // Loop-safe: partial declarations live entirely in Creature components,
         // so a restored snapshot re-derives this same menu. The attack-target
         // sub-prompt below is loop-safe too: it is parked as a pending query
-        // (the chosen attacker persisted in Game::pending_attacker) and emitted
+        // (the chosen attacker persisted in Game::pending.attacker) and emitted
         // at the main-loop top.
         search_set_loop_safe(true);
         int creature_choice = InputLogger::instance().get_input(atk_actions);
@@ -718,7 +718,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             // iteration re-enters this declaration. Nothing else is touched —
             // attackers_declared stays false, pending_choice re-derives.
             park_combat_target_query(game, PendingQuery::ATTACK_TARGET,
-                std::move(tgt_actions), game.player_a_turn, chosen_attacker);
+                std::move(tgt_actions), game.turn_state.player_a_turn, chosen_attacker);
             return;
         }
         cr.is_attacking = true;
@@ -768,8 +768,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         global_coordinator.SendEvent(exalted_ev);
     }
 
-    game.attackers_declared = true;
-    game.pending_choice = NONE;
+    game.combat.attackers_declared = true;
+    game.pending.choice = NONE;
 }
 
 static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype,
@@ -862,8 +862,8 @@ static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = opponent_of(active_seat());
     // defending player declares blockers — priority must be theirs for the input routing to work correctly
-    game.player_a_has_priority = !game.player_a_turn;
-    if (game.pending_blocker != 0)
+    game.priority.player_a_has_priority = !game.turn_state.player_a_turn;
+    if (game.pending.blocker != 0)
         fatal_error("declare_blockers entered with a block-target sub-prompt parked");
 
     // Collect attackers, and the ones the defending player can block at all
@@ -939,7 +939,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         // Loop-safe like the attacker selection: committed blocks live in
         // Creature components; the block-target sub-prompt below is parked as a
-        // loop-top pending query (chosen blocker in Game::pending_blocker), so
+        // loop-top pending query (chosen blocker in Game::pending.blocker), so
         // it is loop-safe too.
         search_set_loop_safe(true);
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
@@ -975,7 +975,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         // collapses single-entry menus). The resume commits the block; the next
         // iteration re-derives DECLARE_BLOCKERS_CHOICE and re-enters here.
         park_combat_target_query(game, PendingQuery::BLOCK_TARGET,
-            std::move(blk_tgt_actions), !game.player_a_turn, chosen);
+            std::move(blk_tgt_actions), !game.turn_state.player_a_turn, chosen);
         return;
     }
 
@@ -999,9 +999,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 // active player receives priority (CR 117.3a). Pass flags were reset when the step
 // began and the declaration passes no priority, so they are left as they are.
 static void finish_blocker_declaration(Game &game) {
-    game.blockers_declared = true;
-    game.pending_choice = NONE;
-    game.player_a_has_priority = game.player_a_turn;
+    game.combat.blockers_declared = true;
+    game.pending.choice = NONE;
+    game.priority.player_a_has_priority = game.turn_state.player_a_turn;
 }
 
 // Perspective player for an ability's target search. Ownership-restricted targets
@@ -1540,7 +1540,7 @@ void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller) {
 // persisted state machine (Game::PendingCast) so its LINEAR prompts — kicker /
 // replicate y/n, the X ladder, phyrexian pips, variable-life X, the spell's own
 // sacrifice cost, and the gift promise — suspend as loop-top pending decisions
-// (pending_query tag CAST) instead of blocking mid-frame. Each converted prompt
+// (pending.query tag CAST) instead of blocking mid-frame. Each converted prompt
 // is an arm/apply pair: the arm builds EXACTLY the menu the blocking call asked
 // with (pre-prompt narrative included) and returns out of the flow; the loop-top
 // emitter reads the answer and resume_cast_flow re-enters with it latched. The
@@ -1559,7 +1559,7 @@ void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller) {
 // card.
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
                            Zone::Ownership chooser, Entity decision_source) {
-    PendingQuery &pq = game.pending_query;
+    PendingQuery &pq = game.pending.query;
     pq.tag = tag;
     pq.menu = std::move(menu);
     if (offer_cast_cancel) {
@@ -1627,18 +1627,18 @@ class FlowTargetAsker final : public TargetAsker {
 // the NEXT cast prompt (the caller loops back to the pending branch) or run
 // the flow to completion/cancellation.
 void resume_cast_flow(Game &game, std::shared_ptr<Orderer> orderer) {
-    PendingQuery &pq = game.pending_query;
-    if (!game.pending_cast.active || pq.tag != PendingQuery::CAST || !pq.answered)
+    PendingQuery &pq = game.pending.query;
+    if (!game.pending.cast.active || pq.tag != PendingQuery::CAST || !pq.answered)
         fatal_error("resume_cast_flow without a parked cast query");
     int answer = pq.answer;
     bool cancel = pq.menu[static_cast<size_t>(answer)].cancel_proposal;
     pq = PendingQuery{};
     if (cancel) {
         game_log("Casting cancelled.\n");
-        rewind_cast(game.pending_cast, orderer);
+        rewind_cast(game.pending.cast, orderer);
         return;
     }
-    run_cast_flow(game.pending_cast, game, orderer, answer);
+    run_cast_flow(game.pending.cast, game, orderer, answer);
 }
 
 // Loop-top dispatcher entry (game_driver.cpp) for a parked activation prompt:
@@ -1646,18 +1646,18 @@ void resume_cast_flow(Game &game, std::shared_ptr<Orderer> orderer) {
 // the NEXT activation prompt (the caller loops back to the pending branch) or
 // run the flow to completion/cancellation.
 void resume_activation_flow(Game &game, std::shared_ptr<Orderer> orderer) {
-    PendingQuery &pq = game.pending_query;
-    if (!game.pending_activation.active || pq.tag != PendingQuery::ACTIVATION || !pq.answered)
+    PendingQuery &pq = game.pending.query;
+    if (!game.pending.activation.active || pq.tag != PendingQuery::ACTIVATION || !pq.answered)
         fatal_error("resume_activation_flow without a parked activation query");
     int answer = pq.answer;
     bool cancel = pq.menu[static_cast<size_t>(answer)].cancel_proposal;
     pq = PendingQuery{};
     if (cancel) {
         game_log("Activation cancelled.\n");
-        rewind_activation(game.pending_activation, orderer);
+        rewind_activation(game.pending.activation, orderer);
         return;
     }
-    run_activation_flow(game.pending_activation, game, orderer, answer);
+    run_activation_flow(game.pending.activation, game, orderer, answer);
 }
 
 // Drive the persisted activation to its next prompt, cancellation, or
@@ -2060,7 +2060,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // own costs, so it follows the regular branch: kicker, X, hybrid and Phyrexian pips
             // and additional costs all apply (CR 601.2b, 601.2f).
             const Game::ImpulseCastPermission *grant_p =
-                cur_game.impulse_cast_permission.find(spell_entity);
+                cur_game.resolved_effects.impulse_cast_permission.find(spell_entity);
             const bool impulse_normal = pc.impulse_cast && grant_p &&
                                         grant_p->resource == Game::ImpulseCastPermission::NORMAL;
             // FLASHBACK COST — determined here (601.2f), but PAID after targets are
@@ -2863,9 +2863,9 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // Seat both delve stages on the casting player — the blocking prompt's
             // save/repoint/restore becomes arm-time persistence: the prev seat lives in
             // pc and DELVE_PICK's completion (or a rewind) restores it.
-            pc.delve_prev_priority_a = cur_game.player_a_has_priority;
+            pc.delve_prev_priority_a = cur_game.priority.player_a_has_priority;
             pc.delve_seat_held = true;
-            cur_game.player_a_has_priority = (caster == Zone::PLAYER_A);
+            cur_game.priority.player_a_has_priority = (caster == Zone::PLAYER_A);
             // The count prompt is skipped when only one count is legal (the pre-collapse
             // condition, re-derived at arm). The actions carry the delve spell as their
             // source entity, so the machine protocol emits its card id (a plain X-cost
@@ -2927,7 +2927,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 pc.delve_picks_done++;
             }
             // Restore the pre-delve seat (persisted at DELVE_COUNT's arm).
-            cur_game.player_a_has_priority = pc.delve_prev_priority_a;
+            cur_game.priority.player_a_has_priority = pc.delve_prev_priority_a;
             pc.delve_seat_held = false;
             pc.step = Game::PendingCast::DEF_SAC;
             break;
@@ -3191,7 +3191,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             global_coordinator.GetComponent<Spell>(spell_entity) = spell;
             // A play permission is consumed by the cast it allowed (it lapses once the card
             // has left exile).
-            if (pc.impulse_cast) cur_game.impulse_cast_permission.erase(spell_entity);
+            if (pc.impulse_cast) cur_game.resolved_effects.impulse_cast_permission.erase(spell_entity);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells
             {
@@ -3368,7 +3368,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             zone.controller = land_player;
             // ForgetOnMoved$ Exile: a land played from exile under a Light Up the Stage play
             // permission consumes that permission as it leaves exile (harmless no-op otherwise).
-            cur_game.impulse_cast_permission.erase(land_entity);
+            cur_game.resolved_effects.impulse_cast_permission.erase(land_entity);
 
             // Permanent component added by apply_permanent_components on next SBA pass
 
@@ -3420,7 +3420,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // flags, replicate count, deferred payment pieces) live in pc; converted
             // prompts suspend as loop-top pending decisions (tag CAST) that the main
             // loop emits and resume_cast_flow re-enters with the latched answer.
-            Game::PendingCast &pc = game.pending_cast;
+            Game::PendingCast &pc = game.pending.cast;
             if (pc.active) fatal_error("CAST_SPELL with a cast flow already in flight");
             pc = Game::PendingCast{};
             pc.active = true;
@@ -3463,21 +3463,21 @@ bool any_attacker_needs_damage_assignment(Game &game, std::shared_ptr<Orderer> o
     for (auto entity : orderer->mEntities) {
         // Re-entrancy guard: the handler stores an entry for every attacker it prompts, so an
         // already-decided attacker is skipped and the step falls through to deal_combat_damage.
-        if (game.combat_damage_assignment.count(entity)) continue;
+        if (game.combat.damage_assignment.count(entity)) continue;
         if (attacker_needs_assignment(entity, orderer, first_strike_only)) return true;
     }
     return false;
 }
 
 // Build and park the next lethal-order pick for the in-flight attacker
-// (Game::pending_damage) as a loop-top pending decision (tag DAMAGE_ASSIGN):
+// (Game::pending.damage) as a loop-top pending decision (tag DAMAGE_ASSIGN):
 // offer only blockers still killable with the remaining damage, plus the Done
 // option — exactly the inner-loop menu the blocking get_input prompted with.
 // Prints the same "--- Assign ... ---" header at arm time (it precedes the menu
 // emission, as it preceded get_input before). Returns false without arming when
 // no blocker is still killable (the inner loop's `offered.empty()` break).
 static bool arm_damage_assign_query(Game &game) {
-    auto &pd = game.pending_damage;
+    auto &pd = game.pending.damage;
     std::string attacker_name = entity_name(pd.attacker);
     std::vector<LegalAction> actions;
     for (auto b : pd.pool) {
@@ -3496,12 +3496,12 @@ static bool arm_damage_assign_query(Game &game) {
     actions.push_back(done);
 
     game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), pd.remaining);
-    PendingQuery &pq = game.pending_query;
+    PendingQuery &pq = game.pending.query;
     pq.tag = PendingQuery::DAMAGE_ASSIGN;
     pq.menu = std::move(actions);
     // The attacking (active) player divides the damage (510.1c); priority was
     // seated at them by run_damage_assignment and stays there between arms.
-    pq.chooser_is_a = game.player_a_turn;
+    pq.chooser_is_a = game.turn_state.player_a_turn;
     // The attacking creature whose damage is being divided is the
     // pending-decision source.
     pq.decision_source = pd.attacker;
@@ -3518,17 +3518,17 @@ static bool arm_damage_assign_query(Game &game) {
 // blocker if none were killable (last_assigned == 0 implies no pick was made,
 // so the untouched pool still IS the full blocker list).
 static void finish_pending_attacker(Game &game) {
-    auto &pd = game.pending_damage;
+    auto &pd = game.pending.damage;
     if (pd.remaining > 0) {
         Entity dump = pd.last_assigned ? pd.last_assigned : pd.pool.front();
-        game.combat_damage_assignment[pd.attacker][dump] += pd.remaining;
+        game.combat.damage_assignment[pd.attacker][dump] += pd.remaining;
     }
     pd = Game::PendingDamageAssign{};
 }
 
 // Prompt the attacking player (rule 510.1c) to pick which blockers receive lethal damage, one
 // at a time, until power runs out. Records the per-blocker assignment in
-// game.combat_damage_assignment for deal_combat_damage() to apply.
+// game.combat.damage_assignment for deal_combat_damage() to apply.
 //
 // Resumable: each pick is parked as a loop-top pending decision (DAMAGE_ASSIGN)
 // instead of blocking on get_input, so the whole multi-attacker division spreads
@@ -3536,18 +3536,18 @@ static void finish_pending_attacker(Game &game) {
 // and dispatches the answer back here (resume_choice >= 0), which applies the
 // pick exactly as the inline post-get_input code did and arms the next query
 // (same attacker, or the next one via the outer scan) or completes. In-flight
-// state lives in Game::pending_damage; completed attackers are skipped by their
-// combat_damage_assignment map entries, so the outer scan restarts from the top
+// state lives in Game::pending.damage; completed attackers are skipped by their
+// combat.damage_assignment map entries, so the outer scan restarts from the top
 // on every resume and lands on the first undecided attacker.
 static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, int resume_choice) {
-    bool first_strike_only = (game.cur_step == FIRST_STRIKE_DAMAGE);
+    bool first_strike_only = (game.turn_state.step == FIRST_STRIKE_DAMAGE);
     // The attacking (active) player chooses the division — route input to them.
-    game.player_a_has_priority = game.player_a_turn;
-    auto &pd = game.pending_damage;
+    game.priority.player_a_has_priority = game.turn_state.player_a_turn;
+    auto &pd = game.pending.damage;
 
     if (resume_choice >= 0) {
         // Resume: apply the latched answer to the in-flight attacker's division.
-        PendingQuery &pq = game.pending_query;
+        PendingQuery &pq = game.pending.query;
         bool is_done = (resume_choice == static_cast<int>(pq.menu.size()) - 1);
         Entity chosen = is_done ? 0 : pq.menu[static_cast<size_t>(resume_choice)].source_entity;
         pq = PendingQuery{};
@@ -3555,7 +3555,7 @@ static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, 
             finish_pending_attacker(game);
         } else {
             uint32_t need = lethal_needed_for_blocker(pd.attacker, chosen);
-            game.combat_damage_assignment[pd.attacker][chosen] = need;
+            game.combat.damage_assignment[pd.attacker][chosen] = need;
             pd.remaining -= need;
             pd.last_assigned = chosen;
             pd.pool.erase(std::remove(pd.pool.begin(), pd.pool.end(), chosen), pd.pool.end());
@@ -3569,17 +3569,17 @@ static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, 
         // Fresh entry (per strike step; survivors re-decide next step). The clear
         // must NOT run on a resume — mid-assignment the map already holds the
         // completed attackers' divisions (and the in-flight partial one).
-        game.combat_damage_assignment.clear();
+        game.combat.damage_assignment.clear();
     }
 
     // Outer scan: first attacker still needing a division starts one. The map
     // entry (created when the division starts) doubles as the re-entrancy guard,
     // mirroring any_attacker_needs_damage_assignment().
     for (auto attacker : orderer->mEntities) {
-        if (game.combat_damage_assignment.count(attacker)) continue;
+        if (game.combat.damage_assignment.count(attacker)) continue;
         if (!attacker_needs_assignment(attacker, orderer, first_strike_only)) continue;
         auto &acr = global_coordinator.GetComponent<Creature>(attacker);
-        game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
+        game.combat.damage_assignment[attacker];  // creates the entry (also the guard)
         pd.active = true;
         pd.attacker = attacker;
         pd.remaining = acr.power;
@@ -3590,22 +3590,22 @@ static void run_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer, 
         finish_pending_attacker(game);
     }
 
-    game.pending_choice = NONE;
+    game.pending.choice = NONE;
 }
 
 // proc_mandatory_choice entry: a fresh ASSIGN_COMBAT_DAMAGE_CHOICE derivation.
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
-    if (game.pending_damage.active || game.pending_query.active)
+    if (game.pending.damage.active || game.pending.query.active)
         fatal_error("assign_combat_damage entered with a damage-assignment query parked");
     run_damage_assignment(game, orderer, -1);
 }
 
 // Loop-top dispatcher entry (game_driver.cpp) for a parked DAMAGE_ASSIGN query.
 void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
-    if (!game.pending_damage.active || game.pending_query.tag != PendingQuery::DAMAGE_ASSIGN
-        || !game.pending_query.answered)
+    if (!game.pending.damage.active || game.pending.query.tag != PendingQuery::DAMAGE_ASSIGN
+        || !game.pending.query.answered)
         fatal_error("resume_damage_assignment without a parked damage-assignment query");
-    run_damage_assignment(game, orderer, game.pending_query.answer);
+    run_damage_assignment(game, orderer, game.pending.query.answer);
 }
 
 // One loop-safe miracle yes/no read, with the miracle card as the pending-decision source.
@@ -3614,7 +3614,7 @@ void resume_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer) {
 // re-enters with it still set, and without the reset the recreated scope would capture it as
 // its prev and leak it past the answer.
 static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, Entity card) {
-    game.pending_decision_source = 0;
+    game.pending.decision_source = 0;
     PendingDecisionScope pending(card);
     search_set_loop_safe(true);
     int choice = InputLogger::instance().get_input(menu);
@@ -3631,7 +3631,7 @@ static int ask_miracle_choice(Game &game, const std::vector<LegalAction> &menu, 
 // revealed card and gets a response window); the owner decides whether to cast it as that trigger
 // resolves (effect_miracle.cpp).
 static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
-    Entity card = game.miracle_reveal_pending;
+    Entity card = game.pending.miracle_reveal;
     // The pending flag is the ONLY state that lets a restored loop re-derive this
     // prompt (is_mandatory_choice_pending -> proc_mandatory_choice re-asks), so it
     // must stay SET across the get_input below: the ask is a loop-safe MCTS search
@@ -3643,12 +3643,12 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     // The card must still be in its owner's hand to be miracle-revealed (nothing runs between the
     // draw and this decision today, but guard against a vanished/moved entity regardless).
     if (!global_coordinator.entity_has_component<Zone>(card)) {
-        game.miracle_reveal_pending = 0;
+        game.pending.miracle_reveal = 0;
         return;
     }
     auto &z = global_coordinator.GetComponent<Zone>(card);
     if (z.location != Zone::HAND || (z.owner != Zone::PLAYER_A && z.owner != Zone::PLAYER_B)) {
-        game.miracle_reveal_pending = 0;
+        game.pending.miracle_reveal = 0;
         return;
     }
     Zone::Ownership owner = z.owner;
@@ -3663,14 +3663,14 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     // shared chooser-scope pattern (mirrors CLEANUP_DISCARD): machine mode then serializes the state
     // from the owner's perspective and routes the decision to them, keeping it hidden from the
     // opponent. Loop-safe: one decision derived from the pending card alone.
-    bool prev_priority = game.player_a_has_priority;
-    game.player_a_has_priority = (owner == Zone::PLAYER_A);
+    bool prev_priority = game.priority.player_a_has_priority;
+    game.priority.player_a_has_priority = (owner == Zone::PLAYER_A);
     int choice = ask_miracle_choice(game, yn, card);
-    game.player_a_has_priority = prev_priority;
+    game.priority.player_a_has_priority = prev_priority;
     // Answer consumed — NOW the one-shot decision is spent (see the flag note above).
     // On a search unwind the restore overwrites the flag from the snapshot (still
     // set), so the restored line re-derives this same prompt.
-    game.miracle_reveal_pending = 0;
+    game.pending.miracle_reveal = 0;
 
     if (choice != 1) return;  // declined — the card stays hidden in hand, no cast opportunity
 
@@ -3707,15 +3707,15 @@ ResolutionCastStatus cast_during_resolution(const LegalAction &cast, Zone::Owner
         // The cast is made by `caster`, who holds the cast flow's prompts; priority returns to
         // the resolving ability's controller once it completes.
         rt.stage = ResolutionCastRt::CASTING;
-        rt.prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (caster == Zone::PLAYER_A);
+        rt.prev_priority = cur_game.priority.player_a_has_priority;
+        cur_game.priority.player_a_has_priority = (caster == Zone::PLAYER_A);
         process_action(cast, cur_game, orderer);
         if (decision_suspended()) return ResolutionCastStatus::SUSPENDED;
     }
     if (rt.stage == ResolutionCastRt::CASTING) {
-        if (cur_game.pending_cast.active)
+        if (cur_game.pending.cast.active)
             fatal_error("cast_during_resolution re-entered with the cast still in flight");
-        cur_game.player_a_has_priority = rt.prev_priority;
+        cur_game.priority.player_a_has_priority = rt.prev_priority;
         rt.stage = ResolutionCastRt::DONE;
         // A cancelled cast leaves the card where it was.
         bool on_stack = global_coordinator.entity_has_component<Zone>(card) &&
@@ -3736,7 +3736,7 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
     if (rt.stage == ResolutionCastRt::OFFER) {
         grant.caster = caster;
         grant.during_resolution = true;
-        cur_game.impulse_cast_permission[card] = grant;
+        cur_game.resolved_effects.impulse_cast_permission[card] = grant;
         castable = exile_grant_castable(card, caster, /*sorcery_window=*/false, orderer);
     }
     const std::string nm = entity_name(card);
@@ -3747,18 +3747,18 @@ ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
                           ? " without paying its mana cost" : "";
     ResolutionCastStatus status =
         cast_during_resolution(cast, caster, castable, "Cast " + nm + how, rt, ctx, orderer);
-    if (status != ResolutionCastStatus::SUSPENDED) cur_game.impulse_cast_permission.erase(card);
+    if (status != ResolutionCastStatus::SUSPENDED) cur_game.resolved_effects.impulse_cast_permission.erase(card);
     return status;
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
     // A pending miracle reveal (CR 702.94) is a forced decision the drawing player makes before
     // proceeding; it rides this channel but is not a pending_choice enum value.
-    if (game.miracle_reveal_pending != 0) {
+    if (game.pending.miracle_reveal != 0) {
         proc_miracle_reveal(game, orderer);
         return;
     }
-    switch (game.pending_choice) {
+    switch (game.pending.choice) {
         case DECLARE_ATTACKERS_CHOICE:
             declare_attackers(game, orderer);
             break;
@@ -3787,25 +3787,25 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             // the state from their perspective and routes the decision to them —
             // otherwise the opponent could be asked to choose the active player's
             // discard.
-            bool prev_priority = game.player_a_has_priority;
-            game.player_a_has_priority = (active_player == Zone::PLAYER_A);
+            bool prev_priority = game.priority.player_a_has_priority;
+            game.priority.player_a_has_priority = (active_player == Zone::PLAYER_A);
             // Loop-safe: one discard per proc_mandatory_choice call, menu derived
             // from the hand alone.
             search_set_loop_safe(true);
             int choice = InputLogger::instance().get_input(discard_actions);
             search_set_loop_safe(false);
-            game.player_a_has_priority = prev_priority;
+            game.priority.player_a_has_priority = prev_priority;
             Entity card = discard_actions[static_cast<size_t>(choice)].source_entity;
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             orderer->add_to_zone(false, card, Zone::GRAVEYARD);
             game_log("%s discards %s.\n", player_name(active_player).c_str(), cd.name.c_str());
 
-            game.pending_choice = NONE;
+            game.pending.choice = NONE;
             break;
         }
         case CHOOSE_ENTITY:
             game_log("TODO: Choose entity\n");
-            game.pending_choice = NONE;
+            game.pending.choice = NONE;
             break;
         case NONE:
             break;
