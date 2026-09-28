@@ -22,7 +22,7 @@ import numpy as np
 
 import archetypes
 from env import (MAX_ACTIONS, STATE_SIZE, _SELF_IS_A_IDX, _IS_SIDEBOARD_IDX,
-                 _CUR_TURN_IDX, _MATCH_CTX_START)
+                 _CUR_TURN_IDX, _MATCH_CTX_START, obs_game_number)
 from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
                     CAT_CONFIRM_BLOCKERS)
@@ -700,7 +700,7 @@ class SearchController:
         if self._clock is not None:
             # Every decision faced (searched, followed, trivial, fallback)
             # advances the match pace the clock's horizon is revised from.
-            self._clock.note_decision(int(round(float(obs[_MATCH_CTX_START]) * 3)))
+            self._clock.note_decision(obs_game_number(obs))
         try:
             return self._choose_impl(obs, num_choices, action_masks,
                                      decoded_actions)
@@ -985,7 +985,7 @@ class SearchController:
             # draws no rng, and keeps the parity-sensitive search code untouched.
             priors, v = self._evaluator.evaluate(obs, num_choices)
             turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
-            g = int(round(float(obs[_MATCH_CTX_START]) * 3))
+            g = obs_game_number(obs)
             ws = int(round(float(obs[_MATCH_CTX_START + 1]) * 2))
             wo = int(round(float(obs[_MATCH_CTX_START + 2]) * 2))
             # The same root eval's value head feeds the match-point closeout

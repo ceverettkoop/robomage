@@ -49,7 +49,7 @@ from env import (
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
     _EXTRAS_SELF_PASSED, _EXTRAS_OPP_PASSED, _EXTRAS_IS_PRIORITY_WINDOW,
     _EXTRAS_SELF_MULLIGANS, _EXTRAS_OPP_MULLIGANS, _EXTRAS_SELF_BOTTOM_REMAINING,
-    _MATCH_CTX_START,
+    _MATCH_CTX_START, obs_game_number,
     _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     _MANA_DEV_START, _MANA_DEV_OPP_START,
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
@@ -670,6 +670,22 @@ def _check_player_effects(decision_idx, seat, state):
             PLAYER_EFFECTS_SEEN["active"] += 1
 
 
+def _check_match_context(decision_idx, state, seat):
+    """Match context: every float stays in [0, 1] (the game index is normalized by
+    the last possible game index, so a match lengthened by drawn games never pushes
+    it past 1.0), and the wins de-normalize to a legal bo3 score."""
+    for i, field in enumerate(("game_number", "self_wins", "opp_wins", "is_sideboard")):
+        v = float(state[_MATCH_CTX_START + i])
+        if not (np.isfinite(v) and 0.0 <= v <= 1.0):
+            _fail(decision_idx, seat, "match_ctx", field, v,
+                  f"match-context {field} float outside [0, 1]")
+    for i, field in ((1, "self_wins"), (2, "opp_wins")):
+        wins = float(state[_MATCH_CTX_START + i]) * 2
+        if abs(wins - round(wins)) > 1e-4 or round(wins) > 2:
+            _fail(decision_idx, seat, "match_ctx", field, wins,
+                  f"{field} de-normalizes to {wins} (expected 0, 1 or 2)")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -763,6 +779,9 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         if not np.isfinite(lib) or lib < -0.5:
             _fail(decision_idx, seat, f"{label}_player.library", "-", lib,
                   f"library count de-normalizes to {lib} (expected finite & >= 0)")
+
+    # (7b) Match context ranges.
+    _check_match_context(decision_idx, state, seat)
 
     # (8) Companion: a declared companion is revealed to the opponent for the
     # whole game proper. When the seat WITHOUT priority (the viewer's opponent)
@@ -1795,6 +1814,7 @@ def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHA
         num = env._num_choices
         seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
         cats = decode.action_categories(obs, num)
+        _check_match_context(-1, obs, seat)
         yield obs, num, cats, seat
 
         picked = _sideboard_action(cats, swaps_left[seat])
@@ -1852,7 +1872,7 @@ def check_opponent_decklist_frozen():
             n_rev = sum(1 for v in revealed.values() if v > 0.5)
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 rev_in_sb = max(rev_in_sb, n_rev)
-            elif int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0:
+            elif obs_game_number(obs) > 0:
                 rev_post_board = max(rev_post_board, n_rev)
             if seat not in first:
                 first[seat] = blocks
@@ -1873,7 +1893,7 @@ def check_opponent_decklist_frozen():
             # A post-board decision: game 2+ of the bo3 (game_number is 0-based),
             # outside the sideboard phase itself.
             if (obs[_IS_SIDEBOARD_IDX] <= 0.5
-                    and int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0):
+                    and obs_game_number(obs) > 0):
                 post_board += 1
                 if post_board >= _SB_POST_BOARD_MIN:
                     break

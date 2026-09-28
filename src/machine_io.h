@@ -216,7 +216,9 @@
 //                Per slot: card_id (sentinel = empty)
 //
 //  [5770-5773]   Match context (4 floats, all 0.0 in single-game mode):
-//                game_number / 3.0, self_match_wins / 2.0,
+//                game_number / MATCH_GAME_NORMALIZER (0-based game index; a drawn
+//                game counts for neither player, so a match can run past game 3,
+//                up to MAX_MATCH_GAMES), self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
 //  [5774-5775]   Library context (2 floats):
@@ -541,6 +543,10 @@ static constexpr int STACK_HEAD_FIELDS = 3;    // controller_is_self + card id +
 static constexpr int STACK_XAMT_FIELDS = 1;    // x_or_amount / 10
 static constexpr int STACK_QUAL_FIELDS = 7;    // is_copy, kicked, flashback, evoke, escape, offspring, impending
 static constexpr int MATCH_CTX_SIZE    = 4;    // game#, self wins, opp wins, is_sideboard_phase
+// Divisor of the match-context game index: the last possible game index, MAX_MATCH_GAMES - 1
+// (game_driver.h; asserted in machine_io.cpp), so the float stays in [0, 1] however many drawn
+// games lengthen a match.
+static constexpr int MATCH_GAME_NORMALIZER = 9;
 static constexpr int LIBRARY_CTX_SIZE  = 2;    // self lib/60, opp lib/60
 static constexpr int CUR_TURN_SIZE     = 1;    // current turn / 50
 static constexpr int PENDING_DECISION_SIZE = 2; // source card id + ctrl_is_self

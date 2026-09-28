@@ -41,7 +41,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OPP_KNOWN_HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  MAX_GY_SLOTS, MANDATORY_CATS,
-                 _PENDING_DECISION_START, _MATCH_CTX_START,
+                 _PENDING_DECISION_START, _MATCH_CTX_START, obs_game_number,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
@@ -93,7 +93,7 @@ _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
-_IDX_GAME_NUMBER = _MATCH_CTX_START                # game_number / 3
+_IDX_GAME_NUMBER = _MATCH_CTX_START                # game_number / MATCH_GAME_NORMALIZER
 _IDX_SELF_WINS   = _MATCH_CTX_START + 1            # self_match_wins / 2
 _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
@@ -1187,7 +1187,7 @@ def _decode_match_context(state):
     game_number (the obs carries no separate flag). self_wins/opp_wins
     are viewer-relative (like the rest of the state vector) — a mirrored decode
     must swap them."""
-    game_number = int(round(float(state[_IDX_GAME_NUMBER]) * 3))
+    game_number = obs_game_number(state)
     return {
         "game_number": game_number,
         "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),

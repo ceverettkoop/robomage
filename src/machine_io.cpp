@@ -30,6 +30,9 @@
 #include "game_queries.h"
 #include "mana_system.h"                    // mana_potential (mana-development block)
 #include "parse.h"                          // name_to_uid
+
+static_assert(MATCH_GAME_NORMALIZER == MAX_MATCH_GAMES - 1,
+              "the match-context game index is normalized by the last possible game index");
 #include "systems/rules_modifying.h"        // rules_mod::land_drops_remaining
 #include "systems/state_manager_internal.h"
 
@@ -1273,7 +1276,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
         state.push_back(norm_card_id(gs->self_hand[i]));
 
     // Match context (4 floats, all 0.0 in single-game mode)
-    state.push_back(gs->match_game_number >= 0 ? static_cast<float>(gs->match_game_number) / 3.0f : 0.0f);
+    state.push_back(gs->match_game_number >= 0
+                        ? static_cast<float>(gs->match_game_number) /
+                              static_cast<float>(MATCH_GAME_NORMALIZER)
+                        : 0.0f);
     state.push_back(static_cast<float>(gs->match_wins_self) / 2.0f);
     state.push_back(static_cast<float>(gs->match_wins_opp) / 2.0f);
     state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);

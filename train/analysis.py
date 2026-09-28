@@ -49,7 +49,7 @@ from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
                       BOARD_GUI, is_search_spec,
                       browse_inapplicable_dests, browse_source_kind,
                       explicit_dests, resolve_board, is_bo3)
-from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
+from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL, obs_game_number,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
@@ -301,7 +301,7 @@ def _extract_interpretable(obs):
     # Library counts (mirror env.py _LIBRARY_CTX_START); post-board = game 2+ of a bo3
     f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
     f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
-    f[i] = 1.0 if int(round(obs[_MATCH_CTX_START] * 3.0)) > 0 else 0.0; i += 1  # is_post_board
+    f[i] = 1.0 if obs_game_number(obs) > 0 else 0.0; i += 1  # is_post_board
     f[i] = 1.0 if obs[_MATCH_CTX_START + 3] > 0.5 else 0.0; i += 1  # is_sideboard
 
     # Current game turn (obs stores turn / 50, mirror machine_io.h TURN_NORMALIZER)
@@ -1277,7 +1277,7 @@ def _match_meta(obs):
     from a stored observation. game_number is 0-based; all fields are zero in
     single-game (bo1) mode. During the sideboard phase game_number still holds
     the finished game's number (the convention the `sideboard` report uses)."""
-    return (int(round(obs[_MATCH_CTX_START] * 3.0)),
+    return (obs_game_number(obs),
             int(round(obs[_MATCH_CTX_START + 1] * 2.0)),
             int(round(obs[_MATCH_CTX_START + 2] * 2.0)),
             bool(obs[_MATCH_CTX_START + 3] > 0.5))
@@ -1573,7 +1573,7 @@ def _decode_board_state(obs, value=None):
     stack_size   = int(round(obs[_STACK_SIZE_IDX] * 10.0))
 
     # Match context (_MATCH_CTX_START .. +4) and library counts (_LIBRARY_CTX_START .. +2)
-    game_number      = int(round(obs[_MATCH_CTX_START]     * 3.0))
+    game_number      = obs_game_number(obs)
     self_match_wins  = int(round(obs[_MATCH_CTX_START + 1] * 2.0))
     opp_match_wins   = int(round(obs[_MATCH_CTX_START + 2] * 2.0))
     is_sideboard     = obs[_MATCH_CTX_START + 3] > 0.5
@@ -1876,7 +1876,7 @@ def _sim_sideboard_report(games):
             # resumes (a non-sideboard action) or, defensively, when the
             # upcoming game number changes with no gameplay in between.
             if current_after_game is not None:
-                this_after = (int(round(obs[_MATCH_CTX_START] * 3.0))
+                this_after = (obs_game_number(obs)
                               if is_sb_action else None)
                 if not is_sb_action or this_after != current_after_game:
                     phases.append((gi, current_after_game,
@@ -1886,7 +1886,7 @@ def _sim_sideboard_report(games):
                     current_after_game = None
 
             if is_sb_action and current_after_game is None:
-                current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
+                current_after_game = obs_game_number(obs)
 
             if cat == _CAT_SB_IN:
                 card_raw = obs[ACT_IDS_START + action]

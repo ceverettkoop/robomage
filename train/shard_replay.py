@@ -49,7 +49,7 @@ import numpy as np
 
 import decode
 from env import (MAX_ACTIONS, OBS_SIZE, _CUR_TURN_IDX, _IS_SIDEBOARD_IDX,
-                 _MATCH_CTX_START, _SELF_IS_A_IDX)
+                 _SELF_IS_A_IDX, obs_game_number)
 
 
 def shard_sort_key(path):
@@ -193,7 +193,7 @@ def _row_search_pi(obs_row, pi_row, n, q, diag):
 
 
 def _row_game_number(obs_row):
-    return int(round(float(obs_row[_MATCH_CTX_START]) * 3.0))
+    return obs_game_number(obs_row)
 
 
 def _row_turn(obs_row):

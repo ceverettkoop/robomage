@@ -36,7 +36,7 @@ import decode
 import runner
 import shard_replay
 from env import (MAX_ACTIONS, OBS_SIZE, STATE_SIZE, RoboMageEnv,
-                 _MATCH_CTX_START, _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX)
+                 _IS_SIDEBOARD_IDX, _SELF_IS_A_IDX, obs_game_number)
 from opponents import make_controller
 
 DECK = "league/ur_delver"       # league deck: has a SIDEBOARD (bo3 matches)
@@ -86,7 +86,7 @@ def _pack_shard(rows, winners):
         obs[i] = o
         pi[i, action] = 1.0
         mask[i, :nc] = True
-        game_idx = int(round(float(o[_MATCH_CTX_START]) * 3.0))
+        game_idx = obs_game_number(o)
         winner = winners[game_idx] if game_idx < len(winners) else None
         if winner is not None:
             z[i] = 1.0 if (winner == "A") == mover_is_a else -1.0
@@ -118,7 +118,7 @@ def _check_segments(matches, per_file_rows, obs):
             f"match {mi}: segmented rows not contiguous in write order"
         row += n_rows
         for gi, g_rows in enumerate(games):
-            gns = {int(round(float(obs[i, _MATCH_CTX_START]) * 3.0)) for i in g_rows}
+            gns = {obs_game_number(obs[i]) for i in g_rows}
             assert gns == {gi}, \
                 f"match {mi} game {gi}: mixed game_numbers {sorted(gns)}"
             sb = [bool(obs[i, _IS_SIDEBOARD_IDX] > 0.5) for i in g_rows]

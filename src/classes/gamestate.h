@@ -246,7 +246,7 @@ typedef struct GameState_tag {
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
 
     // bo3 match state
-    int  match_game_number;  // -1 = single game, 0-2 = bo3 game index
+    int  match_game_number;  // -1 = single game, else the 0-based bo3 game index (< MAX_MATCH_GAMES)
     int  match_wins_self;
     int  match_wins_opp;
     bool is_sideboard_phase;

@@ -52,6 +52,7 @@ STACK_XAMT_FIELDS = 1  # src/machine_io.h
 STACK_QUAL_FIELDS = 7  # src/machine_io.h
 STACK_TGT_FIELDS = 5  # src/machine_io.h
 MATCH_CTX_SIZE = 4  # src/machine_io.h
+MATCH_GAME_NORMALIZER = 9  # src/machine_io.h
 LIBRARY_CTX_SIZE = 2  # src/machine_io.h
 CUR_TURN_SIZE = 1  # src/machine_io.h
 PENDING_DECISION_SIZE = 2  # src/machine_io.h
