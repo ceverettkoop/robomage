@@ -53,8 +53,9 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
 | `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
-`smoke`/`fuzz` play through `runner.run_games` with seed `--seed + 1000·k` for matchup `k`, and
-write `ci_out/<tier>_<a>__<b>.txt` (Python output plus engine stderr).
+`smoke`/`fuzz` play through `runner.run_games` with seed `--seed + 1000·k` for matchup `k`, one
+process per matchup (in parallel), and write `ci_out/<tier>_<a>__<b>.txt` (Python output plus
+engine stderr).
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)
 

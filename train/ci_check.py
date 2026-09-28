@@ -204,6 +204,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -827,32 +828,53 @@ def _run_capturing(out_path, run_fn):
                     fh.write(data)
 
 
+def _play_matchup(task):
+    """Play one smoke/fuzz matchup into its transcript (a process-pool task).
+
+    Runs with its own working directory so the draw_<stamp>.txt logs run_games
+    writes there are attributed to this matchup, then moves them into out_dir.
+    Returns (wins, losses, draws) and the crash message (None if the engine
+    didn't crash)."""
+    tier, deck_a, deck_b, mode, n_games, seed, out_dir = task
+    stem = f"{tier}_{_short(deck_a)}__{_short(deck_b)}"
+    out_path = os.path.join(out_dir, f"{stem}.txt")
+    work_dir = tempfile.mkdtemp(prefix=f".{stem}_", dir=out_dir)
+    os.chdir(work_dir)
+    result = {}
+
+    def run_fn():
+        result["wld"] = runner.run_games(
+            make_controller(mode), make_controller(mode),
+            label_a=f"A:{mode}", label_b=f"B:{mode}",
+            deck_a=deck_a, deck_b=deck_b, n_games=n_games, seed=seed,
+            verbose=True)
+
+    crashed = None
+    try:
+        _run_capturing(out_path, run_fn)
+    except Exception as e:  # engine crash: nonzero exit / EOF mid-game
+        crashed = str(e) or type(e).__name__
+    finally:
+        os.chdir(_REPO_ROOT)
+        for dl in glob.glob(os.path.join(work_dir, "draw_*.txt")):
+            shutil.move(dl, os.path.join(out_dir, f"{stem}_{os.path.basename(dl)}"))
+        shutil.rmtree(work_dir, ignore_errors=True)
+    return result.get("wld", (0, 0, 0)), crashed
+
+
 def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
-    """Run each matchup as scripted games, classify draws, scan transcripts."""
-    for k, (deck_a, deck_b) in enumerate(pairs):
-        seed = base_seed + 1000 * k
+    """Run each matchup as scripted games, classify draws, scan transcripts.
+
+    The matchups are independent (own engine processes and seeds), so they run
+    in a process pool; the report is made in matchup order."""
+    tasks = [(tier, deck_a, deck_b, mode, n_games, base_seed + 1000 * k, out_dir)
+             for k, (deck_a, deck_b) in enumerate(pairs)]
+    workers = max(1, min(len(tasks), 16, os.cpu_count() or 4))
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        outcomes = list(ex.map(_play_matchup, tasks))
+    for (_tier, deck_a, deck_b, _mode, _n, seed, _dir), ((wins, losses, draws), crashed) \
+            in zip(tasks, outcomes):
         out_path = os.path.join(out_dir, f"{tier}_{_short(deck_a)}__{_short(deck_b)}.txt")
-        result = {}
-
-        def run_fn():
-            result["wld"] = runner.run_games(
-                make_controller(mode), make_controller(mode),
-                label_a=f"A:{mode}", label_b=f"B:{mode}",
-                deck_a=deck_a, deck_b=deck_b, n_games=n_games, seed=seed,
-                verbose=True)
-
-        crashed = None
-        try:
-            _run_capturing(out_path, run_fn)
-        except Exception as e:  # engine crash: nonzero exit / EOF mid-game
-            crashed = e
-        wins, losses, draws = result.get("wld", (0, 0, 0))
-        # Relocate any draw_<n>.txt run_games wrote into cwd, so they're captured
-        # as artifacts and don't litter the tree.
-        for dl in glob.glob(os.path.join(os.getcwd(), "draw_*.txt")):
-            shutil.move(dl, os.path.join(out_dir, f"{tier}_{_short(deck_a)}__"
-                                                  f"{_short(deck_b)}_{os.path.basename(dl)}"))
-
         label = f"{_short(deck_a)} vs {_short(deck_b)} [{mode}] seed {seed}"
         if crashed is not None:
             rep.error(tier, f"{label}: engine crashed — {crashed} (see {out_path})")
