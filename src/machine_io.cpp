@@ -1333,9 +1333,8 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     state.push_back(gs->self_plays_first ? 1.0f : 0.0f);
     state.push_back(static_cast<float>(gs->sideboard_swaps_made) /
                     static_cast<float>(SIDEBOARD_SWAP_CAP));
-    // Drift mapped to [0, 1] with "balanced" at the 0.5 midpoint, so the two
-    // unbalanced poles sit symmetrically either side of it.
-    state.push_back((static_cast<float>(gs->sideboard_delta) + 1.0f) / 2.0f);
+    // Drift is 0 (balanced) or 1 (one card over): the IN-FIRST menu never cuts first.
+    state.push_back(static_cast<float>(gs->sideboard_delta));
 
     // ── Deck-identity tail blocks (see machine_io.h [4925-5340]) ───────────────
     // Each slot is (card_id, count): empty slot id = -1 sentinel (count 0); count

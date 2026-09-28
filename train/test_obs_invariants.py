@@ -1960,8 +1960,8 @@ def check_sideboard_copy_ordinals():
 
 
 def _decode_sb_delta(obs):
-    """Maindeck drift from its phase-start size, from the serialized (d + 1) / 2."""
-    return int(round(float(obs[_EXTRAS_SB_DELTA]) * 2)) - 1
+    """Maindeck drift from its phase-start size (serialized as the drift itself)."""
+    return int(round(float(obs[_EXTRAS_SB_DELTA])))
 
 
 def _decode_sb_swaps(obs):

@@ -36,7 +36,7 @@ OUT_FILE  = os.path.join(REPO_ROOT, "train/_enums.py")
 # C++ ActionCategory enum name -> short display abbreviation (the only place
 # these cosmetic strings are defined). Keys must exactly match the C++ enum.
 _CAT_DISPLAY = {
-    "PASS_PRIORITY": "PASS", "MANA_ABILITY": "MANA",
+    "PASS_PRIORITY": "PASS",
     "SELECT_ATTACKER": "SEL_ATK", "CONFIRM_ATTACKERS": "CONF_ATK",
     "SELECT_BLOCKER": "SEL_BLK", "CONFIRM_BLOCKERS": "CONF_BLK",
     "ACTIVATE_ABILITY": "ACTIVATE", "CAST_SPELL": "CAST",
@@ -48,7 +48,7 @@ _CAT_DISPLAY = {
     "PAYING_COSTS": "PAYING", "DIG_CHOICE": "DIG",
     "SIDEBOARD_IN": "SB_IN", "SIDEBOARD_OUT": "SB_OUT",
     "SIDEBOARD_DONE": "SB_DONE",
-    # Categories split out of the former OTHER_CHOICE catch-all.
+    # Dedicated choice categories (OTHER_CHOICE is the fallback).
     "SACRIFICE_PERMANENT": "SACRIFICE", "RETURN_PERMANENT": "RETURN",
     "CHOOSE_X": "CHOOSE_X", "DISCARD": "DISCARD", "CHOOSE_MODE": "MODE",
     "CHOOSE_MANA_COLOR": "MANA_COLOR", "PAY_UNLESS": "PAY_UNLESS",

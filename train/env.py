@@ -123,7 +123,7 @@ try:
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
-        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_PASS_PRIORITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
         CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
         CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
@@ -159,7 +159,7 @@ except ImportError:
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
-        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_PASS_PRIORITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
         CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
         CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
@@ -553,9 +553,8 @@ _EXTRAS_MC_ONEHOT_START = _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
 # phase (whose starting player is already fixed before either sideboard stage runs).
 _EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 # Sideboard-phase progress: swaps completed / SIDEBOARD_SWAP_CAP, and the maindeck
-# drift as (d + 1) / 2 so balanced sits at 0.5. The menu is IN-FIRST, so the drift
-# is only ever 0 or +1 and this float only ever reads 0.5 or 1.0 (the 0.0 pole of
-# the encoding is unreachable). Both inert outside the phase.
+# drift from its phase-start size — the menu is IN-FIRST, so it is only ever 0
+# (balanced) or 1 (one card over). Both 0.0 outside the phase.
 _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
@@ -1417,8 +1416,6 @@ class NarrativeEnv(RoboMageEnv):
 # (and the mandatory/mana category sets) are the names the rest of the Python
 # side — env, scripted_agent (imports these _CAT_* from env), decode — uses.
 _CAT_PASS       = CAT_PASS_PRIORITY
-_CAT_MANA       = CAT_MANA_ABILITY  # legacy, no longer emitted by the game (mana
-                      # activations arrive as the per-color MANA_W..MANA_C cats — see _MANA_CATS)
 _MANA_CATS      = frozenset(range(CAT_MANA_W, CAT_MANA_C + 1))  # MANA_W..MANA_C — mana-source
                       # activations (machine mode: only instant-speed cracks, e.g. LED, at priority)
 _CAT_MANA_U     = CAT_MANA_U  # tap for blue mana — the color the scripted Doomsday

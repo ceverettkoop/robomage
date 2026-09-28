@@ -2949,10 +2949,10 @@ def analyze_sb_session(obs, rows):
     import collections
     import env
     first = obs[rows[0]]
-    # The last row where the config is balanced (drift float at its 0.5 midpoint).
+    # The last row where the config is balanced (drift float 0.0).
     last = None
     for i in reversed(rows):
-        if abs(float(obs[i][env._EXTRAS_SB_DELTA]) - 0.5) < 0.1:
+        if float(obs[i][env._EXTRAS_SB_DELTA]) < 0.5:
             last = obs[i]
             break
     if last is None:

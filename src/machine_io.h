@@ -292,12 +292,10 @@
 //                       observation.
 //                  [5819] sideboard swaps completed this phase / SIDEBOARD_SWAP_CAP
 //                       (0.0 outside the phase)
-//                  [5820] sideboard maindeck drift, (d + 1) / 2 so -1/0/+1 map to
-//                       0.0/0.5/1.0 and "balanced" is the 0.5 midpoint. Always 0.5
-//                       outside the phase. The encoding is kept, but the 0.0 pole is
-//                       unreachable: the menu is IN-FIRST, so drift is only ever 0
-//                       or +1 and only 0.5/1.0 are ever emitted (see
-//                       run_sideboard_phase in src/game_driver.cpp).
+//                  [5820] sideboard maindeck drift from its phase-start size: 0.0
+//                       balanced, 1.0 one card over. The menu is IN-FIRST, so drift is
+//                       only ever 0 or +1 (see run_sideboard_phase in
+//                       src/game_driver.cpp). 0.0 outside the phase.
 //
 //  ── Deck-identity tail blocks ────────────────────────────────────────────────
 //  Each self slot is (card_id, count) and each opponent slot is (card_id, count,

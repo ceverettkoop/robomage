@@ -622,13 +622,14 @@ def test_harness_script_then_players():
         obs[_SELF_IS_A_IDX] = 1.0 if seat == "A" else 0.0
         return obs
 
-    pass_menu = [{"index": 0, "category": 0, "card": None, "controller": None,
+    from _enums import CAT_PASS_PRIORITY, CAT_PLAY_LAND, CAT_DISCARD
+    pass_menu = [{"index": 0, "category": CAT_PASS_PRIORITY, "card": None, "controller": None,
                   "description": "Pass priority"},
-                 {"index": 1, "category": 9, "card": "Mountain",
+                 {"index": 1, "category": CAT_PLAY_LAND, "card": "Mountain",
                   "controller": "own", "description": "Play Mountain"}]
-    discard_menu = [{"index": 0, "category": 30, "card": "Island",
+    discard_menu = [{"index": 0, "category": CAT_DISCARD, "card": "Island",
                      "controller": "own", "description": "Discard Island"},
-                    {"index": 1, "category": 30, "card": "Forest",
+                    {"index": 1, "category": CAT_DISCARD, "card": "Forest",
                      "controller": "own", "description": "Discard Forest"}]
 
     pa, pb = Fixed(1), Fixed(1)
