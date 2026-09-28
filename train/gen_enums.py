@@ -5,12 +5,12 @@ or MandatoryChoice enums, or the OBS_KEYWORDS array:
     python train/gen_enums.py
 Writes train/_enums.py with _CAT_NAMES (action-category int -> short display
 name), CAT_<NAME> (name-keyed ActionCategory ints), _STEP_NAMES (ordered step
-display names), ACTION_CATEGORY_MAX, _REF_NAMES / REF_ZONE_MAX (per-action
-zone_ref block), _MC_NAMES / N_MANDATORY_CHOICES (the MandatoryChoice one-hot in
-the global-extras block), _OBS_KEYWORDS / N_OBS_KEYWORDS (the per-permanent
-keyword multi-hot order), and the observation layout / size constants
-(MAX_ACTIONS, STATE_SIZE, N_CARD_TYPES, PERM_SLOT_SIZE, ...) parsed straight from
-the C++ headers so train/env.py never hand-copies them.
+display names), ACTION_CATEGORY_MAX, _REF_NAMES / REF_ZONE_MAX / REF_<NAME>
+(per-action zone_ref block), _MC_NAMES / N_MANDATORY_CHOICES (the
+MandatoryChoice one-hot in the global-extras block), _OBS_KEYWORDS /
+N_OBS_KEYWORDS (the per-permanent keyword multi-hot order), and the observation
+layout / size constants (MAX_ACTIONS, STATE_SIZE, N_CARD_TYPES, PERM_SLOT_SIZE,
+...) parsed straight from the C++ headers so train/env.py never hand-copies them.
 
 The C++ enums in src/classes/action.h (ActionCategory), src/classes/game.h
 (Step, MandatoryChoice), and src/classes/gamestate.h (ActionRefZone), plus the
@@ -431,7 +431,15 @@ def main():
     ]
     for val, name in enumerate(refs):
         lines.append(f'    {val}: "{_REF_DISPLAY[name]}",  # {name}')
-    lines += ["}", ""]
+    lines += [
+        "}",
+        "",
+        "# Name-keyed ActionRefZone constants: <ENUM_NAME> = value, for every",
+        "# entry in the C++ ActionRefZone enum (src/classes/gamestate.h).",
+    ]
+    for val, name in enumerate(refs):
+        lines.append(f"{name} = {val}")
+    lines += [""]
 
     write_if_changed(OUT_FILE, "\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}: {len(cats)} categories, {len(steps)} steps, "

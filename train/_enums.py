@@ -261,3 +261,18 @@ _REF_NAMES = {
     11: "opp",  # REF_PLAYER_OPP
 }
 
+# Name-keyed ActionRefZone constants: <ENUM_NAME> = value, for every
+# entry in the C++ ActionRefZone enum (src/classes/gamestate.h).
+REF_NONE = 0
+REF_SELF_BATTLEFIELD = 1
+REF_OPP_BATTLEFIELD = 2
+REF_SELF_HAND = 3
+REF_OPP_HAND = 4
+REF_STACK = 5
+REF_SELF_GY = 6
+REF_OPP_GY = 7
+REF_SELF_EXILE = 8
+REF_OPP_EXILE = 9
+REF_PLAYER_SELF = 10
+REF_PLAYER_OPP = 11
+
