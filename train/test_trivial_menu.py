@@ -2,7 +2,7 @@
 and the SearchController trivial fast path.
 
 Pure Python on synthetic observation vectors — no engine binary, no torch.
-Run standalone (not wired into a ci_check tier, matching test_match_clock.py):
+Runs in ci_check tier menus; standalone:
     train/.venv/bin/python train/test_trivial_menu.py
 """
 

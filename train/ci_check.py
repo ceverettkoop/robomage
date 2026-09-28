@@ -19,7 +19,9 @@ fails, so one invocation reports every finding):
           regenerated output). The script-derived codegen (card_costs.py,
           card_props.py, card_costs_gen.h) is untracked and regenerated every
           `make`, so it has no committed copy to go stale; its generators are
-          still run here as a crash smoke.
+          still run here as a crash smoke, and the generated C++ cost tables
+          (card_costs_gen.h) must equal card_costs.py's matrices float32-exactly
+          (train/test_cost_tables.py).
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
@@ -56,6 +58,13 @@ fails, so one invocation reports every finding):
           node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
           descent identical — and a bad format version is refused
           (train/test_tree_cache.py). Torch-free, engine-free, instant.
+  menus   The Python search's menu semantics on synthetic observations:
+          duplicate-edge merging (decode.menu_merge_reps partition, the mcts
+          _Node fold/select/walk; train/test_menu_merge.py) and the
+          interchangeable-menu collapse behind the SearchController trivial
+          fast path (decode.menu_is_interchangeable;
+          train/test_trivial_menu.py). The C++ merge twin is covered by the
+          opt-in `actor` tier. Torch-free, engine-free, instant.
   browser The Textual analysis browser (train/tui_analysis.py, `analysis.py
           browse --board tui`) driven headlessly over a synthetic saved
           session: the .rmtrace source loads through the shared engine
@@ -229,7 +238,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "browser", "modelspec", "concede", "scenarios", "obsinv",
+             "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -336,7 +345,10 @@ def tier_pygen(rep):
     diff, and stale local scripts can never commit stale matrices. Every generator
     is still RUN below (a crash is a real failure), but only the tracked outputs are
     diffed; they are restored afterward so a stale result is reported, not left
-    half-regenerated (the developer runs `make pygen` to actually update them)."""
+    half-regenerated (the developer runs `make pygen` to actually update them).
+    Finally the regenerated C++ cost tables must equal card_costs.py's
+    matrices float32-exactly (train/test_cost_tables.py) — the two generated
+    mirrors of one source may not drift."""
     tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
                 "train/gen_card_props.py", "train/gen_archetypes.py",
@@ -357,6 +369,8 @@ def tier_pygen(rep):
         rep.error("pygen",
                   "generated files are stale — run `make pygen` and commit "
                   f"{', '.join(tracked)}:\n{diff.stdout}")
+    _run_test_script(rep, "pygen", "train/test_cost_tables.py",
+                     "C++/Python cost-table")
 
 
 def tier_vocab(rep):
@@ -476,6 +490,15 @@ def tier_treecache(rep):
     per-world trees round-trip node-for-node (see train/test_tree_cache.py).
     Torch-free, engine-free."""
     _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_menus(rep):
+    """Python search menu semantics on synthetic observations: duplicate-edge
+    merging (train/test_menu_merge.py) and the interchangeable-menu collapse
+    behind the SearchController trivial fast path (train/test_trivial_menu.py).
+    Torch-free, engine-free."""
+    _run_test_script(rep, "menus", "train/test_menu_merge.py", "menu-merge")
+    _run_test_script(rep, "menus", "train/test_trivial_menu.py", "trivial-menu")
 
 
 def tier_browser(rep):
@@ -1116,6 +1139,7 @@ _TIER_FNS = {
     "gatesprt": lambda rep, args, out_dir: tier_gatesprt(rep),
     "shardrec": lambda rep, args, out_dir: tier_shardrec(rep),
     "treecache": lambda rep, args, out_dir: tier_treecache(rep),
+    "menus": lambda rep, args, out_dir: tier_menus(rep),
     "browser": lambda rep, args, out_dir: tier_browser(rep),
     "modelspec": lambda rep, args, out_dir: tier_modelspec(rep),
     "treerebuild": lambda rep, args, out_dir: tier_treerebuild(rep),

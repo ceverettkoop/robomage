@@ -6,8 +6,8 @@ The cross-language contract (the C++ twin in src/actor/menu_merge.h producing
 the same partition, hence bit-identical visits) is covered by
 train/test_mcts_parity.py; this file pins the Python-side semantics.
 
-Run standalone (the search-vs-net divergence check also runs from
-test_shard_record.py, ci_check tier shardrec):
+Runs in ci_check tier menus (the search-vs-net divergence check also runs
+from test_shard_record.py, ci_check tier shardrec); standalone:
     train/.venv/bin/python train/test_menu_merge.py
 """
 

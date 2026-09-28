@@ -6,7 +6,8 @@ checks np.float32 elementwise equality for both CARD_COST_MATRIX and
 CARD_ABILITY_COST_MATRIX. A future C++ actor reads these tables to reproduce the
 RL obs cost blocks, so the two sources MUST hold identical float32 values.
 
-Stdlib + numpy only. Standalone: train/.venv/bin/python train/test_cost_tables.py
+Stdlib + numpy only. Runs in ci_check tier pygen (after the generators);
+standalone: train/.venv/bin/python train/test_cost_tables.py
 """
 import os
 import re
