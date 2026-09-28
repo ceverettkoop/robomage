@@ -1753,7 +1753,7 @@
   Step: First Main (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 2 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW,res 1) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [1/1] | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1]
+  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [1/1] | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
   Pending: Cabal Therapy (self)
@@ -1804,7 +1804,7 @@
   Step: First Main (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW,res 1) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [1/1] | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1]
+  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [1/1] | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1835,7 +1835,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1866,7 +1866,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1897,7 +1897,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1928,7 +1928,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1959,7 +1959,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -1990,7 +1990,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2021,7 +2021,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2052,7 +2052,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2083,7 +2083,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat Warrior [3/2] [+1/+1:1]
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat Warrior [3/2] [+1/+1:1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2114,7 +2114,7 @@
   Step: Declare Atk (turn 9)
   Self:  24 life | mana: empty | hand(2): Goblin Bombardment, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | energy 1 | hand count: 0 | lib 46
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat Warrior [3/2] [+1/+1:1] (ATK)
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (ATK) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (ATK) | Orc Army [1/1] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat [2/2] [+1/+1:1] (ATK) | Cat Warrior [3/2] [+1/+1:1] (ATK)
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
   Self GY: Thoughtseize, Voice of Victory, Arid Mesa
   Opp GY:  Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
@@ -2156,7 +2156,7 @@
   Self:  2 life | mana: empty | energy 1 | hand(0): (empty) | lib 46
   Opp:   24 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK)
+  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK)
   Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Voice of Victory, Arid Mesa
   Self exile: Cabal Therapy
@@ -2179,7 +2179,7 @@
   Self:  2 life | mana: empty | energy 1 | hand(0): (empty) | lib 46
   Opp:   24 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK)
+  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK)
   Pending: Ocelot Pride (self)
   Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Voice of Victory, Arid Mesa
@@ -2222,7 +2222,7 @@
   Self:  2 life | mana: empty | energy 1 | hand(0): (empty) | lib 46
   Opp:   24 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (BLK->Cat Warrior,SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
+  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
   Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Voice of Victory, Arid Mesa
   Self exile: Cabal Therapy
@@ -2244,7 +2244,7 @@
   Self:  2 life | mana: empty | energy 1 | hand(0): (empty) | lib 46
   Opp:   24 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (BLK->Cat Warrior,SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
+  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
   Pending: Ocelot Pride (self)
   Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Voice of Victory, Arid Mesa
@@ -2288,7 +2288,7 @@
   Self:  2 life | mana: empty | energy 1 | hand(0): (empty) | lib 46
   Opp:   24 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (BLK->Cat Warrior,SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] (BLK->Cat Warrior,SICK) | Scrubland (T)
-  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,res 1,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
+  Opp BF:   Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Amped Raptor [2/1] [First Strike] (T,ATK) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plateau | Scrubland (T) | Cat [2/2] [+1/+1:1] (T,ATK) | Orc Army [1/1] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat [2/2] [+1/+1:1] (T,ATK) | Cat Warrior [3/2] [+1/+1:1] (T,ATK,BLOCKED)
   Self GY: Voice of Victory, Voice of Victory, Amped Raptor, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Voice of Victory, Arid Mesa
   Self exile: Cabal Therapy

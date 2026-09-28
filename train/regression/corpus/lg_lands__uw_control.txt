@@ -894,7 +894,7 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | energy 2 | hand(3): Brainstorm, Spell Pierce, Tamiyo, Inquisitive Student | lib 45
   Opp:   24 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Tundra (T)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T)
   Self GY: Brainstorm, Swords to Plowshares, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Meticulous Archive, Flooded Strand, Force of Will
   Opp GY:  Urza's Saga, Boseiju, Who Endures, Dark Depths, Mox Diamond

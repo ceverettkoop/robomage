@@ -1836,7 +1836,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1863,7 +1863,7 @@
   Self:  19 life | mana: empty | hand(3): Daze, Force of Will, Thassa's Oracle | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Thassa's Oracle (spell, opponent)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
@@ -1885,7 +1885,7 @@
   Self:  19 life | mana: empty | hand(2): Force of Will, Thassa's Oracle | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Daze (spell, self) -> Thassa's Oracle (spell, opponent)
   Pending: Daze (self)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1906,7 +1906,7 @@
   Self:  19 life | mana: empty | hand(2): Force of Will, Thassa's Oracle | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Daze (spell, self) -> Thassa's Oracle (opponent, slot 97) -> Thassa's Oracle (spell, opponent)
   Pending: Daze (self)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1930,7 +1930,7 @@
   Self:  19 life | mana: empty | hand(3): Force of Will, Thassa's Oracle, Tundra | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Daze (spell, self) -> Thassa's Oracle (opponent, slot 97) -> Thassa's Oracle (spell, opponent)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
@@ -1951,7 +1951,7 @@
   Self:  19 life | mana: empty | hand(2): Thassa's Oracle, Tundra | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Force of Will (spell, self) -> Daze (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Thassa's Oracle (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1973,7 +1973,7 @@
   Self:  19 life | mana: empty | hand(2): Thassa's Oracle, Tundra | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Stack: Force of Will (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Daze (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Thassa's Oracle (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
@@ -1999,7 +1999,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   18 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
   Stack: Daze (spell, opponent) -> Thassa's Oracle (self, slot 97) -> Thassa's Oracle (spell, self)
   Pending: Daze (opp)
@@ -2027,7 +2027,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   18 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)

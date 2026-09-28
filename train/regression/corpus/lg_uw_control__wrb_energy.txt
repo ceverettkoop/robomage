@@ -1040,7 +1040,7 @@
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
   Opp:   18 life | mana: empty | energy 4 | hand count: 4 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW,res 2) | Badlands (T) | Elegant Parlor (T)
+  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Stack: Cabal Therapy (spell, self) [flashback] -> opponent (player)
   Pending: Cabal Therapy (self)
@@ -1092,7 +1092,7 @@
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(5): Marsh Flats, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
   Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW,res 2) | Badlands (T) | Elegant Parlor (T)
+  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Self GY: Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
@@ -1116,7 +1116,7 @@
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
   Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW,res 2) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
+  Self BF:  Ajani, Nacatl Avenger [loy 3] (NEW) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Self GY: Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta
@@ -1140,7 +1140,7 @@
   Step: First Main (turn 6)
   Self:  18 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
   Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 2,act 1) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T) | Marsh Flats (NEW)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Stack: Ajani, Nacatl Avenger (ability, self)
   Self GY: Arid Mesa, Thoughtseize, Marsh Flats
@@ -1166,7 +1166,7 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 47
   Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 2,act 1) | Badlands (T) | Elegant Parlor (T)
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Stack: Marsh Flats (ability, self) -> Ajani, Nacatl Avenger (ability, self)
   Pending: Marsh Flats (self)
@@ -1194,7 +1194,7 @@
   Step: First Main (turn 6)
   Self:  17 life | mana: empty | hand(4): Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 46
   Opp:   18 life | mana: empty | energy 4 | hand count: 3 | lib 45
-  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,res 2,act 1) | Badlands (T) | Elegant Parlor (T) | Plateau (NEW)
+  Self BF:  Ajani, Nacatl Avenger [loy 5] (NEW,act 1) | Badlands (T) | Elegant Parlor (T) | Plateau (NEW)
   Opp BF:   Meticulous Archive (T) | Plains (T) | Tundra (T)
   Self GY: Marsh Flats, Arid Mesa, Thoughtseize, Marsh Flats
   Opp GY:  Flow State, Swords to Plowshares, Ponder, Tune the Narrative, Teferi, Time Raveler, Ponder, Flooded Strand, Tune the Narrative, Polluted Delta

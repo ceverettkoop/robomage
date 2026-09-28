@@ -1098,7 +1098,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Stack: Knight of the Reliquary (ability, self) [amt=1]
   Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
@@ -1121,7 +1121,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 46
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Stack: Knight of the Reliquary (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
@@ -1155,7 +1155,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1181,7 +1181,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Stack: Thalia, Guardian of Thraben (spell, self)
   Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
@@ -1203,7 +1203,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1230,7 +1230,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Windswept Heath | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1250,7 +1250,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Windswept Heath | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1270,7 +1270,7 @@
   Step: First Main (turn 10)
   Self:  19 life | mana: empty | hand(1): Swords to Plowshares | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Windswept Heath (NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [4/4] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Windswept Heath (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1294,7 +1294,7 @@
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 45
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Stack: Windswept Heath (ability, self)
   Pending: Windswept Heath (self)
@@ -1319,7 +1319,7 @@
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Force of Will, Tropical Island
@@ -1339,7 +1339,7 @@
   Step: First Main (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
@@ -1372,7 +1372,7 @@
   Step: Declare Atk (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Tropical Island
@@ -1395,7 +1395,7 @@
   Step: Declare Atk (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Tropical Island
@@ -1418,7 +1418,7 @@
   Step: Declare Atk (turn 10)
   Self:  18 life | mana: empty | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] (ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Self GY: Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Tropical Island
@@ -1445,7 +1445,7 @@
   Self:  17 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   18 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Keen-Eyed Curator [3/3] (T,ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
+  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T,SICK,NEW) | Keen-Eyed Curator [3/3] (T,ATK) | Knight of the Reliquary [5/5] (T) | Savannah (T) | Savannah (T,NEW) | Savannah (T,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Self GY: Tropical Island
   Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Scythecat Cub, Wasteland, Misty Rainforest, Once Upon a Time
   Self exile: Force of Will, Baleful Strix

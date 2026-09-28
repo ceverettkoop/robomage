@@ -3119,7 +3119,7 @@
   Self:  9 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
   Stack: Prismatic Vista (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Wasteland, Prismatic Vista, Scrubland
@@ -3142,7 +3142,7 @@
   Self:  9 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 68
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (NEW) | Pre-War Formalwear | Witch-Blessed Meadow | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
   Self GY: Wasteland, Prismatic Vista, Scrubland
   Opp GY:  Wasteland, Horizon Canopy, Bojuka Bog, Once Upon a Time
   Opp revealed: Wasteland, Collector Ouphe, Dryad Arbor, Endurance, Horizon Canopy, Once Upon a Time, Talon Gates of Madara, Bojuka Bog, Badgermole Cub
@@ -3166,7 +3166,7 @@
   Self:  9 life | mana: empty | hand(1): White Orchid Phantom | lib 68
   Opp:   16 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T,NEW) | Pre-War Formalwear | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
-  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW,res 1) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
+  Opp BF:   Badgermole Cub [2/2] (T) | Collector Ouphe [2/2] (SICK) | Dryad Arbor [1/1] (T,SICK,NEW) | Endurance [3/4] [Reach, Flash] (T) | Talon Gates of Madara (T)
   Pending: White Orchid Phantom (self)
   Self GY: Wasteland, Prismatic Vista, Scrubland
   Opp GY:  Wasteland, Horizon Canopy, Bojuka Bog, Once Upon a Time

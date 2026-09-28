@@ -4162,7 +4162,7 @@
   Step: End Step (turn 18)
   Self:  1 life | mana: empty | hand(1): Meteor Sword | lib 58
   Opp:   19 life | mana: empty | hand count: 1 | lib 34
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Undercity Sewers (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] (SICK) | Clue (SICK)
   Pending: Witch Enchanter (self)
   Self GY: Wasteland, Swords to Plowshares, Windswept Heath, Phelia, Exuberant Shepherd, Karakas, Swords to Plowshares, Prismatic Vista, Swords to Plowshares, Aether Vial, Flickerwisp, Pre-War Formalwear, Karakas, White Orchid Phantom, Prismatic Vista
@@ -4183,7 +4183,7 @@
   Step: End Step (turn 18)
   Self:  1 life | mana: empty | hand(1): Meteor Sword | lib 58
   Opp:   19 life | mana: empty | hand count: 1 | lib 34
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Undercity Sewers (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] (SICK) | Clue (SICK)
   Stack: Witch Enchanter (ability, self) -> Clue (opponent, slot 57)
   Self GY: Wasteland, Swords to Plowshares, Windswept Heath, Phelia, Exuberant Shepherd, Karakas, Swords to Plowshares, Prismatic Vista, Swords to Plowshares, Aether Vial, Flickerwisp, Pre-War Formalwear, Karakas, White Orchid Phantom, Prismatic Vista
@@ -4206,7 +4206,7 @@
   Step: End Step (turn 18)
   Self:  1 life | mana: empty | hand(1): Meteor Sword | lib 58
   Opp:   19 life | mana: empty | hand count: 1 | lib 34
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW,res 1) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Shadowy Backstreet (T) | Witch Enchanter [2/2] (SICK,NEW,res 1) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Undercity Sewers (T) | Underground Sea | Orc Army [1/1] [+1/+1:1] (SICK)
   Self GY: Wasteland, Swords to Plowshares, Windswept Heath, Phelia, Exuberant Shepherd, Karakas, Swords to Plowshares, Prismatic Vista, Swords to Plowshares, Aether Vial, Flickerwisp, Pre-War Formalwear, Karakas, White Orchid Phantom, Prismatic Vista
   Opp GY:  Bayou, Flow State, Ponder, Baleful Strix, Brainstorm, Force of Will, Wasteland, Flow State, Brainstorm, Flow State, Force of Will, Witherbloom Command, Fatal Push, Tropical Island

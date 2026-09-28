@@ -2697,7 +2697,7 @@
   Step: Upkeep (turn 10)
   Self:  16 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 40
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Stack: The One Ring (ability, self)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
@@ -2722,7 +2722,7 @@
   Step: Upkeep (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(4): Force of Negation, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 40
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2745,7 +2745,7 @@
   Step: Draw (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(5): Force of Negation, Plains, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 39
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2765,7 +2765,7 @@
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(5): Force of Negation, Plains, Swords to Plowshares, Tamiyo, Inquisitive Student, Wrath of the Skies | lib 39
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2793,7 +2793,7 @@
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(4): Force of Negation, Plains, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2817,7 +2817,7 @@
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(3): Force of Negation, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Polluted Delta, Ponder, Scalding Tarn, Unholy Heat, Mishra's Bauble, Daze, Daze, Brainstorm, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2843,7 +2843,7 @@
   Step: First Main (turn 10)
   Self:  14 life | mana: empty | energy 2 | hand(3): Force of Negation, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   18 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
+  Self BF:  Meticulous Archive (T) | Plains (NEW) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra (T) | Tundra (T) | Tundra | Clue
   Opp BF:   Cori-Steel Cutter | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand
@@ -3442,7 +3442,7 @@
   Step: Upkeep (turn 12)
   Self:  7 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Spell Pierce, Wasteland, Wrath of the Skies | lib 35
   Opp:   17 life | mana: empty | hand count: 2 | lib 39
-  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive | Plains (T) | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
   Opp BF:   Cori-Steel Cutter (->Murktide Regent) | Island (T) | Murktide Regent [8/8] [+1/+1:4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
   Stack: Swords to Plowshares (spell, self) -> Murktide Regent (opponent, slot 50) -> The One Ring (ability, self)
   Self GY: Tune the Narrative, Brainstorm, Force of Negation, Polluted Delta, Misty Rainforest, Tune the Narrative, Force of Will, Flooded Strand

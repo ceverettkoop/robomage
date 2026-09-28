@@ -2371,7 +2371,7 @@
   Step: End Step (turn 10)
   Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
   Opp:   15 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Mountain | Mountain | Mountain
   Pending: White Orchid Phantom (self)
   Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
@@ -2395,7 +2395,7 @@
   Step: End Step (turn 10)
   Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
   Opp:   15 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Mountain | Mountain | Mountain
   Stack: White Orchid Phantom (ability, self)
   Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
@@ -2419,7 +2419,7 @@
   Step: End Step (turn 10)
   Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
   Opp:   15 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Self BF:  Aether Vial (NEW) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
   Opp BF:   Mountain | Mountain | Mountain
   Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
   Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt

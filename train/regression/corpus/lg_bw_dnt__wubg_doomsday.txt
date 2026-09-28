@@ -653,7 +653,7 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW)
   Opp GY:  Brainstorm, Lotus Petal
   Opp revealed: Island, Brainstorm, Lotus Petal, Tamiyo, Inquisitive Student
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
@@ -669,7 +669,7 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(5): Teferi, Time Raveler, Thassa's Oracle, Tropical Island, Undercity Sewers, Veil of Summer | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1)
+  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW)
   Opp BF:   Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T) | Wasteland
   Self GY: Brainstorm, Lotus Petal
   Known top: Teferi, Time Raveler, Polluted Delta, ?, ?, ?
@@ -690,7 +690,7 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(4): Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers, Veil of Summer | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (NEW)
+  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (NEW)
   Opp BF:   Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T) | Wasteland
   Self GY: Brainstorm, Lotus Petal
   Known top: Teferi, Time Raveler, Polluted Delta, ?, ?, ?
@@ -712,7 +712,7 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   20 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T,NEW)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T,NEW)
   Stack: Veil of Summer (spell, opponent)
   Opp GY:  Brainstorm, Lotus Petal
   Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -732,7 +732,7 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   20 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T,NEW)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T,NEW)
   Stack: Aether Vial (ability, self) -> Veil of Summer (spell, opponent)
   Opp GY:  Brainstorm, Lotus Petal
   Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -751,7 +751,7 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   20 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T) | Wasteland
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T,NEW)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T,NEW)
   Stack: Wasteland (ability, self) -> Aether Vial (ability, self) -> Veil of Summer (spell, opponent)
   Pending: Wasteland (self)
   Opp GY:  Brainstorm, Lotus Petal
@@ -778,7 +778,7 @@
   Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
   Opp:   20 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T)
-  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1)
+  Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW)
   Stack: Aether Vial (ability, self) -> Veil of Summer (spell, opponent)
   Pending: Aether Vial (self)
   Self GY: Wasteland
@@ -802,7 +802,7 @@
   Step: First Main (turn 4)
   Self:  20 life | mana: empty | hand(3): Teferi, Time Raveler, Thassa's Oracle, Undercity Sewers | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1)
+  Self BF:  Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW)
   Opp BF:   Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T)
   Self GY: Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
   Opp GY:  Wasteland

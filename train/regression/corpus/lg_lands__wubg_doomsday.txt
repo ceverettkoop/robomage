@@ -1640,7 +1640,7 @@
   Step: First Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1661,7 +1661,7 @@
   Step: Begin Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1683,7 +1683,7 @@
   Step: Declare Atk (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1703,7 +1703,7 @@
   Step: End Combat (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1723,7 +1723,7 @@
   Step: Second Main (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
   Self GY: Street Wraith, Doomsday
@@ -1746,7 +1746,7 @@
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Stack: Quantum Riddler (ability, self)
   Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step, on stack #0)
@@ -1770,7 +1770,7 @@
   Step: End Step (turn 6)
   Self:  8 life | mana: empty | hand(4): Edge of Autumn, Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
   Self GY: Street Wraith, Doomsday
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths

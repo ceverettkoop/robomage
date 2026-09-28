@@ -1778,7 +1778,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   20 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Opp BF:   Thundering Falls (T) | Volcanic Island (T)
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Brainstorm, Brainstorm, Daze, Mishra's Bauble, Daze, Mishra's Bauble, Mishra's Bauble
@@ -1808,7 +1808,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   20 life | mana: empty | hand count: 6 | lib 45
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Thundering Falls (T) | Volcanic Island (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)

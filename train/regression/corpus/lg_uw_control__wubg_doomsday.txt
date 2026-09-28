@@ -1834,7 +1834,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
   Opp:   18 life | mana: empty | energy 2 | hand count: 7 | lib 40
-  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue | Clue
   Opp BF:   Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra (T)
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp GY:  Brainstorm, Polluted Delta, Flow State, Lorien Revealed, Lorien Revealed, Ponder, Brainstorm, Tune the Narrative, Polluted Delta
@@ -1864,7 +1864,7 @@
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
   Opp:   18 life | mana: empty | energy 2 | hand count: 7 | lib 40
-  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
   Opp BF:   Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tundra (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)

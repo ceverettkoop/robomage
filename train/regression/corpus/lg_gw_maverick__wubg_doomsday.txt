@@ -1841,7 +1841,7 @@
   Step: First Main (turn 6)
   Self:  5 life | mana: empty | hand(3): Force of Will, Teferi, Time Raveler, Thassa's Oracle | lib 1
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island | Underground Sea | Clue
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island | Underground Sea | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Street Wraith, Edge of Autumn, Island, Doomsday
@@ -1868,7 +1868,7 @@
   Step: First Main (turn 6)
   Self:  5 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 1
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
   Stack: Thassa's Oracle (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
@@ -1895,7 +1895,7 @@
   Step: First Main (turn 6)
   Self:  5 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 1
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Tropical Island (T) | Underground Sea (T) | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)

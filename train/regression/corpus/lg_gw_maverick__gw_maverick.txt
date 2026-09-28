@@ -1853,7 +1853,7 @@
   Step: First Main (turn 13)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   18 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW,res 1) | Knight of the Reliquary [6/6] (T) | Savannah | Savannah
+  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Knight of the Reliquary [6/6] (T) | Savannah | Savannah
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] | Wasteland (T)
   Stack: Knight of the Reliquary (ability, self) [amt=1] -> Badgermole Cub (spell, self)
   Pending: Knight of the Reliquary (self)
@@ -1890,7 +1890,7 @@
   Step: First Main (turn 13)
   Self:  20 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   18 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW,res 1) | Knight of the Reliquary [6/6] (T) | Savannah | Savannah (NEW) | Savannah
+  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Birds of Paradise [0/1] [Flying] (T) | Forest (T,NEW) | Knight of the Reliquary [6/6] (T) | Savannah | Savannah (NEW) | Savannah
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] | Wasteland (T)
   Pending: Badgermole Cub (self)
   Self GY: Gaea's Cradle, Wasteland, Misty Rainforest, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Swords to Plowshares
@@ -2413,7 +2413,7 @@
   Step: First Main (turn 15)
   Self:  14 life | mana: empty | hand(1): Savannah | lib 42
   Opp:   18 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T,NEW,res 1) | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest (T,NEW) | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
   Stack: Knight of the Reliquary (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
@@ -2447,7 +2447,7 @@
   Step: First Main (turn 15)
   Self:  14 life | mana: empty | hand(1): Savannah | lib 41
   Opp:   18 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (SICK,NEW) | Forest (T,NEW,res 1) | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (SICK,NEW) | Forest (T,NEW) | Knight of the Reliquary [5/5] (T) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
   Self GY: Wasteland, Misty Rainforest, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Swords to Plowshares
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Swords to Plowshares, Savannah, Misty Rainforest, Once Upon a Time
@@ -2470,7 +2470,7 @@
   Step: Declare Atk (turn 15)
   Self:  14 life | mana: empty | hand(0): (empty) | lib 41
   Opp:   18 life | mana: empty | hand count: 2 | lib 44
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (SICK,NEW) | Forest (T,NEW,res 1) | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
+  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] (SICK,NEW) | Forest (T,NEW) | Knight of the Reliquary [5/5] (T) | Savannah (NEW) | Savannah | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW,act 1)
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Keen-Eyed Curator [4/4] [+1/+1:1] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
   Self GY: Wasteland, Misty Rainforest, Thalia, Guardian of Thraben, Wasteland, Once Upon a Time, Swords to Plowshares
   Opp GY:  Wasteland, Gaea's Cradle, Swords to Plowshares, Swords to Plowshares, Savannah, Misty Rainforest, Once Upon a Time

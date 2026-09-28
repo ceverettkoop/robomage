@@ -5198,7 +5198,7 @@
   Step: Second Main (turn 17)
   Self:  16 life | mana: empty | hand(2): Force of Will, Plains | lib 34
   Opp:   23 life | mana: empty | energy 2 | hand count: 2 | lib 35
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 2) | Tundra (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T,NEW,res 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Clue (SICK)
   Self GY: Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
@@ -5853,7 +5853,7 @@
   Step: Upkeep (turn 20)
   Self:  23 life | mana: empty | energy 2 | hand(4): Geist of Saint Traft, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 30
   Opp:   16 life | mana: empty | hand count: 2 | lib 32
-  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Clue
+  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra | Clue
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
   Self GY: Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
   Opp GY:  Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -5878,7 +5878,7 @@
   Step: Draw (turn 20)
   Self:  23 life | mana: empty | energy 2 | hand(5): Force of Will, Geist of Saint Traft, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 29
   Opp:   16 life | mana: empty | hand count: 2 | lib 32
-  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Clue
+  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra | Clue
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
   Self GY: Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
   Opp GY:  Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -5901,7 +5901,7 @@
   Step: First Main (turn 20)
   Self:  23 life | mana: empty | energy 2 | hand(5): Force of Will, Geist of Saint Traft, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 29
   Opp:   16 life | mana: empty | hand count: 2 | lib 32
-  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Clue
+  Self BF:  Island (T) | Island | Meticulous Archive | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra | Clue
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
   Self GY: Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
   Opp GY:  Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -5933,7 +5933,7 @@
   Self:  16 life | mana: empty | hand(2): Force of Negation, Force of Will | lib 32
   Opp:   23 life | mana: empty | energy 2 | hand count: 4 | lib 29
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Clue
   Stack: Geist of Saint Traft (spell, opponent)
   Self GY: Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
   Opp GY:  Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
@@ -5957,7 +5957,7 @@
   Self:  16 life | mana: empty | hand(1): Force of Negation | lib 32
   Opp:   23 life | mana: empty | energy 2 | hand count: 4 | lib 29
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Clue
   Stack: Force of Will (spell, self) -> Geist of Saint Traft (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -5981,7 +5981,7 @@
   Self:  16 life | mana: empty | hand(1): Force of Negation | lib 32
   Opp:   23 life | mana: empty | energy 2 | hand count: 4 | lib 29
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
-  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Clue
+  Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Clue
   Stack: Force of Will (spell, self) -> Geist of Saint Traft (opponent, slot 97) -> Geist of Saint Traft (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -6008,7 +6008,7 @@
   Step: First Main (turn 20)
   Self:  23 life | mana: empty | energy 2 | hand(4): Force of Will, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 29
   Opp:   15 life | mana: empty | hand count: 0 | lib 32
-  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra (T) | Clue
+  Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Clue
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra | Tundra
   Self GY: Geist of Saint Traft, Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative, Force of Will
   Opp GY:  Force of Will, Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -11812,7 +11812,7 @@
   Step: Second Main (turn 31)
   Self:  12 life | mana: empty | hand(1): Swords to Plowshares | lib 21
   Opp:   19 life | mana: empty | energy 1 | hand count: 4 | lib 18
-  Self BF:  Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 18] (act 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 2) | Tundra (T) | Tundra
+  Self BF:  Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 18] (act 1) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Tundra
   Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 14] | Teferi, Time Raveler [loy 7] | Tundra (T) | Tundra
   Self GY: Lorien Revealed, Brainstorm, Flooded Strand, Wasteland, Tamiyo, Inquisitive Student, The One Ring, Flooded Strand, Flooded Strand, Wasteland, Force of Will, Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
   Opp GY:  Misty Rainforest, Flow State, Tundra, Wrath of the Skies, Force of Will, Flooded Strand, Flooded Strand, Meticulous Archive, Geist of Saint Traft, Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative
@@ -12201,7 +12201,7 @@
   Step: First Main (turn 32)
   Self:  19 life | mana: empty | energy 1 | hand(5): Force of Will, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 15
   Opp:   12 life | mana: empty | hand count: 1 | lib 21
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tamiyo, Seasoned Scholar [loy 14] | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tamiyo, Seasoned Scholar [loy 14] | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 18] | Tundra (T) | Tundra
   Self GY: Ponder, Misty Rainforest, Flow State, Tundra, Wrath of the Skies, Force of Will, Flooded Strand, Flooded Strand, Meticulous Archive, Geist of Saint Traft, Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative
   Opp GY:  Tamiyo, Inquisitive Student, Lorien Revealed, Brainstorm, Flooded Strand, Wasteland, Tamiyo, Inquisitive Student, The One Ring, Flooded Strand, Flooded Strand, Wasteland, Force of Will, Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -12225,7 +12225,7 @@
   Step: First Main (turn 32)
   Self:  19 life | mana: empty | energy 1 | hand(5): Force of Will, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 15
   Opp:   12 life | mana: empty | hand count: 1 | lib 21
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 18] | Tundra (T) | Tundra
   Self GY: Tamiyo, Inquisitive Student, Ponder, Misty Rainforest, Flow State, Tundra, Wrath of the Skies, Force of Will, Flooded Strand, Flooded Strand, Meticulous Archive, Geist of Saint Traft, Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative
   Opp GY:  Tamiyo, Inquisitive Student, Lorien Revealed, Brainstorm, Flooded Strand, Wasteland, Tamiyo, Inquisitive Student, The One Ring, Flooded Strand, Flooded Strand, Wasteland, Force of Will, Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta
@@ -12254,7 +12254,7 @@
   Step: First Main (turn 32)
   Self:  19 life | mana: empty | energy 1 | hand(5): Force of Will, Lorien Revealed, Swords to Plowshares, Swords to Plowshares, Swords to Plowshares | lib 15
   Opp:   12 life | mana: empty | hand count: 1 | lib 21
-  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
+  Self BF:  Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Teferi, Time Raveler [loy 7] | The One Ring [burden:1] [Indestructible] (T,NEW,res 1) | Tundra (T) | Tundra (T)
   Opp BF:   Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 18] | Tundra (T) | Tundra
   Self GY: Tamiyo, Inquisitive Student, Ponder, Misty Rainforest, Flow State, Tundra, Wrath of the Skies, Force of Will, Flooded Strand, Flooded Strand, Meticulous Archive, Geist of Saint Traft, Brainstorm, Wasteland, Flow State, Tamiyo, Inquisitive Student, Wasteland, Tamiyo, Inquisitive Student, Ponder, Wasteland, Force of Will, Misty Rainforest, Tune the Narrative
   Opp GY:  Tamiyo, Inquisitive Student, Lorien Revealed, Brainstorm, Flooded Strand, Wasteland, Tamiyo, Inquisitive Student, The One Ring, Flooded Strand, Flooded Strand, Wasteland, Force of Will, Brainstorm, Mystic Sanctuary, Force of Negation, Flow State, Ponder, Swords to Plowshares, Lorien Revealed, Brainstorm, Tundra, Flooded Strand, Meticulous Archive, Force of Will, Ponder, Brainstorm, Ponder, Tune the Narrative, Polluted Delta

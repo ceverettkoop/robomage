@@ -2188,7 +2188,7 @@
   Step: Draw (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2209,7 +2209,7 @@
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2235,7 +2235,7 @@
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Stack: Tamiyo, Seasoned Scholar (ability, self)
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
@@ -2260,7 +2260,7 @@
   Step: First Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2283,7 +2283,7 @@
   Step: Begin Combat (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2307,7 +2307,7 @@
   Step: Declare Atk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2332,7 +2332,7 @@
   Step: Declare Atk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2355,7 +2355,7 @@
   Step: Declare Atk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2379,7 +2379,7 @@
   Step: Declare Blk (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   16 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2405,7 +2405,7 @@
   Step: Combat Dmg (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   10 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2427,7 +2427,7 @@
   Step: End Combat (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   10 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T,ATK) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2449,7 +2449,7 @@
   Step: Second Main (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   10 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal
@@ -2472,7 +2472,7 @@
   Step: End Step (turn 10)
   Self:  15 life | mana: empty | energy 2 | hand(4): Spell Snare, Swords to Plowshares, Swords to Plowshares, Wrath of the Skies | lib 39
   Opp:   10 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,res 1,act 1) | Tundra | Tundra | Tundra
+  Self BF:  Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Tamiyo, Seasoned Scholar [loy 4] (NEW,act 1) | Tundra | Tundra | Tundra
   Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
   Self GY: Brainstorm, Polluted Delta, The One Ring, Misty Rainforest, Tune the Narrative
   Opp GY:  Thoughtseize, Ponder, Brainstorm, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Polluted Delta, Brainstorm, Marsh Flats, Lotus Petal

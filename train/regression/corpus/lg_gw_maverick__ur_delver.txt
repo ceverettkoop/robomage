@@ -3047,7 +3047,7 @@
   Step: First Main (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Stack: Knight of the Reliquary (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
@@ -3081,7 +3081,7 @@
   Step: Declare Atk (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -3106,7 +3106,7 @@
   Step: Declare Atk (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -3131,7 +3131,7 @@
   Step: Declare Atk (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -3156,7 +3156,7 @@
   Step: Declare Atk (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -3181,7 +3181,7 @@
   Step: Declare Atk (turn 15)
   Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
+  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -3212,7 +3212,7 @@
   Self:  3 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -3232,7 +3232,7 @@
   Self:  3 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Pending: Murktide Regent (self)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3263,7 +3263,7 @@
   Self:  3 life | mana: empty | hand(0): (empty) | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (BLK->Endurance,SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK,BLOCKED) | Forest (T,NEW,res 2) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
+  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK,BLOCKED) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler

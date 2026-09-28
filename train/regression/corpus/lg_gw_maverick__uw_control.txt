@@ -1622,7 +1622,7 @@
   Step: Second Main (turn 8)
   Self:  15 life | mana: empty | energy 2 | hand(6): Flow State, Force of Negation, Force of Will, Swords to Plowshares, The One Ring, Wasteland | lib 41
   Opp:   20 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW,res 2) | Tundra (T) | Tundra (T) | Tundra (T,NEW)
+  Self BF:  Tamiyo, Seasoned Scholar [loy 2] (NEW) | Tundra (T) | Tundra (T) | Tundra (T,NEW)
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Gaea's Cradle | Savannah (T)
   Self GY: Ponder, Polluted Delta, Misty Rainforest, Meticulous Archive, Flooded Strand, Tune the Narrative, Force of Will, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4010,7 +4010,7 @@
   Step: Upkeep (turn 16)
   Self:  10 life | mana: empty | energy 2 | hand(5): Geist of Saint Traft, Murktide Regent, Spell Snare, Teferi, Time Raveler, Wrath of the Skies | lib 43
   Opp:   24 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 10] | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra
+  Self BF:  Island | Tamiyo, Seasoned Scholar [loy 10] | Tamiyo, Seasoned Scholar [loy 2] (NEW) | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra
   Opp BF:   Birds of Paradise [0/1] [Flying] (T) | Forest (T) | Savannah (T) | Savannah (T)
   Stack: The One Ring (ability, self)
   Self GY: Swords to Plowshares, Force of Negation, Tundra

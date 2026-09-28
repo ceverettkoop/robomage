@@ -1378,7 +1378,7 @@
   Step: Upkeep (turn 8)
   Self:  20 life | mana: empty | hand(2): Flooded Strand, Flooded Strand | lib 49
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
@@ -1399,7 +1399,7 @@
   Step: Draw (turn 8)
   Self:  20 life | mana: empty | hand(3): Dark Ritual, Flooded Strand, Flooded Strand | lib 48
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
@@ -1419,7 +1419,7 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(3): Dark Ritual, Flooded Strand, Flooded Strand | lib 48
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
@@ -1444,7 +1444,7 @@
   Step: First Main (turn 8)
   Self:  20 life | mana: empty | hand(2): Dark Ritual, Flooded Strand | lib 48
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls | Flooded Strand (NEW) | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
+  Self BF:  Cavern of Souls | Flooded Strand (NEW) | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
@@ -1470,7 +1470,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Dark Ritual, Flooded Strand | lib 48
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue
+  Self BF:  Cavern of Souls | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Clue
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Flooded Strand (ability, self)
   Self GY: Flooded Strand, Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
@@ -1501,7 +1501,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(3): Dark Ritual, Flooded Strand, Ponder | lib 47
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Flooded Strand (ability, self)
   Pending: Flooded Strand (self)
@@ -1527,7 +1527,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(3): Dark Ritual, Flooded Strand, Ponder | lib 46
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Underground Sea (NEW)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Underground Sea (NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Flooded Strand, Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
@@ -1553,7 +1553,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Dark Ritual, Flooded Strand | lib 46
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Underground Sea (T,NEW)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Underground Sea (T,NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1576,7 +1576,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Dark Ritual, Flooded Strand | lib 46
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Underground Sea (T,NEW)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Underground Sea (T,NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1597,7 +1597,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(2): Dark Ritual, Flooded Strand | lib 46
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Underground Sea (T,NEW)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Underground Sea (T,NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Ponder (spell, self)
   Pending: Ponder (self)
@@ -1621,7 +1621,7 @@
   Step: First Main (turn 8)
   Self:  19 life | mana: empty | hand(3): Brainstorm, Dark Ritual, Flooded Strand | lib 45
   Opp:   13 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Underground Sea (T,NEW)
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW) | Underground Sea (T,NEW)
   Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Ponder, Flooded Strand, Brainstorm, Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Doomsday
   Opp GY:  Flooded Strand, Thoughtseize, Thoughtseize, Polluted Delta, Marsh Flats, Brainstorm, Lotus Petal
