@@ -250,10 +250,11 @@
 //                [5797] card_id of the spell/ability currently making a
 //                mid-resolution choice (target select, dig/scry/surveil pick,
 //                search, discard, modal, ...; sentinel = none). Set via
-//                PendingDecisionScope — the source may not be on the stack yet,
-//                since targets are announced before the spell moves there
-//                (CR 601.2b/c), so this is the only place the observation shows
-//                WHAT is asking for the current choice.
+//                PendingDecisionScope — a spell or activated ability being
+//                proposed is already on the stack (CR 601.2a / 602.2a), but a
+//                mid-resolution choice's source may not be, so this is the one
+//                place the observation always shows WHAT is asking for the
+//                current choice.
 //                [5798] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 //

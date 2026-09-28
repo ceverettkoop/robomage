@@ -1209,9 +1209,9 @@ def _decode_pending_decision(state):
     """The spell/ability currently making a mid-resolution choice, or None.
 
     Returns {"name", "card_idx", "is_self"} for the source of the pending
-    target/dig/search/discard/modal choice. The source may not be on the stack
-    yet (targets are announced before the spell moves there), so this is the
-    only place the observation shows WHAT is asking for the current choice.
+    target/dig/search/discard/modal choice. A mid-resolution choice's source
+    need not be on the stack, so this is the one place the observation always
+    shows WHAT is asking for the current choice.
     """
     idx = _slot_card_idx(state, _PENDING_DECISION_START)
     if idx < 0:
@@ -1728,8 +1728,8 @@ def format_state_lines(gs):
     if gs.get("delayed_triggers"):
         lines.append("Delayed: " + " | ".join(fmt_delayed_trigger(d)
                                               for d in gs["delayed_triggers"]))
-    # Source of the current mid-resolution choice (may not be on the stack yet,
-    # since targets are announced before the spell moves there).
+    # Source of the current choice: a spell/ability being cast or activated (already
+    # on the stack, CR 601.2a / 602.2a) or a resolving effect's source.
     pend = gs.get("pending_decision")
     if pend:
         lines.append(f"Pending: {pend['name']}"

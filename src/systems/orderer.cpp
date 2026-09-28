@@ -4,6 +4,7 @@
 #include <memory>
 #include <numeric>
 
+#include "../error.h"
 #include "../stable_rng.h"
 
 #include "../card_db.h"
@@ -52,14 +53,20 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     Zone ab_zone(Zone::HAND, controller, controller);
     global_coordinator.AddComponent(ability_entity, ab_zone);
     add_to_zone(false, ability_entity, Zone::STACK);
+    global_coordinator.AddComponent(ability_entity, Ability{});
+    set_stack_ability(ability_entity, ability, controller);
+    return ability_entity;
+}
+
+void Orderer::set_stack_ability(Entity ability_entity, const Ability &ability,
+                                Zone::Ownership controller) {
     // The player who put the ability on the stack controls it (CR 113.8 / 603.3a): stamp that onto
     // the stack object so every "you" it resolves reads Ability::controller.
-    Ability stack_ab = ability;
+    Ability &stack_ab = global_coordinator.GetComponent<Ability>(ability_entity);
+    stack_ab = ability;
     stack_ab.controller = controller;
     stack_ab.source_gen = stamp_object_gen(stack_ab.source);
     stamp_source_transforms(stack_ab);
-    global_coordinator.AddComponent(ability_entity, stack_ab);
-    return ability_entity;
 }
 
 void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) {
@@ -392,6 +399,64 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
     }
     add_to_zone(false, target, destination);
     return true;
+}
+
+// See declaration in orderer.h.
+Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    const Zone origin = z;
+    // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
+    // library, whose known-top record the rewind would also have to restore.
+    if (origin.location != Zone::HAND && origin.location != Zone::GRAVEYARD &&
+        origin.location != Zone::EXILE)
+        fatal_error("begin_cast_move: a card can't be cast from zone " +
+                    std::to_string(static_cast<int>(origin.location)));
+    close_zone_gap(card);
+    for (auto &&e : mEntities) {
+        if (e == card) continue;
+        auto &cz = global_coordinator.GetComponent<Zone>(e);
+        if (cz.location == Zone::STACK) cz.distance_from_top++;
+    }
+    z.location = Zone::STACK;
+    z.distance_from_top = 0;
+    z.controller = caster;
+    z.obj_gen = cur_game.next_obj_gen++;
+    z.identity_known = false;
+    z.is_face_down = false;
+    // A spell on the stack is public (CR 400.2).
+    mark_card_revealed(card, z.owner);
+    return origin;
+}
+
+// See declaration in orderer.h.
+void Orderer::complete_cast_move(Entity card, const Zone &origin) {
+    // A void counter on an exiled card (Dauthi Voidwalker) doesn't follow it out of exile
+    // (CR 400.7, 122.2).
+    if (origin.location == Zone::EXILE) cur_game.void_countered.erase(card);
+    supersede_last_known_info(card);
+    Event ev(Events::CARD_CHANGED_ZONE);
+    ev.SetParam(Params::ENTITY, card);
+    ev.SetParam(Params::PLAYER, get_player_entity(origin.owner));
+    ev.SetParam(Params::ORIGIN, origin.location);
+    ev.SetParam(Params::DESTINATION, Zone::STACK);
+    global_coordinator.SendEvent(ev);
+}
+
+// See declaration in orderer.h.
+void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
+    close_zone_gap(card);
+    // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
+    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
+        for (auto &&e : mEntities) {
+            if (e == card) continue;
+            auto &cz = global_coordinator.GetComponent<Zone>(e);
+            if (cz.location != origin.location || cz.owner != origin.owner) continue;
+            if (cz.distance_from_top >= origin.distance_from_top) cz.distance_from_top++;
+        }
+    }
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    z = origin;
+    if (origin.location == Zone::HAND) z.identity_known = true;
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER

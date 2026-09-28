@@ -1605,7 +1605,7 @@ def _decode_board_state(obs, value=None):
             print(f"    {ln}")
 
     # The spell/ability asking for the current mid-resolution choice (target
-    # select, dig/search pick, discard, modal, ...). May not be on the stack yet.
+    # select, dig/search pick, discard, modal, ...).
     pending = decode._decode_pending_decision(obs)
     if pending:
         who = self_label if pending["is_self"] else opp_label

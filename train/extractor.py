@@ -813,7 +813,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         arch_onehot   = obs[:, _ARCH_ONEHOT_START:_ARCH_ONEHOT_END]
 
         # Pending-decision context: embed WHAT is asking for the current choice
-        # (may not be on the stack yet — targets are announced pre-push).
+        # (a mid-resolution choice's source need not be on the stack).
         pending_emb, _ = self._embed_ids(pending[:, 0])         # (B, card_embed)
         pending_feat = torch.cat([pending_emb, pending[:, 1:2]], dim=-1)
 

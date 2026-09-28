@@ -329,30 +329,36 @@ std::set<Entity> collect_pending_pins() {
         if (pt.source != 0) pins.insert(pt.source);
         pin_ability_tree_targets(pt.ab, pins);
     }
-    // A suspended cast (tag CAST): the spell being cast — its zone row (hand /
-    // graveyard / exile) must survive a world resample so the resumed flow
-    // (and its FINISH move-to-stack) finds it where it left it — plus every
-    // target the announce stages have bound so far: the half-built primary
-    // ability's own/sub/charm-mode targets, the aura enchant target, and the
-    // replicate copy machine's in-flight state (the announce/copy target
-    // menus themselves list only battlefield/stack/player entities, covered
-    // by the generic menu pins above — the spell and its bound targets are
-    // what must additionally hold still).
+    // A suspended cast (tag CAST): the spell being cast — on the stack since
+    // the cast began (CR 601.2a), its identity and the zone row a rewind returns
+    // it to must survive a world resample — plus every target the announce
+    // stages have bound so far: the half-built primary ability's own/sub/
+    // charm-mode targets, the aura enchant target, and the replicate copy
+    // machine's in-flight state (the announce/copy target menus themselves list
+    // only battlefield/stack/player entities, covered by the generic menu pins
+    // above), and every cost item already chosen (a pitched hand card, a delve
+    // or escape graveyard card, a permanent to sacrifice or return) — the
+    // spell, its bound targets and its chosen costs are what must additionally
+    // hold still.
     const Game::PendingCast &pcst = cur_game.pending_cast;
     if (pcst.active) {
         if (pcst.spell_entity != 0) pins.insert(pcst.spell_entity);
         if (pcst.have_ability) pin_ability_tree_targets(pcst.ability, pins);
         if (pcst.enchant_ab.target != 0) pins.insert(pcst.enchant_ab.target);
         pin_copy_spell_rt(pcst.copy_rt, pins);
+        for (const auto &r : pcst.cost_removals) pins.insert(r.entity);
     }
     // A suspended activation (tag ACTIVATION): the activating card — its zone
     // row (battlefield / hand / graveyard for ActivationZone$ paths) must
     // survive a world resample so the resumed flow finds it where it left it —
-    // plus every target the pre-cost selection has bound so far.
+    // plus every target the pre-cost selection has bound so far and the cost
+    // items already chosen.
     const Game::PendingActivation &pact = cur_game.pending_activation;
     if (pact.active) {
         if (pact.source_entity != 0) pins.insert(pact.source_entity);
         pin_ability_tree_targets(pact.stack_ab, pins);
+        if (pact.sac_choice != 0) pins.insert(pact.sac_choice);
+        if (pact.return_choice != 0) pins.insert(pact.return_choice);
     }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.

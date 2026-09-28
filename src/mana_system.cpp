@@ -587,7 +587,10 @@ size_t max_available_mana(Zone::Ownership player_owner, const ManaValue &base_co
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
     ManaPaymentSnapshot snap;
     Entity player_entity = get_player_entity(player);
-    snap.player_mana = global_coordinator.GetComponent<Player>(player_entity).mana;
+    const auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    snap.player_mana = pl.mana;
+    snap.life_total = pl.life_total;
+    snap.life_lost_this_turn = pl.life_lost_this_turn;
     snap.delve_exiled = cur_game.delve_exiled;
 
     for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
@@ -605,7 +608,10 @@ ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<
 void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
                         std::shared_ptr<Orderer> orderer) {
     Entity player_entity = get_player_entity(player);
-    global_coordinator.GetComponent<Player>(player_entity).mana = snap.player_mana;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    pl.mana = snap.player_mana;
+    pl.life_total = snap.life_total;
+    pl.life_lost_this_turn = snap.life_lost_this_turn;
 
     for (auto &[entity, was_tapped] : snap.tapped_state) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -897,10 +903,10 @@ static int life_reserved_for_pending_payment(Zone::Ownership seat) {
     const auto &pc = cur_game.pending_cast;
     if (pc.active && pc.caster_is_a == seat_is_a)
         return pc.deferred_life_cost + (pc.life_x_announced > 0 ? pc.life_x_announced : 0);
-    // An activation pays its mana before its life (SECONDARY_PRE pays the life).
+    // An activation pays its mana before its life (PAY_APPLY pays the life).
     const auto &pa = cur_game.pending_activation;
     if (pa.active && pa.activator_is_a == seat_is_a &&
-        pa.step < Game::PendingActivation::SECONDARY_PRE)
+        pa.step < Game::PendingActivation::PAY_APPLY)
         return pa.ability.life_cost;
     return 0;
 }

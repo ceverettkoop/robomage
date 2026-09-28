@@ -2,6 +2,7 @@
 #define MANA_SYSTEM_H
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
@@ -136,9 +137,13 @@ ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
 
-// Snapshot of mana-related state for rewind on payment failure
+// Snapshot of mana-related state for rewind on payment failure: reversing the mana abilities
+// the payment activated (CR 733.1) restores the pool, the sources' tapped state and activation
+// counts, and the life a painful source took (Ancient Tomb's damage, a horizon land's PayLife).
 struct ManaPaymentSnapshot {
     std::multiset<Colors> player_mana;
+    int32_t life_total = 0;
+    int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
     std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
     std::vector<Entity> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind

@@ -509,9 +509,9 @@ _OPP_KNOWN_HAND_START = _OPP_KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
-# sentinel = none) + its controller-is-viewer flag. The source may not be on the
-# stack yet (targets are announced before the spell moves there), so this is the
-# only place the observation shows WHAT is asking for the current choice.
+# sentinel = none) + its controller-is-viewer flag. A mid-resolution choice's
+# source need not be on the stack, so this is the one place the observation
+# always shows WHAT is asking for the current choice.
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = PENDING_DECISION_SIZE  # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE

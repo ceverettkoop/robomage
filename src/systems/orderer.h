@@ -47,9 +47,30 @@ public:
     // sacrifice gate (CR 714.4). Returns true when a card moved into a zone (its landing zone may
     // differ from `destination` under a replacement effect).
     bool remove_from_stack(Entity target, Zone::ZoneValue destination);
+    // The three stages of the card's move while it is cast (CR 601.2a / 601.2i / 733.1). The
+    // card moves when the proposal begins, but its zone change becomes an EVENT only once the
+    // spell becomes cast, so a proposal that is reversed leaves no trace behind.
+    //   begin_cast_move: CR 601.2a — move `card` from its hand, graveyard or exile to the top of
+    //     the stack, controlled by `caster`, as a new object (CR 400.7) whose identity is public.
+    //     Returns the card's Zone as it was, for complete_cast_move / rewind_cast_move.
+    //   complete_cast_move: CR 601.2i — the spell became cast: the move's CARD_CHANGED_ZONE event
+    //     fires, and what the card carried in its old zone ends (a void counter in exile, the
+    //     last-known information of its old battlefield object).
+    //   rewind_cast_move: CR 601.5 / 733.1 — the proposal was reversed: the card returns to the
+    //     zone and position `origin` records, as the same object it was, with no zone-change
+    //     event. Its identity stays known to both players (it was revealed on the stack).
+    Zone begin_cast_move(Entity card, Zone::Ownership caster);
+    void complete_cast_move(Entity card, const Zone &origin);
+    void rewind_cast_move(Entity card, const Zone &origin);
     // Create a standalone ability entity and place it on the stack. `ability` must
     // already have source/controller/target populated. Returns the new entity.
     Entity push_ability_onto_stack(const Ability &ability, Zone::Ownership controller);
+    // Replace the Ability of the stack object `ability_entity` (made by push_ability_onto_stack)
+    // with `ability`, controlled by `controller` — how an activated ability put on the stack as its
+    // activation began (CR 602.2a) takes its final choices once it becomes activated (CR 602.2b,
+    // 601.2i).
+    void set_stack_ability(Entity ability_entity, const Ability &ability,
+                           Zone::Ownership controller);
     std::vector<Entity> get_library_contents(Zone::Ownership owner);
     // The top `n` cards of `owner`'s library, ordered so result[0] is the actual top card
     // (sorted by Zone::distance_from_top ascending); fewer than `n` if the library is smaller.

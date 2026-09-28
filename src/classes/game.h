@@ -290,9 +290,9 @@ struct Game {
         // The source entity of the spell/ability currently making a mid-resolution choice
         // (target select, dig/scry/surveil pick, search, discard, modal, ...). Serialized into
         // the state vector's pending-decision context block so the ML observation shows WHAT is
-        // asking for the current choice — the source may not be on the stack yet, since targets
-        // are announced before the spell moves there (CR 601.2b/c). Managed exclusively via
-        // PendingDecisionScope; 0 = no ability-driven choice pending.
+        // asking for the current choice (a mid-resolution choice's source need not be on the
+        // stack). Managed exclusively via PendingDecisionScope; 0 = no ability-driven choice
+        // pending.
         Entity pending_decision_source = 0;
         // Suspension framework (see pending_query.h / resolution_frame.h): a
         // mid-flow decision parked for the main loop to emit, and the persisted
@@ -353,16 +353,19 @@ struct Game {
         // sacrifice, escape exile-from-graveyard, alt-cost pitch/return); only
         // the interactive mana payment and the interactive hybrid pips remain
         // blocking (machine mode auto-resolves both with zero decisions).
-        // active == true from the CAST_SPELL action until the spell reaches
-        // the stack (COPY_TARGETS end) or the payment cancel rewinds.
+        // active == true from the CAST_SPELL action until the spell becomes
+        // cast (COPY_TARGETS end) or the proposal is reversed (rewind_cast).
+        // The card is on the stack for that whole span (CR 601.2a).
         struct PendingCast {
             // Where the flow resumes. The enum is listed in RUN order, which follows
             // CR 601.2: announce (601.2b) -> targets (601.2c) -> pay every cost
             // (601.2f-h). Everything from ALT_PITCH to PAY_APPLY is the single payment
             // phase: it CHOOSES each non-mana cost item first, then floats and pays
-            // mana, then applies the chosen items. Nothing irreversible happens before
-            // MANA_PAY commits, so its failure path rewinds the whole cast from
-            // mana_snap alone (see cost_removals).
+            // mana, then applies the chosen items and every other cost (CR 601.2h).
+            // Nothing irreversible happens before MANA_PAY commits, so a proposal
+            // reversed at any step before PAY_APPLY (CR 601.5 / 733.1) is undone by
+            // rewind_cast: the card returns to cast_origin, mana_snap restores the
+            // payment's mana abilities, and the chosen items are simply dropped.
             enum Step {
                 COST,             // cost-branch dispatch (flashback/escape/impulse/alt vs regular)
                 KICKER,           // per-kicker optional-additional-cost y/n
@@ -390,9 +393,9 @@ struct Game {
                 DEF_EXILE_TYPES,  // escape exile-by-types picks (CR 702.139)
                 DEF_EXILE_COUNT,  // escape exile-by-count picks (Uro)
                 MANA_PAY,         // float doomed permanents, then pay mana (interactive payer stays blocking)
-                PAY_APPLY,        // apply the chosen cost items + life, once the mana committed
+                PAY_APPLY,        // apply the chosen cost items + life + energy, once the mana committed
                 COPY_TARGETS,     // replicate copy retargeting (pc.copy_rt) + take_action LAST
-                FINISH            // spell to stack + cast events; seeds COPY_TARGETS
+                FINISH            // the spell becomes cast (CR 601.2i): cast events; seeds COPY_TARGETS
             };
             bool active = false;
             Step step = COST;
@@ -406,10 +409,17 @@ struct Game {
             bool use_offspring = false;
             bool impulse_cast = false;
             bool cast_back_face = false;
-            // Snapshot of mana state for rewind on payment failure (taken in
-            // process_action before the flow starts, consumed by the MANA_PAY
-            // cancel path).
+            // The card's Zone before the cast moved it to the stack (CR 601.2a):
+            // where a reversed proposal returns it (Orderer::rewind_cast_move) and
+            // the origin of the zone change reported once it becomes cast.
+            Zone cast_origin;
+            // cur_game.x_paid before this cast announced an X, restored by a rewind.
+            size_t x_paid_before = 0;
+            // Snapshot of mana state taken as MANA_PAY begins (the first step that
+            // can activate a mana ability), restored when the proposal is reversed
+            // after it (mana_snap_taken).
             ManaPaymentSnapshot mana_snap;
+            bool mana_snap_taken = false;
             // The regular-cost accumulation (base + offspring/kicker/replicate/
             // X/hybrid/phyrexian folds), deferred into deferred_mana_cost once
             // the cost is fully resolved.
@@ -451,7 +461,14 @@ struct Game {
             // exile-from-graveyard) are deferred the same way: targets first (601.2c),
             // then every cost (601.2g/h). They are paid only after the deferred mana
             // payment commits, so a cancelled payment never costs life or a creature.
+            // An exile grant's LIFE resource cost (CR 118.9) adds to it too.
             int deferred_life_cost = 0;
+            // Life paid for Phyrexian pips (CR 107.4f). Paid as each pip is announced, so the
+            // choice shows in the life total at the prompts that follow; a rewind gives it back.
+            int phyrexian_life_paid = 0;
+            // An exile grant's ENERGY resource cost (Amped Raptor, CR 118.9 / 107.14), paid at
+            // PAY_APPLY with the rest of the non-mana costs.
+            int deferred_energy_cost = 0;
             // Variable life X (Toxic Deluge's PayLife<X>): the value ANNOUNCED at LIFE_X
             // (CR 601.2b), paid at PAY_APPLY. Kept apart from deferred_life_cost only so
             // the narrative can still say "pays N life (X = N)". -1 = no such cost.
@@ -461,14 +478,14 @@ struct Game {
             int deferred_exile_count = 0;
             // Cost items that have been CHOSEN but not yet applied. Every non-mana cost
             // that moves a card (the alt cost's pitch/bounce/sacrifice, a spell's
-            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles) is
-            // picked before the mana payment and applied only after it commits, at
-            // PAY_APPLY. That split is what makes a failed payment a CLEAN rewind: when
-            // prompt_mana_payment returns false nothing irreversible has happened yet, so
-            // restoring mana_snap restores the whole cast (CR 601.2h lets the costs be
-            // paid in any order, and CR 733 wants the failure to leave no trace). It also
-            // lets the payment SEE the doomed permanents — MANA_PAY floats their mana
-            // before spending, since they are still on the battlefield at that point.
+            // additional sacrifice, flashback's sacrifice, escape's graveyard exiles,
+            // delve's graveyard exiles) is picked before the mana payment and applied
+            // only after it commits, at PAY_APPLY. That split is what makes a reversed
+            // proposal a CLEAN rewind: before PAY_APPLY nothing irreversible has happened,
+            // so rewind_cast restores the whole game (CR 601.2h lets the costs be paid in
+            // any order, and CR 733.1 wants the reversal to leave no trace). It also lets
+            // the payment SEE the doomed permanents — MANA_PAY floats their mana before
+            // spending, since they are still on the battlefield at that point.
             struct CostRemoval {
                 Entity entity = 0;
                 Zone::ZoneValue dest = Zone::GRAVEYARD;
@@ -477,6 +494,8 @@ struct Game {
                 // whole so each cost keeps its own wording ("sacrifices X", "returns X
                 // to hand", "exiles X from their graveyard").
                 std::string log;
+                // A delve exile (CR 702.66a): recorded in cur_game.delve_exiled as it moves.
+                bool delve = false;
             };
             std::vector<CostRemoval> cost_removals;
             // The half-built primary spell ability. The ENTITY's Ability
@@ -508,18 +527,19 @@ struct Game {
             CopySpellRT copy_rt;
             // ── Deferred-payment progress (Batch 11) ──
             // Alt-cost pick loops (Force of Will's pitch, Daze's return):
-            // completed picks. NOTE this branch pays BEFORE targets are chosen
-            // — the pre-existing alt-cost order, kept for byte compatibility.
+            // completed picks.
             int alt_pitch_done = 0;
             int alt_return_done = 0;
             int alt_sac_done = 0;  // alt-cost Sac<N/Type> sacrifices completed (Fireblast)
             // Delve (CR 702.66): the chosen exile count, completed picks, and
             // the pre-delve priority seat (the blocking prompt seated both
             // delve stages on the caster and restored the seat afterwards;
-            // the arm-time repoint persists its prev value here instead).
+            // the arm-time repoint persists its prev value here instead, and
+            // delve_seat_held says it is still to be restored).
             size_t delve_exile_ct = 0;
             size_t delve_picks_done = 0;
             bool delve_prev_priority_a = true;
+            bool delve_seat_held = false;
             // Escape ExileFromGrave progress (CR 702.139): distinct card types
             // exiled so far (min-types form) / cards exiled so far (Uro's
             // literal-count form). Candidate lists are re-derived from the
@@ -530,35 +550,35 @@ struct Game {
         PendingCast pending_cast;
         // Activated-ability suspension state (pending_query tag ACTIVATION):
         // the persisted state machine of process_action's ACTIVATE_ABILITY
-        // branch (run_activation_flow, action_processor.cpp). The branch's
-        // former locals — the activated ability, the in-flight targeted copy,
-        // the chosen X, the pre-payment equip/ninjutsu candidate menus — live
-        // here BY VALUE so a cur_game copy covers the whole in-flight
-        // activation. Batch 12 converted every machine-mode prompt in the
-        // family: the equip creature menu, the X-activation and loyalty-X
-        // ladders, the pre-cost target selection (battlefield and hand/
-        // graveyard activation zones), the secondary-cost sacrifice/return
-        // picks, and the ninjutsu return-an-attacker pick. The interactive
-        // mana payment stays blocking (machine mode auto-pays with zero
-        // decisions); every cancel path fully rewinds and clears this.
+        // branch (run_activation_flow, action_processor.cpp). The activated
+        // ability, the in-flight targeted copy, the chosen X and the chosen
+        // cost items live here BY VALUE so a cur_game copy covers the whole
+        // in-flight activation. Every machine-mode prompt in the family is a
+        // loop-top pending decision: the X-activation and loyalty-X ladders,
+        // the pre-cost target selection (battlefield and hand/graveyard
+        // activation zones), and the sacrifice/return cost picks (including
+        // ninjutsu's return-an-attacker pick). The interactive mana payment
+        // stays blocking (machine mode auto-pays with zero decisions).
         // active == true from the ACTIVATE_ABILITY action until the ability
-        // resolves off-stack (mana ability), reaches the stack, or a payment
-        // cancel rewinds.
+        // resolves off-stack (mana ability), becomes activated, or the
+        // proposal is reversed (rewind_activation). A non-mana ability is on
+        // the stack for that whole span (CR 602.2a).
         struct PendingActivation {
-            // Where the flow resumes. Steps run in today's exact statement
-            // order; steps that never prompt pass through synchronously.
+            // Where the flow resumes, in CR 602.2 order: announce and choose (X,
+            // targets, the cost items to sacrifice/return), then pay every cost
+            // (602.2b -> 601.2g-h). Nothing is paid before PAY, and PAY_APPLY applies
+            // the non-mana costs only once the mana committed, so a proposal reversed
+            // at any step before PAY_APPLY (CR 733.1) leaves no trace.
             enum Step {
                 ZONE_TARGET,       // hand/graveyard activation: pre-cost target select
-                ZONE_PAY,          // hand/graveyard activation: mana payment (sync)
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
                 TARGET,            // battlefield pre-cost select_target
-                TAP_PAY,           // tap cost + mana payment (cancel rewind; sync)
-                SECONDARY_PRE,     // loyalty/life/energy/sac-self costs (sync)
-                SECONDARY_SAC,     // type-based sacrifice-cost pick
-                SECONDARY_RETURN,  // return-to-hand-cost pick
-                SECONDARY_POST,    // discard-self / discard-hand costs (sync)
-                FINISH             // mana production, or stack push + take_action
+                COST_SAC,          // type-based sacrifice-cost pick (chosen, not yet moved)
+                COST_RETURN,       // return-to-hand-cost pick (chosen, not yet moved)
+                PAY,               // tap cost + mana payment (failure rewinds; sync)
+                PAY_APPLY,         // loyalty/life/energy/sacrifice/return/discard costs (sync)
+                FINISH             // mana production, or the ability becomes activated + take_action
             };
             bool active = false;
             Step step = X_LADDER;
@@ -568,19 +588,32 @@ struct Game {
             bool activator_is_a = true;
             // Hand/graveyard ActivationZone$ path (no Permanent component):
             // routes FINISH to the zone path's completion (auto-consume to
-            // graveyard + stack push) instead of the battlefield mana/stack
-            // completion.
+            // graveyard) instead of the battlefield mana/stack completion.
             bool zone_path = false;
             // The activated ability as the consumed LegalAction carried it
             // (costs are read from here), and the in-flight copy the target
-            // selection writes into (pushed onto the stack at FINISH) — the
-            // branch's former `ability` / `stack_ab` pair.
+            // selection writes into (the stack object's Ability once it
+            // becomes activated) — the branch's former `ability` / `stack_ab`
+            // pair.
             Ability ability;
             Ability stack_ab;
+            // The ability's object on the stack (CR 602.2a), created as the
+            // activation is proposed; 0 for a mana ability (CR 605.3b).
+            Entity stack_entity = 0;
             // X chosen at the X_LADDER step (added as generic pips to the
-            // TAP_PAY cost). The loyalty-X choice lives only in
-            // cur_game.x_paid, exactly like the blocking flow.
+            // PAY cost). The loyalty-X choice lives only in cur_game.x_paid.
             size_t x_activation = 0;
+            // cur_game.x_paid before this activation announced an X, restored by
+            // a rewind.
+            size_t x_paid_before = 0;
+            // The permanents chosen at COST_SAC / COST_RETURN, moved at PAY_APPLY
+            // (0 = none).
+            Entity sac_choice = 0;
+            Entity return_choice = 0;
+            // Snapshot of mana state taken as PAY begins, restored when the payment
+            // fails (mana_snap_taken).
+            ManaPaymentSnapshot mana_snap;
+            bool mana_snap_taken = false;
             // The shared in-flight target pick (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).
