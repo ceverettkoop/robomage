@@ -25,18 +25,18 @@ static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
 
 HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Delirium-conditional damage (Unholy Heat)
-    size_t dmg = ab.def.amount;
+    size_t dmg = ab.def->amount;
     // Dynamic damage (e.g. Ajani's "damage equal to the number of creatures you control",
     // NumDmg$ X with X = Count$Valid Creature.YouCtrl). Mirrors lose_life/gain_life, which
     // evaluate their dynamic amount at resolution.
-    if (!ab.def.dynamic_amount_expr.empty()) {
+    if (!ab.def->dynamic_amount_expr.empty()) {
         // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
         // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
         // control) can exclude the source itself via the +Other qualifier.
-        dmg = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
+        dmg = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
                                       ab.source.lki_entity());
     }
-    const DamageParams *dp = std::get_if<DamageParams>(&ab.def.params);
+    const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
     if (dp && dp->is_delirium_scale) {
         if (check_delirium(ab.controller, orderer->mEntities)) dmg = dp->delirium_amount;
     }
@@ -52,9 +52,9 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // player who cast the spell) also routes through resolve_defined_player, which binds the
     // player captured at trigger-fire time. Without this it would fall to the targeted path
     // with an unset target and trip the "should have fizzled" guard.
-    if (ab.def.defined_you || ab.def.defined_each_opponent || ab.def.defined_targeted_controller ||
-        ab.def.defined_triggered_activator || ab.def.defined_triggered_player ||
-        ab.def.defined_triggered_card_controller) {
+    if (ab.def->defined_you || ab.def->defined_each_opponent || ab.def->defined_targeted_controller ||
+        ab.def->defined_triggered_activator || ab.def->defined_triggered_player ||
+        ab.def->defined_triggered_card_controller) {
         Zone::Ownership who = resolve_defined_player(ab);
         if (who != Zone::UNKNOWN) ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;

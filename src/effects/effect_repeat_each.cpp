@@ -51,7 +51,7 @@ static std::vector<std::string> imprinted_types(Zone::Ownership owner) {
 // persisted FrameLevel via resolve_child (the same machinery the per-player path uses).
 static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     std::vector<std::string> types = imprinted_types(ab.controller);
-    size_t body_count = ab.def.repeat_sub_count > 0 ? ab.def.repeat_sub_count : ab.subabilities.size();
+    size_t body_count = ab.def->repeat_sub_count > 0 ? ab.def->repeat_sub_count : ab.subabilities.size();
     if (body_count > ab.subabilities.size()) body_count = ab.subabilities.size();
 
     RepeatRt local_rt;
@@ -122,9 +122,9 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
 // resolves as a persisted REPEAT_SUB FrameLevel (iter_index = the player index).
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // RepeatTypesFrom$ — loop once per distinct card type among the imprinted cards (Atraxa).
-    if (!ab.def.repeat_types_from.empty()) return repeat_each_types(ab, orderer, ctx);
+    if (!ab.def->repeat_types_from.empty()) return repeat_each_types(ab, orderer, ctx);
 
-    if (ab.def.repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
+    if (ab.def->repeat_players.empty() || ab.subabilities.empty()) return HandlerResult::DONE_NO_SUBS;
 
     Zone::Ownership active = active_seat();
     Zone::Ownership nonactive = opponent_of(active);
@@ -153,7 +153,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                         sub.source = parent->source;
                         sub.controller = parent->controller;
                         // Defined$ Remembered points the sub-ability at the looped player.
-                        if (sub.def.defined_remembered) sub.target = ObjectRef::of(pe);
+                        if (sub.def->defined_remembered) sub.target = ObjectRef::of(pe);
                     };
                     if (ctx.resolve_child(sub_template, FrameLevel::REPEAT_SUB, rt.sub_idx,
                                           rt.player_idx, bind, orderer) ==
@@ -164,7 +164,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     sub.source = ab.source;
                     sub.controller = ab.controller;
                     // Defined$ Remembered points the sub-ability at the looped player.
-                    if (sub.def.defined_remembered) sub.target = ObjectRef::of(pe);
+                    if (sub.def->defined_remembered) sub.target = ObjectRef::of(pe);
                     sub.resolve(orderer);
                 }
             }

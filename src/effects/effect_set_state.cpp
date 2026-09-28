@@ -17,8 +17,8 @@ namespace effects {
 // card the source Saga chapter I exiled face down); Defined$ Self falls back to the source. A
 // future SetState on a target would read ab.target here.
 static Entity set_state_subject(const Ability &ab) {
-    if (ab.def.defined_exiled_with) return exiled_with_card(ab.source.get());
-    if (ab.def.defined_self) return ab.source.get();
+    if (ab.def->defined_exiled_with) return exiled_with_card(ab.source.get());
+    if (ab.def->defined_self) return ab.source.get();
     return ab.target.get();
 }
 
@@ -32,7 +32,7 @@ HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, Frame
         return HandlerResult::DONE_RUN_SUBS;
     auto &z = global_coordinator.GetComponent<Zone>(subject);
 
-    if (ab.def.set_state_mode == "TurnFaceUp") {
+    if (ab.def->set_state_mode == "TurnFaceUp") {
         if (z.is_face_down) {
             z.is_face_down = false;
             // Turning it face up makes its identity public knowledge (CR 708.2) — record it in the
@@ -41,7 +41,7 @@ HandlerResult set_state(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, Frame
             mark_card_revealed(subject, z.owner);
             game_log("%s is turned face up.\n", entity_name(subject).c_str());
         }
-    } else if (ab.def.set_state_mode == "TurnFaceDown") {
+    } else if (ab.def->set_state_mode == "TurnFaceDown") {
         z.is_face_down = true;
         game_log("%s is turned face down.\n", entity_name(subject).c_str());
     }

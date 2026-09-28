@@ -3,7 +3,11 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
+#include <deque>
+#include <map>
 #include <string>
+#include <tuple>
+#include <unordered_map>
 #include <vector>
 
 #include "../classes/action.h"
@@ -48,6 +52,8 @@ extern Game cur_game;
 // effects.h (de-static'd so effect handlers in src/effects/ can share them);
 // their definitions remain below.
 
+// The process-wide definition store behind intern_ability_def (see ability.h).
+static std::deque<AbilityDef> &ability_def_store();
 // Bind a chained sub-ability's target before it resolves, reading the script's stated
 // Defined$ intent rather than blanket-inheriting the parent's target. See definition below
 // (CR 608.2c). Forward-declared per CLAUDE.md.
@@ -86,29 +92,30 @@ static bool search_candidate_matches(Entity entity, const std::string &change_ty
                                      Entity chain_target);
 
 // edge case of two identical abilities being applied from two sources not handled
-bool Ability::identical_activated_ability(const AbilityDef &other) const {
-    if (other.category != def.category) return false;
-    if (other.valid_tgts != def.valid_tgts) return false;
-    if (other.amount != def.amount) return false;
+bool Ability::identical_activated_ability(const AbilityDef *other) const {
+    if (other == def) return true;
+    if (other->category != def->category) return false;
+    if (other->valid_tgts != def->valid_tgts) return false;
+    if (other->amount != def->amount) return false;
     // A Metalcraft-/condition-gated ability and an otherwise-identical ungated one are
     // distinct abilities (Urza's Workshop: plain "{T}: Add {C}" vs the Metalcraft
     // "{T}: Add {C} for each Urza's land"). Likewise two mana abilities that produce
     // different dynamic amounts are distinct. Without these the second is wrongly deduped.
-    if (other.activation_condition != def.activation_condition) return false;
-    if (other.dynamic_amount_expr != def.dynamic_amount_expr) return false;
-    if (other.tap_cost != def.tap_cost) return false;
-    if (other.activation_mana_cost != def.activation_mana_cost) return false;
-    if (other.sac_self != def.sac_self) return false;
-    if (other.change_type != def.change_type) return false;
-    if (other.origin != def.origin) return false;
-    if (other.origin_any != def.origin_any) return false;
-    if (other.destination != def.destination) return false;
-    if (other.color != def.color) return false;
-    if (other.mana_choices != def.mana_choices) return false;
-    if (other.reflected_mana_filter != def.reflected_mana_filter) return false;
-    if (other.restrict_to_chosen_type_creature != def.restrict_to_chosen_type_creature) return false;
-    if (other.restrict_to_creature != def.restrict_to_creature) return false;
-    if (other.adds_no_counter != def.adds_no_counter) return false;
+    if (other->activation_condition != def->activation_condition) return false;
+    if (other->dynamic_amount_expr != def->dynamic_amount_expr) return false;
+    if (other->tap_cost != def->tap_cost) return false;
+    if (other->activation_mana_cost != def->activation_mana_cost) return false;
+    if (other->sac_self != def->sac_self) return false;
+    if (other->change_type != def->change_type) return false;
+    if (other->origin != def->origin) return false;
+    if (other->origin_any != def->origin_any) return false;
+    if (other->destination != def->destination) return false;
+    if (other->color != def->color) return false;
+    if (other->mana_choices != def->mana_choices) return false;
+    if (other->reflected_mana_filter != def->reflected_mana_filter) return false;
+    if (other->restrict_to_chosen_type_creature != def->restrict_to_chosen_type_creature) return false;
+    if (other->restrict_to_creature != def->restrict_to_creature) return false;
+    if (other->adds_no_counter != def->adds_no_counter) return false;
     return true;
 }
 
@@ -509,8 +516,8 @@ bool run_unless_loop(
         unless_actions.erase(
             std::remove_if(unless_actions.begin(), unless_actions.end(),
                 [&](const LegalAction &la) {
-                    return !la.ability.def.activation_mana_cost.empty() &&
-                           !can_afford(controller, la.ability.def.activation_mana_cost);
+                    return !la.ability.def->activation_mana_cost.empty() &&
+                           !can_afford(controller, la.ability.def->activation_mana_cost);
                 }),
             unless_actions.end());
 
@@ -563,7 +570,7 @@ bool run_unless_loop(
 void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     // stack manager present behavior moves everything to graveyard or destroys it
     // so for now this is a stub
-    game_log("%s fizzles\n", this->def.category.c_str());
+    game_log("%s fizzles\n", this->def->category.c_str());
     return;
 }
 
@@ -611,9 +618,9 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
     if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
     if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
     auto &ab = global_coordinator.GetComponent<Ability>(cand);
-    if (alt.find("Activated") != std::string::npos && ab.def.ability_type == AbilityDef::ACTIVATED)
+    if (alt.find("Activated") != std::string::npos && ab.def->ability_type == AbilityDef::ACTIVATED)
         return true;
-    if (alt.find("Triggered") != std::string::npos && ab.def.ability_type == AbilityDef::TRIGGERED)
+    if (alt.find("Triggered") != std::string::npos && ab.def->ability_type == AbilityDef::TRIGGERED)
         return true;
     return false;
 }
@@ -693,12 +700,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
     // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
     if (cand == source.get()) {
-        for (size_t p = def.valid_tgts.find("Other"); p != std::string::npos;
-             p = def.valid_tgts.find("Other", p + 1)) {
-            bool left_ok = (p > 0) && (def.valid_tgts[p - 1] == '.' || def.valid_tgts[p - 1] == '+');
+        for (size_t p = def->valid_tgts.find("Other"); p != std::string::npos;
+             p = def->valid_tgts.find("Other", p + 1)) {
+            bool left_ok = (p > 0) && (def->valid_tgts[p - 1] == '.' || def->valid_tgts[p - 1] == '+');
             size_t end = p + 5;  // length of "Other"
-            bool right_ok = (end == def.valid_tgts.size()) ||
-                            def.valid_tgts[end] == '.' || def.valid_tgts[end] == '+';
+            bool right_ok = (end == def->valid_tgts.size()) ||
+                            def->valid_tgts[end] == '.' || def->valid_tgts[end] == '+';
             if (left_ok && right_ok) return false;
         }
     }
@@ -712,15 +719,15 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // the shared filter evaluator on both the stack-spell and battlefield-permanent paths
     // (CR 115.1: target restrictions are checked when chosen, against the candidate).
 
-    const std::string &vt = def.valid_tgts;
+    const std::string &vt = def->valid_tgts;
 
     // Stack-object targets (counterspells, Stifle, Consign to Memory): TargetType$ names one or
     // more kinds of stack object — "Spell[.quals]", "Activated", "Triggered" — as an OR list.
-    if (!def.target_type.empty() &&
-        (def.target_type.find("Spell") != std::string::npos ||
-         def.target_type.find("Activated") != std::string::npos ||
-         def.target_type.find("Triggered") != std::string::npos)) {
-        if (!target_type_matches_stack_object(def.target_type, cand)) return false;
+    if (!def->target_type.empty() &&
+        (def->target_type.find("Spell") != std::string::npos ||
+         def->target_type.find("Activated") != std::string::npos ||
+         def->target_type.find("Triggered") != std::string::npos)) {
+        if (!target_type_matches_stack_object(def->target_type, cand)) return false;
         // A bare "TargetType$ Spell" carries its restriction in ValidTgts$, written against the
         // CARD on the stack — Red Elemental Blast "Card.Blue", Force of Negation
         // "Card.nonCreature", Flusterstorm "Instant,Sorcery" (CR 115.1: the restriction is part
@@ -741,7 +748,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
-    if (vt == "Card" && def.category == "ChangeZone" && def.origin == Zone::GRAVEYARD) {
+    if (vt == "Card" && def->category == "ChangeZone" && def->origin == Zone::GRAVEYARD) {
         return global_coordinator.entity_has_component<Zone>(cand) &&
                global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
@@ -783,8 +790,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // from your graveyard to the battlefield"). In every case the target is the card sitting
     // in the graveyard, matched there by its card characteristics regardless of destination; a
     // card's controller there is its owner (CR 108.4a), so YouCtrl/OppCtrl mean YouOwn/OppOwn.
-    if (def.target_in_graveyard ||
-        (def.category == "ChangeZone" && def.origin == Zone::GRAVEYARD)) {
+    if (def->target_in_graveyard ||
+        (def->category == "ChangeZone" && def->origin == Zone::GRAVEYARD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         if (global_coordinator.GetComponent<Zone>(cand).location != Zone::GRAVEYARD) return false;
         return card_matches_filter(cand, owner_relative_filter(spec), ctx);
@@ -811,7 +818,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // colors. The "is a spell" half is known here from this Ability's type (a SPELL ability,
         // not an activated/triggered ability), and the "is colored" half from the source's
         // effective colors — so a colorless spell, or any ability, may still target it.
-        if (def.ability_type == AbilityDef::SPELL && has_protection_from_colored_spells(cand_cr) &&
+        if (def->ability_type == AbilityDef::SPELL && has_protection_from_colored_spells(cand_cr) &&
             !is_colorless(source.lki_entity()))
             return false;
     }
@@ -834,7 +841,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
 bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
-    if (target.empty() && targets.empty() && def.target_min == 0) return true;
+    if (target.empty() && targets.empty() && target_min == 0) return true;
 
     // Multi-target abilities (target_max > 1) populate `targets`. CR 608.2b: the spell or
     // ability is countered on resolution only if ALL of its targets are illegal; with at
@@ -1250,19 +1257,86 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // sub, including independently-targeted ones, whose own (card) target must not erase the
     // outer player target (see Ability::targeted_player).
     sub.targeted_player = parent.player_target_for_subs();
-    if (sub.def.valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
-    const std::string &d = sub.def.defined;
+    if (sub.def->valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
+    const std::string &d = sub.def->defined;
     if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
         d == "TargetedController")
         sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }
 
-Ability::Ability(const AbilityDef &d) : def(d) {
-    subabilities.reserve(d.subabilities.size());
-    for (const AbilityDef &sub : d.subabilities) subabilities.emplace_back(sub);
-    charm_choices.reserve(d.charm_choices.size());
-    for (const AbilityDef &mode : d.charm_choices) charm_choices.emplace_back(mode);
+Ability::Ability(const AbilityDef *d)
+    : def(d), target_min(d->target_min), target_max(d->target_max), color(d->color) {
+    subabilities.reserve(d->subabilities.size());
+    for (const AbilityDef &sub : d->subabilities) subabilities.emplace_back(&sub);
+    charm_choices.reserve(d->charm_choices.size());
+    for (const AbilityDef &mode : d->charm_choices) charm_choices.emplace_back(&mode);
+}
+
+// The definition store (see ability.h). A deque never moves its elements, so the pointers it
+// hands out stay valid as it grows.
+static std::deque<AbilityDef> &ability_def_store() {
+    static std::deque<AbilityDef> store;
+    return store;
+}
+
+const AbilityDef *intern_ability_def(AbilityDef def) {
+    ability_def_store().push_back(std::move(def));
+    return &ability_def_store().back();
+}
+
+std::vector<const AbilityDef *> intern_ability_defs(std::vector<AbilityDef> defs) {
+    std::vector<const AbilityDef *> out;
+    out.reserve(defs.size());
+    for (AbilityDef &d : defs) out.push_back(intern_ability_def(std::move(d)));
+    return out;
+}
+
+const AbilityDef *keyed_ability_def(const std::string &key,
+                                    const std::function<AbilityDef()> &build) {
+    static std::unordered_map<std::string, const AbilityDef *> by_key;
+    auto it = by_key.find(key);
+    if (it != by_key.end()) return it->second;
+    const AbilityDef *d = intern_ability_def(build());
+    by_key.emplace(key, d);
+    return d;
+}
+
+const AbilityDef *derived_ability_def(const AbilityDef *base, const std::string &variant, int value,
+                                      const std::function<void(AbilityDef &)> &edit) {
+    static std::map<std::tuple<const AbilityDef *, std::string, int>, const AbilityDef *> derived;
+    auto key = std::make_tuple(base, variant, value);
+    auto it = derived.find(key);
+    if (it != derived.end()) return it->second;
+    AbilityDef copy = *base;
+    edit(copy);
+    const AbilityDef *d = intern_ability_def(std::move(copy));
+    derived.emplace(key, d);
+    return d;
+}
+
+const AbilityDef *triggered_effect_def(const std::string &category) {
+    return keyed_ability_def("triggered:" + category, [&category] {
+        AbilityDef d;
+        d.ability_type = AbilityDef::TRIGGERED;
+        d.category = category;
+        return d;
+    });
+}
+
+const AbilityDef *draw_one_trigger_def() {
+    return keyed_ability_def("draw_one", [] {
+        AbilityDef d;
+        d.ability_type = AbilityDef::TRIGGERED;
+        d.category = "Draw";
+        d.amount = 1;
+        return d;
+    });
+}
+
+const AbilityDef *blank_ability_def() {
+    static const AbilityDef *blank = intern_ability_def(AbilityDef{});
+    return blank;
 }
 
 Entity Ability::player_target_for_subs() const {
@@ -1312,8 +1386,8 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     auto signed_str = [](int v) {
         return (v >= 0 ? std::string("+") : std::string()) + std::to_string(v);
     };
-    if (ab.def.category == "Pump" || ab.def.category == "PumpAll") {
-        const PumpParams *pp = std::get_if<PumpParams>(&ab.def.params);
+    if (ab.def->category == "Pump" || ab.def->category == "PumpAll") {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
         if (!pp || (pp->att == 0 && pp->def == 0 && pp->att_expr.empty() && pp->def_expr.empty()))
             return "";  // keyword-grant-only pump — no P/T change to report
         int att = 0, def = 0;
@@ -1322,9 +1396,9 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     }
     // Counter effects keep their count in CounterParams (CounterNum$/its SVar), not
     // Ability::amount — read it the way the handlers do.
-    if (ab.def.category == "PutCounter" || ab.def.category == "PutCounterAll" ||
-        ab.def.category == "RemoveCounter") {
-        const CounterParams *cp = std::get_if<CounterParams>(&ab.def.params);
+    if (ab.def->category == "PutCounter" || ab.def->category == "PutCounterAll" ||
+        ab.def->category == "RemoveCounter") {
+        const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
         if (!cp) return "";
         int n = cp->count;
         if (!cp->count_expr.empty())
@@ -1334,9 +1408,9 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     }
     // Discard only counts by Ability::amount in Random mode (Hymn to Tourach); the
     // reveal-and-choose / discard-all modes (Thoughtseize, Cabal Therapy) have no fixed count.
-    if (ab.def.category == "Discard") {
-        const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def.params);
-        if (dp && dp->mode == "Random") return ", amount: " + std::to_string(ab.def.amount);
+    if (ab.def->category == "Discard") {
+        const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def->params);
+        if (dp && dp->mode == "Random") return ", amount: " + std::to_string(ab.def->amount);
         return "";
     }
     // Categories where Ability::amount (or its dynamic Count$ expression) is the effect's
@@ -1344,12 +1418,12 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     static const std::set<std::string> kAmountIsAuthoritative = {
         "DealDamage", "DamageAll", "Draw", "Mill", "GainLife", "LoseLife",
         "Scry", "Surveil"};
-    if (kAmountIsAuthoritative.count(ab.def.category)) {
-        size_t amt = ab.def.amount;
+    if (kAmountIsAuthoritative.count(ab.def->category)) {
+        size_t amt = ab.def->amount;
         // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
-        if (amt == 0 && (ab.def.category == "Draw" || ab.def.category == "Mill")) amt = 1;
-        if (!ab.def.dynamic_amount_expr.empty())
-            amt = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ab.controller, orderer,
+        if (amt == 0 && (ab.def->category == "Draw" || ab.def->category == "Mill")) amt = 1;
+        if (!ab.def->dynamic_amount_expr.empty())
+            amt = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer,
                                           ab.target.get(), ab.source.lki_entity());
         return ", amount: " + std::to_string(amt);
     }
@@ -1443,7 +1517,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
 
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
-        if (def.trigger_optional) {
+        if (def->trigger_optional) {
             int yc = ctx.ask(
                 optional_yesno_menu("use " + entity_name(source.lki_entity()) + "'s triggered ability"),
                 controller, source.lki_entity());
@@ -1463,13 +1537,13 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
         // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
         // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
-        if (def.ability_type == AbilityDef::TRIGGERED && def.sac_self) {
+        if (def->ability_type == AbilityDef::TRIGGERED && def->sac_self) {
             const Entity src = source.get();
             std::string sname = global_coordinator.entity_has_component<Permanent>(src)
                                     ? global_coordinator.GetComponent<Permanent>(src).name
                                     : std::string("it");
             bool on_bf = src != 0 && is_battlefield_permanent(src);
-            if (def.mandatory) {
+            if (def->mandatory) {
                 // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
                 // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
                 // clause: only run the effect (the token creation) if the source was actually on
@@ -1520,7 +1594,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             // re-checked at resolution. Dark Depths' "sacrifice it, if you do create Marit Lage" must
             // still create the token even though the sacrifice it just performed makes the "no ice
             // counters" condition read false (the source has left the battlefield).
-            if (def.intervening_if && !def.trigger_state_condition &&
+            if (def->intervening_if && !def->trigger_state_condition &&
                 !evaluate_present_condition(*this, controller, orderer)) {
                 game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
                 return ResolveStatus::DONE;
@@ -1530,15 +1604,15 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
             // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
             // the mana resolves, so the gate still reads 0 here for a legitimate fire).
-            if (!def.stored_svar_gate_name.empty() &&
-                !stored_svar_gate_passes(source.get(), def.stored_svar_gate_name, def.stored_svar_gate_compare)) {
+            if (!def->stored_svar_gate_name.empty() &&
+                !stored_svar_gate_passes(source.get(), def->stored_svar_gate_name, def->stored_svar_gate_compare)) {
                 game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
             // Pre-resolve target validity check (CR 608.2b): every targeted effect, a Pump
             // included, was targeted as it was put on the stack and fizzles here if its target
             // became illegal (it does NOT retarget).
-            if (def.valid_tgts != "N_A") {
+            if (def->valid_tgts != "N_A") {
                 if (!is_target_valid()) {
                     fizzle(orderer);
                     return ResolveStatus::DONE;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
@@ -1563,7 +1637,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             }
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
-            if (def.remember_targeted) {
+            if (def->remember_targeted) {
                 cur_game.remembered_entities.clear();
                 if (!targets.empty()) {
                     for (const ObjectRef &t : targets)
@@ -1572,7 +1646,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                     cur_game.remembered_entities.push_back(ObjectRef::of(te));
                 }
             }
-            game_log("Resolving ability (category: %s%s)\n", def.category.c_str(),
+            game_log("Resolving ability (category: %s%s)\n", def->category.c_str(),
                      resolving_log_detail(*this, orderer).c_str());
             next_sub = 0;  // gift-loop cursor (fresh levels start at 0; explicit for clarity)
         }  // end of the one-shot (non-resuming) section
@@ -1611,9 +1685,9 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
     if (phase == 3) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
         bool condition_passed = true;
-        if (!def.condition_check_svar.empty()) {
-            int val = evaluate_condition_svar(def.condition_check_svar, source.lki_entity(), controller, orderer);
-            condition_passed = compare_svar(val, def.condition_svar_compare, def.condition_compare_svar_expr,
+        if (!def->condition_check_svar.empty()) {
+            int val = evaluate_condition_svar(def->condition_check_svar, source.lki_entity(), controller, orderer);
+            condition_passed = compare_svar(val, def->condition_svar_compare, def->condition_compare_svar_expr,
                                             source.lki_entity(), controller, orderer);
         }
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
@@ -1625,11 +1699,11 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // skips this body but still chains subabilities. An intervening-if was already checked in
         // phase 2, and a ConditionDefined$ Targeted condition is applied by the effect handler
         // to its target.
-        if (condition_passed && !def.condition_present.empty() && !def.intervening_if && !def.condition_on_target)
+        if (condition_passed && !def->condition_present.empty() && !def->intervening_if && !def->condition_on_target)
             condition_passed = evaluate_present_condition(*this, controller, orderer);
         // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
         // controller has the city's blessing (702.131). Failure still chains subabilities.
-        if (condition_passed && def.condition_city_blessing) {
+        if (condition_passed && def->condition_city_blessing) {
             // 702.131b applies "any time", so re-latch the blessing before reading the
             // flag: a token created by an EARLIER sub-ability of this same resolution
             // (Ocelot Pride's first clause making the 10th permanent) must count — the
@@ -1658,7 +1732,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // in src/effects/. handler_for() returns nullptr only for categories with no
         // resolve-time handler (e.g. "Equip", handled at activation) — those simply
         // chain subabilities.
-        effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(def.category));
+        effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(def->category));
         HandlerResult hres = handler ? handler(*this, orderer, ctx) : HandlerResult::DONE_RUN_SUBS;
         // A suspended handler parked its decision; propagate WITHOUT chaining subs
         // or clearing the named card — the re-entry finishes both.
@@ -1684,7 +1758,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
     // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is
     // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
     // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
-    if (effect_kind_from_string(def.category) == EffectKind::NameCard)
+    if (effect_kind_from_string(def->category) == EffectKind::NameCard)
         cur_game.named_card.clear();
     return ResolveStatus::DONE;
 }

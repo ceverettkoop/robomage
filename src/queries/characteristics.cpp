@@ -127,7 +127,7 @@ std::string entity_name(Entity e) {
              global_coordinator.entity_has_component<Token>(src) ||
              !last_known_name(src).empty()))
             return entity_name(src) + "'s ability";
-        if (!ab.def.category.empty()) return ab.def.category + " ability";
+        if (!ab.def->category.empty()) return ab.def->category + " ability";
         return "an ability";
     }
     std::string lk = last_known_name(e);

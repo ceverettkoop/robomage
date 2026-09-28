@@ -21,11 +21,11 @@ HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // triggering spell) loses the life, not the source's controller. Bound at trigger-fire
     // time (CR 603.x). Mai, Scornful Striker: "Whenever a player casts a noncreature spell,
     // they lose 2 life."
-    if (ab.def.defined_triggered_activator && ab.triggered_activator != Zone::UNKNOWN)
+    if (ab.def->defined_triggered_activator && ab.triggered_activator != Zone::UNKNOWN)
         lose_controller = ab.triggered_activator;
-    size_t lose_amount = ab.def.amount;
-    if (!ab.def.dynamic_amount_expr.empty())
-        lose_amount = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, lose_controller, orderer, ab.target.get(), ab.source.lki_entity());
+    size_t lose_amount = ab.def->amount;
+    if (!ab.def->dynamic_amount_expr.empty())
+        lose_amount = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, lose_controller, orderer, ab.target.get(), ab.source.lki_entity());
     // "Target player/opponent loses N life" (Witherbloom Command): the chosen target
     // player is the one who loses the life. The dynamic-amount reference above stays the
     // controller's "you"; only the loser is redirected to the targeted player. Redirect
@@ -35,8 +35,8 @@ HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // chaining copies parent.target into ab.target — Thoughtseize's DBLoseLife ("You
     // lose 2 life") must hit the caster, not the discard target.
     Zone::Ownership loser = lose_controller;
-    bool targets_player = (ab.def.valid_tgts != "N_A") || ab.def.defined == "Targeted" ||
-                          ab.def.defined == "ParentTarget" || ab.def.defined == "Parent";
+    bool targets_player = (ab.def->valid_tgts != "N_A") || ab.def->defined == "Targeted" ||
+                          ab.def->defined == "ParentTarget" || ab.def->defined == "Parent";
     const Entity tgt_player = ab.target.get();
     if (targets_player && tgt_player != 0 && global_coordinator.entity_has_component<Player>(tgt_player))
         loser = seat_of_player(tgt_player);

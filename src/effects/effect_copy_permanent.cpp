@@ -61,7 +61,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 
     // Offspring (CR 702.175a): "create a token that's a copy of it, except it's 1/1."
     // Copy the source permanent itself, then override the copy's P/T to 1/1.
-    if (ab.def.is_offspring_token) {
+    if (ab.def->is_offspring_token) {
         Token tok = copyable_token_of(ab.source.lki_entity());
         if (tok.name.empty()) return HandlerResult::DONE_RUN_SUBS;
         tok.power = 1;
@@ -78,7 +78,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
     for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.def.valid_cards_filter, MatchCtx{ctrl, ab.source.lki_entity()}))
+        if (permanent_matches_filter(e, ab.def->valid_cards_filter, MatchCtx{ctrl, ab.source.lki_entity()}))
             sources.push_back(e);
 
     for (auto src : sources) {
@@ -123,10 +123,10 @@ HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 
     // GainThisAbility$ True: preserve the source's own Clone ability(ies) — captured BEFORE the
     // overwrite — so the copy keeps "…except it has this ability." and can re-clone later.
-    std::vector<AbilityDef> retained;
-    if (ab.def.gain_this_ability) {
+    std::vector<const AbilityDef *> retained;
+    if (ab.def->gain_this_ability) {
         for (const auto &a : global_coordinator.GetComponent<CardData>(src).abilities)
-            if (a.category == "Clone") retained.push_back(a);
+            if (a->category == "Clone") retained.push_back(a);
     }
 
     // Build the copy from the target's copiable characteristics (a value copy of its CardData),

@@ -99,7 +99,7 @@ struct CardData{
     uint32_t power = 0;
     uint32_t toughness = 0;
     int starting_loyalty = 0;  // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
-    std::vector<AbilityDef> abilities;
+    std::vector<const AbilityDef *> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;
     std::vector<StaticAbility> static_abilities;
@@ -160,7 +160,7 @@ struct CardData{
     // effect (Into the Flood Maw: a DB$ Token making a tapped 1/1 Fish for the promised opponent),
     // from the card's GiftAbility SVar. gift_description is the printed name of the gift (display).
     bool has_gift = false;
-    std::vector<AbilityDef> gift_abilities;
+    std::vector<const AbilityDef *> gift_abilities;
     std::string gift_description = "";
     // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
     // "Kicker [A] and/or [B]" is Forge-encoded as two colon-separated costs and means
@@ -193,7 +193,7 @@ struct CardData{
     // Multiple chapters may share the same ability (Summon: Bahamut I & II both destroy). Empty for
     // a non-Saga card. The Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in
     // src/saga.{h,cpp}.
-    std::vector<AbilityDef> saga_chapters;
+    std::vector<const AbilityDef *> saga_chapters;
     // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening hand,
     // you may [effect]" (CR 103.6b; the Leylines' "begin the game with it on the battlefield").
     // The named SVar's body is parsed into opening_hand_abilities (Leyline of the Void:
@@ -203,7 +203,7 @@ struct CardData{
     // optional !PlayFirst field
     // (Gemstone Caverns) restricts the offer to a player who is NOT the starting player.
     // Empty for cards without the keyword.
-    std::vector<AbilityDef> opening_hand_abilities;
+    std::vector<const AbilityDef *> opening_hand_abilities;
     bool opening_hand_not_first = false;
 };
 

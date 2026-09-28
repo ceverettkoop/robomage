@@ -47,7 +47,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // Defined$ Self (The Tabernacle at Pendrell Vale's granted upkeep trigger: "destroy this
     // creature unless you pay {1}"): the effect acts on its own source. Bind it as the target so
     // the shared destroy/unless path below operates on the creature. Idempotent on a suspend/resume.
-    if (ab.def.defined_self && ab.target.empty() && ab.targets.empty())
+    if (ab.def->defined_self && ab.target.empty() && ab.targets.empty())
         ab.target = ab.source;
 
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
@@ -59,11 +59,11 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     }
 
     // Conditional destroy (Fatal Push): check target CMC against threshold
-    if (!ab.def.condition_present.empty() && ab.def.condition_present.find("cmcLEX") != std::string::npos) {
+    if (!ab.def->condition_present.empty() && ab.def->condition_present.find("cmcLEX") != std::string::npos) {
         // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")
         int threshold = 2;  // default fallback
-        if (!ab.def.dynamic_amount_expr.empty()) {
-            threshold = static_cast<int>(evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
+        if (!ab.def->dynamic_amount_expr.empty()) {
+            threshold = static_cast<int>(evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
         }
         Entity tgt = ab.target.get();
         if (global_coordinator.entity_has_component<CardData>(tgt)) {
@@ -82,18 +82,18 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // and true when declined / unaffordable. Handled for the single-target / defined_self form. The
     // MANA kind may suspend on a payment decision (checked before the return value); the arm-only
     // announcement is resume-guarded so a resume never re-logs it.
-    if (ab.def.unless_generic_cost > 0) {
+    if (ab.def->unless_generic_cost > 0) {
         Entity tgt = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
         Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
-        UnlessPayKind kind = ab.def.unless_cost_is_energy   ? UnlessPayKind::ENERGY
-                           : ab.def.unless_cost_is_discard  ? UnlessPayKind::DISCARD
-                           : ab.def.unless_cost_is_life      ? UnlessPayKind::LIFE
+        UnlessPayKind kind = ab.def->unless_cost_is_energy   ? UnlessPayKind::ENERGY
+                           : ab.def->unless_cost_is_discard  ? UnlessPayKind::DISCARD
+                           : ab.def->unless_cost_is_life      ? UnlessPayKind::LIFE
                                                          : UnlessPayKind::MANA;
         if (!ctx.resuming())
             game_log("%s may pay to prevent %s from being destroyed:\n",
                      player_name(payer).c_str(), entity_name(tgt).c_str());
         bool suspended = false;
-        bool do_destroy = run_unless_loop(ab.def.unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+        bool do_destroy = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
                                           suspended, UnlessSubject{UnlessEffect::DESTROY, tgt, false}, kind);
         if (suspended) return HandlerResult::SUSPENDED;
         if (!do_destroy) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is destroyed

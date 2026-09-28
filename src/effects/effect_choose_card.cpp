@@ -34,7 +34,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // current cur_game.chosen_type to take. A "you may" choice — the controller may decline. A
     // chosen card is appended to the remembered set (RememberChosen$ True) so the trailing
     // Defined$ Remembered ChangeZone moves it to hand. CR 300/401.
-    if (ab.def.choose_imprinted) {
+    if (ab.def->choose_imprinted) {
         Zone::Ownership you = ab.controller;
         std::vector<Entity> cands;
         for (Entity e : live_entities(cur_game.imprinted_entities)) {
@@ -71,7 +71,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice >= 0 && choice < static_cast<int>(cands.size())) {
             Entity chosen = cands[static_cast<size_t>(choice)];
-            if (ab.def.remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+            if (ab.def->remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
             game_log("%s chooses %s\n", player_name(you).c_str(),
                      global_coordinator.GetComponent<CardData>(chosen).name.c_str());
         }
@@ -81,16 +81,16 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).
-    if (!ab.def.choose_each.empty()) {
+    if (!ab.def->choose_each.empty()) {
         Zone::Ownership opp = opponent_of(ab.controller);
 
         // Split the "Artifact & Creature & Enchantment & Planeswalker" type list.
         std::vector<std::string> types;
         size_t tp = 0;
-        while (tp <= ab.def.choose_each.size()) {
-            size_t amp = ab.def.choose_each.find('&', tp);
-            if (amp == std::string::npos) amp = ab.def.choose_each.size();
-            std::string t = ab.def.choose_each.substr(tp, amp - tp);
+        while (tp <= ab.def->choose_each.size()) {
+            size_t amp = ab.def->choose_each.find('&', tp);
+            if (amp == std::string::npos) amp = ab.def->choose_each.size();
+            std::string t = ab.def->choose_each.substr(tp, amp - tp);
             while (!t.empty() && t.front() == ' ') t.erase(t.begin());
             while (!t.empty() && t.back() == ' ') t.pop_back();
             if (!t.empty()) types.push_back(t);
@@ -152,10 +152,10 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         la.category = ActionCategory::CHOOSE_CARD;
         // Cards in a public zone (exile is face up, CR 406.3) are public; a hand or library
         // choice is not.
-        la.card_is_public = ab.def.choose_card_zone != Zone::HAND && ab.def.choose_card_zone != Zone::LIBRARY;
+        la.card_is_public = ab.def->choose_card_zone != Zone::HAND && ab.def->choose_card_zone != Zone::LIBRARY;
         picks.push_back(la);
     }
-    if (!ab.def.mandatory) {
+    if (!ab.def->mandatory) {
         LegalAction none(PASS_PRIORITY, std::string("Choose no card"));
         none.category = ActionCategory::CHOOSE_CARD;
         picks.push_back(none);
@@ -167,7 +167,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
         cur_game.chosen_cards.insert(chosen);
-        if (ab.def.remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+        if (ab.def->remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
         game_log("%s chooses %s.\n", player_name(ab.controller).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;
@@ -185,9 +185,9 @@ static std::vector<Entity> choose_card_candidates(const Ability &ab,
     std::vector<Entity> cands;
     for (auto e : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        if (global_coordinator.GetComponent<Zone>(e).location != ab.def.choose_card_zone) continue;
-        if (ab.def.choose_card_zone == Zone::BATTLEFIELD && !is_battlefield_permanent(e)) continue;
-        if (!object_matches_filter(e, ab.def.choose_card_filter, mctx)) continue;
+        if (global_coordinator.GetComponent<Zone>(e).location != ab.def->choose_card_zone) continue;
+        if (ab.def->choose_card_zone == Zone::BATTLEFIELD && !is_battlefield_permanent(e)) continue;
+        if (!object_matches_filter(e, ab.def->choose_card_filter, mctx)) continue;
         cands.push_back(e);
     }
     return cands;

@@ -29,7 +29,7 @@ namespace effects {
 // new attack is declared and no further "attacks" triggers fire). At the next end step the
 // controller sacrifices exactly the tokens this instance created, via a delayed trigger.
 HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    int n = static_cast<int>(ab.def.amount);
+    int n = static_cast<int>(ab.def->amount);
     if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
 
     Zone::Ownership ctrl = ab.controller;  // the tokens are created by the ability's controller (CR 111.2)
@@ -70,9 +70,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     // Register the "sacrifice them at the beginning of the next end step" delayed trigger
     // (same turn — the attack happened during this turn's combat, so the next end step is
     // this turn's). The sacrifice ability carries exactly the tokens created here.
-    Ability sac_ab;
-    sac_ab.def.ability_type = AbilityDef::TRIGGERED;
-    sac_ab.def.category = "SacrificeTokens";
+    Ability sac_ab(triggered_effect_def("SacrificeTokens"));
     sac_ab.source = ab.source;
     sac_ab.targets = refs_of(created);
 

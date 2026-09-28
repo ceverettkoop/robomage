@@ -79,11 +79,15 @@ void Game::set_monarch(Entity player_entity) {
 void Game::queue_trigger(const Ability &ab, const std::string &log_line) {
     PendingTriggerRT pt;
     pt.ab = ab;
-    pt.ab.def.ability_type = AbilityDef::TRIGGERED;
+    // Whatever queues it, it is a triggered ability (a reflexive one reuses a DB$ body).
+    if (pt.ab.def->ability_type != AbilityDef::TRIGGERED)
+        pt.ab.def = derived_ability_def(ab.def, "triggered", 0, [](AbilityDef &d) {
+            d.ability_type = AbilityDef::TRIGGERED;
+        });
     pt.controller = ab.controller;
     pt.source = ab.source.lki_entity();
     pt.log_line = log_line;
-    pt.needs_target = (ab.def.valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty());
+    pt.needs_target = (ab.def->valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty());
     waiting_triggers.push_back(std::move(pt));
 }
 
@@ -254,7 +258,7 @@ void Game::end_cleanup_effects() {
     {
         auto &floating = resolved_effects.floating_triggers;
         floating.erase(std::remove_if(floating.begin(), floating.end(),
-                                      [](const Ability &ft) { return !ft.def.duration_until_your_next_turn; }),
+                                      [](const Ability &ft) { return !ft.def->duration_until_your_next_turn; }),
                        floating.end());
     }
     // Impulse-cast permissions (Amped Raptor / Ugin) last only "this turn" and are
@@ -408,7 +412,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         auto &floating = resolved_effects.floating_triggers;
                         floating.erase(std::remove_if(floating.begin(), floating.end(),
                                                       [active_player](const Ability &ft) {
-                                                          return ft.def.duration_until_your_next_turn &&
+                                                          return ft.def->duration_until_your_next_turn &&
                                                                  ft.controller == active_player;
                                                       }),
                                        floating.end());

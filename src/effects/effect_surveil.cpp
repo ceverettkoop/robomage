@@ -31,9 +31,9 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     LookSplitRt local_rt;
     LookSplitRt &rt = ctx.can_suspend() ? ctx.rt<LookSplitRt>() : local_rt;
     if (!rt.init) {
-        size_t num = ab.def.amount;
-        if (!ab.def.dynamic_amount_expr.empty())
-            num = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, controller, orderer, ab.target.get());
+        size_t num = ab.def->amount;
+        if (!ab.def->dynamic_amount_expr.empty())
+            num = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, controller, orderer, ab.target.get());
         if (num == 0) return HandlerResult::DONE_RUN_SUBS;  // CR 701.25c: surveil 0 is no event
 
         std::vector<Entity> looked = orderer->get_library_top(controller, num);

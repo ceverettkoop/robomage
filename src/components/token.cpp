@@ -42,7 +42,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         // "Sacrifice this creature: Add {C}." mana ability reaches the player this way.
         // Triggered abilities stay on Token::abilities (the trigger scan reads them there).
         for (const auto &ab : tok.abilities) {
-            if (ab.ability_type != AbilityDef::ACTIVATED && ab.ability_type != AbilityDef::SPELL)
+            if (ab->ability_type != AbilityDef::ACTIVATED && ab->ability_type != AbilityDef::SPELL)
                 continue;
             Ability copy(ab);
             copy.source = ObjectRef::of(tok_entity);

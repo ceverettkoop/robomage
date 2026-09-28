@@ -46,9 +46,9 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     RearrangeRt local_rt;
     RearrangeRt &rt = ctx.can_suspend() ? ctx.rt<RearrangeRt>() : local_rt;
     if (!rt.init) {
-        size_t num_cards = ab.def.amount;
-        if (!ab.def.dynamic_amount_expr.empty())
-            num_cards = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, owner, orderer, ab.target.get());
+        size_t num_cards = ab.def->amount;
+        if (!ab.def->dynamic_amount_expr.empty())
+            num_cards = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, ab.target.get());
 
         // looking at top n only
         rt.lib = orderer->get_library_top(owner, num_cards);
@@ -97,7 +97,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         rt.placed = true;
     }
 
-    if (ab.def.may_shuffle) {
+    if (ab.def->may_shuffle) {
         std::vector<LegalAction> shuffle_actions = {
             LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
             LegalAction(PASS_PRIORITY, std::string("Shuffle")),

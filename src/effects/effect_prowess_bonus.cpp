@@ -13,9 +13,9 @@ HandlerResult prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     const Entity self = ab.source.get();
     if (self != 0 && global_coordinator.entity_has_component<Creature>(self)) {
         auto &cr = global_coordinator.GetComponent<Creature>(self);
-        cr.prowess_bonus += static_cast<int>(ab.def.amount);
+        cr.prowess_bonus += static_cast<int>(ab.def->amount);
         recompute_pt(cr);
-        game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", ab.def.amount, ab.def.amount);
+        game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", ab.def->amount, ab.def->amount);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

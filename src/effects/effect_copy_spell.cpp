@@ -84,7 +84,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // card's SPELL ability template reproduces the resolving ability, and the copies choose
         // their own new targets anyway, so the template's (absent) targets don't matter.
         for (const auto &tmpl : orig_card.abilities)
-            if (tmpl.ability_type == AbilityDef::SPELL) {
+            if (tmpl->ability_type == AbilityDef::SPELL) {
                 template_instance = Ability(tmpl);
                 orig_ability = &template_instance;
                 break;
@@ -135,7 +135,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
 
         if (rt.have_ability) {
             if (rt.phase == 0) {
-                if (rt.work.def.valid_tgts != "N_A") {
+                if (rt.work.def->valid_tgts != "N_A") {
                     // If no legal target remains for this copy, it can't be put on the stack
                     // (CR 707.10c-ish: a copy that requires a target with none available is not
                     // created). Skip it cleanly rather than placing an untargeted copy. Checked
@@ -164,7 +164,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                     // resolution) rather than crashing.
                     Ability &sub = rt.work.subabilities[rt.sub_idx];
                     sub.targeted_player = rt.work.player_target_for_subs();  // ParentTarget
-                    if (sub.def.valid_tgts != "N_A" &&
+                    if (sub.def->valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(sub, orderer))) {
                         if (run_target_select(sub, rt.tsel, asker, orderer, controller) !=
                             TargetStatus::DONE)
@@ -185,7 +185,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                     Ability &mode = rt.work.charm_choices[static_cast<size_t>(idx)];
                     mode.source = ObjectRef::of(rt.cur_copy);
                     mode.controller = controller;
-                    if (mode.def.valid_tgts != "N_A" &&
+                    if (mode.def->valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(mode, orderer))) {
                         if (!rt.tsel.active) {
                             mode.target = ObjectRef{};
@@ -236,7 +236,7 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         // when the parent targeted a permanent — that permanent's controller. The target is the
         // parent effect's target, inherited onto this sub-ability (Defined$ Parent) by bind_sub_target.
         Zone::Ownership payer = ab.controller;
-        if (ab.def.unless_payer_is_targeted_or_controller) {
+        if (ab.def->unless_payer_is_targeted_or_controller) {
             Entity tgt = ab.target.get();
             if (tgt != 0 && global_coordinator.entity_has_component<Player>(tgt)) {
                 payer = seat_of_player(tgt);
@@ -249,19 +249,19 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
 
         // Offer the optional unless-cost. UnlessSwitched inverts the meaning of "paid".
         bool do_copy;
-        if (ab.def.unless_generic_cost > 0) {
+        if (ab.def->unless_generic_cost > 0) {
             if (!ctx.resuming())
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
                          entity_name(ab.source.lki_entity()).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.def.unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
+            bool prevented = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                              suspended,
-                                             UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.def.unless_switched},
-                                             UnlessPayKind::MANA, &ab.def.unless_cost_pips);
+                                             UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.def->unless_switched},
+                                             UnlessPayKind::MANA, &ab.def->unless_cost_pips);
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.
-            do_copy = ab.def.unless_switched ? paid : prevented;
+            do_copy = ab.def->unless_switched ? paid : prevented;
         } else {
             do_copy = true;  // no cost — always copy
         }

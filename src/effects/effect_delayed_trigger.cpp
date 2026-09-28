@@ -34,7 +34,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     Zone::Ownership owner = ab.controller;
     Entity owner_entity = get_player_entity(owner);
 
-    const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.def.params);
+    const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.def->params);
     bool has_execute = dp && !dp->execute_svar.empty();
     std::string phase = dp ? dp->phase : std::string();
     bool next_turn = dp && dp->next_turn;
@@ -47,7 +47,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     bool found_execute = false;
     if (has_execute) {
         for (size_t i = 0; i < ab.subabilities.size(); i++) {
-            if (!ab.subabilities[i].def.from_delayed_execute) continue;
+            if (!ab.subabilities[i].def->from_delayed_execute) continue;
             fire_ab = ab.subabilities[i];
             for (size_t j = 0; j < ab.subabilities.size(); j++)
                 if (j != i) fire_ab.subabilities.push_back(ab.subabilities[j]);
@@ -55,11 +55,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             break;
         }
     }
-    if (!found_execute) {
-        fire_ab.def.ability_type = AbilityDef::TRIGGERED;
-        fire_ab.def.category = "Draw";
-        fire_ab.def.amount = 1;
-    }
+    if (!found_execute) fire_ab = Ability(draw_one_trigger_def());
     fire_ab.source = ab.source;
 
     // Mode$ ChangesZone (Searing Blood): a "when THAT object changes zone, do Y" delayed trigger
@@ -95,13 +91,13 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
         // The origin is implicit (leave-battlefield watch); the destination becomes the zone filter
         // so a bounce/exile of the watched object does not fire a "when it dies" trigger.
-        if (ab.def.destination == Zone::GRAVEYARD || ab.def.destination == Zone::EXILE ||
-            ab.def.destination == Zone::HAND || ab.def.destination == Zone::LIBRARY)
-            dt.fire_dest_zones = {ab.def.destination};
+        if (ab.def->destination == Zone::GRAVEYARD || ab.def->destination == Zone::EXILE ||
+            ab.def->destination == Zone::HAND || ab.def->destination == Zone::LIBRARY)
+            dt.fire_dest_zones = {ab.def->destination};
         dt.expires_end_of_turn = dp->this_turn;
         register_delayed_trigger(dt, ab.source);
         game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
-                 fire_ab.def.category.c_str());
+                 fire_ab.def->category.c_str());
         return HandlerResult::DONE_NO_SUBS;
     }
 
@@ -140,7 +136,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
     dt.fire_on_turn = next_turn ? cur_game.turn_state.turn + 1 : cur_game.turn_state.turn;
     register_delayed_trigger(dt, ab.source);
-    game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.def.category.c_str(),
+    game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.def->category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());
     // Return false so resolve() does NOT chain this DB$ DelayedTrigger's subabilities inline:
     // the Execute$ ability (and any trailing cleanup) is deferred onto the delayed trigger to

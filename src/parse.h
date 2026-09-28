@@ -16,15 +16,18 @@ Token parse_token_script(const std::string &script_name);
 // Hamlet) at grant time, so the same Forge ability grammar (Cost$/Produced$/...) is honoured
 // as for a printed A: ability. No SVar table is available here, so SVar-referencing params
 // inside the body are left as their literal token (the granted bodies in use are self-contained).
-AbilityDef parse_ability_body(const std::string &body, AbilityDef::AbilityType type = AbilityDef::ACTIVATED);
+// Each distinct body is parsed once per process; later calls return the same definition.
+const AbilityDef *parse_ability_body(const std::string &body,
+                                     AbilityDef::AbilityType type = AbilityDef::ACTIVATED);
 
 // Parse a TRIGGERED ability granted by a Continuous static's AddTrigger$/AddSVar$ (The Tabernacle
 // at Pendrell Vale). `trigger_line` is the resolved Mode$ ... trigger body; `svar_name`/`svar_body`
 // are the Execute$ SVar it references (so the trigger's Execute can be reparsed at grant time).
 // Returns a TRIGGERED Ability (trigger_on == 0 if unrecognised). The layer-6 grant pass attaches a
-// per-recipient copy to each affected permanent's ability list.
-AbilityDef parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
-                              const std::string &svar_body);
+// per-recipient copy to each affected permanent's ability list. Parsed once per distinct input.
+const AbilityDef *parse_granted_trigger(const std::string &trigger_line,
+                                        const std::string &svar_name,
+                                        const std::string &svar_body);
 
 // Parse a Ward cost argument — the text after "Ward:" in a K: line or a granted keyword
 // (CR 702.21). Sets `cost` and `is_life` for the two supported shapes: "PayLife<N>"

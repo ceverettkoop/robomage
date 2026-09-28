@@ -42,9 +42,7 @@ HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
              remaining);
     if (remaining > 0) return HandlerResult::DONE_RUN_SUBS;
     counters.erase("TIME");
-    Ability cast_trigger;
-    cast_trigger.def.ability_type = AbilityDef::TRIGGERED;
-    cast_trigger.def.category = "SuspendCast";
+    Ability cast_trigger(triggered_effect_def("SuspendCast"));
     cast_trigger.source = ObjectRef::of(card);
     cast_trigger.controller = global_coordinator.GetComponent<Zone>(card).owner;
     cur_game.queue_trigger(cast_trigger, entity_name(card) +

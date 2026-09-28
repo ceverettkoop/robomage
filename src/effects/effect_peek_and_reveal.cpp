@@ -27,7 +27,7 @@ extern Game cur_game;
 namespace effects {
 
 HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    const PeekParams *pp = std::get_if<PeekParams>(&ab.def.params);
+    const PeekParams *pp = std::get_if<PeekParams>(&ab.def->params);
     if (pp && pp->no_reveal) {
         // Look at the top N cards of the target player's library privately, no reveal choice.
         // N = PeekAmount (Mishra's Bauble = 1; Birthing Ritual = 7, so the controller sees the
@@ -81,7 +81,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // Delver of Secrets: peek own library top, optionally reveal
     const Entity self = ab.source.get();
     if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) {
-        game_log("%s fizzles\n", ab.def.category.c_str());
+        game_log("%s fizzles\n", ab.def->category.c_str());
         return HandlerResult::DONE_NO_SUBS;
     }
     auto &src_perm = global_coordinator.GetComponent<Permanent>(self);

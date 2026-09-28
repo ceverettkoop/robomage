@@ -41,9 +41,9 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     LookSplitRt local_rt;
     LookSplitRt &rt = ctx.can_suspend() ? ctx.rt<LookSplitRt>() : local_rt;
     if (!rt.init) {
-        size_t num = ab.def.amount;
-        if (!ab.def.dynamic_amount_expr.empty())
-            num = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, owner, orderer, ab.target.get());
+        size_t num = ab.def->amount;
+        if (!ab.def->dynamic_amount_expr.empty())
+            num = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, ab.target.get());
         if (num == 0) return HandlerResult::DONE_RUN_SUBS;
 
         std::vector<Entity> looked = orderer->get_library_top(owner, num);

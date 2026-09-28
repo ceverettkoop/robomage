@@ -28,7 +28,7 @@ namespace effects {
 // perfect-information / narrative mode via game_log_private, so it is no longer a silent
 // no-op. Subabilities (the slowtrip DelayedTrigger draw) still chain afterward.
 HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    const PeekParams *pp = std::get_if<PeekParams>(&ab.def.params);
+    const PeekParams *pp = std::get_if<PeekParams>(&ab.def->params);
     if (!pp || !pp->random_from_hand) {
         // No other Reveal mode is modeled yet; fall through to subability chaining as a no-op.
         return HandlerResult::DONE_RUN_SUBS;

@@ -515,7 +515,7 @@ static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer) {
 
     if (global_coordinator.entity_has_component<Ability>(e)) {
         const auto& ab = global_coordinator.GetComponent<Ability>(e);
-        if (!se.is_spell) se.x_or_amount = static_cast<int>(ab.def.amount);
+        if (!se.is_spell) se.x_or_amount = static_cast<int>(ab.def->amount);
         fill_stack_choices(ab, se, viewer);
         if (!ab.target.empty()) {
             std::string tname = target_display_name(cur_game, ab.target.lki_entity());

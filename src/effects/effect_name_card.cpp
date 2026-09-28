@@ -62,8 +62,8 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // continuous Card.NamedCard static, so it is recorded on the source permanent's
     // chosen_name (the same per-source state match_named_card statics read) rather than the
     // transient global cur_game.named_card (which is cleared after the ability resolves).
-    bool defines_self_owner = ab.def.defined_you && subject == 0;
-    bool only_lands = (ab.def.valid_cards_filter == "Land");
+    bool defines_self_owner = ab.def->defined_you && subject == 0;
+    bool only_lands = (ab.def->valid_cards_filter == "Land");
     if (defines_self_owner) {
         Zone::Ownership chooser = ab.controller;
         // Land-naming (Petrified Hamlet / Alpine Moon-style "name a land") offers lands present
@@ -74,7 +74,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         NameCardScope scope = only_lands ? NameCardScope::BOTH_PLAYERS : NameCardScope::CHOOSER_ONLY;
         std::vector<std::string> names;
         std::vector<LegalAction> name_choices =
-            build_name_card_choices(orderer->mEntities, chooser, ab.def.valid_cards_filter, names,
+            build_name_card_choices(orderer->mEntities, chooser, ab.def->valid_cards_filter, names,
                                     scope);
         bool suspended = false;
         std::string chosen = prompt_name_card(ctx, chooser, names, name_choices, ab.source.lki_entity(),
@@ -100,7 +100,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 
     std::vector<std::string> names;
     std::vector<LegalAction> name_choices =
-        build_name_card_choices(orderer->mEntities, name_owner, ab.def.valid_cards_filter, names);
+        build_name_card_choices(orderer->mEntities, name_owner, ab.def->valid_cards_filter, names);
 
     if (name_choices.empty()) {
         // No nameable card; the chained Card.NamedCard discard will find no match.
@@ -125,7 +125,7 @@ static Entity name_card_subject_player(const Ability &ab) {
     if (t != 0 && global_coordinator.entity_has_component<Player>(t)) return t;
     for (const Ability &sub : ab.subabilities) {
         const Entity st = sub.target.get();
-        if (sub.def.valid_tgts != "N_A" && st != 0 && global_coordinator.entity_has_component<Player>(st))
+        if (sub.def->valid_tgts != "N_A" && st != 0 && global_coordinator.entity_has_component<Player>(st))
             return st;
     }
     return 0;

@@ -42,7 +42,7 @@ static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Ord
     for (auto e : to_move) {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(e).owner;
         std::string ename = global_coordinator.GetComponent<Permanent>(e).name;
-        orderer->add_to_zone(false, e, ab.def.destination);
+        orderer->add_to_zone(false, e, ab.def->destination);
         game_log("%s returns to %s's hand\n", ename.c_str(), player_name(owner).c_str());
     }
     return true;
@@ -50,14 +50,14 @@ static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Ord
 
 HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
-    if (ab.def.change_type.find("sameName") != std::string::npos)
+    if (ab.def->change_type.find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/true)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
 
     // Echoing Truth family: ChangeType$ ...+sharesNameWith Targeted over the battlefield — return
     // the target and all other permanents with its name to their owners' hands.
-    if (ab.def.change_type.find("sharesNameWith") != std::string::npos && ab.def.origin == Zone::BATTLEFIELD)
+    if (ab.def->change_type.find("sharesNameWith") != std::string::npos && ab.def->origin == Zone::BATTLEFIELD)
         return change_zone_shares_name_battlefield(ab, orderer)
                    ? HandlerResult::DONE_RUN_SUBS
                    : HandlerResult::DONE_NO_SUBS;
@@ -66,7 +66,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // one target player", TargetMin$ 0) affects no one — do nothing rather than
     // falling back to the controller's own zones. Untargeted ChangeZoneAll
     // (valid_tgts "N_A", e.g. Doomsday) still operates on the controller below.
-    if (ab.def.valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty())
+    if (ab.def->valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty())
         return HandlerResult::DONE_RUN_SUBS;
 
     Zone::Ownership owner = ab.controller;
@@ -82,7 +82,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // source), not the last controller. Read the owner off the source's Zone (it is in the
     // graveyard by now). CR 608.2g/400.3: ownership is fixed regardless of who controlled it.
     const Entity trig_card = ab.source.lki_entity();  // ownership never changes (CR 108.3)
-    if (ab.def.defined == "TriggeredCardOwner" && trig_card != 0 &&
+    if (ab.def->defined == "TriggeredCardOwner" && trig_card != 0 &&
         global_coordinator.entity_has_component<Zone>(trig_card)) {
         Zone::Ownership src_owner = global_coordinator.GetComponent<Zone>(trig_card).owner;
         if (src_owner != Zone::UNKNOWN) owner = src_owner;
@@ -90,13 +90,13 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     // Determine which zones to search
     std::vector<Zone::ZoneValue> search_zones;
-    if (ab.def.origin_any) {
+    if (ab.def->origin_any) {
         // Origin$ All/Any: every owned-card zone this collector reads.
         search_zones = {Zone::LIBRARY, Zone::HAND, Zone::GRAVEYARD, Zone::EXILE};
-    } else if (ab.def.origins.size() > 1) {
-        search_zones = ab.def.origins;
+    } else if (ab.def->origins.size() > 1) {
+        search_zones = ab.def->origins;
     } else {
-        search_zones.push_back(ab.def.origin);
+        search_zones.push_back(ab.def->origin);
     }
 
     // Collect all cards from the specified zones
@@ -135,35 +135,35 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     mctx.source = ab.source.lki_entity();
     std::vector<Entity> to_move;
     for (auto entity : zone_contents)
-        if (ab.def.change_type.empty() || card_matches_filter(entity, ab.def.change_type, mctx))
+        if (ab.def->change_type.empty() || card_matches_filter(entity, ab.def->change_type, mctx))
             to_move.push_back(entity);
 
     // RandomOrder$ — randomize the moved cards with the seeded RNG (deterministic
     // per game seed, platform-stable — see stable_rng.h). Used for "in a random
     // order" library placement (Endurance).
-    if (ab.def.rest_random_order) {
+    if (ab.def->rest_random_order) {
         stable_shuffle(to_move, cur_game.rng.engine);
     }
 
     // Library destinations honor LibraryPosition$ (-1 / unset = bottom).
-    bool on_bottom = (ab.def.destination == Zone::LIBRARY && ab.def.dig_library_position != 0);
-    const char *dest_str = ab.def.destination == Zone::EXILE       ? "exile"
-                           : ab.def.destination == Zone::GRAVEYARD ? "graveyard"
-                           : ab.def.destination == Zone::HAND      ? "hand"
-                           : ab.def.destination == Zone::BATTLEFIELD ? "the battlefield"
-                           : ab.def.destination == Zone::LIBRARY   ? (on_bottom ? "the bottom of their library"
+    bool on_bottom = (ab.def->destination == Zone::LIBRARY && ab.def->dig_library_position != 0);
+    const char *dest_str = ab.def->destination == Zone::EXILE       ? "exile"
+                           : ab.def->destination == Zone::GRAVEYARD ? "graveyard"
+                           : ab.def->destination == Zone::HAND      ? "hand"
+                           : ab.def->destination == Zone::BATTLEFIELD ? "the battlefield"
+                           : ab.def->destination == Zone::LIBRARY   ? (on_bottom ? "the bottom of their library"
                                                                             : "the top of their library")
                                                                : "zone";
 
     // Cards put into a library in a random order land in positions no player knows (Triumph of
     // Saint Katherine's shuffled pile), so the known-top record keeps them unknown.
     const LibraryTopView top_view =
-        ab.def.rest_random_order ? LibraryTopView::NOBODY : LibraryTopView::OWNER;
+        ab.def->rest_random_order ? LibraryTopView::NOBODY : LibraryTopView::OWNER;
     size_t moved = 0;
     for (auto entity : to_move) {
         // The shared uncast battlefield entry first: an Aura picks what it enchants, or stays
         // where it is without a legal object (CR 303.4f/g), and then isn't moved.
-        if (ab.def.destination == Zone::BATTLEFIELD &&
+        if (ab.def->destination == Zone::BATTLEFIELD &&
             put_onto_battlefield(orderer, FrameCtx::blocking(), entity) != Zone::BATTLEFIELD)
             continue;
         if (global_coordinator.entity_has_component<CardData>(entity)) {
@@ -176,13 +176,13 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                          dest_str);
             }
         }
-        if (ab.def.destination != Zone::BATTLEFIELD)
-            orderer->add_to_zone(on_bottom, entity, ab.def.destination, top_view);
+        if (ab.def->destination != Zone::BATTLEFIELD)
+            orderer->add_to_zone(on_bottom, entity, ab.def->destination, top_view);
         // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each
         // artifact or land card exiled this way"); cleared by the paired DBCleanup ClearRemembered$.
-        if (ab.def.remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(entity));
+        if (ab.def->remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(entity));
         moved++;
     }
     game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
@@ -190,7 +190,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // Shuffle$ True (Emrakul's death trigger: "shuffle their graveyard into their library"): after
     // moving the cards into the library, shuffle it. shuffle_library also clears the known-top-of-
     // library tracking for that player (CR 701.20).
-    if (ab.def.shuffle_after && ab.def.destination == Zone::LIBRARY) {
+    if (ab.def->shuffle_after && ab.def->destination == Zone::LIBRARY) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library.\n", player_name(owner).c_str());
     }

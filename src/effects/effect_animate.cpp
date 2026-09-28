@@ -87,7 +87,7 @@ void apply_animate_creature_bootstrap(Entity e) {
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
     // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
-    Entity tgt = ab.def.defined_self ? ab.source.get() : ab.target.get();
+    Entity tgt = ab.def->defined_self ? ab.source.get() : ab.target.get();
     if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
@@ -98,8 +98,8 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     //                                    animate_* fields for persistence PLUS the until-turn marker
     //                                    so the untap revert knows what/when to lapse.
     //   * (default, until end of turn) — the *_eot fields, cleared by the CLEANUP step this turn.
-    const bool permanent_dur = ab.def.animate_duration_permanent;
-    const bool until_turn = ab.def.animate_duration_until_your_next_turn;
+    const bool permanent_dur = ab.def->animate_duration_permanent;
+    const bool until_turn = ab.def->animate_duration_until_your_next_turn;
     const bool eot = !permanent_dur && !until_turn;
     const bool reverts = !permanent_dur;  // eot and until-turn both lapse later
 
@@ -113,7 +113,7 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                                       : perm.animate_added_types;
     // The effect's timestamp (CR 613.7b), ordering it against static abilities' effects.
     (eot ? perm.animate_timestamp_eot : perm.animate_timestamp) = cur_game.timestamp++;
-    for (const auto &t : ab.def.animate_types) {
+    for (const auto &t : ab.def->animate_types) {
         bool already_recorded = false;
         for (const auto &existing : types_bucket)
             if (existing.kind == t.kind && existing.name == t.name) { already_recorded = true; break; }
@@ -138,13 +138,13 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // practice and matches how the existing animate effect stores base P/T as plain ints. Only
     // applied for persistent/until-turn durations (the rest-of-game animate_* fields persist; no
     // EOT-duration card needs a set P/T, and animate_set_pt is not cleared at cleanup).
-    if (ab.def.animate_has_pt && !eot) {
-        int base_p = ab.def.animate_base_power;
-        int base_t = ab.def.animate_base_toughness;
-        if (!ab.def.animate_power_expr.empty())
-            base_p = static_cast<int>(evaluate_dynamic_amount(ab.def.animate_power_expr, ab.controller, orderer, tgt));
-        if (!ab.def.animate_toughness_expr.empty())
-            base_t = static_cast<int>(evaluate_dynamic_amount(ab.def.animate_toughness_expr, ab.controller, orderer, tgt));
+    if (ab.def->animate_has_pt && !eot) {
+        int base_p = ab.def->animate_base_power;
+        int base_t = ab.def->animate_base_toughness;
+        if (!ab.def->animate_power_expr.empty())
+            base_p = static_cast<int>(evaluate_dynamic_amount(ab.def->animate_power_expr, ab.controller, orderer, tgt));
+        if (!ab.def->animate_toughness_expr.empty())
+            base_t = static_cast<int>(evaluate_dynamic_amount(ab.def->animate_toughness_expr, ab.controller, orderer, tgt));
         perm.animate_set_pt = true;
         perm.animate_power = base_p;
         perm.animate_toughness = base_t;
@@ -155,7 +155,7 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // bootstrapped. Flag it on the permanent (permanent/until-turn use the rest-of-game flag so
     // the grant survives this cleanup; EOT uses its own flag so cleanup can revert it).
     bool adds_creature_type = false;
-    for (const auto &t : ab.def.animate_types)
+    for (const auto &t : ab.def->animate_types)
         if (t.kind == TYPE && t.name == "Creature") { adds_creature_type = true; break; }
     if (adds_creature_type) {
         if (eot) perm.animate_make_creature_eot = true;
@@ -190,17 +190,17 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // re-merges into perm.abilities each SBE pass — so it survives the layer-6 ability-removal
     // strip and comes back once the remover leaves) and also pushed onto perm.abilities now so a
     // same-pass reader sees it immediately. Deduped so re-resolving is idempotent.
-    if (!ab.def.animate_granted_abilities.empty() && permanent_dur) {
-        for (const AbilityDef &granted_def : ab.def.animate_granted_abilities) {
-            Ability granted(granted_def);
+    if (!ab.def->animate_granted_abilities.empty() && permanent_dur) {
+        for (const AbilityDef &granted_def : ab.def->animate_granted_abilities) {
+            Ability granted(&granted_def);
             granted.source = ObjectRef::of(tgt);
             bool recorded = false;
             for (auto &existing : perm.animate_granted_abilities)
-                if (existing.identical_activated_ability(granted_def)) { recorded = true; break; }
+                if (existing.identical_activated_ability(&granted_def)) { recorded = true; break; }
             if (!recorded) perm.animate_granted_abilities.push_back(granted);
             bool dup = false;
             for (auto &existing : perm.abilities)
-                if (existing.identical_activated_ability(granted_def)) { dup = true; break; }
+                if (existing.identical_activated_ability(&granted_def)) { dup = true; break; }
             if (dup) continue;
             perm.abilities.push_back(granted);
             game_log("%s gains an activated ability.\n", perm.name.c_str());

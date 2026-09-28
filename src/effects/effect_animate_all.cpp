@@ -37,28 +37,28 @@ HandlerResult animate_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     int affected = 0;
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e)) continue;
-        if (!permanent_matches_filter(e, ab.def.valid_cards_filter, ctx)) continue;
+        if (!permanent_matches_filter(e, ab.def->valid_cards_filter, ctx)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
 
         // Removal direction (CR 613 layer 6): suppress the named keyword(s) until end of turn.
-        for (const auto &kw : ab.def.remove_keywords)
+        for (const auto &kw : ab.def->remove_keywords)
             perm.removed_keywords_eot.insert(kw);
 
         // Grant direction (until end of turn) — creatures only (keywords live on Creature).
-        if (!ab.def.add_keywords.empty() && global_coordinator.entity_has_component<Creature>(e)) {
+        if (!ab.def->add_keywords.empty() && global_coordinator.entity_has_component<Creature>(e)) {
             auto &cr = global_coordinator.GetComponent<Creature>(e);
             cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
-            for (const auto &kw : ab.def.add_keywords) {
+            for (const auto &kw : ab.def->add_keywords) {
                 add_keyword_instance(cr.eot_keywords, kw);
                 add_keyword_instance(cr.keywords, kw);
             }
         }
         ++affected;
     }
-    if (!ab.def.remove_keywords.empty()) {
+    if (!ab.def->remove_keywords.empty()) {
         std::string list;
-        for (size_t i = 0; i < ab.def.remove_keywords.size(); ++i)
-            list += (i ? ", " : "") + ab.def.remove_keywords[i];
+        for (size_t i = 0; i < ab.def->remove_keywords.size(); ++i)
+            list += (i ? ", " : "") + ab.def->remove_keywords[i];
         game_log("%d permanent(s) lose %s until end of turn.\n", affected, list.c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;

@@ -44,7 +44,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
     // OppCtrl, exactly as Ability::is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
     // matches the opponent's nonland permanents. The controller is the "you" reference.
-    std::string spec = ab.def.vote_card_filter.empty() ? std::string("Permanent.nonLand") : ab.def.vote_card_filter;
+    std::string spec = ab.def->vote_card_filter.empty() ? std::string("Permanent.nonLand") : ab.def->vote_card_filter;
     for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
          pos = spec.find("YouDontCtrl", pos))
         spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");

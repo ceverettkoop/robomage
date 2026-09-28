@@ -9,6 +9,7 @@
 #include "types.h"
 #include "zone.h"
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <variant>
@@ -816,10 +817,35 @@ struct AbilityDef {
     std::vector<AbilityDef> charm_choices;
 };
 
+// ── The definition store ────────────────────────────────────────────────────
+// Every AbilityDef an Ability refers to lives in one process-wide, append-only store: once added
+// a definition is never changed or freed, so a `const AbilityDef *` stays valid across snapshot
+// restores and the per-game ECS reset, and copying an Ability never copies its definition. The
+// store holds script content only, never game state. Parsed cards and tokens are cached per
+// script (parse.cpp), and engine-built definitions are keyed, so the store stops growing once
+// every card, token and keyword a process meets has been seen.
+const AbilityDef *intern_ability_def(AbilityDef def);
+// The definition `build` makes the first time `key` is asked for; the same one afterwards.
+const AbilityDef *keyed_ability_def(const std::string &key,
+                                    const std::function<AbilityDef()> &build);
+// A copy of `base` changed by `edit`, built once per (base, variant, value).
+const AbilityDef *derived_ability_def(const AbilityDef *base, const std::string &variant, int value,
+                                      const std::function<void(AbilityDef &)> &edit);
+// The definition of a default-constructed Ability (no category, no effect).
+const AbilityDef *blank_ability_def();
+// An engine-built TRIGGERED definition with just `category` set (a suspend or warp trigger, a
+// delayed "sacrifice / exile those tokens"), one per category.
+const AbilityDef *triggered_effect_def(const std::string &category);
+// The engine-built "draw a card" TRIGGERED definition (a delayed trigger with no Execute$, the
+// monarch's end-step draw, CR 725.2).
+const AbilityDef *draw_one_trigger_def();
+// Interns each definition of `defs`, in order.
+std::vector<const AbilityDef *> intern_ability_defs(std::vector<AbilityDef> defs);
+
 // Returns the effect-param block of type P held in `ab.params`, default-
 // constructing (and switching the variant to P) if it isn't already active.
 // Use from parse hooks before writing effect-exclusive params. Resolution-time
-// readers should use std::get_if<P>(&def.params) and treat nullptr as "defaults",
+// readers should use std::get_if<P>(&def->params) and treat nullptr as "defaults",
 // which is exception-free under -fno-exceptions.
 template <typename P>
 P& effect_params(AbilityDef& ab) {
@@ -834,12 +860,22 @@ P& effect_params(AbilityDef& ab) {
 struct Ability {
     using AbilityType = AbilityDef::AbilityType;
 
-    AbilityDef def;
+    // What this is an instance of (never null; see the definition store above).
+    const AbilityDef *def = blank_ability_def();
 
     Ability() = default;
     // An instance of `d` with fresh per-instance state; its sub-ability and mode instances
     // mirror d's chains.
-    explicit Ability(const AbilityDef &d);
+    explicit Ability(const AbilityDef *d);
+
+    // The target-count bounds (CR 601.2c), starting as def's TargetMin$/TargetMax$ and fixed
+    // once as the targets are chosen when a count depends on X or another announced value
+    // (Count$xPaid, Count$PromisedGift), so resolution rechecks the same bounds.
+    int target_min = 1;
+    int target_max = 1;
+    // The color this mana ability instance makes (def's Produced$ color, or the one color picked
+    // from a Produced$ Combo / reflected choice when it is offered as a mana source).
+    Colors color = NO_COLOR;
 
     // The object this ability comes from (CR 113.7), as it was when the ability was created: a
     // spell's card once it is on the stack, an activated ability's source after its costs were
@@ -952,7 +988,7 @@ struct Ability {
     // transitional blocking shim below, which resolves inline exactly as before.
     ResolveStatus resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx);
     void resolve(std::shared_ptr<Orderer> orderer);  // blocking shim (discards the status)
-    bool identical_activated_ability(const AbilityDef& other) const;
+    bool identical_activated_ability(const AbilityDef *other) const;
     // Single source of truth for target legality. Returns true if `cand` is a legal
     // target for this ability when controlled by `caster`. Used both to enumerate
     // legal targets (build_valid_targets) and to re-verify chosen targets at

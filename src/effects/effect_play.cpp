@@ -40,7 +40,7 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Resolve the card to play (Defined$ Remembered). While the cast is in flight the card has
     // left exile, so the card is looked up only for the offer.
     Entity card = 0;
-    if (ab.def.defined_remembered && !cur_game.remembered_entities.empty())
+    if (ab.def->defined_remembered && !cur_game.remembered_entities.empty())
         card = cur_game.remembered_entities[0].get();
     else
         card = ab.target.get();  // fallback: a directly-defined/targeted card
@@ -51,11 +51,11 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         const CardData &cd = global_coordinator.GetComponent<CardData>(card);
         if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE)
             return HandlerResult::DONE_RUN_SUBS;
-        if (ab.def.play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
+        if (ab.def->play_valid_sa_spell && is_land_card(cd)) return HandlerResult::DONE_RUN_SUBS;
     }
 
     Game::ImpulseCastPermission grant;
-    grant.resource = (ab.def.play_cost_resource == AbilityDef::PLAY_COST_LIFE)
+    grant.resource = (ab.def->play_cost_resource == AbilityDef::PLAY_COST_LIFE)
                          ? Game::ImpulseCastPermission::LIFE
                          : Game::ImpulseCastPermission::ENERGY;
     grant.amount = play_cost_amount(ab, card);
@@ -100,8 +100,8 @@ bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value
 
 // The PlayCost$ amount for `card`: its mana value for "ConvertedManaCost", else the literal.
 static int play_cost_amount(const Ability &ab, Entity card) {
-    if (ab.def.play_cost_expr == "ConvertedManaCost")
+    if (ab.def->play_cost_expr == "ConvertedManaCost")
         return object_mana_value(card, global_coordinator.GetComponent<CardData>(card));
-    if (!ab.def.play_cost_expr.empty()) return std::atoi(ab.def.play_cost_expr.c_str());
+    if (!ab.def->play_cost_expr.empty()) return std::atoi(ab.def->play_cost_expr.c_str());
     return 0;
 }

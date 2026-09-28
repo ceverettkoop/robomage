@@ -62,8 +62,8 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // sub-ability chaining copies parent.target into ab.target — Archon of Cruelty's
         // DBDraw ("You draw a card") must draw for the caster, not the sacrifice/discard
         // target. Mirrors the same guard in effect_lose_life.cpp.
-        bool targets_player = (ab.def.valid_tgts != "N_A") || ab.def.defined == "Targeted" ||
-                              ab.def.defined == "ParentTarget" || ab.def.defined == "Parent";
+        bool targets_player = (ab.def->valid_tgts != "N_A") || ab.def->defined == "Targeted" ||
+                              ab.def->defined == "ParentTarget" || ab.def->defined == "Parent";
         Zone::Ownership owner;
         if (targets_player && ab.target.get() != 0 &&
             global_coordinator.entity_has_component<Player>(ab.target.get()))
@@ -75,11 +75,11 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
             owner = ab.controller;
         // A Draw with no NumCards$ draws a single card (Forge default), e.g. Kozilek's
         // Command's "then draws a card" rider (DB$ Draw | Defined$ ParentTarget).
-        size_t count = ab.def.amount > 0 ? ab.def.amount : 1;
+        size_t count = ab.def->amount > 0 ? ab.def->amount : 1;
         // A dynamic NumCards$ (The One Ring: NumCards$ X, X = Count$CardCounters.BURDEN — "draw a card
         // for each burden counter on it") is evaluated at resolution against the source permanent.
-        if (!ab.def.dynamic_amount_expr.empty())
-            count = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, owner, orderer, ab.target.get(), ab.source.lki_entity());
+        if (!ab.def->dynamic_amount_expr.empty())
+            count = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, ab.target.get(), ab.source.lki_entity());
         rt.owner = owner;
         rt.total = count;
         rt.init = true;

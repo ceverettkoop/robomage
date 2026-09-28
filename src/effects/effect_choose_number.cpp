@@ -23,9 +23,9 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // ask seats the query on the choosing player and carries ab.source as the
     // pending-decision context, replicating the old scope + priority swap.
     int max = 0;
-    if (!ab.def.dynamic_amount_expr.empty())
+    if (!ab.def->dynamic_amount_expr.empty())
         max = static_cast<int>(
-            evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
+            evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
     if (max < 0) max = 0;
 
     std::vector<LegalAction> choices;

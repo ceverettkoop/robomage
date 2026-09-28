@@ -25,7 +25,7 @@ namespace effects {
 // Parses a token script string of the form "<color>_<power>_<toughness>_<name>[_<kw1>...]"
 // e.g. "w_1_1_monk_prowess"
 HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    const TokenParams *tp = std::get_if<TokenParams>(&ab.def.params);
+    const TokenParams *tp = std::get_if<TokenParams>(&ab.def->params);
     std::string script = tp ? tp->script : "";
     Token tok = parse_token_script(script);
     if (tok.name.empty()) {
@@ -74,9 +74,9 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 
     // TokenAmount$ N (default 1): create N identical tokens. The count may be dynamic
     // (Count$xPaid → X). amount==0 with no dynamic expr means the single-token default.
-    size_t count = ab.def.amount;
-    if (!ab.def.dynamic_amount_expr.empty())
-        count = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ctrl, orderer, ab.target.get());
+    size_t count = ab.def->amount;
+    if (!ab.def->dynamic_amount_expr.empty())
+        count = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ctrl, orderer, ab.target.get());
     else if (count == 0)
         count = 1;
 
@@ -118,9 +118,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // AtEOT$ ExileCombat (Geist of Saint Traft): "Exile that token at end of combat." Register a
     // delayed trigger firing at the end-of-combat step (CR 512) that exiles exactly these tokens.
     if (tp && tp->at_eot == "ExileCombat" && !created.empty()) {
-        Ability exile_ab;
-        exile_ab.def.ability_type = AbilityDef::TRIGGERED;
-        exile_ab.def.category = "ExileTokens";
+        Ability exile_ab(triggered_effect_def("ExileTokens"));
         exile_ab.source = ab.source;
         exile_ab.targets = refs_of(created);
 
@@ -158,7 +156,9 @@ HandlerResult investigate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Clue tokens default to a single token; an explicit Amount$/Num$ (or a dynamic count
     // expr) makes more. Route the count through token() unchanged (it reads ab.amount /
     // ab.dynamic_amount_expr), only ensuring the Clue script is set.
-    effect_params<TokenParams>(ab.def).script = "c_a_clue_draw";
+    ab.def = derived_ability_def(ab.def, "investigate_clue", 0, [](AbilityDef &d) {
+        effect_params<TokenParams>(d).script = "c_a_clue_draw";
+    });
     return token(ab, orderer, ctx);
 }
 

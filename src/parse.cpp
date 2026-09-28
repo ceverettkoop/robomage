@@ -4,6 +4,7 @@
 #include <cctype>
 #include <fstream>
 #include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <cassert>
@@ -65,7 +66,21 @@ static void split_keywords(const std::string& kw_line, std::vector<std::string>&
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
 static std::string svar_key_param(const std::string& line, const std::string& want_key);
+// A card face's ability definitions while it is being parsed (still editable); parse_card_face
+// interns them into the CardData once the face is complete.
+struct FaceAbilityDefs {
+    std::vector<AbilityDef> abilities;
+    std::vector<AbilityDef> gift_abilities;
+    std::vector<AbilityDef> saga_chapters;
+    std::vector<AbilityDef> opening_hand_abilities;
+};
+static void parse_card_face_body(const std::string& front_script, CardData& card,
+                                 FaceAbilityDefs& face_defs);
 static void parse_card_face(const std::string& front_script, CardData& card);
+// Parses the card script at `path` into `card`; false when the file can't be opened.
+static bool parse_card_file(const std::string &path, CardData &card);
+// Parses token script `script_name` into `tok`; false when the file can't be opened.
+static bool parse_token_file(const std::string &script_name, Token &tok);
 static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label);
 // Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
@@ -430,12 +445,26 @@ static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::s
 }
 
 Entity parse_card_script(std::string path) {
+    // A script parses the same way every time, so each is parsed once per process: its ability
+    // definitions are interned once, and a later load (the next game's init_ecs) reuses them.
+    static std::unordered_map<std::string, CardData> parsed;
+    auto it = parsed.find(path);
+    if (it == parsed.end()) {
+        CardData card;
+        if (!parse_card_file(path, card)) return 0;
+        it = parsed.emplace(path, std::move(card)).first;
+    }
+    auto id = global_coordinator.CreateEntity();
+    global_coordinator.AddComponent(id, it->second);
+    return id;
+}
+
+static bool parse_card_file(const std::string &path, CardData &card) {
     auto stream = std::ifstream(path);
     if (!stream.is_open()) {
         fprintf(stderr, "parse_card_script: failed to open '%s'\n", path.c_str());
-        return 0;
+        return false;
     }
-    auto id = global_coordinator.CreateEntity();
     std::string script_data;
     for (size_t i = 0; true; i++) {
         if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
@@ -459,7 +488,6 @@ Entity parse_card_script(std::string path) {
         }
     }
 
-    CardData card;
     parse_card_face(front_script, card);
 
     // Parse the DFC back face as a complete second face so a transformed permanent
@@ -471,17 +499,15 @@ Entity parse_card_script(std::string path) {
         card.backside = backside;
     }
 
-    // no error handling here
-    global_coordinator.AddComponent(id, card);
-
-    return id;
+    return true;
 }
 
 // Parses one card face (front or DFC back) into `card`: mana cost, types, colors,
 // oracle text, P/T, starting loyalty, activated/spell abilities, triggered abilities,
 // alternate costs, static abilities, replacement effects, and keywords. Shared by
 // both faces so each face of a DFC is a fully-functional permanent definition.
-static void parse_card_face(const std::string& front_script, CardData& card) {
+static void parse_card_face_body(const std::string& front_script, CardData& card,
+                                 FaceAbilityDefs& face_defs) {
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
@@ -516,7 +542,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     }
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
-    card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
+    face_defs.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
     // Detect "shuffle into library" pattern: SVar with DB$ ChangeZone from Stack to Library + Defined$ Parent
     // (e.g. Green Sun's Zenith) — sets a flag so stack manager moves to library instead of graveyard.
     // Strip the sub-ability since the stack manager handles it via the flag.
@@ -527,7 +553,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             sv.second.find("Defined$ Parent") != std::string::npos) {
             card.shuffle_into_library = true;
             // Remove the sub-ability from all spell abilities so it doesn't resolve as a ChangeZone
-            for (auto &ab : card.abilities) {
+            for (auto &ab : face_defs.abilities) {
                 ab.subabilities.erase(
                     std::remove_if(ab.subabilities.begin(), ab.subabilities.end(),
                         [](const AbilityDef &sub) {
@@ -542,7 +568,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     }
     // parse triggered abilities from T: lines
     for (auto &trig : parse_triggered_abilities(front_script, svars, card.name))
-        card.abilities.push_back(trig);
+        face_defs.abilities.push_back(trig);
 
     // Parse S: lines for alternate costs
     for (auto& line : multi_values_from_script(front_script, "S")) {
@@ -731,7 +757,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // creature (CR 301.5c).
         if (kw_line.rfind("Equip", 0) == 0) {
             card.is_equipment = true;
-            card.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
+            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
             card.keywords.push_back("Equip");
             continue;
         }
@@ -744,8 +770,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         if (kw_line.rfind("Reconfigure", 0) == 0) {
             card.is_equipment = true;
             card.is_reconfigure = true;
-            card.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
-            card.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
+            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
+            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
             card.keywords.push_back("Reconfigure");
             continue;
         }
@@ -847,11 +873,14 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             if (parts.size() >= 3) {
                 for (const std::string &name : split(parts[2], ',', /*skip_empty=*/true)) {
                     auto it = svars.find(name);
+                    AbilityDef chapter;  // an unknown SVar keeps chapter indexing aligned
                     if (it != svars.end())
-                        card.saga_chapters.push_back(
-                            parse_svar_ability(it->second, AbilityDef::TRIGGERED, svars, card.name));
-                    else
-                        card.saga_chapters.push_back(AbilityDef{});  // keep chapter indexing aligned
+                        chapter = parse_svar_ability(it->second, AbilityDef::TRIGGERED, svars, card.name);
+                    // A chapter ability is a triggered ability (CR 714.2b) the Saga lifecycle
+                    // tracks until it leaves the stack (CR 714.4).
+                    chapter.ability_type = AbilityDef::TRIGGERED;
+                    chapter.is_saga_chapter = true;
+                    face_defs.saga_chapters.push_back(chapter);
                 }
             }
             card.keywords.push_back("Chapter");
@@ -886,7 +915,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             ab.activation_zone = Zone::HAND;
             // Shared Cost$ token grammar (PayLife, Sac, Discard, Return, tap, mana).
             parse_activation_cost(cost_str, ab);
-            card.abilities.push_back(ab);
+            face_defs.abilities.push_back(ab);
             card.keywords.push_back("Cycling");
             continue;
         }
@@ -905,7 +934,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             ab.defined_self = true;
             ab.activation_zone = Zone::HAND;
             parse_activation_cost(cost_str + " Return<1/Creature.attacking+unblocked>", ab);
-            card.abilities.push_back(ab);
+            face_defs.abilities.push_back(ab);
             card.keywords.push_back("Ninjutsu");
             continue;
         }
@@ -931,7 +960,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             ab.mandatory = false;           // searches may fail to find (CR 701.19c)
             // Shared Cost$ token grammar (the mana portion of the cycling cost).
             parse_activation_cost(cost_str, ab);
-            card.abilities.push_back(ab);
+            face_defs.abilities.push_back(ab);
             card.keywords.push_back(subtype + "cycling");
             continue;
         }
@@ -972,7 +1001,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             ab.is_unearth = true;
             // Shared Cost$ token grammar (the mana portion of the unearth cost).
             parse_activation_cost(cost_str, ab);
-            card.abilities.push_back(ab);
+            face_defs.abilities.push_back(ab);
             card.keywords.push_back("Unearth");
             continue;
         }
@@ -1026,7 +1055,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             sac.origin = Zone::BATTLEFIELD;
             sac.destination = Zone::GRAVEYARD;
             sac.mandatory = true;
-            card.abilities.push_back(sac);
+            face_defs.abilities.push_back(sac);
             continue;
         }
         // K:Offspring:<cost> — an optional additional cost (CR 702.171). You may pay the
@@ -1051,7 +1080,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             tok.defined_self = true;          // copies its own source (no targeting)
             tok.valid_tgts = "N_A";
             tok.mandatory = true;
-            card.abilities.push_back(tok);
+            face_defs.abilities.push_back(tok);
             continue;
         }
         // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
@@ -1099,7 +1128,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Gift");
             auto git = svars.find("GiftAbility");
             if (git != svars.end()) {
-                card.gift_abilities.push_back(
+                face_defs.gift_abilities.push_back(
                     parse_svar_ability(git->second, AbilityDef::SPELL, svars, card.name));
                 size_t gd = git->second.find("GiftDescription$");
                 if (gd != std::string::npos) {
@@ -1127,7 +1156,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             if (parts.size() >= 2) {
                 auto oit = svars.find(parts[1]);
                 if (oit != svars.end())
-                    card.opening_hand_abilities.push_back(
+                    face_defs.opening_hand_abilities.push_back(
                         parse_svar_ability(oit->second, AbilityDef::SPELL, svars, card.name));
             }
             for (size_t pi = 2; pi < parts.size(); pi++)
@@ -1149,7 +1178,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             st.trigger_only_self = true;  // ValidCard$ Card.Self — fires for the cast spell itself
             st.valid_tgts = "N_A";
             st.mandatory = true;
-            card.abilities.push_back(st);
+            face_defs.abilities.push_back(st);
             continue;
         }
         // K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
@@ -1173,7 +1202,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
             ab.sac_valid = "Permanent";       // any permanent the defending player controls
             ab.sac_count = static_cast<size_t>(n);
-            card.abilities.push_back(ab);
+            face_defs.abilities.push_back(ab);
             continue;
         }
         // K:Protection:<quality>:<desc> — structured Protection keyword (CR 702.16). The middle
@@ -1199,14 +1228,33 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     }
 }
 
+static void parse_card_face(const std::string& front_script, CardData& card) {
+    FaceAbilityDefs face_defs;
+    parse_card_face_body(front_script, card, face_defs);
+    card.abilities = intern_ability_defs(std::move(face_defs.abilities));
+    card.gift_abilities = intern_ability_defs(std::move(face_defs.gift_abilities));
+    card.saga_chapters = intern_ability_defs(std::move(face_defs.saga_chapters));
+    card.opening_hand_abilities = intern_ability_defs(std::move(face_defs.opening_hand_abilities));
+}
+
 Token parse_token_script(const std::string &script_name) {
+    // Parsed once per script per process, like a card script (parse_card_script).
+    static std::unordered_map<std::string, Token> parsed;
+    auto it = parsed.find(script_name);
+    if (it != parsed.end()) return it->second;
     Token tok;
+    if (!parse_token_file(script_name, tok)) return tok;
+    parsed.emplace(script_name, tok);
+    return tok;
+}
+
+static bool parse_token_file(const std::string &script_name, Token &tok) {
     tok.script_name = script_name;
     std::string path = RESOURCE_DIR + "/tokenscripts/" + script_name + ".txt";
     std::ifstream stream(path);
     if (!stream.is_open()) {
         non_fatal_error("Could not open token script: " + path);
-        return tok;
+        return false;
     }
     std::string script_data;
     char buffer[SCRIPT_MAX_LEN];
@@ -1247,15 +1295,16 @@ Token parse_token_script(const std::string &script_name) {
     // grammar as a real card's A: line, so the sac-for-mana ability resolves identically to
     // Lotus Petal's.
     auto svars = parse_svars(script_data);
-    tok.abilities = parse_triggered_abilities(script_data, svars, tok.name);
+    std::vector<AbilityDef> tok_defs = parse_triggered_abilities(script_data, svars, tok.name);
     for (auto &ab : parse_abilities(multi_values_from_script(script_data, "A"), tok.types,
                                     svars, tok.name))
-        tok.abilities.push_back(ab);
+        tok_defs.push_back(ab);
+    tok.abilities = intern_ability_defs(std::move(tok_defs));
     // S: lines — continuous static abilities (e.g. the Construct token's "+1/+1 for each
     // artifact you control" self-buff). Applied via the Permanent once bootstrapped.
     tok.static_abilities = parse_static_abilities(script_data, svars);
 
-    return tok;
+    return true;
 }
 
 // private util functions
@@ -2567,19 +2616,28 @@ static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::Abi
 // grammar via parse_svar_ability. Used to materialize an AddAbility$ static's granted
 // ability (Petrified Hamlet). No SVar table is available at the grant site, so an empty map
 // is passed; the granted bodies in use are self-contained (no SVar references).
-AbilityDef parse_ability_body(const std::string &body, AbilityDef::AbilityType type) {
-    static const std::map<std::string, std::string> kNoSvars;
-    return parse_svar_ability(body, type, kNoSvars, "");
+const AbilityDef *parse_ability_body(const std::string &body, AbilityDef::AbilityType type) {
+    std::string key = "body:" + std::to_string(static_cast<int>(type)) + ":" + body;
+    return keyed_ability_def(key, [&body, type] {
+        static const std::map<std::string, std::string> kNoSvars;
+        return parse_svar_ability(body, type, kNoSvars, "");
+    });
 }
 
-AbilityDef parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
-                              const std::string &svar_body) {
-    // Build the minimal svars table the trigger's Execute$ resolves against (its named execute
-    // SVar), then run the shared trigger parser — so the granted trigger honours the full trigger
-    // grammar (Mode$/Phase$/ValidPlayer$/Execute$ + the DB$ effect body) exactly as a printed T:.
-    std::map<std::string, std::string> svars;
-    if (!svar_name.empty()) svars[svar_name] = svar_body;
-    return parse_one_trigger(trigger_line, svars, "");
+const AbilityDef *parse_granted_trigger(const std::string &trigger_line,
+                                        const std::string &svar_name,
+                                        const std::string &svar_body) {
+    std::string key = "granted_trigger:" + trigger_line + "\n" + svar_name + "\n" + svar_body;
+    return keyed_ability_def(key, [&] {
+        // Build the minimal svars table the trigger's Execute$ resolves against (its named execute
+        // SVar), then run the shared trigger parser — so the granted trigger honours the full trigger
+        // grammar (Mode$/Phase$/ValidPlayer$/Execute$ + the DB$ effect body) exactly as a printed T:.
+        std::map<std::string, std::string> svars;
+        if (!svar_name.empty()) svars[svar_name] = svar_body;
+        AbilityDef d = parse_one_trigger(trigger_line, svars, "");
+        d.ability_type = AbilityDef::TRIGGERED;
+        return d;
+    });
 }
 
 // Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
