@@ -60,7 +60,10 @@ from az_selfplay import (_play_match, _backfill_and_pack,  # noqa: E402
 _IS_SIDEBOARD_IDX = _MATCH_CTX_START + 3
 
 # Small budgets so the match finishes fast; sideboard roots get their own budget.
+# FAST_SIMS is the playout cap's fast-root budget (most in-game roots): left at
+# the shipped default (128) it made each match ~40x slower than these budgets.
 SIMS = 8
+FAST_SIMS = 4
 WORLDS = 2
 SB_BRANCHES = 2
 SB_WORLDS = 2
@@ -118,7 +121,7 @@ def check_opp_pool_match() -> int:
             seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
             sb_rollout_turns=SB_ROLLOUT_TURNS,
             opp_evaluator=UniformEvaluator(), net_is_a=True,
-            full_search_frac=0.5, fast_sims=4)
+            full_search_frac=0.5, fast_sims=FAST_SIMS)
     finally:
         env.close()
         for p in paths:
@@ -423,7 +426,7 @@ def main() -> int:
             env, UniformEvaluator(), rng, sims=SIMS, worlds=WORLDS,
             root_noise_eps=0.0, root_noise_alpha=1.0,
             seed=SEED, sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
-            sb_rollout_turns=SB_ROLLOUT_TURNS)
+            sb_rollout_turns=SB_ROLLOUT_TURNS, fast_sims=FAST_SIMS)
     finally:
         env.close()
 
@@ -571,7 +574,8 @@ def main() -> int:
             sims=SIMS, worlds=WORLDS,
             root_noise_eps=0.0, root_noise_alpha=1.0, seed=SEED,
             sb_branches=SB_BRANCHES, sb_worlds=SB_WORLDS,
-            sb_rollout_turns=SB_ROLLOUT_TURNS, sb_mode="plan")
+            sb_rollout_turns=SB_ROLLOUT_TURNS, sb_mode="plan",
+            fast_sims=FAST_SIMS)
     finally:
         env2.close()
     sb2 = [s for s in samples2 if _is_sideboard(s)]
