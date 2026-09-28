@@ -151,6 +151,8 @@ static void resolve_pump_exprs(AbilityDef& ability, const std::map<std::string, 
 static void resolve_destroyall_svars(AbilityDef& ability, const std::map<std::string, std::string>& svars);
 static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
                                   std::vector<std::string>& terms);
+static bool find_cmc_bound(const std::string& filter, const char* only_op, std::string& op,
+                           std::string& bound);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
@@ -2319,31 +2321,42 @@ static void resolve_destroyall_svars(AbilityDef &ability,
                                      const std::map<std::string, std::string> &svars) {
     if (ability.category != "DestroyAll") return;
     auto &dp = effect_params<DestroyAllParams>(ability);
-    if (dp.cmc_expr.empty() && !ability.valid_cards_filter.empty()) {
-        for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-            size_t pos = ability.valid_cards_filter.find(op);
-            if (pos == std::string::npos) continue;
-            std::string svar_ref = ability.valid_cards_filter.substr(pos + 5);
-            size_t end = 0;
-            while (end < svar_ref.size() &&
-                   (std::isalnum(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                end++;
-            svar_ref = svar_ref.substr(0, end);
-            // A pure-numeric or "X" bound stays on the legacy path (handled at resolution);
-            // only a named SVar resolving to a Count$ expression routes here.
-            if (svar_ref.empty() || svar_ref == "X") break;
-            auto it = svars.find(svar_ref);
-            if (it != svars.end()) {
-                dp.cmc_expr = it->second;
-                dp.cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
-            }
-            break;
+    std::string op, bound;
+    // A pure-numeric or "X" bound stays on the legacy path (handled at resolution); only a named
+    // SVar resolving to a Count$ expression routes here.
+    if (dp.cmc_expr.empty() && find_cmc_bound(ability.valid_cards_filter, nullptr, op, bound) &&
+        bound != "X") {
+        auto it = svars.find(bound);
+        if (it != svars.end()) {
+            dp.cmc_expr = it->second;
+            dp.cmc_op = op;
         }
     }
     if (!dp.energy_unless_expr.empty()) {
         auto it = svars.find(dp.energy_unless_expr);
         if (it != svars.end()) dp.energy_unless_expr = it->second;
     }
+}
+
+// The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
+// → "LE", "X"): its two-letter comparator and its bound, the SVar name or number that follows (a
+// run of letters, digits and '_'). OP is tried in the order EQ, LE, GE, LT, GT, NE, or is only
+// `only_op` when given. False when the filter has no such qualifier.
+static bool find_cmc_bound(const std::string &filter, const char *only_op, std::string &op,
+                           std::string &bound) {
+    for (const char *cmp : {"EQ", "LE", "GE", "LT", "GT", "NE"}) {
+        if (only_op && std::strcmp(cmp, only_op) != 0) continue;
+        size_t pos = filter.find(std::string("cmc") + cmp);
+        if (pos == std::string::npos) continue;
+        size_t start = pos + 5, end = start;
+        while (end < filter.size() &&
+               (std::isalnum(static_cast<unsigned char>(filter[end])) || filter[end] == '_'))
+            end++;
+        op = cmp;
+        bound = filter.substr(start, end - start);
+        return true;
+    }
+    return false;
 }
 
 // Parses a spell, activated or DB$ ability body: the category at `category_pos` (just past its
@@ -2528,24 +2541,15 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
                                   const std::map<std::string, std::string> &svars,
                                   const std::string &card_name) {
     resolve_effect_static_svars(ability, text, svars);
+    std::string op, bound;  // a filter's cmc<OP><bound> qualifier (find_cmc_bound)
     // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
     // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
     // amount_svar would be empty and the revolt-scaled threshold never resolves.
     // Wire the referenced SVar into amount_svar so resolve_amount_svar resolves it into
     // dynamic_amount_expr (evaluated at resolution by effects::destroy).
-    if (ability.amount_svar.empty()) {
-        size_t lex = ability.condition_present.find("cmcLE");
-        if (lex != std::string::npos) {
-            std::string svar_ref = ability.condition_present.substr(lex + 5);
-            size_t end = 0;
-            while (end < svar_ref.size() &&
-                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                end++;
-            svar_ref = svar_ref.substr(0, end);
-            if (!svar_ref.empty() && svars.find(svar_ref) != svars.end())
-                ability.amount_svar = svar_ref;
-        }
-    }
+    if (ability.amount_svar.empty() && find_cmc_bound(ability.condition_present, "LE", op, bound) &&
+        svars.find(bound) != svars.end())
+        ability.amount_svar = bound;
     resolve_amount_svar(ability, svars, card_name);
     // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
     // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
@@ -2562,22 +2566,11 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // "cmcEQ<svar>"/"cmcLE<svar>" SVar reference to its runtime Count$ expression and stash
     // it (with the comparator) so the ChangeZone search can gate hand cards by mana value
     // == the source's charge-counter count at resolution time.
-    if (ability.change_type_cmc_expr.empty() && !ability.change_type.empty()) {
-        for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-            size_t pos = ability.change_type.find(op);
-            if (pos == std::string::npos) continue;
-            std::string svar_ref = ability.change_type.substr(pos + 5);
-            size_t end = 0;
-            while (end < svar_ref.size() &&
-                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                end++;
-            svar_ref = svar_ref.substr(0, end);
-            auto it = svars.find(svar_ref);
-            if (it != svars.end()) {
-                ability.change_type_cmc_expr = it->second;
-                ability.change_type_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
-            }
-            break;
+    if (ability.change_type_cmc_expr.empty() && find_cmc_bound(ability.change_type, nullptr, op, bound)) {
+        auto it = svars.find(bound);
+        if (it != svars.end()) {
+            ability.change_type_cmc_expr = it->second;
+            ability.change_type_cmc_op = op;
         }
     }
     // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
@@ -2635,18 +2628,9 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     }
     // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
     // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
-    if (ability.dynamic_amount_expr.empty() && !ability.change_valid.empty()) {
-        size_t lex = ability.change_valid.find("cmcLE");
-        if (lex != std::string::npos) {
-            std::string svar_ref = ability.change_valid.substr(lex + 5);
-            size_t end = 0;
-            while (end < svar_ref.size() &&
-                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                end++;
-            svar_ref = svar_ref.substr(0, end);
-            auto it = svars.find(svar_ref);
-            if (it != svars.end()) ability.dynamic_amount_expr = it->second;
-        }
+    if (ability.dynamic_amount_expr.empty() && find_cmc_bound(ability.change_valid, "LE", op, bound)) {
+        auto it = svars.find(bound);
+        if (it != svars.end()) ability.dynamic_amount_expr = it->second;
     }
 }
 
@@ -3146,26 +3130,20 @@ static void read_trigger_valid_card(const std::string &value,
     // "Card.cmcEQY", Y = Count$CardCounters.CHARGE). Resolve the cmc<op><svar>
     // qualifier to its runtime Count$ expression + comparison op, mirroring the
     // ChangeType cmcEQ handling used by Aether Vial.
-    for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-        size_t p = value.find(op);
-        if (p == std::string::npos) continue;
-        std::string svar_key = value.substr(p + strlen(op));
-        size_t end = svar_key.find_first_of(".+");
-        if (end != std::string::npos) svar_key = svar_key.substr(0, end);
-        auto it = svars.find(svar_key);
+    std::string op, bound;
+    if (find_cmc_bound(value, nullptr, op, bound)) {
+        auto it = svars.find(bound);
         if (it != svars.end()) {
             ability.trigger_cmc_expr = it->second;
-            ability.trigger_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
-        } else if (!svar_key.empty() &&
-                   svar_key.find_first_not_of("0123456789") == std::string::npos) {
+            ability.trigger_cmc_op = op;
+        } else if (!bound.empty() && bound.find_first_not_of("0123456789") == std::string::npos) {
             // A LITERAL numeric bound (Eidolon of the Great Revel: Card.cmcLE3).
             // evaluate_svar returns a plain integer literal as itself, so store
             // the number directly; without this the filter would be dropped and the
             // trigger would fire on every spell.
-            ability.trigger_cmc_expr = svar_key;
-            ability.trigger_cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
+            ability.trigger_cmc_expr = bound;
+            ability.trigger_cmc_op = op;
         }
-        break;
     }
 }
 
