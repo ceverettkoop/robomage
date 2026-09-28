@@ -455,7 +455,8 @@
 //                  [7]  subject_card_id — the first subject (the blinked or exiled
 //                       card, the first token to sacrifice/exile, the watched land);
 //                       captured at registration; sentinel when there is none
-//                       (Mishra's Bauble's draw)
+//                       (Mishra's Bauble's draw), and while that subject is a face-down
+//                       exiled card the opponent owns (hidden, like the exile slots)
 //                  [8-11] fire_on one-hot: upkeep, end step, end of combat, leaves the
 //                       battlefield (all 0.0 for any other phase)
 //                  [12] fires_this_turn — a WAITING phase trigger scheduled for a step

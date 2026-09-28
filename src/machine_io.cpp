@@ -64,6 +64,7 @@ static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
 static int battlefield_slot_ref_of(Entity e);
 static int creator_slot_ref(const DelayedTriggerLink& link);
 static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched);
+static int visible_subject_card_idx(const DelayedTriggerLink& link, Zone::Ownership viewer);
 static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
                                   const std::vector<Entity>& stack_delayed);
 static void push_delayed_slot(std::vector<float>& out, const DelayedTriggerEntry& d);
@@ -612,6 +613,17 @@ static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity 
     return -1;
 }
 
+// The delayed trigger's subject card id as `viewer` may see it: the sentinel while that subject is
+// a face-down exiled card another player owns (CR 406.3, 708.2), like the exile zone slots. The
+// subject must still be the same card (its vocab idx matches the one captured at registration).
+static int visible_subject_card_idx(const DelayedTriggerLink& link, Zone::Ownership viewer) {
+    if (!link.subjects.empty() &&
+        action_card_vocab_idx(link.subjects[0]) == link.subject_vocab_idx &&
+        face_down_hidden_from(link.subjects[0], viewer))
+        return -1;
+    return link.subject_vocab_idx;
+}
+
 // Pass-B fill of the delayed-trigger block: the waiting Game::delayed_triggers records plus
 // the fired stack objects in `stack_delayed`, packed in ascending seq and truncated at
 // MAX_DELAYED_TRIGGER_SLOTS. Needs the entity->slot map for the refs.
@@ -630,7 +642,7 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
         d.creator_card_idx   = link.creator_vocab_idx;
         d.creator_ref        = creator_slot_ref(link);
         d.subject_ref        = first_subject_battlefield_ref(link, dt.watch_entity);
-        d.subject_card_idx   = link.subject_vocab_idx;
+        d.subject_card_idx   = visible_subject_card_idx(link, viewer);
         d.fire_kind          = link.fire_kind;
         d.fires_this_turn    = delayed_trigger_fires_this_turn(dt);
         entries.push_back({link.seq, d});
@@ -645,7 +657,7 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
         d.creator_card_idx   = link.creator_vocab_idx;
         d.creator_ref        = creator_slot_ref(link);
         d.subject_ref        = first_subject_battlefield_ref(link, 0);
-        d.subject_card_idx   = link.subject_vocab_idx;
+        d.subject_card_idx   = visible_subject_card_idx(link, viewer);
         d.fire_kind          = link.fire_kind;
         d.fires_this_turn    = false;
         entries.push_back({link.seq, d});
