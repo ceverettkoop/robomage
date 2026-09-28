@@ -126,7 +126,7 @@ struct AbilityDef {
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
     std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
-    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to remembered_entities
+    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to the remembered set
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
@@ -187,7 +187,7 @@ struct AbilityDef {
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
-    // into cur_game.remembered_entities so chained ChangeType$ Remembered.sameName
+    // into cur_game.resolution.memory.remembered so chained ChangeType$ Remembered.sameName
     // subabilities can reference the card whose name to match (Surgical Extraction).
     bool remember_targeted = false;
     // TgtZone$ Graveyard — this spell/ability targets a card in a graveyard even though
@@ -519,7 +519,7 @@ struct AbilityDef {
     bool trigger_taps_for_mana_static = false;
 
     // Attach / Equip sub-ability
-    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.resolution.memory.remembered[0]
     // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
     // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
     bool from_delayed_execute = false;
@@ -532,14 +532,14 @@ struct AbilityDef {
     bool defined_triggered_source_sa = false;
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
-    // loop once per player, setting cur_game.remembered_entities to that player's entity
+    // loop once per player, setting cur_game.resolution.memory.remembered to that player's entity
     // before resolving the RepeatSubAbility (parsed into subabilities). Empty = not a
     // per-player repeat.
     std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
 
     // RepeatEach over CARD TYPES (Atraxa, Grand Unifier): RepeatTypesFrom$ ValidLibrary
     // Card.IsImprinted makes the effect loop once per distinct card type present among the
-    // imprinted cards (cur_game.imprinted_entities), setting cur_game.chosen_type before
+    // imprinted cards (cur_game.resolution.memory.imprinted), setting cur_game.resolution.memory.chosen_type before
     // resolving the RepeatSubAbility body each iteration. Empty = not a per-type repeat.
     std::string repeat_types_from = "";
     // Number of leading `subabilities` that are the RepeatSubAbility$ body (repeated each
@@ -549,20 +549,20 @@ struct AbilityDef {
     size_t repeat_sub_count = 0;
 
     // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
-    // card of the current cur_game.chosen_type owned by the controller. A "you may" choice
+    // card of the current cur_game.resolution.memory.chosen_type owned by the controller. A "you may" choice
     // (declinable). RememberChosen$ True appends the chosen card to the remembered set so a
     // trailing Defined$ Remembered ChangeZone moves it to hand.
     bool choose_imprinted = false;
-    bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to remembered_entities
+    bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to the remembered set
     // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
     // card an opponent owns with a void counter on it"): the controller chooses one card in that
     // zone matching the filter. The choice becomes the resolution's chosen card
-    // (cur_game.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
+    // (cur_game.resolution.memory.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
     // True means no "choose nothing" option. Unset zone = the battlefield.
     std::string choose_card_filter = "";
     Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
-    // Mill: remember milled cards in cur_game.remembered_entities
+    // Mill: remember milled cards in cur_game.resolution.memory.remembered
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
@@ -570,12 +570,12 @@ struct AbilityDef {
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
-    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.chosen_cards
-    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.imprinted_entities (Atraxa)
+    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.resolution.memory.chosen_cards
+    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.resolution.memory.imprinted (Atraxa)
 
     // ChooseCard ChooseEach$ "Type & Type & ..." (Ajani -4): each affected player chooses
     // one permanent of each listed type from among their matching permanents to keep
-    // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
+    // (recorded in cur_game.resolution.memory.chosen_cards). Empty = the legacy single-pick ChooseCard.
     std::string choose_each = "";
 
     // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
@@ -590,18 +590,18 @@ struct AbilityDef {
     // RememberLKI$ — remember the moved object's last-known information (Boomerang Basics:
     // remember the bounced permanent so a paired ConditionDefined$ RememberedLKI gate can
     // read the controller it had as it left the battlefield, CR 608.2g). Like remember_changed
-    // it stashes the moved entity in cur_game.remembered_entities; the condition reads its LKI.
+    // it stashes the moved entity in cur_game.resolution.memory.remembered; the condition reads its LKI.
     bool remember_lki = false;
 
     // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
-    // stash every revealed card into cur_game.remembered_entities so a later Defined$ Remembered
+    // stash every revealed card into cur_game.resolution.memory.remembered so a later Defined$ Remembered
     // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first
     // link of the chain that records the candidates a subsequent exile picks from.
     bool remember_revealed = false;
 
     // RememberPumped$ True (Cloak and Dagger's DBPump): a Pump used purely as an (optional)
     // target-selector — it applies no stat change, it just APPENDS its chosen creature to
-    // cur_game.remembered_entities so it joins the candidate pool of a later exile.
+    // cur_game.resolution.memory.remembered so it joins the candidate pool of a later exile.
     bool remember_pumped = false;
 
     // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e linked
@@ -644,7 +644,7 @@ struct AbilityDef {
     // among the affected cards may be played ("play", not only "cast"; CR 305.1).
     bool effect_may_play_lands = false;
     // RememberObjects$ ChosenCard: the Effect's affected cards are the resolution's chosen card(s)
-    // (cur_game.chosen_cards, set by a preceding ChooseCard) instead of the remembered set.
+    // (cur_game.resolution.memory.chosen_cards, set by a preceding ChooseCard) instead of the remembered set.
     bool effect_remember_chosen_card = false;
 
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
@@ -723,7 +723,7 @@ struct AbilityDef {
     // change_valid (Valid$). dig_until_found_dest is where the matching card goes,
     // dig_until_revealed_dest where the non-matching cards passed over go (both Exile for
     // Amped Raptor). dig_until_remember_found stores the matching card in
-    // cur_game.remembered_entities (RememberFound$) for a chained DB$ Play.
+    // cur_game.resolution.memory.remembered (RememberFound$) for a chained DB$ Play.
     int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
     int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
     bool dig_until_remember_found = false;       // RememberFound$ True
@@ -775,7 +775,7 @@ struct AbilityDef {
     // enforced when they resolve, so cast-time legality must NOT gate on the condition.
     bool condition_on_target = false;
     // ConditionDefined$ Remembered — condition_present/condition_compare are evaluated over
-    // cur_game.remembered_entities (count of remembered cards) rather than battlefield
+    // cur_game.resolution.memory.remembered (count of remembered cards) rather than battlefield
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
     // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
@@ -941,7 +941,7 @@ struct Ability {
     // Leaves-the-battlefield ability that operates on the cards its source had exiled
     // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
     // exiled_with here (from the live Permanent, or its last-known info if already stripped),
-    // and resolve() restores it into cur_game.remembered_entities so the body's
+    // and resolve() restores it into cur_game.resolution.memory.remembered so the body's
     // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
     // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
     std::vector<ObjectRef> restore_remembered_exiled_with;

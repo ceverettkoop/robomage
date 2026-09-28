@@ -26,7 +26,7 @@ namespace effects {
 // matches Valid$ (CR 701.16 reveal + 401 library ordering). The matching card goes to
 // FoundDestination$; the cards passed over go to RevealedDestination$.
 //   - Amped Raptor: found -> Exile, revealed -> Exile (impulse), RememberFound$ True records the
-//     matching card in cur_game.remembered_entities so a chained DB$ Play can cast it.
+//     matching card in cur_game.resolution.memory.remembered so a chained DB$ Play can cast it.
 //   - Raph & Mikey, Troublemakers: found -> Battlefield entering Tapped$ and Attacking$ (CR 508.4:
 //     put onto the battlefield attacking, not declared — no new "attacks" triggers), revealed ->
 //     the bottom of the library (RevealedLibraryPosition$ -1) in a random order (RevealRandomOrder$).
@@ -40,7 +40,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // RememberFound$ True replaces any previously remembered cards with the found one, so a
     // downstream Defined$ Remembered (DB$ Play) reads exactly this card. Clear up front so a
     // failed dig (library empties) leaves nothing remembered.
-    if (ab.def->dig_until_remember_found) cur_game.remembered_entities.clear();
+    if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.clear();
 
     // Reveal from the top (a stable top-first snapshot — nothing leaves the library until the
     // reveal has resolved) until a card matches. `revealed` holds the non-matching cards passed
@@ -102,7 +102,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             orderer->add_to_zone(false, found, found_dest);
             game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
         }
-        if (ab.def->dig_until_remember_found) cur_game.remembered_entities.push_back(ObjectRef::of(found));
+        if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(found));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

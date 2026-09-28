@@ -37,7 +37,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // later Defined$ Remembered exile picks from. This RevealHand is the first link of the chain,
     // so start a FRESH remembered set (clear it) and fill it with the revealed cards. A later
     // RememberPumped$ Pump appends the chosen creature to this same set (CR 608.2c chaining).
-    if (ab.def->remember_revealed) cur_game.remembered_entities.clear();
+    if (ab.def->remember_revealed) cur_game.resolution.memory.remembered.clear();
 
     if (hand.empty()) {
         game_log("%s reveals their hand: it is empty.\n", player_name(hand_owner).c_str());
@@ -50,7 +50,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         game_log("  %s\n", cd.name.c_str());
         // The whole hand is now public — record each card's identity in the belief state.
         mark_card_revealed(e, hand_owner);
-        if (ab.def->remember_revealed) cur_game.remembered_entities.push_back(ObjectRef::of(e));
+        if (ab.def->remember_revealed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(e));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

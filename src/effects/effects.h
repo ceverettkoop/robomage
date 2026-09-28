@@ -162,7 +162,7 @@ HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, Fr
 // entity in ab.targets still on the battlefield (the token(s) created when the creature attacked).
 HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
-// player, with cur_game.remembered_entities set to that player's entity each iteration.
+// player, with cur_game.resolution.memory.remembered set to that player's entity each iteration.
 HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
 // graveyard card in cur_game.resolved_effects.may_cast_this_turn so the casting path offers it this turn.
@@ -186,7 +186,7 @@ HandlerResult storm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 // run_copy_spell machine (suspendable). See effect_copy_spell.cpp. CR 707.10 / 707.12.
 HandlerResult copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
-// chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
+// chosen name is stored in cur_game.resolution.memory.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
 HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ Animate (Guide of Souls): the targeted permanent "becomes ..." — bakes the
@@ -219,7 +219,7 @@ HandlerResult tap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
 // [0, Max], where Max is the runtime Count$ expression in ab.dynamic_amount_expr (e.g.
 // Count$YourCountersEnergy = their current energy). The pick is recorded in
-// cur_game.chosen_number for a chained Count$ChosenNumber reference. General over "choose a
+// cur_game.resolution.memory.chosen_number for a chained Count$ChosenNumber reference. General over "choose a
 // number up to N" cards. See effect_choose_number.cpp.
 HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches Valid$;

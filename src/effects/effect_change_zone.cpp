@@ -446,7 +446,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
             // leaves-the-battlefield ability (TrigToken sizing/owning the Illusion) can read it.
-            if (ab.def->remember_changed || ab.def->remember_lki) cur_game.remembered_entities.push_back(ObjectRef::of(tgt));
+            if (ab.def->remember_changed || ab.def->remember_lki) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(tgt));
             if (landed == ab.def->destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
@@ -487,7 +487,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     ab.def->gain_control ? ab.controller
                                     : global_coordinator.GetComponent<Zone>(enchanted).owner;
             if (ab.def->remember_changed || ab.def->remember_lki)
-                cur_game.remembered_entities.push_back(ObjectRef::of(enchanted));
+                cur_game.resolution.memory.remembered.push_back(ObjectRef::of(enchanted));
             if (landed == ab.def->destination)
                 game_log("%s is moved to %s\n", ename.c_str(), dest_str);
         }
@@ -515,7 +515,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
         // it via Card.IsRemembered / Count$RememberedSize (Triumph of Saint Katherine's self-exile
         // head of its recursion pile, counted by the GE7 shuffle-back condition).
-        if (ab.def->remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(self));
+        if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(self));
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -590,7 +590,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         for (; rt.picked < cap; rt.picked++) {
             // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
             std::vector<Entity> cands;
-            for (Entity e : live_entities(cur_game.remembered_entities)) {
+            for (Entity e : live_entities(cur_game.resolution.memory.remembered)) {
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
                 bool zone_ok = ab.def->origin_any;
@@ -647,7 +647,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // pick may suspend only when a declared Origin$ lets the resumed loop skip the cards it
         // already moved; otherwise it is asked inline.
         FrameCtx remembered_ctx = ab.def->origins.empty() ? FrameCtx::blocking() : fctx;
-        for (Entity e : live_entities(cur_game.remembered_entities)) {
+        for (Entity e : live_entities(cur_game.resolution.memory.remembered)) {
             // Only move a card that is still the remembered object (one that left exile is a new
             // object, CR 400.7) and is in the ability's declared Origin$ zone. A delayed return
             // (Phelia/Flickerwisp's TrigBounce, Origin$ Exile) must not "return" a card that
@@ -685,7 +685,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Zone::ZoneValue landed = change_zone_move(orderer, fctx, ab, self, ab.def->destination,
                                                   ab.def->enters_transformed);
         if (decision_suspended()) return HandlerResult::SUSPENDED;
-        if (ab.def->remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(self));
+        if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(self));
         if (landed == Zone::BATTLEFIELD) {
             // Forge's ChangeZone-to-battlefield default: under the card's owner's control.
             auto &szone = global_coordinator.GetComponent<Zone>(self);
@@ -741,7 +741,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             Entity chosen = cands[static_cast<size_t>(choice)];
             std::string cname = object_display_name(chosen);
             change_zone_move(orderer, FrameCtx::blocking(), ab, chosen, ab.def->destination);
-            if (ab.def->remember_changed) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+            if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -856,7 +856,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // the private-vs-public logging below.
             bool face_down = (ab.def->exile_face_down && landed == Zone::EXILE);
             if (ab.def->remember_changed) {
-                cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+                cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
             }
             bool dest_public =
                 (ab.def->destination == Zone::BATTLEFIELD || ab.def->destination == Zone::GRAVEYARD || ab.def->destination == Zone::EXILE);
@@ -961,7 +961,7 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     if (ab.def->change_type.find("Targeted") != std::string::npos)
         ref = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
     else
-        ref = !cur_game.remembered_entities.empty() ? cur_game.remembered_entities[0].lki_entity()
+        ref = !cur_game.resolution.memory.remembered.empty() ? cur_game.resolution.memory.remembered[0].lki_entity()
               : (!ab.targets.empty() ? ab.targets[0].get() : ab.target.get());
     if (ref == 0 || !global_coordinator.entity_has_component<CardData>(ref)) return true;
     std::string name = global_coordinator.GetComponent<CardData>(ref).name;

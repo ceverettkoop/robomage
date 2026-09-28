@@ -37,7 +37,7 @@
 // descending then name ascending (deterministic for replay) and capped at
 // MAX_ACTIONS. The names parallel-array (chosen[i] is the name for choice i) is
 // returned via `out_names` so the caller can record the picked name in its own
-// field (cur_game.named_card vs Permanent::chosen_name).
+// field (cur_game.resolution.memory.named_card vs Permanent::chosen_name).
 enum class NameCardScope { CHOOSER_ONLY, BOTH_PLAYERS };
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,

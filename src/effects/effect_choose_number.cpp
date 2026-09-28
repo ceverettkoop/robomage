@@ -15,7 +15,7 @@ namespace effects {
 // DB$ ChooseNumber: the resolving controller chooses an integer in [0, Max]. Max comes from
 // ab.dynamic_amount_expr — the runtime Count$ expression named by Max$ (Wrath of the Skies:
 // Count$YourCountersEnergy = the controller's current energy, capping how much {E} they may
-// choose to pay). The pick is stored in cur_game.chosen_number so a chained sub-ability can
+// choose to pay). The pick is stored in cur_game.resolution.memory.chosen_number so a chained sub-ability can
 // read it via Count$ChosenNumber (here the DestroyAll's mana-value bound Y and its
 // PayEnergy<Y> unless-cost). General over any "choose a number up to N" effect.
 HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -40,7 +40,7 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
 
     if (choice < 0) choice = 0;
     if (choice > max) choice = max;
-    cur_game.chosen_number = choice;
+    cur_game.resolution.memory.chosen_number = choice;
     game_log("%s chooses %d.\n", player_name(ab.controller).c_str(), choice);
     return HandlerResult::DONE_RUN_SUBS;
 }

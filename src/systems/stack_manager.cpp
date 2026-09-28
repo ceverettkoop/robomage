@@ -51,9 +51,13 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
             fatal_error("resolution frame resume: top of stack is not the suspended object");
         return;
     }
+    // Each resolution starts with empty memory (the frame reset); the remembered set a top-level
+    // blocking resolve left in the idle frame comes back when this resolution finishes.
+    std::vector<ObjectRef> outer_remembered = std::move(fr.memory.remembered);
     fr = ResolutionFrame{};
     fr.active = true;
     fr.stack_entity = top_entity;
+    fr.saved_remembered = std::move(outer_remembered);
     // The resolution is one effect: the objects it moves stay findable by the rest of it
     // (CR 400.7j) until frame_finish.
     open_follow_window();
@@ -68,8 +72,6 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     } else {
         fr.x_paid = ab.x_paid < 0 ? 0 : ab.x_paid;
     }
-    fr.saved_remembered = cur_game.remembered_entities;
-    cur_game.remembered_entities.clear();
     if (count_triggered && ab.def->ability_type == AbilityDef::TRIGGERED) {
         cur_game.ability_resolution_counts[ab.source]++;
         fr.counted_resolution = true;
@@ -86,14 +88,15 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
 static void frame_finish() {
     ResolutionFrame &fr = cur_game.resolution;
     cur_game.priority.player_a_has_priority = fr.prev_priority;
-    cur_game.remembered_entities = fr.saved_remembered;
-    // A ChooseCard's chosen cards belong to the resolution that chose them (Ajani's kept
-    // permanents, Dauthi Voidwalker's card), so they don't leak into a later nonChosenCard filter.
-    cur_game.chosen_cards.clear();
     // The revealing effect is over, so the cards it revealed in a library stop being revealed
     // (CR 701.20a).
     cur_game.revealed_in_library.clear();
+    // What this resolution remembered and chose (ChooseCard's chosen cards: Ajani's kept
+    // permanents, Dauthi Voidwalker's card) ends with it, so it can't leak into a later
+    // nonChosenCard filter; the outer remembered set comes back.
+    std::vector<ObjectRef> outer_remembered = std::move(fr.saved_remembered);
     fr = ResolutionFrame{};
+    fr.memory.remembered = std::move(outer_remembered);
     close_follow_window();
     // The effects that could read a card this resolution moved off the battlefield as the
     // departed object have run; from here on it is a new object (CR 400.7).

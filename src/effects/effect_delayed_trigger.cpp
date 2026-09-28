@@ -60,7 +60,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     // Mode$ ChangesZone (Searing Blood): a "when THAT object changes zone, do Y" delayed trigger
     // (CR 603.7b). The watched object is the parent spell's target — RememberObjects$ Targeted
-    // put it in cur_game.remembered_entities before this handler ran. Register a
+    // put it in cur_game.resolution.memory.remembered before this handler ran. Register a
     // fire_on_leave_battlefield watch (reusing the earthbend infrastructure) filtered to the
     // Destination$ zone(s) so only the matching move fires it; ThisTurn$ bounds it to this turn.
     if (dp && dp->mode_changes_zone) {
@@ -69,15 +69,15 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // watched object is the remembered target (Searing Blood's IsTriggerRemembered).
         bool watch_self = dp->valid_card.find("Self") != std::string::npos;
         Entity watched = watch_self ? ab.source.get()
-                         : (cur_game.remembered_entities.empty()
+                         : (cur_game.resolution.memory.remembered.empty()
                                 ? 0
-                                : cur_game.remembered_entities[0].get());
+                                : cur_game.resolution.memory.remembered[0].get());
         if (watched == 0) return HandlerResult::DONE_NO_SUBS;
         // RememberObjects$ RememberedLKI (Animate Dead): the fire ability acts on the objects the
         // preceding RememberChanged$ ChangeZone moved (the reanimated creature) — carry them so
         // Defined$ DelayTriggerRememberedLKI restores exactly those when the trigger fires later.
         // The objects are handed on as they now are (CR 400.7j).
-        const std::vector<ObjectRef> objects = restamp_live(cur_game.remembered_entities);
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.resolution.memory.remembered);
         if (dp->remember_objects_lki && !objects.empty())
             fire_ab.restore_remembered_exiled_with = objects;
         DelayedTrigger dt;
@@ -105,7 +105,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     DelayedTrigger dt;
     // RememberObjects$ RememberedLKI: capture the objects the preceding RememberChanged$
-    // ChangeZone just moved (CR 603.7a). They are restored into cur_game.remembered_entities
+    // ChangeZone just moved (CR 603.7a). They are restored into cur_game.resolution.memory.remembered
     // when the trigger fires so the Execute ability's Defined$ DelayTriggerRememberedLKI acts on
     // exactly those objects (Flickerwisp / Phelia return the card they exiled).
     if (dp && dp->remember_objects_lki) {
@@ -116,7 +116,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // (a phantom "<unknown>" entering the battlefield, falsely firing ETB watchers).
         // The objects are handed on as they now are (CR 400.7j); one that has ceased to exist
         // (an exiled token, CR 111.7) is nothing to return.
-        const std::vector<ObjectRef> objects = restamp_live(cur_game.remembered_entities);
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.resolution.memory.remembered);
         if (objects.empty()) return HandlerResult::DONE_NO_SUBS;
         dt.remembered_objects = objects;
         fire_ab.restore_remembered_exiled_with = objects;

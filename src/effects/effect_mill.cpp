@@ -28,8 +28,8 @@ HandlerResult mill(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     size_t mill_count = ab.def->amount_from_damage ? ab.trigger_damage_amount : ((ab.def->amount > 0) ? ab.def->amount : 1);
     std::vector<Entity> milled = orderer->mill(mill_owner, mill_count);
     if (ab.def->remember_milled) {
-        cur_game.remembered_entities.clear();
-        for (auto e : milled) cur_game.remembered_entities.push_back(ObjectRef::of(e));
+        cur_game.resolution.memory.remembered.clear();
+        for (auto e : milled) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(e));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

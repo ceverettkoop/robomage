@@ -142,7 +142,7 @@ struct PeekParams {
     bool reveal_optional = false;
     // ImprintRevealed$ True (Atraxa, Grand Unifier): reveal the top PeekAmount cards of the
     // controller's library to all players AND record them as the "imprinted" set
-    // (cur_game.imprinted_entities) so a chained Card.IsImprinted filter can act on exactly the
+    // (cur_game.resolution.memory.imprinted) so a chained Card.IsImprinted filter can act on exactly the
     // revealed cards. The cards stay in the library; a later ChangeZone/ChangeZoneAll moves them.
     bool imprint_revealed = false;
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
@@ -167,7 +167,7 @@ struct DelayedTriggerParams {
     std::string execute_svar = "";  // Execute$ — SVar name of the ability to fire
     std::string valid_player = "";  // ValidPlayer$ — "Player"/"You"/"Opponent"
     // RememberObjects$ RememberedLKI — at registration, snapshot the objects the immediately
-    // preceding RememberChanged$ ChangeZone moved (cur_game.remembered_entities) and carry them
+    // preceding RememberChanged$ ChangeZone moved (cur_game.resolution.memory.remembered) and carry them
     // with the delayed trigger, so its Execute$ ability can act on those same objects when it
     // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
     // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
@@ -175,7 +175,7 @@ struct DelayedTriggerParams {
     // Mode$ ChangesZone (Searing Blood's "When that creature dies this turn"): instead of firing
     // at a future phase, this delayed trigger watches a specific object leaving one zone for
     // another (CR 603.7b). The watched object is the parent spell's target (RememberObjects$
-    // Targeted, in cur_game.remembered_entities at registration); Origin$/Destination$ on the
+    // Targeted, in cur_game.resolution.memory.remembered at registration); Origin$/Destination$ on the
     // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
     bool mode_changes_zone = false;
     // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —

@@ -23,8 +23,8 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     (void)orderer;
     // Equip the source equipment to the remembered entity
     Entity equip_entity = ab.source.get();
-    Entity target_creature = (ab.def->defined_remembered && !cur_game.remembered_entities.empty())
-                                 ? cur_game.remembered_entities[0].get()
+    Entity target_creature = (ab.def->defined_remembered && !cur_game.resolution.memory.remembered.empty())
+                                 ? cur_game.resolution.memory.remembered[0].get()
                                  : ab.target.get();
 
     if (ab.def->optional_choice && target_creature != 0) {

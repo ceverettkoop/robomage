@@ -83,7 +83,7 @@ struct DelayedTrigger {
     bool expires_end_of_turn = false;
     // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
-    // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
+    // Flickerwisp/Phelia exiled). Restored into cur_game.resolution.memory.remembered before the fire
     // ability resolves so its Defined$ DelayTriggerRememberedLKI acts on those same objects.
     std::vector<ObjectRef> remembered_objects;
 };
@@ -289,7 +289,6 @@ struct Game {
                                             // A card's entry is superseded once the card is a new
                                             // object (see lki_for); an entry is unread once its
                                             // entity id is issued again (LastKnownInfo::issue)
-        std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         // The persisted resolve() continuation of the resolving spell or ability
@@ -761,11 +760,6 @@ struct Game {
         // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
         // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
         ObjectSet revealed_in_library;
-        ObjectSet chosen_cards;  // cards chosen by a resolving ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard Effect); cleared by Cleanup ClearChosenCard$ and when the resolution finishes
-        std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
-        int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
-        std::vector<ObjectRef> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
-        std::string chosen_type = "";  // the current card type set by a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per card type present among the imprinted cards); read by a ChooseCard Choices$ Card.ChosenType filter, cleared when the loop ends
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

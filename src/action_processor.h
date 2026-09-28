@@ -162,7 +162,7 @@ void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller);
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,
 // unless ability.condition_on_remembered is set, in which case it counts the remembered
-// entities (cur_game.remembered_entities). An empty condition_present returns true; an empty
+// entities (cur_game.resolution.memory.remembered). An empty condition_present returns true; an empty
 // condition_compare defaults to ">= 1". Shared by spell castability, trigger intervening-ifs
 // (603.4), and ConditionDefined$ Remembered subability gates.
 bool evaluate_present_condition(const Ability& ability, Zone::Ownership controller,

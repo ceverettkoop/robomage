@@ -93,8 +93,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // lapses once the card leaves exile (ForgetOnMoved$ Exile).
     if (ab.def->effect_may_play_from_exile) {
         const std::vector<Entity> cards = ab.def->effect_remember_chosen_card
-                                              ? cur_game.chosen_cards.live()
-                                              : live_entities(cur_game.remembered_entities);
+                                              ? cur_game.resolution.memory.chosen_cards.live()
+                                              : live_entities(cur_game.resolution.memory.remembered);
         for (Entity card : cards) {
             if (!global_coordinator.entity_has_component<Zone>(card)) continue;
             if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
@@ -152,11 +152,11 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // creature — all combat damage it would deal (ValidSource$ Card.IsRemembered) and/or be dealt
     // (ValidTarget$ Card.IsRemembered) this turn is prevented (CR 615). The remembered creature is
     // the ability's inherited target (RememberObjects$ Targeted also stashed it in
-    // remembered_entities). Sourceless turn-long grant, cleared at cleanup. General over any such
+    // the remembered set). Sourceless turn-long grant, cleared at cleanup. General over any such
     // Effect (reusable by future fog/prevention cards).
     if (ab.def->effect_prevent_combat_damage_by_remembered || ab.def->effect_prevent_combat_damage_to_remembered) {
         Entity who = ab.target.get();
-        if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front().get();
+        if (who == 0 && !cur_game.resolution.memory.remembered.empty()) who = cur_game.resolution.memory.remembered.front().get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
             Game::CombatDamagePreventionShield shield;
             shield.creature = ObjectRef::of(who);

@@ -78,7 +78,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // effect_animate_all.cpp.
         {"AnimateAll", EffectKind::AnimateAll},
         // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
-        // [0, Max$]; the pick is stored in cur_game.chosen_number so a chained sub-ability can
+        // [0, Max$]; the pick is stored in cur_game.resolution.memory.chosen_number so a chained sub-ability can
         // read it via Count$ChosenNumber. See effect_choose_number.cpp.
         {"ChooseNumber", EffectKind::ChooseNumber},
         // DB$ DigUntil (Amped Raptor): exile cards from the top of the controller's library

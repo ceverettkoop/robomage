@@ -54,8 +54,8 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // TokenOwner$ RememberedOwner (Skyclave Apparition): the token is owned and controlled by
     // the OWNER of the first remembered card — the exiled permanent's owner — so if Skyclave
     // exiled your permanent, you get the Illusion when Skyclave dies (CR 707/the card text).
-    if (tp && tp->owner_is_remembered && !cur_game.remembered_entities.empty()) {
-        Entity r = cur_game.remembered_entities[0].lki_entity();  // ownership never changes
+    if (tp && tp->owner_is_remembered && !cur_game.resolution.memory.remembered.empty()) {
+        Entity r = cur_game.resolution.memory.remembered[0].lki_entity();  // ownership never changes
         if (global_coordinator.entity_has_component<Zone>(r))
             ctrl = global_coordinator.GetComponent<Zone>(r).owner;
     }
@@ -88,7 +88,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
 
     std::vector<Entity> created;
-    cur_game.remembered_entities.clear();
+    cur_game.resolution.memory.remembered.clear();
     for (size_t n = 0; n < count; n++) {
         Entity tok_entity = global_coordinator.CreateEntity();
         global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
@@ -110,7 +110,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
             cr.attack_target = attack_target;
         }
         created.push_back(tok_entity);
-        cur_game.remembered_entities.push_back(ObjectRef::of(tok_entity));
+        cur_game.resolution.memory.remembered.push_back(ObjectRef::of(tok_entity));
         game_log("Token created: %u/%u %s%s\n", tok.power, tok.toughness, tok.name.c_str(),
                  (tp && tp->attacking) ? " (tapped and attacking)" : "");
     }
@@ -198,7 +198,7 @@ bool parse_token(AbilityDef &ab, const std::string &key, const std::string &valu
     }
     if (key == "RememberTokens") {
         // RememberTokens$ True (Cori-Steel Cutter's TrigToken): stash the created tokens in
-        // cur_game.remembered_entities so a chained Defined$ Remembered sub-ability (the
+        // cur_game.resolution.memory.remembered so a chained Defined$ Remembered sub-ability (the
         // optional DBAttach) can act on them. token() already remembers every token it
         // creates unconditionally (Skyclave Apparition's chain relies on the same behaviour
         // without the tag), so accepting the tag records the script's intent — no extra

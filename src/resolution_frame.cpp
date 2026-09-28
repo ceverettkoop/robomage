@@ -272,7 +272,7 @@ static void pin_effect_runtime(const EffectRuntime &rt, std::set<Entity> &pins) 
     } else if (const auto *rp = std::get_if<RepeatRt>(&rt)) {
         // The outer remembered set repeat_each will restore at completion — it
         // may reference cards a determinize would otherwise resample (mirrors
-        // the cur_game.remembered_entities pin below). CharmRt/ImmediateRt
+        // the cur_game.resolution.memory.remembered pin below). CharmRt/ImmediateRt
         // hold no entity state of their own: in-flight mode/sub targets live
         // on the persisted parent work / child levels (pinned generically).
         pin_refs(rp->saved_remembered, pins);
@@ -372,6 +372,6 @@ std::set<Entity> collect_pending_pins() {
     }
     // The remembered set: a suspended resolution's accumulated Remembered$
     // references (Doomsday piles, RememberChanged) must survive a determinize.
-    pin_refs(cur_game.remembered_entities, pins);
+    pin_refs(cur_game.resolution.memory.remembered, pins);
     return pins;
 }

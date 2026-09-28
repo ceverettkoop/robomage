@@ -82,7 +82,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
 // an EDICT — each opponent of the controller chooses and sacrifices one of THEIR matching
 // permanents (the choosing player controls the permanent; CR 701.16a). Optional$ True lets the
 // sacrificer decline. RememberSacrificed$ True records the sacrificed entity in
-// cur_game.remembered_entities so a later sub-ability can read its mana value / identity (and a
+// cur_game.resolution.memory.remembered so a later sub-ability can read its mana value / identity (and a
 // ConditionDefined$ Remembered gate can tell whether anything was sacrificed).
 // Self-sacrifice (CR 701.16): the source object's controller sacrifices it. Used for a bare
 // DB$ Sacrifice (no SacValid$ / Defined$) — "sacrifice CARDNAME". No choice is involved. Returns
@@ -105,7 +105,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     if (!rt.pre_done) {
         // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
         // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
-        if (ab.def->remember_sacrificed) cur_game.remembered_entities.clear();
+        if (ab.def->remember_sacrificed) cur_game.resolution.memory.remembered.clear();
 
         // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
         // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
@@ -130,7 +130,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
     if (ab.def->sac_valid.empty() && !ab.def->defined_each_opponent) {
         Entity sacked = sacrifice_self(ab, orderer);
-        if (ab.def->remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
+        if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -149,7 +149,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.def->remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
+            if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -168,7 +168,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);
             if (suspended) return HandlerResult::SUSPENDED;
-            if (ab.def->remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
+            if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
             if (sacked == 0) break;
         }
         return HandlerResult::DONE_RUN_SUBS;
@@ -178,7 +178,7 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         bool suspended = false;
         Entity sacked = sacrifice_one(ab, ab.controller, ab.def->optional_choice, orderer, ctx, suspended);
         if (suspended) return HandlerResult::SUSPENDED;
-        if (ab.def->remember_sacrificed && sacked) cur_game.remembered_entities.push_back(ObjectRef::of(sacked));
+        if (ab.def->remember_sacrificed && sacked) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(sacked));
         if (sacked == 0) break;
     }
     return HandlerResult::DONE_RUN_SUBS;

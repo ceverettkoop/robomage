@@ -319,6 +319,37 @@ struct FrameLevel {
     bool saved_priority = false;  // priority to restore when this level completes
 };
 
+// What one resolution remembers, chooses and names for its later instructions to refer to
+// (CR 608.2c: a spell or ability follows its instructions in order, and a later one may act on
+// what an earlier one did). Starts empty with each resolution and ends with it. A top-level
+// blocking resolve outside a stack resolution (an off-stack trigger, a mana ability) uses the
+// idle frame's memory, saved and restored around it.
+struct ResolutionMemory {
+    // Defined$ Remembered — the objects the resolution has remembered so far (RememberChanged$,
+    // RememberTargets$, RememberSacrificed$, ...: Doomsday's pile, an Attach's creature).
+    std::vector<ObjectRef> remembered;
+    // Cards "imprinted" (recorded) by a DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand
+    // Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter
+    // (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$.
+    // Distinct from `remembered` (which holds the chosen cards taken to hand).
+    std::vector<ObjectRef> imprinted;
+    // Cards chosen by a ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's
+    // nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard
+    // Effect); cleared by Cleanup ClearChosenCard$.
+    ObjectSet chosen_cards;
+    // Card name chosen by an SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained
+    // Card.NamedCard discard.
+    std::string named_card;
+    // Integer chosen by a DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}");
+    // read downstream via Count$ChosenNumber (the cmc bound and PayEnergy unless-cost of the
+    // chained DestroyAll).
+    int chosen_number = 0;
+    // The current card type of a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per
+    // card type present among the imprinted cards); read by a ChooseCard Choices$
+    // Card.ChosenType filter, cleared when the loop ends.
+    std::string chosen_type;
+};
+
 // The whole persisted resolution: armed by resolve_top on first entry, cleared
 // by its completion epilogue. While active, advance_step short-circuits back to
 // resolve_top (the resume path) instead of resetting pass tracking.
@@ -333,6 +364,7 @@ struct ResolutionFrame {
     // Count$Converge through current_x_paid() / current_converge().
     int x_paid = 0;
     int converge = 0;
+    ResolutionMemory memory;
     std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
                                            // frame_finish in stack_manager.cpp)
@@ -428,7 +460,7 @@ class ResolutionTargetAsker final : public TargetAsker {
 // place (a DETERMINIZE at a suspended root must not shuffle a card the parked
 // menu / the resolving ability refers to). The union of: pending query menu
 // entities, each FrameLevel's in-flight work targets/source (plus the ROOT
-// ability component's), cur_game.remembered_entities, and each level's
+// ability component's), cur_game.resolution.memory.remembered, and each level's
 // EffectRuntime pool slices (dig/scry/surveil/rearrange lib slices, sylvan's
 // drawn/chosen set) via the per-handler visitor in resolution_frame.cpp.
 std::set<Entity> collect_pending_pins();

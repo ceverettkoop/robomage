@@ -269,10 +269,10 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     }
 
     // Exclude already-remembered entities (e.g. Doomsday picking 5 cards one at a time)
-    if (!cur_game.remembered_entities.empty()) {
+    if (!cur_game.resolution.memory.remembered.empty()) {
         std::vector<Entity> filtered;
         for (auto e : zone_contents)
-            if (!refs_contain(cur_game.remembered_entities, e)) filtered.push_back(e);
+            if (!refs_contain(cur_game.resolution.memory.remembered, e)) filtered.push_back(e);
         zone_contents = filtered;
     }
 
@@ -1138,11 +1138,11 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     // Count$RememberedSize / RememberedSize — the total number of currently-remembered objects
-    // (cur_game.remembered_entities), regardless of type. Triumph of Saint Katherine's recursion
+    // (cur_game.resolution.memory.remembered), regardless of type. Triumph of Saint Katherine's recursion
     // gates its shuffle-back on "RememberedSize GE7" — the self-exiled card plus the six milled
     // cards. Distinct from Remembered$Valid, which filters by card characteristics.
     if (expr == "Count$RememberedSize" || expr == "RememberedSize")
-        return cur_game.remembered_entities.size();
+        return cur_game.resolution.memory.remembered.size();
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
     // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
     // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
@@ -1153,7 +1153,7 @@ size_t evaluate_dynamic_amount(
         MatchCtx mctx;
         mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
         size_t count = 0;
-        for (Entity e : lki_entities(cur_game.remembered_entities)) {
+        for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
         }
@@ -1165,12 +1165,12 @@ size_t evaluate_dynamic_amount(
     // snapshots the card as last-known info once it has left its origin zone (Reanimate: you
     // lose life equal to the reanimated creature's mana value — CR 608.2h last-known-info,
     // since the card left the graveyard as it entered play). Both forms resolve identically
-    // here because the LKI snapshot is pushed to cur_game.remembered_entities all the same.
+    // here because the LKI snapshot is pushed to cur_game.resolution.memory.remembered all the same.
     if (expr.find("Remembered$CardManaCost") != std::string::npos ||
         expr.find("RememberedLKI$CardManaCost") != std::string::npos) {
         int base = 0;
-        if (!cur_game.remembered_entities.empty()) {
-            Entity r = cur_game.remembered_entities[0].lki_entity();
+        if (!cur_game.resolution.memory.remembered.empty()) {
+            Entity r = cur_game.resolution.memory.remembered[0].lki_entity();
             if (global_coordinator.entity_has_component<CardData>(r))
                 base = object_mana_value(r, global_coordinator.GetComponent<CardData>(r));
         }
@@ -1181,11 +1181,11 @@ size_t evaluate_dynamic_amount(
     // Count$Valid Land.nonBasic+RememberedPlayerCtrl[/Times.N] — number of nonbasic
     // lands controlled by the remembered player (Price of Progress, evaluated once per
     // player by the RepeatEach loop), optionally multiplied by N. The remembered player
-    // is cur_game.remembered_entities[0] (a Player entity set by the repeat_each handler).
+    // is cur_game.resolution.memory.remembered[0] (a Player entity set by the repeat_each handler).
     if (expr.find("Count$Valid Land.nonBasic+RememberedPlayerCtrl") != std::string::npos) {
         Zone::Ownership remembered_ctrl = ctrl;
-        if (!cur_game.remembered_entities.empty()) {
-            Entity rp = cur_game.remembered_entities[0].get();
+        if (!cur_game.resolution.memory.remembered.empty()) {
+            Entity rp = cur_game.resolution.memory.remembered[0].get();
             if (rp == cur_game.player_a_entity) remembered_ctrl = Zone::PLAYER_A;
             else if (rp == cur_game.player_b_entity) remembered_ctrl = Zone::PLAYER_B;
         }
@@ -1431,7 +1431,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     return "";
 }
 
-// The remembered set (cur_game.remembered_entities) is per-resolution scope in Forge — each
+// The remembered set (cur_game.resolution.memory.remembered) is per-resolution scope in Forge — each
 // resolving spell/ability instance has its OWN Remembered list (CR 608.2). This engine backs it
 // with one global vector, so a top-level ability's resolution must not inherit remembered objects
 // left behind by an EARLIER, unrelated ability that never cleared them (Skyclave Apparition's ETB
@@ -1462,15 +1462,15 @@ struct BlockingRememberedScope {
         if (!participates) return;  // root resolves: the frame owns the scoping
         top_level = (g_blocking_resolve_depth == 0 && !cur_game.resolution.active);
         if (top_level) {
-            saved = cur_game.remembered_entities;
-            cur_game.remembered_entities.clear();
+            saved = cur_game.resolution.memory.remembered;
+            cur_game.resolution.memory.remembered.clear();
         }
         ++g_blocking_resolve_depth;
     }
     ~BlockingRememberedScope() {
         if (!participates) return;
         --g_blocking_resolve_depth;
-        if (top_level) cur_game.remembered_entities = saved;
+        if (top_level) cur_game.resolution.memory.remembered = saved;
     }
 };
 }  // namespace
@@ -1513,7 +1513,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // (token P/T), and TokenOwner$ RememberedOwner all read the exiled card (CR 608.2h). The
         // exiled_with snapshot was captured at the source's departure into last-known info.
         if (!restore_remembered_exiled_with.empty()) {
-            cur_game.remembered_entities = restore_remembered_exiled_with;
+            cur_game.resolution.memory.remembered = restore_remembered_exiled_with;
         }
 
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
@@ -1639,12 +1639,12 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
             if (def->remember_targeted) {
-                cur_game.remembered_entities.clear();
+                cur_game.resolution.memory.remembered.clear();
                 if (!targets.empty()) {
                     for (const ObjectRef &t : targets)
-                        if (Entity te = t.get()) cur_game.remembered_entities.push_back(ObjectRef::of(te));
+                        if (Entity te = t.get()) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
                 } else if (Entity te = target.get()) {
-                    cur_game.remembered_entities.push_back(ObjectRef::of(te));
+                    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(te));
                 }
             }
             game_log("Resolving ability (category: %s%s)\n", def->category.c_str(),
@@ -1760,7 +1760,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
     // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
     // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
     if (effect_kind_from_string(def->category) == EffectKind::NameCard)
-        cur_game.named_card.clear();
+        cur_game.resolution.memory.named_card.clear();
     return ResolveStatus::DONE;
 }
 

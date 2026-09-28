@@ -155,7 +155,7 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     // ChooseNumber handler so a chained sub-ability (the DestroyAll's cmc bound Y and its
     // PayEnergy<Y> unless-cost) can reference the chosen value.
     if (expr == "Count$ChosenNumber")
-        return cur_game.chosen_number;
+        return cur_game.resolution.memory.chosen_number;
 
     if (expr.rfind("PlayerCount", 0) == 0 && expr.find('$') != std::string::npos)
         return count_players_with_property(expr, controller);

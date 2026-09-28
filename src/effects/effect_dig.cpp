@@ -271,10 +271,10 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     }
 
     // RememberChanged$ True (Light Up the Stage): stash the moved (chosen) cards in
-    // cur_game.remembered_entities so a paired DB$ Effect sub-ability can grant a play
+    // cur_game.resolution.memory.remembered so a paired DB$ Effect sub-ability can grant a play
     // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
     if (ab.def->remember_changed)
-        for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+        for (Entity chosen : rt.chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
 
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;

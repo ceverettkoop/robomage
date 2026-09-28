@@ -31,22 +31,22 @@ namespace effects {
 HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa, Grand Unifier): from the
     // imprinted cards (still in the controller's library after the reveal), choose one of the
-    // current cur_game.chosen_type to take. A "you may" choice — the controller may decline. A
+    // current cur_game.resolution.memory.chosen_type to take. A "you may" choice — the controller may decline. A
     // chosen card is appended to the remembered set (RememberChosen$ True) so the trailing
     // Defined$ Remembered ChangeZone moves it to hand. CR 300/401.
     if (ab.def->choose_imprinted) {
         Zone::Ownership you = ab.controller;
         std::vector<Entity> cands;
-        for (Entity e : live_entities(cur_game.imprinted_entities)) {
+        for (Entity e : live_entities(cur_game.resolution.memory.imprinted)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.owner != you || z.location != Zone::LIBRARY) continue;  // YouOwn + still in library
             // A card already chosen for an earlier card type this resolution is no longer "among
             // them" (CR: one card per card type) — exclude it even though it hasn't physically left
             // the library yet (the trailing Defined$ Remembered move runs after the whole type loop).
-            if (refs_contain(cur_game.remembered_entities, e)) continue;
-            if (!cur_game.chosen_type.empty() &&
-                !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.chosen_type))
+            if (refs_contain(cur_game.resolution.memory.remembered, e)) continue;
+            if (!cur_game.resolution.memory.chosen_type.empty() &&
+                !card_has_type(global_coordinator.GetComponent<CardData>(e), cur_game.resolution.memory.chosen_type))
                 continue;
             cands.push_back(e);
         }
@@ -55,23 +55,23 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         std::vector<LegalAction> picks;
         for (auto e : cands) {
             const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
-            LegalAction la(PASS_PRIORITY, e, "Put " + nm + " (" + cur_game.chosen_type + ") into hand");
+            LegalAction la(PASS_PRIORITY, e, "Put " + nm + " (" + cur_game.resolution.memory.chosen_type + ") into hand");
             la.category = ActionCategory::CHOOSE_CARD;
             la.card_is_public = true;
             picks.push_back(la);
         }
-        LegalAction none(PASS_PRIORITY, std::string("Put no ") + cur_game.chosen_type + " card into hand");
+        LegalAction none(PASS_PRIORITY, std::string("Put no ") + cur_game.resolution.memory.chosen_type + " card into hand");
         none.category = ActionCategory::CHOOSE_CARD;
         picks.push_back(none);
 
         if (!ctx.resuming())
             game_log("%s may put a %s card from among the revealed cards into their hand:\n",
-                     player_name(you).c_str(), cur_game.chosen_type.c_str());
+                     player_name(you).c_str(), cur_game.resolution.memory.chosen_type.c_str());
         int choice = ctx.ask(std::move(picks), you, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice >= 0 && choice < static_cast<int>(cands.size())) {
             Entity chosen = cands[static_cast<size_t>(choice)];
-            if (ab.def->remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+            if (ab.def->remember_chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
             game_log("%s chooses %s\n", player_name(you).c_str(),
                      global_coordinator.GetComponent<CardData>(chosen).name.c_str());
         }
@@ -79,7 +79,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
 
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
-    // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
+    // listed type; the kept permanents go into cur_game.resolution.memory.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).
     if (!ab.def->choose_each.empty()) {
         Zone::Ownership opp = opponent_of(ab.controller);
@@ -128,7 +128,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             int choice = ctx.ask(std::move(picks), opp, ab.source.lki_entity());
             if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             Entity kept = cands[static_cast<size_t>(choice)];
-            cur_game.chosen_cards.insert(kept);
+            cur_game.resolution.memory.chosen_cards.insert(kept);
             game_log("%s keeps %s.\n", player_name(opp).c_str(),
                      global_coordinator.GetComponent<Permanent>(kept).name.c_str());
         }
@@ -138,7 +138,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
     // card an opponent owns with a void counter on it."): the controller chooses one card in that
     // zone matching the filter. The choice becomes the resolution's chosen card
-    // (cur_game.chosen_cards), which a chained RememberObjects$ ChosenCard Effect acts on (Dauthi:
+    // (cur_game.resolution.memory.chosen_cards), which a chained RememberObjects$ ChosenCard Effect acts on (Dauthi:
     // "You may play it this turn without paying its mana cost"). Mandatory$ True leaves no
     // "choose nothing" option; with no matching card nothing is chosen.
     std::vector<Entity> cands = choose_card_candidates(ab, orderer);
@@ -163,11 +163,11 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(ab.controller).c_str());
     int choice = ctx.ask(std::move(picks), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-    cur_game.chosen_cards.clear();
+    cur_game.resolution.memory.chosen_cards.clear();
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
         Entity chosen = cands[static_cast<size_t>(choice)];
-        cur_game.chosen_cards.insert(chosen);
-        if (ab.def->remember_chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
+        cur_game.resolution.memory.chosen_cards.insert(chosen);
+        if (ab.def->remember_chosen) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
         game_log("%s chooses %s.\n", player_name(ab.controller).c_str(), entity_name(chosen).c_str());
     }
     return HandlerResult::DONE_RUN_SUBS;

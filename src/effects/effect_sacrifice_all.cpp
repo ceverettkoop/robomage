@@ -20,15 +20,15 @@ namespace effects {
 // SacrificeAll (Ajani's -4 after each opponent keeps one of each chosen type): every
 // permanent matching the ValidCards$ filter is sacrificed by its controller. The filter
 // (e.g. "Permanent.nonLand+OppCtrl+nonChosenCard") already excludes the kept permanents
-// via nonChosenCard, which reads cur_game.chosen_cards.
+// via nonChosenCard, which reads cur_game.resolution.memory.chosen_cards.
 HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     std::vector<Entity> to_sac;
     // Defined$ Remembered / DelayTriggerRememberedLKI (Animate Dead's leaves-the-battlefield
     // trigger): sacrifice exactly the remembered object(s) — the creature the aura animated,
-    // restored into cur_game.remembered_entities before this ability resolves (CR 603.7a) — rather
+    // restored into cur_game.resolution.memory.remembered before this ability resolves (CR 603.7a) — rather
     // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
     if (ab.def->defined_remembered) {
-        for (Entity e : live_entities(cur_game.remembered_entities))
+        for (Entity e : live_entities(cur_game.resolution.memory.remembered))
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)

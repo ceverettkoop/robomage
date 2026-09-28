@@ -155,16 +155,16 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // "!<qualifier>" negates it (Doomsday's Card.!IsRemembered); "!token" is spelled out below.
     if (q[0] == '!' && q != "!token") return !eval_qualifier(v, ctx, q.substr(1));
     // identity / state keywords ------------------------------------------------
-    if (q == "IsRemembered") return refs_contain(cur_game.remembered_entities, v.entity);
+    if (q == "IsRemembered") return refs_contain(cur_game.resolution.memory.remembered, v.entity);
     // IsImprinted — one of the cards the resolving ability imprinted (Atraxa's revealed pile).
-    if (q == "IsImprinted") return refs_contain(cur_game.imprinted_entities, v.entity);
+    if (q == "IsImprinted") return refs_contain(cur_game.resolution.memory.imprinted, v.entity);
     // NamedCard — the object has the name chosen by a preceding name-a-card effect (Cabal
     // Therapy's discard, CR 201.4); nothing matches when no name was chosen.
     if (q == "NamedCard")
-        return v.entity != 0 && !cur_game.named_card.empty() && object_name(v.entity) == cur_game.named_card;
+        return v.entity != 0 && !cur_game.resolution.memory.named_card.empty() && object_name(v.entity) == cur_game.resolution.memory.named_card;
     if (q == "Other")        return ctx.source == 0 || v.entity != ctx.source;
     if (q == "Self")         return ctx.source != 0 && v.entity == ctx.source;
-    if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
+    if (q == "nonChosenCard") return !cur_game.resolution.memory.chosen_cards.count(v.entity);
     // targetedBy — the object IS the card the resolving ability chain targeted (Cloak and
     // Dagger, Entwined's exile filter alternative "Card.targetedBy" matches exactly the
     // creature its DBPump sub chose). Fails closed when no chain target is in context.

@@ -62,12 +62,12 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         Zone::Ownership owner = ab.controller;
         int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
         std::vector<Entity> top = orderer->get_library_top(owner, static_cast<size_t>(n));
-        cur_game.imprinted_entities.clear();
+        cur_game.resolution.memory.imprinted.clear();
         if (top.empty()) {
             game_log("%s's library is empty — nothing to reveal.\n", player_name(owner).c_str());
         } else {
             for (auto e : top) {
-                cur_game.imprinted_entities.push_back(ObjectRef::of(e));
+                cur_game.resolution.memory.imprinted.push_back(ObjectRef::of(e));
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 mark_card_revealed(e, owner);

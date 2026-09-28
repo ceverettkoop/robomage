@@ -28,7 +28,7 @@ static std::vector<std::string> imprinted_types(Zone::Ownership owner) {
                                        "Sorcery"};
     std::vector<std::string> present;
     for (const char *t : kCardTypes) {
-        for (Entity e : live_entities(cur_game.imprinted_entities)) {
+        for (Entity e : live_entities(cur_game.resolution.memory.imprinted)) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             if (global_coordinator.entity_has_component<Zone>(e) &&
                 global_coordinator.GetComponent<Zone>(e).owner != owner)
@@ -43,7 +43,7 @@ static std::vector<std::string> imprinted_types(Zone::Ownership owner) {
 }
 
 // RepeatEach over CARD TYPES (Atraxa, Grand Unifier): for each distinct card type among the
-// imprinted cards, set cur_game.chosen_type and resolve the RepeatSubAbility body (a ChooseCard
+// imprinted cards, set cur_game.resolution.memory.chosen_type and resolve the RepeatSubAbility body (a ChooseCard
 // that takes one imprinted card of that type). The leading `repeat_sub_count` subabilities are the
 // per-type body; the remaining subabilities are trailing SubAbility$ links resolved ONCE after the
 // whole loop (Atraxa: the DBChangeZone that moves the chosen cards to hand). Suspendable: the type
@@ -59,7 +59,7 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
 
     // Per-type loop: player_idx is reused as the type index.
     while (rt.player_idx < static_cast<int>(types.size())) {
-        cur_game.chosen_type = types[static_cast<size_t>(rt.player_idx)];
+        cur_game.resolution.memory.chosen_type = types[static_cast<size_t>(rt.player_idx)];
         for (; rt.sub_idx < static_cast<int>(body_count); ++rt.sub_idx) {
             const Ability &body = ab.subabilities[static_cast<size_t>(rt.sub_idx)];
             if (ctx.can_suspend()) {
@@ -81,7 +81,7 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
         rt.player_idx++;
         rt.sub_idx = 0;
     }
-    cur_game.chosen_type = "";
+    cur_game.resolution.memory.chosen_type = "";
 
     // Trailing SubAbility$ links (the DBChangeZone → ShuffleRest → Cleanup chain) resolve once.
     for (; rt.trailing_idx < static_cast<int>(ab.subabilities.size() - body_count); ++rt.trailing_idx) {
@@ -107,7 +107,7 @@ static HandlerResult repeat_each_types(Ability &ab, std::shared_ptr<Orderer> ord
 }
 
 // RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
-// player. Each iteration sets cur_game.remembered_entities to that player's entity (so a
+// player. Each iteration sets cur_game.resolution.memory.remembered to that player's entity (so a
 // Defined$ Remembered / RememberedPlayerCtrl sub-ability resolves against that player) and
 // resolves the parsed sub-ability with its target/controller pinned to that player.
 //
@@ -133,7 +133,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     RepeatRt local_rt;
     RepeatRt &rt = ctx.can_suspend() ? ctx.rt<RepeatRt>() : local_rt;
     if (!rt.init) {
-        rt.saved_remembered = cur_game.remembered_entities;
+        rt.saved_remembered = cur_game.resolution.memory.remembered;
         rt.init = true;
     }
     while (rt.player_idx < static_cast<int>(order.size())) {
@@ -141,8 +141,8 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         Entity pe = get_player_entity(p);
         if (global_coordinator.entity_has_component<Player>(pe)) {
             if (!rt.player_setup) {
-                cur_game.remembered_entities.clear();
-                cur_game.remembered_entities.push_back(ObjectRef::of(pe));
+                cur_game.resolution.memory.remembered.clear();
+                cur_game.resolution.memory.remembered.push_back(ObjectRef::of(pe));
                 rt.player_setup = true;
             }
             for (; rt.sub_idx < static_cast<int>(ab.subabilities.size()); ++rt.sub_idx) {
@@ -173,7 +173,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         rt.sub_idx = 0;
         rt.player_setup = false;
     }
-    cur_game.remembered_entities = rt.saved_remembered;
+    cur_game.resolution.memory.remembered = rt.saved_remembered;
     return HandlerResult::DONE_NO_SUBS;  // sub-abilities already resolved per-player; suppress default chaining
 }
 

@@ -40,7 +40,7 @@ static std::string prompt_name_card(FrameCtx &ctx, Zone::Ownership chooser,
 static Entity name_card_subject_player(const Ability &ab);
 
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller chooses a card name
-// (CR 201.4). The chosen name is recorded in cur_game.named_card so a chained
+// (CR 201.4). The chosen name is recorded in cur_game.resolution.memory.named_card so a chained
 // Card.NamedCard sub-ability — here a RevealDiscardAll discard that makes a player discard
 // every copy of the named card — can reference it.
 //
@@ -61,7 +61,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // the SOURCE's controller names a land card. The choice persists for the source's
     // continuous Card.NamedCard static, so it is recorded on the source permanent's
     // chosen_name (the same per-source state match_named_card statics read) rather than the
-    // transient global cur_game.named_card (which is cleared after the ability resolves).
+    // transient global cur_game.resolution.memory.named_card (which is cleared after the ability resolves).
     bool defines_self_owner = ab.def->defined_you && subject == 0;
     bool only_lands = (ab.def->valid_cards_filter == "Land");
     if (defines_self_owner) {
@@ -85,7 +85,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         const Entity self = ab.source.get();
         if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
             global_coordinator.GetComponent<Permanent>(self).chosen_name = chosen;
-        cur_game.named_card = chosen;
+        cur_game.resolution.memory.named_card = chosen;
         if (chosen.empty())
             game_log("%s names no card (no eligible card to name).\n", player_name(chooser).c_str());
         else
@@ -104,7 +104,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 
     if (name_choices.empty()) {
         // No nameable card; the chained Card.NamedCard discard will find no match.
-        cur_game.named_card = "";
+        cur_game.resolution.memory.named_card = "";
         game_log("%s names no card (no eligible card to name).\n",
                  player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -114,8 +114,8 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     std::string chosen = prompt_name_card(ctx, ab.controller, names, name_choices, ab.source.lki_entity(),
                                           suspended);
     if (suspended) return HandlerResult::SUSPENDED;
-    cur_game.named_card = chosen;
-    game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.named_card.c_str());
+    cur_game.resolution.memory.named_card = chosen;
+    game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.resolution.memory.named_card.c_str());
     return HandlerResult::DONE_RUN_SUBS;
 }
 

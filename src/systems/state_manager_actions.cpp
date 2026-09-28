@@ -557,7 +557,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         // can't be found / is gone yields none either).
         if (ab.def->condition_present == "Card.ExiledWithSource") {
             size_t still_exiled = 0;
-            for (Entity e : live_entities(cur_game.remembered_entities))
+            for (Entity e : live_entities(cur_game.resolution.memory.remembered))
                 if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE) still_exiled++;
             return compare_svar(static_cast<int>(still_exiled), compare);
         }
@@ -572,7 +572,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
             ctx.controller = caster;
             ctx.source = ab.source.lki_entity();
             size_t matching = 0;
-            for (Entity e : lki_entities(cur_game.remembered_entities)) {
+            for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
                 if (permanent_matches_filter(e, ab.def->condition_present, ctx)) {
                     matching++;
                     continue;
@@ -618,7 +618,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
             }
             return compare_svar(static_cast<int>(matching), compare);
         }
-        size_t count = cur_game.remembered_entities.size();
+        size_t count = cur_game.resolution.memory.remembered.size();
         return compare_svar(static_cast<int>(count), compare);
     }
 

@@ -1729,7 +1729,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         if (value == "Remembered") ability.defined_remembered = true;
         // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
         // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
-        // cur_game.remembered_entities before the fire ability resolves, so this resolves
+        // cur_game.resolution.memory.remembered before the fire ability resolves, so this resolves
         // exactly like Defined$ Remembered (Flickerwisp / Phelia return the exiled card).
         else if (value == "DelayTriggerRememberedLKI") ability.defined_remembered = true;
         // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
@@ -1934,7 +1934,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
         // "Imprinted" → the same evaluation, over the imprinted card. For the exile-and-return
         // cards (Phelia) the imprinted card IS the returned card already held in
-        // cur_game.remembered_entities (RememberObjects$ RememberedLKI / Defined$
+        // cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI / Defined$
         // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
         // redundant Imprint$ True on the preceding ChangeZone is ignored.
         // "RememberedLKI" → the same remembered-set condition path, but the remembered card is
@@ -1981,14 +1981,14 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // ChooseCard | RememberChosen$ True (Atraxa): append the chosen card to the remembered set.
         ability.remember_chosen = (value == "True");
     } else if (key == "ClearImprinted") {
-        // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.imprinted_entities. (For the
-        // exile-and-return cards whose "imprint" is actually the remembered set, imprinted_entities
+        // DB$ Cleanup | ClearImprinted$ True (Atraxa): clear cur_game.resolution.memory.imprinted. (For the
+        // exile-and-return cards whose "imprint" is actually the remembered set, memory.imprinted
         // is empty, so this is a harmless no-op there.)
         ability.clear_imprinted = (value == "True");
     } else if (key == "Choices" && ability.category == "ChooseCard") {
         // ChooseCard | Choices$ <filter>: the cards the choice is made from (Dauthi Voidwalker:
         // Card.OppOwn+counters_GE1_VOID). Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa)
-        // chooses one imprinted card of the current cur_game.chosen_type. (The Ajani -4
+        // chooses one imprinted card of the current cur_game.resolution.memory.chosen_type. (The Ajani -4
         // umbrella Choices$ is superseded by its per-type ChooseEach$.)
         ability.choose_card_filter = value;
         ability.choose_imprinted = filter_names_token(value, "IsImprinted");
@@ -2109,10 +2109,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // vocab cards, so the filter spec and its prose are informational here.
             "ValidCards", "ValidDescription",
             // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
-            // already tracked in cur_game.remembered_entities (RememberObjects$ RememberedLKI),
+            // already tracked in cur_game.resolution.memory.remembered (RememberObjects$ RememberedLKI),
             // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
             // (ClearImprinted$ True is parsed above into clear_imprinted — a no-op for Phelia,
-            // whose imprinted_entities set is empty, but load-bearing for Atraxa.)
+            // whose memory.imprinted set is empty, but load-bearing for Atraxa.)
             "Imprint",
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
