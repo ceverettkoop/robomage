@@ -3039,7 +3039,6 @@
   Forest is moved to the battlefield
   Forest enters tapped.
   Resolving ability (category: ChangeZone)
-  Forest is moved to the battlefield
   Resolving ability (category: ChangeZone)
   Searching Player A's library:
 
