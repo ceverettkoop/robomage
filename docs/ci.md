@@ -86,7 +86,8 @@ QT_QPA_PLATFORM=offscreen ROBOMAGE_SMOKE=browser:/tmp/rec \
 Flags: `--tier a,b` (subset), `--smoke-games N`, `--fuzz-games N`, `--seed N` (default 1),
 `--mode explore|explore:patient` (fuzz agent), `--matchups mirrors|ring|mirrors+ring|all|"a:b,c:d"`
 (default: smoke `mirrors+ring`, fuzz `mirrors`), `--out-dir DIR` (default `ci_out/`). The run
-ends with a `Reproduce:` line naming its tiers, seed, mode and matchups.
+ends with a per-tier wall-time table and a `Reproduce:` line naming its tiers, seed, mode and
+matchups.
 
 ### Error and warning classification
 

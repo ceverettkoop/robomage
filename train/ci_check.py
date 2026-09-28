@@ -197,6 +197,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -1064,6 +1065,38 @@ def tier_actor(rep):
             print(f"  {name}: PASS", flush=True)
 
 
+# Tier name -> runner(rep, args, out_dir). Only smoke/fuzz read args/out_dir.
+_TIER_FNS = {
+    "pygen": lambda rep, args, out_dir: tier_pygen(rep),
+    "vocab": lambda rep, args, out_dir: tier_vocab(rep),
+    "curriculum": lambda rep, args, out_dir: tier_curriculum(rep),
+    "clispec": lambda rep, args, out_dir: tier_clispec(rep),
+    "gatesprt": lambda rep, args, out_dir: tier_gatesprt(rep),
+    "shardrec": lambda rep, args, out_dir: tier_shardrec(rep),
+    "treecache": lambda rep, args, out_dir: tier_treecache(rep),
+    "browser": lambda rep, args, out_dir: tier_browser(rep),
+    "modelspec": lambda rep, args, out_dir: tier_modelspec(rep),
+    "treerebuild": lambda rep, args, out_dir: tier_treerebuild(rep),
+    "concede": lambda rep, args, out_dir: tier_concede(rep),
+    "obsinv": lambda rep, args, out_dir: tier_obsinv(rep),
+    "actorobs": lambda rep, args, out_dir: tier_actorobs(rep),
+    "snapshot": lambda rep, args, out_dir: tier_snapshot(rep),
+    "pergame": lambda rep, args, out_dir: tier_pergame(rep),
+    "sbselfplay": lambda rep, args, out_dir: tier_sbselfplay(rep),
+    "sbrules": lambda rep, args, out_dir: tier_sbrules(rep),
+    "plansearch": lambda rep, args, out_dir: tier_plansearch(rep),
+    "mirror": lambda rep, args, out_dir: tier_mirror(rep),
+    "xwsearch": lambda rep, args, out_dir: tier_xwsearch(rep),
+    "replay": lambda rep, args, out_dir: tier_replay(rep),
+    "smoke": tier_smoke,
+    "fuzz": tier_fuzz,
+    "actor": lambda rep, args, out_dir: tier_actor(rep),
+    "analysis": lambda rep, args, out_dir: tier_analysis(rep),
+    "azinspect": lambda rep, args, out_dir: tier_azinspect(rep),
+    "gui": lambda rep, args, out_dir: tier_gui(rep),
+}
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -1112,63 +1145,21 @@ def main(argv=None):
             return 2
 
     rep = Report()
+    tier_times = []
+    t_start = time.monotonic()
     for t in tiers:
         print(f"\n=== tier: {t} ===", flush=True)
-        if t == "pygen":
-            tier_pygen(rep)
-        elif t == "vocab":
-            tier_vocab(rep)
-        elif t == "curriculum":
-            tier_curriculum(rep)
-        elif t == "clispec":
-            tier_clispec(rep)
-        elif t == "gatesprt":
-            tier_gatesprt(rep)
-        elif t == "shardrec":
-            tier_shardrec(rep)
-        elif t == "treecache":
-            tier_treecache(rep)
-        elif t == "browser":
-            tier_browser(rep)
-        elif t == "modelspec":
-            tier_modelspec(rep)
-        elif t == "treerebuild":
-            tier_treerebuild(rep)
-        elif t == "concede":
-            tier_concede(rep)
-        elif t == "obsinv":
-            tier_obsinv(rep)
-        elif t == "actorobs":
-            tier_actorobs(rep)
-        elif t == "snapshot":
-            tier_snapshot(rep)
-        elif t == "pergame":
-            tier_pergame(rep)
-        elif t == "sbselfplay":
-            tier_sbselfplay(rep)
-        elif t == "sbrules":
-            tier_sbrules(rep)
-        elif t == "plansearch":
-            tier_plansearch(rep)
-        elif t == "mirror":
-            tier_mirror(rep)
-        elif t == "replay":
-            tier_replay(rep)
-        elif t == "smoke":
-            tier_smoke(rep, args, out_dir)
-        elif t == "fuzz":
-            tier_fuzz(rep, args, out_dir)
-        elif t == "xwsearch":
-            tier_xwsearch(rep)
-        elif t == "actor":
-            tier_actor(rep)
-        elif t == "analysis":
-            tier_analysis(rep)
-        elif t == "azinspect":
-            tier_azinspect(rep)
-        elif t == "gui":
-            tier_gui(rep)
+        t0 = time.monotonic()
+        _TIER_FNS[t](rep, args, out_dir)
+        tier_times.append((t, time.monotonic() - t0))
+        print(f"  ({t}: {tier_times[-1][1]:.1f}s)", flush=True)
+    total = time.monotonic() - t_start
 
+    print("\n" + "=" * 60, flush=True)
+    print("tier wall times:", flush=True)
+    for t, dt in tier_times:
+        print(f"  {t:<12} {dt:7.1f}s", flush=True)
+    print(f"  {'total':<12} {total:7.1f}s", flush=True)
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",
           flush=True)
