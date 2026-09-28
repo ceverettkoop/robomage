@@ -23,7 +23,9 @@ Usage (from repo root):
   train/.venv/bin/python train/regression/replay_diff.py check
 """
 
+import os
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
@@ -98,14 +100,27 @@ def _play(deck_a: str, deck_b: str, seed: int) -> str:
     return buf.getvalue()
 
 
+def _play_scenario(scenario) -> str:
+    """_play for one SCENARIOS entry (a picklable process-pool task)."""
+    _name, deck_a, deck_b = scenario
+    return _play(deck_a, deck_b, SEED)
+
+
+def _play_all():
+    """Every scenario's transcript, in SCENARIOS order. The games are
+    independent (each its own engine process, seeded by SEED), so they run in
+    a process pool; a transcript does not depend on which worker played it."""
+    with ProcessPoolExecutor(max_workers=min(16, os.cpu_count() or 4)) as ex:
+        return list(ex.map(_play_scenario, SCENARIOS))
+
+
 def cmd_record() -> int:
     _CORPUS.mkdir(parents=True, exist_ok=True)
     # Drop any stale ".actions" files from the previous (forced-replay) format —
     # the deterministic scripted transcript no longer needs them.
     for stale in _CORPUS.glob("*.actions"):
         stale.unlink()
-    for name, deck_a, deck_b in SCENARIOS:
-        transcript = _play(deck_a, deck_b, SEED)
+    for (name, _deck_a, _deck_b), transcript in zip(SCENARIOS, _play_all()):
         (_CORPUS / f"{name}.txt").write_text(transcript)
         print(f"  recorded {name}: {len(transcript)} bytes")
     print(f"Recorded {len(SCENARIOS)} scenarios (seed {SEED}) to {_CORPUS}")
@@ -114,14 +129,13 @@ def cmd_record() -> int:
 
 def cmd_check() -> int:
     failures = []
-    for name, deck_a, deck_b in SCENARIOS:
+    for (name, _deck_a, _deck_b), actual in zip(SCENARIOS, _play_all()):
         expected_path = _CORPUS / f"{name}.txt"
         if not expected_path.exists():
             print(f"  MISSING corpus for {name} — run `record` first")
             failures.append(name)
             continue
         expected = expected_path.read_text()
-        actual = _play(deck_a, deck_b, SEED)
         if actual == expected:
             print(f"  OK   {name}")
         else:
