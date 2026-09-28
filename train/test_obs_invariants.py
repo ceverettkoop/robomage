@@ -20,6 +20,7 @@ it); also runnable standalone::
 
     train/.venv/bin/python train/test_obs_invariants.py
 """
+import atexit
 import math
 import os
 import random
@@ -110,6 +111,9 @@ _OPP_GY_START = _GY_START + MAX_GY_SLOTS * _GY_SLOT_SIZE
 _OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * _EXILE_SLOT_SIZE
 
 _DECKS_DIR = os.path.join(BIN_DIR, "resources", "decks")
+
+# Every temp deck this process wrote (absolute paths); removed at exit, pass or fail.
+_TEMP_DECK_PATHS = set()
 
 
 class InvariantError(AssertionError):
@@ -1134,18 +1138,37 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
     return checked[0]
 
 
+def _write_temp_deck(stem, lines):
+    """Write decks/temp/<stem>_<pid>.dk (one line per entry) and return its deck
+    spec (relative to decks/). The name carries the process id so concurrent runs
+    never share a file; the path is registered for _remove_temp_decks."""
+    spec = f"temp/{stem}_{os.getpid()}"
+    path = os.path.join(_DECKS_DIR, spec + ".dk")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    _TEMP_DECK_PATHS.add(path)
+    return spec
+
+
+def _remove_temp_decks():
+    """Delete every temp deck _write_temp_deck wrote (registered with atexit, so
+    it also runs when a check fails or raises)."""
+    for path in sorted(_TEMP_DECK_PATHS):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+    _TEMP_DECK_PATHS.clear()
+
+
 def _write_yorion80_deck():
     """Write an 80-card temp deck with Yorion in the sideboard so the engine
     declares it as a companion (DeckSizePlus20 => >= 80 main cards; that is the
     only gate the engine enforces — see src/companion.cpp). Basics keep it fully
     in-vocab and the game short. Returns the deck spec (relative to decks/)."""
-    stem = "temp/obsinv_yorion80"
-    path = os.path.join(_DECKS_DIR, "temp", "obsinv_yorion80.dk")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    lines = ["80 Plains", "", "SIDEBOARD:", "1 Yorion, Sky Nomad", ""]
-    with open(path, "w") as f:
-        f.write("\n".join(lines))
-    return stem
+    return _write_temp_deck("obsinv_yorion80",
+                            ["80 Plains", "", "SIDEBOARD:", "1 Yorion, Sky Nomad"])
 
 
 # The matchups: cheap, deterministic, fixed seeds. delver vs mav is the vanilla
@@ -1285,11 +1308,7 @@ def _write_face_down_decks():
                          ["1 The Creation of Avacyn", "6 Swamp", "10 Swamp",
                           "1 Lightning Bolt", "12 Swamp"]),
                         ("obsinv_facedown_b", ["30 Island"])):
-        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
-            f.write("\n".join(lines) + "\n")
-        specs.append("temp/" + stem)
+        specs.append(_write_temp_deck(stem, lines))
     return specs
 
 
@@ -1305,11 +1324,7 @@ def _write_known_top_decks():
     specs = []
     for stem, lines in (("obsinv_knowntop_a", ["7 Island", "1 Brainstorm", "22 Island"]),
                         ("obsinv_knowntop_b", ["30 Mountain"])):
-        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
-            f.write("\n".join(lines) + "\n")
-        specs.append("temp/" + stem)
+        specs.append(_write_temp_deck(stem, lines))
     return specs
 
 
@@ -1392,11 +1407,6 @@ def _run_known_top_line(reveal):
         return seen, unseen
     finally:
         env.close()
-        for spec in (deck_a, deck_b):
-            try:
-                os.remove(os.path.join(_DECKS_DIR, spec + ".dk"))
-            except OSError:
-                pass
 
 
 def check_public_known_top():
@@ -1424,14 +1434,10 @@ def check_graveyard_target_collapse():
     choices). Returns the menu size."""
     names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
     surgical = names["Surgical Extraction"]
-    stem = "obsinv_gycollapse_a"
-    path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        f.write("1 Surgical Extraction\n29 Swamp\n")
+    deck_a = _write_temp_deck("obsinv_gycollapse_a", ["1 Surgical Extraction", "29 Swamp"])
     gy_a = ",".join(["Lightning Bolt"] * 20 + ["Brainstorm"] * 20)
     gy_b = ",".join(["Ponder"] * 20 + ["Counterspell"] * 15)
-    env = RoboMageEnv(deck_a="temp/" + stem, deck_b="league/ur_delver", no_shuffle=True,
+    env = RoboMageEnv(deck_a=deck_a, deck_b="league/ur_delver", no_shuffle=True,
                       battlefield_a="Swamp", graveyard_a=gy_a, graveyard_b=gy_b, bo3=False)
     cast = False
     try:
@@ -1461,10 +1467,6 @@ def check_graveyard_target_collapse():
         raise InvariantError(f"no Surgical Extraction target menu (cast={cast})")
     finally:
         env.close()
-        try:
-            os.remove(path)
-        except OSError:
-            pass
 
 
 def check_face_down_exile_hidden():
@@ -1532,11 +1534,6 @@ def check_face_down_exile_hidden():
             f"searched={searched}, hidden B decisions={n_hidden}, visible={n_visible})")
     finally:
         env.close()
-        for spec in (deck_a, deck_b):
-            try:
-                os.remove(os.path.join(_DECKS_DIR, spec + ".dk"))
-            except OSError:
-                pass
 
 
 def check_delayed_trigger_lifecycle():
@@ -1620,12 +1617,7 @@ def _seat_effect_halves(state, priority_is_a):
 def _write_veil_deck():
     """A stacked temp deck for check_veil_player_effects: two Veil of Summer on top
     (so both start in hand under no_shuffle), then Forests. Returns the deck spec."""
-    stem = "temp/obsinv_veil"
-    path = os.path.join(_DECKS_DIR, "temp", "obsinv_veil.dk")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        f.write("2 Veil of Summer\n58 Forest\n")
-    return stem
+    return _write_temp_deck("obsinv_veil", ["2 Veil of Summer", "58 Forest"])
 
 
 def check_veil_player_effects():
@@ -2281,11 +2273,7 @@ def _write_strand_decks():
     specs = []
     for stem, lines in (("obsinv_strand_a", ["36 Grizzly Bears", "24 Forest"]),
                         ("obsinv_strand_b", ["60 Swamp", "SIDEBOARD:", "1 Swamp"])):
-        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
-            f.write("\n".join(lines) + "\n")
-        specs.append("temp/" + stem)
+        specs.append(_write_temp_deck(stem, lines))
     return specs
 
 
@@ -2556,6 +2544,15 @@ def check_sideboard_self_context():
 
 
 def main():
+    atexit.register(_remove_temp_decks)
+    try:
+        return _run_all_checks()
+    finally:
+        _remove_temp_decks()
+
+
+def _run_all_checks():
+    """Every matchup and staged check in order; 1 at the first failure, else 0."""
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
         # Seat A declares Yorion (vocab 289); the game is short (A only plays
