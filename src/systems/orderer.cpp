@@ -181,6 +181,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // CardData components are still intact (they are stripped later, by the SBA pass).
         LastKnownInfo &lki = cur_game.last_known_info[target];
         lki = LastKnownInfo{};
+        lki.issue = global_coordinator.GetIssueCount(target);
         lki.types = global_coordinator.GetComponent<Permanent>(target).types;
         lki.keywords = permanent_keywords(target);
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;

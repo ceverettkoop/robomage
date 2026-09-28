@@ -159,10 +159,9 @@ static bool trigger_needs_target(const Ability &ab) {
 
 // The object a CARD_CHANGED_ZONE event moved, as it was before the move.
 static ObjectRef moved_object(const Event &ev) {
-    ObjectRef moved;
-    moved.e = ev.GetParam<Entity>(Params::ENTITY);
-    moved.gen = ev.HasParam(Params::OBJECT_GEN) ? ev.GetParam<uint64_t>(Params::OBJECT_GEN) : 0;
-    return moved;
+    return ObjectRef::of_object(
+        ev.GetParam<Entity>(Params::ENTITY),
+        ev.HasParam(Params::OBJECT_GEN) ? ev.GetParam<uint64_t>(Params::OBJECT_GEN) : 0);
 }
 
 // Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own

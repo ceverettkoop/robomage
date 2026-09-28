@@ -265,8 +265,8 @@ std::string entity_name(Entity e);
 // its printed characteristics (CR 400.7). So a card's snapshot is superseded when that
 // resolution ends, at birth when the card left outside a resolution (a state-based death, a
 // cost), and at the card's next zone change. A token keeps its snapshot after it ceases to exist
-// (CR 111.7) — no new object ever takes its place — until its entity id is issued again. Defined
-// in game_queries.cpp.
+// (CR 111.7) — no new object ever takes its place — while its entity id is not issued again.
+// Defined in game_queries.cpp.
 struct LastKnownInfo;
 const LastKnownInfo *lki_for(Entity e);
 
@@ -284,11 +284,6 @@ void supersede_last_known_info(Entity e);
 // that read a card's last-known information as the object that just left (a sub-ability of the
 // spell that moved it, CR 608.2h) have all run.
 void supersede_departed_cards();
-
-// Drop all Game state recorded under `e` (Game::forget_entity, including its last-known
-// information). Installed as the coordinator's entity-issued hook, so an object given a reused
-// id never inherits the state of the id's previous holder.
-void forget_reissued_entity(Entity e);
 
 // The display name `e` had as it last left the battlefield ("Construct token" for a token),
 // from its last-known information; empty when none was captured.

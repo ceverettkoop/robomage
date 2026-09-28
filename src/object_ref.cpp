@@ -9,12 +9,25 @@
 ObjectRef ObjectRef::of(Entity e) {
     ObjectRef r;
     r.e = e;
+    r.issue = e == 0 ? 0 : global_coordinator.GetIssueCount(e);
     r.gen = stamp_object_gen(e);
     return r;
 }
 
+ObjectRef ObjectRef::of_object(Entity e, uint64_t gen) {
+    ObjectRef r;
+    r.e = e;
+    r.issue = e == 0 ? 0 : global_coordinator.GetIssueCount(e);
+    r.gen = gen;
+    return r;
+}
+
+Entity ObjectRef::lki_entity() const {
+    return e != 0 && issue == global_coordinator.GetIssueCount(e) ? e : 0;
+}
+
 Entity ObjectRef::get() const {
-    if (e == 0) return 0;
+    if (lki_entity() == 0) return 0;
     const bool has_zone = global_coordinator.entity_has_component<Zone>(e);
     if (gen == 0) return has_zone ? 0 : e;
     if (!has_zone) return 0;
@@ -45,7 +58,8 @@ std::vector<Entity> live_entities(const std::vector<ObjectRef> &refs) {
 std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs) {
     std::vector<Entity> out;
     out.reserve(refs.size());
-    for (const ObjectRef &r : refs) out.push_back(r.lki_entity());
+    for (const ObjectRef &r : refs)
+        if (Entity e = r.lki_entity()) out.push_back(e);
     return out;
 }
 
@@ -58,14 +72,6 @@ bool refs_contain(const std::vector<ObjectRef> &refs, Entity e) {
     for (const ObjectRef &r : refs)
         if (r.e == e && r.get() == e) return true;
     return false;
-}
-
-void erase_refs_to(std::vector<ObjectRef> &refs, Entity e) {
-    std::vector<ObjectRef> kept;
-    kept.reserve(refs.size());
-    for (const ObjectRef &r : refs)
-        if (r.e != e) kept.push_back(r);
-    refs.swap(kept);
 }
 
 size_t ObjectSet::count(Entity e) const {

@@ -295,10 +295,11 @@ resolution ends and at the object's next zone change (tokens excepted, CR 111.7)
 
 **Object identity (CR 400.7).** An entity id survives zone changes and is eventually reissued, so
 any reference kept across a zone change, a resolution boundary or a turn is an `ObjectRef`
-(`src/object_ref.h`: the entity plus its `Zone::obj_gen` stamp, made with `ObjectRef::of`), never
-a bare `Entity`; keyed state uses `ObjectSet` / `ObjectMap`. Read it with `get()` and handle 0
-(the object is gone or became a new object); `lki_entity()` is only for last-known-information
-lookups, logging and link bookkeeping. Within one resolution the follow window keeps an object the
+(`src/object_ref.h`: the entity plus its `Zone::obj_gen` stamp and the id's issue count, made with
+`ObjectRef::of`), never a bare `Entity`; keyed state uses `ObjectSet` / `ObjectMap`. Read it with
+`get()` and handle 0 (the object is gone or became a new object); `lki_entity()` is only for
+last-known-information lookups, logging and link bookkeeping (0 once the id is issued to another
+entity; last-known information is keyed the same way, `LastKnownInfo::issue`). Within one resolution the follow window keeps an object the
 effect moved findable (CR 400.7j). Plain `Entity` is for values that live within one step.
 
 **Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal Therapy,

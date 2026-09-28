@@ -10,13 +10,16 @@
 // A reference to one game OBJECT across time (CR 400.7). An entity id survives zone changes and
 // is eventually reissued to an unrelated object, so an Entity alone cannot say whether it still
 // names the object it was taken from. ObjectRef pairs the id with the object's identity stamp —
-// Zone::obj_gen, fresh on every zone entry (Orderer::add_to_zone) and never reused — taken when
-// the reference is made:
+// Zone::obj_gen, fresh on every zone entry (Orderer::add_to_zone) and never reused — and with
+// which holder of the id it was (the coordinator's issue count), both taken when the reference
+// is made:
 //   - get() is the entity while it is still that object, else 0: it changed zones (a new object),
 //     ceased to exist, or its id now belongs to something else.
-//   - lki_entity() is the raw id, for last-known-information lookups (lki_for / departed_lki_for,
-//     effective_* on a departed object), logging, and matching a reference against the entity it
-//     was taken of (bookkeeping that clears links to an object) — never to act on the object.
+//   - lki_entity() is the id while it still belongs to the entity the reference was taken of (in
+//     any zone, or ceased to exist), else 0: for last-known-information lookups (lki_for /
+//     departed_lki_for, effective_* on a departed object), logging, and matching a reference
+//     against the entity it was taken of (bookkeeping that clears links to an object) — never to
+//     act on the object.
 // Every reference kept across a zone change, a resolution boundary or a turn is an ObjectRef;
 // plain Entity is for values that live inside one uninterrupted step.
 //
@@ -31,14 +34,19 @@
 // Trivially copyable, so component and whole-Game snapshots copy it by value.
 struct ObjectRef {
     Entity e = 0;
+    uint32_t issue = 0;  // which holder of id `e` (Coordinator::GetIssueCount) was referenced
     uint64_t gen = 0;
 
     static ObjectRef of(Entity e);  // stamps `e`'s identity now; of(0) is the empty ref
-    Entity get() const;             // e if still the same object, else 0
-    Entity lki_entity() const { return e; }  // raw id: LKI lookups, logging, link bookkeeping
-    bool empty() const { return e == 0; }    // no object was ever referenced
+    // `e` as the earlier object stamped `gen` (the object a zone-change event moved).
+    static ObjectRef of_object(Entity e, uint64_t gen);
+    Entity get() const;         // e if still the same object, else 0
+    Entity lki_entity() const;  // e while its id is not reissued: LKI lookups, logging, links
+    bool empty() const { return e == 0; }  // no object was ever referenced
     explicit operator bool() const { return get() != 0; }
-    bool operator==(const ObjectRef &o) const { return e == o.e && gen == o.gen; }
+    bool operator==(const ObjectRef &o) const {
+        return e == o.e && issue == o.issue && gen == o.gen;
+    }
     bool operator!=(const ObjectRef &o) const { return !(*this == o); }
 };
 
@@ -46,8 +54,9 @@ struct ObjectRef {
 std::vector<ObjectRef> refs_of(const std::vector<Entity> &entities);
 // The entities `refs` still name (get() != 0), in order.
 std::vector<Entity> live_entities(const std::vector<ObjectRef> &refs);
-// The raw ids of `refs` (lki_entity), in order: for last-known-information reads (counts and
-// characteristics of the objects as they last existed, a ceased token included).
+// The ids of `refs` (lki_entity), in order, skipping any since issued to another entity: for
+// last-known-information reads (counts and characteristics of the objects as they last existed,
+// a ceased token included).
 std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs);
 // Refs to the objects `refs` still name, stamped as those objects are now. Used when references
 // are handed on past the current effect (a delayed trigger's remembered objects): an object the
@@ -55,8 +64,6 @@ std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs);
 std::vector<ObjectRef> restamp_live(const std::vector<ObjectRef> &refs);
 // True if some ref in `refs` names `e` as the object it is now.
 bool refs_contain(const std::vector<ObjectRef> &refs, Entity e);
-// Remove every ref to entity id `e` (whatever object it named).
-void erase_refs_to(std::vector<ObjectRef> &refs, Entity e);
 
 // An ordered set of objects keyed by entity id (the std::set<Entity> iteration order), each
 // member remembered with its identity stamp: a member that became a new object, or whose id was

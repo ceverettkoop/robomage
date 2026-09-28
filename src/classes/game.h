@@ -97,6 +97,9 @@ struct DelayedTrigger {
 struct CardData;
 
 struct LastKnownInfo {
+    uint32_t issue = 0;                    // the holder of the entity id it was captured for
+                                           // (Coordinator::GetIssueCount): a later holder of the id
+                                           // has no last-known information from this one
     std::string name;                      // Permanent name as it left play: a token that then ceases
                                            // to exist (CR 111.7) keeps its identity for a prompt or
                                            // observation that still refers to it
@@ -276,13 +279,14 @@ struct Game {
                                             // permanent leaves the battlefield (CR 608.2h); read by the
                                             // effective_* accessors when the object is no longer in play.
                                             // A card's entry is superseded once the card is a new
-                                            // object (see lki_for); every entry is erased when its
-                                            // entity id is issued again
+                                            // object (see lki_for); an entry is unread once its
+                                            // entity id is issued again (LastKnownInfo::issue)
         std::vector<ObjectRef> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         ObjectMap<int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve of its source
-        // Machine mode: block casting after 2 failed payments. Keyed by the card's entity id, not
-        // by object: a cancelled cast returns the card to its origin as a restored object.
-        std::map<Entity, int> payment_fail_counts;
+        // Machine mode: block casting a spell or activating an ability after 2 failed payments
+        // for it since the last action taken. Keyed by the card or source as the object it is at
+        // its origin: a cancelled cast returns the card there as its restored object.
+        ObjectMap<int> payment_fail_counts;
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
         // The source entity of the spell/ability currently making a mid-resolution choice
@@ -843,14 +847,6 @@ struct Game {
         // chosen as it is put on the stack (CR 603.3d). `log_line` is narrated as it is placed;
         // the scan labels it for the ordering choice.
         void queue_trigger(const Ability &ab, const std::string &log_line);
-
-        // Drop what this Game recorded under entity id `e` that an ObjectRef does not already
-        // disown, so an object issued a reused id never inherits state of the id's previous
-        // holder (CR 400.7): the last-known information and the remembered entries (both read as
-        // the objects as they last existed), the per-id payment-failure guard, and the one-shot
-        // entry markers keyed by raw id. Called for every id the coordinator issues (see
-        // forget_reissued_entity).
-        void forget_entity(Entity e);
 
         // The one place a game ends (CR 104.1): marks the game over, records `result` as the
         // winner (Zone::PLAYER_A / Zone::PLAYER_B, or Zone::UNKNOWN for a draw — CR 104.4a) and

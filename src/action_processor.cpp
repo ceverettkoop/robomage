@@ -253,9 +253,11 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
 
 // See forward declaration at top of file.
 static void fail_cast_payment(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer) {
-    cur_game.payment_fail_counts[pc.spell_entity]++;
+    const Entity spell_entity = pc.spell_entity;
     game_log("Payment cancelled.\n");
     rewind_cast(pc, orderer);
+    // Counted against the card as the object it is again at its origin.
+    cur_game.payment_fail_counts[spell_entity]++;
 }
 
 // Drop already-chosen entities from a re-derived cost menu (see already_chosen_as_cost).

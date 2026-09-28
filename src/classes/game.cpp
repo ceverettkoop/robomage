@@ -64,13 +64,6 @@ Entity Game::gen_player(const Deck &deck) {
     return player_entity;
 }
 
-void Game::forget_entity(Entity e) {
-    last_known_info.erase(e);
-    erase_refs_to(remembered_entities, e);
-    payment_fail_counts.erase(e);
-    entering_together.erase(e);
-}
-
 void Game::set_monarch(Entity player_entity) {
     if (monarch_entity == player_entity) return;  // already the monarch — no change (725.3)
     monarch_entity = player_entity;  // the previous monarch ceases to be the monarch (725.3)

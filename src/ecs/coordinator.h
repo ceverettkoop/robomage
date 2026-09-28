@@ -39,17 +39,10 @@ class Coordinator {
             mSystemManager = std::make_unique<SystemManager>();
         }
         // Entity methods
-        // Called with every id CreateEntity issues, so per-id state kept outside the ECS (the
-        // game's per-entity records, including last-known information) can drop whatever it
-        // recorded for an earlier object that held the same id. Set by the engine; persists
-        // across Init().
-        using EntityIssuedHook = void (*)(Entity);
-        void SetEntityIssuedHook(EntityIssuedHook hook) { mEntityIssuedHook = hook; }
-        Entity CreateEntity() {
-            Entity id = mEntityManager->CreateEntity();
-            if (mEntityIssuedHook) mEntityIssuedHook(id);
-            return id;
-        }
+        Entity CreateEntity() { return mEntityManager->CreateEntity(); }
+        // How many times `entity` has been issued (EntityManager::GetIssueCount): tells the id's
+        // current holder apart from an earlier one.
+        uint32_t GetIssueCount(Entity entity) const { return mEntityManager->GetIssueCount(entity); }
         void DestroyEntity(Entity entity) {
             mEntityManager->DestroyEntity(entity);
             mComponentManager->EntityDestroyed(entity);
@@ -134,7 +127,6 @@ class Coordinator {
         std::unique_ptr<EntityManager> mEntityManager;
         std::unique_ptr<EventManager> mEventManager;
         std::unique_ptr<SystemManager> mSystemManager;
-        EntityIssuedHook mEntityIssuedHook = nullptr;
         static Coordinator *singleton;
 };
 

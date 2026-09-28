@@ -42,7 +42,10 @@ const LastKnownInfo *lki_for(Entity e) {
 
 const LastKnownInfo *departed_lki_for(Entity e) {
     auto it = cur_game.last_known_info.find(e);
-    return it == cur_game.last_known_info.end() ? nullptr : &it->second;
+    if (it == cur_game.last_known_info.end()) return nullptr;
+    // Captured for an earlier holder of the id (the id was destroyed and issued again).
+    if (it->second.issue != global_coordinator.GetIssueCount(e)) return nullptr;
+    return &it->second;
 }
 
 void supersede_last_known_info(Entity e) {
@@ -54,8 +57,6 @@ void supersede_departed_cards() {
     for (auto &kv : cur_game.last_known_info)
         if (!kv.second.is_token) kv.second.superseded = true;
 }
-
-void forget_reissued_entity(Entity e) { cur_game.forget_entity(e); }
 
 uint64_t stamp_object_gen(Entity e) {
     if (e == 0 || !global_coordinator.entity_has_component<Zone>(e)) return 0;

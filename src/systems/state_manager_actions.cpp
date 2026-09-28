@@ -82,8 +82,8 @@ static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool s
 // Machine mode: stop offering a spell or ability whose payment already failed twice (the payer
 // bumps payment_fail_counts on each cancelled payment), so an agent can't loop on it.
 static bool payment_blocked(Entity paid_for) {
-    auto it = cur_game.payment_fail_counts.find(paid_for);
-    return it != cur_game.payment_fail_counts.end() && it->second >= 2;
+    const int *fails = cur_game.payment_fail_counts.find(paid_for);
+    return fails && *fails >= 2;
 }
 
 // Machine mode only: action-masking optimization — don't offer a conditional-destroy spell to

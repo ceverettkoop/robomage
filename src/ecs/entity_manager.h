@@ -32,11 +32,19 @@ class EntityManager {
             Entity id = mAvailableEntities.front();
             mAvailableEntities.pop();
             mAlive.set(id);
+            ++mIssueCount[id];
             ++mLivingEntityCount;
             if (id >= mMaxIssuedEntity) mMaxIssuedEntity = id + 1;
             return id;
         }
         Entity GetMaxIssuedEntity() const { return mMaxIssuedEntity; }
+        // How many times `entity` has been issued: its current holder is the id's
+        // GetIssueCount(entity)'th. A reference taken of one holder compares it to tell a later
+        // holder of the same id apart (the id was destroyed and issued again).
+        uint32_t GetIssueCount(Entity entity) const {
+            assert(entity < MAX_ENTITIES && "Entity out of range.");
+            return mIssueCount[entity];
+        }
         void DestroyEntity(Entity entity) {
             // Destroying an id that isn't alive would queue it a second time, and two later
             // entities would then share it.
@@ -71,16 +79,19 @@ class EntityManager {
             std::queue<Entity> availableEntities;
             std::array<Signature, MAX_ENTITIES> signatures;
             std::bitset<MAX_ENTITIES> alive;
+            std::array<uint32_t, MAX_ENTITIES> issueCount;
             uint32_t livingEntityCount;
             Entity maxIssuedEntity;
         };
         EntityManagerState snapshot_state() const {
-            return {mAvailableEntities, mSignatures, mAlive, mLivingEntityCount, mMaxIssuedEntity};
+            return {mAvailableEntities, mSignatures, mAlive, mIssueCount, mLivingEntityCount,
+                    mMaxIssuedEntity};
         }
         void restore_state(const EntityManagerState &s) {
             mAvailableEntities = s.availableEntities;
             mSignatures = s.signatures;
             mAlive = s.alive;
+            mIssueCount = s.issueCount;
             mLivingEntityCount = s.livingEntityCount;
             mMaxIssuedEntity = s.maxIssuedEntity;
         }
@@ -91,6 +102,8 @@ class EntityManager {
         std::array<Signature, MAX_ENTITIES> mSignatures{};
         // Which ids are currently issued (created and not yet destroyed)
         std::bitset<MAX_ENTITIES> mAlive{};
+        // Times each id has been issued (see GetIssueCount)
+        std::array<uint32_t, MAX_ENTITIES> mIssueCount{};
         // Total living entities - used to keep limits on how many exist
         uint32_t mLivingEntityCount{};
         // Highest entity ID ever issued + 1; used to bound linear scans
