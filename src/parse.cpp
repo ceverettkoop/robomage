@@ -69,6 +69,50 @@ struct FaceAbilityDefs {
     std::vector<AbilityDef> saga_chapters;
     std::vector<AbilityDef> opening_hand_abilities;
 };
+// The facts a trigger line (a T: line or trigger SVar) states that decide which event its
+// ability fires on and how that event is filtered, read in one pass over its params.
+struct TriggerLine {
+    std::string mode;                 // Mode$
+    std::vector<std::string> phases;  // Phase$ list (Mode$ Phase)
+    int origin = -1;                  // Origin$ / Destination$ zone filter (Mode$ ChangesZone); -1 = any
+    int destination = -1;
+    bool player_is_you = false;       // the event's player is the source's controller (ValidPlayer$ You, ...)
+    bool valid_card_creature = false;
+    bool valid_card_self = false;
+    bool valid_card_non_creature = false;
+    bool valid_card_colorless = false;
+    bool valid_card_untapped = false;
+    bool valid_card_opp_own = false;
+    bool valid_card_opp_ctrl = false;
+    int kicked_index = 0;             // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
+    bool source_is_spell = false;     // ValidSource$ Spell...
+    bool source_opp_ctrl = false;     // ValidSource$ ...OppCtrl
+    bool source_creature_youctrl = false;  // ValidSource$ Creature.YouCtrl
+    bool target_self = false;         // ValidTarget$ Card.Self
+    bool is_static = false;           // Static$ True
+    bool attacking_player_is_you = false;
+    bool exclude_first_draw_step = false;
+    bool optional = false;            // OptionalDecider$
+    bool combat_damage_only = false;  // CombatDamage$ True
+    bool from_graveyard = false;      // TriggerZones$ Graveyard
+    size_t draw_number_eq = 0;        // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
+    size_t cast_count_eq = 0;         // ActivatorThisTurnCast$ EQN
+    // 603.4 intervening-if (IsPresent$/PresentCompare$ or a CheckSVar$ count gate).
+    bool intervening_if = false;
+    std::string condition_present;
+    std::string condition_compare;
+};
+static TriggerLine read_trigger_line(const std::string& line,
+                                     const std::map<std::string, std::string>& svars,
+                                     AbilityDef& ability);
+static int trigger_zone_filter(const std::string& value);
+static void read_mana_spent_filter(const std::string& value, AbilityDef& ability);
+static void read_trigger_valid_card(const std::string& value,
+                                    const std::map<std::string, std::string>& svars, TriggerLine& t,
+                                    AbilityDef& ability);
+static void bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
+static void bind_phase_trigger(const TriggerLine& t, AbilityDef& ability);
+static void bind_spell_cast_trigger(const TriggerLine& t, AbilityDef& ability);
 static void parse_card_face_body(const std::string& front_script, CardData& card,
                                  FaceAbilityDefs& face_defs);
 static void parse_card_face(const std::string& front_script, CardData& card);
@@ -2906,266 +2950,100 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
             ability = parse_svar_ability(exec_it->second, AbilityDef::TRIGGERED, svars, card_name);
     }
     ability.ability_type = AbilityDef::TRIGGERED;
+    bind_trigger_line(read_trigger_line(line, svars, ability), ability);
+    return ability;
+}
 
-    // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
-    // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
-    // ConditionNotPresent$ Card.Self+escaped) is kept when the line declares none.
-    bool line_intervening_if = false;
-    std::string line_condition_present;
-    std::string line_condition_compare;
-
-    bool mode_changes_zone = false;
-    bool mode_changes_zone_all = false;
-    bool dest_is_battlefield = false;
-    bool dest_is_graveyard = false;
-    bool origin_is_battlefield = false;
-    bool origin_is_graveyard = false;
-    bool valid_card_creature = false;
-    bool valid_card_self = false;
-    bool mode_is_phase = false;
-    bool phase_is_upkeep = false;
-    bool phase_is_end_step = false;
-    bool phase_is_draw = false;
-    bool phase_is_begin_combat = false;
-    bool phase_is_first_main = false;
-    bool phase_is_second_main = false;
-    bool phase_is_cleanup = false;
-    bool trigger_zone_is_graveyard = false;
-    bool valid_player_is_you = false;
-    bool mode_is_spell_cast = false;
-    bool mode_is_damage_done = false;
-    bool mode_is_damage_all = false;
-    bool valid_source_creature_youctrl = false;
-    bool damage_combat_only = false;
-    bool valid_card_non_creature = false;
-    bool valid_card_colorless = false;
-    bool valid_card_untapped = false;
-    bool mode_is_drawn = false;
-    bool mode_is_attacks = false;
-    bool mode_is_attackers_declared = false;
-    bool mode_is_taps_for_mana = false;
-    bool mode_is_becomes_target = false;
-    bool mode_is_become_monstrous = false;
-    bool mode_is_always = false;
-    bool source_is_spell = false;
-    bool source_opp_ctrl = false;
-    bool valid_target_self = false;
-    bool trigger_static = false;
-    bool attacking_player_is_you = false;
-    bool valid_card_opp_own = false;
-    bool valid_card_opp_ctrl = false;
-    bool exclude_first_draw_step = false;
-    bool trigger_optional_local = false;
-    size_t draw_number_eq = 0;          // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
-    size_t activator_this_turn_cast_eq = 0;
-    int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
-
-    // Walk pipe-delimited params
+// Reads a trigger line's params. Filters and gates that need no event binding are written straight
+// onto `ability`; the facts the event binding depends on are returned.
+static TriggerLine read_trigger_line(const std::string &line,
+                                     const std::map<std::string, std::string> &svars,
+                                     AbilityDef &ability) {
+    TriggerLine t;
     size_t param_pos = 0;
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
         if (key == "Mode") {
-            // ChangesZone fires once per matching card. ChangesZoneAll ("whenever one or more
-            // cards ...") is a single batch trigger (CR 603.2c): it fires exactly ONCE for a
-            // group of simultaneous zone changes, no matter how many cards matched. Both reuse the
-            // same per-card origin/destination/ValidCards filters; the _all form additionally sets
-            // trigger_batch_zone_all so the trigger scan dedupes it to a single firing per batch
-            // (Moonshadow: milling 3 permanent cards removes ONE -1/-1 counter, not three).
-            if (value == "ChangesZone" || value == "ChangesZoneAll") mode_changes_zone = true;
-            if (value == "ChangesZoneAll") mode_changes_zone_all = true;
-            else if (value == "Phase") mode_is_phase = true;
-            else if (value == "SpellCast") mode_is_spell_cast = true;
-            else if (value == "DamageDone") mode_is_damage_done = true;
-            else if (value == "DamageAll") mode_is_damage_all = true;
-            else if (value == "Drawn") mode_is_drawn = true;
-            else if (value == "Attacks") mode_is_attacks = true;
-            else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
-            else if (value == "TapsForMana") mode_is_taps_for_mana = true;
-            else if (value == "BecomesTarget") mode_is_becomes_target = true;
-            else if (value == "BecomeMonstrous") mode_is_become_monstrous = true;
-            else if (value == "Always") mode_is_always = true;
+            t.mode = value;
         } else if (key == "ValidSource") {
             // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl — the targeting object must be a
             // SPELL (not an ability) controlled by an opponent of the source's controller.
-            if (value.rfind("Spell", 0) == 0) source_is_spell = true;
-            if (value.find("OppCtrl") != std::string::npos) source_opp_ctrl = true;
+            if (value.rfind("Spell", 0) == 0) t.source_is_spell = true;
+            if (value.find("OppCtrl") != std::string::npos) t.source_opp_ctrl = true;
             // Mode$ DamageAll | ValidSource$ Creature.YouCtrl — the damaging creature must be one
             // this trigger's controller controls (Forth Eorlingas!'s floating monarch trigger).
             if (filter_has_head(value, "Creature") && filter_names_token(value, "YouCtrl"))
-                valid_source_creature_youctrl = true;
+                t.source_creature_youctrl = true;
         } else if (key == "ValidTarget") {
             // ValidTarget$ Card.Self — the permanent that became a target must be this source.
-            if (value == "Card.Self") valid_target_self = true;
+            if (value == "Card.Self") t.target_self = true;
         } else if (key == "Activator") {
             // Mode$ TapsForMana | Activator$ You — only the source controller tapping a
             // permanent for mana fires this ("whenever YOU tap ...").
-            if (value == "You") valid_player_is_you = true;
+            if (value == "You") t.player_is_you = true;
         } else if (key == "Static") {
             // Static$ True on a TapsForMana trigger: it is a mana-additional effect that does
             // not use the stack (CR 605.1a) — resolved immediately by the mana system.
-            if (value == "True") trigger_static = true;
+            if (value == "True") t.is_static = true;
         } else if (key == "AttackingPlayer") {
             // Mode$ AttackersDeclared | AttackingPlayer$ You — the trigger fires only when
             // the player who declared attackers is this ability's controller ("whenever you attack").
-            if (value == "You") attacking_player_is_you = true;
+            if (value == "You") t.attacking_player_is_you = true;
         } else if (key == "Phase") {
             // A Phase trigger may list several phases comma-separated (Carpet of Flowers:
-            // Phase$ Main1,Main2 — "at the beginning of each of your main phases"). Split and set
-            // each phase flag so the trigger can bind to every listed phase's event.
-            size_t tok_pos = 0;
-            while (tok_pos <= value.size()) {
-                size_t comma = value.find(',', tok_pos);
-                std::string tok = value.substr(tok_pos, comma == std::string::npos
-                                                            ? std::string::npos : comma - tok_pos);
-                if (tok == "Upkeep")   phase_is_upkeep   = true;
-                // Forge writes the end step as either "EndStep" or "End of Turn".
-                if (tok == "EndStep" || tok == "End of Turn")  phase_is_end_step = true;
-                if (tok == "Draw")     phase_is_draw     = true;
-                if (tok == "BeginCombat") phase_is_begin_combat = true;
-                // Forge writes the (pre-combat) first main phase as "Main1", the post-combat one as "Main2".
-                if (tok == "Main1")    phase_is_first_main = true;
-                if (tok == "Main2")    phase_is_second_main = true;
-                if (tok == "Cleanup")  phase_is_cleanup = true;
-                if (comma == std::string::npos) break;
-                tok_pos = comma + 1;
-            }
+            // Phase$ Main1,Main2 — "at the beginning of each of your main phases").
+            t.phases = split(value, ',');
         } else if (key == "TriggerZones") {
             // The zone(s) the source must be in for this triggered ability to function
             // (CR 113.6 / 603.6). Arclight Phoenix's combat trigger functions from the
             // graveyard, so the trigger scan must look at graveyard cards, not just the
             // battlefield.
-            if (value.find("Graveyard") != std::string::npos) trigger_zone_is_graveyard = true;
+            if (value.find("Graveyard") != std::string::npos) t.from_graveyard = true;
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
-            if (value == "You") valid_player_is_you = true;
+            if (value == "You") t.player_is_you = true;
             // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): the trigger fires only
             // when an OPPONENT of the source's controller is the acting player.
             if (value == "Opponent") ability.trigger_valid_player_is_opponent = true;
         } else if (key == "ValidSA") {
-            // SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> (Roiling Vortex: "if no mana was
-            // spent to cast that spell" = Spell.ManaSpent EQ0). Parse the ManaSpent comparison
-            // (op + integer) into the runtime filter; a ".YouCtrl"/".OppCtrl" restriction on the
-            // spell's controller is handled by the ValidActivatingPlayer path. General over any
-            // Spell.ManaSpent-gated SpellCast trigger.
-            size_t mp = value.find("ManaSpent");
-            if (mp != std::string::npos) {
-                size_t p = mp + strlen("ManaSpent");
-                while (p < value.size() && value[p] == ' ') p++;
-                for (const char *op : {"EQ", "NE", "LE", "GE", "LT", "GT"}) {
-                    if (value.compare(p, 2, op) == 0) {
-                        ability.trigger_mana_spent_op = op;
-                        p += 2;
-                        int n = 0;
-                        bool any = false;
-                        while (p < value.size() && isdigit((unsigned char)value[p])) {
-                            n = n * 10 + (value[p++] - '0');
-                            any = true;
-                        }
-                        if (any) ability.trigger_mana_spent_val = n;
-                        break;
-                    }
-                }
-            }
-            if (value.find("YouCtrl") != std::string::npos) valid_player_is_you = true;
+            read_mana_spent_filter(value, ability);
+            if (value.find("YouCtrl") != std::string::npos) t.player_is_you = true;
         } else if (key == "Origin") {
-            if (value == "Battlefield") origin_is_battlefield = true;
-            if (value == "Graveyard")   origin_is_graveyard   = true;
+            t.origin = trigger_zone_filter(value);
         } else if (key == "Destination") {
-            if (value == "Battlefield") dest_is_battlefield = true;
-            if (value == "Graveyard")   dest_is_graveyard   = true;
+            t.destination = trigger_zone_filter(value);
         } else if (key == "ValidCard" || key == "ValidCards") {
-            // The filter itself is matched against the event's object at trigger time
-            // (zone_change_object_matches); only the tokens that select an event binding or an
-            // identity gate are read here, as whole filter tokens (so "nonCreature" is not read as
-            // "Creature", nor "nonLand" as "Land").
-            ability.trigger_valid_card = value;
-            if (filter_has_head(value, "Creature"))          valid_card_creature     = true;
-            if (filter_names_token(value, "nonCreature"))    valid_card_non_creature = true;
-            if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
-            // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
-            // Card.wasCastByYou+Self).
-            if (filter_names_token(value, "Self"))           valid_card_self         = true;
-            // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
-            // source must have entered by being cast (Permanent::entered_by_cast).
-            if (filter_names_token(value, "wasCastByYou"))
-                ability.trigger_requires_entered_by_cast = true;
-            // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
-            // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
-            // defaults to the first kicker). General over any "+kicked N" SpellCast trigger.
-            {
-                size_t kp = value.find("kicked");
-                if (kp != std::string::npos) {
-                    size_t np = kp + strlen("kicked");
-                    while (np < value.size() && value[np] == ' ') np++;
-                    int n = 0;
-                    while (np < value.size() && isdigit((unsigned char)value[np]))
-                        n = n * 10 + (value[np++] - '0');
-                    kicked_index = (n > 0) ? n : 1;
-                }
-            }
-            if (filter_names_token(value, "OppOwn"))         valid_card_opp_own      = true;
-            if (filter_names_token(value, "OppCtrl"))        valid_card_opp_ctrl     = true;
-            if (filter_names_token(value, "Colorless"))      valid_card_colorless    = true;
-            // "untapped" qualifier — the changing card must be untapped when the trigger checks
-            // it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters untapped").
-            if (filter_names_token(value, "untapped"))       valid_card_untapped     = true;
-            // YouCtrl on a Drawn / SpellCast trigger names the event's player (the drawer / caster).
-            if (filter_names_token(value, "YouCtrl"))        valid_player_is_you     = true;
-            // Dynamic mana-value filter on the cast spell (Chalice of the Void:
-            // "Card.cmcEQY", Y = Count$CardCounters.CHARGE). Resolve the cmc<op><svar>
-            // qualifier to its runtime Count$ expression + comparison op, mirroring the
-            // ChangeType cmcEQ handling used by Aether Vial.
-            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-                size_t p = value.find(op);
-                if (p == std::string::npos) continue;
-                std::string svar_key = value.substr(p + strlen(op));
-                size_t end = svar_key.find_first_of(".+");
-                if (end != std::string::npos) svar_key = svar_key.substr(0, end);
-                auto it = svars.find(svar_key);
-                if (it != svars.end()) {
-                    ability.trigger_cmc_expr = it->second;
-                    ability.trigger_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
-                } else if (!svar_key.empty() &&
-                           svar_key.find_first_not_of("0123456789") == std::string::npos) {
-                    // A LITERAL numeric bound (Eidolon of the Great Revel: Card.cmcLE3).
-                    // evaluate_svar returns a plain integer literal as itself, so store
-                    // the number directly; without this the filter would be dropped and the
-                    // trigger would fire on every spell.
-                    ability.trigger_cmc_expr = svar_key;
-                    ability.trigger_cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
-                }
-                break;
-            }
+            read_trigger_valid_card(value, svars, t, ability);
         } else if (key == "OptionalDecider") {
             // Any named decider ("You" / "TriggeredCardController" / "Controller") makes the
             // whole triggered ability optional ("you may ...") for that player — the controller
             // of the source, which is who the engine prompts in every supported case.
             if (value.find("You") != std::string::npos ||
                 value.find("Controller") != std::string::npos)
-                trigger_optional_local = true;
+                t.optional = true;
         } else if (key == "FirstCardInDrawStep") {
-            if (value == "False") exclude_first_draw_step = true;
+            if (value == "False") t.exclude_first_draw_step = true;
         } else if (key == "Number") {
             // Number$ N on a Mode$ Drawn trigger (Tamiyo, Inquisitive Student: "your THIRD card
             // in a turn"). Fire only on the Nth card the player draws this turn.
             if (!value.empty() && isdigit((unsigned char)value[0]))
-                draw_number_eq = static_cast<size_t>(std::stoi(value));
+                t.draw_number_eq = static_cast<size_t>(std::stoi(value));
         } else if (key == "Attacked") {
             // Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned Scholar's +2 trigger): in a
             // two-player game an opponent's attacker can only be attacking the trigger's
             // controller or a planeswalker they control (CR 508.1), so it needs no gate.
         } else if (key == "CombatDamage") {
-            if (value == "True") damage_combat_only = true;
+            if (value == "True") t.combat_damage_only = true;
         } else if (key == "ActivatorThisTurnCast") {
             if (value.rfind("EQ", 0) == 0) {
-                activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
+                t.cast_count_eq = static_cast<size_t>(std::stoi(value.substr(2)));
             }
         } else if (key == "IsPresent") {
             // Intervening-if (603.4): "..., if you control a <thing>, ...". Checked both
             // when the trigger would go on the stack and again on resolution.
-            line_condition_present = value;
-            line_intervening_if = true;
+            t.condition_present = value;
+            t.intervening_if = true;
         } else if (key == "PresentCompare") {
-            line_condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+            t.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
         } else if (key == "CheckSVar") {
             auto it = svars.find(value);
             const std::string svdef = (it != svars.end()) ? it->second : std::string();
@@ -3180,151 +3058,324 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
                 // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
                 // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
                 // it as the intervening-if condition so the whole trigger fizzles when false.
-                line_condition_present = (it != svars.end()) ? it->second : value;
-                line_intervening_if = true;
+                t.condition_present = (it != svars.end()) ? it->second : value;
+                t.intervening_if = true;
             }
         } else if (key == "SVarCompare") {
             // SVarCompare follows CheckSVar on the line; route it to whichever gate CheckSVar set up.
             if (!ability.stored_svar_gate_name.empty())
                 ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
             else
-                line_condition_compare = value;  // explicit compare for the CheckSVar count gate
+                t.condition_compare = value;  // explicit compare for the CheckSVar count gate
         }
     }
-    if (line_intervening_if) {
-        ability.intervening_if = true;
-        ability.condition_present = line_condition_present;
-        ability.condition_compare = line_condition_compare;
+    return t;
+}
+
+// The zone a ChangesZone trigger's Origin$/Destination$ names (-1 = any zone; only the
+// battlefield and graveyard filters are modeled).
+static int trigger_zone_filter(const std::string &value) {
+    if (value == "Battlefield") return Zone::BATTLEFIELD;
+    if (value == "Graveyard") return Zone::GRAVEYARD;
+    return -1;
+}
+
+// SpellCast trigger ValidSA$ Spell.ManaSpent <op><n> (Roiling Vortex: "if no mana was spent to
+// cast that spell" = Spell.ManaSpent EQ0). Parse the ManaSpent comparison (op + integer) into the
+// runtime filter; a ".YouCtrl"/".OppCtrl" restriction on the spell's controller is handled by the
+// ValidActivatingPlayer path. General over any Spell.ManaSpent-gated SpellCast trigger.
+static void read_mana_spent_filter(const std::string &value, AbilityDef &ability) {
+    size_t mp = value.find("ManaSpent");
+    if (mp == std::string::npos) return;
+    size_t p = mp + strlen("ManaSpent");
+    while (p < value.size() && value[p] == ' ') p++;
+    for (const char *op : {"EQ", "NE", "LE", "GE", "LT", "GT"}) {
+        if (value.compare(p, 2, op) != 0) continue;
+        ability.trigger_mana_spent_op = op;
+        p += 2;
+        int n = 0;
+        bool any = false;
+        while (p < value.size() && isdigit((unsigned char)value[p])) {
+            n = n * 10 + (value[p++] - '0');
+            any = true;
+        }
+        if (any) ability.trigger_mana_spent_val = n;
+        return;
     }
+}
 
-    // Map trigger condition to event ID.
+// A trigger's ValidCard$ / ValidCards$ filter. The filter itself is matched against the event's
+// object at trigger time (zone_change_object_matches); only the tokens that select an event
+// binding or an identity gate are read here, as whole filter tokens (so "nonCreature" is not read
+// as "Creature", nor "nonLand" as "Land").
+static void read_trigger_valid_card(const std::string &value,
+                                    const std::map<std::string, std::string> &svars, TriggerLine &t,
+                                    AbilityDef &ability) {
+    ability.trigger_valid_card = value;
+    if (filter_has_head(value, "Creature"))          t.valid_card_creature     = true;
+    if (filter_names_token(value, "nonCreature"))    t.valid_card_non_creature = true;
+    if (filter_names_token(value, "Other"))          ability.trigger_self_excluded = true;
+    // Self may be the head qualifier (Card.Self) or a later one (The One Ring's
+    // Card.wasCastByYou+Self).
+    if (filter_names_token(value, "Self"))           t.valid_card_self         = true;
+    // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
+    // source must have entered by being cast (Permanent::entered_by_cast).
+    if (filter_names_token(value, "wasCastByYou"))
+        ability.trigger_requires_entered_by_cast = true;
+    // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
+    // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
+    // defaults to the first kicker). General over any "+kicked N" SpellCast trigger.
+    size_t kp = value.find("kicked");
+    if (kp != std::string::npos) {
+        size_t np = kp + strlen("kicked");
+        while (np < value.size() && value[np] == ' ') np++;
+        int n = 0;
+        while (np < value.size() && isdigit((unsigned char)value[np]))
+            n = n * 10 + (value[np++] - '0');
+        t.kicked_index = (n > 0) ? n : 1;
+    }
+    if (filter_names_token(value, "OppOwn"))         t.valid_card_opp_own      = true;
+    if (filter_names_token(value, "OppCtrl"))        t.valid_card_opp_ctrl     = true;
+    if (filter_names_token(value, "Colorless"))      t.valid_card_colorless    = true;
+    // "untapped" qualifier — the changing card must be untapped when the trigger checks
+    // it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters untapped").
+    if (filter_names_token(value, "untapped"))       t.valid_card_untapped     = true;
+    // YouCtrl on a Drawn / SpellCast trigger names the event's player (the drawer / caster).
+    if (filter_names_token(value, "YouCtrl"))        t.player_is_you           = true;
+    // Dynamic mana-value filter on the cast spell (Chalice of the Void:
+    // "Card.cmcEQY", Y = Count$CardCounters.CHARGE). Resolve the cmc<op><svar>
+    // qualifier to its runtime Count$ expression + comparison op, mirroring the
+    // ChangeType cmcEQ handling used by Aether Vial.
+    for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+        size_t p = value.find(op);
+        if (p == std::string::npos) continue;
+        std::string svar_key = value.substr(p + strlen(op));
+        size_t end = svar_key.find_first_of(".+");
+        if (end != std::string::npos) svar_key = svar_key.substr(0, end);
+        auto it = svars.find(svar_key);
+        if (it != svars.end()) {
+            ability.trigger_cmc_expr = it->second;
+            ability.trigger_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+        } else if (!svar_key.empty() &&
+                   svar_key.find_first_not_of("0123456789") == std::string::npos) {
+            // A LITERAL numeric bound (Eidolon of the Great Revel: Card.cmcLE3).
+            // evaluate_svar returns a plain integer literal as itself, so store
+            // the number directly; without this the filter would be dropped and the
+            // trigger would fire on every spell.
+            ability.trigger_cmc_expr = svar_key;
+            ability.trigger_cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
+        }
+        break;
+    }
+}
 
+// Binds a read trigger line onto `ability`: its intervening-if and optionality, then the event its
+// Mode$ fires on together with that mode's filters.
+static void bind_trigger_line(const TriggerLine &t, AbilityDef &ability) {
+    // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
+    // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
+    // ConditionNotPresent$ Card.Self+escaped) is kept when the line declares none.
+    if (t.intervening_if) {
+        ability.intervening_if = true;
+        ability.condition_present = t.condition_present;
+        ability.condition_compare = t.condition_compare;
+    }
     // OptionalDecider$ You ("At the beginning of your upkeep, you may ...") makes the whole
     // triggered ability optional at resolution, independent of the trigger mode (Aether
     // Vial's upkeep charge-counter trigger is a Phase trigger, not a zone-change trigger).
-    ability.trigger_optional = trigger_optional_local;
-
-    // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied at match time.
-    if (mode_changes_zone) {
-        ability.trigger_on = Events::CARD_CHANGED_ZONE;
-        if (origin_is_battlefield)       ability.trigger_zone_origin      = Zone::BATTLEFIELD;
-        else if (origin_is_graveyard)    ability.trigger_zone_origin      = Zone::GRAVEYARD;
-        if (dest_is_battlefield)         ability.trigger_zone_destination = Zone::BATTLEFIELD;
-        else if (dest_is_graveyard)      ability.trigger_zone_destination = Zone::GRAVEYARD;
-        // ValidCard$ (types, control, ownership, …) is matched against the moving object itself
-        // through ability.trigger_valid_card, not against the event's player.
-        ability.trigger_valid_card_untapped               = valid_card_untapped;
-        ability.trigger_batch_zone_all                    = mode_changes_zone_all;
-        if (valid_card_self) ability.trigger_only_self = true;
-        // A Destination$ Battlefield trigger gated by IsPresent$ Card.Self (the source must
-        // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
-        // enters" — the source's own entry must not satisfy it (Kappa Cannoneer's Oracle text
-        // reads "another artifact you control"). Exclude the source from this trigger.
-        if (dest_is_battlefield && line_intervening_if && line_condition_present == "Card.Self")
-            ability.trigger_self_excluded = true;
-    }
-
-    if (mode_is_phase && phase_is_upkeep) {
-        ability.trigger_on = Events::UPKEEP_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_end_step) {
-        ability.trigger_on = Events::END_STEP_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_draw) {
-        ability.trigger_on = Events::DRAW_STEP_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_begin_combat) {
-        ability.trigger_on = Events::BEGIN_COMBAT_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_first_main) {
-        ability.trigger_on = Events::FIRST_MAIN_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_second_main) {
-        // "at the beginning of [your] second/postcombat main phase" / Phase$ Main2. If Main1 already
-        // claimed trigger_on (Phase$ Main1,Main2 — "each of your main phases", Carpet of Flowers),
-        // bind SECOND_MAIN_BEGAN as an additional event so the one trigger fires on both phases.
-        if (ability.trigger_on == 0) ability.trigger_on = Events::SECOND_MAIN_BEGAN;
-        else                         ability.trigger_on_extra.push_back(Events::SECOND_MAIN_BEGAN);
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    if (mode_is_phase && phase_is_cleanup) {
-        // "at the beginning of the cleanup step" / Phase$ Cleanup (Carpet of Flowers' Static$ True
-        // reset). With no ValidPlayer$ You it fires at every cleanup (re-arming the latch).
-        ability.trigger_on = Events::CLEANUP_BEGAN;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
+    ability.trigger_optional = t.optional;
     // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
     // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
     // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its
     // own dedicated flag (trigger_taps_for_mana_static) and inline mana-system handling, so it is
     // excluded here. General over any Static$ True phase/ChangesZone trigger.
-    if (trigger_static && !mode_is_taps_for_mana)
-        ability.trigger_static_offstack = true;
-
+    if (t.is_static && t.mode != "TapsForMana") ability.trigger_static_offstack = true;
     // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
-    ability.trigger_from_graveyard = trigger_zone_is_graveyard;
+    ability.trigger_from_graveyard = t.from_graveyard;
 
-    if (mode_is_spell_cast && valid_card_non_creature) {
-        ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    const std::string &mode = t.mode;
+    if (mode == "ChangesZone" || mode == "ChangesZoneAll") {
+        // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied
+        // at match time. ChangesZone fires once per matching card. ChangesZoneAll ("whenever one
+        // or more cards ...") is a single batch trigger (CR 603.2c): it fires exactly ONCE for a
+        // group of simultaneous zone changes, no matter how many cards matched, so the trigger
+        // scan dedupes it to a single firing per batch (Moonshadow: milling 3 permanent cards
+        // removes ONE -1/-1 counter, not three).
+        ability.trigger_on = Events::CARD_CHANGED_ZONE;
+        ability.trigger_zone_origin = t.origin;
+        ability.trigger_zone_destination = t.destination;
+        // ValidCard$ (types, control, ownership, …) is matched against the moving object itself
+        // through ability.trigger_valid_card, not against the event's player.
+        ability.trigger_valid_card_untapped = t.valid_card_untapped;
+        ability.trigger_batch_zone_all = (mode == "ChangesZoneAll");
+        if (t.valid_card_self) ability.trigger_only_self = true;
+        // A Destination$ Battlefield trigger gated by IsPresent$ Card.Self (the source must
+        // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
+        // enters" — the source's own entry must not satisfy it (Kappa Cannoneer's Oracle text
+        // reads "another artifact you control"). Exclude the source from this trigger.
+        if (t.destination == Zone::BATTLEFIELD && t.intervening_if && t.condition_present == "Card.Self")
+            ability.trigger_self_excluded = true;
+    } else if (mode == "Phase") {
+        bind_phase_trigger(t, ability);
+    } else if (mode == "SpellCast") {
+        bind_spell_cast_trigger(t, ability);
+    } else if (mode == "DamageDone") {
+        // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
+        if (t.combat_damage_only) {
+            ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
+            ability.trigger_only_self = true;  // ValidSource$ Card.Self
+        }
+    } else if (mode == "DamageAll") {
+        // "Whenever one or more creatures you control deal combat damage to one or more players" —
+        // Forth Eorlingas!'s floating monarch trigger (Mode$ DamageAll | ValidSource$ Creature.YouCtrl
+        // | ValidTarget$ Player | CombatDamage$ True). Fires on COMBAT_DAMAGE_TO_PLAYER when the
+        // damaging creature is controlled by this trigger's controller (matched at fire time, since
+        // the floating trigger has no source permanent to self-reference).
+        if (t.combat_damage_only) {
+            ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
+            ability.trigger_damage_source_youctrl = t.source_creature_youctrl;
+        }
+    } else if (mode == "Drawn") {
+        // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
+        ability.trigger_on = Events::PLAYER_DREW_CARD;
+        ability.trigger_valid_card_opp_own = t.valid_card_opp_own;
+        ability.trigger_exclude_first_draw_step = t.exclude_first_draw_step;
+        ability.trigger_draw_number_eq = t.draw_number_eq;
+        // ValidCard$ Card.YouCtrl on a Drawn trigger ("whenever YOU draw ...", Tamiyo): the drawer
+        // must be the source's controller. Reuse the controller-is-event-player gate (the
+        // PLAYER_DREW_CARD event's PLAYER is the drawer), set by YouCtrl in the ValidCard parse.
+        ability.trigger_valid_player_is_controller = t.player_is_you;
+    } else if (mode == "Attacks") {
+        // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
+        // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$
+        // Card.Self → trigger_only_self matches the attacking ENTITY against the source.
+        ability.trigger_on = Events::CREATURE_ATTACKED;
+        if (t.valid_card_self) ability.trigger_only_self = true;
+        // ValidCard$ Creature.OppCtrl | Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned
+        // Scholar's +2 hosted trigger): an opponent's creature attacking you/your planeswalker.
+        // Matched at fire time against the attacker's controller (the trigger has no source perm).
+        ability.trigger_attacker_opp_ctrl = t.valid_card_opp_ctrl;
+    } else if (mode == "AttackersDeclared") {
+        // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
+        // Fires once per combat when the source's controller declares one or more attackers.
+        ability.trigger_on = Events::ATTACKERS_DECLARED;
+        ability.trigger_valid_player_is_controller = t.attacking_player_is_you;
+    } else if (mode == "TapsForMana") {
+        // "Whenever you tap a creature for mana, add an additional {G}." — Badgermole Cub
+        // (Mode$ TapsForMana | ValidCard$ Creature | Activator$ You | Static$ True). A
+        // mana-additional triggered ability resolved immediately by the mana system (off-stack,
+        // CR 605.1a) rather than placed on the stack.
+        ability.trigger_on = Events::TAPPED_FOR_MANA;
+        ability.trigger_valid_card_is_creature = t.valid_card_creature;
+        ability.trigger_valid_player_is_controller = t.player_is_you;
+        ability.trigger_taps_for_mana_static = t.is_static;
+    } else if (mode == "BecomesTarget") {
+        // "Whenever CARDNAME becomes the target of a spell an opponent controls, ..." — Reality
+        // Smasher (Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl | ValidTarget$ Card.Self). Fires
+        // when this permanent becomes the target of a matching spell (CR 603.2c). ValidTarget$
+        // Card.Self reuses trigger_only_self (the targeted permanent must be the source).
+        ability.trigger_on = Events::BECAME_TARGET;
+        ability.trigger_source_must_be_spell = t.source_is_spell;
+        ability.trigger_source_opp_ctrl = t.source_opp_ctrl;
+        if (t.target_self) ability.trigger_only_self = true;
+    } else if (mode == "BecomeMonstrous") {
+        // "When CARDNAME becomes monstrous, ..." — Mode$ BecomeMonstrous (CR 701.37). Fired by the
+        // resolving Monstrosity$ ability (effect_put_counter.cpp) with ENTITY = the permanent that
+        // became monstrous, so ValidCard$ Card.Self reuses the standard trigger_only_self ENTITY check.
+        // TriggerZones$ Battlefield is the default functioning zone; no extra handling needed.
+        ability.trigger_on = Events::BECAME_MONSTROUS;
+        if (t.valid_card_self) ability.trigger_only_self = true;
+    } else if (mode == "Always") {
+        // Mode$ Always — a state-triggered ability (CR 603.8). Its trigger condition is a game STATE
+        // (the IsPresent$ intervening-if bound above into condition_present/intervening_if), not a
+        // game event, so it has no trigger_on; the dedicated state-trigger scan in
+        // collect_triggered_abilities evaluates the condition each SBA pass and fires once when it
+        // becomes true. Dark Depths: IsPresent$ Card.Self+counters_EQ0_ICE ("when this has no ice
+        // counters on it"). trigger_only_self is set so the source is the permanent whose counters
+        // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.
+        ability.trigger_state_condition = true;
+        ability.trigger_only_self = true;
     }
+}
 
+// Mode$ Phase: "at the beginning of [your] <step>". The first listed phase (in the order below)
+// binds trigger_on and any further one is an additional event the same trigger fires on (Carpet
+// of Flowers' Phase$ Main1,Main2 — "each of your main phases").
+static void bind_phase_trigger(const TriggerLine &t, AbilityDef &ability) {
+    static const struct {
+        const char *phase;
+        EventId event;
+    } kPhaseEvents[] = {
+        {"Upkeep", Events::UPKEEP_BEGAN},
+        // Forge writes the end step as either "EndStep" or "End of Turn".
+        {"EndStep", Events::END_STEP_BEGAN},
+        {"End of Turn", Events::END_STEP_BEGAN},
+        {"Draw", Events::DRAW_STEP_BEGAN},
+        {"BeginCombat", Events::BEGIN_COMBAT_BEGAN},
+        // Forge writes the (pre-combat) first main phase as "Main1", the post-combat one as "Main2".
+        {"Main1", Events::FIRST_MAIN_BEGAN},
+        {"Main2", Events::SECOND_MAIN_BEGAN},
+        // With no ValidPlayer$ You a Cleanup trigger fires at every cleanup (Carpet of Flowers'
+        // Static$ True reset re-arming its latch).
+        {"Cleanup", Events::CLEANUP_BEGAN},
+    };
+    for (const auto &pe : kPhaseEvents) {
+        if (std::find(t.phases.begin(), t.phases.end(), pe.phase) == t.phases.end()) continue;
+        if (ability.trigger_on == 0) ability.trigger_on = pe.event;
+        else if (ability.trigger_on != pe.event &&
+                 std::find(ability.trigger_on_extra.begin(), ability.trigger_on_extra.end(),
+                           pe.event) == ability.trigger_on_extra.end())
+            ability.trigger_on_extra.push_back(pe.event);
+        ability.trigger_valid_player_is_controller = t.player_is_you;
+    }
+}
+
+// Mode$ SpellCast: which cast event the trigger binds to, and its gates on the cast spell.
+static void bind_spell_cast_trigger(const TriggerLine &t, AbilityDef &ability) {
+    if (t.valid_card_non_creature) {
+        ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
+        ability.trigger_valid_player_is_controller = t.player_is_you;
+    }
     // "Whenever you cast a colorless spell, ..." — Glaring Fleshraker
     // (Mode$ SpellCast | ValidCard$ Card.Colorless | ValidActivatingPlayer$ You). A plain
     // SpellCast with a colorless filter on the cast spell; matched at trigger time against the
     // spell's colorlessness (CR 105.2c). Keyed on the general Colorless tag, not this card.
-    if (mode_is_spell_cast && valid_card_colorless) {
+    if (t.valid_card_colorless) {
         ability.trigger_on = Events::SPELL_CAST;
         ability.trigger_valid_card_colorless = true;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
+        ability.trigger_valid_player_is_controller = t.player_is_you;
     }
-
     // "whenever you cast your Nth spell" — Cori-Steel Cutter; or "your Nth NONCREATURE spell each
     // turn" — The Fantasticar. Bind to SPELL_CAST (fired AFTER the per-cast spell counters bump,
     // unlike NONCREATURE_SPELL_CAST which fires before) so the count gate sees the current cast.
-    if (mode_is_spell_cast && activator_this_turn_cast_eq > 0) {
+    if (t.cast_count_eq > 0) {
         ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-        ability.trigger_spell_count_eq = activator_this_turn_cast_eq;
-        if (valid_card_non_creature) {
+        ability.trigger_valid_player_is_controller = t.player_is_you;
+        ability.trigger_spell_count_eq = t.cast_count_eq;
+        if (t.valid_card_non_creature) {
             // Count only noncreature spells, and only fire on a noncreature cast (the SPELL_CAST
             // event carries every spell, so filter the triggering card to noncreature too).
             ability.trigger_valid_card_non_creature = true;
             ability.trigger_spell_count_noncreature = true;
         }
     }
-
     // "Whenever a player casts a spell with mana value equal to ..." — Chalice of the Void
     // (Mode$ SpellCast | ValidCard$ Card.cmcEQY | ValidActivatingPlayer$ Player). A dynamic
     // mana-value filter on any player's spell. The cmc match is checked at trigger time.
-    if (mode_is_spell_cast && !ability.trigger_cmc_expr.empty()) {
+    if (!ability.trigger_cmc_expr.empty()) {
         ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
+        ability.trigger_valid_player_is_controller = t.player_is_you;
     }
-
     // "When you cast this spell, [if it was kicked with its [N] kicker,] ..." — Wastescape
     // Battlemage (Mode$ SpellCast | ValidCard$ Card.Self[+kicked N]). A linked self-cast
     // trigger that fires while the spell is on the stack (CR 702.33e/f). trigger_only_self
     // restricts it to the source spell; trigger_kicked_index (>0) additionally gates on the
     // Nth kicker having been paid. Handled by the dedicated self-cast SPELL_CAST scan.
-    if (mode_is_spell_cast && valid_card_self) {
+    if (t.valid_card_self) {
         ability.trigger_on = Events::SPELL_CAST;
         ability.trigger_only_self = true;
-        ability.trigger_kicked_index = kicked_index;
+        ability.trigger_kicked_index = t.kicked_index;
     }
-
     // General "whenever you cast a spell, ..." — Paradox Engine
     // (Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You). A plain, unfiltered
     // SpellCast trigger that fires on EVERY spell the source's controller casts. None of the
@@ -3332,102 +3383,10 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
     // bind to SPELL_CAST and gate on the caster being this source's controller. The general
     // battlefield trigger scan fires it (no extra ValidCard$ filter ⇒ any spell). Keyed on the
     // bare SpellCast mode, not this card.
-    if (mode_is_spell_cast && ability.trigger_on == 0) {
+    if (ability.trigger_on == 0) {
         ability.trigger_on = Events::SPELL_CAST;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
+        ability.trigger_valid_player_is_controller = t.player_is_you;
     }
-
-    // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
-    if (mode_is_damage_done && damage_combat_only) {
-        ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
-        ability.trigger_only_self = true;  // ValidSource$ Card.Self
-    }
-
-    // "Whenever one or more creatures you control deal combat damage to one or more players" —
-    // Forth Eorlingas!'s floating monarch trigger (Mode$ DamageAll | ValidSource$ Creature.YouCtrl
-    // | ValidTarget$ Player | CombatDamage$ True). Fires on COMBAT_DAMAGE_TO_PLAYER when the
-    // damaging creature is controlled by this trigger's controller (matched at fire time, since
-    // the floating trigger has no source permanent to self-reference).
-    if (mode_is_damage_all && damage_combat_only) {
-        ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
-        ability.trigger_damage_source_youctrl = valid_source_creature_youctrl;
-    }
-
-    // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
-    if (mode_is_drawn) {
-        ability.trigger_on = Events::PLAYER_DREW_CARD;
-        ability.trigger_valid_card_opp_own = valid_card_opp_own;
-        ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
-        ability.trigger_draw_number_eq = draw_number_eq;
-        // ValidCard$ Card.YouCtrl on a Drawn trigger ("whenever YOU draw ...", Tamiyo): the drawer
-        // must be the source's controller. Reuse the controller-is-event-player gate (the
-        // PLAYER_DREW_CARD event's PLAYER is the drawer), set by YouCtrl in the ValidCard parse.
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
-    // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$
-    // Card.Self → trigger_only_self matches the attacking ENTITY against the source.
-    if (mode_is_attacks) {
-        ability.trigger_on = Events::CREATURE_ATTACKED;
-        if (valid_card_self) ability.trigger_only_self = true;
-        // ValidCard$ Creature.OppCtrl | Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned
-        // Scholar's +2 hosted trigger): an opponent's creature attacking you/your planeswalker.
-        // Matched at fire time against the attacker's controller (the trigger has no source perm).
-        ability.trigger_attacker_opp_ctrl = valid_card_opp_ctrl;
-    }
-
-    // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
-    // Fires once per combat when the source's controller declares one or more attackers.
-    if (mode_is_attackers_declared) {
-        ability.trigger_on = Events::ATTACKERS_DECLARED;
-        ability.trigger_valid_player_is_controller = attacking_player_is_you;
-    }
-
-    // "Whenever you tap a creature for mana, add an additional {G}." — Badgermole Cub
-    // (Mode$ TapsForMana | ValidCard$ Creature | Activator$ You | Static$ True). A
-    // mana-additional triggered ability resolved immediately by the mana system (off-stack,
-    // CR 605.1a) rather than placed on the stack.
-    if (mode_is_taps_for_mana) {
-        ability.trigger_on = Events::TAPPED_FOR_MANA;
-        ability.trigger_valid_card_is_creature = valid_card_creature;
-        ability.trigger_valid_player_is_controller = valid_player_is_you;
-        ability.trigger_taps_for_mana_static = trigger_static;
-    }
-
-    // "Whenever CARDNAME becomes the target of a spell an opponent controls, ..." — Reality
-    // Smasher (Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl | ValidTarget$ Card.Self). Fires
-    // when this permanent becomes the target of a matching spell (CR 603.2c). ValidTarget$
-    // Card.Self reuses trigger_only_self (the targeted permanent must be the source).
-    if (mode_is_becomes_target) {
-        ability.trigger_on = Events::BECAME_TARGET;
-        ability.trigger_source_must_be_spell = source_is_spell;
-        ability.trigger_source_opp_ctrl = source_opp_ctrl;
-        if (valid_target_self) ability.trigger_only_self = true;
-    }
-
-    // "When CARDNAME becomes monstrous, ..." — Mode$ BecomeMonstrous (CR 701.37). Fired by the
-    // resolving Monstrosity$ ability (effect_put_counter.cpp) with ENTITY = the permanent that
-    // became monstrous, so ValidCard$ Card.Self reuses the standard trigger_only_self ENTITY check.
-    // TriggerZones$ Battlefield is the default functioning zone; no extra handling needed.
-    if (mode_is_become_monstrous) {
-        ability.trigger_on = Events::BECAME_MONSTROUS;
-        if (valid_card_self) ability.trigger_only_self = true;
-    }
-
-    // Mode$ Always — a state-triggered ability (CR 603.8). Its trigger condition is a game STATE
-    // (the IsPresent$ intervening-if parsed above into condition_present/intervening_if), not a
-    // game event, so it has no trigger_on; the dedicated state-trigger scan in
-    // collect_triggered_abilities evaluates the condition each SBA pass and fires once when it
-    // becomes true. Dark Depths: IsPresent$ Card.Self+counters_EQ0_ICE ("when this has no ice
-    // counters on it"). trigger_only_self is set so the source is the permanent whose counters
-    // are checked. parse_triggered_abilities keeps this ability despite trigger_on == 0.
-    if (mode_is_always) {
-        ability.trigger_state_condition = true;
-        ability.trigger_only_self = true;
-    }
-
-    return ability;
 }
 
 static std::vector<AbilityDef> parse_triggered_abilities(const std::string &script,
