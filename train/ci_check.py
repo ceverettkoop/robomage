@@ -159,7 +159,9 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           chunk (train/test_analysis_session.py). Also the shard-replay
           reconstruction behind analysis.py browse --source DIR: recorded scripted
           matches round-trip through synthetic shard_*.npz files into
-          browsable match records (train/test_shard_replay.py).
+          browsable match records (train/test_shard_replay.py). And the
+          SearchController's tree-follow gates plus the hidden-info
+          fingerprint on synthetic trees (train/test_tree_follow.py).
           Torch-free; needs bin/robomage.
   treerebuild The exact rebuild of a recorded opponent search
           (train/tree_rebuild.py): a uniform-evaluator SearchController plays
@@ -678,6 +680,10 @@ def tier_analysis(rep):
         rep.error("analysis", "browse-session violation "
                               f"(test_browse_session.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
+    # SearchController tree reuse (_try_follow_tree gates) and the
+    # revealed-hidden-info fingerprint, on synthetic trees. Engine- and
+    # torch-free.
+    _run_test_script(rep, "analysis", "train/test_tree_follow.py", "tree-follow")
     # GUI session save/load (gui_session_io): .rmplay byte-identical replay
     # round-trip, .rmtrace round-trip incl. shard/whatif records, validation
     # gates, kind sniffing, trace_from_replay. Torch-free; needs bin/robomage.

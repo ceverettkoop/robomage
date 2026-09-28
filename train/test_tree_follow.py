@@ -4,8 +4,7 @@ _try_follow_tree gates (opponent-action categories, reveal ratchet, visit
 threshold, winning-action share threshold, menu/seat match).
 
 Pure Python on synthetic observation vectors and hand-built _Node trees — no
-engine binary, no torch. Run standalone (not wired into a ci_check tier,
-matching test_match_clock.py):
+engine binary, no torch. Part of ci_check's opt-in `analysis` tier; standalone:
     train/.venv/bin/python train/test_tree_follow.py
 """
 
@@ -143,6 +142,7 @@ class FakeEnv:
 def arm(ctrl, env, tree_roots, obs):
     ctrl.bind_env(env)
     ctrl._followed_trees = tree_roots
+    ctrl._followed_world_idx = list(range(len(tree_roots)))
     ctrl._followed_hist_len = len(env._action_history)
     ctrl._followed_fp = hidden_info_fingerprint(obs[:STATE_SIZE])
 
