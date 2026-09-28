@@ -718,6 +718,11 @@ Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
 }
 
+bool revolt_this_turn(Zone::Ownership player) {
+    return global_coordinator.GetComponent<Player>(get_player_entity(player))
+        .permanent_left_battlefield_this_turn;
+}
+
 Zone::Ownership seat_of_player(Entity player_entity) {
     if (player_entity == cur_game.player_a_entity) return Zone::PLAYER_A;
     if (player_entity == cur_game.player_b_entity) return Zone::PLAYER_B;

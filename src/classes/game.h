@@ -756,8 +756,6 @@ struct Game {
             bool prevent_as_target = false;  // ValidTarget$ Card.IsRemembered — damage TO the creature
         };
         std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
-        bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
-        bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         // Miracle (CR 702.94): miracle_reveal_pending is a first-of-turn miracle card just drawn,
         // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
         // special action (off the stack, hidden from the opponent until they choose to reveal),
@@ -902,6 +900,10 @@ struct Game {
         // in either direction (damage it would deal or be dealt).
         bool combat_damage_shielded(Entity creature) const;
         bool is_mandatory_choice_pending() const;
+        // The turn's end resets everything counted "this turn": both players' counts
+        // (Player::reset_turn_counters), the per-source resolution counts and a lapsed miracle
+        // reveal. `active_player_entity` is the ending turn's active player.
+        void reset_turn_counters(Entity active_player_entity);
         void generate_players(const Deck &deck_a, const Deck &deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager, std::shared_ptr<class Orderer> orderer);
         // The step-change epilogue advance_step deferred when the turn-based

@@ -1042,7 +1042,7 @@ size_t evaluate_dynamic_amount(
         size_t dot2 = expr.find('.', dot1);
         int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
         int low_val = std::stoi(expr.substr(dot2 + 1));
-        bool revolt = (ctrl == Zone::PLAYER_A) ? cur_game.revolt_player_a : cur_game.revolt_player_b;
+        bool revolt = revolt_this_turn(ctrl);
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
     // Count$PromisedGift.high.low — Gift (CR 702.176): returns high if the spell currently being

@@ -447,6 +447,8 @@ inline Zone::Ownership opponent_of(Zone::Ownership p) {
 
 // The player entity sitting in `player`'s seat.
 Entity get_player_entity(Zone::Ownership player);
+// Revolt: a permanent `player` controlled left the battlefield this turn.
+bool revolt_this_turn(Zone::Ownership player);
 
 // The seat of a player entity; UNKNOWN when `player_entity` is not a player.
 Zone::Ownership seat_of_player(Entity player_entity);

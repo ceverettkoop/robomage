@@ -877,8 +877,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->self.is_monarch     = (cur_game.monarch_entity == viewer_entity);
     gs->opponent.is_monarch = (cur_game.monarch_entity == opp_entity);
     bool viewer_is_player_a = (viewer == Zone::PLAYER_A);
-    gs->self.revolt     = viewer_is_player_a ? cur_game.revolt_player_a : cur_game.revolt_player_b;
-    gs->opponent.revolt = viewer_is_player_a ? cur_game.revolt_player_b : cur_game.revolt_player_a;
+    gs->self.revolt     = revolt_this_turn(viewer_is_player_a ? Zone::PLAYER_A : Zone::PLAYER_B);
+    gs->opponent.revolt = revolt_this_turn(viewer_is_player_a ? Zone::PLAYER_B : Zone::PLAYER_A);
     for (Zone::Ownership et : cur_game.extra_turns) {
         if (et == viewer) gs->self.extra_turns_pending++;
         else              gs->opponent.extra_turns_pending++;

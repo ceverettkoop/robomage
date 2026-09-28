@@ -595,59 +595,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         begin_cleanup_step(active_player_entity);
                         break;
                     }
-                    // Reset per-turn state
-                    revolt_player_a = false;
-                    revolt_player_b = false;
-                    auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
-                    player.lands_played_this_turn = 0;
-                    // Snapshot this (the ending) turn's active player's OWN-TURN spell count before
-                    // the per-turn reset, for the next turn's untap day/night check (CR 502.2 /
-                    // 731.2). Both players' spells_cast_this_turn are reset to 0 each cleanup (the
-                    // opponent's just below), so this counter holds only spells cast during this
-                    // turn — no start-of-turn baseline subtraction is needed.
-                    prev_turn_active_spell_count = static_cast<int>(player.spells_cast_this_turn);
-                    player.spells_cast_this_turn = 0;
-                    player.noncreature_spells_cast_this_turn = 0;
-                    player.instant_sorcery_spells_cast_this_turn = 0;
-                    player.spell_colors_cast_this_turn.clear();
-                    player.cards_drawn_this_turn.clear();
-                    player.cards_drawn_this_draw_step = 0;
-                    // Miracle (CR 702.94) is a "first card drawn this turn" concept — the
-                    // reveal opportunity lapses at end of turn, so a never-answered pending
-                    // reveal decision (e.g. the game ended first) lapses each cleanup.
-                    miracle_reveal_pending = 0;
-                    // Also clear opponent's drawn-this-turn tracking
-                    {
-                        Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
-                        auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
-                        opp.cards_drawn_this_turn.clear();
-                        opp.cards_drawn_this_draw_step = 0;
-                        opp.spell_colors_cast_this_turn.clear();
-                        // Reset the opponent's per-turn spell COUNTS too (CR 702.40a "cast before
-                        // it this turn"): an instant the opponent cast during the active player's
-                        // turn must not persist into the opponent's own next turn, or
-                        // storm_count_this_turn (sum of both players' spells_cast_this_turn − 1)
-                        // overcounts. "This turn" is the current turn for both players, so both
-                        // counters are zero at the start of each new turn. The active player's
-                        // own-turn count was already snapshotted into prev_turn_active_spell_count
-                        // above for the day/night check before its reset, so that is unaffected.
-                        opp.spells_cast_this_turn = 0;
-                        opp.noncreature_spells_cast_this_turn = 0;
-                        opp.instant_sorcery_spells_cast_this_turn = 0;
-                    }
-                    // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
-                    // reset for BOTH players each turn — life can be gained on either player's
-                    // turn, and the end-step trigger above has already checked them. Done in
-                    // cleanup so the just-fired end step still saw this turn's totals.
-                    global_coordinator.GetComponent<Player>(player_a_entity).life_gained_this_turn = 0;
-                    global_coordinator.GetComponent<Player>(player_b_entity).life_gained_this_turn = 0;
-                    // "Life lost this turn" resets for BOTH players each turn too — Spectacle
-                    // (CR 702.107a) reads an opponent's life_lost_this_turn to enable its alt cost.
-                    global_coordinator.GetComponent<Player>(player_a_entity).life_lost_this_turn = 0;
-                    global_coordinator.GetComponent<Player>(player_b_entity).life_lost_this_turn = 0;
-
-                    // Reset per-trigger resolution counts
-                    ability_resolution_counts.clear();
+                    reset_turn_counters(active_player_entity);
 
                     // Empty mana pools
                     empty_mana_pool(Zone::PLAYER_A);
@@ -689,6 +637,21 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
         // return false if not ready to resolve, meaning someone has priority
         return false;
     }
+}
+
+void Game::reset_turn_counters(Entity active_player_entity) {
+    // Snapshot the ending turn's active player's spell count before it resets, for the next
+    // turn's untap day/night check (CR 502.2 / 731.2). Both players' counts are reset every
+    // turn, so it holds only the spells cast during this turn.
+    prev_turn_active_spell_count = static_cast<int>(
+        global_coordinator.GetComponent<Player>(active_player_entity).spells_cast_this_turn);
+    global_coordinator.GetComponent<Player>(player_a_entity).reset_turn_counters();
+    global_coordinator.GetComponent<Player>(player_b_entity).reset_turn_counters();
+    ability_resolution_counts.clear();
+    // Miracle (CR 702.94) is a "first card drawn this turn" concept — the reveal opportunity
+    // lapses at end of turn, so a never-answered pending reveal decision (e.g. the game ended
+    // first) lapses each cleanup.
+    miracle_reveal_pending = 0;
 }
 
 bool Game::is_mandatory_choice_pending() const {

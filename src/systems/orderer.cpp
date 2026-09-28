@@ -171,8 +171,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (target_zone.location == Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<Permanent>(target)) {
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(target).controller;
-        if (ctrl == Zone::PLAYER_A) cur_game.revolt_player_a = true;
-        else                        cur_game.revolt_player_b = true;
+        global_coordinator.GetComponent<Player>(get_player_entity(ctrl))
+            .permanent_left_battlefield_this_turn = true;
 
         // Full last-known-information snapshot (CR 608.2h / 112.7a): the permanent's effective
         // characteristics as it last existed in play, so the effective_* accessors can answer a

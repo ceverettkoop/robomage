@@ -106,8 +106,7 @@ static bool machine_masks_conditional_destroy(const CardData &face, Zone::Owners
             size_t dot2 = ab.dynamic_amount_expr.find('.', dot1);
             int high_val = std::stoi(ab.dynamic_amount_expr.substr(dot1, dot2 - dot1));
             int low_val = std::stoi(ab.dynamic_amount_expr.substr(dot2 + 1));
-            bool revolt = (caster == Zone::PLAYER_A) ? cur_game.revolt_player_a
-                                                     : cur_game.revolt_player_b;
+            bool revolt = revolt_this_turn(caster);
             threshold = revolt ? high_val : low_val;
         }
         for (auto ce : entities) {

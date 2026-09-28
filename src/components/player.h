@@ -35,6 +35,8 @@ struct Player {
     std::set<Colors> spell_colors_cast_this_turn;
     std::vector<ObjectRef> cards_drawn_this_turn;
     size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
+    // Revolt: a permanent this player controlled left the battlefield this turn.
+    bool permanent_left_battlefield_this_turn = false;
     // CR 120.3 / 704.5c: set when this player attempted to draw from an empty library (and no
     // draw-empty replacement applied). The loss is NOT immediate — the resolving effect finishes
     // first (so e.g. Jace, Wielder of Mysteries' -8 "then if your library is empty, you win" can
@@ -51,6 +53,24 @@ struct Player {
     // rebuild (gen_player recreates the Player each game).
     Entity chosen_companion = 0;
     bool companion_brought_to_hand = false;
+
+    // Reset every "this turn" count above as a turn ends. "This turn" is the current turn for
+    // both players, so both players' counts are reset at every turn's end: an instant the
+    // opponent cast during the active player's turn must not persist into the opponent's own
+    // next turn (storm's "cast before it this turn", CR 702.40a), and life can be gained or lost
+    // on either player's turn.
+    void reset_turn_counters() {
+        life_gained_this_turn = 0;
+        life_lost_this_turn = 0;
+        lands_played_this_turn = 0;
+        spells_cast_this_turn = 0;
+        noncreature_spells_cast_this_turn = 0;
+        instant_sorcery_spells_cast_this_turn = 0;
+        spell_colors_cast_this_turn.clear();
+        cards_drawn_this_turn.clear();
+        cards_drawn_this_draw_step = 0;
+        permanent_left_battlefield_this_turn = false;
+    }
 
     // Number of counters of `type` on this player (0 if none). Single read path for the
     // counter map so every counter kind (POISON, ENERGY, …) is queried the same way.
