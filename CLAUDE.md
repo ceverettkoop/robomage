@@ -72,6 +72,8 @@ The official **MTG Comprehensive Rules** are checked in at
 implement or test a mechanic** — they define correct behavior independent of the engine's current
 state. `grep` the numbered rule rather than reading the 9k-line file (e.g.
 `grep -nE "^509\." docs/mtg_comprehensive_rules.txt`; 702 keywords, 704 SBAs, 613 layers).
+Known deviations and gaps are listed in [`docs/rules_deviations.md`](docs/rules_deviations.md);
+update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
@@ -334,7 +336,7 @@ last-known-information lookups, logging and link bookkeeping (0 once the id is i
 entity; last-known information is keyed the same way, `LastKnownInfo::issue`). Within one resolution the follow window keeps an object the
 effect moved findable (CR 400.7j). Plain `Entity` is for values that live within one step.
 
-**Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal Therapy,
+**Name-a-card candidate set (deviation from CR 201.4; see `docs/rules_deviations.md`).** "Name a card" effects (Cabal Therapy,
 Disruptor Flute, Petrified Hamlet) do **not** offer every card. `build_name_card_choices()`
 (`src/name_card_choices.{h,cpp}`) returns a LIMITED set — the distinct vocab cards in the
 relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source: `CHOOSER_ONLY`
