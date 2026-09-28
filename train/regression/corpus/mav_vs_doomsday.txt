@@ -235,10 +235,11 @@
 --- Decision 11 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Edge of Autumn, Polluted Delta, Island | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Lotus Petal (NEW)
   Opp BF:   Talon Gates of Madara
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Opp revealed: Talon Gates of Madara
   This turn: self spells=1 noncreature=1 drawn=1
@@ -2043,10 +2044,11 @@
 --- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
+  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben | lib 50
   Opp:   8 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Karakas (NEW) | Talon Gates of Madara
   Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Island
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time, Thalia, Guardian of Thraben
   Opp GY:  Doomsday
@@ -2452,6 +2454,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Undercity Sewers | Underground Sea | Island
   Opp BF:   Dryad Arbor [1/1] (SICK) | Karakas (T) | Talon Gates of Madara (T)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
   Opp GY:  Once Upon a Time, Thalia, Guardian of Thraben

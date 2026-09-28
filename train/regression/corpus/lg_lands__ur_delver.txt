@@ -270,6 +270,7 @@
   Opp:   20 life | mana: empty | hand count: 1 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp GY:  Urza's Saga, Dark Depths
   Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
@@ -356,11 +357,11 @@
 --- Decision 17 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Ponder, Scalding Tarn, Volcanic Island | lib 51
   Opp:   20 life | mana: empty | hand count: 1 | lib 53
   Self BF:  Island (NEW)
   Opp BF:   Mox Diamond (T) | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Into the Flood Maw (spell, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Into the Flood Maw (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp GY:  Urza's Saga, Dark Depths
@@ -397,7 +398,7 @@
   Urza's Saga gains an activated ability.
 --- Turn 3 (Player A) ---
   PA: Boseiju, Who Endures, Mox Diamond, Wasteland
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 18 ---
   Priority: Player A (active)
@@ -513,6 +514,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Mox Diamond (T,NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Wasteland (NEW) | Fish [1/1] | Construct [4/4] (SICK,NEW)
   Opp BF:   Island (T)
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -847,7 +849,7 @@
   Opp:   16 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Urza's Saga [lore:3] (T) | Wasteland | Fish [2/1] [Haste] (eq:Skateboard) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Mystic Sanctuary (T)
-  Stack: Urza's Saga (ability, self) [amt=1]
+  Stack: Wasteland (ability, self) -> Urza's Saga (ability, self) [amt=1]
   Pending: Wasteland (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -1252,6 +1254,7 @@
   Opp:   8 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Ancient Tomb (T,NEW) | Dark Depths [ice:9] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Fish) | Fish [2/1] [Haste] (eq:Skateboard) | Construct [6/6] | Construct [6/6]
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Ponder, Mystic Sanctuary, Scalding Tarn, Ponder, Into the Flood Maw, Polluted Delta, Mishra's Bauble

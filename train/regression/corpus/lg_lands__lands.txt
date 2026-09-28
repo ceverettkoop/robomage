@@ -322,7 +322,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
   Opp BF:   Dark Depths [ice:10]
-  Stack: Urza's Saga (ability, self)
+  Stack: Boseiju, Who Endures (ability, self) -> Urza's Saga (ability, self)
   Pending: Boseiju, Who Endures (self)
   Self GY: Urza's Saga, Dark Depths
   Opp revealed: Dark Depths
@@ -385,11 +385,11 @@
 --- Decision 18 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 52
+  Self:  20 life | mana: empty | hand(5): Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 52
   Opp:   20 life | mana: empty | hand count: 1 | lib 52
   Self BF:  Forest (NEW)
   Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Urza's Saga (ability, opponent)
+  Stack: Crop Rotation (spell, self) -> Urza's Saga (ability, opponent)
   Pending: Crop Rotation (self)
   Self GY: Dark Depths
   Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -492,6 +492,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
   Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Crop Rotation, Forest, Dark Depths
@@ -699,10 +700,11 @@
 --- Decision 31 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(3): Crop Rotation, Malevolent Rumble, Swords to Plowshares | lib 50
+  Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Swords to Plowshares | lib 50
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
   Self BF:  Exploration | Savannah | Thespian's Stage
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
+  Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Urza's Saga, Crop Rotation, Forest, Dark Depths
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -874,10 +876,11 @@
 --- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 44
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   20 life | mana: empty | hand count: 0 | lib 50
   Self BF:  Boseiju, Who Endures (T,NEW) | Dark Depths [ice:10] (NEW) | Exploration | Karakas (NEW) | Thespian's Stage (T) | Eldrazi Spawn [0/1] (SICK,NEW)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Forest, Dark Depths
   Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -901,7 +904,7 @@
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: (empty)
-  PB: Swords to Plowshares
+  PB: (empty)
 
 --- Decision 39 ---
   Priority: Player A (active)
@@ -1109,6 +1112,7 @@
   Opp:   25 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Boseiju, Who Endures | Dark Depths [ice:10] | Exploration | Karakas | Thespian's Stage | Eldrazi Spawn [0/1]
   Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T)
+  Stack: Thespian's Stage (ability, self)
   Pending: Thespian's Stage (self)
   Self GY: Swords to Plowshares, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Forest, Dark Depths
   Opp GY:  Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
@@ -1211,6 +1215,7 @@
   Opp:   20 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Dark Depths [ice:10] | Mox Diamond | Mox Diamond | Skateboard | Thespian's Stage
   Opp BF:   Boseiju, Who Endures (T) | Exploration | Grafdigger's Cage | Karakas (T) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
+  Stack: Thespian's Stage (ability, self)
   Pending: Thespian's Stage (self)
   Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Thespian's Stage, Dark Depths, Swords to Plowshares, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Forest, Dark Depths
@@ -1303,6 +1308,7 @@
   Opp:   20 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
   Opp BF:   Boseiju, Who Endures (T) | Exploration | Grafdigger's Cage | Karakas (T) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Thespian's Stage, Dark Depths, Swords to Plowshares, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Forest, Dark Depths
@@ -1672,6 +1678,7 @@
   Opp:   20 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Mox Diamond (T) | Mox Diamond (T) | Rishadan Port (NEW) | Skateboard (->Token) | Urza's Saga [lore:2] (T,res 1) | Marit Lage [21/20] [Flying, Haste, Indestructible] (eq:Skateboard) | Construct [4/4] (SICK,NEW)
   Opp BF:   Boseiju, Who Endures (T) | Exploration | Grafdigger's Cage | Karakas (T) | Savannah | Marit Lage [20/20] [Flying, Indestructible] (T) | Eldrazi Spawn [0/1] (SICK)
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Malevolent Rumble, Thespian's Stage, Yavimaya, Cradle of Growth, Life from the Loam, Thespian's Stage, Dark Depths, Swords to Plowshares, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Forest, Dark Depths

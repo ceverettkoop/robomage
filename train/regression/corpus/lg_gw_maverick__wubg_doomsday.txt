@@ -1398,10 +1398,11 @@
 --- Decision 58 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   9 life | mana: empty | hand count: 4 | lib 4
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
   Opp BF:   Tropical Island (T) | Underground Sea (T)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time, Once Upon a Time
@@ -1448,7 +1449,7 @@
   Opp:   9 life | mana: empty | hand count: 4 | lib 4
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Tropical Island (T) | Underground Sea (T)
-  Stack: Green Sun's Zenith (spell, self)
+  Stack: Wasteland (ability, self) -> Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Once Upon a Time
@@ -2066,6 +2067,7 @@
   Opp:   7 life | mana: empty | hand count: 3 | lib 3
   Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Noble Hierarch [0/1] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Island | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Underground Sea (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Wasteland, Once Upon a Time, Once Upon a Time

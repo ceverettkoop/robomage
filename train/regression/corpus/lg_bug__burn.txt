@@ -240,10 +240,11 @@
 --- Decision 11 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
-  Self:  20 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   18 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain
   Opp BF:   Tropical Island
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Opp revealed: Orcish Bowmasters, Tropical Island
   Extras: not_priority_window, opp_mulligans=1
@@ -301,10 +302,11 @@
 --- Decision 14 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Self:  20 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   15 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Tropical Island
+  Stack: Lava Spike (spell, self)
   Pending: Lava Spike (self)
   Self GY: Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tropical Island
@@ -463,10 +465,11 @@
 --- Decision 21 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 50
   Opp:   8 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp revealed: Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
@@ -787,10 +790,11 @@
 --- Decision 36 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
-  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
   Opp:   3 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Stack: Fireblast (spell, self)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
@@ -809,10 +813,11 @@
 --- Decision 37 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
-  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
   Opp:   3 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Stack: Fireblast (spell, self) -> opponent (player)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will
@@ -828,10 +833,11 @@
 --- Decision 38 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
-  Self:  20 life | mana: empty | hand(3): Eidolon of the Great Revel, Fireblast, Mountain | lib 49
+  Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
   Opp:   3 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Stack: Fireblast (spell, self) -> opponent (player)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Force of Will

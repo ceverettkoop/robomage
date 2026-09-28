@@ -119,9 +119,10 @@
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -1508,10 +1509,11 @@
 --- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Edge of Autumn, Edge of Autumn, Verdant Catacombs | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Underground Sea (NEW) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Ponder, Thoughtseize
@@ -4086,6 +4088,7 @@
   Opp:   16 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Underground Sea (T) | Underground Sea | Island
   Opp BF:   Underground Sea | Underground Sea | Underground Sea
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will

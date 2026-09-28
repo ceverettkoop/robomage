@@ -213,10 +213,11 @@
 --- Decision 10 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Fatal Push, Force of Will, Polluted Delta, Tamiyo, Inquisitive Student, Thoughtseize, Undercity Sewers, Uro, Titan of Nature's Wrath | lib 51
+  Self:  19 life | mana: empty | hand(6): Fatal Push, Force of Will, Polluted Delta, Tamiyo, Inquisitive Student, Undercity Sewers, Uro, Titan of Nature's Wrath | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Bayou (NEW)
   Opp BF:   Tropical Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Misty Rainforest
   Opp revealed: Tropical Island
@@ -602,11 +603,11 @@
 --- Decision 28 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
-  Self:  16 life | mana: empty | hand(5): Fatal Push, Force of Will, Undercity Sewers, Uro, Titan of Nature's Wrath, Witherbloom Command | lib 49
+  Self:  16 life | mana: empty | hand(4): Fatal Push, Undercity Sewers, Uro, Titan of Nature's Wrath, Witherbloom Command | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Bayou | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Tropical Island (T)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Force of Will (spell, self) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Force of Will
@@ -623,11 +624,11 @@
 --- Decision 29 ---
   Priority: Player B (non-active)
   Step: First Main (turn 5)
-  Self:  16 life | mana: empty | hand(5): Fatal Push, Force of Will, Undercity Sewers, Uro, Titan of Nature's Wrath, Witherbloom Command | lib 49
+  Self:  16 life | mana: empty | hand(4): Fatal Push, Undercity Sewers, Uro, Titan of Nature's Wrath, Witherbloom Command | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Bayou | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
   Opp BF:   Tropical Island (T)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Force of Will (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 97) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Force of Will
@@ -852,10 +853,11 @@
 --- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  15 life | mana: empty | hand(4): Fatal Push, Life from the Loam, Undercity Sewers, Witherbloom Command | lib 48
+  Self:  15 life | mana: empty | hand(3): Fatal Push, Undercity Sewers, Witherbloom Command | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Tropical Island (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will
@@ -1093,10 +1095,11 @@
 --- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  15 life | mana: empty | hand(3): Fatal Push, Life from the Loam, Witherbloom Command | lib 44
+  Self:  15 life | mana: empty | hand(2): Fatal Push, Witherbloom Command | lib 44
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue
   Opp BF:   Tropical Island | Tropical Island
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will
@@ -1619,10 +1622,11 @@
 --- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  15 life | mana: empty | hand(3): Fatal Push, Life from the Loam, Witherbloom Command | lib 41
+  Self:  15 life | mana: empty | hand(2): Fatal Push, Witherbloom Command | lib 41
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
   Opp BF:   Tropical Island | Tropical Island
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Wasteland, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will
@@ -1644,10 +1648,11 @@
 --- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  15 life | mana: empty | hand(3): Fatal Push, Life from the Loam, Witherbloom Command | lib 41
+  Self:  15 life | mana: empty | hand(2): Fatal Push, Witherbloom Command | lib 41
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue
   Opp BF:   Tropical Island | Tropical Island
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Wasteland, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will
@@ -1743,6 +1748,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Wasteland (NEW) | Clue | Clue
   Opp BF:   Tropical Island | Tropical Island
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Life from the Loam, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tamiyo, Inquisitive Student, Force of Will
@@ -2172,11 +2178,11 @@
 --- Decision 100 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
-  Self:  15 life | mana: empty | hand(2): Fatal Push, Witherbloom Command | lib 41
+  Self:  15 life | mana: empty | hand(1): Witherbloom Command | lib 41
   Opp:   20 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers | Clue | Clue | Clue (SICK)
   Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK,NEW) | Swamp (T,NEW) | Tropical Island (T)
-  Stack: Baleful Strix (ability, opponent) [amt=1]
+  Stack: Fatal Push (spell, self) -> Baleful Strix (ability, opponent) [amt=1]
   Pending: Fatal Push (self)
   Self GY: Wasteland, Life from the Loam, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2293,10 +2299,11 @@
 --- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  15 life | mana: empty | hand(2): Life from the Loam, Witherbloom Command | lib 38
+  Self:  15 life | mana: empty | hand(1): Witherbloom Command | lib 38
   Opp:   20 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Tropical Island, Ponder, Polluted Delta, Fatal Push, Wasteland, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2318,10 +2325,11 @@
 --- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  15 life | mana: empty | hand(2): Life from the Loam, Witherbloom Command | lib 38
+  Self:  15 life | mana: empty | hand(1): Witherbloom Command | lib 38
   Opp:   20 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Tropical Island, Ponder, Polluted Delta, Fatal Push, Wasteland, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2395,6 +2403,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Wasteland (NEW) | Clue | Clue | Clue
   Opp BF:   Swamp (T) | Tropical Island (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Life from the Loam, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2538,10 +2547,11 @@
 --- Decision 115 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Lorien Revealed, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 47
+  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Lorien Revealed, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict | lib 47
   Opp:   15 life | mana: empty | hand count: 1 | lib 38
   Self BF:  Swamp
   Opp BF:   Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers | Clue | Clue | Clue | Clue (SICK)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Wasteland, Life from the Loam, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -2806,10 +2816,11 @@
 --- Decision 126 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
-  Self:  15 life | mana: empty | hand(1): Life from the Loam | lib 35
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   17 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue | Clue
   Opp BF:   Bayou (T) | Swamp (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Wasteland, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2832,10 +2843,11 @@
 --- Decision 127 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
-  Self:  15 life | mana: empty | hand(1): Life from the Loam | lib 35
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   17 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue | Clue
   Opp BF:   Bayou (T) | Swamp (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Wasteland, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -2911,6 +2923,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Wasteland (NEW) | Clue | Clue | Clue | Clue
   Opp BF:   Bayou (T) | Swamp (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Life from the Loam, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3203,10 +3216,11 @@
 --- Decision 142 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  14 life | mana: empty | hand(1): Life from the Loam | lib 32
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   17 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Tamiyo, Inquisitive Student, Underground Sea, Forest, Wasteland, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3230,10 +3244,11 @@
 --- Decision 143 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  14 life | mana: empty | hand(1): Life from the Loam | lib 32
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   17 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Bayou | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Undercity Sewers | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Tamiyo, Inquisitive Student, Underground Sea, Forest, Wasteland, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3415,10 +3430,11 @@
 --- Decision 150 ---
   Priority: Player A (active)
   Step: Upkeep (turn 17)
-  Self:  17 life | mana: empty | hand(4): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict | lib 44
+  Self:  17 life | mana: empty | hand(3): Fatal Push, Fatal Push, Force of Will | lib 44
   Opp:   14 life | mana: empty | hand count: 1 | lib 29
   Self BF:  Island | Orcish Bowmasters [1/1] [Flash] | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue | Clue (SICK)
+  Stack: Sheoldred's Edict (spell, self)
   Pending: Sheoldred's Edict (self)
   Self GY: Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Wasteland, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -3618,10 +3634,11 @@
 --- Decision 158 ---
   Priority: Player B (active)
   Step: Draw (turn 18)
-  Self:  12 life | mana: empty | hand(2): Life from the Loam, Sheoldred's Edict | lib 28
+  Self:  12 life | mana: empty | hand(1): Life from the Loam | lib 28
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou | Island | Undercity Sewers | Wasteland | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Orcish Bowmasters [1/1] [Flash] (T) | Swamp (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Sheoldred's Edict (spell, self)
   Pending: Sheoldred's Edict (self)
   Self GY: Tamiyo, Inquisitive Student, Wasteland, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3745,10 +3762,11 @@
 --- Decision 163 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
-  Self:  12 life | mana: empty | hand(1): Life from the Loam | lib 28
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 28
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou | Island (T) | Undercity Sewers (T) | Wasteland | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Swamp (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Sheoldred's Edict, Tamiyo, Inquisitive Student, Wasteland, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3773,10 +3791,11 @@
 --- Decision 164 ---
   Priority: Player B (active)
   Step: First Main (turn 18)
-  Self:  12 life | mana: empty | hand(1): Life from the Loam | lib 28
+  Self:  12 life | mana: empty | hand(0): (empty) | lib 28
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou | Island (T) | Undercity Sewers (T) | Wasteland | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Swamp (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Sheoldred's Edict, Tamiyo, Inquisitive Student, Wasteland, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -3850,6 +3869,7 @@
   Opp:   17 life | mana: empty | hand count: 3 | lib 43
   Self BF:  Bayou (T) | Island (T) | Undercity Sewers (T) | Wasteland (T) | Wasteland (NEW) | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Island (T) | Swamp (T) | Tropical Island | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Life from the Loam, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -4238,10 +4258,11 @@
 --- Decision 183 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
-  Self:  11 life | mana: empty | hand(1): Life from the Loam | lib 25
+  Self:  11 life | mana: empty | hand(0): (empty) | lib 25
   Opp:   16 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Bayou | Island | Undercity Sewers | Wasteland | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -4265,10 +4286,11 @@
 --- Decision 184 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
-  Self:  11 life | mana: empty | hand(1): Life from the Loam | lib 25
+  Self:  11 life | mana: empty | hand(0): (empty) | lib 25
   Opp:   16 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Bayou | Island | Undercity Sewers | Wasteland | Clue | Clue | Clue | Clue | Clue
   Opp BF:   Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -4345,11 +4367,11 @@
 --- Decision 187 ---
   Priority: Player A (non-active)
   Step: First Main (turn 20)
-  Self:  16 life | mana: empty | hand(3): Force of Will, Force of Will, Uro, Titan of Nature's Wrath | lib 40
+  Self:  16 life | mana: empty | hand(2): Force of Will, Uro, Titan of Nature's Wrath | lib 40
   Opp:   11 life | mana: empty | hand count: 0 | lib 25
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Bayou (T) | Island (T) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
-  Stack: Clue (ability, opponent) [amt=1] -> Life from the Loam (spell, opponent) -> Wasteland (opponent)
+  Stack: Force of Will (spell, self) -> Clue (ability, opponent) [amt=1] -> Life from the Loam (spell, opponent) -> Wasteland (opponent)
   Pending: Force of Will (self)
   Self GY: Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4366,11 +4388,11 @@
 --- Decision 188 ---
   Priority: Player A (non-active)
   Step: First Main (turn 20)
-  Self:  16 life | mana: empty | hand(3): Force of Will, Force of Will, Uro, Titan of Nature's Wrath | lib 40
+  Self:  16 life | mana: empty | hand(2): Force of Will, Uro, Titan of Nature's Wrath | lib 40
   Opp:   11 life | mana: empty | hand count: 0 | lib 25
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Bayou (T) | Island (T) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
-  Stack: Clue (ability, opponent) [amt=1] -> Life from the Loam (spell, opponent) -> Wasteland (opponent)
+  Stack: Force of Will (spell, self) -> Life from the Loam (opponent, slot 98) -> Clue (ability, opponent) [amt=1] -> Life from the Loam (spell, opponent) -> Wasteland (opponent)
   Pending: Force of Will (self)
   Self GY: Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4829,10 +4851,11 @@
 --- Decision 205 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Witherbloom Command, Witherbloom Command | lib 36
+  Self:  18 life | mana: empty | hand(2): Misty Rainforest, Witherbloom Command | lib 36
   Opp:   10 life | mana: empty | hand count: 1 | lib 21
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4857,10 +4880,11 @@
 --- Decision 206 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Witherbloom Command, Witherbloom Command | lib 36
+  Self:  18 life | mana: empty | hand(2): Misty Rainforest, Witherbloom Command | lib 36
   Opp:   10 life | mana: empty | hand count: 1 | lib 21
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4883,10 +4907,11 @@
 --- Decision 207 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Witherbloom Command, Witherbloom Command | lib 36
+  Self:  18 life | mana: empty | hand(2): Misty Rainforest, Witherbloom Command | lib 36
   Opp:   10 life | mana: empty | hand count: 1 | lib 21
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -4910,10 +4935,11 @@
 --- Decision 208 ---
   Priority: Player A (active)
   Step: First Main (turn 23)
-  Self:  18 life | mana: empty | hand(3): Misty Rainforest, Witherbloom Command, Witherbloom Command | lib 36
+  Self:  18 life | mana: empty | hand(2): Misty Rainforest, Witherbloom Command | lib 36
   Opp:   10 life | mana: empty | hand count: 1 | lib 21
   Self BF:  Forest | Island (T) | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 5] (SICK) | Undercity Sewers (T) | Wasteland (T) | Clue | Clue | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Bayou, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5164,10 +5190,11 @@
 --- Decision 217 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
-  Self:  9 life | mana: empty | hand(2): Life from the Loam, Polluted Delta | lib 17
+  Self:  9 life | mana: empty | hand(1): Polluted Delta | lib 17
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Bayou | Island | Kaito, Bane of Nightmares [4/5] [loy 5] [Hexproof] | Undercity Sewers | Wasteland | Clue | Clue | Clue
   Opp BF:   Bayou | Forest (T) | Island (T) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -5194,10 +5221,11 @@
 --- Decision 218 ---
   Priority: Player B (active)
   Step: First Main (turn 24)
-  Self:  9 life | mana: empty | hand(2): Life from the Loam, Polluted Delta | lib 17
+  Self:  9 life | mana: empty | hand(1): Polluted Delta | lib 17
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Bayou | Island | Kaito, Bane of Nightmares [4/5] [loy 5] [Hexproof] | Undercity Sewers | Wasteland | Clue | Clue | Clue
   Opp BF:   Bayou | Forest (T) | Island (T) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -5255,7 +5283,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [4/5] [loy 5] [Hexproof] | Undercity Sewers | Wasteland | Clue | Clue | Clue
   Opp BF:   Bayou | Forest (T) | Island (T) | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Life from the Loam (spell, self) -> Wasteland (self)
+  Stack: Wasteland (ability, self) -> Life from the Loam (spell, self) -> Wasteland (self)
   Pending: Wasteland (self)
   Self GY: Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Wasteland, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -5552,10 +5580,11 @@
 --- Decision 231 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
-  Self:  13 life | mana: empty | hand(3): Misty Rainforest, Wasteland, Witherbloom Command | lib 35
+  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
   Opp:   8 life | mana: empty | hand count: 2 | lib 13
   Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 6] (T) | Swamp (T) | Undercity Sewers (T) | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Bayou, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5580,10 +5609,11 @@
 --- Decision 232 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
-  Self:  13 life | mana: empty | hand(3): Misty Rainforest, Wasteland, Witherbloom Command | lib 35
+  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
   Opp:   8 life | mana: empty | hand count: 2 | lib 13
   Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 6] (T) | Swamp (T) | Undercity Sewers (T) | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Bayou, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5606,10 +5636,11 @@
 --- Decision 233 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
-  Self:  13 life | mana: empty | hand(3): Misty Rainforest, Wasteland, Witherbloom Command | lib 35
+  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
   Opp:   8 life | mana: empty | hand count: 2 | lib 13
   Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 6] (T) | Swamp (T) | Undercity Sewers (T) | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Bayou, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5633,10 +5664,11 @@
 --- Decision 234 ---
   Priority: Player A (active)
   Step: First Main (turn 25)
-  Self:  13 life | mana: empty | hand(3): Misty Rainforest, Wasteland, Witherbloom Command | lib 35
+  Self:  13 life | mana: empty | hand(2): Misty Rainforest, Wasteland | lib 35
   Opp:   8 life | mana: empty | hand count: 2 | lib 13
   Self BF:  Forest | Island | Swamp | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Bayou (T) | Island (T) | Kaito, Bane of Nightmares [loy 6] (T) | Swamp (T) | Undercity Sewers (T) | Clue | Clue
+  Stack: Witherbloom Command (spell, self)
   Pending: Witherbloom Command (self)
   Self GY: Bayou, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:self], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
   Opp GY:  Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
@@ -5987,10 +6019,11 @@
 --- Decision 247 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath [play:self], Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -6018,10 +6051,11 @@
 --- Decision 248 ---
   Priority: Player B (active)
   Step: First Main (turn 26)
-  Self:  7 life | mana: empty | hand(3): Life from the Loam, Wasteland, Wasteland | lib 8
+  Self:  7 life | mana: empty | hand(2): Wasteland, Wasteland | lib 8
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 6] [Hexproof] | Swamp | Undercity Sewers | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Life from the Loam (spell, self)
   Pending: Life from the Loam (self)
   Self GY: Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath [play:self], Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Wasteland, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -6137,7 +6171,7 @@
   Opp:   13 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Bayou (T) | Island (T) | Kaito, Bane of Nightmares [5/6] [loy 7] [Hexproof] (act 1) | Swamp (T) | Undercity Sewers | Wasteland (NEW) | Clue
   Opp BF:   Bayou | Forest (T) | Island | Swamp (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Kaito, Bane of Nightmares (ability, self)
+  Stack: Wasteland (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Wasteland (self)
   Self GY: Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath [play:self], Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will
@@ -6557,7 +6591,7 @@
   Opp:   6 life | mana: empty | hand count: 2 | lib 33
   Self BF:  Bayou | Island | Kaito, Bane of Nightmares [6/7] [loy 8] [Hexproof] (act 1) | Swamp | Undercity Sewers | Wasteland (NEW) | Clue
   Opp BF:   Forest | Island | Swamp | Underground Sea | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Kaito, Bane of Nightmares (ability, self)
+  Stack: Wasteland (ability, self) -> Kaito, Bane of Nightmares (ability, self)
   Pending: Wasteland (self)
   Self GY: Wasteland, Life from the Loam, Brainstorm, Orcish Bowmasters, Uro, Titan of Nature's Wrath [play:self], Brainstorm, Misty Rainforest, Ponder, Brainstorm, Polluted Delta, Baleful Strix, Sheoldred's Edict, Force of Will, Flow State, Flow State, Brainstorm, Misty Rainforest, Verdant Catacombs, Misty Rainforest, Sheoldred's Edict, Tamiyo, Inquisitive Student, Fatal Push, Tropical Island, Tamiyo, Inquisitive Student, Underground Sea, Forest, Baleful Strix, Fatal Push, Underground Sea, Witherbloom Command, Tropical Island, Ponder, Polluted Delta, Fatal Push, Lorien Revealed, Tropical Island, Force of Will, Ponder, Orcish Bowmasters, Witherbloom Command, Force of Will, Polluted Delta, Thoughtseize, Misty Rainforest
   Opp GY:  Misty Rainforest, Bayou, Witherbloom Command, Witherbloom Command, Ponder, Uro, Titan of Nature's Wrath [play:opponent], Force of Will, Misty Rainforest, Brainstorm, Tropical Island, Orcish Bowmasters, Sheoldred's Edict, Lorien Revealed, Misty Rainforest, Thoughtseize, Tropical Island, Baleful Strix, Tropical Island, Tamiyo, Inquisitive Student, Force of Will

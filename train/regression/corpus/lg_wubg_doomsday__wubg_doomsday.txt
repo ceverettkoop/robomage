@@ -1644,6 +1644,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 47
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal

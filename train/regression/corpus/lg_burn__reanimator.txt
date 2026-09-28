@@ -186,10 +186,11 @@
 --- Decision 9 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Swamp (NEW)
   Opp BF:   Fiery Islet (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Opp exile:  Rift Bolt [1 ctr]
@@ -295,11 +296,10 @@
   Opp:   17 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Swamp (T)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Rift Bolt
   Opp GY:  Thoughtseize, Marsh Flats
-  Self exile: Rift Bolt
   Opp revealed: Thoughtseize, Swamp, Marsh Flats
   Extras: not_priority_window
   Actions:
@@ -334,11 +334,11 @@
 --- Decision 15 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
+  Self:  17 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 53
   Self BF:  Swamp (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Rift Bolt
@@ -355,11 +355,11 @@
 --- Decision 16 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
+  Self:  17 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   19 life | mana: empty | hand count: 4 | lib 53
   Self BF:  Swamp (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (opponent, slot 97) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Rift Bolt
@@ -405,10 +405,11 @@
 --- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Self:  19 life | mana: empty | hand(4): Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   16 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Swamp (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt, Rift Bolt
   Opp GY:  Force of Will, Thoughtseize, Marsh Flats
@@ -501,10 +502,11 @@
 --- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 50
+  Self:  13 life | mana: empty | hand(4): Careful Study, Ponder, Reanimate, Scalding Tarn | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Swamp
   Opp BF:   Fiery Islet (T) | Mountain
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Chain Lightning, Rift Bolt, Rift Bolt
@@ -882,10 +884,11 @@
 --- Decision 38 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  18 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Self:  18 life | mana: empty | hand(1): Mountain | lib 51
   Opp:   10 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Fiery Islet | Mountain | Mountain (NEW)
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
   Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
@@ -910,7 +913,7 @@
   -------- TURN 6 (Player B) --------
   Player B draws Dark Ritual
 --- Turn 6 (Player B) ---
-  PA: Exquisite Firecraft, Mountain
+  PA: Mountain
   PB: Dark Ritual
 
 --- Decision 39 ---
@@ -1711,10 +1714,11 @@
 --- Decision 78 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
+  Self:  17 life | mana: empty | hand(1): Mountain | lib 48
   Opp:   5 life | mana: empty | hand count: 1 | lib 41
   Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain
   Opp BF:   Island | Swamp | Undercity Sewers (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
   Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats

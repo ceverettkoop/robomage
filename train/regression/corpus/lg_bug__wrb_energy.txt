@@ -214,10 +214,11 @@
 --- Decision 10 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Badlands (NEW)
   Opp BF:   Tropical Island
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
@@ -319,10 +320,11 @@
 --- Decision 13 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory, Wasteland | lib 50
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory, Wasteland | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Badlands
   Opp BF:   Tropical Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Cabal Therapy [play:self], Marsh Flats
   Known opp hand: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize
@@ -444,8 +446,9 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
   Opp BF:   Tropical Island
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tropical Island
@@ -465,8 +468,9 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
   Opp BF:   Tropical Island
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
   Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tropical Island
@@ -755,6 +759,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Scrubland (T) | Wasteland (NEW) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
@@ -923,10 +928,11 @@
 --- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(4): Cabal Therapy, Swords to Plowshares, Swords to Plowshares, Voice of Victory | lib 43
+  Self:  17 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Voice of Victory | lib 43
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Tropical Island, Force of Will
@@ -1053,8 +1059,9 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self GY: Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Tropical Island, Force of Will
   Self exile: Elegant Parlor, Arid Mesa, Marsh Flats, Arid Mesa, Cabal Therapy
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
@@ -1075,8 +1082,9 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self GY: Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Tropical Island, Force of Will
   Self exile: Elegant Parlor, Arid Mesa, Marsh Flats, Arid Mesa, Cabal Therapy
   Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
@@ -2012,10 +2020,11 @@
 --- Decision 80 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
-  Self:  17 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Voice of Victory | lib 42
+  Self:  17 life | mana: empty | hand(2): Swords to Plowshares, Voice of Victory | lib 42
   Opp:   14 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Orcish Bowmasters [1/1] [Flash] | Scrubland | Orc Army [2/2] [+1/+1:2] | Cat Warrior [2/1]
   Opp BF:   Baleful Strix [1/1] [Flying, Deathtouch] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Tropical Island, Force of Will
@@ -2215,10 +2224,11 @@
 --- Decision 87 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
-  Self:  9 life | mana: empty | hand(6): Fatal Push, Fatal Push, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
+  Self:  9 life | mana: empty | hand(5): Fatal Push, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
   Opp:   17 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue | Clue
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
+  Stack: Fatal Push (spell, self)
   Pending: Fatal Push (self)
   Self GY: Tropical Island, Force of Will
   Opp GY:  Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -2413,10 +2423,11 @@
 --- Decision 95 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  8 life | mana: empty | hand(5): Fatal Push, Island, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 45
+  Self:  8 life | mana: empty | hand(4): Island, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 45
   Opp:   17 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Bayou (NEW) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue | Clue
   Opp BF:   Badlands | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
+  Stack: Fatal Push (spell, self)
   Pending: Fatal Push (self)
   Self GY: Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island, Force of Will
   Opp GY:  Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -2733,10 +2744,11 @@
 --- Decision 107 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
-  Self:  4 life | mana: empty | hand(4): Force of Will, Island, Sheoldred's Edict, Thoughtseize | lib 44
+  Self:  4 life | mana: empty | hand(3): Force of Will, Island, Sheoldred's Edict | lib 44
   Opp:   16 life | mana: empty | hand count: 3 | lib 40
   Self BF:  Bayou | Orcish Bowmasters [1/1] [Flash] (SICK,NEW,res 1) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Clue | Clue | Clue | Clue | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
   Opp BF:   Badlands | Guide of Souls [1/2] (SICK) | Scrubland (T) | Orc Army [2/2] [+1/+1:2] (T) | Cat Warrior [2/1] (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island, Force of Will
   Opp GY:  Orcish Bowmasters, Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -2890,10 +2902,11 @@
 --- Decision 113 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
-  Self:  16 life | mana: empty | hand(2): Swords to Plowshares, Voice of Victory | lib 40
+  Self:  16 life | mana: empty | hand(1): Voice of Victory | lib 40
   Opp:   2 life | mana: empty | hand count: 2 | lib 44
   Self BF:  Badlands | Guide of Souls [1/2] | Scrubland | Orc Army [2/2] [+1/+1:2] | Cat Warrior [2/1]
   Opp BF:   Bayou (T) | Island | Orcish Bowmasters [1/1] [Flash] (SICK) | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue | Clue | Orc Army [1/1] [+1/+1:1] (SICK) | Clue (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Voice of Victory, Orcish Bowmasters, Ajani, Nacatl Pariah, Swords to Plowshares, Amped Raptor, Wasteland, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Thoughtseize, Fatal Push, Lorien Revealed, Misty Rainforest, Fatal Push, Tropical Island, Force of Will

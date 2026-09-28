@@ -475,11 +475,11 @@
 --- Decision 23 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Stack: Tune the Narrative (spell, opponent)
+  Stack: Force of Will (spell, self) -> Tune the Narrative (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Ponder, Polluted Delta
@@ -496,11 +496,11 @@
 --- Decision 24 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   19 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Stack: Tune the Narrative (spell, opponent)
+  Stack: Force of Will (spell, self) -> Tune the Narrative (opponent, slot 97) -> Tune the Narrative (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Ponder, Polluted Delta
@@ -543,11 +543,11 @@
 --- Decision 26 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Flow State, Force of Will, Swords to Plowshares, Tundra, Wasteland | lib 51
+  Self:  19 life | mana: empty | hand(4): Flow State, Swords to Plowshares, Tundra, Wasteland | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Stack: Force of Will (spell, opponent) -> Tune the Narrative (self, slot 97) -> Tune the Narrative (spell, self)
+  Stack: Force of Will (spell, self) -> Force of Will (spell, opponent) -> Tune the Narrative (self, slot 98) -> Tune the Narrative (spell, self)
   Pending: Force of Will (self)
   Self GY: Ponder, Polluted Delta
   Opp GY:  Ponder, Flooded Strand
@@ -566,11 +566,11 @@
 --- Decision 27 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Flow State, Force of Will, Swords to Plowshares, Tundra, Wasteland | lib 51
+  Self:  19 life | mana: empty | hand(4): Flow State, Swords to Plowshares, Tundra, Wasteland | lib 51
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Island (T)
   Opp BF:   Island (T)
-  Stack: Force of Will (spell, opponent) -> Tune the Narrative (self, slot 97) -> Tune the Narrative (spell, self)
+  Stack: Force of Will (spell, self) -> Force of Will (opponent, slot 97) -> Force of Will (spell, opponent) -> Tune the Narrative (self, slot 98) -> Tune the Narrative (spell, self)
   Pending: Force of Will (self)
   Self GY: Ponder, Polluted Delta
   Opp GY:  Ponder, Flooded Strand
@@ -1569,6 +1569,7 @@
   Opp:   17 life | mana: empty | energy 4 | hand count: 5 | lib 43
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Wasteland (NEW)
   Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1990,11 +1991,11 @@
 --- Decision 87 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
+  Self:  17 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
   Opp:   17 life | mana: empty | energy 4 | hand count: 5 | lib 42
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra (T)
   Opp BF:   Island (T) | Island (T)
-  Stack: Flow State (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Flow State (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2013,11 +2014,11 @@
 --- Decision 88 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Force of Negation, Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
+  Self:  17 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, Teferi, Time Raveler | lib 43
   Opp:   17 life | mana: empty | energy 4 | hand count: 5 | lib 42
   Self BF:  Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 4] | Tundra (T)
   Opp BF:   Island (T) | Island (T)
-  Stack: Flow State (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Flow State (opponent, slot 97) -> Flow State (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2373,10 +2374,11 @@
 --- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -2397,10 +2399,11 @@
 --- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -2421,20 +2424,20 @@
    6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 104 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative, Teferi, Time Raveler
   This turn: self drawn=1
@@ -2451,20 +2454,20 @@
    6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 105 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Mystic Sanctuary, Tune the Narrative, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
+  Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative, Teferi, Time Raveler
   This turn: self drawn=1
@@ -2480,20 +2483,20 @@
    5: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
-  Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 106 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Mystic Sanctuary, Tune the Narrative, Misty Rainforest, Tune the Narrative, Force of Will, Ponder
+  Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative, Teferi, Time Raveler
   This turn: self drawn=1
@@ -2508,20 +2511,20 @@
    4: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
-  Player B exiles Force of Will via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 107 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  17 life | mana: empty | energy 4 | hand(4): Meticulous Archive, Murktide Regent, Swords to Plowshares, The One Ring | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(3): Meticulous Archive, Swords to Plowshares, The One Ring | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 1 | lib 41
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Mystic Sanctuary, Tune the Narrative, Misty Rainforest, Tune the Narrative, Ponder
+  Self GY: Mystic Sanctuary, Brainstorm, Tune the Narrative, Brainstorm, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Force of Negation, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative, Teferi, Time Raveler
   This turn: self drawn=1
@@ -2535,9 +2538,13 @@
    3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Misty Rainforest (Delve))
 --- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Island for 1(U)
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Flooded Strand via Delve.
+  Player B exiles Force of Will via Delve.
   Player B exiles Misty Rainforest via Delve.
-  Player B activated Island for 1(U)
-  Player B activated Island for 1(U)
   Player B casts Murktide Regent
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
@@ -2751,10 +2758,11 @@
 --- Decision 116 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
-  Self:  17 life | mana: empty | energy 4 | hand(1): Swords to Plowshares | lib 41
+  Self:  17 life | mana: empty | energy 4 | hand(0): (empty) | lib 41
   Opp:   17 life | mana: empty | energy 4 | hand count: 2 | lib 40
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra | Wasteland
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
@@ -2932,7 +2940,7 @@
   Opp:   23 life | mana: empty | energy 4 | hand count: 2 | lib 40
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] | Teferi, Time Raveler [loy 5] | Tundra (T) | Wasteland
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra | Clue (SICK)
-  Stack: Polluted Delta (ability, self)
+  Stack: Wasteland (ability, self) -> Polluted Delta (ability, self)
   Pending: Wasteland (self)
   Self GY: Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
@@ -3948,10 +3956,11 @@
 --- Decision 159 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
+  Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Flow State, Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
@@ -3971,20 +3980,20 @@
    5: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flow State (Delve))
 --- Narrative ---
-  Player B exiles Flow State via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 160 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
+  Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
+  Self GY: Flow State, Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Flow State, Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=2 colors=U
@@ -3999,20 +4008,20 @@
    4: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Meticulous Archive (Delve))
 --- Narrative ---
-  Player B exiles Meticulous Archive via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 161 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
+  Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Ponder, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
+  Self GY: Flow State, Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Meticulous Archive, Flow State, Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=2 colors=U
@@ -4026,20 +4035,20 @@
    3: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Mystic Sanctuary (Delve))
 --- Narrative ---
-  Player B exiles Mystic Sanctuary via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 162 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
+  Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Ponder, Wasteland, Tune the Narrative, Tune the Narrative, Ponder
+  Self GY: Flow State, Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Mystic Sanctuary, Meticulous Archive, Flow State, Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=2 colors=U
@@ -4052,20 +4061,20 @@
    2: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
-  Player B exiles Ponder via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 163 ---
   Priority: Player B (active)
   Step: First Main (turn 16)
-  Self:  21 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Murktide Regent, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
+  Self:  21 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Polluted Delta, Spell Snare, Swords to Plowshares, Wasteland, Wrath of the Skies | lib 30
   Opp:   15 life | mana: empty | energy 4 | hand count: 0 | lib 33
   Self BF:  Island (T) | Island | Plains (T) | Tamiyo, Seasoned Scholar [loy 6] | The One Ring [burden:2] [Indestructible] (T,res 1) | Tundra
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Plains | Tamiyo, Seasoned Scholar [loy 12] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Teferi, Time Raveler [loy 8] | Tundra
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Ponder, Wasteland, Tune the Narrative, Tune the Narrative
+  Self GY: Flow State, Ponder, Meticulous Archive, Wasteland, Mystic Sanctuary, Tune the Narrative, Tune the Narrative, Ponder
   Opp GY:  Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
-  Self exile: Ponder, Mystic Sanctuary, Meticulous Archive, Flow State, Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
+  Self exile: Murktide Regent, Misty Rainforest, Force of Will, Flooded Strand, Brainstorm, Brainstorm, Flow State, Tamiyo, Inquisitive Student
   Opp exile:  Force of Will, Flow State
   Opp revealed: Flooded Strand, Polluted Delta, Wasteland, Ponder, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Force of Negation, Flow State, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive, Tune the Narrative, Teferi, Time Raveler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=2 colors=U
@@ -4078,9 +4087,13 @@
    2: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
-  Player B exiles Ponder via Delve.
   Player B activated Island for 1(U)
   Player B activated Tundra for 1(U)
+  Player B exiles Flow State via Delve.
+  Player B exiles Meticulous Archive via Delve.
+  Player B exiles Mystic Sanctuary via Delve.
+  Player B exiles Ponder via Delve.
+  Player B exiles Ponder via Delve.
   Player B casts Murktide Regent
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
@@ -5060,10 +5073,11 @@
 --- Decision 200 ---
   Priority: Player A (active)
   Step: Second Main (turn 19)
-  Self:  10 life | mana: empty | energy 4 | hand(2): Spell Snare, Wrath of the Skies | lib 30
+  Self:  10 life | mana: empty | energy 4 | hand(1): Spell Snare | lib 30
   Opp:   16 life | mana: empty | energy 4 | hand count: 7 | lib 24
   Self BF:  Island (T) | Island | Meticulous Archive | Mystic Sanctuary | Plains (T) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Teferi, Time Raveler [loy 10] (act 1) | Tundra | Tundra
   Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] | Teferi, Time Raveler [loy 5] | The One Ring [burden:3] [Indestructible] (T) | Tundra (T) | Tundra | Tundra
+  Stack: Wrath of the Skies (spell, self)
   Pending: Wrath of the Skies (self)
   Self GY: Flooded Strand, Flow State, Swords to Plowshares, Wasteland, Polluted Delta, Swords to Plowshares, Brainstorm, Force of Negation, Tune the Narrative, Wasteland, Ponder, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Polluted Delta
   Opp GY:  Flooded Strand, Polluted Delta, Wasteland, Tune the Narrative, Tune the Narrative

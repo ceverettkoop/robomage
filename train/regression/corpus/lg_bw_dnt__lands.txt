@@ -385,6 +385,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 52
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Thespian's Stage
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Opp GY:  Boseiju, Who Endures
   Opp revealed: Grafdigger's Cage, Boseiju, Who Endures, Thespian's Stage, Mox Diamond
@@ -1701,10 +1702,11 @@
 --- Decision 87 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(5): Crop Rotation, Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
+  Self:  17 life | mana: empty | hand(4): Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Dark Depths [ice:10] (NEW) | Expedition Map | Grafdigger's Cage | Mox Diamond
   Opp BF:   Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland
@@ -2589,10 +2591,11 @@
 --- Decision 130 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  13 life | mana: empty | hand(4): Crop Rotation, Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 48
+  Self:  13 life | mana: empty | hand(3): Life from the Loam, Sphere of Resistance, Sphere of Resistance | lib 48
   Opp:   20 life | mana: empty | hand count: 3 | lib 69
   Self BF:  Expedition Map | Grafdigger's Cage | Mox Diamond | The Tabernacle at Pendrell Vale
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland
@@ -4285,10 +4288,11 @@
 --- Decision 211 ---
   Priority: Player B (active)
   Step: Draw (turn 14)
-  Self:  9 life | mana: empty | hand(3): Crop Rotation, Life from the Loam, Sphere of Resistance | lib 43
+  Self:  9 life | mana: empty | hand(2): Life from the Loam, Sphere of Resistance | lib 43
   Opp:   18 life | mana: empty | hand count: 1 | lib 65
   Self BF:  Expedition Map | Ghost Quarter | Grafdigger's Cage | Mox Diamond | Mox Diamond | Sphere of Resistance | Construct [6/6]
   Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
+  Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Self GY: Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Marsh Flats, Prismatic Vista, Wasteland
@@ -4981,7 +4985,7 @@
   Opp:   9 life | mana: empty | hand count: 2 | lib 41
   Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Grafdigger's Cage | Mox Diamond (T) | Mox Diamond (T) | Sphere of Resistance | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] | Construct [5/5] (T)
-  Stack: White Orchid Phantom (spell, self)
+  Stack: Wasteland (ability, self) -> White Orchid Phantom (spell, self)
   Pending: Wasteland (self)
   Self GY: Marsh Flats, Prismatic Vista, Wasteland
   Opp GY:  Expedition Map, Crop Rotation, Ghost Quarter, Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
@@ -5505,10 +5509,11 @@
 --- Decision 267 ---
   Priority: Player B (active)
   Step: Draw (turn 16)
-  Self:  3 life | mana: empty | hand(3): Life from the Loam, Sphere of Resistance, Swords to Plowshares | lib 40
+  Self:  3 life | mana: empty | hand(2): Life from the Loam, Sphere of Resistance | lib 40
   Opp:   13 life | mana: empty | hand count: 0 | lib 64
   Self BF:  Grafdigger's Cage | Mox Diamond | Mox Diamond | Sphere of Resistance | Urza's Saga [lore:1] | Construct [5/5]
   Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Plains (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Urza's Saga, Expedition Map, Crop Rotation, Ghost Quarter, Urza's Saga, Dark Depths, Crop Rotation, The Tabernacle at Pendrell Vale, Crop Rotation, Dark Depths, Thespian's Stage, Boseiju, Who Endures
   Opp GY:  Wasteland, Marsh Flats, Prismatic Vista, Wasteland

@@ -363,11 +363,11 @@
 --- Decision 18 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 51
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T)
   Opp BF:   Underground Sea (T,NEW)
-  Stack: Personal Tutor (spell, opponent)
+  Stack: Daze (spell, self) -> Personal Tutor (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
@@ -384,11 +384,11 @@
 --- Decision 19 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland | lib 51
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 51
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Island (T)
   Opp BF:   Underground Sea (T,NEW)
-  Stack: Personal Tutor (spell, opponent)
+  Stack: Daze (spell, self) -> Personal Tutor (opponent, slot 97) -> Personal Tutor (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Misty Rainforest
   Opp GY:  Polluted Delta
@@ -551,7 +551,7 @@
 --- Narrative ---
   -------- TURN 3 (Player A) --------
 --- Turn 3 (Player A) ---
-  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Scalding Tarn, Wasteland
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland
   PB: Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs
 
 --- Decision 28 ---
@@ -779,10 +779,11 @@
 --- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
+  Self:  19 life | mana: empty | hand(6): Force of Will, Dark Ritual, Edge of Autumn, Ponder, Underground Sea, Verdant Catacombs | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Underground Sea
   Opp BF:   Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Personal Tutor, Polluted Delta
   Opp GY:  Daze, Ponder, Misty Rainforest
@@ -840,11 +841,11 @@
 --- Decision 43 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn, Wasteland | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Island
   Opp BF:   Underground Sea (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Thoughtseize (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Daze, Ponder, Misty Rainforest
   Opp GY:  Personal Tutor, Polluted Delta
@@ -861,11 +862,11 @@
 --- Decision 44 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland | lib 50
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn, Wasteland | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Island
   Opp BF:   Underground Sea (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Thoughtseize (opponent, slot 97) -> Thoughtseize (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Daze, Ponder, Misty Rainforest
   Opp GY:  Personal Tutor, Polluted Delta
@@ -1164,7 +1165,7 @@
 --- Narrative ---
   -------- TURN 5 (Player A) --------
 --- Turn 5 (Player A) ---
-  PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Scalding Tarn, Wasteland
+  PA: Dragon's Rage Channeler, Dragon's Rage Channeler, Cori-Steel Cutter, Scalding Tarn, Wasteland
   PB: Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Verdant Catacombs
 
 --- Decision 59 ---
@@ -1401,10 +1402,11 @@
 --- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Force of Will, Thoughtseize, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
+  Self:  19 life | mana: empty | hand(5): Force of Will, Dark Ritual, Edge of Autumn, Undercity Sewers, Verdant Catacombs | lib 48
   Opp:   19 life | mana: empty | hand count: 6 | lib 49
   Self BF:  Underground Sea | Underground Sea
   Opp BF:   Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Ponder, Thoughtseize, Personal Tutor, Polluted Delta
   Opp GY:  Daze, Daze, Ponder, Misty Rainforest
@@ -2670,11 +2672,11 @@
 --- Decision 120 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
-  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Wasteland | lib 47
+  Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Wasteland | lib 47
   Opp:   8 life | mana: empty | hand count: 3 | lib 5
   Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] [Flying] | Island | Mountain
   Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T) | Verdant Catacombs
-  Stack: Delver of Secrets (ability, self)
+  Stack: Unholy Heat (spell, self) -> Delver of Secrets (ability, self)
   Pending: Unholy Heat (self)
   Self GY: Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Doomsday
@@ -2881,6 +2883,7 @@
   Opp:   8 life | mana: empty | hand count: 3 | lib 5
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island | Mountain (T) | Wasteland (NEW)
   Opp BF:   Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T) | Verdant Catacombs
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Delver of Secrets, Unholy Heat, Mishra's Bauble, Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest
   Opp GY:  Doomsday
@@ -3300,6 +3303,7 @@
   Opp:   18 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Underground Sea | Underground Sea | Verdant Catacombs
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Street Wraith, Street Wraith, Undercity Sewers, Doomsday
   Opp GY:  Wasteland, Delver of Secrets, Unholy Heat, Mishra's Bauble, Scalding Tarn, Cori-Steel Cutter, Daze, Daze, Ponder, Misty Rainforest

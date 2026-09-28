@@ -286,10 +286,11 @@
 --- Decision 13 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Dryad Arbor [1/1] | Forest (NEW)
   Opp BF:   Tropical Island
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp revealed: Tropical Island
@@ -642,7 +643,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Tropical Island
-  Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 1)
+  Stack: Wasteland (ability, self) -> Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 1)
   Pending: Wasteland (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
@@ -901,11 +902,11 @@
 --- Decision 40 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
-  Self:  16 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
+  Self:  16 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Scythecat Cub [2/2] [Trample]
-  Stack: Scryb Ranger (spell, opponent)
+  Stack: Force of Will (spell, self) -> Scryb Ranger (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
@@ -922,11 +923,11 @@
 --- Decision 41 ---
   Priority: Player A (non-active)
   Step: Draw (turn 10)
-  Self:  16 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
+  Self:  16 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 50
   Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Clue (SICK)
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Scythecat Cub [2/2] [Trample]
-  Stack: Scryb Ranger (spell, opponent)
+  Stack: Force of Will (spell, self) -> Scryb Ranger (opponent, slot 97) -> Scryb Ranger (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Tropical Island
   Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
@@ -1135,10 +1136,11 @@
 --- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  10 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
+  Self:  10 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   19 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Swamp (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Fatal Push (spell, self)
   Pending: Fatal Push (self)
   Self GY: Force of Will, Tropical Island
   Opp GY:  Scryb Ranger, Wasteland, Misty Rainforest, Once Upon a Time
@@ -1531,10 +1533,11 @@
 --- Decision 66 ---
   Priority: Player A (active)
   Step: Upkeep (turn 13)
-  Self:  3 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
+  Self:  3 life | mana: empty | hand(3): Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
   Opp:   19 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Swamp | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Clue | Clue
   Opp BF:   Badgermole Cub [2/2] (SICK) | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Forest (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Fatal Push (spell, self)
   Delayed: Badgermole Cub@48 -> Bojuka Bog@49 (opponent, leaves bf, waiting)
   Pending: Fatal Push (self)
   Self GY: Fatal Push, Force of Will, Tropical Island
@@ -1836,6 +1839,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Bojuka Bog [2/2] [+1/+1:2] [Haste] (DELAYED) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah (NEW) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Bojuka Bog@0 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Badgermole Cub, Thalia, Guardian of Thraben, Dryad Arbor, Scryb Ranger, Wasteland, Misty Rainforest, Once Upon a Time
@@ -1915,6 +1919,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Bojuka Bog [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah (NEW) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Bojuka Bog@0 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Badgermole Cub, Thalia, Guardian of Thraben, Dryad Arbor, Scryb Ranger, Wasteland, Misty Rainforest, Once Upon a Time
@@ -1994,6 +1999,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Bojuka Bog [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah (NEW) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Bojuka Bog@0 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Badgermole Cub, Thalia, Guardian of Thraben, Dryad Arbor, Scryb Ranger, Wasteland, Misty Rainforest, Once Upon a Time
@@ -2070,6 +2076,7 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Bojuka Bog [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Bayou | Swamp (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Clue | Clue | Clue (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Bojuka Bog@0 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Badgermole Cub, Thalia, Guardian of Thraben, Dryad Arbor, Scryb Ranger, Wasteland, Misty Rainforest, Once Upon a Time

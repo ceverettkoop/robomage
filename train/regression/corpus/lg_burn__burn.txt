@@ -227,9 +227,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Self exile: Rift Bolt
   Known top: Chain Lightning, ?, ?, ?, ?
   Opp revealed: Mountain, Goblin Guide
   Extras: not_priority_window
@@ -269,10 +268,11 @@
 --- Decision 12 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Self:  17 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   17 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet
   Opp BF:   Goblin Guide [2/2] [Haste] (T,SICK) | Mountain (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp revealed: Mountain, Goblin Guide
@@ -373,10 +373,11 @@
 --- Decision 17 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
-  Self:  14 life | mana: empty | hand(6): Eidolon of the Great Revel, Lightning Bolt, Mountain, Mountain, Mountain, Price of Progress | lib 52
+  Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Mountain, Mountain, Mountain, Price of Progress | lib 52
   Opp:   16 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain
   Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
@@ -439,10 +440,11 @@
 --- Decision 20 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(5): Eidolon of the Great Revel, Lava Spike, Mountain, Mountain, Price of Progress | lib 51
+  Self:  14 life | mana: empty | hand(4): Eidolon of the Great Revel, Mountain, Mountain, Price of Progress | lib 51
   Opp:   13 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Lava Spike (spell, self)
   Pending: Lava Spike (self)
   Self GY: Lightning Bolt
   Opp GY:  Chain Lightning, Rift Bolt
@@ -581,11 +583,10 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Goblin Guide [2/2] [Haste] (T) | Mountain (T) | Mountain (T)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Lava Spike, Lightning Bolt
-  Self exile: Rift Bolt
   Known top: Exquisite Firecraft, ?, ?, ?, ?
   Opp revealed: Mountain, Lightning Bolt, Lava Spike, Goblin Guide
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
@@ -691,10 +692,11 @@
 --- Decision 30 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  11 life | mana: empty | hand(3): Chain Lightning, Eidolon of the Great Revel, Mountain | lib 50
+  Self:  11 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 50
   Opp:   3 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Price of Progress, Lava Spike, Lightning Bolt
   Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt

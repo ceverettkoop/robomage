@@ -121,10 +121,10 @@
 --- Decision 6 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
+  Self:  20 life | mana: empty | hand(6): Flooded Strand, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (spell, opponent)
+  Stack: Force of Will (spell, self) -> Mox Diamond (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Urza's Saga, Mox Diamond
   This turn: opp spells=1 noncreature=1
@@ -138,10 +138,10 @@
 --- Decision 7 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
+  Self:  20 life | mana: empty | hand(6): Flooded Strand, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (spell, opponent)
+  Stack: Force of Will (spell, self) -> Mox Diamond (opponent, slot 97) -> Mox Diamond (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Urza's Saga, Mox Diamond
   This turn: opp spells=1 noncreature=1
@@ -659,6 +659,7 @@
   Opp:   17 life | mana: empty | energy 2 | hand count: 4 | lib 48
   Self BF:  Boseiju, Who Endures (NEW) | Expedition Map (NEW) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (T,res 1) | Construct [5/5] | Construct [5/5] (SICK,NEW)
   Opp BF:   Island (T) | Island | Tamiyo, Inquisitive Student [0/3] [Flying]
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Misty Rainforest, Tune the Narrative, Flooded Strand, Force of Will
@@ -1069,10 +1070,11 @@
 --- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  4 life | mana: empty | energy 2 | hand(5): Lorien Revealed, Murktide Regent, Swords to Plowshares, The One Ring, Tundra | lib 46
+  Self:  4 life | mana: empty | energy 2 | hand(4): Lorien Revealed, Swords to Plowshares, The One Ring, Tundra | lib 46
   Opp:   20 life | mana: empty | hand count: 2 | lib 48
   Self BF:  Island | Island | Mystic Sanctuary
   Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Construct [8/7] [Haste] (eq:Skateboard) (T) | Construct [7/7] (T) | Construct [7/7] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Flooded Strand, Force of Will
   Opp GY:  Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
@@ -1085,13 +1087,13 @@
    1: Exile 5 cards from graveyard (Delve)  [#5]
   >> B/B: 1 (Exile 5 cards from graveyard (Delve))
 --- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Island for 1(U)
   Player B exiles Flooded Strand via Delve.
   Player B exiles Force of Will via Delve.
   Player B exiles Misty Rainforest via Delve.
   Player B exiles Tamiyo, Inquisitive Student via Delve.
   Player B exiles Tune the Narrative via Delve.
-  Player B activated Island for 1(U)
-  Player B activated Island for 1(U)
   Player B casts Murktide Regent
 
 --- Decision 46 ---
@@ -1324,6 +1326,7 @@
   Opp:   4 life | mana: empty | energy 2 | hand count: 3 | lib 44
   Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Expedition Map | Exploration (NEW) | Exploration (NEW) | Grafdigger's Cage | Mox Diamond (T) | Skateboard (->Construct) | Wasteland (NEW) | Construct [8/7] [Haste] (eq:Skateboard) | Construct [7/7] | Construct [7/7]
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Mystic Sanctuary (T)
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Urza's Saga, Dark Depths, Mox Diamond
   Opp GY:  Polluted Delta, Lorien Revealed

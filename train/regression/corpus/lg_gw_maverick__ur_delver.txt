@@ -191,6 +191,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Forest
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp GY:  Once Upon a Time
   Known opp hand: Badgermole Cub
@@ -462,10 +463,11 @@
 --- Decision 20 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 49
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Ponder, Scalding Tarn, Volcanic Island | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Stack: Into the Flood Maw (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Into the Flood Maw (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
@@ -483,10 +485,11 @@
 --- Decision 21 ---
   Priority: Player B (active)
   Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 49
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Ponder, Scalding Tarn, Volcanic Island | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Stack: Into the Flood Maw (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Into the Flood Maw (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
@@ -683,6 +686,7 @@
   Opp:   18 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Once Upon a Time
@@ -880,10 +884,11 @@
 --- Decision 37 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  20 life | mana: empty | hand(5): Badgermole Cub, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Volcanic Island (T)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Once Upon a Time, Once Upon a Time
@@ -1008,10 +1013,11 @@
 --- Decision 42 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  21 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Ponder, Preordain | lib 45
+  Self:  21 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Ponder, Preordain | lib 45
   Opp:   20 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Volcanic Island
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
+  Stack: Lightning Bolt (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Lightning Bolt (self)
   Self GY: Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
@@ -1211,6 +1217,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island (T) | Volcanic Island (T) | Wasteland (NEW)
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Ponder, Lightning Bolt, Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
@@ -1267,10 +1274,11 @@
 --- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(5): Green Sun's Zenith, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
+  Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
   Opp:   21 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Savannah
   Opp BF:   Island (T) | Volcanic Island (T)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -1316,11 +1324,11 @@
 --- Decision 54 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  21 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Daze, Preordain | lib 43
+  Self:  21 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Preordain | lib 43
   Opp:   17 life | mana: 1G | hand count: 4 | lib 47
   Self BF:  Island (T) | Volcanic Island (T)
   Opp BF:   Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Savannah
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Daze (spell, self) -> Green Sun's Zenith (spell, opponent)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Daze (self)
   Self GY: Wasteland, Ponder, Lightning Bolt, Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
@@ -1340,11 +1348,11 @@
 --- Decision 55 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  21 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Daze, Preordain | lib 43
+  Self:  21 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Preordain | lib 43
   Opp:   17 life | mana: 1G | hand count: 4 | lib 47
   Self BF:  Island (T) | Volcanic Island (T)
   Opp BF:   Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Savannah
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Daze (spell, self) -> Green Sun's Zenith (opponent, slot 97) -> Green Sun's Zenith (spell, opponent)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Daze (self)
   Self GY: Wasteland, Ponder, Lightning Bolt, Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
@@ -1494,6 +1502,7 @@
   Opp:   21 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (SICK,NEW) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Volcanic Island (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -1899,10 +1908,11 @@
 --- Decision 77 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  16 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Thundering Falls | lib 39
+  Self:  16 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls | lib 39
   Opp:   17 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Island | Volcanic Island (NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Lightning Bolt (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Lightning Bolt (self)
   Self GY: Flooded Strand, Preordain, Volcanic Island, Daze, Wasteland, Ponder, Lightning Bolt, Ponder, Mystic Sanctuary, Scalding Tarn, Into the Flood Maw, Ponder, Polluted Delta, Mishra's Bauble
@@ -1931,7 +1941,7 @@
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
   PA: Thalia, Guardian of Thraben
-  PB: Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Thundering Falls
+  PB: Cori-Steel Cutter, Cori-Steel Cutter, Thundering Falls
 
 --- Decision 78 ---
   Priority: Player A (active)
@@ -2026,7 +2036,7 @@
   Opp:   16 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Karakas | Knight of the Reliquary [5/5] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Stack: Badgermole Cub (spell, self)
+  Stack: Karakas (ability, self) -> Badgermole Cub (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2066,9 +2076,9 @@
   Step: First Main (turn 13)
   Self:  14 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 45
   Opp:   16 life | mana: empty | hand count: 3 | lib 39
-  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [5/5] (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Dryad Arbor [1/1] (T) | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [5/5] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Volcanic Island (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 6) -> Badgermole Cub (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 6) -> Badgermole Cub (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2413,9 +2423,9 @@
   Step: First Main (turn 15)
   Self:  14 life | mana: 1G | hand(1): Thalia, Guardian of Thraben | lib 43
   Opp:   14 life | mana: empty | hand count: 3 | lib 37
-  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [6/6] (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [6/6] | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island | Thundering Falls (T) | Volcanic Island
-  Stack: Knight of the Reliquary (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (spell, self)
   Delayed: Badgermole Cub@1 -> Forest@3 (self, leaves bf, waiting) | Badgermole Cub@1 -> Forest@3 (self, leaves bf, waiting) | Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2620,6 +2630,7 @@
   Opp:   14 life | mana: empty | hand count: 3 | lib 37
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Forest (T,NEW,res 2) | Karakas (T) | Knight of the Reliquary [7/7] (T) | Knight of the Reliquary [7/7] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Island | Thundering Falls (T) | Volcanic Island
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2929,6 +2940,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Forest (T) | Karakas | Knight of the Reliquary [8/8] | Knight of the Reliquary [8/8] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
+  Stack: Karakas (ability, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2970,9 +2982,9 @@
   Step: First Main (turn 17)
   Self:  14 life | mana: empty | hand(0): (empty) | lib 40
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Forest (T) | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [8/8] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Forest (T) | Karakas (T) | Knight of the Reliquary [8/8] | Knight of the Reliquary [8/8] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 9)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 9)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3015,9 +3027,9 @@
   Step: First Main (turn 17)
   Self:  14 life | mana: empty | hand(0): (empty) | lib 40
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
-  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (T) | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3144,7 +3156,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
+  Stack: Scryb Ranger (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3172,7 +3184,7 @@
   Opp:   8 life | mana: empty | hand count: 2 | lib 36
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [11/11] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
+  Stack: Scryb Ranger (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3527,7 +3539,7 @@
   Opp:   4 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Badgermole Cub [2/2] (T) | Badgermole Cub [2/2] (T) | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Cori-Steel Cutter (spell, opponent)
+  Stack: Scryb Ranger (ability, self) -> Cori-Steel Cutter (spell, opponent)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3555,7 +3567,7 @@
   Opp:   4 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Badgermole Cub [2/2] (T) | Badgermole Cub [2/2] (T) | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Savannah (T) | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
   Opp BF:   Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Cori-Steel Cutter (spell, opponent)
+  Stack: Scryb Ranger (ability, self) -> Cori-Steel Cutter (spell, opponent)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3680,7 +3692,7 @@
   Opp:   4 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Noble Hierarch (spell, self)
+  Stack: Karakas (ability, self) -> Noble Hierarch (spell, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3722,9 +3734,9 @@
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Savannah | lib 35
   Opp:   4 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Savannah (T) | Scryb Ranger [1/1] [Flying, Flash] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8) -> Noble Hierarch (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8) -> Noble Hierarch (spell, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3795,9 +3807,9 @@
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(1): Savannah | lib 34
   Opp:   4 life | mana: empty | hand count: 2 | lib 35
-  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] (T) | Plains (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] | Plains (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8) -> Noble Hierarch (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 8) -> Noble Hierarch (spell, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Savannah, Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -3902,11 +3914,11 @@
 --- Decision 157 ---
   Priority: Player B (non-active)
   Step: First Main (turn 19)
-  Self:  4 life | mana: empty | hand(2): Flow State, Force of Will | lib 35
+  Self:  4 life | mana: empty | hand(1): Flow State | lib 35
   Opp:   12 life | mana: empty | hand count: 2 | lib 33
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
   Opp BF:   Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [14/14] (T) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara (NEW,res 1)
-  Stack: Noble Hierarch (spell, opponent)
+  Stack: Force of Will (spell, self) -> Noble Hierarch (spell, opponent)
   Delayed: Badgermole Cub@48 -> Bojuka Bog@50 (opponent, leaves bf, waiting)
   Pending: Force of Will (self)
   Self GY: Thundering Falls, Brainstorm
@@ -3925,11 +3937,11 @@
 --- Decision 158 ---
   Priority: Player B (non-active)
   Step: First Main (turn 19)
-  Self:  4 life | mana: empty | hand(2): Flow State, Force of Will | lib 35
+  Self:  4 life | mana: empty | hand(1): Flow State | lib 35
   Opp:   12 life | mana: empty | hand count: 2 | lib 33
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
   Opp BF:   Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (DELAYED) | Karakas (T) | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [14/14] (T) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara (NEW,res 1)
-  Stack: Noble Hierarch (spell, opponent)
+  Stack: Force of Will (spell, self) -> Noble Hierarch (opponent, slot 97) -> Noble Hierarch (spell, opponent)
   Delayed: Badgermole Cub@48 -> Bojuka Bog@50 (opponent, leaves bf, waiting)
   Pending: Force of Will (self)
   Self GY: Thundering Falls, Brainstorm
@@ -4025,6 +4037,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 35
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [14/14] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara (T,NEW,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
+  Stack: Scryb Ranger (ability, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Noble Hierarch, Plains, Savannah, Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -4052,6 +4065,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 35
   Self BF:  Badgermole Cub [2/2] | Badgermole Cub [2/2] | Bojuka Bog [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [14/14] (T) | Savannah (NEW) | Scryb Ranger [1/1] [Flying, Flash] | Talon Gates of Madara (T,NEW,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Wasteland (T)
+  Stack: Scryb Ranger (ability, self)
   Delayed: Badgermole Cub@0 -> Bojuka Bog@2 (self, leaves bf, waiting)
   Pending: Scryb Ranger (self)
   Self GY: Noble Hierarch, Plains, Savannah, Misty Rainforest, Misty Rainforest, Savannah, Forest, Wasteland, Thalia, Guardian of Thraben, Horizon Canopy, Dryad Arbor, Wasteland, Gaea's Cradle, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time

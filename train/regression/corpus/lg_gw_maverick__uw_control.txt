@@ -391,11 +391,11 @@
 --- Decision 18 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Forest (T) | Savannah (T,NEW)
-  Stack: Badgermole Cub (spell, opponent)
+  Stack: Force of Will (spell, self) -> Badgermole Cub (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Once Upon a Time
@@ -412,11 +412,11 @@
 --- Decision 19 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Island (T)
   Opp BF:   Forest (T) | Savannah (T,NEW)
-  Stack: Badgermole Cub (spell, opponent)
+  Stack: Force of Will (spell, self) -> Badgermole Cub (opponent, slot 97) -> Badgermole Cub (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Opp GY:  Once Upon a Time
@@ -909,7 +909,7 @@
   Opp:   16 life | mana: empty | energy 2 | hand count: 4 | lib 45
   Self BF:  Forest (T) | Savannah (T) | Wasteland
   Opp BF:   Island | Island | Meticulous Archive (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Meticulous Archive (ability, opponent) [amt=1]
+  Stack: Wasteland (ability, self) -> Meticulous Archive (ability, opponent) [amt=1]
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1177,10 +1177,11 @@
 --- Decision 53 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(6): Gaea's Cradle, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   16 life | mana: empty | energy 2 | hand count: 5 | lib 43
   Self BF:  Forest | Savannah
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1240,11 +1241,11 @@
 --- Decision 56 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
-  Self:  16 life | mana: empty | energy 2 | hand(5): Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
+  Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
   Opp BF:   Forest (T) | Savannah
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Green Sun's Zenith (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -1262,11 +1263,11 @@
 --- Decision 57 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
-  Self:  16 life | mana: empty | energy 2 | hand(5): Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
+  Self:  16 life | mana: empty | energy 2 | hand(4): Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring | lib 43
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
   Opp BF:   Forest (T) | Savannah
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Green Sun's Zenith (opponent, slot 97) -> Green Sun's Zenith (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -1446,7 +1447,7 @@
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
-  PB: Force of Negation, Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring
+  PB: Polluted Delta, Swords to Plowshares, Teferi, Time Raveler, The One Ring
 
 --- Decision 66 ---
   Priority: Player A (non-active)
@@ -2056,6 +2057,7 @@
   Opp:   15 life | mana: empty | energy 2 | hand count: 4 | lib 40
   Self BF:  Forest (T) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Island (T) | Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -2229,6 +2231,7 @@
   Opp:   20 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland (NEW)
   Opp BF:   Forest (T) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Ponder, Mystic Sanctuary, Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -2569,6 +2572,7 @@
   Opp:   20 life | mana: empty | hand count: 3 | lib 46
   Self BF:  Island | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Wasteland (NEW) | Clue
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Wasteland, Ponder, Mystic Sanctuary, Polluted Delta, Force of Negation, Force of Negation, Meticulous Archive, Misty Rainforest, Flooded Strand, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -3300,10 +3304,11 @@
 --- Decision 141 ---
   Priority: Player B (active)
   Step: Upkeep (turn 16)
-  Self:  6 life | mana: empty | energy 2 | hand(5): Murktide Regent, Swords to Plowshares, Swords to Plowshares, The One Ring, Wasteland | lib 34
+  Self:  6 life | mana: empty | energy 2 | hand(4): Murktide Regent, Swords to Plowshares, The One Ring, Wasteland | lib 34
   Opp:   20 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 4] | Tundra | Clue
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3412,7 +3417,7 @@
   Opp:   22 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Island (T) | Island | Tamiyo, Seasoned Scholar [loy 6] (act 1) | Tundra (T) | Wasteland (NEW) | Clue
   Opp BF:   Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
+  Stack: Wasteland (ability, self) -> Tamiyo, Seasoned Scholar (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Swords to Plowshares
@@ -3710,10 +3715,11 @@
 --- Decision 156 ---
   Priority: Player B (active)
   Step: Upkeep (turn 18)
-  Self:  5 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, The One Ring | lib 33
+  Self:  5 life | mana: empty | energy 2 | hand(3): Force of Will, Murktide Regent, The One Ring | lib 33
   Opp:   21 life | mana: empty | hand count: 4 | lib 42
   Self BF:  Island | Island | Tamiyo, Seasoned Scholar [loy 6] | Tundra | Clue
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Swords to Plowshares
@@ -4190,13 +4196,13 @@
    4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
   >> B/B: 1 (Cast Murktide Regent)
 --- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B activated Tundra for 1(U)
   Player B exiles Brainstorm via Delve.
   Player B exiles Misty Rainforest via Delve.
   Player B exiles Swords to Plowshares via Delve.
   Player B exiles Swords to Plowshares via Delve.
   Player B exiles Wasteland via Delve.
-  Player B activated Tundra for 1(U)
-  Player B activated Tundra for 1(U)
   Player B casts Murktide Regent
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
@@ -4255,10 +4261,11 @@
 --- Decision 176 ---
   Priority: Player A (active)
   Step: Upkeep (turn 21)
-  Self:  22 life | mana: empty | hand(3): Knight of the Reliquary, Swords to Plowshares, Swords to Plowshares | lib 41
+  Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 41
   Opp:   3 life | mana: empty | energy 2 | hand count: 4 | lib 28
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island (T) | Island (T) | Murktide Regent [6/6] [+1/+1:3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 10] | Tundra (T) | Tundra (T)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -4990,10 +4997,11 @@
 --- Decision 203 ---
   Priority: Player A (active)
   Step: Upkeep (turn 25)
-  Self:  22 life | mana: empty | hand(2): Knight of the Reliquary, Swords to Plowshares | lib 39
+  Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 39
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
   Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Knight of the Reliquary [8/8] | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5136,8 +5144,9 @@
   Step: First Main (turn 25)
   Self:  22 life | mana: empty | hand(1): Knight of the Reliquary | lib 38
   Opp:   4 life | mana: empty | energy 4 | hand count: 4 | lib 20
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Windswept Heath (NEW)
+  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Knight of the Reliquary [8/8] | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Windswept Heath (NEW)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] (SICK) | Island (T) | Island (T) | Plains (T) | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:2] [Indestructible] (T) | Tundra (T) | Tundra (T) | Tundra (T)
+  Stack: Knight of the Reliquary (ability, self) [amt=1]
   Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5604,10 +5613,11 @@
 --- Decision 226 ---
   Priority: Player B (active)
   Step: Draw (turn 26)
-  Self:  1 life | mana: empty | energy 4 | hand(8): Force of Will, Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
+  Self:  1 life | mana: empty | energy 4 | hand(7): Force of Will, Force of Will, Spell Pierce, Spell Snare, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 15
   Opp:   20 life | mana: empty | hand count: 0 | lib 36
   Self BF:  Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island | Plains | Tamiyo, Seasoned Scholar [loy 14] | The One Ring [burden:3] [Indestructible] (T,res 1) | Tundra | Tundra | Tundra
   Opp BF:   Forest (T) | Horizon Canopy (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (SICK) | Plains (T) | Savannah (T) | Savannah (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
   Opp GY:  Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -5924,9 +5934,9 @@
   Step: First Main (turn 27)
   Self:  29 life | mana: empty | hand(0): (empty) | lib 35
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
-  Self BF:  Forest (T) | Knight of the Reliquary [10/10] (T) | Plains | Savannah | Savannah | Wasteland (NEW)
+  Self BF:  Forest (T) | Knight of the Reliquary [10/10] | Plains | Savannah | Savannah | Wasteland (NEW)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Stack: Horizon Canopy (ability, self) [amt=1]
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
   Pending: Knight of the Reliquary (self)
   Self GY: Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -5976,7 +5986,7 @@
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Knight of the Reliquary [11/11] (T) | Plains | Savannah | Savannah | Wasteland (NEW)
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra | Tundra
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
+  Stack: Wasteland (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Horizon Canopy (ability, self) [amt=1]
   Pending: Wasteland (self)
   Self GY: Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand
@@ -6087,7 +6097,7 @@
   Opp:   1 life | mana: empty | energy 4 | hand count: 6 | lib 15
   Self BF:  Karakas (NEW) | Knight of the Reliquary [12/12] (T) | Plains | Savannah | Savannah
   Opp BF:   Geist of Saint Traft [2/2] [Hexproof] | Island (T) | Island (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tamiyo, Seasoned Scholar [loy 16] | The One Ring [burden:3] [Indestructible] (T) | Tundra | Tundra
-  Stack: Horizon Canopy (ability, self) [amt=1]
+  Stack: Karakas (ability, self) -> Horizon Canopy (ability, self) [amt=1]
   Pending: Karakas (self)
   Self GY: Wasteland, Forest, Horizon Canopy, Thalia, Guardian of Thraben, Windswept Heath, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Misty Rainforest, Bojuka Bog, Savannah, Gaea's Cradle, Wasteland, Wasteland, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Tundra, Swords to Plowshares, Brainstorm, Flooded Strand, Tune the Narrative, Flooded Strand

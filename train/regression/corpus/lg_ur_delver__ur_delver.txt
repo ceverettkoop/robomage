@@ -120,7 +120,7 @@
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Mishra's Bauble (NEW)
-  Stack: Mishra's Bauble (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Mishra's Bauble (spell, self)
   Pending: Mishra's Bauble (self)
   This turn: self spells=2 noncreature=2
   Extras: not_priority_window
@@ -186,7 +186,7 @@
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Stack: Thundering Falls (ability, self) [amt=1]
+  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
@@ -342,6 +342,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Thundering Falls (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Brainstorm, Thundering Falls, Mishra's Bauble
@@ -664,7 +665,7 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T) | Volcanic Island (T,NEW)
   Opp BF:   Island (T)
-  Stack: Cori-Steel Cutter (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Cori-Steel Cutter (spell, self)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
@@ -723,11 +724,11 @@
 --- Decision 33 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
+  Stack: Daze (spell, self) -> Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -744,11 +745,11 @@
 --- Decision 34 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
+  Stack: Daze (spell, self) -> Cori-Steel Cutter (opponent, slot 98) -> Mishra's Bauble (ability, opponent) -> self (player) -> Cori-Steel Cutter (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -787,10 +788,10 @@
 --- Decision 36 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
+  Self:  20 life | mana: empty | hand(3): Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 98) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Stack: Daze (spell, self) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
@@ -808,10 +809,10 @@
 --- Decision 37 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Daze, Daze, Murktide Regent, Volcanic Island | lib 49
+  Self:  20 life | mana: empty | hand(3): Daze, Murktide Regent, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Thundering Falls (T) | Volcanic Island (T,NEW)
-  Stack: Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 98) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Stack: Daze (spell, self) -> Daze (opponent, slot 97) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
@@ -850,10 +851,10 @@
 --- Decision 39 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Thundering Falls, Volcanic Island | lib 49
+  Self:  20 life | mana: empty | hand(3): Murktide Regent, Thundering Falls, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Volcanic Island (T,NEW)
-  Stack: Daze (spell, self) -> Daze (opponent, slot 97) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Stack: Daze (spell, self) -> Daze (spell, self) -> Daze (opponent, slot 98) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 100) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
@@ -872,10 +873,10 @@
 --- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Thundering Falls, Volcanic Island | lib 49
+  Self:  20 life | mana: empty | hand(3): Murktide Regent, Thundering Falls, Volcanic Island | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Volcanic Island (T,NEW)
-  Stack: Daze (spell, self) -> Daze (opponent, slot 97) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 99) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
+  Stack: Daze (spell, self) -> Daze (opponent, slot 98) -> Daze (spell, self) -> Daze (opponent, slot 98) -> Daze (spell, opponent) -> Cori-Steel Cutter (self, slot 100) -> Mishra's Bauble (ability, self) -> opponent (player) -> Cori-Steel Cutter (spell, self)
   Pending: Daze (self)
   Self GY: Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
@@ -924,7 +925,7 @@
   Player A draws Brainstorm
   Player B draws Unholy Heat
 --- Turn 4 (Player B) ---
-  PA: Daze, Murktide Regent, Thundering Falls, Volcanic Island
+  PA: Murktide Regent, Thundering Falls, Volcanic Island
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
 
 --- Decision 42 ---
@@ -971,10 +972,11 @@
 --- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 48
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 48
   Opp:   20 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Island (NEW)
   Opp BF:   Cori-Steel Cutter
+  Stack: Into the Flood Maw (spell, self)
   Pending: Into the Flood Maw (self)
   Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -999,7 +1001,7 @@
   Player A draws Ponder
 --- Turn 5 (Player A) ---
   PA: Brainstorm, Cori-Steel Cutter, Murktide Regent, Ponder, Thundering Falls, Volcanic Island, Volcanic Island
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
 
 --- Decision 45 ---
   Priority: Player A (active)
@@ -1561,10 +1563,11 @@
 --- Decision 68 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Murktide Regent, Preordain, Unholy Heat, Volcanic Island | lib 43
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Murktide Regent, Preordain, Volcanic Island | lib 43
   Opp:   15 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Thundering Falls | Volcanic Island | Fish [1/1]
   Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Stack: Unholy Heat (spell, self)
   Pending: Unholy Heat (self)
   Self GY: Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -1607,10 +1610,11 @@
 --- Decision 70 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Murktide Regent, Preordain, Volcanic Island | lib 42
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Murktide Regent, Preordain, Volcanic Island | lib 42
   Opp:   15 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Thundering Falls (T) | Volcanic Island | Fish [1/1]
   Opp BF:   Island (T) | Mystic Sanctuary | Thundering Falls (T)
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Self GY: Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -1747,10 +1751,11 @@
 --- Decision 76 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  11 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
+  Self:  11 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Unholy Heat, Volcanic Island | lib 43
   Opp:   20 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Island | Mystic Sanctuary | Thundering Falls
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] (T)
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Self GY: Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2346,6 +2351,7 @@
   Opp:   10 life | mana: empty | hand count: 3 | lib 41
   Self BF:  Cori-Steel Cutter (NEW,res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 4) | Island (T,NEW) | Mishra's Bauble (NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] | Monk [3/3] (SICK,NEW,res 2)
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -2449,12 +2455,12 @@
 --- Decision 105 ---
   Priority: Player B (active)
   Step: Upkeep (turn 12)
-  Self:  6 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Volcanic Island | lib 41
+  Self:  6 life | mana: empty | hand(2): Dragon's Rage Channeler, Volcanic Island | lib 41
   Opp:   16 life | mana: empty | hand count: 1 | lib 34
   Self BF:  Cori-Steel Cutter | Island | Mystic Sanctuary | Thundering Falls | Volcanic Island
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (T) | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] (T) | Monk [1/1] (SICK)
-  Stack: Mishra's Bauble (ability, opponent)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
+  Stack: Unholy Heat (spell, self) -> Mishra's Bauble (ability, opponent)
+  Delayed: Mishra's Bauble (opponent, upkeep, on stack #1)
   Pending: Unholy Heat (self)
   Self GY: Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2718,10 +2724,11 @@
 --- Decision 116 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  16 life | mana: empty | hand(2): Murktide Regent, Ponder | lib 32
+  Self:  16 life | mana: empty | hand(1): Ponder | lib 32
   Opp:   6 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Fish [1/1] | Monk [2/2] (res 1)
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
@@ -2743,20 +2750,19 @@
   11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player A exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 117 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  16 life | mana: empty | hand(2): Murktide Regent, Ponder | lib 32
+  Self:  16 life | mana: empty | hand(1): Ponder | lib 32
   Opp:   6 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Fish [1/1] | Monk [2/2] (res 1)
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Extras: not_priority_window
@@ -2775,20 +2781,19 @@
   11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player A exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 118 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  16 life | mana: empty | hand(2): Murktide Regent, Ponder | lib 32
+  Self:  16 life | mana: empty | hand(1): Ponder | lib 32
   Opp:   6 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Fish [1/1] | Monk [2/2] (res 1)
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Extras: not_priority_window
@@ -2807,20 +2812,19 @@
   11: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player A exiles Brainstorm via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 119 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  16 life | mana: empty | hand(2): Murktide Regent, Ponder | lib 32
+  Self:  16 life | mana: empty | hand(1): Ponder | lib 32
   Opp:   6 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Fish [1/1] | Monk [2/2] (res 1)
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Daze, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Brainstorm, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Extras: not_priority_window
@@ -2838,20 +2842,19 @@
   10: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
-  Player A exiles Daze via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 120 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  16 life | mana: empty | hand(2): Murktide Regent, Ponder | lib 32
+  Self:  16 life | mana: empty | hand(1): Ponder | lib 32
   Opp:   6 life | mana: empty | hand count: 2 | lib 37
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Fish [1/1] | Monk [2/2] (res 1)
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island (T) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Daze, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Brainstorm, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Brainstorm, Scalding Tarn, Daze, Daze, Mishra's Bauble, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Daze, Brainstorm, Brainstorm, Brainstorm
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Misty Rainforest, Wasteland, Ponder, Daze, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Flow State, Mystic Sanctuary, Into the Flood Maw, Tamiyo, Inquisitive Student
   This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Extras: not_priority_window
@@ -2869,9 +2872,13 @@
   10: Exile Unholy Heat (Delve)
   >> A/A: 0 (Exile Daze (Delve))
 --- Narrative ---
+  Player A activated Volcanic Island for 1(U)
+  Player A activated Volcanic Island for 1(U)
+  Player A exiles Brainstorm via Delve.
+  Player A exiles Brainstorm via Delve.
+  Player A exiles Brainstorm via Delve.
   Player A exiles Daze via Delve.
-  Player A activated Volcanic Island for 1(U)
-  Player A activated Volcanic Island for 1(U)
+  Player A exiles Daze via Delve.
   Player A casts Murktide Regent
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
@@ -3049,6 +3056,7 @@
   Opp:   16 life | mana: empty | hand count: 1 | lib 32
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Dragon's Rage Channeler [3/3] [Flying] | Island | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island (NEW) | Monk [1/1]
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] | Monk [1/1] | Monk [1/1] (SICK) | Monk [1/1] (SICK)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
@@ -3097,6 +3105,7 @@
   Opp:   16 life | mana: empty | hand count: 1 | lib 32
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Dragon's Rage Channeler [3/3] [Flying] | Island (T) | Mystic Sanctuary | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Volcanic Island (NEW) | Monk [1/1]
   Opp BF:   Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Murktide Regent [8/8] [+1/+1:5] [Flying] (SICK) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Fish [1/1] | Monk [1/1] | Monk [1/1] (SICK) | Monk [1/1] (SICK)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Flow State, Wasteland, Unholy Heat, Misty Rainforest, Lightning Bolt, Tamiyo, Inquisitive Student, Ponder, Scalding Tarn, Scalding Tarn, Into the Flood Maw, Daze, Ponder, Polluted Delta, Mishra's Bauble
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Into the Flood Maw, Flow State, Scalding Tarn, Preordain, Force of Will, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Ponder, Scalding Tarn, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble

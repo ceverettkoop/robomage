@@ -225,10 +225,11 @@
 --- Decision 11 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Swamp (NEW)
   Opp BF:   Forest
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
@@ -371,11 +372,11 @@
 --- Decision 17 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
+  Self:  17 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Swamp (T)
   Opp BF:   Forest (T) | Savannah (T,NEW)
-  Stack: Badgermole Cub (spell, opponent)
+  Stack: Force of Will (spell, self) -> Badgermole Cub (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
@@ -392,11 +393,11 @@
 --- Decision 18 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
+  Self:  17 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Swamp (T)
   Opp BF:   Forest (T) | Savannah (T,NEW)
-  Stack: Badgermole Cub (spell, opponent)
+  Stack: Force of Will (spell, self) -> Badgermole Cub (opponent, slot 97) -> Badgermole Cub (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time
@@ -1209,10 +1210,11 @@
 --- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  15 life | mana: empty | hand(2): Reanimate, Underground Sea | lib 43
+  Self:  15 life | mana: empty | hand(1): Underground Sea | lib 43
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T) | Swamp
   Opp BF:   Forest (T) | Savannah (T) | Wasteland
+  Stack: Reanimate (spell, self)
   Pending: Reanimate (self)
   Self GY: Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Atraxa, Grand Unifier, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
@@ -1487,7 +1489,7 @@
   Opp:   8 life | mana: empty | hand count: 3 | lib 39
   Self BF:  Forest (T) | Savannah (T) | Wasteland
   Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T) | Swamp (T) | Underground Sea (T,NEW)
-  Stack: Brainstorm (spell, opponent)
+  Stack: Wasteland (ability, self) -> Brainstorm (spell, opponent)
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
@@ -1727,10 +1729,11 @@
 --- Decision 72 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  20 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   8 life | mana: empty | hand count: 2 | lib 35
   Self BF:  Forest | Savannah
   Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Otherworldly Gaze [play:opponent], Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
@@ -2052,10 +2055,11 @@
 --- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(4): Green Sun's Zenith, Knight of the Reliquary, Thalia, Guardian of Thraben, Wasteland | lib 47
+  Self:  20 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Wasteland | lib 47
   Opp:   14 life | mana: empty | hand count: 2 | lib 29
   Self BF:  Forest | Gaea's Cradle | Savannah
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T)
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
@@ -2172,6 +2176,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 29
   Self BF:  Dryad Arbor [1/1] (SICK,NEW) | Forest (T) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
@@ -2257,10 +2262,11 @@
 --- Decision 94 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  14 life | mana: empty | hand(3): Dark Ritual, Force of Will, Thoughtseize | lib 28
+  Self:  14 life | mana: empty | hand(2): Dark Ritual, Force of Will | lib 28
   Opp:   20 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Island | Swamp
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest (T) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Undercity Sewers, Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
@@ -2611,10 +2617,11 @@
 --- Decision 111 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  20 life | mana: empty | hand(1): Green Sun's Zenith | lib 45
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 45
   Opp:   10 life | mana: empty | hand count: 3 | lib 27
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island | Swamp
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Thalia, Guardian of Thraben, Knight of the Reliquary, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Thoughtseize, Undercity Sewers, Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
@@ -2659,11 +2666,11 @@
 --- Decision 113 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
-  Self:  10 life | mana: empty | hand(3): Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 27
+  Self:  10 life | mana: empty | hand(2): Atraxa, Grand Unifier, Dark Ritual | lib 27
   Opp:   20 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Island | Swamp
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Force of Will (spell, self) -> Green Sun's Zenith (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Undercity Sewers, Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Knight of the Reliquary, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
@@ -2680,11 +2687,11 @@
 --- Decision 114 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
-  Self:  10 life | mana: empty | hand(3): Atraxa, Grand Unifier, Dark Ritual, Force of Will | lib 27
+  Self:  10 life | mana: empty | hand(2): Atraxa, Grand Unifier, Dark Ritual | lib 27
   Opp:   20 life | mana: empty | hand count: 0 | lib 45
   Self BF:  Island | Swamp
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Stack: Green Sun's Zenith (spell, opponent)
+  Stack: Force of Will (spell, self) -> Green Sun's Zenith (opponent, slot 97) -> Green Sun's Zenith (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Thoughtseize, Undercity Sewers, Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Knight of the Reliquary, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
@@ -2959,10 +2966,11 @@
 --- Decision 128 ---
   Priority: Player A (active)
   Step: First Main (turn 15)
-  Self:  20 life | mana: empty | hand(1): Green Sun's Zenith | lib 44
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 44
   Opp:   7 life | mana: empty | hand count: 2 | lib 26
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Island | Swamp
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Green Sun's Zenith, Thalia, Guardian of Thraben, Knight of the Reliquary, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Badgermole Cub, Thalia, Guardian of Thraben, Once Upon a Time
   Opp GY:  Force of Will, Thoughtseize, Undercity Sewers, Force of Will, Polluted Delta, Lotus Petal, Thoughtseize, Polluted Delta, Force of Will, Animate Dead, Atraxa, Grand Unifier, Lotus Petal, Brainstorm, Underground Sea, Reanimate, Ponder, Lotus Petal, Brainstorm, Ponder, Scalding Tarn, Careful Study, Reanimate, Lotus Petal, Force of Will, Thoughtseize, Marsh Flats

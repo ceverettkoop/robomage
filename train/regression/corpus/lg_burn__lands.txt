@@ -206,9 +206,8 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Fiery Islet
   Opp BF:   Dark Depths [ice:10]
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Self exile: Rift Bolt
   Opp revealed: Dark Depths
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -247,10 +246,11 @@
 --- Decision 11 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   17 life | mana: empty | hand count: 6 | lib 53
   Self BF:  Fiery Islet
   Opp BF:   Dark Depths [ice:10]
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp revealed: Dark Depths
@@ -419,10 +419,9 @@
   Opp:   10 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Rift Bolt
   Opp revealed: Dark Depths, Thespian's Stage
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
   Extras: not_priority_window, opp_mulligans=1
@@ -584,10 +583,11 @@
 --- Decision 26 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 50
   Opp:   7 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Fiery Islet | Mountain | Mountain
   Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
@@ -649,10 +649,11 @@
 --- Decision 29 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  3 life | mana: empty | hand(4): Crop Rotation, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 51
+  Self:  3 life | mana: empty | hand(3): Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 51
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dark Depths [ice:10] | Exploration | Savannah | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Crop Rotation (spell, self)
   Pending: Crop Rotation (self)
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
@@ -866,10 +867,11 @@
 --- Decision 38 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 48
   Opp:   3 life | mana: empty | hand count: 3 | lib 49
   Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Dark Depths [ice:10] | Expedition Map | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage (T) | Urza's Saga [lore:2]
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Crop Rotation, Savannah

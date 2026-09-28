@@ -313,10 +313,9 @@
   Opp:   19 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Opp GY:  Ponder, Flooded Strand
-  Self exile: Rift Bolt
   Opp revealed: Flooded Strand, Ponder, Island
   Extras: not_priority_window
   Actions:
@@ -350,11 +349,11 @@
 --- Decision 16 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Flow State, Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Flow State, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
@@ -370,11 +369,11 @@
 --- Decision 17 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Flow State, Force of Will, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
+  Self:  19 life | mana: empty | hand(6): Flow State, Misty Rainforest, Swords to Plowshares, Tamiyo, Inquisitive Student, The One Ring, Tune the Narrative | lib 50
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (opponent, slot 97) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
   Self GY: Ponder, Flooded Strand
   Known top: Mystic Sanctuary, Tundra, ?, ?, ?
@@ -420,10 +419,11 @@
 --- Decision 19 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Fiery Islet
   Opp BF:   Island (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp GY:  Force of Will, Ponder, Flooded Strand
@@ -703,11 +703,10 @@
   Opp:   14 life | mana: empty | energy 2 | hand count: 4 | lib 47
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Island (T) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
-  Self exile: Rift Bolt
   Opp exile:  Flow State
   Opp revealed: Flooded Strand, Misty Rainforest, Ponder, Force of Will, Island, Flow State, Tamiyo, Inquisitive Student, Tune the Narrative
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
@@ -881,10 +880,11 @@
 --- Decision 38 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 50
   Opp:   11 life | mana: empty | energy 2 | hand count: 3 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
   Opp BF:   Island (T) | Island | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1259,10 +1259,11 @@
 --- Decision 55 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 48
   Opp:   7 life | mana: empty | energy 2 | hand count: 4 | lib 43
   Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
@@ -1332,7 +1333,7 @@
   No creatures eligible to attack.
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
-  PA: Chain Lightning
+  PA: (empty)
   PB: Murktide Regent, Swords to Plowshares, The One Ring, Tundra
 
 --- Decision 58 ---
@@ -1356,10 +1357,11 @@
 --- Decision 59 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  4 life | mana: empty | energy 2 | hand(4): Murktide Regent, Swords to Plowshares, The One Ring, Tundra | lib 43
+  Self:  4 life | mana: empty | energy 2 | hand(3): Murktide Regent, The One Ring, Tundra | lib 43
   Opp:   12 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -1408,10 +1410,11 @@
 --- Decision 61 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -1430,10 +1433,11 @@
 --- Decision 62 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -1452,20 +1456,20 @@
    6: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
-  Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 63 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder
+  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Flooded Strand, Flow State
+  Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
@@ -1479,20 +1483,20 @@
    5: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
-  Player B exiles Force of Will via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 64 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Ponder
+  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Force of Will, Flooded Strand, Flow State
+  Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
@@ -1505,20 +1509,20 @@
    4: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Misty Rainforest (Delve))
 --- Narrative ---
-  Player B exiles Misty Rainforest via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 65 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative, Ponder
+  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
@@ -1530,20 +1534,20 @@
    3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
-  Player B exiles Ponder via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 66 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | energy 2 | hand(4): Force of Will, Murktide Regent, The One Ring, Tundra | lib 42
+  Self:  2 life | mana: empty | energy 2 | hand(3): Force of Will, The One Ring, Tundra | lib 42
   Opp:   14 life | mana: empty | hand count: 0 | lib 48
   Self BF:  Island | Island | Meticulous Archive (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying]
   Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Tune the Narrative
+  Self GY: Swords to Plowshares, Ponder, Tamiyo, Inquisitive Student, Misty Rainforest, Tune the Narrative, Force of Will, Ponder, Flooded Strand
   Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Ponder, Misty Rainforest, Force of Will, Flooded Strand, Flow State
+  Self exile: Flow State
   Opp exile:  Eidolon of the Great Revel
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=W | opp life_gained=2
@@ -1555,9 +1559,13 @@
    3: Exile Tune the Narrative (Delve)
   >> B/B: 0 (Exile Ponder (Delve))
 --- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Island for 1(U)
+  Player B exiles Flooded Strand via Delve.
+  Player B exiles Force of Will via Delve.
+  Player B exiles Misty Rainforest via Delve.
   Player B exiles Ponder via Delve.
-  Player B activated Island for 1(U)
-  Player B activated Island for 1(U)
+  Player B exiles Ponder via Delve.
   Player B casts Murktide Regent
   Murktide Regent enters the battlefield
   Murktide Regent enters with 3 +1/+1 counter(s) (6/6).

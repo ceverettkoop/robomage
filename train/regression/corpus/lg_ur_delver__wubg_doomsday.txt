@@ -169,7 +169,7 @@
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Self BF:  Mishra's Bauble (NEW)
-  Stack: Mishra's Bauble (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Mishra's Bauble (spell, self)
   Pending: Mishra's Bauble (self)
   This turn: self spells=2 noncreature=2
   Extras: not_priority_window, opp_mulligans=1
@@ -235,7 +235,7 @@
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 54
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Stack: Thundering Falls (ability, self) [amt=1]
+  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
@@ -391,11 +391,11 @@
 --- Decision 18 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
+  Self:  20 life | mana: empty | hand(5): Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Thundering Falls (T)
   Opp BF:   Cavern of Souls (T,NEW)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Daze (spell, self) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
@@ -410,11 +410,11 @@
 --- Decision 19 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
+  Self:  20 life | mana: empty | hand(5): Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Thundering Falls (T)
   Opp BF:   Cavern of Souls (T,NEW)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Daze (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 97) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
@@ -525,7 +525,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
   Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Thundering Falls (ability, self) [amt=1]
+  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
   Pending: Mishra's Bauble (self)
   Self GY: Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
@@ -621,11 +621,11 @@
 --- Decision 28 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Thundering Falls (T)
   Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Daze (spell, self) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
@@ -640,11 +640,11 @@
 --- Decision 29 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Thundering Falls (T)
   Opp BF:   Cavern of Souls (T) | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Stack: Daze (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 97) -> Tamiyo, Inquisitive Student (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp revealed: Cavern of Souls, Tamiyo, Inquisitive Student
@@ -1766,6 +1766,7 @@
   Opp:   18 life | mana: empty | hand count: 6 | lib 41
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Island (T) | Mystic Sanctuary (T)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Misty Rainforest, Ponder, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble

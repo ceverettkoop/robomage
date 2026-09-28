@@ -488,7 +488,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
   Opp BF:   Lotus Petal | Tropical Island
-  Stack: Urza's Saga (ability, self)
+  Stack: Boseiju, Who Endures (ability, self) -> Urza's Saga (ability, self)
   Pending: Boseiju, Who Endures (self)
   Self GY: Urza's Saga, Dark Depths
   Opp revealed: Lotus Petal, Tropical Island
@@ -625,6 +625,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
   Opp BF:   Tropical Island | Underground Sea (NEW)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Lotus Petal
@@ -2439,6 +2440,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 1
   Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Sphere of Resistance | Thespian's Stage (NEW) | Construct [5/5]
   Opp BF:   Tamiyo, Seasoned Scholar [loy 2] | Tropical Island | Underground Sea
+  Stack: Skateboard (ability, self)
   Pending: Skateboard (self)
   Self GY: Expedition Map, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
   Opp GY:  Street Wraith, Doomsday

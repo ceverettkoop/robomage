@@ -210,10 +210,11 @@
 --- Decision 10 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
   Self BF:  Swamp (NEW)
   Opp BF:   Tropical Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
@@ -483,10 +484,11 @@
 --- Decision 21 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Flow State, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
+  Self:  16 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
   Opp:   20 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Island (T,NEW) | Swamp
   Opp BF:   Tropical Island
+  Stack: Reanimate (spell, self)
   Pending: Reanimate (self)
   Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will
@@ -951,10 +953,11 @@
 --- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
+  Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
   Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea (NEW)
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Stack: Animate Dead (spell, self)
   Pending: Animate Dead (self)
   Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
   Opp GY:  Force of Will

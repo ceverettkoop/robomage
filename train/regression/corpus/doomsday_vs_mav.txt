@@ -234,9 +234,10 @@
 --- Decision 11 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Force of Will, Thoughtseize, Thoughtseize, Dark Ritual, Polluted Delta | lib 53
+  Self:  19 life | mana: empty | hand(4): Force of Will, Thoughtseize, Dark Ritual, Polluted Delta | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 52
   Self BF:  Underground Sea (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Polluted Delta
   Opp GY:  Once Upon a Time
@@ -418,10 +419,11 @@
 --- Decision 19 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(5): Force of Will, Thoughtseize, Dark Ritual, Polluted Delta, Misty Rainforest | lib 52
+  Self:  17 life | mana: empty | hand(4): Force of Will, Dark Ritual, Polluted Delta, Misty Rainforest | lib 52
   Opp:   20 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Underground Sea
   Opp BF:   Savannah
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Thoughtseize, Polluted Delta
   Opp GY:  Swords to Plowshares, Once Upon a Time
@@ -782,10 +784,11 @@
 --- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
+  Self:  20 life | mana: empty | hand(4): Keen-Eyed Curator, Wasteland, Wasteland, Windswept Heath | lib 50
   Opp:   14 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Savannah | Talon Gates of Madara (NEW,res 1)
   Opp BF:   Underground Sea (T) | Underground Sea
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
@@ -1535,10 +1538,11 @@
 --- Decision 73 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Thoughtseize, Daze, Dark Ritual | lib 48
+  Self:  13 life | mana: empty | hand(3): Force of Will, Daze, Dark Ritual | lib 48
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Underground Sea | Underground Sea | Underground Sea
   Opp BF:   Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
   Opp GY:  Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
@@ -1823,6 +1827,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
@@ -1871,7 +1876,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
-  Stack: Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
+  Stack: Wasteland (ability, self) -> Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Pending: Wasteland (self)
   Self GY: Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
@@ -1921,7 +1926,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara | Wasteland (NEW)
   Opp BF:   Underground Sea (T) | Underground Sea | Underground Sea
-  Stack: Wasteland (ability, self) -> Underground Sea (opponent, slot 48) -> Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
+  Stack: Wasteland (ability, self) -> Wasteland (ability, self) -> Underground Sea (opponent, slot 48) -> Keen-Eyed Curator (ability, self) -> Thoughtseize (opponent)
   Pending: Wasteland (self)
   Self GY: Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Thoughtseize, Polluted Delta
@@ -2088,6 +2093,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Thoughtseize, Polluted Delta
@@ -2179,6 +2185,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Thoughtseize, Misty Rainforest, Polluted Delta, Polluted Delta
@@ -2270,6 +2277,7 @@
   Opp:   11 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta, Polluted Delta
@@ -2920,6 +2928,7 @@
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah | Talon Gates of Madara | Windswept Heath (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest, Polluted Delta
@@ -3099,6 +3108,7 @@
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Underground Sea, Misty Rainforest
@@ -3188,6 +3198,7 @@
   Opp:   7 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Collector Ouphe [2/2] (SICK,NEW) | Dryad Arbor [1/1] (T) | Forest (T,NEW) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (T) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp GY:  Misty Rainforest
@@ -3774,6 +3785,7 @@
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Savannah | Sylvan Library (NEW) | Talon Gates of Madara | Wooded Foothills (NEW)
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Wasteland, Knight of the Reliquary, Swords to Plowshares, Once Upon a Time
   Opp exile:  Misty Rainforest, Underground Sea, Polluted Delta, Polluted Delta, Thoughtseize, Thoughtseize, Thoughtseize
@@ -3944,6 +3956,7 @@
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Savannah (NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares, Once Upon a Time
   Self exile: Knight of the Reliquary
@@ -4033,6 +4046,7 @@
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Once Upon a Time, Knight of the Reliquary
@@ -4120,6 +4134,7 @@
   Opp:   3 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Collector Ouphe [2/2] | Dryad Arbor [1/1] (T) | Forest (T) | Keen-Eyed Curator [7/7] [Trample] | Noble Hierarch [0/1] (T) | Savannah (T,NEW) | Savannah (T) | Sylvan Library (NEW) | Talon Gates of Madara
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wooded Foothills, Windswept Heath, Wasteland, Wasteland
   Self exile: Swords to Plowshares, Once Upon a Time, Knight of the Reliquary

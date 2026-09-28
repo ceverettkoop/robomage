@@ -137,9 +137,10 @@
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 52
+  Self:  19 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Plateau, Voice of Victory, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Badlands (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Arid Mesa
   This turn: self life_lost=1
@@ -2188,6 +2189,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea | Clue
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK) | Cat Warrior [2/1] (SICK) | Cat [1/1] (SICK)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Thoughtseize, Arid Mesa
@@ -2607,10 +2609,11 @@
 --- Decision 110 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(5): Cabal Therapy, Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
+  Self:  19 life | mana: empty | hand(4): Goblin Bombardment, Ocelot Pride, Voice of Victory, Voice of Victory | lib 47
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
   Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] | Orcish Bowmasters [1/1] [Flash] | Plateau | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
@@ -2779,8 +2782,9 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
   Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
+  Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler
@@ -2801,8 +2805,9 @@
   Opp:   2 life | mana: empty | hand count: 3 | lib 2
   Self BF:  Ajani, Nacatl Pariah [1/2] | Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [2/2] [+1/+1:2] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1] | Cat Warrior [2/1] | Cat [1/1]
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island | Underground Sea | Clue | Clue (SICK)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Thoughtseize, Arid Mesa
+  Self GY: Thoughtseize, Arid Mesa
   Opp GY:  Edge of Autumn, Island, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Quantum Riddler, Lotus Petal, Flooded Strand, Dark Ritual
   Known opp hand: Force of Will, Street Wraith, Teferi, Time Raveler

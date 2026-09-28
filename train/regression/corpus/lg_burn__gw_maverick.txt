@@ -205,10 +205,9 @@
   Opp:   20 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Dryad Arbor [1/1] (SICK)
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Opp GY:  Once Upon a Time
-  Self exile: Rift Bolt
   Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
   Extras: not_priority_window
@@ -250,10 +249,11 @@
 --- Decision 11 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
   Opp:   17 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
   Opp BF:   Dryad Arbor [1/1] (SICK)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
   Opp GY:  Once Upon a Time
@@ -437,10 +437,11 @@
 --- Decision 19 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  13 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Dryad Arbor [1/1] | Forest (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Chain Lightning, Rift Bolt
@@ -552,11 +553,10 @@
   Opp:   11 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Fiery Islet (T) | Mountain (T)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
-  Stack: Rift Bolt (ability, self)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
-  Self exile: Rift Bolt
   Known opp hand: Thalia, Guardian of Thraben
   Opp revealed: Forest, Misty Rainforest, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Thalia, Guardian of Thraben
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=2
@@ -729,10 +729,11 @@
 --- Decision 31 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 50
   Opp:   8 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Fiery Islet | Mountain | Mountain
   Opp BF:   Dryad Arbor [1/1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (SICK) | Scythecat Cub [2/2] [Trample] (SICK)
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Misty Rainforest, Once Upon a Time
@@ -838,10 +839,11 @@
 --- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Self:  4 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [1/1] | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample]
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -972,7 +974,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [1/1] (T) | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample] | Wasteland (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 0)
+  Stack: Wasteland (ability, self) -> Scythecat Cub (ability, self) -> Dryad Arbor (self, slot 0)
   Pending: Wasteland (self)
   Self GY: Misty Rainforest, Once Upon a Time
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -1060,6 +1062,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample] (res 1)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
@@ -1129,6 +1132,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample] (res 1)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
@@ -1199,6 +1203,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample] (res 1)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Fiery Islet, Rift Bolt, Price of Progress, Rift Bolt
@@ -1267,6 +1272,7 @@
   Opp:   14 life | mana: empty | hand count: 1 | lib 50
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Scythecat Cub [2/2] [Trample] (res 1)
   Opp BF:   Mountain (T) | Mountain (T) | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Rift Bolt, Price of Progress, Rift Bolt
@@ -1538,6 +1544,7 @@
   Opp:   9 life | mana: empty | hand count: 0 | lib 49
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest | Gaea's Cradle | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,res 1) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Rift Bolt, Rift Bolt
@@ -1603,6 +1610,7 @@
   Opp:   9 life | mana: empty | hand count: 0 | lib 49
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,res 1) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp GY:  Rift Bolt
@@ -1667,6 +1675,7 @@
   Opp:   9 life | mana: empty | hand count: 0 | lib 49
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,res 1) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
   Opp exile:  Rift Bolt, Rift Bolt, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
@@ -1728,6 +1737,7 @@
   Opp:   9 life | mana: empty | hand count: 0 | lib 49
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,res 1) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Once Upon a Time
   Self exile: Misty Rainforest
@@ -1790,6 +1800,7 @@
   Opp:   9 life | mana: empty | hand count: 0 | lib 49
   Self BF:  Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Scythecat Cub [2/2] [Trample]
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,res 1) | Mountain (T) | Mountain (T) | Mountain | Mountain
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland
   Self exile: Once Upon a Time, Misty Rainforest
@@ -1928,10 +1939,11 @@
 --- Decision 85 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  4 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Self:  4 life | mana: empty | hand(0): (empty) | lib 48
   Opp:   2 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain | Mountain
   Opp BF:   Dryad Arbor [2/2] [+1/+1:1] (T) | Forest (T) | Gaea's Cradle (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [2/2] [Trample] (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self exile: Rift Bolt, Rift Bolt, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning
   Opp exile:  Wasteland, Once Upon a Time, Misty Rainforest

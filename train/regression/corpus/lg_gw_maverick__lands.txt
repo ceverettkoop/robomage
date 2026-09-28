@@ -445,10 +445,11 @@
 --- Decision 20 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
   Opp BF:   Dark Depths [ice:10] | Thespian's Stage
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Once Upon a Time, Once Upon a Time
@@ -491,7 +492,7 @@
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Green Sun's Zenith (spell, self)
+  Stack: Wasteland (ability, self) -> Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Once Upon a Time, Once Upon a Time
@@ -918,6 +919,7 @@
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Badgermole Cub [2/2] (res 1) | Dryad Arbor [1/1] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Wasteland (NEW)
   Opp BF:   Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Wasteland, Once Upon a Time, Once Upon a Time
@@ -1437,6 +1439,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Blast Zone [charge:1] | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains | Savannah (T)
+  Stack: Blast Zone (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
@@ -1809,6 +1812,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Blast Zone [charge:1] | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T)
+  Stack: Blast Zone (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
@@ -2201,6 +2205,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Blast Zone [charge:1] | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah | Savannah (T)
+  Stack: Blast Zone (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
@@ -2604,6 +2609,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 43
   Self BF:  Blast Zone [charge:1] | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T)
+  Stack: Blast Zone (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Savannah, Dark Depths
@@ -3545,11 +3551,11 @@
 --- Decision 151 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
-  Self:  4 life | mana: empty | hand(6): Crop Rotation, Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 44
+  Self:  4 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 44
   Opp:   18 life | mana: empty | hand count: 7 | lib 40
   Self BF:  Blast Zone [charge:1] | Expedition Map | Exploration | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage | Yavimaya, Cradle of Growth (T,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T)
-  Stack: Exploration (spell, self)
+  Stack: Crop Rotation (spell, self) -> Exploration (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Crop Rotation (self)
   Self GY: Savannah, Dark Depths
@@ -4111,6 +4117,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 39
   Self BF:  Blast Zone [charge:1] | Dark Depths [ice:10] | Expedition Map | Exploration | Exploration | Rishadan Port (NEW) | Sphere of Resistance | The Tabernacle at Pendrell Vale | Thespian's Stage
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T)
+  Stack: Thespian's Stage (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Thespian's Stage (self)
   Opp GY:  Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
@@ -4243,11 +4250,11 @@
 --- Decision 178 ---
   Priority: Player A (active)
   Step: Upkeep (turn 23)
-  Self:  18 life | mana: empty | hand(7): Collector Ouphe, Green Sun's Zenith, Noble Hierarch, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 39
+  Self:  18 life | mana: empty | hand(6): Collector Ouphe, Green Sun's Zenith, Noble Hierarch, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 39
   Opp:   2 life | mana: empty | hand count: 5 | lib 42
   Self BF:  Badgermole Cub [2/2] | Bojuka Bog | Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Plains | Savannah | Savannah | Savannah
   Opp BF:   Blast Zone [charge:1] (T) | Expedition Map | Exploration | Exploration | Rishadan Port (T) | Sphere of Resistance | The Tabernacle at Pendrell Vale | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Forest (ability, self) -> Dryad Arbor (ability, self) -> Badgermole Cub (ability, self)
+  Stack: Swords to Plowshares (spell, self) -> Forest (ability, self) -> Dryad Arbor (ability, self) -> Badgermole Cub (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@3 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Windswept Heath, Windswept Heath, Wasteland, Wasteland, Once Upon a Time, Once Upon a Time
@@ -4672,7 +4679,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 38
   Self BF:  Blast Zone [charge:1] | Bojuka Bog (T,NEW) | Expedition Map | Exploration | Exploration | Rishadan Port | Sphere of Resistance | The Tabernacle at Pendrell Vale
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T)
-  Stack: Bojuka Bog (ability, self) -> opponent (player)
+  Stack: Blast Zone (ability, self) -> Bojuka Bog (ability, self) -> opponent (player)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Thespian's Stage, Dark Depths
@@ -5713,10 +5720,11 @@
 --- Decision 232 ---
   Priority: Player B (active)
   Step: First Main (turn 28)
-  Self:  16 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 39
+  Self:  16 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 39
   Opp:   18 life | mana: empty | hand count: 7 | lib 36
   Self BF:  Blast Zone [charge:1] | Bojuka Bog | Boseiju, Who Endures | Expedition Map | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T)
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Thespian's Stage, Dark Depths
@@ -5745,7 +5753,7 @@
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 --- Turn 29 (Player A) ---
   PA: Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Scythecat Cub, Scythecat Cub, Thalia, Guardian of Thraben
-  PB: Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares
+  PB: Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares
 
 --- Decision 233 ---
   Priority: Player A (active)
@@ -6287,10 +6295,11 @@
 --- Decision 253 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
-  Self:  14 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 36
+  Self:  14 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 36
   Opp:   18 life | mana: empty | hand count: 7 | lib 35
   Self BF:  Blast Zone [charge:1] | Bojuka Bog | Boseiju, Who Endures | Expedition Map | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Savannah, Urza's Saga, Crop Rotation, Thespian's Stage, Dark Depths
@@ -6314,10 +6323,11 @@
 --- Decision 254 ---
   Priority: Player B (active)
   Step: First Main (turn 30)
-  Self:  14 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 36
+  Self:  14 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 36
   Opp:   18 life | mana: empty | hand count: 7 | lib 35
   Self BF:  Blast Zone [charge:1] | Bojuka Bog | Boseiju, Who Endures | Expedition Map | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Savannah, Urza's Saga, Crop Rotation, Thespian's Stage, Dark Depths
@@ -6962,7 +6972,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 34
   Self BF:  Blast Zone [charge:1] | Bojuka Bog | Boseiju, Who Endures | Expedition Map | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2]
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Urza's Saga (ability, self)
+  Stack: Blast Zone (ability, self) -> Urza's Saga (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Blast Zone (self)
   Self GY: Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -7035,7 +7045,7 @@
   Opp:   18 life | mana: empty | hand count: 7 | lib 34
   Self BF:  Blast Zone [charge:1] (T) | Bojuka Bog (T) | Boseiju, Who Endures | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2] (T)
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Expedition Map (ability, self) [amt=1] -> Blast Zone (ability, self) -> Urza's Saga (ability, self)
+  Stack: Rishadan Port (ability, self) -> Expedition Map (ability, self) [amt=1] -> Blast Zone (ability, self) -> Urza's Saga (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Rishadan Port (self)
   Self GY: Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -7732,10 +7742,11 @@
 --- Decision 302 ---
   Priority: Player B (active)
   Step: Draw (turn 34)
-  Self:  10 life | mana: empty | hand(6): Crop Rotation, Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 31
+  Self:  10 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 31
   Opp:   18 life | mana: empty | hand count: 7 | lib 33
   Self BF:  Blast Zone [charge:1] | Bojuka Bog (T) | Boseiju, Who Endures | Exploration | Exploration | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Urza's Saga [lore:1] (T) | Urza's Saga [lore:2] (T) | Construct [3/3] (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Crop Rotation (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Crop Rotation (self)
   Self GY: Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -9175,6 +9186,7 @@
   Opp:   10 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Badgermole Cub [2/2] (res 1) | Bojuka Bog (T) | Dryad Arbor [1/1] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T) | Wasteland (NEW)
   Opp BF:   Blast Zone [charge:1] (T) | Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Rishadan Port (T) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Construct [6/6] (T) | Construct [6/6] (SICK)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@3 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Verdant Catacombs, Scythecat Cub, Thalia, Guardian of Thraben, Endurance, Thalia, Guardian of Thraben
@@ -9284,11 +9296,11 @@
 --- Decision 354 ---
   Priority: Player B (active)
   Step: Upkeep (turn 38)
-  Self:  10 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Swords to Plowshares | lib 26
+  Self:  10 life | mana: empty | hand(4): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble | lib 26
   Opp:   11 life | mana: empty | hand count: 7 | lib 31
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Construct [6/6] | Construct [6/6]
   Opp BF:   Badgermole Cub [2/2] | Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Construct (ability, self) -> Construct (ability, self)
+  Stack: Swords to Plowshares (spell, self) -> Construct (ability, self) -> Construct (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@51 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -9419,6 +9431,7 @@
   Opp:   13 life | mana: empty | hand count: 7 | lib 31
   Self BF:  Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Rishadan Port (T) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Wasteland (NEW)
   Opp BF:   Bojuka Bog (T) | Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Swords to Plowshares, Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -9876,6 +9889,7 @@
   Opp:   13 life | mana: empty | hand count: 7 | lib 30
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Rishadan Port (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Rishadan Port (self)
   Self GY: Wasteland, Swords to Plowshares, Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -11333,10 +11347,11 @@
 --- Decision 422 ---
   Priority: Player B (active)
   Step: First Main (turn 46)
-  Self:  10 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
+  Self:  10 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
   Opp:   13 life | mana: empty | hand count: 7 | lib 27
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Yavimaya, Cradle of Growth (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -11364,10 +11379,11 @@
 --- Decision 423 ---
   Priority: Player B (active)
   Step: First Main (turn 46)
-  Self:  10 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
+  Self:  10 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
   Opp:   13 life | mana: empty | hand count: 7 | lib 27
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Yavimaya, Cradle of Growth (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -11395,10 +11411,11 @@
 --- Decision 424 ---
   Priority: Player B (active)
   Step: First Main (turn 46)
-  Self:  10 life | mana: empty | hand(5): Life from the Loam, Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
+  Self:  10 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Malevolent Rumble, Sphere of Resistance | lib 21
   Opp:   13 life | mana: empty | hand count: 7 | lib 27
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Yavimaya, Cradle of Growth (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Life from the Loam (spell, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Life from the Loam (self)
   Self GY: Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Urza's Saga, Mox Diamond, Urza's Saga, Thespian's Stage, Urza's Saga, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -11487,7 +11504,7 @@
   Opp:   13 life | mana: empty | hand count: 7 | lib 27
   Self BF:  Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Urza's Saga [lore:1] (NEW) | Yavimaya, Cradle of Growth (T,NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Urza's Saga (ability, self)
+  Stack: Rishadan Port (ability, self) -> Urza's Saga (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Rishadan Port (self)
   Self GY: Life from the Loam, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -12055,7 +12072,7 @@
   Opp:   13 life | mana: empty | hand count: 7 | lib 26
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale | Urza's Saga [lore:2] | Urza's Saga [lore:2] | Yavimaya, Cradle of Growth
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Urza's Saga (ability, self) -> Urza's Saga (ability, self)
+  Stack: Rishadan Port (ability, self) -> Urza's Saga (ability, self) -> Urza's Saga (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Rishadan Port (self)
   Self GY: Mox Diamond, Karakas, Urza's Saga, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -12197,11 +12214,11 @@
 --- Decision 451 ---
   Priority: Player A (active)
   Step: Upkeep (turn 49)
-  Self:  13 life | mana: empty | hand(7): Badgermole Cub, Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Noble Hierarch, Swords to Plowshares | lib 26
+  Self:  13 life | mana: empty | hand(6): Badgermole Cub, Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Noble Hierarch | lib 26
   Opp:   10 life | mana: empty | hand count: 5 | lib 18
   Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Plains | Savannah | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:2] (T) | Urza's Saga [lore:1] | Yavimaya, Cradle of Growth | Construct [6/6] (SICK)
-  Stack: Forest (ability, self) -> Dryad Arbor (ability, self)
+  Stack: Swords to Plowshares (spell, self) -> Forest (ability, self) -> Dryad Arbor (ability, self)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Knight of the Reliquary, Keen-Eyed Curator, Endurance, Outland Liberator, Scythecat Cub, Bojuka Bog, Wasteland, Verdant Catacombs, Scythecat Cub, Thalia, Guardian of Thraben, Endurance, Thalia, Guardian of Thraben
@@ -12646,7 +12663,7 @@
   Opp:   13 life | mana: empty | hand count: 7 | lib 25
   Self BF:  Boseiju, Who Endures | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Urza's Saga [lore:3] (T) | Urza's Saga [lore:3] (T) | Urza's Saga [lore:2] (T) | Yavimaya, Cradle of Growth (T) | Construct [7/7] (SICK,NEW) | Construct [7/7] (SICK,NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
-  Stack: Urza's Saga (ability, self) -> Urza's Saga (ability, self) [amt=1] -> Urza's Saga (ability, self) [amt=1]
+  Stack: Rishadan Port (ability, self) -> Urza's Saga (ability, self) -> Urza's Saga (ability, self) [amt=1] -> Urza's Saga (ability, self) [amt=1]
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Rishadan Port (self)
   Self GY: Mox Diamond, Karakas, Urza's Saga, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -12839,11 +12856,11 @@
 --- Decision 473 ---
   Priority: Player A (active)
   Step: Upkeep (turn 51)
-  Self:  13 life | mana: empty | hand(7): Badgermole Cub, Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Noble Hierarch, Swords to Plowshares | lib 25
+  Self:  13 life | mana: empty | hand(6): Badgermole Cub, Collector Ouphe, Green Sun's Zenith, Green Sun's Zenith, Noble Hierarch, Noble Hierarch | lib 25
   Opp:   16 life | mana: empty | hand count: 6 | lib 16
   Self BF:  Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Plains | Savannah | Savannah | Savannah | Talon Gates of Madara
   Opp BF:   Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Urza's Saga [lore:2] (T) | Yavimaya, Cradle of Growth (T) | Construct [8/8] (SICK) | Construct [8/8] (SICK)
-  Stack: Forest (ability, self) -> Dryad Arbor (ability, self)
+  Stack: Swords to Plowshares (spell, self) -> Forest (ability, self) -> Dryad Arbor (ability, self)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Swords to Plowshares, Knight of the Reliquary, Keen-Eyed Curator, Endurance, Outland Liberator, Scythecat Cub, Bojuka Bog, Wasteland, Verdant Catacombs, Scythecat Cub, Thalia, Guardian of Thraben, Endurance, Thalia, Guardian of Thraben
@@ -13393,6 +13410,7 @@
   Opp:   12 life | mana: empty | hand count: 6 | lib 24
   Self BF:  Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (NEW) | Yavimaya, Cradle of Growth (T) | Construct [8/8] (res 1) | Construct [8/8] (SICK,NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Skateboard (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Urza's Saga, Urza's Saga, Mox Diamond, Karakas, Urza's Saga, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths
@@ -14124,6 +14142,7 @@
   Opp:   3 life | mana: empty | hand count: 7 | lib 23
   Self BF:  Ancient Tomb (NEW) | Boseiju, Who Endures (T) | Exploration | Exploration | Grafdigger's Cage | Mox Diamond (T) | Pithing Needle [naming: Badgermole Cub] | Rishadan Port (T) | Skateboard (->Construct) | Sphere of Resistance | Sphere of Resistance | The Tabernacle at Pendrell Vale (T) | Thespian's Stage (T) | Yavimaya, Cradle of Growth (T) | Construct [9/8] [Haste] (eq:Skateboard) (res 1) | Construct [8/8] (res 1)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Plains (T) | Savannah (T) | Savannah (T) | Savannah (T) | Talon Gates of Madara (T)
+  Stack: Skateboard (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Skateboard (self)
   Self GY: Urza's Saga, Urza's Saga, Urza's Saga, Mox Diamond, Karakas, Urza's Saga, Mox Diamond, Wasteland, Swords to Plowshares, Blast Zone, Mox Diamond, Thespian's Stage, Crop Rotation, Bojuka Bog, Expedition Map, Wasteland, Maze of Ith, Wasteland, Savannah, Crop Rotation, Thespian's Stage, Dark Depths

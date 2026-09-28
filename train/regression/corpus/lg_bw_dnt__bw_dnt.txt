@@ -2150,7 +2150,7 @@
   Opp:   18 life | mana: empty | hand count: 3 | lib 68
   Self BF:  Aether Vial [charge:3] | Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW)
-  Stack: Shadowy Backstreet (ability, opponent) [amt=1]
+  Stack: Wasteland (ability, self) -> Shadowy Backstreet (ability, opponent) [amt=1]
   Pending: Wasteland (self)
   Opp GY:  Marsh Flats
   Opp revealed: Plains, Shadowy Backstreet, Marsh Flats, Aether Vial, Recruiter of the Guard, Phelia, Exuberant Shepherd, Lion Sash, Yorion, Sky Nomad
@@ -3124,10 +3124,11 @@
 --- Decision 158 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
-  Self:  14 life | mana: empty | hand(4): Overlord of the Balemurk, Overlord of the Balemurk, Solitude, White Orchid Phantom | lib 66
+  Self:  14 life | mana: empty | hand(3): Overlord of the Balemurk, Overlord of the Balemurk, White Orchid Phantom | lib 66
   Opp:   17 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Aether Vial [charge:2] (res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Solitude (spell, self)
   Pending: Solitude (self)
   Self GY: Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
@@ -3412,7 +3413,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Aether Vial [charge:2] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Aether Vial (ability, self)
+  Stack: Lion Sash (ability, self) -> Aether Vial (ability, self)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
@@ -3462,7 +3463,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Aether Vial [charge:2] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Wasteland (opponent) -> Aether Vial (ability, self)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Wasteland (opponent) -> Aether Vial (ability, self)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
@@ -3512,7 +3513,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Aether Vial [charge:2] (T,res 1) | Lion Sash [1/1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:4] | Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Wasteland (opponent) -> Lion Sash (ability, self) -> Wasteland (opponent) -> Aether Vial (ability, self)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Wasteland (opponent) -> Lion Sash (ability, self) -> Wasteland (opponent) -> Aether Vial (ability, self)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Wasteland
@@ -4753,6 +4754,7 @@
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
   Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -4804,7 +4806,7 @@
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
   Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -4856,7 +4858,7 @@
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
   Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1] | Windswept Heath (NEW)
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
   Pending: Lion Sash (self)
   Self GY: Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -5003,7 +5005,7 @@
   Opp:   13 life | mana: empty | hand count: 1 | lib 67
   Self BF:  Aether Vial [charge:3] (res 1) | Lion Sash [2/2] [+1/+1:1] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Plains (T) | Plains (NEW) | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:5] | Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent) -> Lion Sash (ability, self) -> Prismatic Vista (opponent)
   Pending: Lion Sash (self)
   Self GY: Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Prismatic Vista
@@ -6964,6 +6966,7 @@
   Opp:   8 life | mana: empty | hand count: 0 | lib 62
   Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self)
   Pending: Lion Sash (self)
   Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
@@ -7019,7 +7022,7 @@
   Opp:   8 life | mana: empty | hand count: 0 | lib 62
   Self BF:  Aether Vial [charge:4] (res 1) | Lion Sash [3/3] [+1/+1:2] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains | Recruiter of the Guard [1/1]
   Opp BF:   Aether Vial [charge:6] | Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Overlord of the Balemurk [time:4] (SICK) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Overlord of the Balemurk (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Overlord of the Balemurk (opponent)
   Pending: Lion Sash (self)
   Self GY: Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Plains, Overlord of the Balemurk, Swords to Plowshares, Pre-War Formalwear
@@ -7814,6 +7817,7 @@
   Opp:   7 life | mana: empty | hand count: 2 | lib 63
   Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains | Pre-War Formalwear | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:4] | Lion Sash [4/4] [+1/+1:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Stack: Karakas (ability, self)
   Pending: Karakas (self)
   Self GY: Plains, Swords to Plowshares, Pre-War Formalwear
   Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -7907,6 +7911,7 @@
   Opp:   7 life | mana: empty | hand count: 3 | lib 63
   Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Karakas (T,NEW) | Orcish Bowmasters [1/1] [Flash] | Overlord of the Balemurk [time:4] | Plains | Pre-War Formalwear | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:4] | Lion Sash [4/4] [+1/+1:3] (T) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1]
+  Stack: Pre-War Formalwear (ability, self)
   Pending: Pre-War Formalwear (self)
   Self GY: Plains, Swords to Plowshares, Pre-War Formalwear
   Opp GY:  Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
@@ -8896,6 +8901,7 @@
   Opp:   4 life | mana: empty | hand count: 0 | lib 61
   Self BF:  Aether Vial [charge:5] (res 1) | Lion Sash [4/4] [+1/+1:3] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains | Plains | Prismatic Vista (NEW)
   Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Lion Sash (ability, self)
   Pending: Lion Sash (self)
   Self GY: Recruiter of the Guard, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Plains, Swords to Plowshares, Pre-War Formalwear
@@ -8952,7 +8958,7 @@
   Opp:   4 life | mana: empty | hand count: 0 | lib 61
   Self BF:  Aether Vial [charge:5] (res 1) | Lion Sash [4/4] [+1/+1:3] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains | Prismatic Vista (NEW)
   Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Plains (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Plains (opponent)
   Pending: Lion Sash (self)
   Self GY: Recruiter of the Guard, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Plains, Swords to Plowshares, Pre-War Formalwear
@@ -9103,7 +9109,7 @@
   Opp:   4 life | mana: empty | hand count: 0 | lib 61
   Self BF:  Aether Vial [charge:5] (res 1) | Lion Sash [4/4] [+1/+1:3] | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Plains (NEW)
   Opp BF:   Aether Vial [charge:7] | Aether Vial [charge:6] | Karakas (T) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Lion Sash (ability, self) -> Plains (opponent) -> Lion Sash (ability, self) -> Plains (opponent)
+  Stack: Lion Sash (ability, self) -> Lion Sash (ability, self) -> Plains (opponent) -> Lion Sash (ability, self) -> Plains (opponent)
   Pending: Lion Sash (self)
   Self GY: Prismatic Vista, Recruiter of the Guard, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats
   Opp GY:  Plains, Swords to Plowshares, Pre-War Formalwear
@@ -10005,7 +10011,7 @@
   Opp:   1 life | mana: empty | hand count: 2 | lib 61
   Self BF:  Aether Vial [charge:8] (res 1) | Aether Vial [charge:7] (res 1) | Karakas | Overlord of the Balemurk [time:3] | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Aether Vial [charge:5] | Lion Sash [5/5] [+1/+1:4] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Plains (T) | Plains (T) | Plains (T) | Plains (T) | Plains (T)
-  Stack: Overlord of the Balemurk (spell, self) [impending]
+  Stack: Karakas (ability, self) -> Overlord of the Balemurk (spell, self) [impending]
   Pending: Karakas (self)
   Self GY: Orcish Bowmasters, Swords to Plowshares, Pre-War Formalwear
   Opp GY:  Prismatic Vista, Recruiter of the Guard, Phelia, Exuberant Shepherd, Windswept Heath, Solitude, Swords to Plowshares, Shadowy Backstreet, Marsh Flats

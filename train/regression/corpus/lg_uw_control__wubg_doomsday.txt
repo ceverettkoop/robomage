@@ -860,11 +860,11 @@
 --- Decision 39 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  19 life | mana: empty | energy 2 | hand(7): Force of Negation, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Self:  19 life | mana: empty | energy 2 | hand(6): Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
   Opp BF:   Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Stack: Dark Ritual (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Dark Ritual (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
@@ -880,11 +880,11 @@
 --- Decision 40 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  19 life | mana: empty | energy 2 | hand(7): Force of Negation, Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
+  Self:  19 life | mana: empty | energy 2 | hand(6): Geist of Saint Traft, Lorien Revealed, Lorien Revealed, Swords to Plowshares, Tune the Narrative, Wasteland | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 51
   Self BF:  Island (T) | Mystic Sanctuary (T) | Tundra (T)
   Opp BF:   Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Stack: Dark Ritual (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Dark Ritual (opponent, slot 97) -> Dark Ritual (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
@@ -2591,6 +2591,7 @@
   Opp:   19 life | mana: empty | energy 4 | hand count: 4 | lib 38
   Self BF:  Cavern of Souls | Flooded Strand | Island | Scrubland | Tamiyo, Seasoned Scholar [loy 2] | Clue | Clue
   Opp BF:   Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
@@ -2745,11 +2746,11 @@
 --- Decision 109 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Self:  19 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 38
   Opp:   8 life | mana: empty | hand count: 0 | lib 2
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
   Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] | Clue | Clue
-  Stack: Thassa's Oracle (spell, opponent)
+  Stack: Force of Will (spell, self) -> Thassa's Oracle (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Street Wraith, Edge of Autumn, Flooded Strand, Doomsday
@@ -2768,11 +2769,11 @@
 --- Decision 110 ---
   Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  19 life | mana: empty | energy 4 | hand(4): Force of Will, Force of Will, Swords to Plowshares, Wasteland | lib 38
+  Self:  19 life | mana: empty | energy 4 | hand(3): Force of Will, Swords to Plowshares, Wasteland | lib 38
   Opp:   8 life | mana: empty | hand count: 0 | lib 2
   Self BF:  Island (T) | Island (T) | Meticulous Archive (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | The One Ring [burden:1] [Indestructible] (T) | Tundra (T) | Clue (SICK)
   Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland | Tamiyo, Seasoned Scholar [loy 2] | Clue | Clue
-  Stack: Thassa's Oracle (spell, opponent)
+  Stack: Force of Will (spell, self) -> Thassa's Oracle (opponent, slot 97) -> Thassa's Oracle (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Force of Will, Lorien Revealed, Lorien Revealed, Tune the Narrative, Force of Negation, Flow State, Brainstorm, Tune the Narrative, Ponder, Polluted Delta
   Opp GY:  Street Wraith, Edge of Autumn, Flooded Strand, Doomsday

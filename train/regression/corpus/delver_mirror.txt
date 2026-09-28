@@ -300,6 +300,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Island (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp GY:  Ponder, Misty Rainforest
   Opp revealed: Misty Rainforest, Ponder, Island
@@ -629,11 +630,11 @@
 --- Decision 29 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(6): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island | Mountain (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, opponent)
+  Stack: Daze (spell, self) -> Dragon's Rage Channeler (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
@@ -650,11 +651,11 @@
 --- Decision 30 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Daze, Ponder, Volcanic Island, Scalding Tarn | lib 49
+  Self:  19 life | mana: empty | hand(6): Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Ponder, Volcanic Island, Scalding Tarn | lib 49
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Island (T)
   Opp BF:   Island | Mountain (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, opponent)
+  Stack: Daze (spell, self) -> Dragon's Rage Channeler (opponent, slot 97) -> Dragon's Rage Channeler (spell, opponent)
   Pending: Daze (self)
   Self GY: Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Scalding Tarn, Ponder, Misty Rainforest
@@ -693,10 +694,10 @@
 --- Decision 32 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Wasteland | lib 49
+  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Wasteland | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Island | Mountain (T,NEW)
-  Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
+  Stack: Daze (spell, self) -> Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 98) -> Dragon's Rage Channeler (spell, self)
   Pending: Daze (self)
   Self GY: Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
@@ -714,10 +715,10 @@
 --- Decision 33 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Wasteland | lib 49
+  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Wasteland | lib 49
   Opp:   19 life | mana: empty | hand count: 7 | lib 49
   Self BF:  Island | Mountain (T,NEW)
-  Stack: Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 97) -> Dragon's Rage Channeler (spell, self)
+  Stack: Daze (spell, self) -> Daze (opponent, slot 97) -> Daze (spell, opponent) -> Dragon's Rage Channeler (self, slot 98) -> Dragon's Rage Channeler (spell, self)
   Pending: Daze (self)
   Self GY: Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Brainstorm, Polluted Delta, Mishra's Bauble
@@ -759,7 +760,7 @@
   -------- TURN 4 (Player B) --------
   Player B draws Flooded Strand
 --- Turn 4 (Player B) ---
-  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Daze, Wasteland
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Wasteland
   PB: Delver of Secrets, Dragon's Rage Channeler, Dragon's Rage Channeler, Ponder, Island, Flooded Strand, Volcanic Island, Scalding Tarn
 
 --- Decision 35 ---
@@ -833,10 +834,11 @@
 --- Decision 38 ---
   Priority: Player A (active)
   Step: Draw (turn 5)
-  Self:  18 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Lightning Bolt, Daze, Island, Wasteland | lib 48
+  Self:  18 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Island, Wasteland | lib 48
   Opp:   19 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [1/1] | Mountain
   Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T)
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Self GY: Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -1219,11 +1221,11 @@
 --- Decision 55 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Wasteland | lib 47
+  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland | lib 47
   Opp:   14 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Dragon's Rage Channeler [1/1] (T) | Island | Mountain (T)
   Opp BF:   Delver of Secrets [1/1] (res 1) | Island (T) | Volcanic Island (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, opponent)
+  Stack: Daze (spell, self) -> Dragon's Rage Channeler (spell, opponent)
   Pending: Daze (self)
   Self GY: Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -1239,11 +1241,11 @@
 --- Decision 56 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Daze, Wasteland | lib 47
+  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Cori-Steel Cutter, Wasteland | lib 47
   Opp:   14 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Dragon's Rage Channeler [1/1] (T) | Island | Mountain (T)
   Opp BF:   Delver of Secrets [1/1] (res 1) | Island (T) | Volcanic Island (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, opponent)
+  Stack: Daze (spell, self) -> Dragon's Rage Channeler (opponent, slot 97) -> Dragon's Rage Channeler (spell, opponent)
   Pending: Daze (self)
   Self GY: Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -1518,6 +1520,7 @@
   Opp:   14 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Dragon's Rage Channeler [1/1] (SICK,NEW,res 1) | Mishra's Bauble (NEW) | Island (NEW) | Mountain (T)
   Opp BF:   Delver of Secrets [1/1] (T) | Island (T) | Volcanic Island (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -1595,12 +1598,12 @@
 --- Decision 71 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  11 life | mana: empty | hand(5): Dragon's Rage Channeler, Dragon's Rage Channeler, Lightning Bolt, Volcanic Island, Scalding Tarn | lib 45
+  Self:  11 life | mana: empty | hand(4): Dragon's Rage Channeler, Dragon's Rage Channeler, Volcanic Island, Scalding Tarn | lib 45
   Opp:   17 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Delver of Secrets [1/1] | Island | Volcanic Island
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T)
-  Stack: Mishra's Bauble (ability, opponent) -> Delver of Secrets (ability, self)
-  Delayed: Mishra's Bauble (opponent, upkeep, on stack #0)
+  Stack: Lightning Bolt (spell, self) -> Mishra's Bauble (ability, opponent) -> Delver of Secrets (ability, self)
+  Delayed: Mishra's Bauble (opponent, upkeep, on stack #1)
   Pending: Lightning Bolt (self)
   Self GY: Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
@@ -1737,7 +1740,7 @@
   Opp:   14 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Delver of Secrets [1/1] (res 1) | Mishra's Bauble (NEW) | Island | Volcanic Island (T) | Volcanic Island (T,NEW)
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mountain (T)
-  Stack: Dragon's Rage Channeler (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Dragon's Rage Channeler (spell, self)
   Pending: Mishra's Bauble (self)
   Self GY: Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
   Opp GY:  Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
@@ -2528,6 +2531,7 @@
   Opp:   4 life | mana: empty | hand count: 1 | lib 39
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Mishra's Bauble (NEW) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Wasteland (NEW)
   Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Scalding Tarn, Mishra's Bauble, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -2570,7 +2574,7 @@
   Opp:   4 life | mana: empty | hand count: 1 | lib 39
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Wasteland (NEW)
   Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Stack: Wasteland (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
   Pending: Wasteland (self)
   Self GY: Mishra's Bauble, Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest
   Opp GY:  Scalding Tarn, Mishra's Bauble, Wasteland, Mishra's Bauble, Lightning Bolt, Dragon's Rage Channeler, Flooded Strand, Ponder, Daze, Brainstorm, Polluted Delta, Mishra's Bauble
@@ -2622,6 +2626,7 @@
   Opp:   4 life | mana: empty | hand count: 1 | lib 39
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Cori-Steel Cutter | Island | Mountain | Volcanic Island
   Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island (T)
+  Stack: Cori-Steel Cutter (ability, self)
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Cori-Steel Cutter (self)
   Self GY: Wasteland, Mishra's Bauble, Brainstorm, Murktide Regent, Flooded Strand, Murktide Regent, Lightning Bolt, Ponder, Polluted Delta, Mishra's Bauble, Lightning Bolt, Ponder, Daze, Scalding Tarn, Lightning Bolt, Volcanic Island, Daze, Scalding Tarn, Ponder, Misty Rainforest

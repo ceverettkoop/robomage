@@ -409,11 +409,11 @@
 --- Decision 20 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
+  Self:  19 life | mana: empty | hand(6): Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 72
   Self BF:  Island (T)
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Stack: Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
+  Stack: Force of Will (spell, self) -> Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Flooded Strand
   Known top: Brainstorm, Flooded Strand, ?, ?, ?
@@ -429,11 +429,11 @@
 --- Decision 21 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
+  Self:  19 life | mana: empty | hand(6): Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 72
   Self BF:  Island (T)
   Opp BF:   Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Stack: Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
+  Stack: Force of Will (spell, self) -> Aether Vial (opponent, slot 98) -> Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Flooded Strand
   Known top: Brainstorm, Flooded Strand, ?, ?, ?
@@ -607,7 +607,7 @@
   -------- TURN 4 (Player B) --------
 --- Turn 4 (Player B) ---
   PA: Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland
-  PB: Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
+  PB: Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
 --- Decision 30 ---
   Priority: Player A (non-active)
@@ -1476,10 +1476,11 @@
 --- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 45
+  Self:  16 life | mana: empty | hand(4): Force of Negation, Murktide Regent, The One Ring, Wrath of the Skies | lib 45
   Opp:   20 life | mana: empty | hand count: 2 | lib 71
   Self BF:  Island (T) | Island (T) | Tundra (NEW)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Aether Vial
@@ -1525,7 +1526,7 @@
   Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Wasteland | Orc Army [1/1] [+1/+1:1] (SICK)
   Opp BF:   Island (T) | Island (T) | Tundra (T,NEW)
-  Stack: Swords to Plowshares (spell, opponent) -> Orcish Bowmasters (self, slot 1)
+  Stack: Wasteland (ability, self) -> Swords to Plowshares (spell, opponent) -> Orcish Bowmasters (self, slot 1)
   Pending: Wasteland (self)
   Self GY: Aether Vial
   Opp GY:  Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
@@ -1554,7 +1555,7 @@
   Aether Vial triggered
 --- Turn 7 (Player A) ---
   PA: Pre-War Formalwear, Witch Enchanter
-  PB: Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies
+  PB: Force of Negation, Murktide Regent, The One Ring, Wrath of the Skies
 
 --- Decision 74 ---
   Priority: Player A (active)
@@ -2030,7 +2031,7 @@
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
   PA: Pre-War Formalwear, White Orchid Phantom
-  PB: Force of Negation, Murktide Regent, Swords to Plowshares, The One Ring, Wrath of the Skies
+  PB: Force of Negation, Murktide Regent, The One Ring, Wrath of the Skies
 
 --- Decision 96 ---
   Priority: Player A (non-active)
@@ -2095,10 +2096,11 @@
 --- Decision 99 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
@@ -2117,20 +2119,20 @@
    6: Exile Tundra (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will, Brainstorm, Flooded Strand
+  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm, Geist of Saint Traft
+  Self exile: Geist of Saint Traft
   Opp exile:  Orcish Bowmasters
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -2145,20 +2147,20 @@
    6: Exile Tundra (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will, Flooded Strand
+  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm, Brainstorm, Geist of Saint Traft
+  Self exile: Geist of Saint Traft
   Opp exile:  Orcish Bowmasters
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -2172,20 +2174,20 @@
    5: Exile Tundra (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
-  Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Force of Will
+  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
-  Self exile: Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
+  Self exile: Geist of Saint Traft
   Opp exile:  Orcish Bowmasters
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -2198,20 +2200,20 @@
    4: Exile Tundra (Delve)
   >> B/B: 0 (Exile Flow State (Delve))
 --- Narrative ---
-  Player B exiles Flow State via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 103 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(5): Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 70
   Self BF:  Island | Island
   Opp BF:   Aether Vial [charge:3] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Scrubland | Wasteland | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Swords to Plowshares, Tundra, Polluted Delta, Force of Will
+  Self GY: Swords to Plowshares, Tundra, Flow State, Polluted Delta, Brainstorm, Force of Will, Brainstorm, Flooded Strand
   Opp GY:  Wasteland, Aether Vial
-  Self exile: Flow State, Flooded Strand, Brainstorm, Brainstorm, Geist of Saint Traft
+  Self exile: Geist of Saint Traft
   Opp exile:  Orcish Bowmasters
   Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -2223,9 +2225,13 @@
    3: Exile Tundra (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Island for 1(U)
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Flooded Strand via Delve.
+  Player B exiles Flow State via Delve.
   Player B exiles Force of Will via Delve.
-  Player B activated Island for 1(U)
-  Player B activated Island for 1(U)
   Player B casts Murktide Regent
 
 --- Decision 104 ---
@@ -2371,7 +2377,7 @@
   Aether Vial triggered
 --- Turn 9 (Player A) ---
   PA: Pre-War Formalwear, White Orchid Phantom
-  PB: Force of Negation, Murktide Regent, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
+  PB: Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
 
 --- Decision 111 ---
   Priority: Player A (active)
@@ -2526,11 +2532,11 @@
 --- Decision 118 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK)
   Opp BF:   Aether Vial [charge:4] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Stack: Pre-War Formalwear (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Pre-War Formalwear (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Swords to Plowshares, Tundra, Polluted Delta
   Opp GY:  Wasteland, Aether Vial
@@ -2548,11 +2554,11 @@
 --- Decision 119 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  13 life | mana: empty | hand(4): Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
+  Self:  13 life | mana: empty | hand(3): Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies | lib 44
   Opp:   21 life | mana: empty | hand count: 2 | lib 69
   Self BF:  Island (T) | Island (T) | Murktide Regent [7/7] [+1/+1:4] [Flying] (SICK)
   Opp BF:   Aether Vial [charge:4] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Stack: Pre-War Formalwear (spell, opponent)
+  Stack: Force of Negation (spell, self) -> Pre-War Formalwear (opponent, slot 97) -> Pre-War Formalwear (spell, opponent)
   Pending: Force of Negation (self)
   Self GY: Swords to Plowshares, Tundra, Polluted Delta
   Opp GY:  Wasteland, Aether Vial
@@ -2728,7 +2734,7 @@
   -------- TURN 10 (Player B) --------
 --- Turn 10 (Player B) ---
   PA: White Orchid Phantom, White Orchid Phantom
-  PB: Force of Negation, Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
+  PB: Tamiyo, Inquisitive Student, The One Ring, Wrath of the Skies
 
 --- Decision 128 ---
   Priority: Player A (non-active)
@@ -3986,10 +3992,11 @@
 --- Decision 185 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  6 life | mana: empty | hand(2): Thoughtseize, White Orchid Phantom | lib 66
+  Self:  6 life | mana: empty | hand(1): White Orchid Phantom | lib 66
   Opp:   10 life | mana: empty | hand count: 3 | lib 42
   Self BF:  Aether Vial [charge:6] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Scrubland | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Island (T) | Island | Murktide Regent [7/7] [+1/+1:4] [Flying] (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Prismatic Vista, Wasteland, Aether Vial
   Opp GY:  Force of Negation, Swords to Plowshares, Tundra, Polluted Delta
@@ -4729,7 +4736,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 40
   Self BF:  Aether Vial [charge:6] | Phelia, Exuberant Shepherd [2/2] [Flash] (T) | Plains (T) | Scrubland (T) | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
   Opp BF:   Island (T) | Island | Meticulous Archive (T,NEW) | Murktide Regent [7/7] [+1/+1:4] [Flying] | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Meticulous Archive (ability, opponent) [amt=1]
+  Stack: Wasteland (ability, self) -> Meticulous Archive (ability, opponent) [amt=1]
   Pending: Wasteland (self)
   Self GY: Thoughtseize, Prismatic Vista, Wasteland, Aether Vial
   Opp GY:  Lorien Revealed, The One Ring, Force of Negation, Swords to Plowshares, Tundra, Polluted Delta

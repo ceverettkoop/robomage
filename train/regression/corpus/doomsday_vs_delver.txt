@@ -119,9 +119,10 @@
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Thoughtseize, Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
+  Self:  20 life | mana: empty | hand(5): Street Wraith, Edge of Autumn, Ponder, Island, Misty Rainforest | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Underground Sea (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Extras: self_lands_played=1, not_priority_window
   Actions:
@@ -424,6 +425,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Underground Sea (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Daze
   Opp GY:  Thoughtseize
@@ -1737,10 +1739,11 @@
 --- Decision 81 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn | lib 47
+  Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Ponder, Scalding Tarn, Scalding Tarn | lib 47
   Opp:   17 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Lightning Bolt (spell, self)
   Pending: Lightning Bolt (self)
   Self GY: Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
@@ -2195,7 +2198,7 @@
   Opp:   14 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 3) | Mishra's Bauble (NEW) | Island (T) | Volcanic Island (T,NEW) | Volcanic Island (T)
   Opp BF:   Underground Sea | Underground Sea | Island
-  Stack: Dragon's Rage Channeler (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Dragon's Rage Channeler (spell, self)
   Pending: Mishra's Bauble (self)
   Self GY: Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
@@ -2943,10 +2946,11 @@
 --- Decision 134 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Brainstorm, Wasteland, Force of Will, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
@@ -2966,20 +2970,19 @@
    8: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
-  Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 135 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Brainstorm, Wasteland, Force of Will, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
+  Self GY: Brainstorm, Wasteland, Force of Will, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
-  Self exile: Mishra's Bauble
   Known top: Scalding Tarn, Mountain, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Underground Sea
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
@@ -2996,20 +2999,19 @@
    8: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
-  Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 136 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Brainstorm, Wasteland, Force of Will, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
+  Self GY: Brainstorm, Wasteland, Force of Will, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
-  Self exile: Mishra's Bauble, Mishra's Bauble
   Known top: Scalding Tarn, Mountain, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Underground Sea
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
@@ -3026,20 +3028,19 @@
    8: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Mishra's Bauble (Delve))
 --- Narrative ---
-  Player B exiles Mishra's Bauble via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 137 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Brainstorm, Wasteland, Force of Will, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
+  Self GY: Brainstorm, Wasteland, Force of Will, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
-  Self exile: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Known top: Scalding Tarn, Mountain, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Underground Sea
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
@@ -3055,20 +3056,19 @@
    7: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Force of Will (Delve))
 --- Narrative ---
-  Player B exiles Force of Will via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 138 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Murktide Regent, Force of Will, Scalding Tarn, Thundering Falls | lib 37
+  Self:  19 life | mana: empty | hand(3): Force of Will, Scalding Tarn, Thundering Falls | lib 37
   Opp:   11 life | mana: empty | hand count: 6 | lib 48
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Island (T) | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Brainstorm, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
+  Self GY: Brainstorm, Wasteland, Force of Will, Mishra's Bauble, Flooded Strand, Ponder, Mishra's Bauble, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Mishra's Bauble, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
-  Self exile: Force of Will, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble
   Known top: Scalding Tarn, Mountain, ?, ?, ?
   Opp revealed: Misty Rainforest, Ponder, Island, Thoughtseize, Underground Sea
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
@@ -3083,9 +3083,13 @@
    6: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
+  Player B activated Volcanic Island for 1(U)
+  Player B activated Volcanic Island for 1(U)
+  Player B exiles Mishra's Bauble via Delve.
+  Player B exiles Mishra's Bauble via Delve.
+  Player B exiles Mishra's Bauble via Delve.
+  Player B exiles Force of Will via Delve.
   Player B exiles Brainstorm via Delve.
-  Player B activated Volcanic Island for 1(U)
-  Player B activated Volcanic Island for 1(U)
   Player B casts Murktide Regent
   Dragon's Rage Channeler loses Delirium bonus
   Dragon's Rage Channeler loses Delirium bonus
@@ -3679,10 +3683,11 @@
 --- Decision 165 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
-  Self:  18 life | mana: empty | hand(3): Force of Will, Unholy Heat, Thundering Falls | lib 35
+  Self:  18 life | mana: empty | hand(2): Force of Will, Thundering Falls | lib 35
   Opp:   9 life | mana: empty | hand count: 7 | lib 47
   Self BF:  Murktide Regent [5/5] [+1/+1:2] [Flying] | Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island | Volcanic Island
   Opp BF:   Underground Sea | Underground Sea | Island
+  Stack: Unholy Heat (spell, self)
   Pending: Unholy Heat (self)
   Self GY: Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
   Opp GY:  Misty Rainforest, Ponder, Thoughtseize
@@ -4715,6 +4720,7 @@
   Opp:   18 life | mana: empty | hand count: 1 | lib 32
   Self BF:  Underground Sea (T) | Underground Sea | Island
   Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Dragon's Rage Channeler [3/3] [Flying] (T) | Island | Mountain (T) | Volcanic Island | Volcanic Island | Thundering Falls (T)
+  Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
   Opp GY:  Brainstorm, Murktide Regent, Unholy Heat, Lightning Bolt, Delver of Secrets, Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
@@ -5173,6 +5179,7 @@
   Opp:   1 life | mana: empty | hand count: 6 | lib 4
   Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Mishra's Bauble (NEW) | Island | Mountain | Volcanic Island | Volcanic Island | Thundering Falls
   Opp BF:   Underground Sea (T) | Underground Sea
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Unholy Heat, Delver of Secrets, Brainstorm, Murktide Regent, Unholy Heat, Lightning Bolt, Delver of Secrets, Scalding Tarn, Wasteland, Flooded Strand, Ponder, Lightning Bolt, Ponder, Ponder, Brainstorm, Polluted Delta, Daze
   Opp GY:  Edge of Autumn, Island, Doomsday

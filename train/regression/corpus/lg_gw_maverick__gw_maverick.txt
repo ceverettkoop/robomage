@@ -368,10 +368,11 @@
 --- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
+  Self:  19 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
   Opp:   20 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Dryad Arbor [1/1] | Forest (NEW)
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Misty Rainforest, Once Upon a Time
@@ -464,11 +465,11 @@
 --- Decision 20 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
+  Self:  20 life | mana: empty | hand(3): Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
   Opp BF:   Dryad Arbor [1/1] (T) | Forest
-  Stack: Once Upon a Time (spell, self)
+  Stack: Swords to Plowshares (spell, self) -> Once Upon a Time (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Once Upon a Time
@@ -901,6 +902,7 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Forest (T) | Noble Hierarch [0/1] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland
+  Stack: Wasteland (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Misty Rainforest, Once Upon a Time
@@ -1137,10 +1139,11 @@
 --- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(5): Gaea's Cradle, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
+  Self:  20 life | mana: empty | hand(4): Gaea's Cradle, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
   Opp:   18 life | mana: empty | hand count: 5 | lib 49
   Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Wasteland
   Opp BF:   Forest (T) | Noble Hierarch [0/1] (SICK)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
@@ -1500,10 +1503,11 @@
 --- Decision 66 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  16 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
+  Self:  16 life | mana: empty | hand(4): Keen-Eyed Curator, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 49
   Opp:   20 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Forest | Noble Hierarch [0/1]
   Opp BF:   Badgermole Cub [2/2] (T) | Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Wasteland
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Misty Rainforest, Once Upon a Time
@@ -1675,7 +1679,7 @@
   Opp:   16 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Dryad Arbor [1/1] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Wasteland
   Opp BF:   Forest | Noble Hierarch [0/1] (T) | Talon Gates of Madara (NEW)
-  Stack: Talon Gates of Madara (ability, opponent)
+  Stack: Wasteland (ability, self) -> Talon Gates of Madara (ability, opponent)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
@@ -2162,6 +2166,7 @@
   Opp:   22 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Wasteland (NEW)
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Wasteland
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
@@ -2219,7 +2224,7 @@
   Opp:   14 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Wasteland
   Opp BF:   Forest (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Noble Hierarch [0/1] (T) | Wasteland (T,NEW)
-  Stack: Keen-Eyed Curator (ability, opponent) -> Once Upon a Time (self)
+  Stack: Wasteland (ability, self) -> Keen-Eyed Curator (ability, opponent) -> Once Upon a Time (self)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Wasteland, Savannah, Once Upon a Time, Swords to Plowshares, Once Upon a Time
@@ -2351,10 +2356,11 @@
 --- Decision 100 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  14 life | mana: empty | hand(4): Green Sun's Zenith, Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
+  Self:  14 life | mana: empty | hand(3): Scythecat Cub, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 46
   Opp:   22 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Forest | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1]
   Opp BF:   Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Gaea's Cradle
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
@@ -2453,6 +2459,7 @@
   Opp:   22 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1]
   Opp BF:   Dryad Arbor [1/1] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Gaea's Cradle
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
@@ -3029,6 +3036,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 43
   Self BF:  Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1]
   Opp BF:   Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Knight of the Reliquary [6/6] (SICK) | Savannah (T)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Once Upon a Time, Wasteland, Talon Gates of Madara, Swords to Plowshares, Wasteland, Misty Rainforest, Once Upon a Time
@@ -3183,9 +3191,9 @@
   Step: First Main (turn 17)
   Self:  13 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 42
   Opp:   12 life | mana: empty | hand count: 4 | lib 44
-  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Knight of the Reliquary [5/5] (T) | Savannah (T)
+  Self BF:  Dryad Arbor [1/1] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle | Knight of the Reliquary [5/5] | Savannah (T)
   Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Forest (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T)
-  Stack: Knight of the Reliquary (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (spell, self)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -3677,9 +3685,9 @@
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
   Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Gaea's Cradle | Knight of the Reliquary [7/7] (T) | Knight of the Reliquary [7/7] | Knight of the Reliquary [7/7] | Plains (T) | Savannah
+  Self BF:  Bojuka Bog (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Gaea's Cradle | Knight of the Reliquary [7/7] | Knight of the Reliquary [7/7] | Knight of the Reliquary [7/7] | Plains (T) | Savannah
   Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK)
-  Stack: Thalia, Guardian of Thraben (spell, self)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
   Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -3726,10 +3734,10 @@
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
   Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Bojuka Bog (T) | Gaea's Cradle | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [8/8] | Plains (T) | Savannah
+  Self BF:  Bojuka Bog (T) | Gaea's Cradle | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [8/8] | Knight of the Reliquary [8/8] | Plains (T) | Savannah
   Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK)
-  Stack: Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
-  Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #0) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
+  Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #1) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
@@ -3772,10 +3780,10 @@
   Step: First Main (turn 19)
   Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Windswept Heath | lib 39
   Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Bojuka Bog (T) | Gaea's Cradle | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (T) | Savannah
+  Self BF:  Bojuka Bog (T) | Gaea's Cradle | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [9/9] | Savannah
   Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
-  Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #1) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Forest (ability, self) -> Knight of the Reliquary (ability, self) [amt=1] -> Thalia, Guardian of Thraben (spell, self)
+  Delayed: Badgermole Cub -> Forest (self, leaves bf, on stack #2) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Plains, Forest, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
   Self exile: Savannah, Once Upon a Time, Once Upon a Time, Badgermole Cub
@@ -4209,10 +4217,11 @@
 --- Decision 171 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
-  Self:  12 life | mana: empty | hand(4): Green Sun's Zenith, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
+  Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 42
   Opp:   10 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Scythecat Cub [2/2] [Trample]
   Opp BF:   Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -4303,10 +4312,11 @@
 --- Decision 175 ---
   Priority: Player B (active)
   Step: First Main (turn 20)
-  Self:  12 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
+  Self:  12 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
   Opp:   10 life | mana: empty | hand count: 0 | lib 34
   Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] | Scythecat Cub [2/2] [Trample]
   Opp BF:   Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Green Sun's Zenith (spell, self)
   Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Opp GY:  Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -4733,6 +4743,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 44
   Self BF:  Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Karakas (ability, self)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Karakas (self)
   Self GY: Once Upon a Time, Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -4776,9 +4787,9 @@
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   12 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [12/12] (T) | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Bojuka Bog (T) | Forest (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Knight of the Reliquary [12/12] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Once Upon a Time, Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares
@@ -4822,9 +4833,9 @@
   Step: First Main (turn 21)
   Self:  3 life | mana: empty | hand(0): (empty) | lib 32
   Opp:   12 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Bojuka Bog (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
+  Self BF:  Bojuka Bog (T) | Gaea's Cradle (T) | Karakas (T) | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [13/13] | Knight of the Reliquary [13/13] | Savannah | Scryb Ranger [1/1] [Flying, Flash] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
+  Stack: Knight of the Reliquary (ability, self) [amt=1] -> Knight of the Reliquary (ability, self) [amt=1] -> Karakas (ability, self) -> Thalia, Guardian of Thraben (opponent, slot 54)
   Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Forest, Once Upon a Time, Windswept Heath, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Misty Rainforest, Horizon Canopy, Savannah, Plains, Windswept Heath, Dryad Arbor, Verdant Catacombs, Wasteland, Wasteland, Swords to Plowshares

@@ -120,7 +120,7 @@
   Self:  20 life | mana: empty | hand(5): Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Mishra's Bauble (NEW)
-  Stack: Mishra's Bauble (spell, self)
+  Stack: Mishra's Bauble (ability, self) -> Mishra's Bauble (spell, self)
   Pending: Mishra's Bauble (self)
   This turn: self spells=2 noncreature=2
   Extras: not_priority_window
@@ -186,7 +186,7 @@
   Self:  20 life | mana: empty | hand(4): Daze, Murktide Regent, Volcanic Island, Volcanic Island | lib 53
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
-  Stack: Thundering Falls (ability, self) [amt=1]
+  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
   Delayed: Mishra's Bauble (self, upkeep, waiting)
   Pending: Mishra's Bauble (self)
   Self GY: Mishra's Bauble
@@ -346,10 +346,11 @@
 --- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Badlands (NEW)
   Opp BF:   Thundering Falls (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -389,11 +390,11 @@
 --- Decision 18 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
+  Self:  20 life | mana: empty | hand(5): Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Thundering Falls (T)
   Opp BF:   Badlands (T,NEW)
-  Stack: Cabal Therapy (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Cabal Therapy (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Marsh Flats
@@ -409,11 +410,11 @@
 --- Decision 19 ---
   Priority: Player A (non-active)
   Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Daze, Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
+  Self:  20 life | mana: empty | hand(5): Daze, Mishra's Bauble, Murktide Regent, Volcanic Island, Volcanic Island | lib 50
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Thundering Falls (T)
   Opp BF:   Badlands (T,NEW)
-  Stack: Cabal Therapy (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Cabal Therapy (opponent, slot 97) -> Cabal Therapy (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Marsh Flats
@@ -526,7 +527,7 @@
   Opp:   19 life | mana: empty | hand count: 6 | lib 51
   Self BF:  Mishra's Bauble (NEW) | Thundering Falls (T,NEW)
   Opp BF:   Badlands (T)
-  Stack: Thundering Falls (ability, self) [amt=1]
+  Stack: Mishra's Bauble (ability, self) -> Thundering Falls (ability, self) [amt=1]
   Pending: Mishra's Bauble (self)
   Self GY: Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
@@ -604,10 +605,11 @@
 --- Decision 27 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 50
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Badlands
   Opp BF:   Thundering Falls (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -646,11 +648,11 @@
 --- Decision 29 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Thundering Falls (T)
   Opp BF:   Badlands (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Thoughtseize (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
@@ -666,11 +668,11 @@
 --- Decision 30 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Ponder, Volcanic Island, Volcanic Island | lib 47
   Opp:   19 life | mana: empty | hand count: 6 | lib 50
   Self BF:  Thundering Falls (T)
   Opp BF:   Badlands (T)
-  Stack: Thoughtseize (spell, opponent) -> self (player)
+  Stack: Daze (spell, self) -> Thoughtseize (opponent, slot 97) -> Thoughtseize (spell, opponent) -> self (player)
   Pending: Daze (self)
   Self GY: Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Cabal Therapy [play:opponent], Marsh Flats
@@ -772,8 +774,9 @@
   Self:  19 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known opp hand: Thundering Falls
   Opp revealed: Daze, Brainstorm, Thundering Falls, Mishra's Bauble
@@ -792,8 +795,9 @@
   Self:  19 life | mana: empty | hand(4): Amped Raptor, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Known opp hand: Thundering Falls
   Opp revealed: Daze, Brainstorm, Thundering Falls, Mishra's Bauble
@@ -1082,11 +1086,11 @@
 --- Decision 47 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 44
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 44
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Amped Raptor (spell, opponent)
+  Stack: Daze (spell, self) -> Amped Raptor (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1104,11 +1108,11 @@
 --- Decision 48 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Daze, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 44
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Murktide Regent, Thundering Falls, Volcanic Island, Volcanic Island | lib 44
   Opp:   19 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Island (T)
   Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Amped Raptor (spell, opponent)
+  Stack: Daze (spell, self) -> Amped Raptor (opponent, slot 97) -> Amped Raptor (spell, opponent)
   Pending: Daze (self)
   Self GY: Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1329,10 +1333,11 @@
 --- Decision 57 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  18 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 46
+  Self:  18 life | mana: empty | hand(2): Swords to Plowshares, Voice of Victory | lib 46
   Opp:   19 life | mana: empty | hand count: 6 | lib 43
   Self BF:  Badlands | Elegant Parlor (T) | Guide of Souls [1/2] (SICK,NEW) | Scrubland
   Opp BF:   Island
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -1928,6 +1933,7 @@
   Opp:   18 life | mana: empty | hand count: 5 | lib 41
   Self BF:  Badlands (T) | Elegant Parlor (T) | Guide of Souls [1/2] (res 1) | Scrubland | Voice of Victory [1/3] (SICK,NEW) | Wasteland (NEW)
   Opp BF:   Island | Mystic Sanctuary (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2493,10 +2499,11 @@
 --- Decision 112 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  17 life | mana: empty | energy 1 | hand(2): Cabal Therapy, Swords to Plowshares | lib 44
+  Self:  17 life | mana: empty | energy 1 | hand(1): Swords to Plowshares | lib 44
   Opp:   17 life | mana: empty | hand count: 5 | lib 39
   Self BF:  Badlands | Elegant Parlor | Guide of Souls [1/2] | Scrubland | Voice of Victory [1/3]
   Opp BF:   Island | Thundering Falls (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -2615,8 +2622,9 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 39
   Self BF:  Badlands (T) | Elegant Parlor | Guide of Souls [1/2] | Scrubland | Voice of Victory [1/3]
   Opp BF:   Island | Thundering Falls (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self GY: Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Cabal Therapy
   Known opp hand: Cori-Steel Cutter, Flow State, Force of Will, Volcanic Island, Volcanic Island
@@ -2637,8 +2645,9 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 39
   Self BF:  Badlands (T) | Elegant Parlor | Guide of Souls [1/2] | Scrubland | Voice of Victory [1/3]
   Opp BF:   Island | Thundering Falls (T)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
+  Self GY: Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Self exile: Cabal Therapy
   Known opp hand: Cori-Steel Cutter, Flow State, Force of Will, Volcanic Island, Volcanic Island
@@ -3274,10 +3283,11 @@
 --- Decision 145 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
-  Self:  17 life | mana: empty | energy 1 | hand(1): Swords to Plowshares | lib 44
+  Self:  17 life | mana: empty | energy 1 | hand(0): (empty) | lib 44
   Opp:   14 life | mana: empty | hand count: 3 | lib 38
   Self BF:  Badlands (T) | Elegant Parlor | Scrubland | Voice of Victory [1/3] (T)
   Opp BF:   Cori-Steel Cutter (NEW,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -3320,11 +3330,11 @@
 --- Decision 147 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  14 life | mana: empty | hand(3): Flow State, Force of Will, Volcanic Island | lib 38
+  Self:  14 life | mana: empty | hand(2): Flow State, Volcanic Island | lib 38
   Opp:   17 life | mana: empty | energy 1 | hand count: 0 | lib 44
   Self BF:  Cori-Steel Cutter (NEW,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badlands (T) | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
+  Stack: Force of Will (spell, self) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
   Pending: Force of Will (self)
   Self GY: Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3341,11 +3351,11 @@
 --- Decision 148 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  14 life | mana: empty | hand(3): Flow State, Force of Will, Volcanic Island | lib 38
+  Self:  14 life | mana: empty | hand(2): Flow State, Volcanic Island | lib 38
   Opp:   17 life | mana: empty | energy 1 | hand count: 0 | lib 44
   Self BF:  Cori-Steel Cutter (NEW,res 1) | Dragon's Rage Channeler [3/3] [Flying] (SICK,NEW) | Island (T) | Thundering Falls (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badlands (T) | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] (T)
-  Stack: Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
+  Stack: Force of Will (spell, self) -> Swords to Plowshares (opponent, slot 97) -> Swords to Plowshares (spell, opponent) -> Dragon's Rage Channeler (self, slot 1)
   Pending: Force of Will (self)
   Self GY: Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3529,6 +3539,7 @@
   Opp:   17 life | mana: empty | energy 1 | hand count: 0 | lib 43
   Self BF:  Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] | Island | Polluted Delta (NEW) | Thundering Falls | Volcanic Island | Monk [1/1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] | Cat Warrior [2/1] (SICK)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3628,6 +3639,7 @@
   Opp:   17 life | mana: empty | energy 1 | hand count: 0 | lib 43
   Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Island (T) | Thundering Falls (T) | Volcanic Island (NEW) | Volcanic Island | Monk [1/1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Badlands (T) | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] | Cat Warrior [2/1] (SICK)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3706,10 +3718,11 @@
 --- Decision 162 ---
   Priority: Player B (active)
   Step: Draw (turn 16)
-  Self:  13 life | mana: empty | energy 1 | hand(1): Swords to Plowshares | lib 42
+  Self:  13 life | mana: empty | energy 1 | hand(0): (empty) | lib 42
   Opp:   12 life | mana: empty | hand count: 1 | lib 35
   Self BF:  Ajani, Nacatl Pariah [1/2] | Badlands | Elegant Parlor | Scrubland | Voice of Victory [1/3] | Cat Warrior [2/1]
   Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Island (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1]
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
@@ -3941,6 +3954,7 @@
   Opp:   13 life | mana: empty | energy 1 | hand count: 0 | lib 42
   Self BF:  Cori-Steel Cutter | Island | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island (NEW) | Monk [1/1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] (T) | Cat Warrior [2/1] (T)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -3989,6 +4003,7 @@
   Opp:   13 life | mana: empty | energy 1 | hand count: 0 | lib 42
   Self BF:  Cori-Steel Cutter (->Monk) | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island | Volcanic Island (NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor (T) | Scrubland | Voice of Victory [1/3] (T) | Cat Warrior [2/1] (T)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -4310,6 +4325,7 @@
   Opp:   11 life | mana: empty | energy 1 | hand count: 0 | lib 40
   Self BF:  Cori-Steel Cutter (->Monk) | Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island | Volcanic Island (NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Scrubland | Shadowy Backstreet (T) | Voice of Victory [1/3] (T) | Cat Warrior [2/1] (T)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Arid Mesa, Swords to Plowshares, Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -4359,6 +4375,7 @@
   Opp:   11 life | mana: empty | energy 1 | hand count: 0 | lib 40
   Self BF:  Cori-Steel Cutter (->Tamiyo, Inquisitive Student) | Island (T) | Tamiyo, Inquisitive Student [1/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island | Volcanic Island | Volcanic Island (NEW) | Monk [1/1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (T) | Badlands | Elegant Parlor | Scrubland | Shadowy Backstreet (T) | Voice of Victory [1/3] (T) | Cat Warrior [2/1] (T)
+  Stack: Cori-Steel Cutter (ability, self)
   Pending: Cori-Steel Cutter (self)
   Self GY: Polluted Delta, Force of Will, Force of Will, Into the Flood Maw, Mystic Sanctuary, Misty Rainforest, Murktide Regent, Daze, Ponder, Scalding Tarn, Daze, Brainstorm, Mishra's Bauble, Daze, Brainstorm, Mishra's Bauble, Mishra's Bauble
   Opp GY:  Arid Mesa, Swords to Plowshares, Swords to Plowshares, Guide of Souls, Wasteland, Thoughtseize, Voice of Victory, Marsh Flats, Amped Raptor, Ocelot Pride, Thoughtseize, Marsh Flats

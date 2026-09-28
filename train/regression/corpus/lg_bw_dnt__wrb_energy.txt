@@ -264,10 +264,11 @@
 --- Decision 13 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory, Wasteland | lib 52
+  Self:  19 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 52
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Self BF:  Badlands (NEW)
   Opp BF:   Aether Vial (T) | Scrubland (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
@@ -508,6 +509,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Aether Vial [charge:1] (T,res 1) | Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
   Opp BF:   Badlands (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Pre-War Formalwear
   Opp GY:  Thoughtseize, Marsh Flats
@@ -1212,10 +1214,11 @@
 --- Decision 59 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  15 life | mana: empty | hand(5): Ocelot Pride, Swords to Plowshares, Swords to Plowshares, Voice of Victory, Wasteland | lib 49
+  Self:  15 life | mana: empty | hand(4): Ocelot Pride, Swords to Plowshares, Voice of Victory, Wasteland | lib 49
   Opp:   20 life | mana: empty | hand count: 2 | lib 71
   Self BF:  Elegant Parlor
   Opp BF:   Aether Vial [charge:2] | Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Pre-War Formalwear
@@ -1344,6 +1347,7 @@
   Opp:   21 life | mana: empty | hand count: 2 | lib 71
   Self BF:  Elegant Parlor (T) | Wasteland (NEW)
   Opp BF:   Aether Vial [charge:2] | Aether Vial [charge:1] | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp GY:  Wasteland, Pre-War Formalwear
@@ -1727,6 +1731,7 @@
   Opp:   15 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Aether Vial [charge:3] (res 1) | Aether Vial [charge:2] (res 1) | Wasteland | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Elegant Parlor (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
@@ -3616,10 +3621,11 @@
 --- Decision 174 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
-  Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
+  Self:  13 life | mana: empty | hand(3): Swords to Plowshares, Thoughtseize, Voice of Victory | lib 45
   Opp:   19 life | mana: empty | hand count: 2 | lib 67
   Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Cat [1/1] (SICK)
   Opp BF:   Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Plains (T,NEW) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp GY:  Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
@@ -4778,11 +4784,11 @@
 --- Decision 231 ---
   Priority: Player B (non-active)
   Step: First Main (turn 13)
-  Self:  13 life | mana: empty | hand(4): Swords to Plowshares, Thoughtseize, Thoughtseize, Voice of Victory | lib 44
+  Self:  13 life | mana: empty | hand(3): Thoughtseize, Thoughtseize, Voice of Victory | lib 44
   Opp:   19 life | mana: empty | hand count: 2 | lib 66
   Self BF:  Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Cat [1/1] (T) | Cat [1/1] (SICK)
   Opp BF:   Aether Vial [charge:6] (res 1) | Aether Vial [charge:5] (res 1) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1]
-  Stack: White Orchid Phantom (ability, opponent)
+  Stack: Swords to Plowshares (spell, self) -> White Orchid Phantom (ability, opponent)
   Pending: Swords to Plowshares (self)
   Self GY: Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats
   Opp GY:  Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
@@ -8823,10 +8829,11 @@
 --- Decision 418 ---
   Priority: Player A (active)
   Step: Draw (turn 23)
-  Self:  12 life | mana: empty | hand(2): Orcish Bowmasters, Swords to Plowshares | lib 59
+  Self:  12 life | mana: empty | hand(1): Orcish Bowmasters | lib 59
   Opp:   3 life | mana: empty | hand count: 6 | lib 38
   Self BF:  Aether Vial [charge:11] (res 1) | Aether Vial [charge:10] (res 1) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains | Stoneforge Mystic [1/2] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains (T) | Plateau (T) | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Windswept Heath, Arid Mesa, Prismatic Vista, Wasteland, Scrubland, Wasteland, Pre-War Formalwear
   Opp GY:  Marsh Flats, Swords to Plowshares, Swords to Plowshares, Arid Mesa, Elegant Parlor, Wasteland, Swords to Plowshares, Guide of Souls, Arid Mesa, Badlands, Thoughtseize, Marsh Flats

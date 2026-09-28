@@ -98,9 +98,9 @@
 --- Decision 5 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
+  Self:  20 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Lotus Petal
   This turn: opp spells=1 noncreature=1
@@ -114,9 +114,9 @@
 --- Decision 6 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
+  Self:  20 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Marsh Flats, Ponder, Reanimate, Thoughtseize | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (opponent, slot 97) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Lotus Petal
   This turn: opp spells=1 noncreature=1
@@ -222,9 +222,10 @@
 --- Decision 11 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
+  Self:  19 life | mana: empty | hand(4): Brainstorm, Polluted Delta, Thoughtseize, Undercity Sewers | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Swamp (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats, Lotus Petal
   Opp GY:  Force of Will
@@ -379,10 +380,11 @@
 --- Decision 17 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(5): Brainstorm, Otherworldly Gaze, Polluted Delta, Thoughtseize, Undercity Sewers | lib 51
+  Self:  17 life | mana: empty | hand(4): Brainstorm, Otherworldly Gaze, Polluted Delta, Undercity Sewers | lib 51
   Opp:   18 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Swamp
   Opp BF:   Swamp
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Marsh Flats, Thoughtseize, Force of Will
@@ -994,11 +996,11 @@
 --- Decision 41 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | hand(2): Careful Study, Force of Will | lib 44
+  Self:  14 life | mana: empty | hand(1): Careful Study | lib 44
   Opp:   17 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Swamp | Undercity Sewers (T)
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
@@ -1016,11 +1018,11 @@
 --- Decision 42 ---
   Priority: Player A (non-active)
   Step: First Main (turn 6)
-  Self:  14 life | mana: empty | hand(2): Careful Study, Force of Will | lib 44
+  Self:  14 life | mana: empty | hand(1): Careful Study | lib 44
   Opp:   17 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Island (T) | Swamp | Undercity Sewers (T)
   Opp BF:   Swamp | Undercity Sewers (T)
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (opponent, slot 97) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Scalding Tarn, Otherworldly Gaze [play:self], Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
@@ -1338,10 +1340,11 @@
 --- Decision 55 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  13 life | mana: empty | hand(1): Reanimate | lib 40
+  Self:  13 life | mana: empty | hand(0): (empty) | lib 40
   Opp:   16 life | mana: empty | hand count: 1 | lib 43
   Self BF:  Island (T) | Swamp (T) | Undercity Sewers
   Opp BF:   Island (T) | Swamp | Undercity Sewers (T)
+  Stack: Reanimate (spell, self)
   Pending: Reanimate (self)
   Self GY: Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Archon of Cruelty, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will
@@ -2358,10 +2361,11 @@
 --- Decision 97 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  10 life | mana: empty | hand(2): Reanimate, Thoughtseize | lib 28
+  Self:  10 life | mana: empty | hand(1): Thoughtseize | lib 28
   Opp:   3 life | mana: empty | hand count: 0 | lib 38
   Self BF:  Island (T) | Lotus Petal | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Archon of Cruelty [6/6] [Flying]
   Opp BF:   Island (T) | Swamp | Undercity Sewers | Undercity Sewers (T)
+  Stack: Reanimate (spell, self)
   Pending: Reanimate (self)
   Self GY: Brainstorm, Otherworldly Gaze [play:self], Otherworldly Gaze [play:self], Atraxa, Grand Unifier, Flow State, Flow State, Force of Will, Bloodstained Mire, Reanimate, Animate Dead, Flooded Strand, Polluted Delta, Force of Will, Scalding Tarn, Force of Will, Dark Ritual, Flow State, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Archon of Cruelty, Polluted Delta, Brainstorm, Dark Ritual, Animate Dead, Ponder, Scalding Tarn, Lotus Petal, Careful Study, Flow State, Thoughtseize, Bloodstained Mire, Reanimate, Marsh Flats, Thoughtseize, Force of Will

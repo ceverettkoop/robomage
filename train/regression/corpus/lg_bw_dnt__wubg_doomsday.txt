@@ -752,7 +752,7 @@
   Opp:   20 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Aether Vial [charge:1] (T) | Aether Vial (T) | Scrubland (T) | Wasteland
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Tropical Island (T,NEW)
-  Stack: Aether Vial (ability, self) -> Veil of Summer (spell, opponent)
+  Stack: Wasteland (ability, self) -> Aether Vial (ability, self) -> Veil of Summer (spell, opponent)
   Pending: Wasteland (self)
   Opp GY:  Brainstorm, Lotus Petal
   Opp revealed: Island, Brainstorm, Lotus Petal, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island
@@ -4270,7 +4270,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 46
   Self BF:  Aether Vial [charge:5] (res 1) | Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Pre-War Formalwear | Scrubland (T) | Wasteland | Witch-Blessed Meadow (T) | Orc Army [2/2] [+1/+1:2]
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 10] | Undercity Sewers
-  Stack: White Orchid Phantom (spell, self)
+  Stack: Wasteland (ability, self) -> White Orchid Phantom (spell, self)
   Pending: Wasteland (self)
   Self GY: Wasteland
   Opp GY:  Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
@@ -7979,6 +7979,7 @@
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
   Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Pre-War Formalwear | Scrubland | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] | Underground Sea
+  Stack: Pre-War Formalwear (ability, self)
   Pending: Pre-War Formalwear (self)
   Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
@@ -8030,7 +8031,7 @@
   Opp:   9 life | mana: empty | hand count: 6 | lib 42
   Self BF:  Aether Vial [charge:7] (res 1) | Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains (T) | Plains (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island | Tamiyo, Seasoned Scholar [loy 14] | Underground Sea
-  Stack: Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
+  Stack: Wasteland (ability, self) -> Pre-War Formalwear (ability, self) -> Orcish Bowmasters (self, slot 2)
   Pending: Wasteland (self)
   Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal
@@ -9714,6 +9715,7 @@
   Opp:   2 life | mana: empty | hand count: 5 | lib 41
   Self BF:  Aether Vial [charge:8] (res 1) | Aether Vial [charge:7] (res 1) | Orcish Bowmasters [3/3] [Vigilance, Flash] (eq:Pre-War Formalwear) | Phelia, Exuberant Shepherd [2/2] [Flash] | Plains | Plains | Plains (NEW) | Pre-War Formalwear (->Orcish Bowmasters) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [3/3] [+1/+1:3]
   Opp BF:   Island (T) | Tamiyo, Seasoned Scholar [loy 16]
+  Stack: Pre-War Formalwear (ability, self)
   Pending: Pre-War Formalwear (self)
   Self GY: Wasteland, Arid Mesa, Prismatic Vista, Wasteland, Wasteland
   Opp GY:  Edge of Autumn, Lotus Petal, Underground Sea, Flooded Strand, Ponder, Undercity Sewers, Ponder, Polluted Delta, Veil of Summer, Tropical Island, Brainstorm, Lotus Petal

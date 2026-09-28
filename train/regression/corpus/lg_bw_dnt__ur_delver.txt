@@ -113,10 +113,10 @@
 --- Decision 6 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Cori-Steel Cutter, Flow State, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Opp BF:   Scrubland (T,NEW)
-  Stack: Aether Vial (spell, opponent)
+  Stack: Force of Will (spell, self) -> Aether Vial (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
   This turn: opp spells=1 noncreature=1
@@ -130,10 +130,10 @@
 --- Decision 7 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Cori-Steel Cutter, Flow State, Force of Will, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
+  Self:  20 life | mana: empty | hand(6): Brainstorm, Cori-Steel Cutter, Flow State, Mishra's Bauble, Polluted Delta, Scalding Tarn | lib 53
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Opp BF:   Scrubland (T,NEW)
-  Stack: Aether Vial (spell, opponent)
+  Stack: Force of Will (spell, self) -> Aether Vial (opponent, slot 97) -> Aether Vial (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
   This turn: opp spells=1 noncreature=1
@@ -225,6 +225,7 @@
   Opp:   20 life | mana: empty | hand count: 5 | lib 73
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Scrubland (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Self GY: Force of Will
   Opp GY:  Aether Vial
@@ -681,6 +682,7 @@
   Opp:   17 life | mana: empty | hand count: 5 | lib 48
   Self BF:  Aether Vial (T) | Scrubland (T) | Wasteland
   Opp BF:   Island | Mystic Sanctuary (T,NEW)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Aether Vial
   Opp GY:  Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
@@ -1391,6 +1393,7 @@
   Opp:   20 life | mana: empty | hand count: 1 | lib 70
   Self BF:  Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Wasteland (NEW)
   Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
+  Stack: Wasteland (ability, self)
   Pending: Wasteland (self)
   Self GY: Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will
   Opp GY:  Wasteland, Aether Vial
@@ -1542,7 +1545,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Phelia, Exuberant Shepherd [2/2] [Flash] | Wasteland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T)
-  Stack: Aether Vial (ability, self)
+  Stack: Wasteland (ability, self) -> Aether Vial (ability, self)
   Pending: Wasteland (self)
   Self GY: Scrubland, Wasteland, Aether Vial
   Opp GY:  Wasteland, Force of Will, Misty Rainforest, Mystic Sanctuary, Scalding Tarn, Polluted Delta, Mishra's Bauble, Force of Will

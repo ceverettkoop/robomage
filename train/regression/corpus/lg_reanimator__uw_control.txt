@@ -98,9 +98,9 @@
 --- Decision 5 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
+  Self:  20 life | mana: empty | hand(6): Flooded Strand, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Lotus Petal
   This turn: opp spells=1 noncreature=1
@@ -114,9 +114,9 @@
 --- Decision 6 ---
   Priority: Player B (non-active)
   Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flooded Strand, Force of Will, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
+  Self:  20 life | mana: empty | hand(6): Flooded Strand, Misty Rainforest, Ponder, Swords to Plowshares, Tamiyo, Inquisitive Student, Tune the Narrative | lib 53
   Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Stack: Lotus Petal (spell, opponent)
+  Stack: Force of Will (spell, self) -> Lotus Petal (opponent, slot 97) -> Lotus Petal (spell, opponent)
   Pending: Force of Will (self)
   Opp revealed: Lotus Petal
   This turn: opp spells=1 noncreature=1
@@ -222,9 +222,10 @@
 --- Decision 11 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(5): Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Undercity Sewers | lib 52
+  Self:  19 life | mana: empty | hand(4): Brainstorm, Polluted Delta, Thoughtseize, Undercity Sewers | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Swamp (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Marsh Flats, Lotus Petal
   Opp GY:  Force of Will
@@ -402,10 +403,11 @@
 --- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(5): Brainstorm, Otherworldly Gaze, Polluted Delta, Thoughtseize, Undercity Sewers | lib 51
+  Self:  17 life | mana: empty | hand(4): Brainstorm, Otherworldly Gaze, Polluted Delta, Undercity Sewers | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 51
   Self BF:  Swamp
   Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Flooded Strand, Tune the Narrative, Force of Will
@@ -731,11 +733,11 @@
 --- Decision 31 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Otherworldly Gaze, Undercity Sewers | lib 49
+  Self:  14 life | mana: empty | hand(2): Otherworldly Gaze, Undercity Sewers | lib 49
   Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Island (T) | Swamp (T)
   Opp BF:   Island (T) | Island (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Flow State (spell, opponent)
+  Stack: Force of Will (spell, self) -> Flow State (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
@@ -754,11 +756,11 @@
 --- Decision 32 ---
   Priority: Player A (non-active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(3): Force of Will, Otherworldly Gaze, Undercity Sewers | lib 49
+  Self:  14 life | mana: empty | hand(2): Otherworldly Gaze, Undercity Sewers | lib 49
   Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Island (T) | Swamp (T)
   Opp BF:   Island (T) | Island (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Stack: Flow State (spell, opponent)
+  Stack: Force of Will (spell, self) -> Flow State (opponent, slot 97) -> Flow State (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
@@ -2535,11 +2537,11 @@
 --- Decision 107 ---
   Priority: Player A (non-active)
   Step: First Main (turn 12)
-  Self:  11 life | mana: empty | hand(2): Force of Will, Griselbrand | lib 37
+  Self:  11 life | mana: empty | hand(1): Griselbrand | lib 37
   Opp:   16 life | mana: empty | hand count: 3 | lib 38
   Self BF:  Island | Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
   Opp BF:   Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
-  Stack: Flow State (spell, opponent)
+  Stack: Force of Will (spell, self) -> Flow State (spell, opponent)
   Pending: Force of Will (self)
   Self GY: Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
   Opp GY:  Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
@@ -2587,11 +2589,11 @@
 --- Decision 109 ---
   Priority: Player B (active)
   Step: First Main (turn 12)
-  Self:  16 life | mana: empty | hand(3): Polluted Delta, Spell Snare, Swords to Plowshares | lib 38
+  Self:  16 life | mana: empty | hand(2): Polluted Delta, Swords to Plowshares | lib 38
   Opp:   11 life | mana: empty | hand count: 1 | lib 37
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Seasoned Scholar [loy 4] | Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra
   Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
-  Stack: Force of Will (spell, opponent) -> Flow State (self, slot 97) -> Flow State (spell, self)
+  Stack: Spell Snare (spell, self) -> Force of Will (spell, opponent) -> Flow State (self, slot 98) -> Flow State (spell, self)
   Pending: Spell Snare (self)
   Self GY: Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -3089,7 +3091,7 @@
 --- Narrative ---
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
-  PA: Force of Will, Griselbrand
+  PA: Griselbrand
   PB: Polluted Delta, Swords to Plowshares
 
 --- Decision 131 ---
@@ -3257,7 +3259,7 @@
 --- Narrative ---
   -------- TURN 14 (Player B) --------
 --- Turn 14 (Player B) ---
-  PA: Force of Will, Griselbrand
+  PA: Griselbrand
   PB: Polluted Delta, Swords to Plowshares
 
 --- Decision 139 ---
@@ -3858,7 +3860,7 @@
 --- Narrative ---
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
-  PA: Force of Will, Griselbrand
+  PA: Griselbrand
   PB: Swords to Plowshares, Swords to Plowshares
 
 --- Decision 164 ---
@@ -4042,7 +4044,7 @@
 --- Narrative ---
   -------- TURN 16 (Player B) --------
 --- Turn 16 (Player B) ---
-  PA: Force of Will, Griselbrand
+  PA: Griselbrand
   PB: Swords to Plowshares, Swords to Plowshares
 
 --- Decision 172 ---
@@ -4968,7 +4970,7 @@
   Opp:   11 life | mana: empty | hand count: 4 | lib 34
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tamiyo, Seasoned Scholar [loy 12] (act 1) | Teferi, Time Raveler [loy 6] | Tundra | Tundra | Tundra | Wasteland (NEW)
   Opp BF:   Island | Swamp | Undercity Sewers | Undercity Sewers | Underground Sea
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
+  Stack: Wasteland (ability, self) -> Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
   Self GY: Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -5621,7 +5623,7 @@
   Opp:   11 life | mana: empty | hand count: 5 | lib 33
   Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 14] (act 1) | Teferi, Time Raveler [loy 7] | Tundra | Tundra | Tundra | Wasteland (NEW)
   Opp BF:   Island | Swamp | Undercity Sewers | Underground Sea
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
+  Stack: Wasteland (ability, self) -> Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
   Self GY: Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -6705,7 +6707,7 @@
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island | Island | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 8] | Tundra | Tundra | Tundra | Wasteland (NEW)
   Opp BF:   Island (T) | Swamp (T) | Underground Sea (T)
-  Stack: Tamiyo, Seasoned Scholar (ability, self)
+  Stack: Wasteland (ability, self) -> Tamiyo, Seasoned Scholar (ability, self)
   Pending: Wasteland (self)
   Self GY: Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -7133,10 +7135,11 @@
 --- Decision 293 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -7159,10 +7162,11 @@
 --- Decision 294 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
   Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
@@ -7189,20 +7193,20 @@
   12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (2 of 5):
 
 --- Decision 295 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
+  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Brainstorm, Ponder
+  Self exile: Ponder
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=2
@@ -7225,20 +7229,20 @@
   12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (3 of 5):
 
 --- Decision 296 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
+  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Brainstorm, Brainstorm, Ponder
+  Self exile: Ponder
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=2
@@ -7261,20 +7265,20 @@
   12: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Brainstorm (Delve))
 --- Narrative ---
-  Player B exiles Brainstorm via Delve.
   Choose a card to exile via Delve (4 of 5):
 
 --- Decision 297 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Wasteland, Wasteland, Wasteland, Misty Rainforest, Tamiyo, Inquisitive Student, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
+  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Brainstorm, Brainstorm, Brainstorm, Ponder
+  Self exile: Ponder
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=2
@@ -7296,20 +7300,20 @@
   11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
-  Player B exiles Flooded Strand via Delve.
   Choose a card to exile via Delve (5 of 5):
 
 --- Decision 298 ---
   Priority: Player B (active)
   Step: Second Main (turn 22)
-  Self:  13 life | mana: empty | hand(4): Force of Will, Murktide Regent, Swords to Plowshares, Swords to Plowshares | lib 24
+  Self:  13 life | mana: empty | hand(3): Force of Will, Swords to Plowshares, Swords to Plowshares | lib 24
   Opp:   11 life | mana: empty | hand count: 5 | lib 26
   Self BF:  Island (T) | Island (T) | Meticulous Archive | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tamiyo, Seasoned Scholar [loy 16] (act 1) | Teferi, Time Raveler [loy 9] (act 1) | Tundra | Tundra | Tundra
   Opp BF:   Island (T) | Swamp (T)
+  Stack: Murktide Regent (spell, self)
   Pending: Murktide Regent (self)
-  Self GY: Wasteland, Wasteland, Wasteland, Misty Rainforest, Tamiyo, Inquisitive Student, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Lorien Revealed, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
+  Self GY: Wasteland, Wasteland, Wasteland, Brainstorm, Misty Rainforest, Tamiyo, Inquisitive Student, Brainstorm, Polluted Delta, Polluted Delta, Spell Snare, Flow State, Force of Negation, Brainstorm, Lorien Revealed, Flooded Strand, Flow State, Misty Rainforest, The One Ring, Flooded Strand, Tune the Narrative, Force of Will
   Opp GY:  Underground Sea, Underground Sea, Polluted Delta, Lotus Petal, Polluted Delta, Ponder, Animate Dead, Undercity Sewers, Undercity Sewers, Force of Will, Polluted Delta, Thoughtseize, Flooded Strand, Careful Study, Animate Dead, Force of Will, Scalding Tarn, Flow State, Force of Will, Brainstorm, Polluted Delta, Thoughtseize, Thoughtseize, Marsh Flats, Lotus Petal
-  Self exile: Flooded Strand, Brainstorm, Brainstorm, Brainstorm, Ponder
+  Self exile: Ponder
   Opp exile:  Otherworldly Gaze, Otherworldly Gaze
   Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Island, Brainstorm, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Careful Study, Otherworldly Gaze, Animate Dead
   This turn: self drawn=2
@@ -7331,9 +7335,13 @@
   11: Exile Wasteland (Delve)
   >> B/B: 0 (Exile Flooded Strand (Delve))
 --- Narrative ---
-  Player B exiles Flooded Strand via Delve.
   Player B activated Mystic Sanctuary for 1(U)
   Player B activated Meticulous Archive for 1(U)
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Flooded Strand via Delve.
+  Player B exiles Flooded Strand via Delve.
   Player B casts Murktide Regent
 
 --- Decision 299 ---

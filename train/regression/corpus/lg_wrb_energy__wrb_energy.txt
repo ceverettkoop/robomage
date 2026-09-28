@@ -137,9 +137,10 @@
 --- Decision 7 ---
   Priority: Player A (active)
   Step: First Main (turn 1)
-  Self:  19 life | mana: empty | hand(6): Ocelot Pride, Ocelot Pride, Plateau, Thoughtseize, Voice of Victory, Voice of Victory | lib 52
+  Self:  19 life | mana: empty | hand(5): Ocelot Pride, Ocelot Pride, Plateau, Voice of Victory, Voice of Victory | lib 52
   Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Self BF:  Badlands (NEW)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Arid Mesa
   This turn: self life_lost=1
@@ -284,10 +285,11 @@
 --- Decision 13 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize | lib 51
+  Self:  19 life | mana: empty | hand(5): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize | lib 51
   Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Badlands (NEW)
   Opp BF:   Badlands (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats, Voice of Victory
   Opp GY:  Thoughtseize, Arid Mesa
@@ -435,10 +437,11 @@
 --- Decision 18 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize | lib 50
+  Self:  19 life | mana: empty | hand(5): Amped Raptor, Arid Mesa, Ocelot Pride, Scrubland, Swords to Plowshares | lib 50
   Opp:   17 life | mana: empty | hand count: 4 | lib 51
   Self BF:  Badlands
   Opp BF:   Badlands | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Plateau (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Cabal Therapy [play:self], Marsh Flats, Voice of Victory
   Opp GY:  Thoughtseize, Arid Mesa
@@ -721,10 +724,11 @@
 --- Decision 29 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  14 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares | lib 48
+  Self:  14 life | mana: empty | hand(3): Amped Raptor, Ocelot Pride, Scrubland | lib 48
   Opp:   18 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Badlands | Elegant Parlor
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
@@ -857,8 +861,9 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
+  Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
@@ -879,8 +884,9 @@
   Opp:   19 life | mana: empty | hand count: 3 | lib 50
   Self BF:  Amped Raptor [2/1] [First Strike] (SICK,NEW,res 1) | Badlands (T) | Elegant Parlor (T) | Scrubland (T,NEW) | Voice of Victory [1/3] (SICK,NEW)
   Opp BF:   Badlands (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (SICK) | Cat [1/1] (SICK)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Cabal Therapy [play:self], Marsh Flats, Voice of Victory
+  Self GY: Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
   Opp exile:  Ocelot Pride
   Known opp hand: Ocelot Pride, Voice of Victory
@@ -1071,10 +1077,11 @@
 --- Decision 41 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  14 life | mana: empty | hand(2): Ocelot Pride, Swords to Plowshares | lib 46
+  Self:  14 life | mana: empty | hand(1): Ocelot Pride | lib 46
   Opp:   19 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Badlands | Elegant Parlor | Scrubland | Voice of Victory [1/3]
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Amped Raptor [2/1] [First Strike] (SICK) | Badlands (T) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Voice of Victory, Thoughtseize, Arid Mesa
@@ -1303,10 +1310,11 @@
 --- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(4): Cabal Therapy, Goblin Bombardment, Ocelot Pride, Voice of Victory | lib 47
+  Self:  17 life | mana: empty | hand(3): Goblin Bombardment, Ocelot Pride, Voice of Victory | lib 47
   Opp:   14 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands | Orcish Bowmasters [1/1] [Flash] | Plateau | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Shadowy Backstreet (T) | Voice of Victory [1/3] (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -1422,8 +1430,9 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Shadowy Backstreet (T) | Voice of Victory [1/3] (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Voice of Victory, Thoughtseize, Arid Mesa
+  Self GY: Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Self exile: Ajani, Nacatl Pariah, Ocelot Pride
   Opp exile:  Cabal Therapy
@@ -1444,8 +1453,9 @@
   Opp:   14 life | mana: empty | hand count: 0 | lib 44
   Self BF:  Amped Raptor [2/1] [First Strike] | Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Shadowy Backstreet (T) | Voice of Victory [1/3] (T)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Cabal Therapy [play:self], Voice of Victory, Thoughtseize, Arid Mesa
+  Self GY: Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Self exile: Ajani, Nacatl Pariah, Ocelot Pride
   Opp exile:  Cabal Therapy
@@ -1707,10 +1717,11 @@
 --- Decision 63 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
-  Self:  9 life | mana: empty | hand(1): Swords to Plowshares | lib 43
+  Self:  9 life | mana: empty | hand(0): (empty) | lib 43
   Opp:   17 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Scrubland | Shadowy Backstreet | Voice of Victory [1/3]
   Opp BF:   Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Orcish Bowmasters [1/1] [Flash] (T) | Plateau (T) | Orc Army [1/1] [+1/+1:1] (T) | Cat [1/1] (T) | Cat Warrior [2/1] (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
@@ -1915,6 +1926,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
+  Stack: Goblin Bombardment (ability, self) [amt=1]
   Pending: Goblin Bombardment (self)
   Self GY: Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -1944,6 +1956,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Orcish Bowmasters [1/1] [Flash] | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
+  Stack: Goblin Bombardment (ability, self) [amt=1]
   Pending: Goblin Bombardment (self)
   Self GY: Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -1991,7 +2004,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2020,7 +2033,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Orc Army [1/1] [+1/+1:1] | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2068,7 +2081,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2096,7 +2109,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Cat [1/1] | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2143,7 +2156,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2170,7 +2183,7 @@
   Opp:   10 life | mana: empty | hand count: 0 | lib 43
   Self BF:  Badlands (T) | Goblin Bombardment (NEW) | Plateau (T) | Cat Warrior [2/1]
   Opp BF:   Badlands | Elegant Parlor (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (SICK)
-  Stack: Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player) -> Goblin Bombardment (ability, self) [amt=1] -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2484,10 +2497,11 @@
 --- Decision 91 ---
   Priority: Player A (active)
   Step: First Main (turn 13)
-  Self:  9 life | mana: empty | hand(2): Thoughtseize, Voice of Victory | lib 45
+  Self:  9 life | mana: empty | hand(1): Voice of Victory | lib 45
   Opp:   6 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Badlands | Goblin Bombardment | Guide of Souls [1/2] (SICK,NEW) | Plateau (T)
   Opp BF:   Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Warrior [1/1] (SICK) | Warrior [1/1] (SICK) | Cat [1/1] (SICK)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Arid Mesa, Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2534,7 +2548,7 @@
   Opp:   6 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Badlands (T) | Goblin Bombardment | Guide of Souls [1/2] (SICK,NEW) | Plateau (T)
   Opp BF:   Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Warrior [1/1] (SICK) | Warrior [1/1] (SICK) | Cat [1/1] (SICK)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Arid Mesa, Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2565,7 +2579,7 @@
   Opp:   6 life | mana: empty | hand count: 0 | lib 41
   Self BF:  Badlands (T) | Goblin Bombardment | Guide of Souls [1/2] (SICK,NEW) | Plateau (T)
   Opp BF:   Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] (T) | Plains | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] (T) | Cat [1/1] (T) | Cat [1/1] (SICK) | Warrior [1/1] (SICK) | Warrior [1/1] (SICK) | Cat [1/1] (SICK)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Stack: Goblin Bombardment (ability, self) [amt=1] -> Thoughtseize (spell, self) -> opponent (player)
   Pending: Goblin Bombardment (self)
   Self GY: Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa
   Opp GY:  Arid Mesa, Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
@@ -2619,10 +2633,11 @@
 --- Decision 96 ---
   Priority: Player B (active)
   Step: First Main (turn 14)
-  Self:  5 life | mana: empty | hand(1): Thoughtseize | lib 40
+  Self:  5 life | mana: empty | hand(0): (empty) | lib 40
   Opp:   7 life | mana: empty | hand count: 1 | lib 45
   Self BF:  Badlands | Elegant Parlor | Ocelot Pride [1/1] [First Strike, Lifelink] | Plains | Scrubland | Shadowy Backstreet | Voice of Victory [1/3] | Cat [1/1] | Cat [1/1] | Warrior [1/1] | Warrior [1/1] | Cat [1/1]
   Opp BF:   Badlands (T) | Goblin Bombardment | Plateau (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Arid Mesa, Swords to Plowshares, Marsh Flats, Swords to Plowshares, Amped Raptor, Swords to Plowshares, Ocelot Pride, Arid Mesa, Thoughtseize, Marsh Flats, Voice of Victory
   Opp GY:  Thoughtseize, Guide of Souls, Orcish Bowmasters, Amped Raptor, Voice of Victory, Thoughtseize, Arid Mesa

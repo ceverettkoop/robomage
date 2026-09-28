@@ -214,10 +214,11 @@
 --- Decision 10 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Cabal Therapy, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 51
   Opp:   20 life | mana: empty | hand count: 6 | lib 52
   Self BF:  Badlands (NEW)
   Opp BF:   Forest
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
   Self GY: Marsh Flats
   Opp GY:  Once Upon a Time
@@ -391,10 +392,11 @@
 --- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Thoughtseize, Voice of Victory | lib 50
+  Self:  19 life | mana: empty | hand(6): Amped Raptor, Ocelot Pride, Ocelot Pride, Scrubland, Swords to Plowshares, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 5 | lib 50
   Self BF:  Badlands
   Opp BF:   Forest (T) | Savannah (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Cabal Therapy [play:self], Marsh Flats
   Opp GY:  Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -513,8 +515,9 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
   Opp BF:   Forest (T) | Savannah (T)
+  Stack: Cabal Therapy (spell, self)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Known opp hand: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -534,8 +537,9 @@
   Opp:   20 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Badlands (T) | Ocelot Pride [1/1] [First Strike, Lifelink] (SICK,NEW) | Scrubland (T,NEW)
   Opp BF:   Forest (T) | Savannah (T)
+  Stack: Cabal Therapy (spell, self) -> opponent (player)
   Pending: Cabal Therapy (self)
-  Self GY: Thoughtseize, Cabal Therapy [play:self], Marsh Flats
+  Self GY: Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Known opp hand: Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland
   Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -631,10 +635,11 @@
 --- Decision 25 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
+  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
   Opp:   17 life | mana: empty | hand count: 4 | lib 50
   Self BF:  Forest | Savannah
   Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Green Sun's Zenith (spell, self)
   Pending: Green Sun's Zenith (self)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Ocelot Pride, Thoughtseize, Marsh Flats
@@ -750,10 +755,11 @@
 --- Decision 30 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(4): Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory | lib 50
+  Self:  17 life | mana: empty | hand(3): Amped Raptor, Ocelot Pride, Voice of Victory | lib 50
   Opp:   20 life | mana: empty | hand count: 2 | lib 49
   Self BF:  Badlands | Scrubland
   Opp BF:   Dryad Arbor [1/1] (SICK) | Forest (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -779,7 +785,7 @@
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
   PA: Swords to Plowshares, Wasteland
-  PB: Amped Raptor, Ocelot Pride, Swords to Plowshares, Voice of Victory
+  PB: Amped Raptor, Ocelot Pride, Voice of Victory
 
 --- Decision 31 ---
   Priority: Player A (active)
@@ -873,6 +879,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Forest | Karakas (NEW) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Badlands (T) | Scrubland (T)
+  Stack: Karakas (ability, self)
   Pending: Karakas (self)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -918,7 +925,7 @@
   Opp:   17 life | mana: empty | hand count: 4 | lib 49
   Self BF:  Forest | Karakas (T,NEW) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Badlands (T) | Scrubland (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 3)
+  Stack: Wasteland (ability, self) -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 3)
   Pending: Wasteland (self)
   Self GY: Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1088,10 +1095,11 @@
 --- Decision 44 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
-  Self:  21 life | mana: empty | hand(2): Swords to Plowshares, Wasteland | lib 48
+  Self:  21 life | mana: empty | hand(1): Wasteland | lib 48
   Opp:   17 life | mana: empty | hand count: 3 | lib 48
   Self BF:  Forest | Karakas | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Ocelot Pride [1/1] [First Strike, Lifelink] (SICK) | Scrubland (T) | Silent Clearing
+  Stack: Swords to Plowshares (spell, self)
   Pending: Swords to Plowshares (self)
   Self GY: Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1305,10 +1313,11 @@
 --- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory | lib 47
+  Self:  16 life | mana: empty | hand(3): Amped Raptor, Amped Raptor, Voice of Victory | lib 47
   Opp:   20 life | mana: empty | hand count: 1 | lib 46
   Self BF:  Scrubland | Silent Clearing
   Opp BF:   Forest (T) | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
   Opp GY:  Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -1338,7 +1347,7 @@
   -------- TURN 11 (Player A) --------
 --- Turn 11 (Player A) ---
   PA: Wasteland
-  PB: Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory
+  PB: Amped Raptor, Amped Raptor, Voice of Victory
 
 --- Decision 54 ---
   Priority: Player A (active)
@@ -1428,6 +1437,7 @@
   Opp:   13 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Forest | Karakas | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
+  Stack: Karakas (ability, self)
   Pending: Karakas (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Thoughtseize, Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1472,7 +1482,7 @@
   Opp:   13 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Forest | Karakas (T) | Savannah | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland (NEW)
   Opp BF:   Scrubland (T) | Silent Clearing (T)
-  Stack: Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 4)
+  Stack: Wasteland (ability, self) -> Karakas (ability, self) -> Thalia, Guardian of Thraben (self, slot 4)
   Pending: Wasteland (self)
   Self GY: Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Thoughtseize, Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1528,7 +1538,7 @@
   -------- TURN 13 (Player A) --------
 --- Turn 13 (Player A) ---
   PA: Windswept Heath
-  PB: Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory
+  PB: Amped Raptor, Amped Raptor, Voice of Victory
 
 --- Decision 62 ---
   Priority: Player A (active)
@@ -1619,7 +1629,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Forest (T) | Karakas | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Silent Clearing
-  Stack: Keen-Eyed Curator (spell, self)
+  Stack: Karakas (ability, self) -> Keen-Eyed Curator (spell, self)
   Pending: Karakas (self)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1689,6 +1699,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Savannah | Windswept Heath (NEW)
   Opp BF:   Silent Clearing
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Badlands, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1818,6 +1829,7 @@
   Opp:   13 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] (SICK,NEW) | Plains (NEW) | Savannah (T) | Savannah (T)
   Opp BF:   Silent Clearing
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize, Marsh Flats
@@ -1853,7 +1865,7 @@
   -------- TURN 15 (Player A) --------
 --- Turn 15 (Player A) ---
   PA: Thalia, Guardian of Thraben
-  PB: Amped Raptor, Amped Raptor, Thoughtseize, Voice of Victory
+  PB: Amped Raptor, Amped Raptor, Voice of Victory
 
 --- Decision 75 ---
   Priority: Player A (active)
@@ -2008,6 +2020,7 @@
   Opp:   13 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Forest (T) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing
+  Stack: Karakas (ability, self)
   Pending: Karakas (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize
@@ -2073,6 +2086,7 @@
   Opp:   13 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (SICK,NEW) | Plains (T) | Savannah (T) | Savannah
   Opp BF:   Silent Clearing
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Ocelot Pride, Thoughtseize
@@ -2310,7 +2324,7 @@
   Opp:   8 life | mana: empty | hand count: 4 | lib 44
   Self BF:  Forest (T) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah
   Opp BF:   Ajani, Nacatl Pariah [1/2] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
-  Stack: Scythecat Cub (spell, self)
+  Stack: Karakas (ability, self) -> Scythecat Cub (spell, self)
   Pending: Karakas (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
@@ -2448,6 +2462,7 @@
   Opp:   8 life | mana: empty | hand count: 5 | lib 44
   Self BF:  Forest (T) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Scrubland, Thoughtseize, Swords to Plowshares, Thoughtseize
@@ -2795,7 +2810,7 @@
   Opp:   3 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Forest (T) | Karakas | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Badgermole Cub (spell, self)
+  Stack: Karakas (ability, self) -> Badgermole Cub (spell, self)
   Pending: Karakas (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
   Opp GY:  Thoughtseize, Swords to Plowshares, Thoughtseize
@@ -2990,6 +3005,7 @@
   Opp:   3 life | mana: empty | hand count: 5 | lib 43
   Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
   Opp BF:   Orcish Bowmasters [1/1] [Flash] (SICK) | Silent Clearing (T) | Wasteland (T) | Cat Warrior [2/1] (T) | Orc Army [1/1] [+1/+1:1] (SICK)
+  Stack: Keen-Eyed Curator (ability, self)
   Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Keen-Eyed Curator (self)
   Self GY: Windswept Heath, Wasteland, Misty Rainforest, Swords to Plowshares, Wasteland, Thalia, Guardian of Thraben, Once Upon a Time, Badgermole Cub, Once Upon a Time
@@ -3232,10 +3248,11 @@
 --- Decision 130 ---
   Priority: Player B (active)
   Step: Draw (turn 20)
-  Self:  1 life | mana: empty | hand(6): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Swords to Plowshares, Voice of Victory, Voice of Victory | lib 42
+  Self:  1 life | mana: empty | hand(5): Ajani, Nacatl Pariah, Amped Raptor, Amped Raptor, Voice of Victory, Voice of Victory | lib 42
   Opp:   16 life | mana: empty | hand count: 0 | lib 40
   Self BF:  Silent Clearing | Wasteland | Cat Warrior [2/1] | Orc Army [1/1] [+1/+1:1]
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Karakas (T) | Keen-Eyed Curator [3/3] (T) | Noble Hierarch [0/1] (T) | Plains (T) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
+  Stack: Swords to Plowshares (spell, self)
   Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Pending: Swords to Plowshares (self)
   Self GY: Orcish Bowmasters, Thoughtseize, Thoughtseize

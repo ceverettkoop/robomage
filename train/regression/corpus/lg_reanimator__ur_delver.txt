@@ -368,6 +368,7 @@
   Opp:   19 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Island (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp GY:  Otherworldly Gaze [play:opponent], Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp revealed: Polluted Delta, Island, Brainstorm, Lotus Petal, Swamp, Bloodstained Mire, Reanimate, Otherworldly Gaze
@@ -1060,10 +1061,11 @@
 --- Decision 45 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  18 life | mana: empty | hand(4): Force of Will, Thoughtseize, Thoughtseize, Underground Sea | lib 37
+  Self:  18 life | mana: empty | hand(3): Force of Will, Thoughtseize, Underground Sea | lib 37
   Opp:   17 life | mana: empty | hand count: 6 | lib 45
   Self BF:  Island (T) | Undercity Sewers | Undercity Sewers
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Volcanic Island (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
@@ -1140,10 +1142,11 @@
 --- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  16 life | mana: empty | hand(3): Force of Will, Thoughtseize, Underground Sea | lib 37
+  Self:  16 life | mana: empty | hand(2): Force of Will, Underground Sea | lib 37
   Opp:   17 life | mana: empty | hand count: 5 | lib 45
   Self BF:  Island (T) | Undercity Sewers (T) | Undercity Sewers
   Opp BF:   Cori-Steel Cutter | Island (T) | Mystic Sanctuary | Volcanic Island (T)
+  Stack: Thoughtseize (spell, self)
   Pending: Thoughtseize (self)
   Self GY: Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
@@ -1394,10 +1397,11 @@
 --- Decision 58 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(2): Force of Will, Reanimate | lib 36
+  Self:  14 life | mana: empty | hand(1): Force of Will | lib 36
   Opp:   16 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Island | Undercity Sewers | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Reanimate (spell, self)
   Pending: Reanimate (self)
   Self GY: Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Raph & Mikey, Troublemakers, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
@@ -1720,10 +1724,11 @@
 --- Decision 69 ---
   Priority: Player A (active)
   Step: Second Main (turn 9)
-  Self:  14 life | mana: empty | hand(7): Animate Dead, Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
+  Self:  14 life | mana: empty | hand(6): Flow State, Force of Will, Force of Will, Griselbrand, Lotus Petal, Underground Sea | lib 29
   Opp:   2 life | mana: empty | hand count: 2 | lib 43
   Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (T,SICK,NEW,res 1) | Island | Raph & Mikey, Troublemakers [7/7] [Trample, Haste] (T,SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers | Underground Sea
   Opp BF:   Cori-Steel Cutter | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Dragon's Rage Channeler [3/3] [Flying] (SICK) | Island | Mystic Sanctuary | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (SICK)
+  Stack: Animate Dead (spell, self)
   Pending: Animate Dead (self)
   Self GY: Reanimate, Thoughtseize, Thoughtseize, Careful Study, Atraxa, Grand Unifier, Archon of Cruelty, Flow State, Archon of Cruelty, Polluted Delta, Animate Dead, Polluted Delta, Reanimate, Bloodstained Mire, Swamp, Polluted Delta, Brainstorm, Lotus Petal
   Opp GY:  Polluted Delta, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Misty Rainforest, Ponder, Polluted Delta, Mishra's Bauble
