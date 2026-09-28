@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <fstream>
+#include <iterator>
 #include <map>
 #include <unordered_map>
 #include <string>
@@ -34,7 +35,7 @@ static std::vector<std::string> multi_values_from_script(const std::string &scri
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
                                              std::vector<HybridPip> *hybrid_out = nullptr);
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
-static std::set<Type> parse_types(std::string value);
+static std::set<Type> parse_types(const std::string &value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 // A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
 // qualifier.
@@ -258,6 +259,7 @@ static void parse_card_face(const std::string& front_script, CardData& card);
 static bool parse_card_file(const std::string &path, CardData &card);
 // Parses token script `script_name` into `tok`; false when the file can't be opened.
 static bool parse_token_file(const std::string &script_name, Token &tok);
+static bool read_script_file(const std::string &path, std::string &text);
 static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label);
 static AbilityDef parse_ability_text(const std::string& text, size_t category_pos,
@@ -294,16 +296,9 @@ static bool find_cmc_bound(const std::string& filter, const char* only_op, std::
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
-    size_t pos = 0;
-    while (pos < kw_line.size()) {
-        size_t comma = kw_line.find(',', pos);
-        if (comma == std::string::npos) comma = kw_line.size();
-        std::string kw = kw_line.substr(pos, comma - pos);
-        size_t s = kw.find_first_not_of(" ");
-        size_t e = kw.find_last_not_of(" ");
-        if (s != std::string::npos)
-            out.push_back(kw.substr(s, e - s + 1));
-        pos = (comma < kw_line.size()) ? comma + 1 : comma;
+    for (const std::string &kw : split(kw_line, ',')) {
+        std::string trimmed = trim(kw);
+        if (!trimmed.empty()) out.push_back(trimmed);
     }
 }
 
@@ -324,12 +319,8 @@ static bool next_param(const std::string& line, size_t& pos, std::string& key, s
         pos = end;
         size_t dollar = param.find('$');
         if (dollar == std::string::npos) continue;
-        key = param.substr(0, dollar);
-        value = param.substr(dollar + 1);
-        size_t ks = key.find_first_not_of(" "), ke = key.find_last_not_of(" ");
-        if (ks != std::string::npos) key = key.substr(ks, ke - ks + 1);
-        size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
-        if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+        key = trim(param.substr(0, dollar));
+        value = trim(param.substr(dollar + 1));
         return true;
     }
     return false;
@@ -382,8 +373,8 @@ std::string name_to_uid(std::string name) {
 
     for (size_t i = 0; i < name.size(); i++) {
         char value = name[i];
-        if (std::isalpha(value)) {
-            name[i] = std::tolower(value);
+        if (std::isalpha(static_cast<unsigned char>(value))) {
+            name[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(value)));
         } else if( ((value == '-') || (value == ' ') || (value == '/')) && (i != name.size() - 1) )   { // we will excise up to 1 trailing space, rest to underscores
                 // '/' is a separator too (CR 709 split cards): a combined "Front/Back" reference
                 // maps to Forge's underscore-joined filename (e.g. "Dead/Gone" -> "dead_gone" ->
@@ -659,18 +650,10 @@ Entity parse_card_script(std::string path) {
 }
 
 static bool parse_card_file(const std::string &path, CardData &card) {
-    auto stream = std::ifstream(path);
-    if (!stream.is_open()) {
+    std::string script_data;
+    if (!read_script_file(path, script_data)) {
         fprintf(stderr, "parse_card_script: failed to open '%s'\n", path.c_str());
         return false;
-    }
-    std::string script_data;
-    for (size_t i = 0; true; i++) {
-        if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
-        char c = stream.get();
-        if (stream.eof()) break;
-        if (c == '\r') continue;
-        script_data += c;
     }
 
     // Split at ALTERNATE marker for DFCs
@@ -698,6 +681,17 @@ static bool parse_card_file(const std::string &path, CardData &card) {
         card.backside = backside;
     }
 
+    return true;
+}
+
+// Reads the script file at `path` into `text` without its '\r' characters; false when it can't be
+// opened. A script longer than SCRIPT_MAX_LEN characters is fatal.
+static bool read_script_file(const std::string &path, std::string &text) {
+    std::ifstream stream(path);
+    if (!stream.is_open()) return false;
+    text.assign(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+    text.erase(std::remove(text.begin(), text.end(), '\r'), text.end());
+    if (text.size() > SCRIPT_MAX_LEN) fatal_error("Script too long: " + path);
     return true;
 }
 
@@ -1172,9 +1166,7 @@ static void kw_escape(const std::string &kw_line, KeywordContext &ctx) {
         mana_part = cost_str.substr(0, eg);
         alt_part = cost_str.substr(eg);
     }
-    // Trim trailing space from the mana part.
-    size_t mend = mana_part.find_last_not_of(' ');
-    mana_part = (mend == std::string::npos) ? "" : mana_part.substr(0, mend + 1);
+    mana_part = trim(mana_part);
     if (!mana_part.empty()) ctx.card.escape_mana_cost = parse_mana_cost(mana_part);
     if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, ctx.card.escape_alt_cost);
     ctx.card.keywords.push_back("Escape");
@@ -1349,20 +1341,11 @@ Token parse_token_script(const std::string &script_name) {
 static bool parse_token_file(const std::string &script_name, Token &tok) {
     tok.script_name = script_name;
     std::string path = RESOURCE_DIR + "/tokenscripts/" + script_name + ".txt";
-    std::ifstream stream(path);
-    if (!stream.is_open()) {
+    std::string script_data;
+    if (!read_script_file(path, script_data)) {
         non_fatal_error("Could not open token script: " + path);
         return false;
     }
-    std::string script_data;
-    char buffer[SCRIPT_MAX_LEN];
-    while (stream.getline(buffer, SCRIPT_MAX_LEN)) {
-        std::string line(buffer);
-        if (!line.empty() && line.back() == '\r') line.pop_back();
-        script_data += line;
-        script_data += "\n";
-    }
-    stream.close();
 
     tok.name = value_from_script(script_data, "Name");
     // Forge token scripts usually name the token "<Name> Token" ("Cat Warrior Token").
@@ -1588,49 +1571,31 @@ static std::set<Colors> parse_colors_field(const std::string &colors_field) {
     std::set<Colors> ret;
     if (colors_field.empty()) return ret;
     // Forge separates a multicolor indicator with commas ("Colors:green,blue"); accept spaces too.
-    size_t cp = 0;
-    while (cp <= colors_field.size()) {
-        size_t sp = colors_field.find_first_of(" ,", cp);
-        if (sp == std::string::npos) sp = colors_field.size();
-        std::string ctok = colors_field.substr(cp, sp - cp);
-        Colors color = color_word_color(ctok);
+    std::string words = colors_field;
+    std::replace(words.begin(), words.end(), ',', ' ');
+    for (const std::string &word : split(words, ' ', /*skip_empty=*/true)) {
+        Colors color = color_word_color(word);
         if (color != NO_COLOR) ret.insert(color);
-        cp = sp + 1;
     }
     return ret;
 }
 
-static std::set<Type> parse_types(std::string value) {
+static std::set<Type> parse_types(const std::string &value) {
     std::set<Type> ret_val;
-    std::vector<std::string> tokens;
-    std::string token;
-    std::string delimiter = " ";
-    Type found;
-    size_t pos = 0;
-    while ((pos = value.find(delimiter)) != std::string::npos) {
-        token = value.substr(0, pos);
-        tokens.push_back(token);
-        value.erase(0, pos + delimiter.length());
-    }
-    if (!value.empty()) tokens.push_back(value);
-    for (auto &&i : tokens) {
-        found.name = i;
+    for (const std::string &name : split(value, ' ', /*skip_empty=*/true)) {
+        Type found;
+        found.name = name;
         // subtypes before types as bandaid for weird types in my list due to... unset cards?
-        if (all_subtypes.find(i) != all_subtypes.end()) {
+        if (all_subtypes.find(name) != all_subtypes.end()) {
             found.kind = SUBTYPE;
-            goto EMPLACE;
-        }
-        if (all_types.find(i) != all_types.end()) {
+        } else if (all_types.find(name) != all_types.end()) {
             found.kind = TYPE;
-            goto EMPLACE;
-        }
-        if (all_supertypes.find(i) != all_supertypes.end()) {
+        } else if (all_supertypes.find(name) != all_supertypes.end()) {
             found.kind = SUPERTYPE;
-            goto EMPLACE;
+        } else {
+            non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + name + " registering as subtype");
+            found.kind = SUBTYPE;
         }
-        non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + i + " registering as subtype");
-        found.kind = SUBTYPE;
-    EMPLACE:
         ret_val.emplace(found);
     }
     return ret_val;
@@ -1674,10 +1639,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
         pos = colon + 1;
         size_t end = script.find('\n', pos);
         if (end == std::string::npos) end = script.size();
-        std::string value = script.substr(pos, end - pos);
-        while (!value.empty() && (value.back() == '\r' || value.back() == ' '))
-            value.pop_back();
-        svars[name] = value;
+        svars[name] = trim(script.substr(pos, end - pos));
         pos = end;
     }
     return svars;
