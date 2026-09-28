@@ -4786,737 +4786,198 @@
    2: Cast Daze (alternate cost)  [#1]
    3: Activate Street Wraith from hand (Draw)  [#0]
    4: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
 --- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Searching Player B's graveyard and library:
+  Choose target for Force of Will:
 
 --- Decision 219 ---
-  Priority: Player B (active)
+  Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Self:  2 life | mana: empty | hand(3): Daze, Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Underground Sea (T) | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
+  Stack: Force of Will (spell, self) -> Doomsday (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
+  Known top: Thassa's Oracle, ?, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: not_priority_window
   Actions:
-   0: Force of Will (graveyard)
-   1: Thoughtseize (graveyard)
-   2: Personal Tutor (graveyard)
-   3: Ponder (graveyard)
-   4: Polluted Delta (graveyard)
-   5: Verdant Catacombs (graveyard)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Thoughtseize (library)
-   9: Daze (library)
-  10: Dark Ritual (library)
-  11: Lotus Petal (library)
-  12: Lion's Eye Diamond (library)
-  13: Thassa's Oracle (library)
-  14: Personal Tutor (library)
-  15: Street Wraith (library)
-  16: Brainstorm (library)
-  17: Ponder (library)
-  18: Swamp (library)
-  19: Undercity Sewers (library)
-  20: Polluted Delta (library)
-  21: Bloodstained Mire (library)
-  22: Island (library)
-  23: Flooded Strand (library)
-  24: Misty Rainforest (library)
-  25: Cavern of Souls (library)
-  26: Barrowgoyf (library)
-  27: Dauthi Voidwalker (library)
-  28: Deep Analysis (library)
-  >> B/B: 13 (Thassa's Oracle (library))
+   0: Doomsday
+  >> A/A: 0 (Doomsday)
 --- Narrative ---
-  Player B puts Thassa's Oracle to top of library
-  Searching Player B's graveyard and library:
+  Targeting choice 0
 
 --- Decision 220 ---
-  Priority: Player B (active)
+  Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
+  Self:  2 life | mana: empty | hand(3): Daze, Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Underground Sea (T) | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
+  Stack: Force of Will (spell, self) -> Doomsday (opponent, slot 97) -> Doomsday (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Known opp hand: Dark Ritual, Edge of Autumn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: not_priority_window
   Actions:
-   0: Force of Will (graveyard)
-   1: Thoughtseize (graveyard)
-   2: Personal Tutor (graveyard)
-   3: Ponder (graveyard)
-   4: Polluted Delta (graveyard)
-   5: Verdant Catacombs (graveyard)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Thoughtseize (library)
-   9: Daze (library)
-  10: Dark Ritual (library)
-  11: Lotus Petal (library)
-  12: Lion's Eye Diamond (library)
-  13: Personal Tutor (library)
-  14: Street Wraith (library)
-  15: Brainstorm (library)
-  16: Ponder (library)
-  17: Swamp (library)
-  18: Undercity Sewers (library)
-  19: Polluted Delta (library)
-  20: Bloodstained Mire (library)
-  21: Island (library)
-  22: Flooded Strand (library)
-  23: Misty Rainforest (library)
-  24: Cavern of Souls (library)
-  25: Barrowgoyf (library)
-  26: Dauthi Voidwalker (library)
-  27: Deep Analysis (library)
-  >> B/B: 14 (Street Wraith (library))
+   0: Exile Daze
+  >> A/A: 0 (Exile Daze)
 --- Narrative ---
-  Player B puts Street Wraith to top of library
-  Searching Player B's graveyard and library:
+  Player A pays 1 life
+  Player A exiles Daze
+  Player A casts Force of Will targeting Doomsday
 
 --- Decision 221 ---
-  Priority: Player B (active)
+  Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Underground Sea (T) | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
+  Stack: Force of Will (spell, self) -> Doomsday (opponent, slot 97) -> Doomsday (spell, opponent)
+  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
+  Known top: Thassa's Oracle, ?, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
-   0: Force of Will (graveyard)
-   1: Thoughtseize (graveyard)
-   2: Personal Tutor (graveyard)
-   3: Ponder (graveyard)
-   4: Polluted Delta (graveyard)
-   5: Verdant Catacombs (graveyard)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Thoughtseize (library)
-   9: Daze (library)
-  10: Dark Ritual (library)
-  11: Lotus Petal (library)
-  12: Lion's Eye Diamond (library)
-  13: Personal Tutor (library)
-  14: Street Wraith (library)
-  15: Brainstorm (library)
-  16: Ponder (library)
-  17: Swamp (library)
-  18: Undercity Sewers (library)
-  19: Polluted Delta (library)
-  20: Bloodstained Mire (library)
-  21: Island (library)
-  22: Flooded Strand (library)
-  23: Misty Rainforest (library)
-  24: Cavern of Souls (library)
-  25: Barrowgoyf (library)
-  26: Dauthi Voidwalker (library)
-  27: Deep Analysis (library)
-  >> B/B: 14 (Street Wraith (library))
---- Narrative ---
-  Player B puts Street Wraith to top of library
-  Searching Player B's graveyard and library:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
 
 --- Decision 222 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
   Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
+  Stack: Force of Will (spell, opponent) -> Doomsday (self, slot 97) -> Doomsday (spell, self)
   Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
   Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, ?, ?
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_passed
   Actions:
-   0: Force of Will (graveyard)
-   1: Thoughtseize (graveyard)
-   2: Personal Tutor (graveyard)
-   3: Ponder (graveyard)
-   4: Polluted Delta (graveyard)
-   5: Verdant Catacombs (graveyard)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Thoughtseize (library)
-   9: Daze (library)
-  10: Dark Ritual (library)
-  11: Lotus Petal (library)
-  12: Lion's Eye Diamond (library)
-  13: Personal Tutor (library)
-  14: Street Wraith (library)
-  15: Brainstorm (library)
-  16: Ponder (library)
-  17: Swamp (library)
-  18: Undercity Sewers (library)
-  19: Polluted Delta (library)
-  20: Bloodstained Mire (library)
-  21: Island (library)
-  22: Flooded Strand (library)
-  23: Misty Rainforest (library)
-  24: Cavern of Souls (library)
-  25: Barrowgoyf (library)
-  26: Dauthi Voidwalker (library)
-  27: Deep Analysis (library)
-  >> B/B: 14 (Street Wraith (library))
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player B puts Street Wraith to top of library
-  Searching Player B's graveyard and library:
+  Resolving ability (category: Counter)
+  Doomsday is countered
 
 --- Decision 223 ---
-  Priority: Player B (active)
+  Priority: Player A (non-active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
+  Self BF:  Underground Sea (T) | Underground Sea
+  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
+  Known top: Thassa's Oracle, ?, ?, ?, ?
+  Known opp hand: Dark Ritual, Edge of Autumn
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Actions:
-   0: Force of Will (graveyard)
-   1: Thoughtseize (graveyard)
-   2: Personal Tutor (graveyard)
-   3: Ponder (graveyard)
-   4: Polluted Delta (graveyard)
-   5: Verdant Catacombs (graveyard)
-   6: Doomsday (library)
-   7: Force of Will (library)
-   8: Thoughtseize (library)
-   9: Daze (library)
-  10: Dark Ritual (library)
-  11: Lotus Petal (library)
-  12: Lion's Eye Diamond (library)
-  13: Personal Tutor (library)
-  14: Brainstorm (library)
-  15: Ponder (library)
-  16: Swamp (library)
-  17: Undercity Sewers (library)
-  18: Polluted Delta (library)
-  19: Bloodstained Mire (library)
-  20: Island (library)
-  21: Flooded Strand (library)
-  22: Misty Rainforest (library)
-  23: Cavern of Souls (library)
-  24: Barrowgoyf (library)
-  25: Dauthi Voidwalker (library)
-  26: Deep Analysis (library)
-  >> B/B: 3 (Ponder (graveyard))
---- Narrative ---
-  Player B puts Ponder to top of library
-  Resolving ability (category: ChangeZoneAll)
-  Player B moves Force of Will to exile
-  Player B moves Thoughtseize to exile
-  Player B moves Personal Tutor to exile
-  Player B moves Personal Tutor to exile
-  Player B moves Polluted Delta to exile
-  Player B moves Verdant Catacombs to exile
-  Player B moves Doomsday to exile
-  Player B moves Doomsday to exile
-  Player B moves Doomsday to exile
-  Player B moves Force of Will to exile
-  Player B moves Force of Will to exile
-  Player B moves Force of Will to exile
-  Player B moves Thoughtseize to exile
-  Player B moves Thoughtseize to exile
-  Player B moves Daze to exile
-  Player B moves Daze to exile
-  Player B moves Daze to exile
-  Player B moves Dark Ritual to exile
-  Player B moves Dark Ritual to exile
-  Player B moves Dark Ritual to exile
-  Player B moves Lotus Petal to exile
-  Player B moves Lotus Petal to exile
-  Player B moves Lotus Petal to exile
-  Player B moves Lotus Petal to exile
-  Player B moves Lion's Eye Diamond to exile
-  Player B moves Personal Tutor to exile
-  Player B moves Personal Tutor to exile
-  Player B moves Brainstorm to exile
-  Player B moves Brainstorm to exile
-  Player B moves Brainstorm to exile
-  Player B moves Brainstorm to exile
-  Player B moves Ponder to exile
-  Player B moves Ponder to exile
-  Player B moves Ponder to exile
-  Player B moves Swamp to exile
-  Player B moves Undercity Sewers to exile
-  Player B moves Polluted Delta to exile
-  Player B moves Polluted Delta to exile
-  Player B moves Polluted Delta to exile
-  Player B moves Bloodstained Mire to exile
-  Player B moves Island to exile
-  Player B moves Flooded Strand to exile
-  Player B moves Misty Rainforest to exile
-  Player B moves Cavern of Souls to exile
-  Player B moves Barrowgoyf to exile
-  Player B moves Dauthi Voidwalker to exile
-  Player B moves Deep Analysis to exile
-  Player B moves 47 card(s) to exile
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player B looks at the top 5 card(s) of their library.
-  Choose which card goes 5 from top:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
 
 --- Decision 224 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: opp_passed
   Actions:
-   0: Ponder  [#4]
-   1: Street Wraith  [#4]
-   2: Thassa's Oracle  [#4]
-  >> B/B: 0 (Ponder)
---- Narrative ---
-  Choose which card goes 4 from top:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
 
 --- Decision 225 ---
   Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Step: Begin Combat (turn 10)
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Ponder, Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
-   0: Street Wraith  [#3]
-   1: Thassa's Oracle  [#3]
-  >> B/B: 1 (Thassa's Oracle)
---- Narrative ---
-  Choose which card goes 3 from top:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   3: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> B/B: 0 (Pass priority)
 
 --- Decision 226 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, Street Wraith, Street Wraith, Street Wraith
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
-  Actions:
-   0: Street Wraith  [#2]
-  >> B/B: 0 (Street Wraith)
---- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 227 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, Ponder, Street Wraith, Street Wraith
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
-  Actions:
-   0: Street Wraith  [#1]
-  >> B/B: 0 (Street Wraith)
---- Narrative ---
-  Resolving ability (category: LoseLife, amount: 8)
-  Player B loses 8 life (now at 8)
-  Resolving ability (category: Cleanup)
-
---- Decision 228 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Ponder
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=8 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 1 (Activate Street Wraith from hand (Draw))
---- Narrative ---
-  Player B pays 2 life
-  Player B activates Street Wraith from hand
-
---- Decision 229 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  6 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 5
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Street Wraith, Thassa's Oracle, Ponder
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=10 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 230 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   6 life | mana: empty | hand count: 3 | lib 5
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Stack: Street Wraith (ability, opponent) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=10 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Street Wraith
-
---- Decision 231 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  6 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 4
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, Ponder, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=10 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 1 (Activate Street Wraith from hand (Draw))
---- Narrative ---
-  Player B pays 2 life
-  Player B activates Street Wraith from hand
-
---- Decision 232 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  4 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 4
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Street Wraith, Thassa's Oracle, Ponder, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=12 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 233 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   4 life | mana: empty | hand count: 3 | lib 4
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Stack: Street Wraith (ability, opponent) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=2 life_lost=12 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Street Wraith
-
---- Decision 234 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  4 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 3
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, Ponder, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=12 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 1 (Activate Street Wraith from hand (Draw))
---- Narrative ---
-  Player B pays 2 life
-  Player B activates Street Wraith from hand
-
---- Decision 235 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(3): Dark Ritual, Edge of Autumn, Edge of Autumn | lib 3
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Street Wraith, Thassa's Oracle, Ponder, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=14 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Edge of Autumn from hand (Draw)  [#1]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 236 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 3 | lib 3
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Stack: Street Wraith (ability, opponent) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=14 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Street Wraith
-
---- Decision 237 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 238 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
-  Self BF:  Underground Sea (T) | Underground Sea
-  Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 239 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
-  Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
-  Known opp hand: Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
-  Actions:
-   0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 240 ---
   Priority: Player A (non-active)
   Step: Begin Combat (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 241 ---
+--- Decision 227 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5524,43 +4985,39 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 242 ---
+--- Decision 228 ---
   Priority: Player A (non-active)
   Step: Declare Atk (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 243 ---
+--- Decision 229 ---
   Priority: Player B (active)
   Step: End Combat (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5568,43 +5025,39 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 244 ---
+--- Decision 230 ---
   Priority: Player A (non-active)
   Step: End Combat (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 245 ---
+--- Decision 231 ---
   Priority: Player B (active)
   Step: Second Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5612,43 +5065,39 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 246 ---
+--- Decision 232 ---
   Priority: Player A (non-active)
   Step: Second Main (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 247 ---
+--- Decision 233 ---
   Priority: Player B (active)
   Step: End Step (turn 10)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Street Wraith from hand (Draw)  [#0]
@@ -5656,65 +5105,59 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 248 ---
+--- Decision 234 ---
   Priority: Player A (non-active)
   Step: End Step (turn 10)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=14 colors=B
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
   Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 11 (Player A) --------
 --- Turn 11 (Player A) ---
-  PA: Force of Will, Daze, Street Wraith, Edge of Autumn
+  PA: Street Wraith, Edge of Autumn
   PB: Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn
 
---- Decision 249 ---
+--- Decision 235 ---
   Priority: Player A (active)
   Step: Upkeep (turn 11)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 1
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 1
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 250 ---
+--- Decision 236 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 11)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 1
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 1
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   Extras: opp_passed
@@ -5727,38 +5170,34 @@
 --- Narrative ---
   Player A draws Thassa's Oracle
 
---- Decision 251 ---
+--- Decision 237 ---
   Priority: Player A (active)
   Step: Draw (turn 11)
-  Self:  2 life | mana: empty | hand(5): Force of Will, Daze, Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(3): Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self drawn=1
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 252 ---
+--- Decision 238 ---
   Priority: Player B (non-active)
   Step: Draw (turn 11)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 5 | lib 0
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 3 | lib 0
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea | Underground Sea
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   This turn: opp drawn=1
@@ -5770,67 +5209,59 @@
    3: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 253 ---
+--- Decision 239 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(5): Force of Will, Daze, Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(3): Thassa's Oracle, Street Wraith, Edge of Autumn | lib 0
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea | Underground Sea
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Thassa's Oracle  [#0]
-   2: Activate Street Wraith from hand (Draw)  [#0]
-   3: Activate Edge of Autumn from hand (Draw)  [#1]
+   2: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 1 (Cast Thassa's Oracle)
 --- Narrative ---
   Player A activated Underground Sea for 1(U)
   Player A activated Underground Sea for 1(U)
   Player A casts Thassa's Oracle
 
---- Decision 254 ---
+--- Decision 240 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 0
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (spell, self)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-   2: Cast Daze (alternate cost)  [#1]
-   3: Activate Street Wraith from hand (Draw)  [#0]
-   4: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 255 ---
+--- Decision 241 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 0
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 0
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (spell, opponent)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   This turn: opp spells=1 drawn=1 colors=U
@@ -5845,40 +5276,36 @@
   Thassa's Oracle enters the battlefield
   Thassa's Oracle triggered
 
---- Decision 256 ---
+--- Decision 242 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 0
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Thassa's Oracle [1/3] (SICK,NEW) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 drawn=1 colors=U
   Actions:
    0: Pass priority
-   1: Activate Street Wraith from hand (Draw)  [#0]
-   2: Activate Edge of Autumn from hand (Draw)  [#1]
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 257 ---
+--- Decision 243 ---
   Priority: Player B (non-active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 2
-  Opp:   2 life | mana: empty | hand count: 4 | lib 0
+  Self:  16 life | mana: empty | hand(4): Dark Ritual, Street Wraith, Edge of Autumn, Edge of Autumn | lib 45
+  Opp:   1 life | mana: empty | hand count: 2 | lib 0
   Self BF:  Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Thassa's Oracle [1/3] (SICK,NEW) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, opponent) [amt=1]
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Known top: Thassa's Oracle, Ponder, ?, ?, ?
+  Self GY: Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Opp GY:  Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp exile:  Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Edge of Autumn
   Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
   This turn: opp spells=1 drawn=1 colors=U
@@ -5893,21 +5320,20 @@
   Resolving ability (category: Dig)
   Player A looks at the top 0 card(s) of their library.
 
---- Decision 258 ---
+--- Decision 244 ---
   Priority: Player A (active)
   Step: First Main (turn 11)
-  Self:  2 life | mana: empty | hand(4): Force of Will, Daze, Street Wraith, Edge of Autumn | lib 0
-  Opp:   2 life | mana: empty | hand count: 4 | lib 2
+  Self:  1 life | mana: empty | hand(2): Street Wraith, Edge of Autumn | lib 0
+  Opp:   16 life | mana: empty | hand count: 4 | lib 45
   Self BF:  Thassa's Oracle [1/3] (SICK,NEW,res 1) | Underground Sea (T) | Underground Sea (T)
   Opp BF:   Underground Sea (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)
-  Self GY: Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
-  Opp GY:  Street Wraith, Street Wraith, Street Wraith, Doomsday
-  Self exile: Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
-  Opp exile:  Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Misty Rainforest, Flooded Strand, Island, Bloodstained Mire, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Verdant Catacombs, Polluted Delta, Personal Tutor, Personal Tutor, Thoughtseize, Force of Will
+  Self GY: Force of Will, Street Wraith, Street Wraith, Street Wraith, Edge of Autumn, Island, Doomsday
+  Opp GY:  Doomsday, Verdant Catacombs, Personal Tutor, Thoughtseize, Ponder, Personal Tutor, Polluted Delta, Force of Will
+  Self exile: Daze, Deep Analysis, Dauthi Voidwalker, Barrowgoyf, Cavern of Souls, Flooded Strand, Verdant Catacombs, Bloodstained Mire, Underground Sea, Polluted Delta, Polluted Delta, Polluted Delta, Polluted Delta, Undercity Sewers, Swamp, Ponder, Ponder, Ponder, Brainstorm, Brainstorm, Brainstorm, Brainstorm, Personal Tutor, Personal Tutor, Personal Tutor, Personal Tutor, Lion's Eye Diamond, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Dark Ritual, Dark Ritual, Dark Ritual, Daze, Daze, Thoughtseize, Thoughtseize, Force of Will, Force of Will, Force of Will, Doomsday, Doomsday, Doomsday, Misty Rainforest, Ponder, Dark Ritual, Thoughtseize
   Known opp hand: Dark Ritual, Edge of Autumn
-  Opp revealed: Flooded Strand, Polluted Delta, Misty Rainforest, Ponder, Force of Will, Daze, Island, Brainstorm, Doomsday, Thoughtseize, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Personal Tutor, Street Wraith, Edge of Autumn, Swamp, Undercity Sewers, Underground Sea, Bloodstained Mire, Verdant Catacombs, Cavern of Souls, Deep Analysis, Barrowgoyf, Dauthi Voidwalker
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Doomsday, Thoughtseize, Dark Ritual, Personal Tutor, Edge of Autumn, Underground Sea, Verdant Catacombs
   This turn: self spells=1 drawn=1 colors=U
   Extras: not_priority_window
   Actions:

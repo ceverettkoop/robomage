@@ -950,24 +950,92 @@
    0: Pass priority
    1: Cast Daze  [#0]
    2: Cast Daze (alternate cost)  [#1]
-  >> A/A: 0 (Pass priority)
+  >> A/A: 1 (Cast Daze)
 --- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Searching Player B's graveyard and library:
+  Choose target for Daze:
 
 --- Decision 46 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 6)
+  Self:  19 life | mana: empty | hand(1): Thassa's Oracle | lib 49
+  Opp:   20 life | mana: empty | hand count: 1 | lib 51
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Stack: Daze (spell, self) -> Doomsday (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp revealed: Island, Doomsday, Dark Ritual, Cavern of Souls, Scrubland, Tamiyo, Inquisitive Student
+  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Doomsday
+  >> A/A: 0 (Doomsday)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Underground Sea for 1(U)
+  Player A activated Underground Sea for 1(U)
+  Player A casts Daze targeting Doomsday
+  Resolving ability (category: Counter)
+  Doomsday's controller may pay {1} to save it:
+
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
+  Stack: Daze (spell, opponent) -> Doomsday (self, slot 97) -> Doomsday (spell, self)
+  Pending: Daze (opp)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
+  Actions:
+   0: Tap Island for (U)
+   1: Don't pay (Doomsday is countered)  [#0]
+  >> B/B: 0 (Tap Island for (U))
+--- Narrative ---
+  Player B tapped Island for {U}
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: 1U | hand(1): Dark Ritual | lib 51
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
+  Stack: Daze (spell, opponent) -> Doomsday (self, slot 97) -> Doomsday (spell, self)
+  Pending: Daze (opp)
+  Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
+  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
+  Actions:
+   0: Pay {1} (Doomsday is not countered)  [#1]
+   1: Don't pay (Doomsday is countered)  [#0]
+  >> B/B: 0 (Pay {1} (Doomsday is not countered))
+--- Narrative ---
+  Player B pays {1} — Doomsday is not countered
+  Resolving ability (category: ChangeZone)
+  Searching Player B's graveyard and library:
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
@@ -999,20 +1067,20 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 47 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Known top: Thassa's Oracle, ?, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
@@ -1043,20 +1111,20 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 48 ---
+--- Decision 51 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Known top: Edge of Autumn, Thassa's Oracle, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
@@ -1086,20 +1154,20 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 49 ---
+--- Decision 52 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Known top: Street Wraith, Edge of Autumn, Thassa's Oracle, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
@@ -1128,20 +1196,20 @@
   Player B puts Brainstorm to top of library
   Searching Player B's graveyard and library:
 
---- Decision 50 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 51
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
   Self GY: Dark Ritual, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
@@ -1223,20 +1291,20 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 51 ---
+--- Decision 54 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Brainstorm  [#4]
@@ -1247,20 +1315,20 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 52 ---
+--- Decision 55 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Brainstorm  [#3]
@@ -1271,20 +1339,20 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 53 ---
+--- Decision 56 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Street Wraith  [#2]
@@ -1294,20 +1362,20 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 54 ---
+--- Decision 57 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  20 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, Street Wraith, Edge of Autumn
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Street Wraith  [#1]
@@ -1319,19 +1387,19 @@
   Resolving ability (category: Cleanup)
   --- Declare Attackers (Player B) ---
 
---- Decision 55 ---
+--- Decision 58 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
@@ -1342,19 +1410,19 @@
   --- Declare Attackers (Player B) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
---- Decision 56 ---
+--- Decision 59 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
+  Opp:   19 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB | opp spells=1 noncreature=1 instant_sorcery=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1370,18 +1438,18 @@
     0: Tamiyo, Inquisitive Student [0/3]
   Your creatures:
 
---- Decision 57 ---
+--- Decision 60 ---
   Priority: Player A (non-active)
   Step: Declare Blk (turn 6)
-  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 49
+  Self:  19 life | mana: empty | hand(1): Thassa's Oracle | lib 49
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue | Clue (SICK,NEW)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra (T) | Underground Sea (T) | Underground Sea (T)
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue | Clue (SICK,NEW)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=10 colors=UB
   Extras: opp_lands_played=1, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
@@ -1395,17 +1463,17 @@
   -------- TURN 7 (Player A) --------
   Player A draws Daze
 --- Turn 7 (Player A) ---
-  PA: Daze, Daze, Thassa's Oracle
+  PA: Daze, Thassa's Oracle
   PB: Dark Ritual
 
---- Decision 58 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Underground Sea | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1418,14 +1486,14 @@
 --- Narrative ---
   --- Declare Attackers (Player A) ---
 
---- Decision 59 ---
+--- Decision 62 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tundra | Underground Sea | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1440,14 +1508,14 @@
   --- Declare Attackers (Player A) ---
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player B
 
---- Decision 60 ---
+--- Decision 63 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tundra | Underground Sea | Underground Sea
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1463,14 +1531,14 @@
   Resolving ability (category: Investigate)
   Token created: 0/0 Clue
 
---- Decision 61 ---
+--- Decision 64 ---
   Priority: Player A (active)
   Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Underground Sea | Underground Sea | Clue (SICK,NEW)
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1483,14 +1551,14 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 62 ---
+--- Decision 65 ---
   Priority: Player A (active)
   Step: Declare Blk (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Underground Sea | Underground Sea | Clue (SICK,NEW)
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1504,14 +1572,14 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 63 ---
+--- Decision 66 ---
   Priority: Player A (active)
   Step: Combat Dmg (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Underground Sea | Underground Sea | Clue (SICK,NEW)
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1522,14 +1590,14 @@
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 64 ---
+--- Decision 67 ---
   Priority: Player A (active)
   Step: End Combat (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Tundra | Underground Sea | Underground Sea | Clue (SICK,NEW)
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1540,14 +1608,14 @@
    1: Activate Clue token (Draw)  [#0]
   >> A/A: 0 (Pass priority)
 
---- Decision 65 ---
+--- Decision 68 ---
   Priority: Player A (active)
   Step: Second Main (turn 7)
-  Self:  19 life | mana: empty | hand(3): Daze, Daze, Thassa's Oracle | lib 48
+  Self:  19 life | mana: empty | hand(2): Daze, Thassa's Oracle | lib 48
   Opp:   10 life | mana: empty | hand count: 1 | lib 5
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Tundra | Underground Sea | Underground Sea | Clue (SICK,NEW)
-  Opp BF:   Cavern of Souls (T) | Island | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp BF:   Cavern of Souls (T) | Island (T) | Scrubland (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Clue | Clue (SICK)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1568,21 +1636,21 @@
   Player A draws Force of Will
   -------- TURN 8 (Player B) --------
 --- Turn 8 (Player B) ---
-  PA: Daze, Daze, Thassa's Oracle
+  PA: Daze, Thassa's Oracle
   PB: Dark Ritual
 
---- Decision 66 ---
+--- Decision 69 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 5
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   Extras: self_mulligans=1
   Actions:
    0: Pass priority
@@ -1593,18 +1661,18 @@
 --- Narrative ---
   Player B draws Edge of Autumn
 
---- Decision 67 ---
+--- Decision 70 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Edge of Autumn | lib 4
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1615,18 +1683,18 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Edge of Autumn | lib 4
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -1637,20 +1705,20 @@
    4: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 4 (Activate Edge of Autumn from hand (Draw))
 
---- Decision 69 ---
+--- Decision 72 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Edge of Autumn | lib 4
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Scrubland | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Stack: Edge of Autumn (ability, self) [amt=1]
   Pending: Edge of Autumn (self)
   Self GY: Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=1
   Extras: not_priority_window, self_mulligans=1
   Actions:
@@ -1662,19 +1730,19 @@
   Player B sacrifices Scrubland
   Player B activates Edge of Autumn from hand
 
---- Decision 70 ---
+--- Decision 73 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(1): Dark Ritual | lib 4
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Stack: Edge of Autumn (ability, self) [amt=1]
   Self GY: Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=1
   Extras: self_revolt, self_mulligans=1
   Actions:
@@ -1686,18 +1754,18 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Street Wraith
 
---- Decision 71 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  10 life | mana: empty | hand(2): Dark Ritual, Street Wraith | lib 3
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=2
   Extras: self_revolt, self_mulligans=1
   Actions:
@@ -1710,19 +1778,19 @@
   Player B pays 2 life
   Player B activates Street Wraith from hand
 
---- Decision 72 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 3
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Stack: Street Wraith (ability, self) [amt=1]
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=2 life_lost=2
   Extras: self_revolt, self_mulligans=1
   Actions:
@@ -1735,19 +1803,19 @@
   Player B draws Thassa's Oracle
   Tamiyo, Inquisitive Student triggered
 
---- Decision 73 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Tamiyo, Inquisitive Student [0/3] [Flying] | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Stack: Tamiyo, Inquisitive Student (ability, self)
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=3 life_lost=2
   Extras: self_revolt, self_mulligans=1
   Actions:
@@ -1763,18 +1831,18 @@
   Resolving ability (category: Cleanup)
   Tamiyo, Seasoned Scholar enters transformed.
 
---- Decision 74 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(2): Dark Ritual, Thassa's Oracle | lib 2
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   19 life | mana: empty | hand count: 3 | lib 47
   Self BF:  Cavern of Souls | Island | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  Opp revealed: Polluted Delta, Ponder, Daze, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
   This turn: self drawn=3 life_lost=2
   Extras: self_revolt, self_mulligans=1
   Actions:
@@ -1789,15 +1857,15 @@
   Player B activated Island for 1(U)
   Player B casts Thassa's Oracle
 
---- Decision 75 ---
+--- Decision 78 ---
   Priority: Player A (non-active)
   Step: First Main (turn 8)
-  Self:  19 life | mana: empty | hand(4): Daze, Daze, Force of Will, Thassa's Oracle | lib 47
+  Self:  19 life | mana: empty | hand(3): Daze, Force of Will, Thassa's Oracle | lib 47
   Opp:   8 life | mana: empty | hand count: 1 | lib 2
   Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
   Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
   Stack: Thassa's Oracle (spell, opponent)
-  Self GY: Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
   Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
   Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
@@ -1806,31 +1874,172 @@
   Actions:
    0: Pass priority
    1: Cast Daze (alternate cost)  [#1]
-   2: Cast Daze (alternate cost)  [#1]
-   3: Cast Force of Will (alternate cost)  [#1]
-  >> A/A: 0 (Pass priority)
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Daze (alternate cost))
 --- Narrative ---
+  Choose target for Daze:
+
+--- Decision 79 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(2): Force of Will, Thassa's Oracle | lib 47
+  Opp:   8 life | mana: empty | hand count: 1 | lib 2
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Stack: Daze (spell, self) -> Thassa's Oracle (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: opp spells=1 drawn=3 life_lost=2 colors=U
+  Extras: opp_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Thassa's Oracle
+  >> A/A: 0 (Thassa's Oracle)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 80 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(2): Force of Will, Thassa's Oracle | lib 47
+  Opp:   8 life | mana: empty | hand count: 1 | lib 2
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Stack: Daze (spell, self) -> Thassa's Oracle (opponent, slot 97) -> Thassa's Oracle (spell, opponent)
+  Pending: Daze (self)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: opp spells=1 drawn=3 life_lost=2 colors=U
+  Extras: opp_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Return Tundra
+   1: Return Underground Sea
+   2: Return Underground Sea
+  >> A/A: 0 (Return Tundra)
+--- Narrative ---
+  Player A returns Tundra to hand
+  Player A casts Daze targeting Thassa's Oracle
+
+--- Decision 81 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(3): Force of Will, Thassa's Oracle, Tundra | lib 47
+  Opp:   8 life | mana: empty | hand count: 1 | lib 2
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Stack: Daze (spell, self) -> Thassa's Oracle (opponent, slot 97) -> Thassa's Oracle (spell, opponent)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 drawn=3 life_lost=2 colors=U
+  Extras: self_revolt, opp_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 82 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(2): Thassa's Oracle, Tundra | lib 47
+  Opp:   8 life | mana: empty | hand count: 1 | lib 2
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Stack: Force of Will (spell, self) -> Daze (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Thassa's Oracle (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 drawn=3 life_lost=2 colors=U
+  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Daze
+   1: Thassa's Oracle
+  >> A/A: 1 (Thassa's Oracle)
+--- Narrative ---
+  Targeting choice 1
+
+--- Decision 83 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 8)
+  Self:  19 life | mana: empty | hand(2): Thassa's Oracle, Tundra | lib 47
+  Opp:   8 life | mana: empty | hand count: 1 | lib 2
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Stack: Force of Will (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Daze (spell, self) -> Thassa's Oracle (opponent, slot 98) -> Thassa's Oracle (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Thassa's Oracle, Street Wraith, Edge of Autumn, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 drawn=3 life_lost=2 colors=U
+  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Exile Thassa's Oracle
+  >> A/A: 0 (Exile Thassa's Oracle)
+--- Narrative ---
+  Player A pays 1 life
+  Player A exiles Thassa's Oracle
+  Player A casts Force of Will targeting Thassa's Oracle
+  Resolving ability (category: Counter)
+  Thassa's Oracle can't be countered
+  Resolving ability (category: Counter)
+  Thassa's Oracle's controller may pay {1} to save it:
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
+  Opp:   18 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Clue | Clue
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
+  Stack: Daze (spell, opponent) -> Thassa's Oracle (self, slot 97) -> Thassa's Oracle (spell, self)
+  Pending: Daze (opp)
+  Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
+  Opp GY:  Force of Will, Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp exile:  Thassa's Oracle
+  Known top: Brainstorm, Brainstorm, ?, ?, ?
+  Known opp hand: Tundra
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Tundra, Lotus Petal, Thassa's Oracle, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=1 drawn=3 life_lost=2 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 life_lost=1 colors=U
+  Extras: self_revolt, opp_revolt, not_priority_window, self_mulligans=1
+  Actions:
+   0: Don't pay (Thassa's Oracle is countered)  [#0]
+  >> B/B: 0 (Don't pay (Thassa's Oracle is countered))
+--- Narrative ---
+  Thassa's Oracle can't be countered
   Thassa's Oracle enters the battlefield
   Thassa's Oracle triggered
   Resolving ability (category: Dig)
   Player B looks at the top 2 card(s) of their library.
 
---- Decision 76 ---
+--- Decision 85 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
   Self:  8 life | mana: empty | hand(1): Dark Ritual | lib 2
-  Opp:   19 life | mana: empty | hand count: 4 | lib 47
+  Opp:   18 life | mana: empty | hand count: 1 | lib 47
   Self BF:  Cavern of Souls (T) | Island (T) | Tamiyo, Seasoned Scholar [loy 2] (NEW,res 1) | Thassa's Oracle [1/3] (SICK,NEW,res 1) | Clue | Clue
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tundra (T) | Underground Sea (T) | Underground Sea
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Underground Sea (T) | Underground Sea
   Stack: Thassa's Oracle (ability, self) [amt=1]
   Pending: Thassa's Oracle (self)
   Self GY: Street Wraith, Edge of Autumn, Scrubland, Doomsday
-  Opp GY:  Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
+  Opp GY:  Daze, Force of Will, Daze, Veil of Summer, Lotus Petal, Polluted Delta, Ponder, Lotus Petal
   Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Quantum Riddler, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Consider, Brainstorm, Brainstorm, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Dark Ritual
+  Opp exile:  Thassa's Oracle
   Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Polluted Delta, Ponder, Tundra, Lotus Petal, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
-  This turn: self spells=1 drawn=3 life_lost=2 colors=U
-  Extras: self_revolt, not_priority_window, self_mulligans=1
+  Known opp hand: Tundra
+  Opp revealed: Polluted Delta, Ponder, Force of Will, Daze, Tundra, Lotus Petal, Thassa's Oracle, Underground Sea, Veil of Summer, Tamiyo, Inquisitive Student
+  This turn: self spells=1 drawn=3 life_lost=2 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 life_lost=1 colors=U
+  Extras: self_revolt, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Put nothing on top of library (rest go to the bottom of library)
    1: Brainstorm

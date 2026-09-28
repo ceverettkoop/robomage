@@ -759,9 +759,9 @@
    5: Sheoldred's Edict
    6: Swamp
    7: Thoughtseize
-  >> A/A: 3 (Force of Will)
+  >> A/A: 5 (Sheoldred's Edict)
 --- Narrative ---
-  Player A discards Force of Will.
+  Player A discards Sheoldred's Edict.
   -------- TURN 8 (Player B) --------
   Player B draws Fireblast
 --- Turn 8 (Player B) ---
@@ -776,8 +776,8 @@
   Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain | Mountain
   Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
-  Opp GY:  Force of Will
-  Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Sheoldred's Edict
+  Opp revealed: Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
@@ -797,8 +797,8 @@
   Stack: Fireblast (spell, self)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
-  Opp GY:  Force of Will
-  Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Sheoldred's Edict
+  Opp revealed: Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -820,8 +820,8 @@
   Stack: Fireblast (spell, self) -> opponent (player)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
-  Opp GY:  Force of Will
-  Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Sheoldred's Edict
+  Opp revealed: Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -840,8 +840,8 @@
   Stack: Fireblast (spell, self) -> opponent (player)
   Pending: Fireblast (self)
   Self GY: Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
-  Opp GY:  Force of Will
-  Opp revealed: Force of Will, Orcish Bowmasters, Tamiyo, Inquisitive Student, Tropical Island
+  Opp GY:  Sheoldred's Edict
+  Opp revealed: Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self drawn=1
   Extras: not_priority_window, opp_mulligans=1
   Actions:
@@ -852,9 +852,167 @@
   Player B sacrifices Mountain
   Player B sacrifices Mountain
   Player B casts Fireblast targeting Player A
-  Resolving ability (category: DealDamage, amount: 4)
-  Fireblast deals 4 damage to Player A (now at -1 life)
-  Player A has -1 life - Player B wins!
+
+--- Decision 39 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 8)
+  Self:  3 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Swamp, Thoughtseize | lib 49
+  Opp:   20 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain
+  Stack: Fireblast (spell, opponent) -> self (player)
+  Self GY: Sheoldred's Edict
+  Opp GY:  Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning, Fireblast
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, opp_passed, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 40 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 8)
+  Self:  3 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Swamp, Thoughtseize | lib 49
+  Opp:   20 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain
+  Stack: Force of Will (spell, self) -> Fireblast (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Sheoldred's Edict
+  Opp GY:  Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning, Fireblast
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
+  Actions:
+   0: Fireblast
+  >> A/A: 0 (Fireblast)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 41 ---
+  Priority: Player A (non-active)
+  Step: Draw (turn 8)
+  Self:  3 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Swamp, Thoughtseize | lib 49
+  Opp:   20 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Opp BF:   Goblin Guide [2/2] [Haste] | Mountain
+  Stack: Force of Will (spell, self) -> Fireblast (opponent, slot 97) -> Fireblast (spell, opponent) -> self (player)
+  Pending: Force of Will (self)
+  Self GY: Sheoldred's Edict
+  Opp GY:  Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp revealed: Mountain, Lightning Bolt, Price of Progress, Lava Spike, Goblin Guide, Chain Lightning, Fireblast
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, not_priority_window, self_mulligans=1
+  Actions:
+   0: Exile Baleful Strix
+  >> A/A: 0 (Exile Baleful Strix)
+--- Narrative ---
+  Player A pays 1 life
+  Player A exiles Baleful Strix
+  Player A casts Force of Will targeting Fireblast
+  Resolving ability (category: Counter)
+  Fireblast is countered
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   2 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Self GY: Fireblast, Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Sheoldred's Edict
+  Opp exile:  Baleful Strix
+  Opp revealed: Force of Will, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+  >> B/B: 1 (Play Mountain)
+--- Narrative ---
+  Player B played Mountain
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  20 life | mana: empty | hand(1): Eidolon of the Great Revel | lib 49
+  Opp:   2 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Goblin Guide [2/2] [Haste] | Mountain | Mountain (NEW)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Self GY: Fireblast, Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Sheoldred's Edict
+  Opp exile:  Baleful Strix
+  Opp revealed: Force of Will, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Eidolon of the Great Revel  [#0]
+  >> B/B: 1 (Cast Eidolon of the Great Revel)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B activated Mountain for 1(R)
+  Player B casts Eidolon of the Great Revel
+  Eidolon of the Great Revel enters the battlefield
+  --- Declare Attackers (Player B) ---
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   2 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Goblin Guide [2/2] [Haste] | Mountain (T) | Mountain (T,NEW)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Self GY: Fireblast, Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Sheoldred's Edict
+  Opp exile:  Baleful Strix
+  Opp revealed: Force of Will, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Goblin Guide [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Goblin Guide [2/2])
+--- Narrative ---
+  Goblin Guide attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Goblin Guide [2/2] -> Player A
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 8)
+  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
+  Opp:   2 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Goblin Guide [2/2] [Haste] (ATK) | Mountain (T) | Mountain (T,NEW)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Tropical Island (T)
+  Self GY: Fireblast, Mountain, Mountain, Chain Lightning, Price of Progress, Lava Spike, Lightning Bolt
+  Opp GY:  Force of Will, Sheoldred's Edict
+  Opp exile:  Baleful Strix
+  Opp revealed: Force of Will, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Goblin Guide -> Player A
+  Goblin Guide triggered
+  Resolving ability (category: Dig)
+  Player A looks at the top 1 card(s) of their library.
+  Player A reveals Misty Rainforest from the top of their library.
+  Player A reveals Misty Rainforest and puts it into hand.
+  Player A puts 0 card(s) on the top of their library.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Goblin Guide deals 2 damage to Player A (now at 0 life)
+  --- End Combat Damage ---
+  Player A has 0 life - Player B wins!
   GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

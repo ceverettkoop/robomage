@@ -171,36 +171,41 @@
    1: Cast Dark Ritual  [#0]
    2: Cast Quantum Riddler (warp)  [#1]
    3: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 0 (Pass priority)
+  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Tropical Island for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
 
 --- Decision 9 ---
   Priority: Player B (active)
-  Step: Begin Combat (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
+  Self BF:  Lotus Petal (NEW) | Tropical Island (T,NEW)
   Opp BF:   Fiery Islet (T)
+  Stack: Tamiyo, Inquisitive Student (spell, self)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 drawn=1
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
+   2: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  No creatures eligible to attack.
+  Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 10 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Step: First Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 drawn=1
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -209,48 +214,80 @@
 
 --- Decision 11 ---
   Priority: Player B (active)
-  Step: End Combat (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Step: Begin Combat (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 drawn=1
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
 
 --- Decision 12 ---
   Priority: Player B (active)
-  Step: Second Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Step: Declare Atk (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 drawn=1
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
-   2: Cast Quantum Riddler (warp)  [#1]
-   3: Cast Tamiyo, Inquisitive Student  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 13 ---
   Priority: Player B (active)
-  Step: End Step (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Step: End Combat (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal (NEW) | Tropical Island (NEW)
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
   Opp BF:   Fiery Islet (T)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 drawn=1
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: End Step (turn 2)
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Lotus Petal (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T,NEW)
+  Opp BF:   Fiery Islet (T)
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Fiery Islet, Rift Bolt
+  This turn: self spells=2 noncreature=1 drawn=1 colors=U
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -261,14 +298,14 @@
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt
-  PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
+  PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler
 
---- Decision 14 ---
+--- Decision 16 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (ability, opponent)
   Opp exile:  Rift Bolt [1 ctr]
@@ -283,12 +320,12 @@
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
 
---- Decision 15 ---
+--- Decision 17 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (ability, opponent)
   Opp exile:  Rift Bolt
@@ -301,17 +338,17 @@
 --- Narrative ---
   Resolving ability (category: SuspendCast)
 
---- Decision 16 ---
+--- Decision 18 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Lotus Petal | Tropical Island
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self exile: Rift Bolt
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Extras: not_priority_window
   Actions:
    0: Do not cast Rift Bolt  [#0]
@@ -321,31 +358,32 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 17 ---
+--- Decision 19 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Opp:   20 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Lotus Petal | Tropical Island
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   Extras: not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
+   2: Tamiyo, Inquisitive Student
   >> A/A: 0 (Player B (20 life))
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 18 ---
+--- Decision 20 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  20 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (spell, opponent) -> self (player)
   Opp revealed: Fiery Islet, Rift Bolt
@@ -360,12 +398,12 @@
   Resolving ability (category: DealDamage, amount: 3)
   Rift Bolt deals 3 damage to Player B (now at 17 life)
 
---- Decision 19 ---
+--- Decision 21 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  17 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet
   Opp GY:  Rift Bolt
   Opp revealed: Fiery Islet, Rift Bolt
@@ -378,12 +416,12 @@
 --- Narrative ---
   Player A draws Chain Lightning
 
---- Decision 20 ---
+--- Decision 22 ---
   Priority: Player B (non-active)
   Step: Draw (turn 3)
-  Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  17 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   19 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet
   Opp GY:  Rift Bolt
   Opp revealed: Fiery Islet, Rift Bolt
@@ -394,15 +432,15 @@
    1: Cast Dark Ritual  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 21 ---
+--- Decision 23 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Lotus Petal | Tropical Island
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Rift Bolt
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
@@ -415,22 +453,23 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 22 ---
+--- Decision 24 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 6 | lib 52
+  Opp:   17 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet
-  Opp BF:   Lotus Petal | Tropical Island
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Rift Bolt
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (19 life)
+   2: Tamiyo, Inquisitive Student
   >> A/A: 0 (Player B (17 life))
 --- Narrative ---
   Targeting choice 0
@@ -438,12 +477,12 @@
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
 
---- Decision 23 ---
+--- Decision 25 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  17 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  17 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
   Opp GY:  Rift Bolt
@@ -461,12 +500,12 @@
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 24 ---
+--- Decision 26 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
   Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Lotus Petal | Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
   Pending: Chain Lightning (opp)
@@ -480,66 +519,19 @@
    2: Tap Lotus Petal for (B)
    3: Tap Lotus Petal for (R)
    4: Tap Lotus Petal for (G)
-   5: Tap Tropical Island for (G)
-   6: Tap Tropical Island for (U)
-   7: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Tap Lotus Petal for (W))
---- Narrative ---
-  Player B sacrifices Lotus Petal
-  Player B tapped Lotus Petal for {W}
-
---- Decision 25 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  14 life | mana: 1W | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Tropical Island
-  Opp BF:   Fiery Islet (T)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Lotus Petal
-  Opp GY:  Rift Bolt
-  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
-  Extras: self_revolt, not_priority_window
-  Actions:
-   0: Tap Tropical Island for (G)
-   1: Tap Tropical Island for (U)
-   2: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Tap Tropical Island for (G))
---- Narrative ---
-  Player B tapped Tropical Island for {G}
-
---- Decision 26 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  14 life | mana: 1W, 1G | hand(6): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 52
-  Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Tropical Island (T)
-  Opp BF:   Fiery Islet (T)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Lotus Petal
-  Opp GY:  Rift Bolt
-  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
-  Extras: self_revolt, not_priority_window
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
+   5: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 5 (Don't pay (Chain Lightning is not copied))
 
 --- Decision 27 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: 1W, 1G | hand count: 6 | lib 52
+  Opp:   14 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet (T)
-  Opp BF:   Tropical Island (T)
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Lotus Petal
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -553,14 +545,13 @@
   Priority: Player A (active)
   Step: First Main (turn 3)
   Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: 1W, 1G | hand count: 6 | lib 52
+  Opp:   14 life | mana: empty | hand count: 5 | lib 52
   Self BF:  Fiery Islet (T) | Mountain (NEW)
-  Opp BF:   Tropical Island (T)
+  Opp BF:   Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Lotus Petal
-  Opp revealed: Lotus Petal, Tropical Island
+  Opp revealed: Lotus Petal, Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
-  Extras: self_lands_played=1, opp_revolt
+  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Suspend Rift Bolt
@@ -568,21 +559,156 @@
 --- Narrative ---
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
-  No creatures eligible to attack.
-  -------- TURN 4 (Player B) --------
-  Player B draws Flooded Strand
---- Turn 4 (Player B) ---
-  PA: Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler
 
 --- Decision 29 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 30 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 31 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 32 ---
+  Priority: Player B (non-active)
+  Step: End Combat (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 33 ---
+  Priority: Player B (non-active)
+  Step: Second Main (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 34 ---
+  Priority: Player B (non-active)
+  Step: End Step (turn 3)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 4)
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 52
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Flooded Strand
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Tamiyo, Inquisitive Student, Teferi, Time Raveler | lib 51
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tropical Island
+  Self BF:  Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
@@ -590,89 +716,95 @@
   Actions:
    0: Pass priority
    1: Play Flooded Strand
-   2: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 2 (Cast Tamiyo, Inquisitive Student)
+   2: Cast Dark Ritual  [#0]
+   3: Cast Quantum Riddler (warp)  [#1]
+  >> B/B: 1 (Play Flooded Strand)
 --- Narrative ---
-  Player B activated Tropical Island for 1(U)
-  Player B casts Tamiyo, Inquisitive Student
+  Player B played Flooded Strand
 
---- Decision 30 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tropical Island (T)
+  Self BF:  Flooded Strand (NEW) | Lotus Petal | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Tamiyo, Inquisitive Student (spell, self)
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Quantum Riddler (warp)  [#1]
+   3: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 1 (Cast Dark Ritual)
+--- Narrative ---
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(B)
+  Player B casts Dark Ritual
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Flooded Strand (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Dark Ritual (spell, self)
   Self GY: Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=U
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Flooded Strand (ability, self) -> Dark Ritual (spell, self)
+  Self GY: Flooded Strand, Lotus Petal
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Tamiyo, Inquisitive Student enters the battlefield
-
---- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(6): Dark Ritual, Doomsday, Flooded Strand, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Lotus Petal
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=U
-  Actions:
-   0: Pass priority
-   1: Play Flooded Strand
-  >> B/B: 1 (Play Flooded Strand)
---- Narrative ---
-  Player B played Flooded Strand
-
---- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Flooded Strand (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Lotus Petal
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Activate Flooded Strand (ChangeZone)  [#0]
-  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
---- Narrative ---
-  Player B pays 1 life
-  Player B sacrifices Flooded Strand
-  Player B's Flooded Strand ability is on the stack
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 33 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
+  Self:  13 life | mana: empty | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 51
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island
   Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Flooded Strand (ability, self)
+  Stack: Flooded Strand (ability, self) -> Dark Ritual (spell, self)
   Pending: Flooded Strand (self)
   Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
@@ -687,40 +819,19 @@
   Player B shuffles their library
   Player B puts Underground Sea to the battlefield
 
---- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(5): Dark Ritual, Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Flooded Strand, Lotus Petal
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 1 (Cast Dark Ritual)
---- Narrative ---
-  Player B activated Underground Sea for 1(B)
-  Player B casts Dark Ritual
-
---- Decision 35 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Dark Ritual (spell, self)
   Self GY: Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -730,39 +841,41 @@
   Resolving ability (category: AddMana)
   Player B adds 3{B}
 
---- Decision 36 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: 3B | hand(4): Doomsday, Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Self GY: Dark Ritual, Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Doomsday  [#0]
+   2: Cast Quantum Riddler  [#0]
+   3: Cast Quantum Riddler (warp)  [#1]
   >> B/B: 1 (Cast Doomsday)
 --- Narrative ---
   Player B casts Doomsday
 
---- Decision 37 ---
+--- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Self GY: Dark Ritual, Flooded Strand, Lotus Petal
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
@@ -772,12 +885,12 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's graveyard and library:
 
---- Decision 38 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -785,7 +898,7 @@
   Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
@@ -820,12 +933,12 @@
   Player B puts Thassa's Oracle to top of library
   Searching Player B's graveyard and library:
 
---- Decision 39 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -834,7 +947,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Thassa's Oracle, ?, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
@@ -868,12 +981,12 @@
   Player B puts Island to top of library
   Searching Player B's graveyard and library:
 
---- Decision 40 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -882,7 +995,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Island, Thassa's Oracle, ?, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
@@ -915,12 +1028,12 @@
   Player B puts Edge of Autumn to top of library
   Searching Player B's graveyard and library:
 
---- Decision 41 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -929,7 +1042,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Edge of Autumn, Island, Thassa's Oracle, ?, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
@@ -961,12 +1074,12 @@
   Player B puts Street Wraith to top of library
   Searching Player B's graveyard and library:
 
---- Decision 42 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -975,7 +1088,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Street Wraith, Edge of Autumn, Island, Thassa's Oracle, ?
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Dark Ritual (graveyard)
@@ -1058,12 +1171,12 @@
   Player B looks at the top 5 card(s) of their library.
   Choose which card goes 5 from top:
 
---- Decision 43 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1072,7 +1185,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Brainstorm  [#4]
@@ -1084,12 +1197,12 @@
 --- Narrative ---
   Choose which card goes 4 from top:
 
---- Decision 44 ---
+--- Decision 51 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1098,7 +1211,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Brainstorm, Street Wraith, Edge of Autumn, Island, Thassa's Oracle
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Street Wraith  [#3]
@@ -1109,12 +1222,12 @@
 --- Narrative ---
   Choose which card goes 3 from top:
 
---- Decision 45 ---
+--- Decision 52 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1123,7 +1236,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Thassa's Oracle, Brainstorm, Street Wraith, Edge of Autumn, Island
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Street Wraith  [#2]
@@ -1133,12 +1246,12 @@
 --- Narrative ---
   Choose which card goes 2 from top:
 
---- Decision 46 ---
+--- Decision 53 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
   Self:  13 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T) | Underground Sea (T,NEW)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Doomsday (spell, self)
   Pending: Doomsday (self)
@@ -1147,7 +1260,7 @@
   Opp exile:  Rift Bolt [1 ctr]
   Known top: Street Wraith, Thassa's Oracle, Brainstorm, Edge of Autumn, Island
   Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UB
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Edge of Autumn  [#1]
@@ -1157,26 +1270,134 @@
   Resolving ability (category: LoseLife, amount: 7)
   Player B loses 7 life (now at 6)
   Resolving ability (category: Cleanup)
-  No creatures eligible to attack.
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island | Underground Sea (NEW)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Doomsday
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=8 colors=B
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Quantum Riddler (warp)  [#1]
+  >> B/B: 1 (Cast Quantum Riddler (warp))
+--- Narrative ---
+  Player B activated Tropical Island for 1(U)
+  Player B activated Underground Sea for 1(U)
+  Player B casts Quantum Riddler
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  6 life | mana: empty | hand(2): Force of Will, Teferi, Time Raveler | lib 5
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T,NEW)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Quantum Riddler (spell, self)
+  Self GY: Doomsday
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Quantum Riddler enters the battlefield
+  Quantum Riddler was cast with warp (exiled at the next end step; castable from exile later).
+  Quantum Riddler triggered
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Island
+  --- Declare Attackers (Player B) ---
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Island, Teferi, Time Raveler | lib 4
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] | Tropical Island (T) | Underground Sea (T,NEW)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
+  Self GY: Doomsday
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=2 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 4)
+  Self:  6 life | mana: empty | hand(3): Force of Will, Island, Teferi, Time Raveler | lib 4
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Quantum Riddler [4/6] [Flying] (SICK,NEW,DELAYED,res 1) | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK) | Tropical Island (T) | Underground Sea (T,NEW)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Delayed: Quantum Riddler@0 -> Quantum Riddler@0 (self, end step this turn, waiting)
+  Self GY: Doomsday
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=2 life_lost=8 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+  No creatures eligible to block.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  Delayed trigger fires.
+  Resolving ability (category: WarpExile)
+  Quantum Riddler is exiled with warp; Player B may cast it from exile for its normal cost.
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
 --- Turn 5 (Player A) ---
   PA: Mountain, Mountain, Price of Progress
-  PB: Force of Will, Quantum Riddler, Teferi, Time Raveler
+  PB: Force of Will, Island, Teferi, Time Raveler
 
---- Decision 47 ---
+--- Decision 58 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
-  Opp:   6 life | mana: empty | hand count: 3 | lib 5
+  Opp:   6 life | mana: empty | hand count: 3 | lib 4
   Self BF:  Fiery Islet | Mountain
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Underground Sea (T) | Clue (SICK)
   Stack: Rift Bolt (ability, self)
   Self GY: Chain Lightning, Rift Bolt
   Opp GY:  Doomsday
   Self exile: Rift Bolt [1 ctr]
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
+  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
@@ -1188,19 +1409,19 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Price of Progress
 
---- Decision 48 ---
+--- Decision 59 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
-  Self:  6 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
+  Self:  6 life | mana: empty | hand(3): Force of Will, Island, Teferi, Time Raveler | lib 4
   Opp:   17 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Underground Sea (T) | Clue (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Price of Progress (spell, opponent) -> Rift Bolt (ability, opponent)
   Self GY: Doomsday
   Opp GY:  Chain Lightning, Rift Bolt
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
   Opp exile:  Rift Bolt [1 ctr]
-  Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=R
   Extras: opp_passed
@@ -1219,20 +1440,20 @@
   Rift Bolt triggers: the last time counter was removed (suspend).
   Resolving ability (category: SuspendCast)
 
---- Decision 49 ---
+--- Decision 60 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   2 life | mana: empty | hand count: 3 | lib 5
+  Opp:   2 life | mana: empty | hand count: 3 | lib 4
   Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Underground Sea (T) | Clue (SICK)
   Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Doomsday
   Self exile: Rift Bolt
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
+  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
   Extras: not_priority_window
   Actions:
@@ -1243,19 +1464,19 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 50 ---
+--- Decision 61 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
   Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   2 life | mana: empty | hand count: 3 | lib 5
+  Opp:   2 life | mana: empty | hand count: 3 | lib 4
   Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Underground Sea (T) | Clue (SICK)
   Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
   Opp GY:  Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler
+  Opp exile:  Quantum Riddler [play:opponent], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
   Extras: not_priority_window
   Actions:
@@ -1267,18 +1488,18 @@
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 51 ---
+--- Decision 62 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 5)
-  Self:  2 life | mana: empty | hand(3): Force of Will, Quantum Riddler, Teferi, Time Raveler | lib 5
+  Self:  2 life | mana: empty | hand(3): Force of Will, Island, Teferi, Time Raveler | lib 4
   Opp:   15 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T) | Underground Sea (T)
+  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (T) | Tropical Island (T) | Underground Sea (T) | Clue (SICK)
   Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Rift Bolt (spell, opponent) -> self (player)
   Self GY: Doomsday
   Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
-  Known top: Island, Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm
+  Self exile: Quantum Riddler [play:self], Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tundra, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Ponder, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Brainstorm, Lotus Petal, Flooded Strand, Dark Ritual
+  Known top: Edge of Autumn, Street Wraith, Thassa's Oracle, Brainstorm, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self life_lost=4 | opp spells=2 noncreature=2 instant_sorcery=2 life_lost=3 colors=R
   Extras: opp_passed

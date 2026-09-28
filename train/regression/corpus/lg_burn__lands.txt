@@ -912,27 +912,7 @@
   Actions:
    0: Tap Urza's Saga for (C)
    1: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Tap Urza's Saga for (C))
---- Narrative ---
-  Player B tapped Urza's Saga for {C}
-
---- Decision 40 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  0 life | mana: 1C | hand(3): Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 49
-  Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage (T) | Urza's Saga [lore:2] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW,res 1) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Crop Rotation, Savannah
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=3 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, self_mulligans=1
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
+  >> B/B: 1 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
   Player B has 0 life - Player A wins!
   GAME_RESULT: 1 Player A wins

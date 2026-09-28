@@ -569,13 +569,38 @@
   Actions:
    0: No target
    1: Fiery Islet
-  >> B/B: 0 (No target)
+  >> B/B: 1 (Fiery Islet)
 --- Narrative ---
-  Targeting choice 0
+  Targeting choice 1
   White Orchid Phantom triggered
   Resolving ability (category: Destroy)
-  Destroy: no target chosen
+  Fiery Islet is destroyed
   Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 27 ---
+  Priority: Player A (non-active)
+  Step: First Main (turn 4)
+  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Opp:   13 life | mana: empty | hand count: 5 | lib 70
+  Self BF:  Mountain (T)
+  Opp BF:   Aether Vial [charge:1] (T,res 1) | Plains (T,NEW) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1)
+  Stack: White Orchid Phantom (ability, opponent) -> Fiery Islet (self)
+  Pending: White Orchid Phantom (opp)
+  Self GY: Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Prismatic Vista
+  Self exile: Rift Bolt [1 ctr]
+  Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
+  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
+  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window
+  Actions:
+   0: Fail to find
+   1: Mountain
+  >> A/A: 1 (Mountain)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Mountain to the battlefield
+  Mountain enters tapped.
   No creatures eligible to attack.
   -------- TURN 5 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
@@ -583,51 +608,48 @@
   PA: Mountain, Mountain, Price of Progress
   PB: Meteor Sword, Prismatic Vista, Shadowy Backstreet, Windswept Heath, Witch Enchanter
 
---- Decision 27 ---
+--- Decision 28 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
-  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 51
   Opp:   13 life | mana: empty | hand count: 5 | lib 70
-  Self BF:  Fiery Islet | Mountain
+  Self BF:  Mountain | Mountain
   Opp BF:   Aether Vial [charge:1] (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK)
   Stack: Rift Bolt (ability, self)
-  Self GY: Chain Lightning, Rift Bolt
+  Self GY: Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista
   Self exile: Rift Bolt [1 ctr]
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
-   2: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 1 (Cast Price of Progress)
 --- Narrative ---
   Player A activated Mountain for 1(R)
-  Player A pays 1 life
-  Player A activated Fiery Islet for 1(U)
+  Player A activated Mountain for 1(R)
   Player A casts Price of Progress
   Resolving ability (category: RepeatEach)
-  Resolving ability (category: DealDamage, amount: 2)
-  Price of Progress deals 2 damage to Player A (now at 15 life)
+  Resolving ability (category: DealDamage, amount: 0)
   Resolving ability (category: DealDamage, amount: 0)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
   Rift Bolt triggers: the last time counter was removed (suspend).
   Resolving ability (category: SuspendCast)
 
---- Decision 28 ---
+--- Decision 29 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
-  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 51
   Opp:   13 life | mana: empty | hand count: 5 | lib 70
-  Self BF:  Fiery Islet (T) | Mountain (T)
+  Self BF:  Mountain (T) | Mountain (T)
   Opp BF:   Aether Vial [charge:1] (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK)
   Stack: Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista
   Self exile: Rift Bolt
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
   Actions:
    0: Do not cast Rift Bolt  [#0]
@@ -637,23 +659,23 @@
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 29 ---
+--- Decision 30 ---
   Priority: Player A (active)
   Step: Upkeep (turn 5)
-  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 51
   Opp:   13 life | mana: empty | hand count: 5 | lib 70
-  Self BF:  Fiery Islet (T) | Mountain (T)
+  Self BF:  Mountain (T) | Mountain (T)
   Opp BF:   Aether Vial [charge:1] (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK)
   Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
   Actions:
    0: Player B (13 life)
-   1: Player A (15 life)
+   1: Player A (18 life)
    2: White Orchid Phantom
   >> A/A: 0 (Player B (13 life))
 --- Narrative ---
@@ -661,23 +683,24 @@
   Player A casts Rift Bolt targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
   Rift Bolt deals 3 damage to Player B (now at 10 life)
-  Player A draws Exquisite Firecraft
+  Player A draws Mountain
 
---- Decision 30 ---
+--- Decision 31 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Mountain | lib 50
   Opp:   10 life | mana: empty | hand count: 5 | lib 70
-  Self BF:  Fiery Islet (T) | Mountain (T)
+  Self BF:  Mountain (T) | Mountain (T)
   Opp BF:   Aether Vial [charge:1] (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=3
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
    2: Play Mountain
+   3: Play Mountain
   >> A/A: 1 (Play Mountain)
 --- Narrative ---
   Player A played Mountain
@@ -685,36 +708,36 @@
   -------- TURN 6 (Player B) --------
   Aether Vial triggered
 --- Turn 6 (Player B) ---
-  PA: Exquisite Firecraft, Mountain, Mountain
+  PA: Mountain, Mountain, Mountain
   PB: Meteor Sword, Prismatic Vista, Shadowy Backstreet, Windswept Heath, Witch Enchanter
 
---- Decision 31 ---
+--- Decision 32 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  10 life | mana: empty | hand(5): Meteor Sword, Prismatic Vista, Shadowy Backstreet, Windswept Heath, Witch Enchanter | lib 70
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:1] | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Aether Vial (ability, self)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 32 ---
+--- Decision 33 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  10 life | mana: empty | hand(5): Meteor Sword, Prismatic Vista, Shadowy Backstreet, Windswept Heath, Witch Enchanter | lib 70
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:1] (res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Extras: not_priority_window
   Actions:
@@ -725,15 +748,15 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
---- Decision 33 ---
+--- Decision 34 ---
   Priority: Player B (active)
   Step: Upkeep (turn 6)
   Self:  10 life | mana: empty | hand(5): Meteor Sword, Prismatic Vista, Shadowy Backstreet, Windswept Heath, Witch Enchanter | lib 70
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
@@ -742,15 +765,15 @@
 --- Narrative ---
   Player B draws Solitude
 
---- Decision 34 ---
+--- Decision 35 ---
   Priority: Player B (active)
   Step: Draw (turn 6)
   Self:  10 life | mana: empty | hand(6): Meteor Sword, Prismatic Vista, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Actions:
@@ -759,15 +782,15 @@
    2: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 35 ---
+--- Decision 36 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(6): Meteor Sword, Prismatic Vista, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Actions:
@@ -782,15 +805,15 @@
 --- Narrative ---
   Player B played Prismatic Vista
 
---- Decision 36 ---
+--- Decision 37 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (res 1) | Plains | Plains | Prismatic Vista (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Extras: self_lands_played=1
@@ -803,16 +826,16 @@
 --- Narrative ---
   Player B's Aether Vial ability is on the stack
 
---- Decision 37 ---
+--- Decision 38 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  10 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Prismatic Vista (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Aether Vial (ability, self)
   Self GY: Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Extras: self_lands_played=1
@@ -826,16 +849,16 @@
   Player B sacrifices Prismatic Vista
   Player B's Prismatic Vista ability is on the stack
 
---- Decision 38 ---
+--- Decision 39 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -847,17 +870,17 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 39 ---
+--- Decision 40 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 69
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Prismatic Vista (ability, self) -> Aether Vial (ability, self)
   Pending: Prismatic Vista (self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -870,16 +893,16 @@
   Player B shuffles their library
   Player B puts Plains to the battlefield
 
---- Decision 40 ---
+--- Decision 41 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Aether Vial (ability, self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -891,17 +914,17 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 41 ---
+--- Decision 42 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
@@ -911,15 +934,15 @@
 --- Narrative ---
   Player B fails to find
 
---- Decision 42 ---
+--- Decision 43 ---
   Priority: Player B (active)
   Step: First Main (turn 6)
   Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -927,17 +950,39 @@
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
    2: Cast Solitude (alternate cost)  [#1]
+  >> B/B: 1 (Companion: pay {3}, put Yorion, Sky Nomad into your hand)
+--- Narrative ---
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B pays {3} and puts Yorion, Sky Nomad into their hand from outside the game
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
+  Self GY: Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Solitude (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 43 ---
+--- Decision 45 ---
   Priority: Player B (active)
   Step: Begin Combat (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -948,15 +993,15 @@
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 44 ---
+--- Decision 46 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -969,15 +1014,15 @@
   --- Declare Attackers (Player B) ---
     [attacking] White Orchid Phantom [2/2] -> Player A
 
---- Decision 45 ---
+--- Decision 47 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
@@ -988,15 +1033,15 @@
   Attackers declared:
     White Orchid Phantom -> Player A
 
---- Decision 46 ---
+--- Decision 48 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -1007,15 +1052,15 @@
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 47 ---
+--- Decision 49 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   18 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt
@@ -1025,18 +1070,18 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player A (now at 13 life)
+    White Orchid Phantom deals 2 damage to Player A (now at 16 life)
   --- End First Strike Combat Damage ---
 
---- Decision 48 ---
+--- Decision 50 ---
   Priority: Player B (active)
   Step: First Strike Dmg (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1 | opp life_lost=2
   Extras: self_lands_played=1, self_revolt
@@ -1048,67 +1093,66 @@
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 49 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1 | opp life_lost=2
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 50 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1 | opp life_lost=2
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
-
 --- Decision 51 ---
   Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Step: Combat Dmg (turn 6)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1 | opp life_lost=2
   Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-   2: Cast Solitude (alternate cost)  [#1]
+   1: Cast Solitude (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 52 ---
   Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains | Plains | Plains (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Step: End Combat (turn 6)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Solitude (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 6)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
+  Self GY: Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Solitude (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: End Step (turn 6)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T,res 1) | Plains (T) | Plains (T) | Plains (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain (T) | Mountain | Mountain (T)
+  Self GY: Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1 life_lost=1 | opp life_lost=2
   Extras: self_lands_played=1, self_revolt
@@ -1119,33 +1163,18 @@
 --- Narrative ---
   -------- TURN 7 (Player A) --------
 --- Turn 7 (Player A) ---
-  PA: Exquisite Firecraft, Mountain
-  PB: Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter
+  PA: Mountain, Mountain, Mountain
+  PB: Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad
 
---- Decision 53 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  13 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   9 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  Actions:
-   0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 54 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 7)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 50
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Extras: opp_passed
   Actions:
@@ -1153,33 +1182,17 @@
    1: Cast Solitude (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player A draws Mountain
-
---- Decision 55 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  13 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
+  Player A draws Monastery Swiftspear
 
 --- Decision 56 ---
   Priority: Player B (non-active)
   Step: Draw (turn 7)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   13 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 3 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: opp drawn=1
   Extras: opp_passed
@@ -1191,11 +1204,11 @@
 --- Decision 57 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  13 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  16 life | mana: empty | hand(3): Monastery Swiftspear, Mountain, Mountain | lib 49
+  Opp:   9 life | mana: empty | hand count: 6 | lib 68
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista, Prismatic Vista
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
   This turn: self drawn=1
@@ -1203,71 +1216,43 @@
    0: Pass priority
    1: Play Mountain
    2: Play Mountain
-   3: Cast Exquisite Firecraft  [#0]
-   4: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 3 (Cast Exquisite Firecraft)
+   3: Cast Monastery Swiftspear  [#0]
+  >> A/A: 3 (Cast Monastery Swiftspear)
 --- Narrative ---
-  Choose target for Exquisite Firecraft:
+  Player A activated Mountain for 1(R)
+  Player A casts Monastery Swiftspear
 
 --- Decision 58 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  13 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Stack: Exquisite Firecraft (spell, self)
-  Pending: Exquisite Firecraft (self)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: not_priority_window
-  Actions:
-   0: Player B (9 life)
-   1: Player A (13 life)
-   2: White Orchid Phantom
-  >> A/A: 0 (Player B (9 life))
---- Narrative ---
-  Targeting choice 0
-  Player A activated Mountain for 1(R)
-  Player A activated Mountain for 1(R)
-  Player A pays 1 life
-  Player A activated Fiery Islet for 1(U)
-  Player A casts Exquisite Firecraft targeting Player B
-
---- Decision 59 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Stack: Exquisite Firecraft (spell, opponent) -> self (player)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 2 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain (T) | Mountain | Mountain
+  Stack: Monastery Swiftspear (spell, opponent)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: opp spells=1 drawn=1 colors=R
   Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Solitude (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Resolving ability (category: DealDamage, amount: 4)
-  Exquisite Firecraft deals 4 damage to Player B (now at 5 life)
+  Monastery Swiftspear enters the battlefield
 
---- Decision 60 ---
+--- Decision 59 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  12 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   5 life | mana: empty | hand count: 5 | lib 68
-  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  16 life | mana: empty | hand(2): Mountain, Mountain | lib 49
+  Opp:   9 life | mana: empty | hand count: 6 | lib 68
+  Self BF:  Monastery Swiftspear [1/2] [Haste] (SICK,NEW) | Mountain (T) | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Opp GY:  Prismatic Vista, Prismatic Vista
   Opp revealed: Plains, Aether Vial, White Orchid Phantom, Prismatic Vista, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1276,145 +1261,136 @@
 --- Narrative ---
   Player A played Mountain
 
+--- Decision 60 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 7)
+  Self:  9 life | mana: empty | hand(6): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Monastery Swiftspear [1/2] [Haste] (SICK,NEW) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
+  Self GY: Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: opp spells=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_passed
+  Actions:
+   0: Pass priority
+   1: Cast Solitude (alternate cost)  [#1]
+  >> B/B: 1 (Cast Solitude (alternate cost))
+
 --- Decision 61 ---
   Priority: Player B (non-active)
   Step: First Main (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
+  Self:  9 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Windswept Heath, Witch Enchanter, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Monastery Swiftspear [1/2] [Haste] (SICK,NEW) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
+  Stack: Solitude (spell, self)
+  Pending: Solitude (self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: opp spells=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
+   0: Exile Witch Enchanter
+   1: Exile Yorion, Sky Nomad
+  >> B/B: 0 (Exile Witch Enchanter)
+--- Narrative ---
+  Player B exiles Witch Enchanter
+  Player B casts Solitude
+  Solitude enters the battlefield
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 62 ---
   Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
+  Step: First Main (turn 7)
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | Solitude [3/2] [Lifelink, Flash] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Monastery Swiftspear [1/2] [Haste] (SICK,NEW) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
+  Pending: Solitude (self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 colors=W | opp spells=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
+   0: Solitude (ChangeZone, targeted)  [#0]
+   1: Solitude (evoke: sacrifice)  [#1]
+  >> B/B: 0 (Solitude (ChangeZone, targeted))
 --- Narrative ---
-  No creatures eligible to attack.
+  Choose target for Solitude:
 
 --- Decision 63 ---
   Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
+  Step: First Main (turn 7)
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 68
+  Opp:   16 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:2] (T) | Plains (T) | Plains (T) | Plains (T) | Solitude [3/2] [Lifelink, Flash] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Monastery Swiftspear [1/2] [Haste] (SICK,NEW) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
+  Pending: Solitude (self)
   Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 colors=W | opp spells=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 64 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 65 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
-
---- Decision 66 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:2] (T) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
+   0: No target
+   1: Monastery Swiftspear
+   2: White Orchid Phantom
+  >> B/B: 1 (Monastery Swiftspear)
 --- Narrative ---
+  Targeting choice 1
+  Solitude triggered
+  Solitude triggered
+  Resolving ability (category: ChangeZone)
+  Solitude is moved to graveyard
+  Resolving ability (category: ChangeZone)
+  Monastery Swiftspear is moved to exile
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 17)
+  No creatures eligible to attack.
   -------- TURN 8 (Player B) --------
   Aether Vial triggered
 --- Turn 8 (Player B) ---
   PA: Mountain, Mountain
-  PB: Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter
+  PB: Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad
 
---- Decision 67 ---
+--- Decision 64 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 68
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Aether Vial [charge:2] | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
   Stack: Aether Vial (ability, self)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 68 ---
+--- Decision 65 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 68
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Aether Vial [charge:2] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -1424,246 +1400,194 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
---- Decision 69 ---
+--- Decision 66 ---
   Priority: Player B (active)
   Step: Upkeep (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 68
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 68
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player B draws Recruiter of the Guard
+  Player B draws Marsh Flats
 
---- Decision 70 ---
+--- Decision 67 ---
   Priority: Player B (active)
   Step: Draw (turn 8)
-  Self:  5 life | mana: empty | hand(6): Meteor Sword, Recruiter of the Guard, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
+  Self:  9 life | mana: empty | hand(5): Marsh Flats, Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 67
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
   This turn: self drawn=1
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
+
+--- Decision 68 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  9 life | mana: empty | hand(5): Marsh Flats, Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 67
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Shadowy Backstreet
+   3: Play Windswept Heath
+   4: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 69 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  9 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 67
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Marsh Flats (NEW) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+
+--- Decision 70 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 67
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Stack: Marsh Flats (ability, self)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
 
 --- Decision 71 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(6): Meteor Sword, Recruiter of the Guard, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 67
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
   Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Pass priority
-   1: Play Shadowy Backstreet
-   2: Play Windswept Heath
-   3: Play Witch-Blessed Meadow
-   4: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-   5: Cast Recruiter of the Guard  [#0]
-   6: Cast Solitude (alternate cost)  [#1]
-   7: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 5 (Cast Recruiter of the Guard)
+   0: Fail to find
+   1: Plains
+   2: Scrubland
+   3: Shadowy Backstreet
+   4: Swamp
+  >> B/B: 2 (Scrubland)
 --- Narrative ---
-  Player B activated Plains for 1(W)
-  Player B activated Plains for 1(W)
-  Player B activated Plains for 1(W)
-  Player B casts Recruiter of the Guard
+  Player B shuffles their library
+  Player B puts Scrubland to the battlefield
 
 --- Decision 72 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Recruiter of the Guard (spell, self)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
---- Narrative ---
-  Recruiter of the Guard enters the battlefield
-  Recruiter of the Guard triggered
 
 --- Decision 73 ---
   Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Recruiter of the Guard (ability, self) [amt=1]
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Recruiter of the Guard (ability, self) [amt=1]
-  Pending: Recruiter of the Guard (self)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window
-  Actions:
-   0: Decline: use Recruiter of the Guard's triggered ability  [#0]
-   1: Accept: use Recruiter of the Guard's triggered ability  [#1]
-  >> B/B: 0 (Decline: use Recruiter of the Guard's triggered ability)
---- Narrative ---
-  Player B declines the optional triggered ability.
-
---- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(5): Meteor Sword, Shadowy Backstreet, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Actions:
-   0: Pass priority
-   1: Play Shadowy Backstreet
-   2: Play Windswept Heath
-   3: Play Witch-Blessed Meadow
-   4: Cast Solitude (alternate cost)  [#1]
-   5: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 1 (Play Shadowy Backstreet)
---- Narrative ---
-  Player B played Shadowy Backstreet
-  Shadowy Backstreet enters tapped.
-  Shadowy Backstreet triggered
-
---- Decision 76 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Shadowy Backstreet (ability, self) [amt=1]
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Surveil, amount: 1)
-  Player B surveils 1.
-  Surveil: looking at Witch Enchanter
-
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 67
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Shadowy Backstreet (ability, self) [amt=1]
-  Pending: Shadowy Backstreet (self)
-  Self GY: Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window
-  Actions:
-   0: Put Witch Enchanter on top of library  [#0]
-   1: Put Witch Enchanter into graveyard
-  >> B/B: 1 (Put Witch Enchanter into graveyard)
---- Narrative ---
-  Player B puts Witch Enchanter into their graveyard.
-
---- Decision 78 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 79 ---
-  Priority: Player B (active)
   Step: Begin Combat (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Declare Attackers (Player B) ---
 
---- Decision 80 ---
+--- Decision 74 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Confirm attackers
@@ -1673,18 +1597,20 @@
   --- Declare Attackers (Player B) ---
     [attacking] White Orchid Phantom [2/2] -> Player A
 
---- Decision 81 ---
+--- Decision 75 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1692,311 +1618,321 @@
   Attackers declared:
     White Orchid Phantom -> Player A
 
---- Decision 82 ---
+--- Decision 76 ---
   Priority: Player B (active)
   Step: Declare Atk (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   No creatures eligible to block.
 
---- Decision 83 ---
+--- Decision 77 ---
   Priority: Player B (active)
   Step: Declare Blk (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   12 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   17 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- First Strike Combat Damage ---
-    White Orchid Phantom deals 2 damage to Player A (now at 10 life)
+    White Orchid Phantom deals 2 damage to Player A (now at 15 life)
   --- End First Strike Combat Damage ---
 
---- Decision 84 ---
+--- Decision 78 ---
   Priority: Player B (active)
   Step: First Strike Dmg (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   --- Combat Damage ---
   --- End Combat Damage ---
 
---- Decision 85 ---
+--- Decision 79 ---
   Priority: Player B (active)
   Step: Combat Dmg (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 86 ---
+--- Decision 80 ---
   Priority: Player B (active)
   Step: End Combat (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 87 ---
+--- Decision 81 ---
   Priority: Player B (active)
   Step: Second Main (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 88 ---
+--- Decision 82 ---
   Priority: Player B (active)
   Step: End Step (turn 8)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK,NEW,res 1) | Shadowy Backstreet (T,NEW,res 1) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain (T) | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1 | opp life_lost=2
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
+   1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
-  PA: Mountain
-  PB: Meteor Sword, Solitude, Windswept Heath, Witch Enchanter
+  PA: Mountain, Mountain
+  PB: Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad
+
+--- Decision 83 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 9)
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 49
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt, Monastery Swiftspear
+  Extras: opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Fireblast
+
+--- Decision 84 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(2): Fireblast, Mountain | lib 48
+  Opp:   8 life | mana: empty | hand count: 4 | lib 66
+  Self BF:  Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Actions:
+   0: Pass priority
+   1: Cast Fireblast (alternate cost)  [#1]
+  >> A/A: 1 (Cast Fireblast (alternate cost))
+--- Narrative ---
+  Choose target for Fireblast:
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(1): Mountain | lib 48
+  Opp:   8 life | mana: empty | hand count: 4 | lib 66
+  Self BF:  Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Stack: Fireblast (spell, self)
+  Pending: Fireblast (self)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Extras: not_priority_window
+  Actions:
+   0: Player B (8 life)
+   1: Player A (15 life)
+   2: White Orchid Phantom
+  >> A/A: 0 (Player B (8 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 86 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(1): Mountain | lib 48
+  Opp:   8 life | mana: empty | hand count: 4 | lib 66
+  Self BF:  Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Stack: Fireblast (spell, self) -> opponent (player)
+  Pending: Fireblast (self)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Extras: not_priority_window
+  Actions:
+   0: Sacrifice Mountain
+   1: Sacrifice Mountain
+   2: Sacrifice Mountain
+   3: Sacrifice Mountain
+  >> A/A: 0 (Sacrifice Mountain)
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: Draw (turn 9)
+  Self:  15 life | mana: empty | hand(1): Mountain | lib 48
+  Opp:   8 life | mana: empty | hand count: 4 | lib 66
+  Self BF:  Mountain | Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Stack: Fireblast (spell, self) -> opponent (player)
+  Pending: Fireblast (self)
+  Self GY: Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Extras: not_priority_window
+  Actions:
+   0: Sacrifice Mountain
+   1: Sacrifice Mountain
+   2: Sacrifice Mountain
+  >> A/A: 0 (Sacrifice Mountain)
+--- Narrative ---
+  Player A sacrifices Mountain
+  Player A sacrifices Mountain
+  Player A casts Fireblast targeting Player B
+
+--- Decision 88 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 9)
+  Self:  8 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain
+  Stack: Fireblast (spell, opponent) -> self (player)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 4)
+  Fireblast deals 4 damage to Player B (now at 4 life)
 
 --- Decision 89 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  10 life | mana: empty | hand(1): Mountain | lib 50
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  Priority: Player B (non-active)
+  Step: Draw (turn 9)
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 1 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_revolt, opp_passed
   Actions:
    0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
 
 --- Decision 90 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player A draws Eidolon of the Great Revel
-
---- Decision 91 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  10 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 92 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 9)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 2 | lib 49
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Fiery Islet | Mountain | Mountain | Mountain
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 93 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Play Mountain
-   2: Cast Eidolon of the Great Revel  [#0]
-   3: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 2 (Cast Eidolon of the Great Revel)
---- Narrative ---
-  Player A activated Mountain for 1(R)
-  Player A activated Mountain for 1(R)
-  Player A casts Eidolon of the Great Revel
-
---- Decision 94 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(1): Mountain | lib 49
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Fiery Islet | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Stack: Eidolon of the Great Revel (spell, self)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=1 colors=R
-  Actions:
-   0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Activate Fiery Islet (Draw))
---- Narrative ---
-  Player A activated Mountain for 1(R)
-  Player A sacrifices Fiery Islet
-  Player A's Fiery Islet ability is on the stack
-
---- Decision 95 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Fiery Islet (ability, opponent) [amt=1] -> Eidolon of the Great Revel (spell, opponent)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=1 colors=R
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player A draws Chain Lightning
-
---- Decision 96 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Eidolon of the Great Revel (spell, opponent)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Eidolon of the Great Revel enters the battlefield
-
---- Decision 97 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=2 colors=R
+  Self:  15 life | mana: empty | hand(1): Mountain | lib 48
+  Opp:   4 life | mana: empty | hand count: 4 | lib 66
+  Self BF:  Mountain | Mountain
+  Opp BF:   Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Self GY: Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=4
   Extras: self_revolt
   Actions:
    0: Pass priority
@@ -2005,309 +1941,39 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 98 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(1): Chain Lightning | lib 48
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=2 colors=R
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Chain Lightning  [#0]
-  >> A/A: 1 (Cast Chain Lightning)
---- Narrative ---
-  Choose target for Chain Lightning:
-
---- Decision 99 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(0): (empty) | lib 48
-  Opp:   5 life | mana: empty | hand count: 4 | lib 66
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Opp BF:   Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Stack: Chain Lightning (spell, self)
-  Pending: Chain Lightning (self)
-  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp revealed: Plains, Shadowy Backstreet, Aether Vial, White Orchid Phantom, Recruiter of the Guard, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 drawn=2 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Player B (5 life)
-   1: Player A (10 life)
-   2: Recruiter of the Guard
-   3: White Orchid Phantom
-   4: Eidolon of the Great Revel
-  >> A/A: 0 (Player B (5 life))
---- Narrative ---
-  Targeting choice 0
-  Player A activated Mountain for 1(R)
-  Player A casts Chain Lightning targeting Player B
-  Eidolon of the Great Revel triggered
-
---- Decision 100 ---
+--- Decision 91 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(4): Meteor Sword, Solitude, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
   Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
-   1: Cast Solitude (alternate cost)  [#1]
-   2: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 1 (Cast Solitude (alternate cost))
-
---- Decision 101 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(3): Meteor Sword, Windswept Heath, Witch Enchanter | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Solitude (spell, self) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Pending: Solitude (self)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
-  Actions:
-   0: Exile Witch Enchanter
-  >> B/B: 0 (Exile Witch Enchanter)
---- Narrative ---
-  Player B exiles Witch Enchanter
-  Player B casts Solitude
-
---- Decision 102 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Solitude (spell, self) [evoke] -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Solitude enters the battlefield
-  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
-
---- Decision 103 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | Solitude [3/2] [Lifelink, Flash] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Pending: Solitude (self)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
-  Actions:
-   0: Solitude (ChangeZone, targeted)  [#0]
-   1: Solitude (evoke: sacrifice)  [#1]
-  >> B/B: 0 (Solitude (ChangeZone, targeted))
---- Narrative ---
-  Choose target for Solitude:
-
---- Decision 104 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | Solitude [3/2] [Lifelink, Flash] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Pending: Solitude (self)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
-  Actions:
-   0: No target
-   1: Eidolon of the Great Revel
-   2: Recruiter of the Guard
-   3: White Orchid Phantom
-  >> B/B: 1 (Eidolon of the Great Revel)
---- Narrative ---
-  Targeting choice 1
-  Solitude triggered
-  Solitude triggered
-
---- Decision 105 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | Solitude [3/2] [Lifelink, Flash] (SICK,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Solitude (ability, self) -> Solitude (ability, self) -> Eidolon of the Great Revel (opponent, slot 48) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Solitude is moved to graveyard
-
---- Decision 106 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Solitude (ability, self) -> Eidolon of the Great Revel (opponent, slot 48) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Eidolon of the Great Revel is moved to exile
-  Resolving ability (category: GainLife, amount: 2)
-  Player A gains 2 life (now at 12)
-
---- Decision 107 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   12 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: DealDamage, amount: 2)
-  Eidolon of the Great Revel deals 2 damage to Player A (now at 10 life)
-
---- Decision 108 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: DealDamage, amount: 3)
-  Chain Lightning deals 3 damage to Player B (now at 2 life)
-  Resolving ability (category: CopySpellAbility)
-  Player B may pay to copy Chain Lightning:
-
---- Decision 109 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
-
---- Decision 110 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt
-  Actions:
-   0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 111 ---
+--- Decision 92 ---
   Priority: Player B (non-active)
   Step: Begin Combat (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2315,77 +1981,77 @@
 --- Narrative ---
   No creatures eligible to attack.
 
---- Decision 112 ---
+--- Decision 93 ---
   Priority: Player B (non-active)
   Step: Declare Atk (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 113 ---
+--- Decision 94 ---
   Priority: Player B (non-active)
   Step: End Combat (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 114 ---
+--- Decision 95 ---
   Priority: Player B (non-active)
   Step: Second Main (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 115 ---
+--- Decision 96 ---
   Priority: Player B (non-active)
   Step: End Step (turn 9)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains (T) | Plains (T) | Plains (T) | Recruiter of the Guard [1/1] (SICK) | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] (T)
+  Opp BF:   Mountain | Mountain | Mountain (NEW)
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 life_lost=3 colors=W | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_gained=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self life_lost=4 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2394,41 +2060,41 @@
   -------- TURN 10 (Player B) --------
   Aether Vial triggered
 --- Turn 10 (Player B) ---
-  PA: (empty)
-  PB: Meteor Sword, Windswept Heath
+  PA: Mountain
+  PB: Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad
 
---- Decision 116 ---
+--- Decision 97 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
   Stack: Aether Vial (ability, self)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 117 ---
+--- Decision 98 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:3] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
   Stack: Aether Vial (ability, self)
   Pending: Aether Vial (self)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
   Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
@@ -2438,115 +2104,446 @@
   Resolving ability (category: PutCounter, amount: 1)
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
---- Decision 118 ---
+--- Decision 99 ---
   Priority: Player B (active)
   Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 66
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 66
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Player B draws Thoughtseize
+  Player B draws Marsh Flats
 
---- Decision 119 ---
+--- Decision 100 ---
   Priority: Player B (active)
   Step: Draw (turn 10)
-  Self:  2 life | mana: empty | hand(3): Meteor Sword, Thoughtseize, Windswept Heath | lib 65
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(5): Marsh Flats, Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 65
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 
---- Decision 120 ---
+--- Decision 101 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(3): Meteor Sword, Thoughtseize, Windswept Heath | lib 65
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(5): Marsh Flats, Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 65
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
   This turn: self drawn=1
   Actions:
    0: Pass priority
-   1: Play Windswept Heath
-   2: Companion: pay {3}, put Yorion, Sky Nomad into your hand
-   3: Cast Thoughtseize  [#0]
+   1: Play Marsh Flats
+   2: Play Shadowy Backstreet
+   3: Play Windswept Heath
    4: Activate Aether Vial (ChangeZone)  [#0]
-  >> B/B: 3 (Cast Thoughtseize)
+  >> B/B: 1 (Play Marsh Flats)
 --- Narrative ---
-  Choose target for Thoughtseize:
+  Player B played Marsh Flats
 
---- Decision 121 ---
+--- Decision 102 ---
   Priority: Player B (active)
   Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 65
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self:  4 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 65
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Marsh Flats (NEW) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+   2: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 65
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Marsh Flats (ability, self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 65
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Marsh Flats (ability, self)
+  Pending: Marsh Flats (self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Scrubland
+   3: Shadowy Backstreet
+   4: Swamp
+  >> B/B: 2 (Scrubland)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Scrubland to the battlefield
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(4): Meteor Sword, Shadowy Backstreet, Windswept Heath, Yorion, Sky Nomad | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Scrubland | Scrubland (NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self drawn=1 life_lost=1
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Cast Yorion, Sky Nomad  [#0]
+   2: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 1 (Cast Yorion, Sky Nomad)
+--- Narrative ---
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B activated Plains for 1(W)
+  Player B activated Scrubland for 1(W)
+  Player B activated Scrubland for 1(W)
+  Player B casts Yorion, Sky Nomad
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike]
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Yorion, Sky Nomad (spell, self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Yorion, Sky Nomad enters the battlefield
+  Yorion, Sky Nomad triggered
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW)
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Yorion, Sky Nomad (ability, self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial [charge:4] (res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 1)
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Yorion, Sky Nomad (ability, self)
+  Pending: Yorion, Sky Nomad (self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: Exile Aether Vial
+   1: Exile White Orchid Phantom
+   2: Done (exile no more)
+  >> B/B: 0 (Exile Aether Vial)
+--- Narrative ---
+  Player B exiles Aether Vial
+
+--- Decision 109 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 1)
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: Yorion, Sky Nomad (ability, self)
+  Pending: Yorion, Sky Nomad (self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Aether Vial, Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: Exile White Orchid Phantom
+   1: Done (exile no more)
+  >> B/B: 0 (Exile White Orchid Phantom)
+--- Narrative ---
+  Player B exiles White Orchid Phantom
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: ChangeZone at next End of Turn.
+  No creatures eligible to attack.
+  Delayed trigger fires.
+  Resolving ability (category: ChangeZone)
+  Aether Vial is moved to the battlefield
+  White Orchid Phantom is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Choose target for White Orchid Phantom:
+
+--- Decision 110 ---
+  Priority: Player B (active)
+  Step: End Step (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Opp BF:   Mountain | Mountain | Mountain
+  Pending: White Orchid Phantom (self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: No target
+   1: Scrubland
+   2: Scrubland
+  >> B/B: 0 (No target)
+--- Narrative ---
+  Targeting choice 0
+  White Orchid Phantom triggered
+
+--- Decision 111 ---
+  Priority: Player B (active)
+  Step: End Step (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Opp BF:   Mountain | Mountain | Mountain
+  Stack: White Orchid Phantom (ability, self)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Destroy: no target chosen
+  Resolving ability (category: ChangeZone)
+
+--- Decision 112 ---
+  Priority: Player B (active)
+  Step: End Step (turn 10)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial (NEW,res 1) | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T,NEW) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Yorion, Sky Nomad [4/5] [Flying] (SICK,NEW,res 2)
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: self spells=1 drawn=1 life_lost=1 colors=WU
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Mountain
+  PB: Meteor Sword, Shadowy Backstreet, Windswept Heath
+
+--- Decision 113 ---
+  Priority: Player B (non-active)
+  Step: Upkeep (turn 11)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Aether Vial | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Yorion, Sky Nomad [4/5] [Flying] (SICK)
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  Extras: opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Lava Spike
+
+--- Decision 114 ---
+  Priority: Player B (non-active)
+  Step: Draw (turn 11)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 1 | lib 47
+  Self BF:  Aether Vial | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Yorion, Sky Nomad [4/5] [Flying] (SICK)
+  Opp BF:   Mountain | Mountain | Mountain
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Self exile: Witch Enchanter
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: opp drawn=1
+  Extras: opp_passed
+  Actions:
+   0: Pass priority
+   1: Activate Aether Vial (ChangeZone)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 115 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  15 life | mana: empty | hand(1): Lava Spike | lib 47
+  Opp:   3 life | mana: empty | hand count: 3 | lib 64
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Yorion, Sky Nomad [4/5] [Flying] (SICK)
+  Self GY: Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
+  This turn: self drawn=1
+  Actions:
+   0: Pass priority
+   1: Cast Lava Spike  [#0]
+  >> A/A: 1 (Cast Lava Spike)
+--- Narrative ---
+  Choose target for Lava Spike:
+
+--- Decision 116 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  15 life | mana: empty | hand(0): (empty) | lib 47
+  Opp:   3 life | mana: empty | hand count: 3 | lib 64
+  Self BF:  Mountain | Mountain | Mountain
+  Opp BF:   Aether Vial | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Yorion, Sky Nomad [4/5] [Flying] (SICK)
+  Stack: Lava Spike (spell, self)
+  Pending: Lava Spike (self)
+  Self GY: Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp GY:  Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Self exile: Monastery Swiftspear
+  Opp exile:  Witch Enchanter
+  Opp revealed: Plains, Marsh Flats, Aether Vial, Solitude, White Orchid Phantom, Scrubland, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
   This turn: self drawn=1
   Extras: not_priority_window
   Actions:
-   0: Player A (10 life)
-   1: Player B (2 life)
-  >> B/B: 0 (Player A (10 life))
+   0: Player B (3 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (3 life))
 --- Narrative ---
   Targeting choice 0
-  Player B activated Shadowy Backstreet for 1(B)
-  Player B casts Thoughtseize targeting Player A
+  Player A activated Mountain for 1(R)
+  Player A casts Lava Spike targeting Player B
 
---- Decision 122 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  2 life | mana: empty | hand(2): Meteor Sword, Windswept Heath | lib 65
-  Opp:   10 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Aether Vial [charge:4] (res 1) | Plains | Plains | Plains | Recruiter of the Guard [1/1] | Shadowy Backstreet (T) | White Orchid Phantom [2/2] [Flying, First Strike]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Solitude, Witch Enchanter, Prismatic Vista, Prismatic Vista
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+--- Decision 117 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  3 life | mana: empty | hand(3): Meteor Sword, Shadowy Backstreet, Windswept Heath | lib 64
+  Opp:   15 life | mana: empty | hand count: 0 | lib 47
+  Self BF:  Aether Vial | Plains (T) | Plains (T) | Plains (T) | Scrubland (T) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Yorion, Sky Nomad [4/5] [Flying] (SICK)
+  Opp BF:   Mountain (T) | Mountain | Mountain
+  Stack: Lava Spike (spell, opponent) -> self (player)
+  Self GY: Marsh Flats, Marsh Flats, Solitude, Prismatic Vista, Prismatic Vista
+  Opp GY:  Fireblast, Mountain, Mountain, Rift Bolt, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Self exile: Witch Enchanter
-  Opp exile:  Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
+  Opp exile:  Monastery Swiftspear
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Lava Spike, Chain Lightning, Fireblast, Rift Bolt, Monastery Swiftspear
+  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-  No valid cards to discard.
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 0)
+  Resolving ability (category: DealDamage, amount: 3)
+  Lava Spike deals 3 damage to Player B (now at 0 life)
   Player B has 0 life - Player A wins!
   GAME_RESULT: 1 Player A wins
 
