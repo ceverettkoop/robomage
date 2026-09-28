@@ -113,6 +113,131 @@ static void read_trigger_valid_card(const std::string& value,
 static void bind_trigger_line(const TriggerLine& t, AbilityDef& ability);
 static void bind_phase_trigger(const TriggerLine& t, AbilityDef& ability);
 static void bind_spell_cast_trigger(const TriggerLine& t, AbilityDef& ability);
+// The face a K: keyword line is parsed into.
+struct KeywordContext {
+    CardData &card;
+    FaceAbilityDefs &face_defs;
+    const std::map<std::string, std::string> &svars;
+};
+// One K: keyword kKeywordTable handles: a line matching `name` (the whole line, its start, or
+// anywhere in it) is parsed by `handler`.
+struct KeywordEntry {
+    enum Match { EXACT, PREFIX, CONTAINS };
+    const char *name;
+    Match match;
+    void (*handler)(const std::string &kw_line, KeywordContext &ctx);
+};
+static void parse_keyword_line(const std::string& kw_line, KeywordContext& ctx);
+static std::string keyword_arg(const std::string& kw_line);
+static void add_keyword_alt_cost(const std::string& kw_line, const char* name, bool AltCost::*flag,
+                                 CardData& card);
+static AbilityDef keyword_activated_ability(const std::string& category, Zone::ZoneValue zone,
+                                            const std::string& cost);
+static AbilityDef keyword_self_trigger(const std::string& category, EventId event);
+static void kw_companion(const std::string& kw_line, KeywordContext& ctx);
+static void kw_enchant(const std::string& kw_line, KeywordContext& ctx);
+static void kw_ward(const std::string& kw_line, KeywordContext& ctx);
+static void kw_affinity(const std::string& kw_line, KeywordContext& ctx);
+static void kw_etb_replacement(const std::string& kw_line, KeywordContext& ctx);
+static void kw_etb_counter(const std::string& kw_line, KeywordContext& ctx);
+static void kw_equip(const std::string& kw_line, KeywordContext& ctx);
+static void kw_reconfigure(const std::string& kw_line, KeywordContext& ctx);
+static void kw_impending(const std::string& kw_line, KeywordContext& ctx);
+static void kw_suspend(const std::string& kw_line, KeywordContext& ctx);
+static void kw_chapter(const std::string& kw_line, KeywordContext& ctx);
+static void kw_dredge(const std::string& kw_line, KeywordContext& ctx);
+static void kw_landwalk(const std::string& kw_line, KeywordContext& ctx);
+static void kw_cycling(const std::string& kw_line, KeywordContext& ctx);
+static void kw_ninjutsu(const std::string& kw_line, KeywordContext& ctx);
+static void kw_type_cycling(const std::string& kw_line, KeywordContext& ctx);
+static void kw_flashback(const std::string& kw_line, KeywordContext& ctx);
+static void kw_unearth(const std::string& kw_line, KeywordContext& ctx);
+static void kw_escape(const std::string& kw_line, KeywordContext& ctx);
+static void kw_evoke(const std::string& kw_line, KeywordContext& ctx);
+static void kw_offspring(const std::string& kw_line, KeywordContext& ctx);
+static void kw_kicker(const std::string& kw_line, KeywordContext& ctx);
+static void kw_replicate(const std::string& kw_line, KeywordContext& ctx);
+static void kw_devoid(const std::string& kw_line, KeywordContext& ctx);
+static void kw_gift(const std::string& kw_line, KeywordContext& ctx);
+static void kw_opening_hand(const std::string& kw_line, KeywordContext& ctx);
+static void kw_storm(const std::string& kw_line, KeywordContext& ctx);
+static void kw_annihilator(const std::string& kw_line, KeywordContext& ctx);
+static void kw_protection(const std::string& kw_line, KeywordContext& ctx);
+// The K: keywords with their own parse, tried in order (the first match handles the line).
+static const KeywordEntry kKeywordTable[] = {
+    {"Delve", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.has_delve = true;
+         ctx.card.keywords.push_back("Delve");
+     }},
+    // K:Improvise — your artifacts can help cast this spell; each untapped artifact you
+    // tap after activating mana abilities pays for {1} of the generic cost (CR 702.126).
+    // A cast-time generic cost reduction, mirroring Delve but tapping battlefield
+    // artifacts instead of exiling graveyard cards.
+    {"Improvise", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) {
+         ctx.card.has_improvise = true;
+         ctx.card.keywords.push_back("Improvise");
+     }},
+    {"Companion:", KeywordEntry::PREFIX, kw_companion},
+    {"Enchant:", KeywordEntry::PREFIX, kw_enchant},
+    {"Ward", KeywordEntry::PREFIX, kw_ward},
+    {"Affinity", KeywordEntry::PREFIX, kw_affinity},
+    {"ETBReplacement", KeywordEntry::CONTAINS, kw_etb_replacement},
+    {"etbCounter", KeywordEntry::PREFIX, kw_etb_counter},
+    {"Equip", KeywordEntry::PREFIX, kw_equip},
+    {"Reconfigure", KeywordEntry::PREFIX, kw_reconfigure},
+    {"Impending", KeywordEntry::PREFIX, kw_impending},
+    {"Suspend", KeywordEntry::PREFIX, kw_suspend},
+    // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
+    // be cast for <cost> instead of its normal mana cost, but only if an opponent lost life
+    // this turn (CR 702.107a). can_afford_alt gates the offering on the opponent's
+    // life_lost_this_turn.
+    {"Spectacle", KeywordEntry::PREFIX,
+     [](const std::string &kw_line, KeywordContext &ctx) {
+         add_keyword_alt_cost(kw_line, "Spectacle", &AltCost::is_spectacle, ctx.card);
+     }},
+    // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An alternative
+    // casting cost: the spell may be cast from hand for <cost> instead of its normal mana cost.
+    // If cast this way the object is exiled at the beginning of the next end step and may then
+    // be cast from exile later for its normal cost (see effect_warp.cpp / the cast-with-warp
+    // markers). can_afford_alt gates it purely on affordability of the warp cost.
+    {"Warp", KeywordEntry::PREFIX,
+     [](const std::string &kw_line, KeywordContext &ctx) {
+         add_keyword_alt_cost(kw_line, "Warp", &AltCost::is_warp, ctx.card);
+     }},
+    // K:Miracle:<cost> — Miracle (CR 702.94). An alternative casting cost: when this card is
+    // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
+    // for <cost> instead of its normal mana cost. The qualifying-draw gate lives in orderer.cpp
+    // (arms Game::pending.miracle_reveal); miracle then runs as two mandatory-choice decisions —
+    // a private reveal and an immediate cast/do-not-cast — rather than a priority-menu alt cost.
+    {"Miracle", KeywordEntry::PREFIX,
+     [](const std::string &kw_line, KeywordContext &ctx) {
+         add_keyword_alt_cost(kw_line, "Miracle", &AltCost::is_miracle, ctx.card);
+     }},
+    {"Chapter:", KeywordEntry::PREFIX, kw_chapter},
+    // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
+    {"Prowess", KeywordEntry::PREFIX,
+     [](const std::string &, KeywordContext &ctx) { ctx.card.keywords.push_back("Prowess"); }},
+    {"Dredge:", KeywordEntry::PREFIX, kw_dredge},
+    {"Landwalk:", KeywordEntry::PREFIX, kw_landwalk},
+    {"Cycling:", KeywordEntry::PREFIX, kw_cycling},
+    {"Ninjutsu:", KeywordEntry::PREFIX, kw_ninjutsu},
+    {"TypeCycling:", KeywordEntry::PREFIX, kw_type_cycling},
+    {"Flashback:", KeywordEntry::PREFIX, kw_flashback},
+    {"Unearth:", KeywordEntry::PREFIX, kw_unearth},
+    {"Escape:", KeywordEntry::PREFIX, kw_escape},
+    {"Evoke", KeywordEntry::PREFIX, kw_evoke},
+    {"Offspring", KeywordEntry::PREFIX, kw_offspring},
+    {"Kicker:", KeywordEntry::PREFIX, kw_kicker},
+    {"Replicate:", KeywordEntry::PREFIX, kw_replicate},
+    {"Devoid", KeywordEntry::EXACT, kw_devoid},
+    {"Gift", KeywordEntry::PREFIX, kw_gift},
+    {"MayEffectFromOpeningHand", KeywordEntry::PREFIX, kw_opening_hand},
+    {"Storm", KeywordEntry::EXACT, kw_storm},
+    {"Annihilator", KeywordEntry::PREFIX, kw_annihilator},
+    {"Protection:", KeywordEntry::PREFIX, kw_protection},
+};
 static void parse_card_face_body(const std::string& front_script, CardData& card,
                                  FaceAbilityDefs& face_defs);
 static void parse_card_face(const std::string& front_script, CardData& card);
@@ -675,622 +800,528 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     card.replacement_effects = parse_replacement_effects(front_script, svars);
 
     // Parse K: keyword lines
-    for (auto& kw_line : multi_values_from_script(front_script, "K")) {
-        // K:Delve
-        if (kw_line == "Delve" || kw_line.rfind("Delve", 0) == 0) {
-            card.has_delve = true;
-            card.keywords.push_back("Delve");
-            continue;
-        }
-        // K:Improvise — your artifacts can help cast this spell; each untapped artifact you
-        // tap after activating mana abilities pays for {1} of the generic cost (CR 702.126).
-        // A cast-time generic cost reduction, mirroring Delve but tapping battlefield
-        // artifacts instead of exiling graveyard cards.
-        if (kw_line == "Improvise" || kw_line.rfind("Improvise", 0) == 0) {
-            card.has_improvise = true;
-            card.keywords.push_back("Improvise");
-            continue;
-        }
-        // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). Forge
-        // encodes the deckbuilding restriction as a token in the 3rd colon field (Yorion:
-        // "Companion:Special:DeckSizePlus20:..."). Store the restriction token structured so
-        // setup_companions can evaluate it against the starting deck; the trailing prose is display.
-        if (kw_line.rfind("Companion:", 0) == 0) {
-            card.is_companion = true;
-            std::vector<std::string> parts = split(kw_line, ':');
-            if (parts.size() >= 3) card.companion_restriction = parts[2];
-            card.keywords.push_back("Companion");
-            continue;
-        }
-        // K:Enchant:<ValidTgts>[:<prompt>] — an Aura's enchant restriction (CR 303.4). The
-        // middle field is a target filter (e.g. "Creature.YouCtrl") for the object this Aura can
-        // be attached to. Stored on the card so the cast path targets a matching object and the
-        // resolved Aura attaches to it (sets equipped_to). The trailing human prompt is ignored.
-        if (kw_line.rfind("Enchant:", 0) == 0) {
-            std::string rest = kw_line.substr(8);  // strip "Enchant:"
-            size_t colon = rest.find(':');
-            card.enchant_filter = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
-            card.keywords.push_back("Enchant");
-            continue;
-        }
-        // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
-        // opponent controls, counter that spell or ability unless that player pays {N}."
-        // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
-        // is synthesized when a targeting spell/ability is put on the stack.
-        if (kw_line.rfind("Ward", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
-            std::string ward_arg = (colon != std::string::npos) ? kw_line.substr(colon + 1)
-                                                                : std::string();
-            parse_ward_cost(ward_arg, card.ward_cost, card.ward_is_life);
-            card.keywords.push_back("Ward");
-            continue;
-        }
-        // K:Affinity:Artifact — this spell costs {1} less to cast for each artifact you
-        // control (CR 702.41). A generic cost reduction applied at cast time in
-        // effective_base_cost(); only the artifact variant is supported.
-        if (kw_line.rfind("Affinity", 0) == 0) {
-            if (kw_line.find("Artifact") != std::string::npos) card.affinity_artifact = true;
-            card.keywords.push_back("Affinity");
-            continue;
-        }
-        // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls)
-        if (kw_line.find("ETBReplacement") != std::string::npos &&
-            kw_line.find("ChooseCT") != std::string::npos) {
-            card.has_etb_choose_creature_type = true;
-            continue;
-        }
-        // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
-        if (kw_line.find("ETBReplacement") != std::string::npos &&
-            kw_line.find("NameCard") != std::string::npos) {
-            card.has_etb_name_card = true;
-            continue;
-        }
-        // K:etbCounter:P1P1:X:... — "this card enters with counters"
-        // Parsed as a static ability; counters applied in apply_permanent_components on ETB.
-        if (kw_line.rfind("etbCounter", 0) == 0) {
-            // K:etbCounter:<TYPE>:<count>  where <count> is either a literal number or a
-            // SVar key resolving to a Count$ expression (e.g. Chalice's "X" → Count$xPaid).
-            std::string sub = kw_line.substr(strlen("etbCounter"));
-            std::string counter_type_str = "P1P1";
-            bool from_delve = false;
-            bool from_xpaid = false;
-            std::string delve_filter = "";
-            int literal_count = 0;
-            if (!sub.empty() && sub[0] == ':') {
-                size_t c1 = sub.find(':', 1);
-                if (c1 != std::string::npos) {
-                    counter_type_str = sub.substr(1, c1 - 1);
-                    size_t c2 = sub.find(':', c1 + 1);
-                    std::string count_tok = (c2 != std::string::npos)
-                        ? sub.substr(c1 + 1, c2 - c1 - 1)
-                        : sub.substr(c1 + 1);
-                    // The count is either a literal number (etbCounter:M1M1:6 → 6) or an SVar
-                    // key resolving to a Count$ expression (delve / X paid at cast).
-                    if (!count_tok.empty() &&
-                        std::all_of(count_tok.begin(), count_tok.end(),
-                                    [](unsigned char ch) { return std::isdigit(ch); })) {
-                        literal_count = std::stoi(count_tok);
-                    } else {
-                        auto svar_it = svars.find(count_tok);
-                        if (svar_it != svars.end()) {
-                            if (svar_it->second.find("ExiledWithSource") != std::string::npos) {
-                                from_delve = true;
-                                // Capture the Count$ValidExile printed-characteristics filter
-                                // (Murktide Regent: "Instant.ExiledWithSource,
-                                // Sorcery.ExiledWithSource") so the ETB counter count is
-                                // restricted to the matching delve exiles — Delve itself may
-                                // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
-                                // is implied by membership in cur_game.delve_exiled, so strip
-                                // it; the remainder ("Instant,Sorcery") is a card_matches_any
-                                // spec.
-                                const std::string ve_prefix = "Count$ValidExile ";
-                                size_t vp = svar_it->second.find(ve_prefix);
-                                if (vp != std::string::npos) {
-                                    delve_filter =
-                                        svar_it->second.substr(vp + ve_prefix.size());
-                                    for (const char *qual :
-                                         {".ExiledWithSource", "+ExiledWithSource"}) {
-                                        size_t qp;
-                                        while ((qp = delve_filter.find(qual)) !=
-                                               std::string::npos)
-                                            delve_filter.erase(qp, strlen(qual));
-                                    }
-                                }
+    KeywordContext kw_ctx{card, face_defs, svars};
+    for (const auto& kw_line : multi_values_from_script(front_script, "K"))
+        parse_keyword_line(kw_line, kw_ctx);
+}
+
+// Parses one K: keyword line through kKeywordTable: the first entry whose name matches handles it;
+// a line no entry matches is a plain comma-separated keyword list.
+static void parse_keyword_line(const std::string &kw_line, KeywordContext &ctx) {
+    for (const KeywordEntry &entry : kKeywordTable) {
+        bool matches = entry.match == KeywordEntry::EXACT    ? kw_line == entry.name
+                       : entry.match == KeywordEntry::PREFIX ? kw_line.rfind(entry.name, 0) == 0
+                                                             : kw_line.find(entry.name) != std::string::npos;
+        if (!matches) continue;
+        entry.handler(kw_line, ctx);
+        return;
+    }
+    split_keywords(kw_line, ctx.card.keywords);
+}
+
+// The text after a keyword line's first ':' ("Spectacle:1 R" → "1 R"); "" when it has none.
+static std::string keyword_arg(const std::string &kw_line) {
+    size_t colon = kw_line.find(':');
+    return (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+}
+
+// An alternative casting cost keyword (<name>:<cost>): the spell may be cast for <cost> instead of
+// its normal mana cost, recorded on the shared AltCost with the keyword's `flag` set.
+static void add_keyword_alt_cost(const std::string &kw_line, const char *name, bool AltCost::*flag,
+                                 CardData &card) {
+    AltCost ac;
+    parse_alt_cost_tokens(keyword_arg(kw_line), ac);
+    ac.*flag = true;
+    card.alt_cost = ac;
+    card.keywords.push_back(name);
+}
+
+// An activated ability a keyword grants (Cycling, Ninjutsu, typecycling, Unearth): activated from
+// `zone` for `cost`, parsed with the shared Cost$ token grammar.
+static AbilityDef keyword_activated_ability(const std::string &category, Zone::ZoneValue zone,
+                                            const std::string &cost) {
+    AbilityDef ab;
+    ab.ability_type = AbilityDef::ACTIVATED;
+    ab.category = category;
+    ab.activation_zone = zone;
+    parse_activation_cost(cost, ab);
+    return ab;
+}
+
+// A mandatory, untargeted triggered ability a keyword synthesizes (Evoke, Offspring, Storm,
+// Annihilator) that fires on `event` for the source itself.
+static AbilityDef keyword_self_trigger(const std::string &category, EventId event) {
+    AbilityDef ab;
+    ab.ability_type = AbilityDef::TRIGGERED;
+    ab.category = category;
+    ab.trigger_on = event;
+    ab.trigger_only_self = true;
+    ab.valid_tgts = "N_A";
+    ab.mandatory = true;
+    return ab;
+}
+
+// K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). Forge
+// encodes the deckbuilding restriction as a token in the 3rd colon field (Yorion:
+// "Companion:Special:DeckSizePlus20:..."). Store the restriction token structured so
+// setup_companions can evaluate it against the starting deck; the trailing prose is display.
+static void kw_companion(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.is_companion = true;
+    std::vector<std::string> parts = split(kw_line, ':');
+    if (parts.size() >= 3) ctx.card.companion_restriction = parts[2];
+    ctx.card.keywords.push_back("Companion");
+}
+
+// K:Enchant:<ValidTgts>[:<prompt>] — an Aura's enchant restriction (CR 303.4). The
+// middle field is a target filter (e.g. "Creature.YouCtrl") for the object this Aura can
+// be attached to. Stored on the card so the cast path targets a matching object and the
+// resolved Aura attaches to it (sets equipped_to). The trailing human prompt is ignored.
+static void kw_enchant(const std::string &kw_line, KeywordContext &ctx) {
+    std::string rest = kw_line.substr(8);  // strip "Enchant:"
+    size_t colon = rest.find(':');
+    ctx.card.enchant_filter = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
+    ctx.card.keywords.push_back("Enchant");
+}
+
+// K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
+// opponent controls, counter that spell or ability unless that player pays {N}."
+// (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
+// is synthesized when a targeting spell/ability is put on the stack.
+static void kw_ward(const std::string &kw_line, KeywordContext &ctx) {
+    // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
+    parse_ward_cost(keyword_arg(kw_line), ctx.card.ward_cost, ctx.card.ward_is_life);
+    ctx.card.keywords.push_back("Ward");
+}
+
+// K:Affinity:Artifact — this spell costs {1} less to cast for each artifact you
+// control (CR 702.41). A generic cost reduction applied at cast time in
+// effective_base_cost(); only the artifact variant is supported.
+static void kw_affinity(const std::string &kw_line, KeywordContext &ctx) {
+    if (kw_line.find("Artifact") != std::string::npos) ctx.card.affinity_artifact = true;
+    ctx.card.keywords.push_back("Affinity");
+}
+
+// K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls);
+// K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute). Any other
+// ETBReplacement is kept as a plain keyword.
+static void kw_etb_replacement(const std::string &kw_line, KeywordContext &ctx) {
+    if (kw_line.find("ChooseCT") != std::string::npos)
+        ctx.card.has_etb_choose_creature_type = true;
+    else if (kw_line.find("NameCard") != std::string::npos)
+        ctx.card.has_etb_name_card = true;
+    else
+        split_keywords(kw_line, ctx.card.keywords);
+}
+
+// K:etbCounter:P1P1:X:... — "this card enters with counters"
+// Parsed as a static ability; counters applied in apply_permanent_components on ETB.
+static void kw_etb_counter(const std::string &kw_line, KeywordContext &ctx) {
+    // K:etbCounter:<TYPE>:<count>  where <count> is either a literal number or a
+    // SVar key resolving to a Count$ expression (e.g. Chalice's "X" → Count$xPaid).
+    std::string sub = kw_line.substr(strlen("etbCounter"));
+    StaticAbility sa;
+    sa.category = "EtbCounter";
+    sa.counter_type = "P1P1";
+    if (!sub.empty() && sub[0] == ':') {
+        size_t c1 = sub.find(':', 1);
+        if (c1 != std::string::npos) {
+            sa.counter_type = sub.substr(1, c1 - 1);
+            size_t c2 = sub.find(':', c1 + 1);
+            std::string count_tok = (c2 != std::string::npos)
+                ? sub.substr(c1 + 1, c2 - c1 - 1)
+                : sub.substr(c1 + 1);
+            // The count is either a literal number (etbCounter:M1M1:6 → 6) or an SVar
+            // key resolving to a Count$ expression (delve / X paid at cast).
+            if (!count_tok.empty() &&
+                std::all_of(count_tok.begin(), count_tok.end(),
+                            [](unsigned char ch) { return std::isdigit(ch); })) {
+                sa.counter_count = std::stoi(count_tok);
+            } else {
+                auto svar_it = ctx.svars.find(count_tok);
+                if (svar_it != ctx.svars.end()) {
+                    if (svar_it->second.find("ExiledWithSource") != std::string::npos) {
+                        sa.counter_count_from_delve = true;
+                        // Capture the Count$ValidExile printed-characteristics filter
+                        // (Murktide Regent: "Instant.ExiledWithSource,
+                        // Sorcery.ExiledWithSource") so the ETB counter count is
+                        // restricted to the matching delve exiles — Delve itself may
+                        // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
+                        // is implied by membership in cur_game.delve_exiled, so strip
+                        // it; the remainder ("Instant,Sorcery") is a card_matches_any
+                        // spec.
+                        const std::string ve_prefix = "Count$ValidExile ";
+                        size_t vp = svar_it->second.find(ve_prefix);
+                        if (vp != std::string::npos) {
+                            std::string &delve_filter = sa.counter_count_delve_filter;
+                            delve_filter = svar_it->second.substr(vp + ve_prefix.size());
+                            for (const char *qual : {".ExiledWithSource", "+ExiledWithSource"}) {
+                                size_t qp;
+                                while ((qp = delve_filter.find(qual)) != std::string::npos)
+                                    delve_filter.erase(qp, strlen(qual));
                             }
-                            // Count$xPaid — the count equals the X value paid at cast time
-                            // (Chalice of the Void enters with X charge counters).
-                            else if (svar_it->second.find("xPaid") != std::string::npos)
-                                from_xpaid = true;
                         }
                     }
+                    // Count$xPaid — the count equals the X value paid at cast time
+                    // (Chalice of the Void enters with X charge counters).
+                    else if (svar_it->second.find("xPaid") != std::string::npos)
+                        sa.counter_count_from_xpaid = true;
                 }
             }
-            StaticAbility sa;
-            sa.category = "EtbCounter";
-            sa.counter_type = counter_type_str;
-            sa.counter_count = literal_count;
-            sa.counter_count_from_delve = from_delve;
-            sa.counter_count_delve_filter = delve_filter;
-            sa.counter_count_from_xpaid = from_xpaid;
-            card.static_abilities.push_back(sa);
-            continue;
         }
-        // K:Equip:<cost> (CR 702.6a): "[Cost]: Attach this permanent to target creature you
-        // control. Activate only as a sorcery." Stored as an ordinary activated ability on the
-        // card (resolved by effects::attach), gated on the Equipment being able to equip some
-        // creature (CR 301.5c).
-        if (kw_line.rfind("Equip", 0) == 0) {
-            card.is_equipment = true;
-            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
-            card.keywords.push_back("Equip");
-            continue;
-        }
-        // K:Reconfigure:<cost> (CR 702.151a): an Equipment keyword on a creature card, two
-        // activated abilities: "[Cost]: Attach this permanent to another target creature you
-        // control. Activate only as a sorcery." and "[Cost]: Unattach this permanent. Activate
-        // only if this permanent is attached to a creature and only as a sorcery." It shares the
-        // equip-attach machinery; is_reconfigure additionally lets it equip while a creature
-        // (CR 301.5c) and makes it stop being a creature while attached (CR 702.151b).
-        if (kw_line.rfind("Reconfigure", 0) == 0) {
-            card.is_equipment = true;
-            card.is_reconfigure = true;
-            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
-            face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
-            card.keywords.push_back("Reconfigure");
-            continue;
-        }
-        // K:Impending:<N>:<mana> — Impending (CR 702.175). An alternative casting cost: the spell
-        // may be cast for <mana> instead of its normal mana cost; if so the permanent enters with N
-        // time counters and isn't a creature until the last is removed (CR 702.175d-e). Encoded on
-        // the shared AltCost (mana portion = parse_mana_cost(<mana>), is_impending + impending_count
-        // flag the impending-specific entry/shed behaviour). The format mirrors Reconfigure's
-        // colon-split (Equip/Reconfigure), with an extra leading count field: "Impending:5:1 B".
-        if (kw_line.rfind("Impending", 0) == 0) {
-            std::string rest = kw_line.substr(strlen("Impending"));
-            if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "5:1 B"
-            size_t colon = rest.find(':');
-            if (colon != std::string::npos) {
-                AltCost ac;
-                ac.has_alt_cost = true;
-                ac.is_impending = true;
-                ac.impending_count = std::stoi(rest.substr(0, colon));
-                ac.mana_cost = parse_mana_cost(rest.substr(colon + 1));
-                card.alt_cost = ac;
-            }
-            card.keywords.push_back("Impending");
-            continue;
-        }
-        // K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost: it is a
-        // special action taken from the HAND. Its owner may pay <cost> and exile the card with N
-        // time counters on it (state_manager offers the action; action_processor performs the
-        // exile). The count/cost are stored on CardData (has_suspend/suspend_count/suspend_cost);
-        // the upkeep time-counter removal and free cast are driven from those. Format mirrors
-        // Impending's colon-split: "Suspend:1:R".
-        if (kw_line.rfind("Suspend", 0) == 0) {
-            std::string rest = kw_line.substr(strlen("Suspend"));
-            if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "1:R"
-            size_t colon = rest.find(':');
-            if (colon != std::string::npos) {
-                card.has_suspend = true;
-                card.suspend_count = std::stoi(rest.substr(0, colon));
-                card.suspend_cost = parse_mana_cost(rest.substr(colon + 1));
-            }
-            card.keywords.push_back("Suspend");
-            continue;
-        }
-        // K:Spectacle:<cost> — Spectacle (CR 702.107). An alternative casting cost: the spell may
-        // be cast for <cost> instead of its normal mana cost, but only if an opponent lost life
-        // this turn (CR 702.107a). Encoded on the shared AltCost (mana portion = <cost>) with the
-        // is_spectacle flag; can_afford_alt gates the offering on the opponent's life_lost_this_turn.
-        if (kw_line.rfind("Spectacle", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
-            AltCost ac;
-            parse_alt_cost_tokens(cost_str, ac);
-            ac.is_spectacle = true;
-            card.alt_cost = ac;
-            card.keywords.push_back("Spectacle");
-            continue;
-        }
-        // K:Warp:<cost> — Warp (a 2025 keyword; not in the checked-in CR snapshot). An alternative
-        // casting cost: the spell may be cast from hand for <cost> instead of its normal mana cost.
-        // If cast this way the object is exiled at the beginning of the next end step and may then
-        // be cast from exile later for its normal cost (see effect_warp.cpp / the cast-with-warp
-        // markers). Encoded on the shared AltCost (mana portion = <cost>) with the is_warp flag;
-        // can_afford_alt gates it purely on affordability of the warp cost. Format mirrors Spectacle.
-        if (kw_line.rfind("Warp", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
-            AltCost ac;
-            parse_alt_cost_tokens(cost_str, ac);
-            ac.is_warp = true;
-            card.alt_cost = ac;
-            card.keywords.push_back("Warp");
-            continue;
-        }
-        // K:Miracle:<cost> — Miracle (CR 702.94). An alternative casting cost: when this card is
-        // drawn as the FIRST card its controller drew this turn, they may reveal it and cast it
-        // for <cost> instead of its normal mana cost. Encoded on the shared AltCost (mana portion
-        // = <cost>) with the is_miracle flag. The qualifying-draw gate lives in orderer.cpp (arms
-        // Game::pending.miracle_reveal); miracle then runs as two mandatory-choice decisions — a
-        // private reveal and an immediate cast/do-not-cast — rather than a priority-menu alt cost.
-        // General over any Miracle card.
-        if (kw_line.rfind("Miracle", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
-            AltCost ac;
-            parse_alt_cost_tokens(cost_str, ac);
-            ac.is_miracle = true;
-            card.alt_cost = ac;
-            card.keywords.push_back("Miracle");
-            continue;
-        }
-        // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
-        // first field is the Saga's final chapter number (= the number of chapter slots, CR 714.2d);
-        // each subsequent comma-separated entry is an SVar naming the DB$ ability run when the Saga's
-        // lore counters reach that chapter (CR 714.2b/714.3). Multiple chapters may name the SAME
-        // SVar (Summon: Bahamut I & II both DBDestroy) — each becomes its own chapter slot, so two
-        // independent triggers fire at lore 1 and lore 2. Parsed 1-indexed into card.saga_chapters;
-        // the Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in src/saga.cpp.
-        if (kw_line.rfind("Chapter:", 0) == 0) {
-            std::vector<std::string> parts = split(kw_line, ':');
-            if (parts.size() >= 3) {
-                for (const std::string &name : split(parts[2], ',', /*skip_empty=*/true)) {
-                    auto it = svars.find(name);
-                    AbilityDef chapter;  // an unknown SVar keeps chapter indexing aligned
-                    if (it != svars.end())
-                        chapter = parse_svar_ability(it->second, AbilityDef::TRIGGERED, svars, card.name);
-                    // A chapter ability is a triggered ability (CR 714.2b) the Saga lifecycle
-                    // tracks until it leaves the stack (CR 714.4).
-                    chapter.ability_type = AbilityDef::TRIGGERED;
-                    chapter.is_saga_chapter = true;
-                    face_defs.saga_chapters.push_back(chapter);
-                }
-            }
-            card.keywords.push_back("Chapter");
-            continue;
-        }
-        // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
-        if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
-            card.keywords.push_back("Prowess");
-            continue;
-        }
-        // K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
-        // milling N cards and returning this card to hand. Value stored on CardData;
-        // the replacement is offered in Orderer::draw.
-        if (kw_line.rfind("Dredge:", 0) == 0) {
-            card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
-            card.keywords.push_back("Dredge");
-            continue;
-        }
-        // K:Landwalk:Swamp / Forest / Island / Mountain / Plains
-        if (kw_line.rfind("Landwalk:", 0) == 0) {
-            std::string land_type = kw_line.substr(strlen("Landwalk:"));
-            card.keywords.push_back(land_type + "walk");
-            continue;
-        }
-        // K:Cycling:<cost> — activated ability from hand: pay cost, discard this card, draw a card
-        if (kw_line.rfind("Cycling:", 0) == 0) {
-            std::string cost_str = kw_line.substr(strlen("Cycling:"));
-            AbilityDef ab;
-            ab.ability_type = AbilityDef::ACTIVATED;
-            ab.category = "Draw";
-            ab.amount = 1;
-            ab.activation_zone = Zone::HAND;
-            // Shared Cost$ token grammar (PayLife, Sac, Discard, Return, tap, mana).
-            parse_activation_cost(cost_str, ab);
-            face_defs.abilities.push_back(ab);
-            card.keywords.push_back("Cycling");
-            continue;
-        }
-        // K:Ninjutsu:<cost> (CR 702.49a): "[Cost], Reveal this card from your hand, Return an
-        // unblocked attacking creature you control to its owner's hand: Put this card onto the
-        // battlefield from your hand tapped and attacking." A hand-activated ability whose cost is
-        // the ninjutsu mana plus the return (an ordinary return-to-hand cost over unblocked
-        // attackers), resolved by effects::ninjutsu. It moves its own source (Defined$ Self), so
-        // activating it doesn't consume the card from hand. General over any K:Ninjutsu.
-        if (kw_line.rfind("Ninjutsu:", 0) == 0) {
-            std::string cost_str = kw_line.substr(strlen("Ninjutsu:"));
-            AbilityDef ab;
-            ab.ability_type = AbilityDef::ACTIVATED;
-            ab.category = "Ninjutsu";
-            ab.is_ninjutsu = true;
-            ab.defined_self = true;
-            ab.activation_zone = Zone::HAND;
-            parse_activation_cost(cost_str + " Return<1/Creature.attacking+unblocked>", ab);
-            face_defs.abilities.push_back(ab);
-            card.keywords.push_back("Ninjutsu");
-            continue;
-        }
-        // K:TypeCycling:<Subtype>:<cost> — typecycling (CR 702.29f). Like Cycling, an
-        // activated ability usable from hand whose cost is the given mana plus discarding
-        // this card; but instead of drawing, it searches the library for a card of the
-        // named subtype, reveals it, puts it into hand, then shuffles. General over the
-        // subtype (Islandcycling/Swampcycling/Plainscycling/...). The discard-this-card
-        // cost is the auto-consume that fires for any hand-activated ability (the source
-        // goes to the graveyard at activation); the effect is a Library→Hand search.
-        if (kw_line.rfind("TypeCycling:", 0) == 0) {
-            std::string rest = kw_line.substr(strlen("TypeCycling:"));
-            size_t colon = rest.find(':');
-            std::string subtype = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
-            std::string cost_str = (colon != std::string::npos) ? rest.substr(colon + 1) : "";
-            AbilityDef ab;
-            ab.ability_type = AbilityDef::ACTIVATED;
-            ab.category = "ChangeZone";
-            ab.activation_zone = Zone::HAND;
-            ab.origin = Zone::LIBRARY;
-            ab.destination = Zone::HAND;
-            ab.change_type = subtype;       // subtype filter (search_zones matches card subtypes)
-            ab.mandatory = false;           // searches may fail to find (CR 701.19c)
-            // Shared Cost$ token grammar (the mana portion of the cycling cost).
-            parse_activation_cost(cost_str, ab);
-            face_defs.abilities.push_back(ab);
-            card.keywords.push_back(subtype + "cycling");
-            continue;
-        }
-        // K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
-        if (kw_line.rfind("Flashback:", 0) == 0) {
-            std::string cost_str = kw_line.substr(strlen("Flashback:"));
-            card.has_flashback = true;
-            // Shared Cost$ token grammar, then map onto the flashback cost fields the
-            // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
-            // mana and life — which the token-by-token grammar handles in one pass.
-            AbilityDef fb;
-            parse_activation_cost(cost_str, fb);
-            card.flashback_mana_cost = fb.activation_mana_cost;
-            card.flashback_alt_cost.life_cost = fb.life_cost;
-            // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
-            // flashback cost. Carry the sac filter so the cast path pays it.
-            card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
-            card.keywords.push_back("Flashback");
-            continue;
-        }
-        // K:Unearth:<cost> — Unearth (CR 702.84): an activated ability usable only from the
-        // graveyard, at sorcery speed, that returns this card to the battlefield. The returned
-        // permanent gains haste, is exiled at the beginning of the next end step (a delayed
-        // triggered ability, CR 603.7b), and is exiled instead if it would leave the battlefield.
-        // Modeled as a synthetic graveyard-activated ChangeZone (Graveyard -> Battlefield, Defined$
-        // Self); is_unearth flags it so the resolution marks the permanent unearthed (haste +
-        // delayed exile + leaves-the-battlefield replacement). General over any K:Unearth:<cost>.
-        if (kw_line.rfind("Unearth:", 0) == 0) {
-            std::string cost_str = kw_line.substr(strlen("Unearth:"));
-            AbilityDef ab;
-            ab.ability_type = AbilityDef::ACTIVATED;
-            ab.category = "ChangeZone";
-            ab.activation_zone = Zone::GRAVEYARD;
-            ab.origin = Zone::GRAVEYARD;
-            ab.destination = Zone::BATTLEFIELD;
-            ab.defined_self = true;        // returns its own source from the graveyard
-            ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
-            ab.is_unearth = true;
-            // Shared Cost$ token grammar (the mana portion of the unearth cost).
-            parse_activation_cost(cost_str, ab);
-            face_defs.abilities.push_back(ab);
-            card.keywords.push_back("Unearth");
-            continue;
-        }
-        // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
-        // escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
-        // token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from
-        // the leading mana symbols; the additional cost is parsed by the shared alt-cost grammar.
-        if (kw_line.rfind("Escape:", 0) == 0) {
-            std::string cost_str = kw_line.substr(strlen("Escape:"));
-            card.has_escape = true;
-            // The mana portion runs up to the first additional-cost keyword (ExileFromGrave/
-            // PayLife/Sac/Return...); take the substring before "ExileFromGrave" (the only
-            // additional cost currently in the vocab) as mana, the remainder as the alt cost.
-            std::string mana_part = cost_str;
-            std::string alt_part;
-            size_t eg = cost_str.find("ExileFromGrave");
-            if (eg != std::string::npos) {
-                mana_part = cost_str.substr(0, eg);
-                alt_part = cost_str.substr(eg);
-            }
-            // Trim trailing space from the mana part.
-            size_t mend = mana_part.find_last_not_of(' ');
-            mana_part = (mend == std::string::npos) ? "" : mana_part.substr(0, mend + 1);
-            if (!mana_part.empty()) card.escape_mana_cost = parse_mana_cost(mana_part);
-            if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, card.escape_alt_cost);
-            card.keywords.push_back("Escape");
-            continue;
-        }
-        // K:Evoke:<cost> — alternate cost; when paid, the creature sacrifices itself as it
-        // enters. The cost may be a pitch (ExileFromHand), mana (e.g. R), or life. The
-        // self-sacrifice is a synthetic ETB self-trigger gated on Permanent::evoked, which
-        // is set only when the spell was cast for its evoke cost.
-        if (kw_line.rfind("Evoke", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
-            AltCost ac;
-            parse_alt_cost_tokens(cost_str, ac);
-            ac.is_evoke = true;
-            card.alt_cost = ac;
-            card.keywords.push_back("Evoke");
-
-            AbilityDef sac;
-            sac.ability_type = AbilityDef::TRIGGERED;
-            sac.category = "ChangeZone";
-            sac.trigger_on = Events::CARD_CHANGED_ZONE;
-            sac.trigger_zone_destination = Zone::BATTLEFIELD;
-            sac.trigger_only_self = true;
-            sac.is_evoke_sacrifice = true;
-            sac.defined_self = true;          // moves its own source (no targeting)
-            sac.valid_tgts = "N_A";
-            sac.origin = Zone::BATTLEFIELD;
-            sac.destination = Zone::GRAVEYARD;
-            sac.mandatory = true;
-            face_defs.abilities.push_back(sac);
-            continue;
-        }
-        // K:Offspring:<cost> — an optional additional cost (CR 702.171). You may pay the
-        // offspring cost in addition to the spell's mana cost as you cast it; if you do,
-        // when this creature enters, create a 1/1 token that's a copy of it. Modeled as a
-        // second cast option (paying base + offspring) that sets Permanent::entered_with_offspring,
-        // gating a synthetic ETB self-trigger that creates the 1/1 token copy.
-        if (kw_line.rfind("Offspring", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            if (colon != std::string::npos)
-                card.offspring_cost = parse_mana_cost(kw_line.substr(colon + 1));
-            card.has_offspring = true;
-            card.keywords.push_back("Offspring");
-
-            AbilityDef tok;
-            tok.ability_type = AbilityDef::TRIGGERED;
-            tok.category = "CopyPermanent";
-            tok.trigger_on = Events::CARD_CHANGED_ZONE;
-            tok.trigger_zone_destination = Zone::BATTLEFIELD;
-            tok.trigger_only_self = true;
-            tok.is_offspring_token = true;
-            tok.defined_self = true;          // copies its own source (no targeting)
-            tok.valid_tgts = "N_A";
-            tok.mandatory = true;
-            face_defs.abilities.push_back(tok);
-            continue;
-        }
-        // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
-        // Forge encodes "Kicker [A] and/or [B]" as two colon-separated costs (CR 702.33b:
-        // it means "Kicker [A], kicker [B]" — two independent kickers). Each segment is a mana
-        // cost paid in addition to the spell's cost as it's cast; paying it makes the spell
-        // "kicked with its Nth kicker". Stored as a list so the model is multikicker-ready and
-        // the linked "if it was kicked with its [N] kicker" triggers index into it.
-        if (kw_line.rfind("Kicker:", 0) == 0) {
-            std::string rest = kw_line.substr(strlen("Kicker:"));
-            for (const std::string &seg : split(rest, ':', /*skip_empty=*/true))
-                card.kicker_costs.push_back(parse_mana_cost(seg));
-            card.keywords.push_back("Kicker");
-            continue;
-        }
-        // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost (CR 702.x) that may be paid any
-        // number of times as the spell is cast. Each payment copies the spell once on cast
-        // (the copies may choose new targets). Stored as a single per-instance mana cost; the
-        // count paid is decided at cast time (see action_processor) and recorded per-Spell.
-        if (kw_line.rfind("Replicate:", 0) == 0) {
-            std::string rest = kw_line.substr(strlen("Replicate:"));
-            card.replicate_cost = parse_mana_cost(rest);
-            card.has_replicate = true;
-            card.keywords.push_back("Replicate");
-            continue;
-        }
-        // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
-        // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
-        // general color override (e.g. an Eldrazi printed with colored mana symbols is still
-        // colorless). explicit_colors = {COLORLESS} marks the card colorless (card_colors).
-        if (kw_line == "Devoid") {
-            card.explicit_colors.clear();
-            card.explicit_colors.insert(COLORLESS);
-            card.keywords.push_back("Devoid");
-            continue;
-        }
-        // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise
-        // the gift to an opponent (an optional choice, not a cost); if promised, the opponent
-        // receives the gift as the spell resolves, before its other effects. The gift effect is
-        // held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
-        // card.gift_abilities; the cast path (action_processor) offers the promise choice and the
-        // resolving spell runs these when Spell::gift_promised is set (resolve_ability).
-        if (kw_line == "Gift" || kw_line.rfind("Gift", 0) == 0) {
-            card.has_gift = true;
-            card.keywords.push_back("Gift");
-            auto git = svars.find("GiftAbility");
-            if (git != svars.end()) {
-                face_defs.gift_abilities.push_back(
-                    parse_svar_ability(git->second, AbilityDef::SPELL, svars, card.name));
-                size_t gd = git->second.find("GiftDescription$");
-                if (gd != std::string::npos) {
-                    gd += strlen("GiftDescription$");
-                    while (gd < git->second.size() && git->second[gd] == ' ') gd++;
-                    size_t ge = git->second.find('|', gd);
-                    if (ge == std::string::npos) ge = git->second.size();
-                    card.gift_description = git->second.substr(gd, ge - gd);
-                    while (!card.gift_description.empty() && card.gift_description.back() == ' ')
-                        card.gift_description.pop_back();
-                }
-            }
-            continue;
-        }
-        // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening
-        // hand, you may [effect]" (CR 103.6b; Leyline of the Void's begin-the-game-on-the-
-        // battlefield). The colon field names the SVar holding the effect body (Leyline:
-        // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield); an optional
-        // !PlayFirst field (Gemstone Caverns) limits the offer to the player NOT going first.
-        // The offer itself happens after mulligans in the pregame gate's
-        // OPENING_ACTIONS stage (game_driver.cpp).
-        if (kw_line.rfind("MayEffectFromOpeningHand", 0) == 0) {
-            card.keywords.push_back("MayEffectFromOpeningHand");
-            std::vector<std::string> parts = split(kw_line, ':');
-            if (parts.size() >= 2) {
-                auto oit = svars.find(parts[1]);
-                if (oit != svars.end())
-                    face_defs.opening_hand_abilities.push_back(
-                        parse_svar_ability(oit->second, AbilityDef::SPELL, svars, card.name));
-            }
-            for (size_t pi = 2; pi < parts.size(); pi++)
-                if (parts[pi] == "!PlayFirst") card.opening_hand_not_first = true;
-            continue;
-        }
-        // K:Storm — Storm (CR 702.40). A triggered ability that functions on the stack: "When
-        // you cast this spell, copy it for each spell cast before it this turn. You may choose new
-        // targets for the copies." Synthesize the self-cast SPELL_CAST trigger here (general over
-        // any Storm card); the copy count is locked in when the trigger fires
-        // (state_manager_triggers) and the copies are put on the stack at resolution
-        // (effects::storm). The trigger itself takes no target — each copy chooses its own.
-        if (kw_line == "Storm") {
-            card.keywords.push_back("Storm");
-            AbilityDef st;
-            st.ability_type = AbilityDef::TRIGGERED;
-            st.category = "Storm";
-            st.trigger_on = Events::SPELL_CAST;
-            st.trigger_only_self = true;  // ValidCard$ Card.Self — fires for the cast spell itself
-            st.valid_tgts = "N_A";
-            st.mandatory = true;
-            face_defs.abilities.push_back(st);
-            continue;
-        }
-        // K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
-        // player sacrifices N permanents." Synthesize the self-attack trigger here (general over any
-        // Annihilator card): a TRIGGERED Sacrifice that fires once per declared attack of this
-        // creature (CREATURE_ATTACKED). defined_each_opponent routes the edict to the defending
-        // player (the controller's opponent in the two-player engine), who chooses and sacrifices N
-        // of their own permanents one at a time (sac_count). It resolves like any triggered ability,
-        // i.e. before blockers are declared. SacValid$ Permanent = any permanent they control.
-        if (kw_line.rfind("Annihilator", 0) == 0) {
-            size_t colon = kw_line.find(':');
-            int n = (colon != std::string::npos) ? std::stoi(kw_line.substr(colon + 1)) : 1;
-            card.keywords.push_back(kw_line);
-            AbilityDef ab;
-            ab.ability_type = AbilityDef::TRIGGERED;
-            ab.category = "Sacrifice";
-            ab.trigger_on = Events::CREATURE_ATTACKED;
-            ab.trigger_only_self = true;  // ValidCard$ Card.Self — only this creature's own attack
-            ab.valid_tgts = "N_A";
-            ab.mandatory = true;
-            ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
-            ab.sac_valid = "Permanent";       // any permanent the defending player controls
-            ab.sac_count = static_cast<size_t>(n);
-            face_defs.abilities.push_back(ab);
-            continue;
-        }
-        // K:Protection:<quality>:<desc> — structured Protection keyword (CR 702.16). The middle
-        // field is the quality. Emrakul uses Protection:Spell.nonColorless ("protection from
-        // colored spells"): a one-or-more-colors SPELL can't target it (702.16b/e). Modeled as a
-        // creature keyword consulted in has_protection_from. A structured single-color quality is
-        // normalized to the literal "Protection from <color>" form the color-protection path
-        // already understands (the common color-protection cards spell that form out directly).
-        if (kw_line.rfind("Protection:", 0) == 0) {
-            std::vector<std::string> parts = split(kw_line, ':');
-            std::string spec = parts.size() > 1 ? parts[1] : "";
-            if (spec.rfind("Spell", 0) == 0 && spec.find("nonColorless") != std::string::npos) {
-                card.keywords.push_back("Protection from colored spells");
-            } else {
-                std::string color = spec;
-                std::transform(color.begin(), color.end(), color.begin(),
-                               [](unsigned char c) { return std::tolower(c); });
-                card.keywords.push_back("Protection from " + color);
-            }
-            continue;
-        }
-        split_keywords(kw_line, card.keywords);
     }
+    ctx.card.static_abilities.push_back(sa);
+}
+
+// K:Equip:<cost> (CR 702.6a): "[Cost]: Attach this permanent to target creature you
+// control. Activate only as a sorcery." Stored as an ordinary activated ability on the
+// card (resolved by effects::attach), gated on the Equipment being able to equip some
+// creature (CR 301.5c).
+static void kw_equip(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.is_equipment = true;
+    ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
+    ctx.card.keywords.push_back("Equip");
+}
+
+// K:Reconfigure:<cost> (CR 702.151a): an Equipment keyword on a creature card, two
+// activated abilities: "[Cost]: Attach this permanent to another target creature you
+// control. Activate only as a sorcery." and "[Cost]: Unattach this permanent. Activate
+// only if this permanent is attached to a creature and only as a sorcery." It shares the
+// equip-attach machinery; is_reconfigure additionally lets it equip while a creature
+// (CR 301.5c) and makes it stop being a creature while attached (CR 702.151b).
+static void kw_reconfigure(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.is_equipment = true;
+    ctx.card.is_reconfigure = true;
+    ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
+    ctx.face_defs.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
+    ctx.card.keywords.push_back("Reconfigure");
+}
+
+// K:Impending:<N>:<mana> — Impending (CR 702.175). An alternative casting cost: the spell
+// may be cast for <mana> instead of its normal mana cost; if so the permanent enters with N
+// time counters and isn't a creature until the last is removed (CR 702.175d-e). Encoded on
+// the shared AltCost (mana portion = parse_mana_cost(<mana>), is_impending + impending_count
+// flag the impending-specific entry/shed behaviour). The format mirrors Reconfigure's
+// colon-split (Equip/Reconfigure), with an extra leading count field: "Impending:5:1 B".
+static void kw_impending(const std::string &kw_line, KeywordContext &ctx) {
+    std::string rest = kw_line.substr(strlen("Impending"));
+    if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "5:1 B"
+    size_t colon = rest.find(':');
+    if (colon != std::string::npos) {
+        AltCost ac;
+        ac.has_alt_cost = true;
+        ac.is_impending = true;
+        ac.impending_count = std::stoi(rest.substr(0, colon));
+        ac.mana_cost = parse_mana_cost(rest.substr(colon + 1));
+        ctx.card.alt_cost = ac;
+    }
+    ctx.card.keywords.push_back("Impending");
+}
+
+// K:Suspend:<N>:<cost> — Suspend (CR 702.62). NOT an alternative casting cost: it is a
+// special action taken from the HAND. Its owner may pay <cost> and exile the card with N
+// time counters on it (state_manager offers the action; action_processor performs the
+// exile). The count/cost are stored on CardData (has_suspend/suspend_count/suspend_cost);
+// the upkeep time-counter removal and free cast are driven from those. Format mirrors
+// Impending's colon-split: "Suspend:1:R".
+static void kw_suspend(const std::string &kw_line, KeywordContext &ctx) {
+    std::string rest = kw_line.substr(strlen("Suspend"));
+    if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "1:R"
+    size_t colon = rest.find(':');
+    if (colon != std::string::npos) {
+        ctx.card.has_suspend = true;
+        ctx.card.suspend_count = std::stoi(rest.substr(0, colon));
+        ctx.card.suspend_cost = parse_mana_cost(rest.substr(colon + 1));
+    }
+    ctx.card.keywords.push_back("Suspend");
+}
+
+// K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
+// first field is the Saga's final chapter number (= the number of chapter slots, CR 714.2d);
+// each subsequent comma-separated entry is an SVar naming the DB$ ability run when the Saga's
+// lore counters reach that chapter (CR 714.2b/714.3). Multiple chapters may name the SAME
+// SVar (Summon: Bahamut I & II both DBDestroy) — each becomes its own chapter slot, so two
+// independent triggers fire at lore 1 and lore 2. Parsed 1-indexed into card.saga_chapters;
+// the Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in src/saga.cpp.
+static void kw_chapter(const std::string &kw_line, KeywordContext &ctx) {
+    std::vector<std::string> parts = split(kw_line, ':');
+    if (parts.size() >= 3) {
+        for (const std::string &name : split(parts[2], ',', /*skip_empty=*/true)) {
+            auto it = ctx.svars.find(name);
+            AbilityDef chapter;  // an unknown SVar keeps chapter indexing aligned
+            if (it != ctx.svars.end())
+                chapter = parse_svar_ability(it->second, AbilityDef::TRIGGERED, ctx.svars, ctx.card.name);
+            // A chapter ability is a triggered ability (CR 714.2b) the Saga lifecycle
+            // tracks until it leaves the stack (CR 714.4).
+            chapter.ability_type = AbilityDef::TRIGGERED;
+            chapter.is_saga_chapter = true;
+            ctx.face_defs.saga_chapters.push_back(chapter);
+        }
+    }
+    ctx.card.keywords.push_back("Chapter");
+}
+
+// K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
+// milling N cards and returning this card to hand. Value stored on CardData;
+// the replacement is offered in Orderer::draw.
+static void kw_dredge(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
+    ctx.card.keywords.push_back("Dredge");
+}
+
+// K:Landwalk:Swamp / Forest / Island / Mountain / Plains
+static void kw_landwalk(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.keywords.push_back(kw_line.substr(strlen("Landwalk:")) + "walk");
+}
+
+// K:Cycling:<cost> — activated ability from hand: pay cost, discard this card, draw a card
+static void kw_cycling(const std::string &kw_line, KeywordContext &ctx) {
+    AbilityDef ab = keyword_activated_ability("Draw", Zone::HAND, kw_line.substr(strlen("Cycling:")));
+    ab.amount = 1;
+    ctx.face_defs.abilities.push_back(ab);
+    ctx.card.keywords.push_back("Cycling");
+}
+
+// K:Ninjutsu:<cost> (CR 702.49a): "[Cost], Reveal this card from your hand, Return an
+// unblocked attacking creature you control to its owner's hand: Put this card onto the
+// battlefield from your hand tapped and attacking." A hand-activated ability whose cost is
+// the ninjutsu mana plus the return (an ordinary return-to-hand cost over unblocked
+// attackers), resolved by effects::ninjutsu. It moves its own source (Defined$ Self), so
+// activating it doesn't consume the card from hand. General over any K:Ninjutsu.
+static void kw_ninjutsu(const std::string &kw_line, KeywordContext &ctx) {
+    AbilityDef ab = keyword_activated_ability(
+        "Ninjutsu", Zone::HAND,
+        kw_line.substr(strlen("Ninjutsu:")) + " Return<1/Creature.attacking+unblocked>");
+    ab.is_ninjutsu = true;
+    ab.defined_self = true;
+    ctx.face_defs.abilities.push_back(ab);
+    ctx.card.keywords.push_back("Ninjutsu");
+}
+
+// K:TypeCycling:<Subtype>:<cost> — typecycling (CR 702.29f). Like Cycling, an
+// activated ability usable from hand whose cost is the given mana plus discarding
+// this card; but instead of drawing, it searches the library for a card of the
+// named subtype, reveals it, puts it into hand, then shuffles. General over the
+// subtype (Islandcycling/Swampcycling/Plainscycling/...). The discard-this-card
+// cost is the auto-consume that fires for any hand-activated ability (the source
+// goes to the graveyard at activation); the effect is a Library→Hand search.
+static void kw_type_cycling(const std::string &kw_line, KeywordContext &ctx) {
+    std::string rest = kw_line.substr(strlen("TypeCycling:"));
+    size_t colon = rest.find(':');
+    std::string subtype = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
+    std::string cost_str = (colon != std::string::npos) ? rest.substr(colon + 1) : "";
+    AbilityDef ab = keyword_activated_ability("ChangeZone", Zone::HAND, cost_str);
+    ab.origin = Zone::LIBRARY;
+    ab.destination = Zone::HAND;
+    ab.change_type = subtype;       // subtype filter (search_zones matches card subtypes)
+    ab.mandatory = false;           // searches may fail to find (CR 701.19c)
+    ctx.face_defs.abilities.push_back(ab);
+    ctx.card.keywords.push_back(subtype + "cycling");
+}
+
+// K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
+static void kw_flashback(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.has_flashback = true;
+    // Shared Cost$ token grammar, then map onto the flashback cost fields the
+    // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
+    // mana and life — which the token-by-token grammar handles in one pass.
+    AbilityDef fb;
+    parse_activation_cost(kw_line.substr(strlen("Flashback:")), fb);
+    ctx.card.flashback_mana_cost = fb.activation_mana_cost;
+    ctx.card.flashback_alt_cost.life_cost = fb.life_cost;
+    // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
+    // flashback cost. Carry the sac filter so the cast path pays it.
+    ctx.card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
+    ctx.card.keywords.push_back("Flashback");
+}
+
+// K:Unearth:<cost> — Unearth (CR 702.84): an activated ability usable only from the
+// graveyard, at sorcery speed, that returns this card to the battlefield. The returned
+// permanent gains haste, is exiled at the beginning of the next end step (a delayed
+// triggered ability, CR 603.7b), and is exiled instead if it would leave the battlefield.
+// Modeled as a synthetic graveyard-activated ChangeZone (Graveyard -> Battlefield, Defined$
+// Self); is_unearth flags it so the resolution marks the permanent unearthed (haste +
+// delayed exile + leaves-the-battlefield replacement). General over any K:Unearth:<cost>.
+static void kw_unearth(const std::string &kw_line, KeywordContext &ctx) {
+    AbilityDef ab = keyword_activated_ability("ChangeZone", Zone::GRAVEYARD,
+                                              kw_line.substr(strlen("Unearth:")));
+    ab.origin = Zone::GRAVEYARD;
+    ab.destination = Zone::BATTLEFIELD;
+    ab.defined_self = true;        // returns its own source from the graveyard
+    ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
+    ab.is_unearth = true;
+    ctx.face_defs.abilities.push_back(ab);
+    ctx.card.keywords.push_back("Unearth");
+}
+
+// K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
+// escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
+// token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from
+// the leading mana symbols; the additional cost is parsed by the shared alt-cost grammar.
+static void kw_escape(const std::string &kw_line, KeywordContext &ctx) {
+    std::string cost_str = kw_line.substr(strlen("Escape:"));
+    ctx.card.has_escape = true;
+    // The mana portion runs up to the first additional-cost keyword (ExileFromGrave/
+    // PayLife/Sac/Return...); take the substring before "ExileFromGrave" (the only
+    // additional cost currently in the vocab) as mana, the remainder as the alt cost.
+    std::string mana_part = cost_str;
+    std::string alt_part;
+    size_t eg = cost_str.find("ExileFromGrave");
+    if (eg != std::string::npos) {
+        mana_part = cost_str.substr(0, eg);
+        alt_part = cost_str.substr(eg);
+    }
+    // Trim trailing space from the mana part.
+    size_t mend = mana_part.find_last_not_of(' ');
+    mana_part = (mend == std::string::npos) ? "" : mana_part.substr(0, mend + 1);
+    if (!mana_part.empty()) ctx.card.escape_mana_cost = parse_mana_cost(mana_part);
+    if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, ctx.card.escape_alt_cost);
+    ctx.card.keywords.push_back("Escape");
+}
+
+// K:Evoke:<cost> — alternate cost; when paid, the creature sacrifices itself as it
+// enters. The cost may be a pitch (ExileFromHand), mana (e.g. R), or life. The
+// self-sacrifice is a synthetic ETB self-trigger gated on Permanent::evoked, which
+// is set only when the spell was cast for its evoke cost.
+static void kw_evoke(const std::string &kw_line, KeywordContext &ctx) {
+    add_keyword_alt_cost(kw_line, "Evoke", &AltCost::is_evoke, ctx.card);
+    AbilityDef sac = keyword_self_trigger("ChangeZone", Events::CARD_CHANGED_ZONE);
+    sac.trigger_zone_destination = Zone::BATTLEFIELD;
+    sac.is_evoke_sacrifice = true;
+    sac.defined_self = true;          // moves its own source (no targeting)
+    sac.origin = Zone::BATTLEFIELD;
+    sac.destination = Zone::GRAVEYARD;
+    ctx.face_defs.abilities.push_back(sac);
+}
+
+// K:Offspring:<cost> — an optional additional cost (CR 702.171). You may pay the
+// offspring cost in addition to the spell's mana cost as you cast it; if you do,
+// when this creature enters, create a 1/1 token that's a copy of it. Modeled as a
+// second cast option (paying base + offspring) that sets Permanent::entered_with_offspring,
+// gating a synthetic ETB self-trigger that creates the 1/1 token copy.
+static void kw_offspring(const std::string &kw_line, KeywordContext &ctx) {
+    if (kw_line.find(':') != std::string::npos)
+        ctx.card.offspring_cost = parse_mana_cost(keyword_arg(kw_line));
+    ctx.card.has_offspring = true;
+    ctx.card.keywords.push_back("Offspring");
+    AbilityDef tok = keyword_self_trigger("CopyPermanent", Events::CARD_CHANGED_ZONE);
+    tok.trigger_zone_destination = Zone::BATTLEFIELD;
+    tok.is_offspring_token = true;
+    tok.defined_self = true;          // copies its own source (no targeting)
+    ctx.face_defs.abilities.push_back(tok);
+}
+
+// K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
+// Forge encodes "Kicker [A] and/or [B]" as two colon-separated costs (CR 702.33b:
+// it means "Kicker [A], kicker [B]" — two independent kickers). Each segment is a mana
+// cost paid in addition to the spell's cost as it's cast; paying it makes the spell
+// "kicked with its Nth kicker". Stored as a list so the model is multikicker-ready and
+// the linked "if it was kicked with its [N] kicker" triggers index into it.
+static void kw_kicker(const std::string &kw_line, KeywordContext &ctx) {
+    for (const std::string &seg : split(kw_line.substr(strlen("Kicker:")), ':', /*skip_empty=*/true))
+        ctx.card.kicker_costs.push_back(parse_mana_cost(seg));
+    ctx.card.keywords.push_back("Kicker");
+}
+
+// K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost (CR 702.x) that may be paid any
+// number of times as the spell is cast. Each payment copies the spell once on cast
+// (the copies may choose new targets). Stored as a single per-instance mana cost; the
+// count paid is decided at cast time (see action_processor) and recorded per-Spell.
+static void kw_replicate(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.replicate_cost = parse_mana_cost(kw_line.substr(strlen("Replicate:")));
+    ctx.card.has_replicate = true;
+    ctx.card.keywords.push_back("Replicate");
+}
+
+// K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
+// Colors: line and rely on the keyword for their colorlessness, so apply it here as a
+// general color override (e.g. an Eldrazi printed with colored mana symbols is still
+// colorless). explicit_colors = {COLORLESS} marks the card colorless (card_colors).
+static void kw_devoid(const std::string &, KeywordContext &ctx) {
+    ctx.card.explicit_colors.clear();
+    ctx.card.explicit_colors.insert(COLORLESS);
+    ctx.card.keywords.push_back("Devoid");
+}
+
+// K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise
+// the gift to an opponent (an optional choice, not a cost); if promised, the opponent
+// receives the gift as the spell resolves, before its other effects. The gift effect is
+// held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
+// card.gift_abilities; the cast path (action_processor) offers the promise choice and the
+// resolving spell runs these when Spell::gift_promised is set (resolve_ability).
+static void kw_gift(const std::string &, KeywordContext &ctx) {
+    ctx.card.has_gift = true;
+    ctx.card.keywords.push_back("Gift");
+    auto git = ctx.svars.find("GiftAbility");
+    if (git == ctx.svars.end()) return;
+    ctx.face_defs.gift_abilities.push_back(
+        parse_svar_ability(git->second, AbilityDef::SPELL, ctx.svars, ctx.card.name));
+    ctx.card.gift_description = param_value(git->second, "GiftDescription");
+}
+
+// K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening
+// hand, you may [effect]" (CR 103.6b; Leyline of the Void's begin-the-game-on-the-
+// battlefield). The colon field names the SVar holding the effect body (Leyline:
+// DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield); an optional
+// !PlayFirst field (Gemstone Caverns) limits the offer to the player NOT going first.
+// The offer itself happens after mulligans in the pregame gate's
+// OPENING_ACTIONS stage (game_driver.cpp).
+static void kw_opening_hand(const std::string &kw_line, KeywordContext &ctx) {
+    ctx.card.keywords.push_back("MayEffectFromOpeningHand");
+    std::vector<std::string> parts = split(kw_line, ':');
+    if (parts.size() >= 2) {
+        auto oit = ctx.svars.find(parts[1]);
+        if (oit != ctx.svars.end())
+            ctx.face_defs.opening_hand_abilities.push_back(
+                parse_svar_ability(oit->second, AbilityDef::SPELL, ctx.svars, ctx.card.name));
+    }
+    for (size_t pi = 2; pi < parts.size(); pi++)
+        if (parts[pi] == "!PlayFirst") ctx.card.opening_hand_not_first = true;
+}
+
+// K:Storm — Storm (CR 702.40). A triggered ability that functions on the stack: "When
+// you cast this spell, copy it for each spell cast before it this turn. You may choose new
+// targets for the copies." Synthesize the self-cast SPELL_CAST trigger here (general over
+// any Storm card); the copy count is locked in when the trigger fires
+// (state_manager_triggers) and the copies are put on the stack at resolution
+// (effects::storm). The trigger itself takes no target — each copy chooses its own.
+static void kw_storm(const std::string &, KeywordContext &ctx) {
+    ctx.card.keywords.push_back("Storm");
+    // ValidCard$ Card.Self — fires for the cast spell itself
+    ctx.face_defs.abilities.push_back(keyword_self_trigger("Storm", Events::SPELL_CAST));
+}
+
+// K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
+// player sacrifices N permanents." Synthesize the self-attack trigger here (general over any
+// Annihilator card): a TRIGGERED Sacrifice that fires once per declared attack of this
+// creature (CREATURE_ATTACKED). defined_each_opponent routes the edict to the defending
+// player (the controller's opponent in the two-player engine), who chooses and sacrifices N
+// of their own permanents one at a time (sac_count). It resolves like any triggered ability,
+// i.e. before blockers are declared. SacValid$ Permanent = any permanent they control.
+static void kw_annihilator(const std::string &kw_line, KeywordContext &ctx) {
+    size_t colon = kw_line.find(':');
+    int n = (colon != std::string::npos) ? std::stoi(kw_line.substr(colon + 1)) : 1;
+    ctx.card.keywords.push_back(kw_line);
+    // ValidCard$ Card.Self — only this creature's own attack
+    AbilityDef ab = keyword_self_trigger("Sacrifice", Events::CREATURE_ATTACKED);
+    ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
+    ab.sac_valid = "Permanent";       // any permanent the defending player controls
+    ab.sac_count = static_cast<size_t>(n);
+    ctx.face_defs.abilities.push_back(ab);
+}
+
+// K:Protection:<quality>:<desc> — structured Protection keyword (CR 702.16). The middle
+// field is the quality. Emrakul uses Protection:Spell.nonColorless ("protection from
+// colored spells"): a one-or-more-colors SPELL can't target it (702.16b/e). Modeled as a
+// creature keyword consulted in has_protection_from. A structured single-color quality is
+// normalized to the literal "Protection from <color>" form the color-protection path
+// already understands (the common color-protection cards spell that form out directly).
+static void kw_protection(const std::string &kw_line, KeywordContext &ctx) {
+    std::vector<std::string> parts = split(kw_line, ':');
+    std::string spec = parts.size() > 1 ? parts[1] : "";
+    if (spec.rfind("Spell", 0) == 0 && spec.find("nonColorless") != std::string::npos)
+        ctx.card.keywords.push_back("Protection from colored spells");
+    else
+        ctx.card.keywords.push_back("Protection from " + ascii_lower(spec));
 }
 
 static void parse_card_face(const std::string& front_script, CardData& card) {
