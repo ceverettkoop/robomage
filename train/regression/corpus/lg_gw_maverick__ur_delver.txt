@@ -1014,7 +1014,7 @@
   Opp:   21 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle (T,NEW) | Savannah (T)
   Opp BF:   Volcanic Island (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
   Pending: Badgermole Cub (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -1046,7 +1046,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Volcanic Island | Volcanic Island
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1075,7 +1075,7 @@
   Opp:   14 life | mana: empty | hand count: 4 | lib 48
   Self BF:  Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
   Self GY: Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1104,7 +1104,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1129,7 +1129,7 @@
   Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -1160,7 +1160,7 @@
   Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
   Stack: Green Sun's Zenith (spell, self) [X=3]
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
   Pending: Green Sun's Zenith (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -1196,7 +1196,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 45
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Endurance (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
@@ -1229,7 +1229,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
@@ -1248,7 +1248,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah | Wasteland (NEW)
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
@@ -1274,7 +1274,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T,NEW)
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
@@ -1296,7 +1296,7 @@
   Opp:   21 life | mana: empty | hand count: 3 | lib 52
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T,NEW)
   Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp exile:  Dragon's Rage Channeler
   Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
@@ -1325,7 +1325,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter | Volcanic Island | Volcanic Island | Volcanic Island
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -1350,7 +1350,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -1369,7 +1369,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -1392,7 +1392,7 @@
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Stack: Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1418,7 +1418,7 @@
   Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Stack: Cori-Steel Cutter (ability, self) -> Cori-Steel Cutter (ability, self) -> Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1445,7 +1445,7 @@
   Self BF:  Cori-Steel Cutter (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Stack: Cori-Steel Cutter (ability, self) -> Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1469,7 +1469,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Mishra's Bauble (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
   Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
@@ -1490,7 +1490,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Mishra's Bauble (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Stack: Mishra's Bauble (ability, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Mishra's Bauble (self)
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1518,7 +1518,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1543,7 +1543,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1568,7 +1568,7 @@
   Opp:   14 life | mana: empty | hand count: 2 | lib 47
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
   Self GY: Mishra's Bauble
   Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1596,7 +1596,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 51
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1618,7 +1618,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 51
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
   Pending: Endurance (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
@@ -1646,7 +1646,7 @@
   Opp:   19 life | mana: empty | hand count: 1 | lib 51
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (BLK->Monk,SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
   Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,BLOCKED,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1682,7 +1682,7 @@
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
   Stack: Mishra's Bauble (ability, opponent)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, on stack #0)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, on stack #0)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1702,7 +1702,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1722,7 +1722,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1740,7 +1740,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1767,7 +1767,7 @@
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
   Stack: Gaddock Teeg (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1788,7 +1788,7 @@
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
   Stack: Wasteland (ability, self) -> Gaddock Teeg (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Mishra's Bauble
@@ -1821,7 +1821,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1846,7 +1846,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1871,7 +1871,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1896,7 +1896,7 @@
   Opp:   19 life | mana: empty | hand count: 2 | lib 50
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -1931,7 +1931,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island | Volcanic Island | Volcanic Island | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -1962,7 +1962,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Brainstorm (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Brainstorm (self)
   Self GY: Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -1988,7 +1988,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Brainstorm (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Brainstorm (self)
   Self GY: Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2013,7 +2013,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2034,7 +2034,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2060,7 +2060,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Unholy Heat (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Unholy Heat (self)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2092,7 +2092,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2118,7 +2118,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2148,7 +2148,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [4/4] [Trample, Haste] (eq:Cori-Steel Cutter) (res 2) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Cori-Steel Cutter (ability, self) -> Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2177,7 +2177,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [4/4] [Trample, Haste] (eq:Cori-Steel Cutter) (res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [1/1] (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Cori-Steel Cutter (self)
   Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2205,7 +2205,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2231,7 +2231,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2257,7 +2257,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2283,7 +2283,7 @@
   Opp:   12 life | mana: empty | hand count: 2 | lib 46
   Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2313,7 +2313,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (T,ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2345,7 +2345,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2373,7 +2373,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2399,7 +2399,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2425,7 +2425,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2451,7 +2451,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (ATK) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2477,7 +2477,7 @@
   Opp:   12 life | mana: empty | hand count: 1 | lib 48
   Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (ATK) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp exile:  Dragon's Rage Channeler
@@ -2514,7 +2514,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2534,7 +2534,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2552,7 +2552,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Dragon's Rage Channeler
@@ -2577,7 +2577,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Murktide Regent (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Murktide Regent (self)
   Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2607,7 +2607,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Murktide Regent (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
   Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
@@ -2627,7 +2627,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Wasteland (ability, self) -> Murktide Regent (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2655,7 +2655,7 @@
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Stack: Wasteland (ability, opponent) -> Gaea's Cradle (self, slot 4) -> Murktide Regent (spell, opponent)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2679,7 +2679,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2700,7 +2700,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland
   Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2722,7 +2722,7 @@
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Pending: Wasteland (self)
   Self GY: Wasteland
   Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
@@ -2752,7 +2752,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2777,7 +2777,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2802,7 +2802,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2827,7 +2827,7 @@
   Opp:   5 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK)
   Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
   Self GY: Wasteland, Wasteland
   Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2856,7 +2856,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2877,7 +2877,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
@@ -2907,7 +2907,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (BLK->Monk,SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,BLOCKED) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2941,7 +2941,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2960,7 +2960,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2978,7 +2978,7 @@
   Opp:   3 life | mana: empty | hand count: 0 | lib 47
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
   Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
@@ -2997,7 +2997,7 @@
   Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
   Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
   Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
+  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
   Pending: Knight of the Reliquary (self)
   Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
   Opp GY:  Wasteland, Wasteland
