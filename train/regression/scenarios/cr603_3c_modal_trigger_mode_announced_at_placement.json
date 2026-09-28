@@ -1,0 +1,13 @@
+{
+  "name": "cr603_3c_modal_trigger_mode_announced_at_placement",
+  "why": "CR 603.3c / 700.2b: Knight of Autumn's modal ETB trigger announces its mode and target as it goes on the stack, so the opponent responds with them known - 1be08626",
+  "hand_a": ["Knight of Autumn"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Plains", "Forest"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Lavaspur Boots", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Knight of Autumn", "A:desc:Destroy target artifact", "A:target:Lavaspur Boots", "B:cast:Lightning Bolt", "B:target:Knight of Autumn@opp"],
+  "max_decisions": 12,
+  "expect_order": ["Player A chooses mode — Destroy target artifact or enchantment", "Knight of Autumn triggered", "Player B casts Lightning Bolt targeting Knight of Autumn", "Knight of Autumn is destroyed", "Resolving ability \\(category: Charm\\)", "Lavaspur Boots is destroyed"]
+}

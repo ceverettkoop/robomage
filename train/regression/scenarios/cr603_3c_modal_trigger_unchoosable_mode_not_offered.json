@@ -1,0 +1,14 @@
+{
+  "name": "cr603_3c_modal_trigger_unchoosable_mode_not_offered",
+  "why": "CR 603.3c / 700.2b: with no artifact or enchantment on the battlefield, Knight of Autumn's destroy mode can't be chosen and only its other modes are offered - 1be08626",
+  "hand_a": ["Knight of Autumn"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Plains", "Forest"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Knight of Autumn", "A:desc:You gain 4 life"],
+  "max_decisions": 6,
+  "expect_menu": ["^Put two \\+1/\\+1 counters", "^You gain 4 life"],
+  "expect_menu_not": ["^Destroy target artifact"],
+  "expect_order": ["Player A chooses mode — You gain 4 life", "Knight of Autumn triggered", "Player A gains 4 life"]
+}
