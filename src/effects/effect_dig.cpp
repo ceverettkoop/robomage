@@ -80,13 +80,13 @@ static bool dig_is_blind(const Ability &ab) {
 namespace effects {
 
 HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     // Look at top N cards, player picks one matching filter, rest go to bottom.
     // When the ability targets a player (Fateseal, e.g. Jace +2), the dug library is
     // the TARGET player's, not the controller's.
     Zone::Ownership dig_owner = ab.controller;
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-        dig_owner = seat_of_player(ab.target);
+    if (ab.target.get() != 0 && global_coordinator.entity_has_component<Player>(ab.target.get()))
+        dig_owner = seat_of_player(ab.target.get());
     // The LOOKER (who sees the cards and makes the choices) is always the ability's controller.
     // For a fateseal on an opponent's library (Jace +2) that differs from dig_owner: the owner
     // must NOT learn any card placed back on top, and private card-name logs are pinned to the
@@ -123,11 +123,11 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // (Birthing Ritual: 1 + the sacrificed creature's mana value), else it is the X paid.
         MatchCtx mctx;
         mctx.controller = dig_owner;
-        mctx.source = ab.source;
+        mctx.source = ab.source.lki_entity();
         if (!ab.change_valid.empty() && ab.change_valid.find("cmcLE") != std::string::npos &&
             !ab.dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
-                evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target));
+                evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target.get()));
             mctx.cmc_op = "LE";
         }
         std::vector<Entity> matching;
@@ -216,7 +216,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         }
         // The looker (ab.controller) is the resolving seat, so this is a no-op
         // swap — the exact seat today's inline get_input read from.
-        int choice = ctx.ask(dig_actions, looker, ab.source);
+        int choice = ctx.ask(dig_actions, looker, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         Entity sel = dig_actions[static_cast<size_t>(choice)].source_entity;
         if (sel == 0) break;  // chose "Take nothing"

@@ -74,7 +74,7 @@ static void swap_face_abilities(Entity e, Permanent &perm, const CardData &old_f
                          perm.abilities.end());
     for (auto ab : new_face.abilities) {
         if (ab.ability_type != Ability::ACTIVATED) continue;
-        ab.source = e;
+        ab.source = ObjectRef::of(e);
         perm.abilities.push_back(ab);
     }
     perm.static_abilities = new_face.static_abilities;
@@ -114,13 +114,15 @@ void transform_permanent(Entity e) {
 
 bool ability_may_transform_source(const Ability &ab) {
     if (ab.source_transforms < 0) return true;
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return true;
-    return global_coordinator.GetComponent<Permanent>(ab.source).times_transformed ==
+    const Entity self = ab.source.get();
+    if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) return true;
+    return global_coordinator.GetComponent<Permanent>(self).times_transformed ==
            static_cast<uint32_t>(ab.source_transforms);
 }
 
 void stamp_source_transforms(Ability &ab) {
     if (ab.source_transforms >= 0) return;
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return;
-    ab.source_transforms = global_coordinator.GetComponent<Permanent>(ab.source).times_transformed;
+    const Entity self = ab.source.get();
+    if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) return;
+    ab.source_transforms = global_coordinator.GetComponent<Permanent>(self).times_transformed;
 }

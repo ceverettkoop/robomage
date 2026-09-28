@@ -31,7 +31,7 @@ namespace effects {
 // The ValidCards$ filter is matched through permanent_matches_filter so YouCtrl/OppCtrl controller
 // scoping and the full qualifier grammar come for free. Cleared at the cleanup step (514.2).
 HandlerResult animate_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
-    MatchCtx ctx{ab.controller, ab.source};
+    MatchCtx ctx{ab.controller, ab.source.lki_entity()};
     int affected = 0;
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e)) continue;

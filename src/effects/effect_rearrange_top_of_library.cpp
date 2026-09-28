@@ -31,7 +31,7 @@ static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::sh
 namespace effects {
 
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership owner = ab.controller;  // "your library" = the ability's controller's (CR 109.5)
 
     // The looked-at slice is frozen once into the frame rt (pinned against
@@ -48,7 +48,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     if (!rt.init) {
         size_t num_cards = ab.amount;
         if (!ab.dynamic_amount_expr.empty())
-            num_cards = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
+            num_cards = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target.get());
 
         // looking at top n only
         rt.lib = orderer->get_library_top(owner, num_cards);
@@ -82,7 +82,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         }
         // No priority repoint existed here — the resolving seat is ab.controller,
         // so seating the ask there is a no-op swap.
-        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source);
+        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         // Record, drop from the candidates, and place in one step with no
         // suspension point between them: a resume re-enters at the next pick
@@ -104,7 +104,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         };
         shuffle_actions[0].category = ActionCategory::DONT_SHUFFLE;
         shuffle_actions[1].category = ActionCategory::SHUFFLE;
-        int shuffle_choice = ctx.ask(std::move(shuffle_actions), ab.controller, ab.source);
+        int shuffle_choice = ctx.ask(std::move(shuffle_actions), ab.controller, ab.source.lki_entity());
         if (shuffle_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (shuffle_choice == 1) {
             orderer->shuffle_library(owner);

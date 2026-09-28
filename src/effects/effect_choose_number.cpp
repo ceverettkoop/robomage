@@ -25,7 +25,7 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     int max = 0;
     if (!ab.dynamic_amount_expr.empty())
         max = static_cast<int>(
-            evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target));
+            evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
     if (max < 0) max = 0;
 
     std::vector<LegalAction> choices;
@@ -35,7 +35,7 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
         la.option_ordinal = n;  // the chosen number
         choices.push_back(la);
     }
-    int choice = ctx.ask(std::move(choices), ab.controller, ab.source);
+    int choice = ctx.ask(std::move(choices), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     if (choice < 0) choice = 0;

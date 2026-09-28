@@ -18,7 +18,7 @@ HandlerResult wins_game(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     if (cur_game.ended) return HandlerResult::DONE_NO_SUBS;
     // Alternative win condition (Thassa's Oracle, Jace Wielder of Mysteries' -8 sub-ability).
     // condition_passed is checked in resolve()'s prologue; reaching here means the player wins.
-    cur_game.end_game(ab.controller, entity_name(ab.source));
+    cur_game.end_game(ab.controller, entity_name(ab.source.lki_entity()));
     return HandlerResult::DONE_NO_SUBS;  // original returned early — skip the standard subability loop
 }
 

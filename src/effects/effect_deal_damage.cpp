@@ -32,8 +32,8 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
         // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
         // control) can exclude the source itself via the +Other qualifier.
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target,
-                                      ab.source);
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
+                                      ab.source.lki_entity());
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {
@@ -55,7 +55,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         ab.defined_triggered_activator || ab.defined_triggered_player ||
         ab.defined_triggered_card_controller) {
         Zone::Ownership who = resolve_defined_player(ab);
-        if (who != Zone::UNKNOWN) ::deal_damage(ab.source, get_player_entity(who), dmg, false);
+        if (who != Zone::UNKNOWN) ::deal_damage(ab.source.lki_entity(), get_player_entity(who), dmg, false);
         return HandlerResult::DONE_RUN_SUBS;
     }
     // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
@@ -65,9 +65,9 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // one target having become illegal (gone from the battlefield, protection) skips only that
     // target without aborting the rest (CR 608.2c).
     if (!ab.targets.empty()) {
-        for (Entity tgt : ab.targets) deal_damage_to_target(ab, tgt, dmg);
+        for (Entity tgt : live_entities(ab.targets)) deal_damage_to_target(ab, tgt, dmg);
     } else {
-        deal_damage_to_target(ab, ab.target, dmg);
+        deal_damage_to_target(ab, ab.target.get(), dmg);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -77,13 +77,14 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 // target was re-checked at resolution (CR 608.2b), so one that can't be dealt damage should have
 // fizzled.
 static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg) {
+    if (tgt == 0) return;  // the object is gone (CR 400.7): nothing is dealt damage
     if (can_be_dealt_damage(tgt)) {
-        ::deal_damage(ab.source, tgt, dmg, false);
+        ::deal_damage(ab.source.lki_entity(), tgt, dmg, false);
         return;
     }
 #ifndef NDEBUG
     fprintf(stderr, "SOURCE:");
-    dump_entity(ab.source);
+    dump_entity(ab.source.lki_entity());
     fprintf(stderr, "TARGET:");
     dump_entity(tgt);
 #endif

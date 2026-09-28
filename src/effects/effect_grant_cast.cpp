@@ -41,8 +41,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         Emblem emblem;
         emblem.controller = ab.controller;
         emblem.statics = ab.effect_emblem_statics;
-        emblem.source = ab.source;
-        emblem.source_vocab_idx = action_card_vocab_idx(ab.source);
+        emblem.source = ab.source.lki_entity();
+        emblem.source_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
         cur_game.emblems.push_back(std::move(emblem));
         game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -63,8 +63,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             Ability ft = trig;
             ft.controller = ab.controller;
             ft.duration_until_your_next_turn = until_next_turn;
-            ft.floating_creator = ab.source;
-            ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source);
+            ft.floating_creator = ab.source.lki_entity();
+            ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
             cur_game.floating_triggers.push_back(ft);
         }
         game_log("A floating triggered ability is created%s.\n",
@@ -118,7 +118,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // rather than instantiating a continuous-effect object. The mark is read by the combat
     // blocker-legality check so the creature is removed from every blocker's legal list.
     if (ab.effect_static_ability == "Unblockable") {
-        Entity who = ab.effect_remember_self ? ab.source : ab.target;
+        Entity who = ab.effect_remember_self ? ab.source.get() : ab.target.get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who) &&
             is_battlefield_permanent(who)) {
             global_coordinator.GetComponent<Creature>(who).cant_be_blocked_this_turn = true;
@@ -149,7 +149,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // remembered_entities). Sourceless turn-long grant, cleared at cleanup. General over any such
     // Effect (reusable by future fog/prevention cards).
     if (ab.effect_prevent_combat_damage_by_remembered || ab.effect_prevent_combat_damage_to_remembered) {
-        Entity who = ab.target;
+        Entity who = ab.target.get();
         if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
             Game::CombatDamagePreventionShield shield;
@@ -210,7 +210,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
         return HandlerResult::DONE_RUN_SUBS;
     }
 
-    Entity tgt = ab.target;
+    Entity tgt = ab.target.get();
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return HandlerResult::DONE_RUN_SUBS;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return HandlerResult::DONE_RUN_SUBS;
 

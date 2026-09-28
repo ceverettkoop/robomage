@@ -25,7 +25,9 @@ namespace effects {
 HandlerResult miracle_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     ResolutionCastRt local_rt;
     ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
-    Entity card = ab.source;
+    Entity card = ab.source.get();
+    // The revealed card is no longer that object (it left the hand, CR 400.7): no offer.
+    if (card == 0 && rt.stage == ResolutionCastRt::OFFER) return HandlerResult::DONE_RUN_SUBS;
     bool castable =
         rt.stage == ResolutionCastRt::OFFER && miracle_castable(card, ab.controller, orderer);
     const std::string nm = entity_name(card);

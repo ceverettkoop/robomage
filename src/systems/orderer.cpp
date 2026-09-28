@@ -65,7 +65,6 @@ void Orderer::set_stack_ability(Entity ability_entity, const Ability &ability,
     Ability &stack_ab = global_coordinator.GetComponent<Ability>(ability_entity);
     stack_ab = ability;
     stack_ab.controller = controller;
-    stack_ab.source_gen = stamp_object_gen(stack_ab.source);
     stamp_source_transforms(stack_ab);
 }
 
@@ -82,6 +81,12 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
         if (cmp_zone.location == Zone::STACK) cmp_zone.distance_from_top++;
     }
     global_coordinator.AddComponent(target, z);
+    // The copy's own ability was built before it had a Zone; it comes from the object now on
+    // the stack.
+    if (global_coordinator.entity_has_component<Ability>(target)) {
+        Ability &ab = global_coordinator.GetComponent<Ability>(target);
+        if (ab.source.lki_entity() == target) ab.source = ObjectRef::of(target);
+    }
     // A stack object is public information (CR 400.2), but a copy of a spell is not a card
     // (CR 707.10) and reveals nothing from its controller's deck, so only a created object that
     // is a card is recorded in the owner's revealed set.
@@ -294,6 +299,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // spell/ability that targeted the OLD object can detect at resolution that the object it chose
     // no longer exists (Tamiyo/Ajani exile-and-return-transformed, any same-resolution flicker),
     // even when the same entity id re-enters its former zone as a same-type object. See Zone::obj_gen.
+    // An open follow window keeps the old object findable for the rest of the effect (CR 400.7j).
+    note_object_moved(target, target_zone.obj_gen);
     target_zone.obj_gen = cur_game.next_obj_gen++;
 
     // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
@@ -420,6 +427,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.location = Zone::STACK;
     z.distance_from_top = 0;
     z.controller = caster;
+    note_object_moved(card, z.obj_gen);  // CR 400.7h: a cast made by an effect stays findable
     z.obj_gen = cur_game.next_obj_gen++;
     z.identity_known = false;
     z.is_face_down = false;

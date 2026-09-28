@@ -31,7 +31,7 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)
-            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
+            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
                 to_sac.push_back(e);
     }
 

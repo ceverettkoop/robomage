@@ -28,8 +28,8 @@ namespace effects {
 HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Whose hand: the targeted Player entity (ValidTgts$ Opponent/Player). With no player target
     // the effect has nothing to reveal, so fall through (chaining subabilities) as a no-op.
-    if (!global_coordinator.entity_has_component<Player>(ab.target)) return HandlerResult::DONE_RUN_SUBS;
-    Zone::Ownership hand_owner = seat_of_player(ab.target);
+    if (!global_coordinator.entity_has_component<Player>(ab.target.get())) return HandlerResult::DONE_RUN_SUBS;
+    Zone::Ownership hand_owner = seat_of_player(ab.target.get());
 
     std::vector<Entity> hand = orderer->get_hand(hand_owner);
 

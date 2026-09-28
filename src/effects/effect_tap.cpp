@@ -15,7 +15,7 @@ namespace effects {
 // this handler covers a Tap that does resolve (e.g. a future "tap target permanent" ability).
 HandlerResult tap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    Entity e = ab.defined_self ? ab.source : ab.target;
+    Entity e = ab.defined_self ? ab.source.get() : ab.target.get();
     if (e == 0 || !is_battlefield_permanent(e)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(e);
     if (!perm.is_tapped) {

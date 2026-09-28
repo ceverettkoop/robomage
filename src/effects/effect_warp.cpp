@@ -27,7 +27,7 @@ namespace effects {
 // (the object it would grant a recast of is gone). General over any warp card.
 HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    Entity card = ab.source;
+    Entity card = ab.source.get();
     // Only exile it if it is still the same object on the battlefield (CR 400.7): a re-entered
     // object is new and is not the warp-cast one.
     if (!is_battlefield_permanent(card)) return HandlerResult::DONE_RUN_SUBS;

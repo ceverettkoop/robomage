@@ -179,12 +179,10 @@ struct Emblem {
 };
 
 // The object an Aura will enchant, chosen before the Aura enters the battlefield: its cast
-// target (CR 303.4a) or the object chosen as it enters without being cast (CR 303.4f). The
-// target's Zone::obj_gen at the choice identifies that object (CR 400.7), so a card that changed
-// zones in between (a new object) no longer counts as the chosen one; 0 = not snapshotted.
+// target (CR 303.4a) or the object chosen as it enters without being cast (CR 303.4f). A card
+// that changed zones in between (a new object, CR 400.7) no longer counts as the chosen one.
 struct PendingAuraTarget {
-    Entity target = 0;
-    uint64_t target_gen = 0;
+    ObjectRef target;
 };
 
 struct Game {
@@ -214,6 +212,10 @@ struct Game {
         // 0 stays reserved for "never stamped". Purely internal (not serialized into the ML
         // observation); deterministic because the add_to_zone call sequence is deterministic.
         uint64_t next_obj_gen = 1;
+        // CR 400.7j follow window (object_ref.h): open while one effect resolves; maps each object
+        // the effect moved to the identity stamp it had before its first move in the window.
+        bool follow_window_open = false;
+        std::map<Entity, uint64_t> follow_window_origins;
         size_t turn = 0;
         Step cur_step = UNTAP;
         Entity player_a_entity;

@@ -152,7 +152,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                         sub.source = parent->source;
                         sub.controller = parent->controller;
                         // Defined$ Remembered points the sub-ability at the looped player.
-                        if (sub.defined_remembered) sub.target = pe;
+                        if (sub.defined_remembered) sub.target = ObjectRef::of(pe);
                     };
                     if (ctx.resolve_child(sub_template, FrameLevel::REPEAT_SUB, rt.sub_idx,
                                           rt.player_idx, bind, orderer) ==
@@ -163,7 +163,7 @@ HandlerResult repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                     sub.source = ab.source;
                     sub.controller = ab.controller;
                     // Defined$ Remembered points the sub-ability at the looped player.
-                    if (sub.defined_remembered) sub.target = pe;
+                    if (sub.defined_remembered) sub.target = ObjectRef::of(pe);
                     sub.resolve(orderer);
                 }
             }

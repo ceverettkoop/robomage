@@ -67,7 +67,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (!ctx.resuming())
             game_log("%s may put a %s card from among the revealed cards into their hand:\n",
                      player_name(you).c_str(), cur_game.chosen_type.c_str());
-        int choice = ctx.ask(std::move(picks), you, ab.source);
+        int choice = ctx.ask(std::move(picks), you, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (choice >= 0 && choice < static_cast<int>(cands.size())) {
             Entity chosen = cands[static_cast<size_t>(choice)];
@@ -125,7 +125,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             }
             if (!ctx.resuming())
                 game_log("%s chooses a %s to keep:\n", player_name(opp).c_str(), type.c_str());
-            int choice = ctx.ask(std::move(picks), opp, ab.source);
+            int choice = ctx.ask(std::move(picks), opp, ab.source.lki_entity());
             if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             Entity kept = cands[static_cast<size_t>(choice)];
             cur_game.chosen_cards.insert(kept);
@@ -161,7 +161,7 @@ HandlerResult choose_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         picks.push_back(none);
     }
     if (!ctx.resuming()) game_log("%s chooses a card:\n", player_name(ab.controller).c_str());
-    int choice = ctx.ask(std::move(picks), ab.controller, ab.source);
+    int choice = ctx.ask(std::move(picks), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
     cur_game.chosen_cards.clear();
     if (choice >= 0 && choice < static_cast<int>(cands.size())) {
@@ -181,7 +181,7 @@ static std::vector<Entity> choose_card_candidates(const Ability &ab,
                                                  std::shared_ptr<Orderer> orderer) {
     MatchCtx mctx;
     mctx.controller = ab.controller;
-    mctx.source = ab.source;
+    mctx.source = ab.source.lki_entity();
     std::vector<Entity> cands;
     for (auto e : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;

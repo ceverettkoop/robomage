@@ -21,7 +21,7 @@ extern Game cur_game;
 namespace effects {
 
 HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
     Zone::Ownership ctrl = ab.controller;
     Entity ctrl_entity = get_player_entity(ctrl);
@@ -37,7 +37,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         // Draw 2 cards — each offering the dredge draw-replacement through ctx
         // (suspendable; rt.draws_done persists the batch progress), with
         // ab.source as the dredge ask's pending-decision source.
-        if (!draw_n_with_replacements(ctx, orderer, ctrl, rt.draws_done, 2, ab.source))
+        if (!draw_n_with_replacements(ctx, orderer, ctrl, rt.draws_done, 2, ab.source.lki_entity()))
             return HandlerResult::SUSPENDED;
         game_log("%s draws 2 cards (Sylvan Library)\n", player_name(ctrl).c_str());
 
@@ -78,7 +78,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         if (choose_actions.empty()) break;
         // No priority repoint existed here — the resolving seat is ab.controller,
         // so seating the ask there is a no-op swap.
-        int choice = ctx.ask(choose_actions, ctrl, ab.source);
+        int choice = ctx.ask(choose_actions, ctrl, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         rt.chosen.push_back(choose_actions[static_cast<size_t>(choice)].source_entity);
     }
@@ -101,7 +101,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         top.category = ActionCategory::SYLVAN_CHOICE;
         top.option_ordinal = 0;  // 0 = put on top of library
         pay_actions.push_back(top);
-        int choice = ctx.ask(pay_actions, ctrl, ab.source);
+        int choice = ctx.ask(pay_actions, ctrl, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (pay_actions[static_cast<size_t>(choice)].option_ordinal == 1) {
             pay_life(pl, 4);

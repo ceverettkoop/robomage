@@ -153,7 +153,7 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // Does triggered ability `ab` still need its targets chosen as it is put on the stack (CR 603.3d)?
 // True when it targets and no target was bound from its trigger event.
 static bool trigger_needs_target(const Ability &ab) {
-    return ab.valid_tgts != "N_A" && ab.target == 0;
+    return ab.valid_tgts != "N_A" && ab.target.empty();
 }
 
 // Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own
@@ -256,10 +256,17 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 // (CR 608.2g — it is in the graveyard by now). Shares triggered_player storage.
                 if (trigger_ab.defined_triggered_card_controller && dt.fire_on_leave_battlefield)
                     trigger_ab.triggered_player = last_known_controller(dt.watch_entity);
+                // CR 400.7e: an ability that triggers on the watched object leaving the
+                // battlefield can find the new object it became in a public zone (earthbend's
+                // "return it to the battlefield").
+                if (dt.fire_on_leave_battlefield && trigger_ab.source.lki_entity() == dt.watch_entity &&
+                    global_coordinator.entity_has_component<Zone>(dt.watch_entity) &&
+                    is_public_zone(global_coordinator.GetComponent<Zone>(dt.watch_entity).location))
+                    trigger_ab.source = ObjectRef::of(dt.watch_entity);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ctrl;
-                pt.source = trigger_ab.source;
+                pt.source = trigger_ab.source.lki_entity();
                 pt.label = "Delayed trigger";
                 pt.log_line = "Delayed trigger fires.";
                 pt.needs_target = trigger_needs_target(trigger_ab);
@@ -298,7 +305,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 Ability trigger_ab = ft;
                 trigger_ab.controller = ft.controller;
                 // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
-                if (trigger_ab.defined_triggered_attacker_lki) trigger_ab.target = attacker;
+                if (trigger_ab.defined_triggered_attacker_lki) trigger_ab.target = ObjectRef::of(attacker);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ft.controller;
@@ -351,7 +358,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 draw_ab.category = "Draw";
                 draw_ab.amount = 1;
                 draw_ab.controller = monarch_ctrl;
-                draw_ab.target = game.monarch_entity;  // effect_draw reads target player when set
+                draw_ab.target = ObjectRef::of(game.monarch_entity);  // effect_draw reads target player when set
                 PendingTrigger pt;
                 pt.ab = draw_ab;
                 pt.controller = monarch_ctrl;
@@ -416,7 +423,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
 
         Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
         trigger_ab.ability_type = Ability::TRIGGERED;
-        trigger_ab.source = saga;
+        trigger_ab.source = ObjectRef::of(saga);
         trigger_ab.controller = ctrl;
         trigger_ab.is_saga_chapter = true;
 
@@ -454,7 +461,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             Ability shed_ab;
             shed_ab.ability_type = Ability::TRIGGERED;
             shed_ab.category = "RemoveCounter";  // reuses effect_remove_counter (Defined$ Self)
-            shed_ab.source = entity;             // remove_counter falls back to source (target == 0)
+            shed_ab.source = ObjectRef::of(entity);             // remove_counter falls back to source (target == 0)
             shed_ab.controller = ctrl;
             shed_ab.params = CounterParams{"TIME", 1};
 
@@ -495,7 +502,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             Ability tick_ab;
             tick_ab.ability_type = Ability::TRIGGERED;
             tick_ab.category = "SuspendTick";
-            tick_ab.source = card;  // the exiled suspended card
+            tick_ab.source = ObjectRef::of(card);  // the exiled suspended card
             tick_ab.controller = ctrl;
 
             PendingTrigger pt;
@@ -636,7 +643,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             if (ab.trigger_valid_card_untapped) continue;
 
             Ability trigger_ab = ab;
-            trigger_ab.source = entity;
+            trigger_ab.source = ObjectRef::of(entity);
             trigger_ab.controller = ctrl;
 
             // A leaves-the-battlefield ability that operates on the cards the source had exiled
@@ -708,7 +715,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             }
 
             Ability trigger_ab = ab;
-            trigger_ab.source = spell_e;
+            trigger_ab.source = ObjectRef::of(spell_e);
             trigger_ab.controller = ctrl;
 
             // Storm (CR 702.40a): lock in the copy count = number of OTHER spells cast before
@@ -757,7 +764,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 }
 
                 Ability trigger_ab = ab;
-                trigger_ab.source = entity;
+                trigger_ab.source = ObjectRef::of(entity);
                 trigger_ab.controller = owner;
 
                 // 603.4 intervening-if: a trigger whose "if" condition is false right now
@@ -810,7 +817,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 if (!ab.trigger_state_condition) continue;
 
                 Ability trigger_ab = ab;
-                trigger_ab.source = entity;
+                trigger_ab.source = ObjectRef::of(entity);
                 trigger_ab.controller = perm.controller;
 
                 // Stable per-trigger signature for the latch (category + the state condition),
@@ -1114,7 +1121,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // Prepare the triggered ability and queue it; APNAP placement (and any target
             // selection) happens after the full scan, in place_triggers_apnap().
             Ability trigger_ab = ab;
-            trigger_ab.source = entity;
+            trigger_ab.source = ObjectRef::of(entity);
             trigger_ab.controller = controller;
             // CR 107.3m: an enters-the-battlefield trigger of a permanent uses the X its spell was
             // cast with.
@@ -1125,7 +1132,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // unless-cost to that spell's controller (the opponent), captured from PLAYER.
             if (ev.GetType() == Events::BECAME_TARGET) {
                 if (trigger_ab.defined_triggered_source_sa && ev.HasParam(Params::ENTITY))
-                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                    trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
                 if (trigger_ab.unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
                     Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
                     trigger_ab.unless_payer = seat_of_player(src_player);
@@ -1134,7 +1141,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
             // fired this trigger. Capture it from the event as the ability's target.
             if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
-                trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
             // Defined$ TriggeredActivator — bind the player who caused the trigger (the
             // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability
             // and its subabilities, so the effect (LoseLife etc.) resolves against them.
@@ -1152,13 +1159,11 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             if (trigger_ab.defined_triggered_defending_player &&
                 ev.GetType() == Events::CREATURE_ATTACKED && ev.HasParam(Params::PLAYER)) {
                 Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
-                trigger_ab.target = (attacker_player == get_player_entity(Zone::PLAYER_A))
-                                        ? get_player_entity(Zone::PLAYER_B)
-                                        : get_player_entity(Zone::PLAYER_A);
+                trigger_ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));
             }
             // For exalted, target the sole attacker from the event
             if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
-                trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
             // For combat damage triggers, capture the damage amount
             if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
                 trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
@@ -1283,7 +1288,7 @@ static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementR
         if (!tp.target_in_flight) {
             // An Execute$ body (a reflexive or delayed trigger's effect) belongs to the ability
             // that triggers later and chooses its targets then (CR 603.12, 603.7).
-            if (sub.from_delayed_execute || sub.valid_tgts == "N_A" || sub.target != 0 ||
+            if (sub.from_delayed_execute || sub.valid_tgts == "N_A" || !sub.target.empty() ||
                 !sub.targets.empty())
                 continue;
             sub.source = pt.ab.source;

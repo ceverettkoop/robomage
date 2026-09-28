@@ -144,7 +144,7 @@ int action_card_vocab_idx(Entity e) {
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
     if (global_coordinator.entity_has_component<Ability>(e)) {
-        Entity src = global_coordinator.GetComponent<Ability>(e).source;
+        Entity src = global_coordinator.GetComponent<Ability>(e).source.lki_entity();
         if (global_coordinator.entity_has_component<Permanent>(src)) {
             auto& sp = global_coordinator.GetComponent<Permanent>(src);
             return sp.is_token ? token_vocab_idx(src) : card_name_to_index(sp.name);
@@ -186,10 +186,11 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer) {
     int n = 0;
     auto add_ability_targets = [&](const Ability& a) {
+        // The targets as announced (last-known information for one that has since left).
         if (!a.targets.empty())
-            for (Entity t : a.targets) add_stack_target(se, n, t, viewer);
+            for (const ObjectRef &t : a.targets) add_stack_target(se, n, t.lki_entity(), viewer);
         else
-            add_stack_target(se, n, a.target, viewer);
+            add_stack_target(se, n, a.target.lki_entity(), viewer);
     };
     add_ability_targets(ab);
     for (const Ability& sub : ab.subabilities) add_ability_targets(sub);
@@ -506,8 +507,8 @@ static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer) {
         const auto& ab = global_coordinator.GetComponent<Ability>(e);
         if (!se.is_spell) se.x_or_amount = static_cast<int>(ab.amount);
         fill_stack_choices(ab, se, viewer);
-        if (ab.target != 0) {
-            std::string tname = target_display_name(cur_game, ab.target);
+        if (!ab.target.empty()) {
+            std::string tname = target_display_name(cur_game, ab.target.lki_entity());
             strncpy(se.target_name, tname.c_str(), sizeof(se.target_name) - 1);
             se.target_name[sizeof(se.target_name) - 1] = '\0';
         }

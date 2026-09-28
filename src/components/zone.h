@@ -25,8 +25,8 @@ struct Zone {
         // entity id across that move (Tamiyo/Ajani exile-and-return-transformed, any flicker), a
         // stamp is the only way a spell/ability that targeted the OLD object can tell that the
         // object it chose no longer exists — even when a same-id, same-type incarnation reoccupies
-        // the old zone. Snapshotted at target selection and re-checked at resolution (CR 608.2b).
-        // 0 = never stamped (a target with no snapshot skips the check).
+        // the old zone. ObjectRef (object_ref.h) pairs an entity with this stamp. 0 = never
+        // stamped yet (stamp_object_gen assigns one on first reference).
         uint64_t obj_gen = 0;
         Ownership owner = UNKNOWN;
         Ownership controller = UNKNOWN; //only relevant for battlefield

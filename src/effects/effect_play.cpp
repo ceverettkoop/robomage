@@ -42,7 +42,7 @@ HandlerResult play(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     if (ab.defined_remembered && !cur_game.remembered_entities.empty())
         card = cur_game.remembered_entities[0];
     else
-        card = ab.target;  // fallback: a directly-defined/targeted card
+        card = ab.target.get();  // fallback: a directly-defined/targeted card
     if (card == 0 || !global_coordinator.entity_has_component<CardData>(card) ||
         !global_coordinator.entity_has_component<Zone>(card))
         return HandlerResult::DONE_RUN_SUBS;

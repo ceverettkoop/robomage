@@ -34,7 +34,7 @@ static void stamp_mode(const Ability &parent, Ability &mode) {
 // The choose-at-resolution loop below remains as a FALLBACK for a charm that reached the
 // stack without an announcement (a cast path not routed through run_cast_flow).
 HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     if (!ab.charm_chosen.empty()) {
         if (ctx.can_suspend()) {
             CharmRt &rt = ctx.rt<CharmRt>();
@@ -101,7 +101,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
                 // reads as "all modes identical" to the policy/search (they were
                 // indistinguishable apart from a lone ordinal). The distinct
                 // option_ordinal still separates the modes from one another.
-                LegalAction la(PASS_PRIORITY, ab.source, desc);
+                LegalAction la(PASS_PRIORITY, ab.source.lki_entity(), desc);
                 la.category = ActionCategory::CHOOSE_MODE;
                 la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
                 mode_actions.push_back(la);
@@ -117,7 +117,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
             // repoint, exactly the seat the old inline get_input read from),
             // under the handler's pending scope source.
             Zone::Ownership seat = priority_seat();
-            int choice = ctx.ask(mode_actions, seat, ab.source);
+            int choice = ctx.ask(mode_actions, seat, ab.source.lki_entity());
             if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
             rt.chosen_idx = static_cast<int>(mode_indices[static_cast<size_t>(choice)]);
             rt.taken[static_cast<size_t>(rt.chosen_idx)] = 1;

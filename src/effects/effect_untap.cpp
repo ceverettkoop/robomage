@@ -17,17 +17,17 @@ HandlerResult untap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // (Candelabra of Tawnos: "Untap X target lands") populates ab.targets — untap each. An
     // UNtargeted Untap (Grim Monolith: "{4}: Untap this artifact.", no ValidTgts$) untaps its
     // own source.
-    std::vector<Entity> targets = ab.targets;
-    if (targets.empty()) {
-        if (ab.target != 0) {
-            targets.push_back(ab.target);  // single chosen target
+    std::vector<Entity> targets = live_entities(ab.targets);
+    if (ab.targets.empty()) {
+        if (!ab.target.empty()) {
+            targets.push_back(ab.target.get());  // single chosen target (0 = its object is gone)
         } else if (ab.valid_tgts == "N_A") {
             // Untargeted Untap (Grim Monolith) untaps its own source. A TARGETED untap that
             // resolved with NO chosen target (e.g. Candelabra's "Untap X target lands" with
             // X=0) untaps NOTHING — it must NOT fall back to its source. Doing so would untap
             // Candelabra itself, undoing the {T} it paid as an activation cost and making the
             // ability infinitely re-activatable in one priority window (a non-terminating loop).
-            targets.push_back(ab.source);
+            targets.push_back(ab.source.get());
         }
     }
     for (Entity t : targets) {

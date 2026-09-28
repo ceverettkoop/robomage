@@ -48,11 +48,14 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     fr = ResolutionFrame{};
     fr.active = true;
     fr.stack_entity = top_entity;
+    // The resolution is one effect: the objects it moves stay findable by the rest of it
+    // (CR 400.7j) until frame_finish.
+    open_follow_window();
     fr.prev_priority = cur_game.player_a_has_priority;
     fr.saved_remembered = cur_game.remembered_entities;
     cur_game.remembered_entities.clear();
     if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
-        cur_game.ability_resolution_counts[ab.source]++;
+        cur_game.ability_resolution_counts[ab.source.lki_entity()]++;
         fr.counted_resolution = true;
     }
     FrameLevel root;
@@ -75,6 +78,7 @@ static void frame_finish() {
     // (CR 701.20a).
     cur_game.revealed_in_library.clear();
     fr = ResolutionFrame{};
+    close_follow_window();
     // The effects that could read a card this resolution moved off the battlefield as the
     // departed object have run; from here on it is a new object (CR 400.7).
     supersede_departed_cards();

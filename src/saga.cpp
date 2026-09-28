@@ -47,9 +47,10 @@ void saga_add_lore_counters(Entity saga, int n) {
 }
 
 void decrement_saga_in_flight(const Ability &ab) {
-    if (!ab.is_saga_chapter || ab.source == 0) return;
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return;
-    auto &saga_perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    const Entity saga = ab.source.get();
+    if (!ab.is_saga_chapter || saga == 0) return;
+    if (!global_coordinator.entity_has_component<Permanent>(saga)) return;
+    auto &saga_perm = global_coordinator.GetComponent<Permanent>(saga);
     if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
 }
 

@@ -65,8 +65,9 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         bool targets_player = (ab.valid_tgts != "N_A") || ab.defined == "Targeted" ||
                               ab.defined == "ParentTarget" || ab.defined == "Parent";
         Zone::Ownership owner;
-        if (targets_player && ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-            owner = seat_of_player(ab.target);
+        if (targets_player && ab.target.get() != 0 &&
+            global_coordinator.entity_has_component<Player>(ab.target.get()))
+            owner = seat_of_player(ab.target.get());
         else
             // The ability's controller, captured when it went on the stack and stable after the
             // source changes control or leaves play (CR 608.2g) — a reanimated Uro's draw goes to
@@ -78,12 +79,12 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // A dynamic NumCards$ (The One Ring: NumCards$ X, X = Count$CardCounters.BURDEN — "draw a card
         // for each burden counter on it") is evaluated at resolution against the source permanent.
         if (!ab.dynamic_amount_expr.empty())
-            count = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target, ab.source);
+            count = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target.get(), ab.source.lki_entity());
         rt.owner = owner;
         rt.total = count;
         rt.init = true;
     }
-    if (!draw_n_with_replacements(ctx, orderer, rt.owner, rt.done, rt.total, ab.source))
+    if (!draw_n_with_replacements(ctx, orderer, rt.owner, rt.done, rt.total, ab.source.lki_entity()))
         return HandlerResult::SUSPENDED;
     return HandlerResult::DONE_RUN_SUBS;
 }

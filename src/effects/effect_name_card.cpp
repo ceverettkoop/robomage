@@ -77,13 +77,14 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             build_name_card_choices(orderer->mEntities, chooser, ab.valid_cards_filter, names,
                                     scope);
         bool suspended = false;
-        std::string chosen = prompt_name_card(ctx, chooser, names, name_choices, ab.source,
+        std::string chosen = prompt_name_card(ctx, chooser, names, name_choices, ab.source.lki_entity(),
                                               suspended);
         if (suspended) return HandlerResult::SUSPENDED;
         // Record on the source permanent so its continuous static can read it; also set the
         // global for any chained sub-ability resolving in the same call (cleared afterward).
-        if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source))
-            global_coordinator.GetComponent<Permanent>(ab.source).chosen_name = chosen;
+        const Entity self = ab.source.get();
+        if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+            global_coordinator.GetComponent<Permanent>(self).chosen_name = chosen;
         cur_game.named_card = chosen;
         if (chosen.empty())
             game_log("%s names no card (no eligible card to name).\n", player_name(chooser).c_str());
@@ -110,7 +111,7 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     }
 
     bool suspended = false;
-    std::string chosen = prompt_name_card(ctx, ab.controller, names, name_choices, ab.source,
+    std::string chosen = prompt_name_card(ctx, ab.controller, names, name_choices, ab.source.lki_entity(),
                                           suspended);
     if (suspended) return HandlerResult::SUSPENDED;
     cur_game.named_card = chosen;
@@ -120,11 +121,13 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
 
 // See forward declaration at top of file.
 static Entity name_card_subject_player(const Ability &ab) {
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) return ab.target;
-    for (const Ability &sub : ab.subabilities)
-        if (sub.valid_tgts != "N_A" && sub.target != 0 &&
-            global_coordinator.entity_has_component<Player>(sub.target))
-            return sub.target;
+    const Entity t = ab.target.get();
+    if (t != 0 && global_coordinator.entity_has_component<Player>(t)) return t;
+    for (const Ability &sub : ab.subabilities) {
+        const Entity st = sub.target.get();
+        if (sub.valid_tgts != "N_A" && st != 0 && global_coordinator.entity_has_component<Player>(st))
+            return st;
+    }
     return 0;
 }
 

@@ -41,8 +41,8 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // hard-coded Player A (which was wrong for the non-A seat). A targeted discard (Thoughtseize,
     // Hymn, Cabal Therapy) overrides this with the actual target player below.
     Zone::Ownership tgt_owner = ab.controller;
-    if (global_coordinator.entity_has_component<Player>(ab.target)) {
-        tgt_owner = seat_of_player(ab.target);
+    if (global_coordinator.entity_has_component<Player>(ab.target.get())) {
+        tgt_owner = seat_of_player(ab.target.get());
     }
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
 
@@ -141,7 +141,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
-        int choice = ctx.ask(std::move(discard_actions), chooser, ab.source);
+        int choice = ctx.ask(std::move(discard_actions), chooser, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         Entity chosen = valid[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);

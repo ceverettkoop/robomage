@@ -85,7 +85,7 @@ void apply_animate_creature_bootstrap(Entity e) {
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
     // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
-    Entity tgt = ab.defined_self ? ab.source : ab.target;
+    Entity tgt = ab.defined_self ? ab.source.get() : ab.target.get();
     if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
@@ -190,7 +190,7 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // same-pass reader sees it immediately. Deduped so re-resolving is idempotent.
     if (!ab.animate_granted_abilities.empty() && permanent_dur) {
         for (Ability granted : ab.animate_granted_abilities) {
-            granted.source = tgt;
+            granted.source = ObjectRef::of(tgt);
             bool recorded = false;
             for (auto &existing : perm.animate_granted_abilities)
                 if (existing.identical_activated_ability(granted)) { recorded = true; break; }

@@ -15,6 +15,7 @@ Scenario keys beyond the harness's own:
   expect         regexes that must each match some narrative line
   expect_not     regexes that must match no narrative line
   expect_order   regexes that must match narrative lines in this order
+  expect_count   {regex: n}: each regex must match exactly n narrative lines
   expect_menu    regexes that must each match some offered action (any decision)
   expect_menu_not  regexes that must match no offered action
   expect_result  "A" | "B" | "draw": the GAME_RESULT the game must end with
@@ -58,7 +59,7 @@ _HARNESS_KEYS = {"name", "hand_a", "hand_b", "library_a", "library_b",
                  "battlefield_a", "battlefield_b", "graveyard_a", "graveyard_b",
                  "exile_a", "exile_b", "sideboard_a", "sideboard_b",
                  "life_a", "life_b", "play", "actions", "seed", "max_decisions"}
-_ASSERT_KEYS = {"expect", "expect_not", "expect_order", "expect_menu",
+_ASSERT_KEYS = {"expect", "expect_not", "expect_order", "expect_count", "expect_menu",
                 "expect_menu_not", "expect_result"}
 _RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel"}
 _KNOWN_KEYS = _HARNESS_KEYS | _ASSERT_KEYS | _RUN_KEYS
@@ -152,6 +153,10 @@ def check_output(scn, text):
                          f"(searched from line {pos})")
             break
         pos = k + 1
+    for rx, n in scn.get("expect_count", {}).items():
+        got = sum(1 for ln in narrative if re.search(rx, ln))
+        if got != n:
+            fails.append(f"narrative line /{rx}/ matched {got} time(s), expected {n}")
     for rx in scn.get("expect_menu", []):
         if not any(re.search(rx, a) for a in actions):
             fails.append(f"no offered action matches /{rx}/")
@@ -178,7 +183,7 @@ def load_scenario(path):
     if not scn.get("why"):
         raise ValueError("missing 'why'")
     if not (_ASSERT_KEYS & set(scn)):
-        raise ValueError("no assertion (expect / expect_not / expect_order / "
+        raise ValueError("no assertion (expect / expect_not / expect_order / expect_count / "
                          "expect_menu / expect_menu_not / expect_result)")
     for key in _ASSERT_KEYS - {"expect_result"}:
         for rx in scn.get(key, []):

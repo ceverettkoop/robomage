@@ -45,7 +45,7 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
             if (ab.ability_type != Ability::ACTIVATED && ab.ability_type != Ability::SPELL)
                 continue;
             Ability copy = ab;
-            copy.source = tok_entity;
+            copy.source = ObjectRef::of(tok_entity);
             perm.abilities.push_back(copy);
         }
         // Carry the token's continuous static abilities onto the permanent so the SBE static

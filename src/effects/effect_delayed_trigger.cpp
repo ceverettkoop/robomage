@@ -71,7 +71,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // leaves-the-battlefield sacrifice) watches the trigger's own SOURCE; otherwise the
         // watched object is the remembered target (Searing Blood's IsTriggerRemembered).
         bool watch_self = dp->valid_card.find("Self") != std::string::npos;
-        Entity watched = watch_self ? ab.source
+        Entity watched = watch_self ? ab.source.get()
                          : (cur_game.remembered_entities.empty() ? 0
                                                                  : cur_game.remembered_entities[0]);
         if (watched == 0) return HandlerResult::DONE_NO_SUBS;
@@ -95,7 +95,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             ab.destination == Zone::HAND || ab.destination == Zone::LIBRARY)
             dt.fire_dest_zones = {ab.destination};
         dt.expires_end_of_turn = dp->this_turn;
-        register_delayed_trigger(dt, ab.source);
+        register_delayed_trigger(dt, ab.source.lki_entity());
         game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
                  fire_ab.category.c_str());
         return HandlerResult::DONE_NO_SUBS;
@@ -132,7 +132,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             dt.restrict_player = get_player_entity(opponent_of(owner));
     }
     dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
-    register_delayed_trigger(dt, ab.source);
+    register_delayed_trigger(dt, ab.source.lki_entity());
     game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());
     // Return false so resolve() does NOT chain this DB$ DelayedTrigger's subabilities inline:

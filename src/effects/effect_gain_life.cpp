@@ -23,8 +23,8 @@ HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // last-known info since the creature was exiled earlier this resolution (CR 608.2g/h).
     // Otherwise (and if that can't be resolved) the ability's controller gains the life.
     Zone::Ownership gain_controller = Zone::UNKNOWN;
-    if (ab.defined_targeted_controller && ab.target != 0)
-        gain_controller = last_known_controller(ab.target);
+    if (ab.defined_targeted_controller && !ab.target.empty())
+        gain_controller = last_known_controller(ab.target.lki_entity());
     if (gain_controller == Zone::UNKNOWN)
         gain_controller = ab.controller;  // "you gain" = the ability's controller (CR 109.5)
     // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). effective_power gives the
@@ -33,7 +33,7 @@ HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // the creature in its main effect before this sub-ability runs (CR 608.2h).
     size_t gain_amount = ab.amount;
     if (!ab.dynamic_amount_expr.empty() && ab.dynamic_amount_expr.find("Targeted$CardPower") != std::string::npos) {
-        int p = effective_power(ab.target);
+        int p = effective_power(ab.target.lki_entity());
         gain_amount = static_cast<size_t>(p < 0 ? 0 : p);
     }
     Entity ctrl_entity = get_player_entity(gain_controller);

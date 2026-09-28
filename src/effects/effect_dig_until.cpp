@@ -81,8 +81,9 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(found);
             if (ab.dig_until_attacking) {
                 Entity attack_target = 0;
-                if (global_coordinator.entity_has_component<Creature>(ab.source))
-                    attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
+                const Entity src = ab.source.get();
+                if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
+                    attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
                 if (attack_target != 0) cur_game.pending_enters_attacking[found] = attack_target;
             }
             // The shared uncast entry (an Aura picks what it enchants, CR 303.4f/g). The card

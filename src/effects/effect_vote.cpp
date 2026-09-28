@@ -50,7 +50,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     MatchCtx ctx;
     ctx.controller = ab.controller;
-    ctx.source = ab.source;
+    ctx.source = ab.source.lki_entity();
 
     std::vector<Entity> candidates;
     for (auto e : orderer->mEntities) {
@@ -82,7 +82,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     if (!fctx.resuming())
         game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
-    int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+    int choice = fctx.ask(std::move(picks), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];

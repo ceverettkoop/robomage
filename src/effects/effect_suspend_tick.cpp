@@ -29,7 +29,7 @@ namespace effects {
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
-    Entity card = ab.source;
+    Entity card = ab.source.get();
     auto it = cur_game.suspend_time_counters.find(card);
     if (it == cur_game.suspend_time_counters.end()) return HandlerResult::DONE_RUN_SUBS;
     // The card must still be a suspended card (in exile). If it left exile some other way, drop
@@ -46,7 +46,7 @@ HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     Ability cast_trigger;
     cast_trigger.ability_type = Ability::TRIGGERED;
     cast_trigger.category = "SuspendCast";
-    cast_trigger.source = card;
+    cast_trigger.source = ObjectRef::of(card);
     cast_trigger.controller = global_coordinator.GetComponent<Zone>(card).owner;
     cur_game.queue_trigger(cast_trigger, entity_name(card) +
                                              " triggers: the last time counter was removed (suspend).");
@@ -61,8 +61,8 @@ HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
 HandlerResult suspend_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     ResolutionCastRt local_rt;
     ResolutionCastRt &rt = ctx.can_suspend() ? ctx.rt<ResolutionCastRt>() : local_rt;
-    Entity card = ab.source;
-    if (rt.stage == ResolutionCastRt::OFFER && !is_exiled(card)) return HandlerResult::DONE_RUN_SUBS;
+    Entity card = ab.source.get();
+    if (rt.stage == ResolutionCastRt::OFFER && (card == 0 || !is_exiled(card))) return HandlerResult::DONE_RUN_SUBS;
     Game::ImpulseCastPermission grant;
     grant.resource = Game::ImpulseCastPermission::FREE;
     if (cast_during_resolution(card, ab.controller, grant, rt, ctx, orderer) ==

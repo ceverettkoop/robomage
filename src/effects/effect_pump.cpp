@@ -111,8 +111,8 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     if (ab.defined_triggered_attacker_lki) {
         const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
         int pump_att = 0, pump_def = 0;
-        resolve_pump_amounts(pp, ab.controller, orderer, ab.target, pump_att, pump_def);
-        apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+        resolve_pump_amounts(pp, ab.controller, orderer, ab.target.get(), pump_att, pump_def);
+        apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -148,15 +148,15 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
     // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
-    if (ab.remember_pumped && ab.target != 0)
-        cur_game.remembered_entities.push_back(ab.target);
+    if (ab.remember_pumped && ab.target.get() != 0)
+        cur_game.remembered_entities.push_back(ab.target.get());
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.
     const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
     int pump_att = 0, pump_def = 0;
-    resolve_pump_amounts(pp, ctrl, orderer, ab.target, pump_att, pump_def);
-    apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+    resolve_pump_amounts(pp, ctrl, orderer, ab.target.get(), pump_att, pump_def);
+    apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

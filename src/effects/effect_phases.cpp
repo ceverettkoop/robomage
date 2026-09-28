@@ -86,7 +86,7 @@ void phase_in(Entity e, const std::set<Entity> &entities) {
 
 HandlerResult phases(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    if (ab.target != 0) phase_out(ab.target, orderer->mEntities);
+    if (Entity t = ab.target.get()) phase_out(t, orderer->mEntities);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

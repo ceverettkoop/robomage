@@ -592,6 +592,12 @@ inline bool has_legendary_supertype(const std::set<Type> &types) {
     return false;
 }
 
+// CR 400.2: the graveyard, battlefield, stack and exile are public zones; the library and hand
+// (and the sideboard, outside the game) are hidden.
+inline bool is_public_zone(Zone::ZoneValue z) {
+    return z == Zone::BATTLEFIELD || z == Zone::GRAVEYARD || z == Zone::STACK || z == Zone::EXILE;
+}
+
 // True if the entity currently sits on the battlefield.
 inline bool on_battlefield(Entity e) {
     return global_coordinator.entity_has_component<Zone>(e) &&
@@ -604,12 +610,6 @@ inline bool on_battlefield(Entity e) {
 // without one (a player). Defined in game_queries.cpp (needs cur_game).
 uint64_t stamp_object_gen(Entity e);
 
-// True if `e` is still the object whose stamp_object_gen was `gen` — it has not changed zones
-// since (CR 400.7). A 0 stamp (never taken) or an entity without a Zone passes.
-inline bool is_same_object(Entity e, uint64_t gen) {
-    if (gen == 0 || !global_coordinator.entity_has_component<Zone>(e)) return true;
-    return global_coordinator.GetComponent<Zone>(e).obj_gen == gen;
-}
 
 // True if `e` is a *live* battlefield permanent: it carries a Permanent component,
 // its Zone is BATTLEFIELD, and it is not phased out (702.26b — a phased-out permanent
@@ -632,6 +632,10 @@ inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKN
     if (ctrl != Zone::UNKNOWN && perm.controller != ctrl) return false;
     return true;
 }
+
+// True if the ability's source is still the object it was when the ability was created (CR
+// 400.7) and is a battlefield permanent (phased-in). Defined in game_queries.cpp.
+bool ability_source_on_battlefield(const Ability &ab);
 
 // True if a permanent whose Permanent::entered_on_turn is `entered_on_turn` entered the
 // battlefield during the current turn. The single "entered this turn" predicate: the

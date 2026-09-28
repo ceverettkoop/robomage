@@ -29,10 +29,10 @@ namespace effects {
 // scrying, any SubAbility$ chains with the same target (Kozilek's Command: "scries X, then draws
 // a card" — DBDraw with Defined$ ParentTarget).
 HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership owner;
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-        owner = seat_of_player(ab.target);
+    if (ab.target.get() != 0 && global_coordinator.entity_has_component<Player>(ab.target.get()))
+        owner = seat_of_player(ab.target.get());
     else
         owner = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
@@ -43,7 +43,7 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     if (!rt.init) {
         size_t num = ab.amount;
         if (!ab.dynamic_amount_expr.empty())
-            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
+            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target.get());
         if (num == 0) return HandlerResult::DONE_RUN_SUBS;
 
         std::vector<Entity> looked = orderer->get_library_top(owner, num);
@@ -59,7 +59,7 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         rt.remaining = looked;
         rt.init = true;
     }
-    return look_and_split(rt, owner, LookSplitRest::LIBRARY_BOTTOM, orderer, ctx, ab.source);
+    return look_and_split(rt, owner, LookSplitRest::LIBRARY_BOTTOM, orderer, ctx, ab.source.lki_entity());
 }
 
 }  // namespace effects

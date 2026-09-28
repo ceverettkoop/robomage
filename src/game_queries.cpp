@@ -63,6 +63,11 @@ uint64_t stamp_object_gen(Entity e) {
     return z.obj_gen;
 }
 
+bool ability_source_on_battlefield(const Ability &ab) {
+    const Entity self = ab.source.get();
+    return self != 0 && is_battlefield_permanent(self);
+}
+
 std::string last_known_name(Entity e) {
     const LastKnownInfo *lki = lki_for(e);
     if (!lki || lki->name.empty()) return "";
@@ -140,12 +145,13 @@ std::string entity_name(Entity e) {
         // delayed-trigger holder): describe it via its source card when the source still
         // carries a name, else via the ability's effect category.
         const auto &ab = global_coordinator.GetComponent<Ability>(e);
-        if (ab.source != 0 && ab.source != e &&
-            (global_coordinator.entity_has_component<Permanent>(ab.source) ||
-             global_coordinator.entity_has_component<CardData>(ab.source) ||
-             global_coordinator.entity_has_component<Token>(ab.source) ||
-             !last_known_name(ab.source).empty()))
-            return entity_name(ab.source) + "'s ability";
+        const Entity src = ab.source.lki_entity();
+        if (src != 0 && src != e &&
+            (global_coordinator.entity_has_component<Permanent>(src) ||
+             global_coordinator.entity_has_component<CardData>(src) ||
+             global_coordinator.entity_has_component<Token>(src) ||
+             !last_known_name(src).empty()))
+            return entity_name(src) + "'s ability";
         if (!ab.category.empty()) return ab.category + " ability";
         return "an ability";
     }
@@ -995,8 +1001,8 @@ static Step delayed_fire_step(uint32_t fire_on) {
 static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt) {
     if (!dt.remembered_objects.empty()) return dt.remembered_objects;
     std::vector<Entity> targets;
-    for (Entity t : dt.ability.targets)
-        if (t != 0 && !global_coordinator.entity_has_component<Player>(t)) targets.push_back(t);
+    for (Entity t : live_entities(dt.ability.targets))
+        if (!global_coordinator.entity_has_component<Player>(t)) targets.push_back(t);
     if (!targets.empty()) return targets;
     if (!dt.ability.restore_remembered_exiled_with.empty())
         return dt.ability.restore_remembered_exiled_with;
@@ -1091,7 +1097,8 @@ PlayerEffects player_effects(Zone::Ownership player, const std::set<Entity> &ent
 Zone::Ownership resolve_defined_player(const Ability &ab) {
     if (ab.defined_you)                 return ab.controller;
     if (ab.defined_each_opponent)       return opponent_of(ab.controller);
-    if (ab.defined_targeted_controller) return ab.target != 0 ? last_known_controller(ab.target) : Zone::UNKNOWN;
+    if (ab.defined_targeted_controller)
+        return !ab.target.empty() ? last_known_controller(ab.target.lki_entity()) : Zone::UNKNOWN;
     if (ab.defined_triggered_activator) return ab.triggered_activator;
     if (ab.defined_triggered_player)    return ab.triggered_player;
     // TriggeredCardController shares triggered_player storage; bound at fire time (see

@@ -337,8 +337,8 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
             (ab.origin == Zone::BATTLEFIELD ||
              std::find(ab.origins.begin(), ab.origins.end(), Zone::BATTLEFIELD) != ab.origins.end());
         if (ab.category != "Destroy" && !exiles_permanent) continue;
-        if (ab.target != 0) tgts.push_back(ab.target);
-        tgts.insert(tgts.end(), ab.targets.begin(), ab.targets.end());
+        if (Entity t = ab.target.get()) tgts.push_back(t);
+        for (Entity t : live_entities(ab.targets)) tgts.push_back(t);
     }
     return tgts;
 }
@@ -527,12 +527,12 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // PRINTED characteristics against condition_present (card_matches_filter is battlefield-agnostic;
     // the exiled card sits in exile). Absent card ⇒ 0 matches (condition unmet).
     if (ab.condition_on_exiled_with) {
-        Entity ew = exiled_with_card(ab.source);
+        Entity ew = exiled_with_card(ab.source.lki_entity());
         int matches = 0;
         if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew)) {
             MatchCtx ctx;
             ctx.controller = caster;
-            ctx.source = ab.source;
+            ctx.source = ab.source.lki_entity();
             if (card_matches_filter(ew, ab.condition_present, ctx)) matches = 1;
         }
         return compare_svar(matches, compare);
@@ -563,7 +563,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         if (!ab.condition_present.empty() && ab.condition_present != "Card") {
             MatchCtx ctx;
             ctx.controller = caster;
-            ctx.source = ab.source;
+            ctx.source = ab.source.lki_entity();
             size_t matching = 0;
             for (auto e : cur_game.remembered_entities) {
                 if (permanent_matches_filter(e, ab.condition_present, ctx)) {
@@ -624,16 +624,17 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // last-known-information snapshot captured as it left play (CR 603.10 / 608.2h) so the
     // exile-cast clause is not silently lost.
     if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
-        if (global_coordinator.entity_has_component<Permanent>(ab.source))
-            return global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
-        const LastKnownInfo *lki = departed_lki_for(ab.source);
+        const Entity self = ab.source.get();
+        if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+            return global_coordinator.GetComponent<Permanent>(self).cast_from_hand_by_controller;
+        const LastKnownInfo *lki = departed_lki_for(ab.source.lki_entity());
         return lki && lki->cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
     // "Whenever another artifact you control enters" only functions while Kappa is in play).
     if (ab.condition_present == "Card.Self") {
-        return is_battlefield_permanent(ab.source);
+        return ability_source_on_battlefield(ab);
     }
 
     // IsPresent$ Card.StrictlySelf (Animate Dead's ETB: "When CARDNAME enters, if it's on the
@@ -644,7 +645,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // parse.cpp). Must not fall through to the generic presence scan below, which would read
     // the type token "Card" as any-permanent and pass vacuously whenever anything is in play.
     if (ab.condition_present == "Card.StrictlySelf") {
-        return is_battlefield_permanent(ab.source);
+        return ability_source_on_battlefield(ab);
     }
 
     // Card.Self+escaped: the source permanent entered because its spell was cast from the
@@ -653,8 +654,9 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // escaped"), so condition_negate inverts this in the wrapper below. General — any escape
     // card with an "if it escaped" clause reuses it.
     if (ab.condition_present == "Card.Self+escaped") {
-        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
-               global_coordinator.GetComponent<Permanent>(ab.source).cast_with_escape;
+        const Entity self = ab.source.get();
+        return self != 0 && global_coordinator.entity_has_component<Permanent>(self) &&
+               global_coordinator.GetComponent<Permanent>(self).cast_with_escape;
     }
 
     // IsPresent$ Card.Self+counters_<OP><N>_<TYPE>: the source must be on the battlefield AND its
@@ -664,7 +666,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // CR 122.1/603.4/603.8 — the counter count is re-checked whenever the condition is evaluated
     // (trigger placement, resolution, and each state-based check for a Mode$ Always state trigger).
     if (ab.condition_present.rfind("Card.Self+counters_", 0) == 0) {
-        if (!is_battlefield_permanent(ab.source)) return false;
+        if (!ability_source_on_battlefield(ab)) return false;
         std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_").size());
         // rest is "<OP><N>_<TYPE>", e.g. "EQ0_ICE" / "GE1_M1M1".
         std::string op = rest.substr(0, 2);          // two-letter comparator
@@ -672,7 +674,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         size_t us = after.find('_');
         std::string num = (us != std::string::npos) ? after.substr(0, us) : after;
         std::string ctype = (us != std::string::npos) ? after.substr(us + 1) : "M1M1";
-        return compare_svar(get_counters(ab.source, ctype), op + num);
+        return compare_svar(get_counters(ab.source.get(), ctype), op + num);
     }
 
     // Count$<...> dynamic intervening-if (Ocelot Pride's life gained this turn, Arclight
@@ -696,7 +698,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the
     // whole filter by their current characteristics (a Clue token is not a creature; an animated
     // manland is), relative to this ability's controller and source.
-    int count = count_battlefield_matching(ab.condition_present, caster, ab.source);
+    int count = count_battlefield_matching(ab.condition_present, caster, ab.source.lki_entity());
     return compare_svar(count, compare);
 }
 

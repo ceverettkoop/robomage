@@ -37,8 +37,8 @@ HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     // Resolve which player's hand to look at: the targeted Player entity (ValidTgts$ Player),
     // else the ability's controller.
     Zone::Ownership hand_owner = ab.controller;
-    if (global_coordinator.entity_has_component<Player>(ab.target)) {
-        hand_owner = seat_of_player(ab.target);
+    if (global_coordinator.entity_has_component<Player>(ab.target.get())) {
+        hand_owner = seat_of_player(ab.target.get());
     }
 
     std::vector<Entity> hand = orderer->get_hand(hand_owner);

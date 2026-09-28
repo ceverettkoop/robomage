@@ -24,8 +24,9 @@ namespace effects {
 // resets naturally because a fresh Permanent on re-entry starts with an empty stored_svars map).
 HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> /*orderer*/, FrameCtx &ctx) {
     if (ab.stored_svar_set_name.empty()) return HandlerResult::DONE_RUN_SUBS;
-    if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    const Entity self = ab.source.get();
+    if (self != 0 && global_coordinator.entity_has_component<Permanent>(self)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(self);
         perm.stored_svars[ab.stored_svar_set_name] = ab.stored_svar_set_value;
     }
     return HandlerResult::DONE_RUN_SUBS;

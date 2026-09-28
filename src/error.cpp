@@ -142,8 +142,10 @@ void dump_entity(Entity e) {
         fprintf(stderr, "  Ability:\n");
         fprintf(stderr, "    type=%s  category=%s\n",
                 ability_type_str(a.ability_type), a.category.c_str());
-        fprintf(stderr, "    source=%u  target=%u  controller=%s\n",
-                a.source, a.target, owner_str(a.controller));
+        fprintf(stderr, "    source=%u(gen %llu)  target=%u(gen %llu)  controller=%s\n",
+                a.source.lki_entity(), static_cast<unsigned long long>(a.source.gen),
+                a.target.lki_entity(), static_cast<unsigned long long>(a.target.gen),
+                owner_str(a.controller));
         fprintf(stderr, "    amount=%zu  color=%s\n", a.amount, mana_symbol(a.color).c_str());
         fprintf(stderr, "    valid_tgts=%s  tap_cost=%d  sac_self=%d  life_cost=%d\n",
                 a.valid_tgts.c_str(), a.tap_cost, a.sac_self, a.life_cost);

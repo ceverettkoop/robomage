@@ -34,8 +34,9 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 
     // The defender the Mobilize creature is attacking; the tokens attack the same target.
     Entity attack_target = 0;
-    if (global_coordinator.entity_has_component<Creature>(ab.source))
-        attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
+    const Entity src = ab.source.get();
+    if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
+        attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
 
     std::vector<Entity> created;
     for (int i = 0; i < n; i++) {
@@ -71,14 +72,14 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     sac_ab.ability_type = Ability::TRIGGERED;
     sac_ab.category = "SacrificeTokens";
     sac_ab.source = ab.source;
-    sac_ab.targets = created;
+    sac_ab.targets = refs_of(created);
 
     DelayedTrigger dt;
     dt.ability = sac_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(ctrl);
     dt.fire_on_turn = cur_game.turn;
-    register_delayed_trigger(dt, ab.source);
+    register_delayed_trigger(dt, ab.source.lki_entity());
     return HandlerResult::DONE_RUN_SUBS;
 }
 
@@ -86,7 +87,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // still on the battlefield (some may already have died/left). Tokens cease to exist when they
 // hit the graveyard, matching "sacrifice them."
 HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    for (Entity tok : ab.targets) {
+    for (Entity tok : live_entities(ab.targets)) {
         if (!is_battlefield_permanent(tok)) continue;
         std::string name = global_coordinator.GetComponent<Permanent>(tok).name;
         orderer->add_to_zone(false, tok, Zone::GRAVEYARD);

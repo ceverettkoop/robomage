@@ -35,7 +35,7 @@ namespace effects {
 // into the library does NOT fire it — the trigger expires unfired (the object is gone).
 HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    Entity tgt = ab.target;
+    Entity tgt = ab.target.get();
     // Target must still be a land on the battlefield at resolution (CR 608.2b re-check).
     if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
@@ -78,7 +78,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "ChangeZone";
     fire_ab.defined_self = true;
-    fire_ab.source = tgt;                 // the card to return (its Zone.owner names its owner)
+    fire_ab.source = ObjectRef::of(tgt);  // the card to return (its Zone.owner names its owner)
     fire_ab.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
     fire_ab.destination = Zone::BATTLEFIELD;
     fire_ab.enters_tapped = true;
@@ -91,7 +91,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     dt.watch_entity = tgt;
     dt.fire_on_leave_battlefield = true;
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
-    register_delayed_trigger(dt, ab.source);
+    register_delayed_trigger(dt, ab.source.lki_entity());
 
     return HandlerResult::DONE_RUN_SUBS;
 }

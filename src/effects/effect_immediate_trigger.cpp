@@ -42,7 +42,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
         bool fire = ab.condition_present.empty();
         if (!fire) {
             for (auto e : orderer->mEntities) {
-                if (permanent_matches_filter(e, ab.condition_present, MatchCtx{ab.controller, ab.source})) {
+                if (permanent_matches_filter(e, ab.condition_present, MatchCtx{ab.controller, ab.source.lki_entity()})) {
                     fire = true;
                     break;
                 }
@@ -63,7 +63,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
                 // pending-decision source.
                 std::string prompt = "Pay " + std::to_string(ab.energy_cost) + " energy";
                 std::vector<LegalAction> yn = optional_yesno_menu(prompt);
-                int yc = ctx.ask(std::move(yn), ab.controller, ab.source);
+                int yc = ctx.ask(std::move(yn), ab.controller, ab.source.lki_entity());
                 if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
                 if (yc == 1 && pay_energy(pl, ab.energy_cost)) {
                     game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.energy_cost);
@@ -114,5 +114,5 @@ static void queue_reflexive_trigger(const Ability &parent, const Ability &execut
     reflexive.targeted_player = parent.player_target_for_subs();
     // X of the resolving parent, as a delayed trigger it creates would use (CR 107.3n).
     reflexive.x_paid = static_cast<int>(cur_game.x_paid);
-    cur_game.queue_trigger(reflexive, entity_name(parent.source) + " reflexive trigger");
+    cur_game.queue_trigger(reflexive, entity_name(parent.source.lki_entity()) + " reflexive trigger");
 }

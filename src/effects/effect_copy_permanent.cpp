@@ -53,13 +53,14 @@ static Token copyable_token_of(Entity src) {
 // control. CopyPermanent's filter is carried in valid_cards_filter (parsed from Defined$ Valid).
 HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership ctrl = ab.controller;
-    if (global_coordinator.entity_has_component<Permanent>(ab.source))
-        ctrl = global_coordinator.GetComponent<Permanent>(ab.source).controller;
+    const Entity self = ab.source.get();
+    if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+        ctrl = global_coordinator.GetComponent<Permanent>(self).controller;
 
     // Offspring (CR 702.175a): "create a token that's a copy of it, except it's 1/1."
     // Copy the source permanent itself, then override the copy's P/T to 1/1.
     if (ab.is_offspring_token) {
-        Token tok = copyable_token_of(ab.source);
+        Token tok = copyable_token_of(ab.source.lki_entity());
         if (tok.name.empty()) return HandlerResult::DONE_RUN_SUBS;
         tok.power = 1;
         tok.toughness = 1;
@@ -75,7 +76,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
     for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ctrl, ab.source}))
+        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ctrl, ab.source.lki_entity()}))
             sources.push_back(e);
 
     for (auto src : sources) {
@@ -105,8 +106,8 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
-    Entity src = ab.source;   // the permanent that becomes a copy
-    Entity tgt = ab.target;   // the land being copied
+    Entity src = ab.source.get();  // the permanent that becomes a copy
+    Entity tgt = ab.target.get();  // the land being copied
     if (!is_battlefield_permanent(src) || !global_coordinator.entity_has_component<CardData>(src)) {
         game_log("Clone: source is no longer on the battlefield\n");
         return HandlerResult::DONE_RUN_SUBS;

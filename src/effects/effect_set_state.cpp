@@ -16,9 +16,9 @@ namespace effects {
 // card the source Saga chapter I exiled face down); Defined$ Self falls back to the source. A
 // future SetState on a target would read ab.target here.
 static Entity set_state_subject(const Ability &ab) {
-    if (ab.defined_exiled_with) return exiled_with_card(ab.source);
-    if (ab.defined_self) return ab.source;
-    return ab.target;
+    if (ab.defined_exiled_with) return exiled_with_card(ab.source.lki_entity());
+    if (ab.defined_self) return ab.source.get();
+    return ab.target.get();
 }
 
 // DB$ SetState | Mode$ <mode> — change an object's face-up/face-down state (CR 708 / 711.8).

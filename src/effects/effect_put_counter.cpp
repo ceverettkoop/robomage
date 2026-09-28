@@ -23,14 +23,15 @@ namespace effects {
 // — the activation gate normally prevents this), the whole ability does nothing. Returns true when
 // the counter placement should proceed, false when it must be skipped (already monstrous).
 static bool apply_monstrosity(Ability &ab) {
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return false;
-    auto &perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    const Entity self = ab.source.get();
+    if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(self);
     if (perm.is_monstrous) return false;  // 701.37a: monstrosity does nothing if already monstrous
     perm.is_monstrous = true;
     game_log("%s becomes monstrous.\n", perm.name.c_str());
     Entity ctrl_entity = get_player_entity(perm.controller);
     Event ev(Events::BECAME_MONSTROUS);
-    ev.SetParam(Params::ENTITY, ab.source);
+    ev.SetParam(Params::ENTITY, self);
     ev.SetParam(Params::PLAYER, ctrl_entity);
     global_coordinator.SendEvent(ev);
     return true;
@@ -38,7 +39,7 @@ static bool apply_monstrosity(Ability &ab) {
 
 int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_ptr<Orderer> orderer) {
     if (cp.count_expr.empty()) return cp.count;
-    return static_cast<int>(evaluate_dynamic_amount(cp.count_expr, ab.controller, orderer, ab.target));
+    return static_cast<int>(evaluate_dynamic_amount(cp.count_expr, ab.controller, orderer, ab.target.get()));
 }
 
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -68,8 +69,12 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // can go on any permanent, not just creatures (CR 122.1), so gate on Permanent: a
     // creature gets +1/+1-style P/T resync via add_counters, a non-creature (Aether Vial,
     // an artifact) just accrues the typed counter in its counter map.
+    // A target whose object is gone (CR 400.7) gets nothing, and the counters don't fall back
+    // onto the source.
+    if (!ab.target.empty() && ab.target.get() == 0) return HandlerResult::DONE_RUN_SUBS;
+    const Entity t = ab.target.get();
     Entity counter_tgt =
-        (ab.target != 0 && global_coordinator.entity_has_component<Permanent>(ab.target)) ? ab.target : ab.source;
+        (t != 0 && global_coordinator.entity_has_component<Permanent>(t)) ? t : ab.source.get();
     if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return HandlerResult::DONE_RUN_SUBS;
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     if (cp && !cp->type.empty()) {

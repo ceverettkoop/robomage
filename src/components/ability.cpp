@@ -679,7 +679,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     // Hexproof from <color> (Veil of Summer) — applies to players and permanents alike, so it is
     // checked up front before the type-specific branches below.
-    if (target_has_color_hexproof(cand, source, caster)) return false;
+    if (target_has_color_hexproof(cand, source.lki_entity(), caster)) return false;
 
     // Protection from everything for a player (The One Ring) — the protected player can't be
     // targeted by an opponent's spell/ability (CR 702.16e). Checked up front like hexproof.
@@ -691,7 +691,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // "Other" only as a complete dot/plus-delimited qualifier token (Creature.Other,
     // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
     // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
-    if (cand == source) {
+    if (cand == source.get()) {
         for (size_t p = valid_tgts.find("Other"); p != std::string::npos;
              p = valid_tgts.find("Other", p + 1)) {
             bool left_ok = (p > 0) && (valid_tgts[p - 1] == '.' || valid_tgts[p - 1] == '+');
@@ -730,7 +730,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // A static numeric cmc qualifier (Spell Snare: ValidTgts$ Card.cmcEQ2) is deferred by
         // the filter evaluator to ctx.cmc_bound, so seed it here or the comparator is a no-op
         // and the counterspell would target any spell.
-        MatchCtx spell_ctx{caster, source};
+        MatchCtx spell_ctx{caster, source.lki_entity()};
         extract_static_cmc_bound(vt, spell_ctx);
         if (vt != "N_A" && !vt.empty() &&
             global_coordinator.entity_has_component<Spell>(cand) &&
@@ -765,7 +765,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // or planeswalker" (CR 115.4 / 306.7; players are handled in their own branch below).
     MatchCtx ctx;
     ctx.controller = caster;
-    ctx.source = source;
+    ctx.source = source.lki_entity();
     if (targeted_player != 0) ctx.targeted_player = seat_of_player(targeted_player);
     // The mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed above into
     // cmc_le; feed it to the evaluator so the bound is actually enforced.
@@ -804,14 +804,14 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // be targeted by it. The filter evaluator doesn't model protection, so check it separately.
     if (global_coordinator.entity_has_component<Creature>(cand)) {
         const Creature &cand_cr = global_coordinator.GetComponent<Creature>(cand);
-        if (has_protection_from(cand_cr, source)) return false;
+        if (has_protection_from(cand_cr, source.lki_entity())) return false;
         // Protection from colored spells (Emrakul: K:Protection:Spell.nonColorless, CR 702.16b/e):
         // a creature with this protection can't be the target of a SPELL that is one or more
         // colors. The "is a spell" half is known here from this Ability's type (a SPELL ability,
         // not an activated/triggered ability), and the "is colored" half from the source's
         // effective colors — so a colorless spell, or any ability, may still target it.
         if (ability_type == Ability::SPELL && has_protection_from_colored_spells(cand_cr) &&
-            !is_colorless(source))
+            !is_colorless(source.lki_entity()))
             return false;
     }
 
@@ -831,30 +831,23 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     return true;
 }
 
-bool Ability::target_gen_current(Entity cand, uint64_t recorded_gen) const {
-    return is_same_object(cand, recorded_gen);
-}
-
 bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
-    if (target == 0 && targets.empty() && target_min == 0) return true;
+    if (target.empty() && targets.empty() && target_min == 0) return true;
 
     // Multi-target abilities (target_max > 1) populate `targets`. CR 608.2b: the spell or
     // ability is countered on resolution only if ALL of its targets are illegal; with at
     // least one still-legal target it resolves, affecting only the legal ones (resolve()
     // prunes the illegal targets before dispatching to the effect handler). A target that
     // changed zones since selection is a new object (CR 400.7) and is illegal even if a same-id
-    // incarnation now looks legal — gated by the parallel obj_gen snapshot in target_gens.
+    // incarnation now looks legal: its ObjectRef no longer resolves.
     if (!targets.empty()) {
-        for (size_t i = 0; i < targets.size(); i++) {
-            uint64_t g = i < target_gens.size() ? target_gens[i] : 0;
-            if (is_legal_target(targets[i], controller) && target_gen_current(targets[i], g))
-                return true;
-        }
+        for (const ObjectRef &t : targets)
+            if (is_legal_target(t.get(), controller)) return true;
         return false;
     }
 
-    return is_legal_target(target, controller) && target_gen_current(target, target_gen);
+    return is_legal_target(target.get(), controller);
 }
 
 // Evaluates a condition SVar expression against cur_game state.
@@ -1265,9 +1258,8 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
 }
 
 Entity Ability::player_target_for_subs() const {
-    return (target != 0 && global_coordinator.entity_has_component<Player>(target))
-               ? target
-               : targeted_player;
+    const Entity t = target.get();
+    return (t != 0 && global_coordinator.entity_has_component<Player>(t)) ? t : targeted_player;
 }
 
 // See forward declaration at top of file. The bind closure holds the exact
@@ -1283,7 +1275,6 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
             Ability *pp = &parent;
             auto bind = [pp](Ability &sub) {
                 sub.source = pp->source;
-                sub.source_gen = pp->source_gen;
                 sub.source_transforms = pp->source_transforms;
                 bind_sub_target(*pp, sub);  // CR 608.2c — Defined$-driven (see helper)
                 sub.controller = pp->controller;
@@ -1294,7 +1285,6 @@ static ResolveStatus chain_subabilities(Ability &parent, std::shared_ptr<Orderer
         } else {
             Ability sub_ab = sub_template;
             sub_ab.source = parent.source;
-            sub_ab.source_gen = parent.source_gen;
             sub_ab.source_transforms = parent.source_transforms;
             bind_sub_target(parent, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = parent.controller;
@@ -1319,7 +1309,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         if (!pp || (pp->att == 0 && pp->def == 0 && pp->att_expr.empty() && pp->def_expr.empty()))
             return "";  // keyword-grant-only pump — no P/T change to report
         int att = 0, def = 0;
-        effects::resolve_pump_amounts(pp, ab.controller, orderer, ab.target, att, def);
+        effects::resolve_pump_amounts(pp, ab.controller, orderer, ab.target.get(), att, def);
         return ", " + signed_str(att) + "/" + signed_str(def);
     }
     // Counter effects keep their count in CounterParams (CounterNum$/its SVar), not
@@ -1331,7 +1321,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         int n = cp->count;
         if (!cp->count_expr.empty())
             n = static_cast<int>(
-                evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+                evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target.get()));
         return ", amount: " + std::to_string(n);
     }
     // Discard only counts by Ability::amount in Random mode (Hymn to Tourach); the
@@ -1352,7 +1342,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         if (amt == 0 && (ab.category == "Draw" || ab.category == "Mill")) amt = 1;
         if (!ab.dynamic_amount_expr.empty())
             amt = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer,
-                                          ab.target, ab.source);
+                                          ab.target.get(), ab.source.lki_entity());
         return ", amount: " + std::to_string(amt);
     }
     return "";
@@ -1405,8 +1395,10 @@ struct BlockingRememberedScope {
 // Transitional blocking shim: every non-stack caller (sub-ability recursion, the
 // gift loop, charm's chosen modes, repeat_each, immediate/delayed triggers, the
 // mana-system riders) resolves inline exactly as before. A blocking ctx can
-// never suspend, so the discarded status is always DONE.
+// never suspend, so the discarded status is always DONE. A top-level blocking resolve is one
+// effect, so it gets its own CR 400.7j follow window (a nested one shares the open window).
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    FollowWindowScope follow_window;
     (void)resolve(orderer, FrameCtx::blocking());
 }
 
@@ -1444,8 +1436,9 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // OptionalDecider$ You ("you may ..."): the controller may decline the whole
         // triggered ability as it resolves (Ajani's exile-and-return-transformed).
         if (trigger_optional) {
-            int yc = ctx.ask(optional_yesno_menu("use " + entity_name(source) + "'s triggered ability"),
-                             controller, source);
+            int yc = ctx.ask(
+                optional_yesno_menu("use " + entity_name(source.lki_entity()) + "'s triggered ability"),
+                controller, source.lki_entity());
             if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
             if (yc == 0) {
                 game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
@@ -1463,10 +1456,11 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
         // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
         if (ability_type == TRIGGERED && sac_self) {
-            std::string sname = global_coordinator.entity_has_component<Permanent>(source)
-                                    ? global_coordinator.GetComponent<Permanent>(source).name
+            const Entity src = source.get();
+            std::string sname = global_coordinator.entity_has_component<Permanent>(src)
+                                    ? global_coordinator.GetComponent<Permanent>(src).name
                                     : std::string("it");
-            bool on_bf = is_battlefield_permanent(source);
+            bool on_bf = src != 0 && is_battlefield_permanent(src);
             if (mandatory) {
                 // Cost$ Mandatory Sac<1/CARDNAME> (Dark Depths: "sacrifice it. If you do, create
                 // Marit Lage."). The sacrifice is not optional — no prompt. Honor the "If you do"
@@ -1477,20 +1471,26 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                     game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
                     return ResolveStatus::DONE;
                 }
-                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
             } else {
+                // The source is no longer the permanent that triggered (CR 400.7): it can't be
+                // sacrificed, so the "if you do" effect doesn't happen.
+                if (!on_bf) {
+                    game_log("%s is already gone; nothing is sacrificed.\n", sname.c_str());
+                    return ResolveStatus::DONE;
+                }
                 // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost (The Fantasticar):
                 // the Sac<.../CARDNAME> cost makes the whole effect optional — prompt, sacrifice on
                 // accept, do nothing (skip the effect and its subabilities) on decline.
                 int yc = ctx.ask(yesno_menu("Don't sacrifice " + sname, "Sacrifice " + sname),
-                                 controller, source);
+                                 controller, src);
                 if (yc < 0 && decision_suspended()) return ResolveStatus::SUSPENDED;
                 if (yc == 0) {
                     game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
                     return ResolveStatus::DONE;
                 }
-                orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+                orderer->add_to_zone(false, src, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
             }
         }
@@ -1523,7 +1523,7 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
             // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
             // the mana resolves, so the gate still reads 0 here for a legitimate fire).
             if (!stored_svar_gate_name.empty() &&
-                !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
+                !stored_svar_gate_passes(source.get(), stored_svar_gate_name, stored_svar_gate_compare)) {
                 game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
                 return ResolveStatus::DONE;
             }
@@ -1542,29 +1542,27 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
                 // case was already countered by the is_target_valid gate above.
                 if (!targets.empty()) {
                     for (size_t i = 0; i < targets.size();) {
-                        uint64_t g = i < target_gens.size() ? target_gens[i] : 0;
-                        if (!is_legal_target(targets[i], controller) ||
-                            !target_gen_current(targets[i], g)) {
-                            std::string tname = entity_name(targets[i]);
+                        if (!is_legal_target(targets[i].get(), controller)) {
+                            std::string tname = entity_name(targets[i].lki_entity());
                             game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
                             targets.erase(targets.begin() + i);
-                            if (i < target_gens.size()) target_gens.erase(target_gens.begin() + i);
                         } else {
                             ++i;
                         }
                     }
-                    target = targets.empty() ? 0 : targets[0];
-                    target_gen = target_gens.empty() ? 0 : target_gens[0];
+                    target = targets.empty() ? ObjectRef{} : targets[0];
                 }
             }
             // RememberTargets/RememberObjects: stash the target(s) so chained
             // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
             if (remember_targeted) {
                 cur_game.remembered_entities.clear();
-                if (!targets.empty())
-                    for (auto t : targets) cur_game.remembered_entities.push_back(t);
-                else if (target != 0)
-                    cur_game.remembered_entities.push_back(target);
+                if (!targets.empty()) {
+                    for (const ObjectRef &t : targets)
+                        if (Entity te = t.get()) cur_game.remembered_entities.push_back(te);
+                } else if (Entity te = target.get()) {
+                    cur_game.remembered_entities.push_back(te);
+                }
             }
             game_log("Resolving ability (category: %s%s)\n", category.c_str(),
                      resolving_log_detail(*this, orderer).c_str());
@@ -1577,9 +1575,10 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
         // Each gift resolves as a persisted GIFT FrameLevel (next_sub is the loop cursor — free
         // until phase 4 resets it for the phase 5 sub chain) so a prompt inside a gift suspends.
-        if (!gift_abilities.empty() && source != 0 &&
-            global_coordinator.entity_has_component<Spell>(source) &&
-            global_coordinator.GetComponent<Spell>(source).gift_promised) {
+        const Entity spell_src = source.get();
+        if (!gift_abilities.empty() && spell_src != 0 &&
+            global_coordinator.entity_has_component<Spell>(spell_src) &&
+            global_coordinator.GetComponent<Spell>(spell_src).gift_promised) {
             for (; next_sub < static_cast<int>(gift_abilities.size()); ++next_sub) {
                 const Ability &gift_template = gift_abilities[static_cast<size_t>(next_sub)];
                 if (ctx.can_suspend()) {
@@ -1605,9 +1604,9 @@ ResolveStatus Ability::resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
         bool condition_passed = true;
         if (!condition_check_svar.empty()) {
-            int val = evaluate_condition_svar(condition_check_svar, source, controller, orderer);
-            condition_passed =
-                compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
+            int val = evaluate_condition_svar(condition_check_svar, source.lki_entity(), controller, orderer);
+            condition_passed = compare_svar(val, condition_svar_compare, condition_compare_svar_expr,
+                                            source.lki_entity(), controller, orderer);
         }
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
         // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you

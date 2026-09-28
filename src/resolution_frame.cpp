@@ -13,6 +13,9 @@
 extern Game cur_game;
 extern Coordinator global_coordinator;
 
+static void pin_ref(const ObjectRef &ref, std::set<Entity> &pins);
+static void pin_refs(const std::vector<ObjectRef> &refs, std::set<Entity> &pins);
+
 FrameCtx FrameCtx::root() { return FrameCtx(true, 0); }
 
 FrameCtx FrameCtx::blocking() { return FrameCtx(false, 0); }
@@ -206,22 +209,31 @@ static void pin_all(const std::vector<Entity> &entities, std::set<Entity> &pins)
         if (e != 0) pins.insert(e);
 }
 
+// Pin the object `ref` still names (a reference to an object that is gone pins nothing).
+static void pin_ref(const ObjectRef &ref, std::set<Entity> &pins) {
+    if (Entity e = ref.get()) pins.insert(e);
+}
+
+static void pin_refs(const std::vector<ObjectRef> &refs, std::set<Entity> &pins) {
+    for (const ObjectRef &r : refs) pin_ref(r, pins);
+}
+
 // Pin every entity an announced/announcing ability tree references: the
 // primary's source/target(s), each chained sub-ability's target(s), and each
 // charm mode's target(s) (only chosen modes ever hold any). Used for the
 // half-built cast ability, the aura enchant ability, and a spell copy's
 // in-flight work ability.
 static void pin_ability_tree_targets(const Ability &ab, std::set<Entity> &pins) {
-    if (ab.source != 0) pins.insert(ab.source);
-    if (ab.target != 0) pins.insert(ab.target);
-    pin_all(ab.targets, pins);
+    pin_ref(ab.source, pins);
+    pin_ref(ab.target, pins);
+    pin_refs(ab.targets, pins);
     for (const auto &sub : ab.subabilities) {
-        if (sub.target != 0) pins.insert(sub.target);
-        pin_all(sub.targets, pins);
+        pin_ref(sub.target, pins);
+        pin_refs(sub.targets, pins);
     }
     for (const auto &mode : ab.charm_choices) {
-        if (mode.target != 0) pins.insert(mode.target);
-        pin_all(mode.targets, pins);
+        pin_ref(mode.target, pins);
+        pin_refs(mode.targets, pins);
     }
 }
 
@@ -292,10 +304,9 @@ std::set<Entity> collect_pending_pins() {
         // ROOT level's work is unused — the resolving ability lives in the
         // stack entity's component, so read its targets from there.
         for (const auto &lv : fr.levels) {
-            if (lv.work.source != 0) pins.insert(lv.work.source);
-            if (lv.work.target != 0) pins.insert(lv.work.target);
-            for (auto t : lv.work.targets)
-                if (t != 0) pins.insert(t);
+            pin_ref(lv.work.source, pins);
+            pin_ref(lv.work.target, pins);
+            pin_refs(lv.work.targets, pins);
             // The level's suspended handler runtime: revealed/looked-at pool
             // slices (dig, scry, surveil, rearrange, sylvan) that must survive
             // a world resample in place.
@@ -304,10 +315,9 @@ std::set<Entity> collect_pending_pins() {
         if (fr.stack_entity != 0 &&
             global_coordinator.entity_has_component<Ability>(fr.stack_entity)) {
             auto &ab = global_coordinator.GetComponent<Ability>(fr.stack_entity);
-            if (ab.source != 0) pins.insert(ab.source);
-            if (ab.target != 0) pins.insert(ab.target);
-            for (auto t : ab.targets)
-                if (t != 0) pins.insert(t);
+            pin_ref(ab.source, pins);
+            pin_ref(ab.target, pins);
+            pin_refs(ab.targets, pins);
         }
     }
     // A suspended trigger placement: the queued-but-not-yet-offered triggers'
@@ -344,7 +354,7 @@ std::set<Entity> collect_pending_pins() {
     if (pcst.active) {
         if (pcst.spell_entity != 0) pins.insert(pcst.spell_entity);
         if (pcst.have_ability) pin_ability_tree_targets(pcst.ability, pins);
-        if (pcst.enchant_ab.target != 0) pins.insert(pcst.enchant_ab.target);
+        pin_ref(pcst.enchant_ab.target, pins);
         pin_copy_spell_rt(pcst.copy_rt, pins);
         for (const auto &r : pcst.cost_removals) pins.insert(r.entity);
     }

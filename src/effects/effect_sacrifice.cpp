@@ -35,7 +35,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
         // SacValid$ filter, evaluated against the sacrificer's permanents (YouCtrl/token/!token,
         // colors, nonLand, …). Filter controller is `sacrificer` so YouCtrl-style qualifiers and
         // negations resolve relative to the player who is sacrificing.
-        if (!permanent_matches_filter(e, ab.sac_valid, MatchCtx{sacrificer, ab.source})) continue;
+        if (!permanent_matches_filter(e, ab.sac_valid, MatchCtx{sacrificer, ab.source.lki_entity()})) continue;
         candidates.push_back(e);
     }
 
@@ -57,7 +57,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
     // the player holding priority (Sheoldred's Edict: the caster holds priority while the
     // opponent picks). The ask seats the query on the sacrificer (persisting priority there
     // when it suspends) and restores afterwards, exactly as the old inline swap did.
-    int choice = ctx.ask(choices, sacrificer, ab.source);
+    int choice = ctx.ask(choices, sacrificer, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) {
         suspended = true;
         return 0;
@@ -86,7 +86,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer, bool 
 // DB$ Sacrifice (no SacValid$ / Defined$) — "sacrifice CARDNAME". No choice is involved. Returns
 // the sacrificed entity, or 0 if the source was no longer on the battlefield.
 static Entity sacrifice_self(const Ability &ab, std::shared_ptr<Orderer> orderer) {
-    Entity src = ab.source;
+    Entity src = ab.source.get();
     if (src == 0 || !is_battlefield_permanent(src)) return 0;
     std::string name = global_coordinator.GetComponent<Permanent>(src).name;
     orderer->add_to_zone(false, src, Zone::GRAVEYARD);
@@ -116,8 +116,8 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                 game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
                          ab.unless_generic_cost);
             bool suspended = false;
-            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
-                                          suspended, UnlessSubject{UnlessEffect::SACRIFICE, ab.source, false},
+            bool unpaid = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
+                                          suspended, UnlessSubject{UnlessEffect::SACRIFICE, ab.source.lki_entity(), false},
                                           UnlessPayKind::ENERGY);
             if (suspended) return HandlerResult::SUSPENDED;
             if (!unpaid) return HandlerResult::DONE_RUN_SUBS;  // paid — nothing is sacrificed
@@ -159,8 +159,9 @@ HandlerResult sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // Defined$ Targeted sub-abilities (discard / lose life) still resolve against that same
     // player. Like an edict, it is mandatory for the targeted player when they have a matching
     // permanent, so Optional$ does not apply here.
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        Zone::Ownership sacker = seat_of_player(ab.target);
+    const Entity tgt_player = ab.target.get();
+    if (tgt_player != 0 && global_coordinator.entity_has_component<Player>(tgt_player)) {
+        Zone::Ownership sacker = seat_of_player(tgt_player);
         for (; rt.iter < ab.sac_count; ++rt.iter) {
             bool suspended = false;
             Entity sacked = sacrifice_one(ab, sacker, /*optional=*/false, orderer, ctx, suspended);

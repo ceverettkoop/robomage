@@ -21,7 +21,7 @@ namespace effects {
 // into your graveyard and the rest on top of your library in any order — look_and_split with the
 // graveyard as the other pile.
 HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership controller = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
     // The looked-at slice is frozen once; the shrinking `remaining` pool and the
@@ -33,7 +33,7 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     if (!rt.init) {
         size_t num = ab.amount;
         if (!ab.dynamic_amount_expr.empty())
-            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target);
+            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target.get());
         if (num == 0) return HandlerResult::DONE_RUN_SUBS;  // CR 701.25c: surveil 0 is no event
 
         std::vector<Entity> looked = orderer->get_library_top(controller, num);
@@ -50,7 +50,7 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         rt.remaining = looked;
         rt.init = true;
     }
-    return look_and_split(rt, controller, LookSplitRest::GRAVEYARD, orderer, ctx, ab.source);
+    return look_and_split(rt, controller, LookSplitRest::GRAVEYARD, orderer, ctx, ab.source.lki_entity());
 }
 
 // See declaration in effects.h.

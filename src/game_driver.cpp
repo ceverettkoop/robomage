@@ -968,7 +968,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
                 // and run it through the normal resolve pipeline so zone-change replacements/
                 // ETB machinery apply.
                 for (Ability ab : cd.opening_hand_abilities) {
-                    ab.source = card;
+                    ab.source = ObjectRef::of(card);
                     ab.controller = player;
                     ab.resolve(sys.orderer);
                 }

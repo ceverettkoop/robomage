@@ -30,7 +30,7 @@ HandlerResult pump_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     std::vector<Entity> targets;
     for (auto e : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
+        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
             targets.push_back(e);
     }
     if (targets.empty()) {

@@ -33,8 +33,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // N = PeekAmount (Mishra's Bauble = 1; Birthing Ritual = 7, so the controller sees the
         // top 7 *before* the subsequent sacrifice decision, per "look at the top seven... Then
         // you may sacrifice"). No card movement here — a chained Dig does the actual selection.
-        Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(ab.target)
-                                         ? seat_of_player(ab.target)
+        Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(ab.target.get())
+                                         ? seat_of_player(ab.target.get())
                                          : ab.controller;
         int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
         std::vector<Entity> top = orderer->get_library_top(peek_owner, static_cast<size_t>(n));
@@ -79,11 +79,12 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     }
 
     // Delver of Secrets: peek own library top, optionally reveal
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) {
+    const Entity self = ab.source.get();
+    if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) {
         game_log("%s fizzles\n", ab.category.c_str());
         return HandlerResult::DONE_NO_SUBS;
     }
-    auto &src_perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    auto &src_perm = global_coordinator.GetComponent<Permanent>(self);
     Entity top_card = 0;
     for (auto e : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
@@ -114,7 +115,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // The old inline get_input ran without a priority repoint — ambient priority
         // is the resolving controller here — so seating the ask on ab.controller is
         // a no-op swap, byte-identical to today.
-        reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source);
+        reveal_choice = ctx.ask(std::move(reveal_actions), ab.controller, ab.source.lki_entity());
         if (reveal_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
     }
 
@@ -129,14 +130,14 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 break;
             }
         }
-        if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(ab.source)) {
-            auto &src_cd = global_coordinator.GetComponent<CardData>(ab.source);
+        if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(self)) {
+            auto &src_cd = global_coordinator.GetComponent<CardData>(self);
             // CR 701.27f: not if Delver already transformed after its trigger went on the stack.
             if (src_cd.backside && !src_perm.transformed && ability_may_transform_source(ab)) {
                 // Flip to the back face through the shared transform subsystem so
                 // Delver's creature->creature flip and Ajani's creature->planeswalker
                 // flip travel the same code path.
-                set_permanent_face(ab.source, true);
+                set_permanent_face(self, true);
             }
         }
     }

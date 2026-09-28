@@ -33,10 +33,11 @@ HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // CR 109/115: this picks out exactly that targeted permanent (Guide of Souls puts the
     // +1/+1s and flying counter on the attacking creature the trigger targeted).
     if (ab.valid_cards_filter.find("targetedBy") != std::string::npos) {
-        if (ab.target != 0 && is_battlefield_permanent(ab.target)) targets.push_back(ab.target);
+        const Entity t = ab.target.get();
+        if (t != 0 && is_battlefield_permanent(t)) targets.push_back(t);
     } else {
         for (auto e : orderer->mEntities)
-            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
+            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
                 targets.push_back(e);
     }
 

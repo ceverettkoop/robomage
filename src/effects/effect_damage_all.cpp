@@ -22,12 +22,12 @@ namespace effects {
 HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     size_t dmg = ab.amount;
     if (!ab.dynamic_amount_expr.empty())
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target,
-                                      ab.source);
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
+                                      ab.source.lki_entity());
     std::vector<Entity> recipients;
     if (!ab.valid_cards_filter.empty())
         for (auto e : orderer->mEntities)
-            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
+            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
                 recipients.push_back(e);
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && !dp->valid_players.empty())
@@ -37,7 +37,7 @@ HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
                 recipients.push_back(pe);
         }
 
-    for (auto e : recipients) ::deal_damage(ab.source, e, dmg, false);
+    for (auto e : recipients) ::deal_damage(ab.source.lki_entity(), e, dmg, false);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

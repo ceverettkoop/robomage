@@ -21,7 +21,7 @@ namespace effects {
 // the stack stays where it is.
 HandlerResult ninjutsu(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    Entity card = ab.source;
+    Entity card = ab.source.get();
     if (card == 0 || !global_coordinator.entity_has_component<Zone>(card)) return HandlerResult::DONE_RUN_SUBS;
     const Zone &zone = global_coordinator.GetComponent<Zone>(card);
     std::string name = entity_name(card);

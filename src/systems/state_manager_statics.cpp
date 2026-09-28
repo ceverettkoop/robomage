@@ -97,7 +97,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     fire_ab.category = "ChangeZone";
     fire_ab.defined_remembered = true;
     fire_ab.restore_remembered_exiled_with = {entity};  // resolve() seeds the remembered set to this card
-    fire_ab.source = entity;
+    fire_ab.source = ObjectRef::of(entity);
     fire_ab.origin = Zone::BATTLEFIELD;
     fire_ab.destination = Zone::EXILE;
 
@@ -123,7 +123,7 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
     Ability fire_ab;
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "WarpExile";
-    fire_ab.source = entity;
+    fire_ab.source = ObjectRef::of(entity);
     fire_ab.delayed_link.subjects = {entity};  // the permanent it exiles
 
     DelayedTrigger dt;
@@ -791,7 +791,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 {
                     auto pat = game.pending_aura_target.find(entity);
                     if (pat != game.pending_aura_target.end()) {
-                        Entity enchanted = pat->second.target;
+                        Entity enchanted = pat->second.target.get();
                         if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
                             perm.equipped_to = enchanted;
                             game_log("%s is attached to %s.\n", perm.name.c_str(),
@@ -848,7 +848,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // the already-present check short-circuits every pass after the first), instead
                 // of copying every card_data ability by value just to discard it each pass.
                 perm_abilities.push_back(ab);
-                perm_abilities.back().source = entity;
+                perm_abilities.back().source = ObjectRef::of(entity);
             }
             // Re-merge rest-of-game ability grants (DB$ Animate | Abilities$ | Duration$
             // Permanent — Urza's Saga chapters) that a layer-6 ability removal (Magus of the
@@ -1168,7 +1168,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         mana_ability.tap_cost = true;
         mana_ability.subtype_derived = true;
 
-        mana_ability.source = entity;
+        mana_ability.source = ObjectRef::of(entity);
         perm_abilities.push_back(mana_ability);
     }
 }
@@ -1214,7 +1214,7 @@ void StateManager::apply_keyword_abilities(Entity entity) {
     for (const auto &kw : wanted) {
         Ability ab = keyword_triggered_ability(kw);
         ab.derived_from_keyword = kw;
-        ab.source = entity;
+        ab.source = ObjectRef::of(entity);
         perm_abilities.push_back(ab);
     }
 }
@@ -1884,7 +1884,7 @@ void StateManager::apply_layer6_ability_grants() {
         for (Entity e : targets) {
             auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
             Ability copy = granted;
-            copy.source = e;
+            copy.source = ObjectRef::of(e);
             // Carry over this pass's runtime counter from the pre-strip instance of the same
             // grant on the same recipient, so ActivationLimit$ is enforced across the whole turn
             // even though continuous effects rebuild the ability every pass (CR 602.5).
@@ -1947,7 +1947,7 @@ void StateManager::apply_layer6_ability_grants() {
             }
             if (dup) continue;
             Ability copy = granted;
-            copy.source = e;
+            copy.source = ObjectRef::of(e);
             abilities.push_back(copy);
         }
     }

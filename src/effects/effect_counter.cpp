@@ -77,23 +77,24 @@ bool target_color_condition_met(const Ability &ab, Entity target) {
 }
 
 HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    if (global_coordinator.entity_has_component<Zone>(ab.target)) {
-        auto &tz = global_coordinator.GetComponent<Zone>(ab.target);
+    const Entity tgt = ab.target.get();
+    if (global_coordinator.entity_has_component<Zone>(tgt)) {
+        auto &tz = global_coordinator.GetComponent<Zone>(tgt);
         if (tz.location == Zone::STACK) {
-            Zone::Ownership target_controller = global_coordinator.entity_has_component<Spell>(ab.target)
-                                                    ? global_coordinator.GetComponent<Spell>(ab.target).caster
+            Zone::Ownership target_controller = global_coordinator.entity_has_component<Spell>(tgt)
+                                                    ? global_coordinator.GetComponent<Spell>(tgt).caster
                                                     : tz.owner;
 
             bool do_counter = true;
             // Pyroblast/Hydroblast: only counter if the target is the required color.
             // The spell still resolves (and is put to the graveyard) doing nothing otherwise.
-            if (!target_color_condition_met(ab, ab.target)) {
-                std::string tname = entity_name(ab.target);
+            if (!target_color_condition_met(ab, tgt)) {
+                std::string tname = entity_name(tgt);
                 game_log("%s is not the required color — not countered\n", tname.c_str());
                 do_counter = false;
             }
             if (do_counter && ab.unless_generic_cost > 0) {
-                std::string tname = entity_name(ab.target);
+                std::string tname = entity_name(tgt);
                 // UnlessPayer$ (Reality Smasher: TriggeredSourceSAController) selects WHO pays —
                 // the controller of the spell that targeted the source. When unset, default to the
                 // countered spell's controller (Ward / Mana Leak / Daze).
@@ -114,8 +115,8 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                         game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
                 }
                 bool suspended = false;
-                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, ab.source, ctx,
-                                             suspended, UnlessSubject{UnlessEffect::COUNTER, ab.target, false},
+                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+                                             suspended, UnlessSubject{UnlessEffect::COUNTER, tgt, false},
                                              kind);
                 if (suspended) return HandlerResult::SUSPENDED;
             }
@@ -128,22 +129,22 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             // protects spells only: a non-spell target (an activated or triggered ability, Stifle)
             // stays counterable even while its controller's spells can't be countered (Veil of
             // Summer).
-            bool target_is_spell = global_coordinator.entity_has_component<Spell>(ab.target);
+            bool target_is_spell = global_coordinator.entity_has_component<Spell>(tgt);
             if (do_counter &&
-                ((target_is_spell && global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
-                 spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
-                 spell_uncounterable_by_own_condition(ab.target, orderer->mEntities) ||
+                ((target_is_spell && global_coordinator.GetComponent<Spell>(tgt).cant_be_countered) ||
+                 spell_uncounterable_by_static(tgt, orderer->mEntities) ||
+                 spell_uncounterable_by_own_condition(tgt, orderer->mEntities) ||
                  (target_is_spell && player_spells_cant_be_countered(target_controller, orderer->mEntities)))) {
-                std::string name = entity_name(ab.target);
+                std::string name = entity_name(tgt);
                 game_log("%s can't be countered\n", name.c_str());
                 do_counter = false;
             }
 
             if (do_counter) {
-                std::string name = entity_name(ab.target);
+                std::string name = entity_name(tgt);
                 // A countered card goes to its owner's graveyard, or to exile when the counter
                 // spell says so ("counter, then exile"); a copy or an ability ceases to exist.
-                orderer->remove_from_stack(ab.target, ab.destination == Zone::EXILE ? Zone::EXILE
+                orderer->remove_from_stack(tgt, ab.destination == Zone::EXILE ? Zone::EXILE
                                                                                    : Zone::GRAVEYARD);
                 game_log("%s is countered\n", name.c_str());
             }

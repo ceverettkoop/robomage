@@ -18,10 +18,10 @@ namespace effects {
 HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Equip the source equipment to the remembered entity
-    Entity equip_entity = ab.source;
+    Entity equip_entity = ab.source.get();
     Entity target_creature = (ab.defined_remembered && !cur_game.remembered_entities.empty())
                                  ? cur_game.remembered_entities[0]
-                                 : ab.target;
+                                 : ab.target.get();
 
     if (ab.optional_choice && target_creature != 0) {
         // Optional$ True — "you MAY attach ..." (Cori-Steel Cutter's DBAttach). The ability's
@@ -33,7 +33,7 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
         std::string prompt = "attach " + entity_name(equip_entity) + " to " +
                              entity_name(target_creature);
         std::vector<LegalAction> yn = optional_yesno_menu(prompt);
-        int yc = ctx.ask(std::move(yn), ab.controller, ab.source);
+        int yc = ctx.ask(std::move(yn), ab.controller, ab.source.lki_entity());
         if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (yc != 1) goto attach_done;
     }

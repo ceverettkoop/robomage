@@ -3,6 +3,7 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "../object_ref.h"
 #include "ability_params.h"
 #include "static_ability.h"
 #include "types.h"
@@ -76,20 +77,17 @@ struct Ability{
     // resolved count of 0 makes the ability target nothing and do nothing (CR: zero targets).
     std::string target_min_count_expr = "";
     std::string target_max_count_expr = "";
-    Entity source = 0;
-    Entity target = 0;
-    std::vector<Entity> targets;    // used when target_max > 1
-    // CR 400.7 / 608.2b object-identity snapshot, parallel to target/targets: the
-    // Zone::obj_gen of each chosen target AT SELECTION time. Re-checked at resolution so a
-    // target that changed zones (and is thus a new object) is treated as illegal, even when the
-    // same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed). 0 means
-    // "not snapshotted" (auto-targeted / copied-target paths keep their prior behavior).
-    uint64_t target_gen = 0;
-    std::vector<uint64_t> target_gens;
-    // CR 400.7 identity of `source` when this ability was put on the stack (its Zone::obj_gen
-    // then; 0 = not stamped). Sub-abilities inherit it with the source. Read where the source's
-    // later departure changes the effect (CR 610.3a/b "until [source] leaves the battlefield").
-    uint64_t source_gen = 0;
+    // The object this ability comes from (CR 113.7), as it was when the ability was created: a
+    // spell's card once it is on the stack, an activated ability's source after its costs were
+    // paid (CR 400.7j), a trigger's source when it triggered (CR 400.7e). get() is that object
+    // while it remains it; sub-abilities inherit it. The card's printed identity and last-known
+    // information read lki_entity().
+    ObjectRef source;
+    // The chosen targets (CR 601.2c / 603.3d), each the object it was when chosen: at resolution
+    // a target that changed zones since is a new object and illegal (CR 400.7 / 608.2b), even
+    // when the same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed).
+    ObjectRef target;
+    std::vector<ObjectRef> targets;    // used when target_max > 1
     // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
     // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
     int64_t source_transforms = -1;
@@ -927,11 +925,6 @@ struct Ability{
     // legal targets (build_valid_targets) and to re-verify chosen targets at
     // resolution (is_target_valid).
     bool is_legal_target(Entity cand, Zone::Ownership caster) const;
-    // CR 400.7 object-identity re-verification: true if `cand` is still the same object that was
-    // targeted, i.e. its current Zone::obj_gen matches `recorded_gen` snapshotted at selection.
-    // A recorded 0 (never snapshotted — auto-targeted/copied path) or a target with no Zone
-    // (a player) passes. Paired with is_legal_target at every resolution-time target check.
-    bool target_gen_current(Entity cand, uint64_t recorded_gen) const;
 private:
     // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
     // effects::handler_for(). resolve() keeps only target validity + condition

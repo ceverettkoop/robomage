@@ -114,14 +114,14 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                 // Copy the resolving spell ability; the controller chooses new targets below
                 // (CR 707.12), so the original's primary/sub targets are cleared up front.
                 rt.work = *orig_ability;
-                rt.work.source = copy;
+                rt.work.source = ObjectRef::of(copy);
                 rt.work.controller = controller;
-                rt.work.target = 0;
+                rt.work.target = ObjectRef{};
                 rt.work.targets.clear();
                 for (auto &sub : rt.work.subabilities) {
-                    sub.source = copy;
+                    sub.source = rt.work.source;
                     sub.controller = controller;
-                    sub.target = 0;
+                    sub.target = ObjectRef{};
                     sub.targets.clear();
                 }
             }
@@ -177,12 +177,12 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                 int idx = rt.work.charm_chosen[rt.mode_pos];
                 if (idx >= 0 && static_cast<size_t>(idx) < rt.work.charm_choices.size()) {
                     Ability &mode = rt.work.charm_choices[static_cast<size_t>(idx)];
-                    mode.source = rt.cur_copy;
+                    mode.source = ObjectRef::of(rt.cur_copy);
                     mode.controller = controller;
                     if (mode.valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(mode, orderer))) {
                         if (!rt.tsel.active) {
-                            mode.target = 0;
+                            mode.target = ObjectRef{};
                             mode.targets.clear();
                         }
                         if (run_target_select(mode, rt.tsel, asker, orderer, controller) !=
@@ -231,7 +231,7 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         // parent effect's target, inherited onto this sub-ability (Defined$ Parent) by bind_sub_target.
         Zone::Ownership payer = ab.controller;
         if (ab.unless_payer_is_targeted_or_controller) {
-            Entity tgt = ab.target;
+            Entity tgt = ab.target.get();
             if (tgt != 0 && global_coordinator.entity_has_component<Player>(tgt)) {
                 payer = seat_of_player(tgt);
             } else if (tgt != 0 && global_coordinator.entity_has_component<Permanent>(tgt)) {
@@ -246,11 +246,11 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         if (ab.unless_generic_cost > 0) {
             if (!ctx.resuming())
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
-                         entity_name(ab.source).c_str());
+                         entity_name(ab.source.lki_entity()).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
+            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                              suspended,
-                                             UnlessSubject{UnlessEffect::COPY, ab.source, ab.unless_switched},
+                                             UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.unless_switched},
                                              UnlessPayKind::MANA, &ab.unless_cost_pips);
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
@@ -261,7 +261,7 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         }
         if (!do_copy) return HandlerResult::DONE_RUN_SUBS;
 
-        copy_spell_begin(rt, ab.source, 1, payer);
+        copy_spell_begin(rt, ab.source.lki_entity(), 1, payer);
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (original gone)
     }
 

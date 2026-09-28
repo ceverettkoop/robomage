@@ -36,16 +36,16 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     Zone::Ownership ctrl = ab.controller;
     // TokenOwner$ TargetedPlayer (Kozilek's Command): the targeted player creates and
     // controls the tokens, not the spell's controller.
-    if (tp && tp->owner_is_target && ab.target != 0 &&
-        global_coordinator.entity_has_component<Player>(ab.target))
-        ctrl = seat_of_player(ab.target);
+    if (tp && tp->owner_is_target && ab.target.get() != 0 &&
+        global_coordinator.entity_has_component<Player>(ab.target.get()))
+        ctrl = seat_of_player(ab.target.get());
     // TokenOwner$ TargetedController (Cityscape Leveler): the token is owned/controlled by the
     // controller of the targeted permanent. The target was just destroyed by the preceding
     // sub-ability, so read its last-known controller. With no target chosen (the "up to one"
     // destroy hit nothing), no token is created — the "if you do" gate.
     if (tp && tp->owner_is_targeted_controller) {
-        if (ab.target == 0) return HandlerResult::DONE_RUN_SUBS;  // no permanent destroyed → no token
-        Zone::Ownership tc = last_known_controller(ab.target);
+        if (ab.target.empty()) return HandlerResult::DONE_RUN_SUBS;  // no permanent destroyed → no token
+        Zone::Ownership tc = last_known_controller(ab.target.lki_entity());
         if (tc == Zone::UNKNOWN) return HandlerResult::DONE_RUN_SUBS;
         ctrl = tc;
     }
@@ -66,23 +66,24 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // override the token script's printed P/T so the created token enters as an X/X. Evaluated
     // once here against the live remembered card; both default to the script's value when absent.
     if (tp && !tp->power_expr.empty())
-        tok.power = static_cast<uint32_t>(evaluate_dynamic_amount(tp->power_expr, ctrl, orderer, ab.target));
+        tok.power = static_cast<uint32_t>(evaluate_dynamic_amount(tp->power_expr, ctrl, orderer, ab.target.get()));
     if (tp && !tp->toughness_expr.empty())
-        tok.toughness = static_cast<uint32_t>(evaluate_dynamic_amount(tp->toughness_expr, ctrl, orderer, ab.target));
+        tok.toughness = static_cast<uint32_t>(evaluate_dynamic_amount(tp->toughness_expr, ctrl, orderer, ab.target.get()));
 
     // TokenAmount$ N (default 1): create N identical tokens. The count may be dynamic
     // (Count$xPaid → X). amount==0 with no dynamic expr means the single-token default.
     size_t count = ab.amount;
     if (!ab.dynamic_amount_expr.empty())
-        count = evaluate_dynamic_amount(ab.dynamic_amount_expr, ctrl, orderer, ab.target);
+        count = evaluate_dynamic_amount(ab.dynamic_amount_expr, ctrl, orderer, ab.target.get());
     else if (count == 0)
         count = 1;
 
     // TokenAttacking$ True (Geist of Saint Traft): the token is put onto the battlefield attacking
     // the same defender the source creature is attacking (CR 508.4a). Read the source's target.
     Entity attack_target = 0;
-    if (tp && tp->attacking && global_coordinator.entity_has_component<Creature>(ab.source))
-        attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
+    const Entity src = ab.source.get();
+    if (tp && tp->attacking && src != 0 && global_coordinator.entity_has_component<Creature>(src))
+        attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
 
     std::vector<Entity> created;
     cur_game.remembered_entities.clear();
@@ -119,14 +120,14 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         exile_ab.ability_type = Ability::TRIGGERED;
         exile_ab.category = "ExileTokens";
         exile_ab.source = ab.source;
-        exile_ab.targets = created;
+        exile_ab.targets = refs_of(created);
 
         DelayedTrigger dt;
         dt.ability = exile_ab;
         dt.fire_on = Events::END_OF_COMBAT_BEGAN;
         dt.owner_entity = get_player_entity(ctrl);
         dt.fire_on_turn = cur_game.turn;
-        register_delayed_trigger(dt, ab.source);
+        register_delayed_trigger(dt, ab.source.lki_entity());
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -136,7 +137,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 // Mobilize's sacrifice_tokens, but the destination is exile rather than the graveyard.
 HandlerResult exile_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    for (Entity tok : ab.targets) {
+    for (Entity tok : live_entities(ab.targets)) {
         if (!is_battlefield_permanent(tok)) continue;
         std::string name = global_coordinator.GetComponent<Permanent>(tok).name;
         orderer->add_to_zone(false, tok, Zone::EXILE);

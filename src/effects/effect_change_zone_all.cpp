@@ -29,7 +29,7 @@ namespace effects {
 // Names are the permanents' current ones (Permanent::name): a transformed Insectile Aberration is
 // named Aberration, not Delver of Secrets (CR 712.8e); a token carries its token name.
 static bool change_zone_shares_name_battlefield(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    Entity ref = !ab.targets.empty() ? ab.targets[0] : ab.target;
+    Entity ref = !ab.targets.empty() ? ab.targets[0].get() : ab.target.get();
     if (ref == 0 || !is_battlefield_permanent(ref)) return true;
     const std::string name = global_coordinator.GetComponent<Permanent>(ref).name;
     if (name.empty()) return true;
@@ -64,23 +64,25 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // one target player", TargetMin$ 0) affects no one — do nothing rather than
     // falling back to the controller's own zones. Untargeted ChangeZoneAll
     // (valid_tgts "N_A", e.g. Doomsday) still operates on the controller below.
-    if (ab.valid_tgts != "N_A" && ab.target == 0 && ab.targets.empty())
+    if (ab.valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty())
         return HandlerResult::DONE_RUN_SUBS;
 
     Zone::Ownership owner = ab.controller;
     // If this targets a player (e.g. Endurance: "target player puts the cards
     // from their graveyard on the bottom of their library"), operate on the
     // targeted player's zones rather than the controller's.
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        owner = seat_of_player(ab.target);
+    const Entity tgt_player = ab.target.get();
+    if (tgt_player != 0 && global_coordinator.entity_has_component<Player>(tgt_player)) {
+        owner = seat_of_player(tgt_player);
     }
     // Defined$ TriggeredCardOwner (Emrakul's death trigger: "its owner shuffles their graveyard
     // into their library"): operate on the OWNER of the card that triggered this ability (the
     // source), not the last controller. Read the owner off the source's Zone (it is in the
     // graveyard by now). CR 608.2g/400.3: ownership is fixed regardless of who controlled it.
-    if (ab.defined == "TriggeredCardOwner" && ab.source != 0 &&
-        global_coordinator.entity_has_component<Zone>(ab.source)) {
-        Zone::Ownership src_owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    const Entity trig_card = ab.source.lki_entity();  // ownership never changes (CR 108.3)
+    if (ab.defined == "TriggeredCardOwner" && trig_card != 0 &&
+        global_coordinator.entity_has_component<Zone>(trig_card)) {
+        Zone::Ownership src_owner = global_coordinator.GetComponent<Zone>(trig_card).owner;
         if (src_owner != Zone::UNKNOWN) owner = src_owner;
     }
 
@@ -128,7 +130,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // the remembered pile). Absent a ChangeType$, every card in the zones moves.
     MatchCtx mctx;
     mctx.controller = owner;
-    mctx.source = ab.source;
+    mctx.source = ab.source.lki_entity();
     std::vector<Entity> to_move;
     for (auto entity : zone_contents)
         if (ab.change_type.empty() || card_matches_filter(entity, ab.change_type, mctx))

@@ -12,7 +12,7 @@ namespace effects {
 HandlerResult multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     // Double all P1P1 counters on target creature
-    Entity tgt = (ab.target != 0) ? ab.target : ab.source;
+    Entity tgt = !ab.target.empty() ? ab.target.get() : ab.source.get();
     if (global_coordinator.entity_has_component<Creature>(tgt)) {
         auto &cr = global_coordinator.GetComponent<Creature>(tgt);
         int p1p1 = get_counters(tgt, "P1P1");

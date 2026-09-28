@@ -1,0 +1,12 @@
+{
+  "name": "cr400_7_double_earthbend_returns_land_once",
+  "why": "CR 400.7 / 400.7e: a land earthbent twice returns once when it dies; the second trigger's card is already a new object on the battlefield",
+  "hand_a": ["Badgermole Cub", "Badgermole Cub"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Forest", "Forest", "Forest", "Knight of the Reliquary"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Badgermole Cub", "A:pass", "A:0", "A:pass", "A:cast:Badgermole Cub", "A:pass", "A:0", "A:pass", "A:activate:Knight of the Reliquary", "A:0", "A:0"],
+  "max_decisions": 16,
+  "expect_order": ["Player A sacrifices Forest", "Forest is moved to the battlefield", "Forest enters tapped"],
+  "expect_count": {"Forest is moved to the battlefield": 1}
+}

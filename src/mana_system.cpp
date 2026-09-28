@@ -145,7 +145,7 @@ void empty_mana_pool(Zone::Ownership player_owner) {
 ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
                                          std::shared_ptr<Orderer> orderer) {
     if (ab.reduce_cost_expr.empty()) return ab.activation_mana_cost;
-    size_t reduction = evaluate_dynamic_amount(ab.reduce_cost_expr, controller, orderer, ab.target);
+    size_t reduction = evaluate_dynamic_amount(ab.reduce_cost_expr, controller, orderer, ab.target.get());
     if (reduction == 0) return ab.activation_mana_cost;
     ManaValue cost = ab.activation_mana_cost;
     // Remove up to `reduction` generic ({1}) symbols; never below zero, never a colored pip.
@@ -171,7 +171,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
         std::string filter = ab.dynamic_amount_expr.substr(kPrefix.size());
         MatchCtx ctx;
         ctx.controller = controller;
-        ctx.source = ab.source;
+        ctx.source = ab.source.lki_entity();
         size_t count = 0;
         for (auto e : orderer->mEntities)
             if (is_battlefield_permanent(e) && permanent_matches_filter(e, filter, ctx)) count++;
@@ -181,7 +181,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
     // shared runtime-amount evaluator, so mana production scales by the same Count$/Targeted$
     // grammar used for dynamic damage/draw/token counts rather than re-implementing each form here.
     if (!ab.dynamic_amount_expr.empty())
-        return evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target);
+        return evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target.get());
     return ab.amount;
 }
 
@@ -784,7 +784,7 @@ void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership
     // 606.3). Only fire it when committing the activation (not during legality simulation).
     if (commit) {
         for (auto sub_ab : ab.subabilities) {
-            sub_ab.source = source;
+            sub_ab.source = ObjectRef::of(source);
             sub_ab.controller = controller;
             sub_ab.resolve(orderer);
         }
