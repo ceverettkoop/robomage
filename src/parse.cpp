@@ -52,6 +52,9 @@ static bool is_colored_mana_letter(char c);
 static Colors color_word_color(const std::string &word);
 static Colors filter_color(const std::string &filter);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
+static std::string svar_or_literal(const std::map<std::string, std::string>& svars,
+                                   const std::string& name);
+static void resolve_svar_ref(std::string& ref, const std::map<std::string, std::string>& svars);
 static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name = "");
@@ -775,8 +778,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
         std::string key, value;
         while (next_param(line, pp, key, value)) {
             if (key == "CheckSVar") {
-                auto it = svars.find(value);
-                ac.condition_svar = (it != svars.end()) ? it->second : value;
+                ac.condition_svar = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
                 ac.condition_compare = value;
             } else if (key == "Condition" && value == "NotPlayerTurn") {
@@ -1626,6 +1628,21 @@ static uint32_t parse_toughness(std::string value) {
     return std::stoi(tough_string);
 }
 
+// The body of SVar `name`, or `name` itself when the script has no such SVar (a literal value).
+static std::string svar_or_literal(const std::map<std::string, std::string> &svars,
+                                   const std::string &name) {
+    auto it = svars.find(name);
+    return (it != svars.end()) ? it->second : name;
+}
+
+// Replaces a non-empty SVar reference with the SVar's body; a name the script has no SVar for is
+// left as it is.
+static void resolve_svar_ref(std::string &ref, const std::map<std::string, std::string> &svars) {
+    if (ref.empty()) return;
+    auto it = svars.find(ref);
+    if (it != svars.end()) ref = it->second;
+}
+
 // Extracts all SVar:name:content entries from a card script into a name→content map.
 static std::map<std::string, std::string> parse_svars(const std::string& script) {
     std::map<std::string, std::string> svars;
@@ -2256,11 +2273,8 @@ static void resolve_xpaid_target_counts(AbilityDef& ability,
 static void resolve_pump_exprs(AbilityDef& ability,
                                const std::map<std::string, std::string>& svars) {
     if (auto *pp = std::get_if<PumpParams>(&ability.params)) {
-        for (std::string *expr : {&pp->att_expr, &pp->def_expr}) {
-            if (expr->empty()) continue;
-            auto it = svars.find(*expr);
-            if (it != svars.end()) *expr = it->second;
-        }
+        resolve_svar_ref(pp->att_expr, svars);
+        resolve_svar_ref(pp->def_expr, svars);
     }
 }
 
@@ -2302,10 +2316,7 @@ static void resolve_destroyall_svars(AbilityDef &ability,
             dp.cmc_op = op;
         }
     }
-    if (!dp.energy_unless_expr.empty()) {
-        auto it = svars.find(dp.energy_unless_expr);
-        if (it != svars.end()) dp.energy_unless_expr = it->second;
-    }
+    resolve_svar_ref(dp.energy_unless_expr, svars);
 }
 
 // The first "cmc<OP><bound>" mana-value qualifier in a card filter (e.g. "Creature.cmcLEX+YouCtrl"
@@ -2527,10 +2538,8 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
     // expanded to its Count$/dynamic expression for evaluation at activation time. The
     // generic mana portion is reduced by the resolved amount (CR 601.2f).
     if (!ability.reduce_cost_expr.empty() &&
-        !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0]))) {
-        auto it = svars.find(ability.reduce_cost_expr);
-        if (it != svars.end()) ability.reduce_cost_expr = it->second;
-    }
+        !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0])))
+        resolve_svar_ref(ability.reduce_cost_expr, svars);
     // Aether Vial pattern: a ChangeType search filter whose mana-value bound is dynamic,
     // e.g. "Creature.cmcEQX+YouCtrl" with SVar:X:Count$CardCounters.CHARGE. Resolve the
     // "cmcEQ<svar>"/"cmcLE<svar>" SVar reference to its runtime Count$ expression and stash
@@ -2568,33 +2577,19 @@ static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
         }
     }
     // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
-    if (!ability.dig_num_expr.empty()) {
-        auto it = svars.find(ability.dig_num_expr);
-        if (it != svars.end()) ability.dig_num_expr = it->second;
-    }
+    resolve_svar_ref(ability.dig_num_expr, svars);
     // ChooseNumber Max$ and a dynamic CounterNum$ both stash a raw SVar token (Wrath of the
     // Skies: Max$ Max → Count$YourCountersEnergy; CounterNum$ X → Count$xPaid). Resolve those
     // SVar references to their runtime Count$ expressions so the effect can evaluate them at
     // resolution.
-    if (ability.category == "ChooseNumber" && !ability.dynamic_amount_expr.empty()) {
-        auto it = svars.find(ability.dynamic_amount_expr);
-        if (it != svars.end()) ability.dynamic_amount_expr = it->second;
-    }
-    if (auto *cp = std::get_if<CounterParams>(&ability.params)) {
-        if (!cp->count_expr.empty()) {
-            auto it = svars.find(cp->count_expr);
-            if (it != svars.end()) cp->count_expr = it->second;
-        }
-    }
+    if (ability.category == "ChooseNumber") resolve_svar_ref(ability.dynamic_amount_expr, svars);
+    if (auto *cp = std::get_if<CounterParams>(&ability.params)) resolve_svar_ref(cp->count_expr, svars);
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →
     // Remembered$CardManaCost): resolve the reference to its runtime expression so the Token
     // effect can size the created token's P/T at creation time.
     if (auto *tkp = std::get_if<TokenParams>(&ability.params)) {
-        for (std::string *expr : {&tkp->power_expr, &tkp->toughness_expr}) {
-            if (expr->empty()) continue;
-            auto it = svars.find(*expr);
-            if (it != svars.end()) *expr = it->second;
-        }
+        resolve_svar_ref(tkp->power_expr, svars);
+        resolve_svar_ref(tkp->toughness_expr, svars);
     }
     // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
     // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
@@ -2762,8 +2757,7 @@ static bool is_runtime_amount_expr(const std::string &sv) {
 static void resolve_condition_svars(AbilityDef &ability,
                                     const std::map<std::string, std::string> &svars) {
     if (!ability.condition_check_svar.empty()) {
-        auto it = svars.find(ability.condition_check_svar);
-        if (it != svars.end()) ability.condition_check_svar = it->second;
+        resolve_svar_ref(ability.condition_check_svar, svars);
         if (ability.condition_svar_compare.empty()) ability.condition_svar_compare = "GE1";
     }
     if (ability.condition_svar_compare.size() >= 3) {
@@ -3348,15 +3342,13 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
                     sa.add_power = std::stoi(value);
                 else if (!value.empty()) {
-                    auto it = svars.find(value);
-                    sa.add_power_svar = (it != svars.end()) ? it->second : value;
+                    sa.add_power_svar = svar_or_literal(svars, value);
                 }
             } else if (key == "AddToughness") {
                 if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
                     sa.add_toughness = std::stoi(value);
                 else if (!value.empty()) {
-                    auto it = svars.find(value);
-                    sa.add_toughness_svar = (it != svars.end()) ? it->second : value;
+                    sa.add_toughness_svar = svar_or_literal(svars, value);
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
@@ -3371,21 +3363,18 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
                 // Resolve the named SVar to its ability body now (e.g. "AB$ Mana | Cost$ T |
                 // Produced$ C"); the layer-6 grant pass parses it to an Ability per recipient.
-                auto it = svars.find(value);
-                sa.add_ability = (it != svars.end()) ? it->second : value;
+                sa.add_ability = svar_or_literal(svars, value);
             } else if (key == "AddTrigger") {
                 // AddTrigger$ <SVarName> (The Tabernacle): a continuous static that grants a full
                 // TRIGGERED ability to every Affected$ permanent (CR 613.1f, layer 6). Resolve the
                 // named SVar to the trigger line body now; the paired AddSVar$ supplies the
                 // Execute$ SVar the layer-6 grant pass needs to reparse it (parse_granted_trigger).
-                auto it = svars.find(value);
-                sa.add_trigger = (it != svars.end()) ? it->second : value;
+                sa.add_trigger = svar_or_literal(svars, value);
             } else if (key == "AddSVar") {
                 // AddSVar$ <SVarName> — the Execute$ SVar the granted trigger references. Store both
                 // its name (so the reparse's svars map is keyed correctly) and its resolved body.
                 sa.add_trigger_svar_name = value;
-                auto it = svars.find(value);
-                sa.add_trigger_svar = (it != svars.end()) ? it->second : value;
+                sa.add_trigger_svar = svar_or_literal(svars, value);
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Per-source counter gate (Kaito: Affected$ Permanent.Self+counters_GE1_LOYALTY).
@@ -3420,8 +3409,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                     // X = Count$ThisTurnCast_Card.YouCtrl). A "spells you cast this turn" count is
                     // the per-cast relative surcharge; resolve the SVar and flag it so the cost
                     // computation adds the caster's spells-cast-this-turn count (CR 601.2f).
-                    auto it = svars.find(value);
-                    const std::string body = (it != svars.end()) ? it->second : value;
+                    const std::string body = svar_or_literal(svars, value);
                     if (body.find("ThisTurnCast") != std::string::npos)
                         sa.raise_cost_per_spell_cast = true;
                 }
@@ -3498,11 +3486,9 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             } else if (key == "CharacteristicDefining") {
                 sa.characteristic_defining = (value == "True");
             } else if (key == "SetPower") {
-                auto it = svars.find(value);
-                sa.set_power_svar = (it != svars.end()) ? it->second : value;
+                sa.set_power_svar = svar_or_literal(svars, value);
             } else if (key == "SetToughness") {
-                auto it = svars.find(value);
-                std::string resolved = (it != svars.end()) ? it->second : value;
+                std::string resolved = svar_or_literal(svars, value);
                 // Resolve SVar$<name>/Plus.<N> pattern at parse time
                 // e.g. "SVar$X/Plus.1" → resolve X from svars, append "/Plus.1"
                 if (resolved.rfind("SVar$", 0) == 0) {
@@ -3543,8 +3529,7 @@ static StaticAbility parse_one_static_ability(const std::string &line,
             } else if (key == "MayPlay") {
                 if (value == "True") sa.may_play_from_graveyard = true;
             } else if (key == "CheckSVar") {
-                auto it = svars.find(value);
-                sa.check_svar_expr = (it != svars.end()) ? it->second : value;
+                sa.check_svar_expr = svar_or_literal(svars, value);
             } else if (key == "SVarCompare") {
                 sa.svar_compare = value;
             } else if (key == "IsPresent") {
@@ -3892,8 +3877,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 // evaluated directly (mirrors the trigger-side CheckSVar handling). An absent
                 // CheckSVar leaves the gate empty = the additive draw always applies.
                 if (!draw_check_svar.empty()) {
-                    auto cv = svars.find(draw_check_svar);
-                    r.draw_condition_count_expr = (cv != svars.end()) ? cv->second : draw_check_svar;
+                    r.draw_condition_count_expr = svar_or_literal(svars, draw_check_svar);
                     r.draw_condition_compare = draw_svar_compare;
                 }
                 result.push_back(r);
