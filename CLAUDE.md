@@ -549,6 +549,7 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `ci_check.py` — `make check` driver; default `ALL_TIERS` vs `OPT_IN_TIERS` (`actor`, `analysis`,
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
+- `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),
