@@ -136,12 +136,11 @@ struct CardData{
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)
     ManaValue escape_mana_cost;          // mana portion of the escape cost (e.g. {2}{B})
     AltCost escape_alt_cost;             // additional escape costs (e.g. ExileFromGrave group-type cost)
-    bool is_equipment = false;           // has K:Equip line
-    ManaValue equip_cost;                // parsed from K:Equip:cost
-    // Reconfigure (CR 702.151): an Equipment keyword on a creature card. It is parsed like
-    // Equip (is_equipment + equip_cost both set), but is_reconfigure additionally (a) lets the
-    // attach ability target only a creature you control, (b) offers an "unattach" ability while
-    // attached, and (c) makes the permanent stop being a creature while it is attached.
+    bool is_equipment = false;           // has a K:Equip (or K:Reconfigure) line
+    // Reconfigure (CR 702.151): an Equipment keyword on a creature card. Its attach and unattach
+    // abilities are parsed onto `abilities` like Equip's; is_reconfigure additionally lets it
+    // equip while it is a creature (CR 301.5c) and makes the permanent stop being a creature
+    // while it is attached (CR 702.151b).
     bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring

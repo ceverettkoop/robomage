@@ -495,9 +495,9 @@ static constexpr int OPTION_ORDINAL_MAX = 63;  // normalizer for the per-action 
                                                // value, color index, cast variant, top-of-library
                                                // depth, binary pole, activated-ability index within
                                                // the source's ability list (so same-permanent
-                                               // activations — e.g. planeswalker loyalty abilities —
-                                               // are distinguishable; synthesised equip/unattach use
-                                               // 32/33); -1 = not applicable
+                                               // activations — e.g. planeswalker loyalty abilities, or
+                                               // reconfigure's attach and unattach — are
+                                               // distinguishable); -1 = not applicable
 // Number of per-action metadata arrays folded into the RL observation vector,
 // in order: cats | ids | ctrl | zone_ref | slot_ref | option_ordinal. Each is
 // MAX_ACTIONS wide. The `pub` array is ALSO emitted in the BQUERY payload but is a

@@ -151,8 +151,8 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // card (see proc_mandatory_choice's miracle-reveal branch). On resolution it offers the
         // miracle cast of the source card. See effect_miracle.cpp.
         {"MiracleCast", EffectKind::MiracleCast},
-        // Reconfigure's "[Cost]: Unattach this permanent" (CR 702.151a), synthesized with the
-        // equip ability from K:Reconfigure. See effect_unattach.cpp.
+        // Reconfigure's "[Cost]: Unattach this permanent" (CR 702.151a), parsed with the equip
+        // ability from K:Reconfigure. See effect_unattach.cpp.
         {"Unattach", EffectKind::Unattach},
         // Ninjutsu's "Put this card onto the battlefield from your hand tapped and attacking"
         // (CR 702.49a), the stack ability parsed from K:Ninjutsu. See effect_ninjutsu.cpp.

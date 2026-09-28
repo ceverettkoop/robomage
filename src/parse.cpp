@@ -65,6 +65,8 @@ static void split_keywords(const std::string& kw_line, std::vector<std::string>&
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
 static void parse_card_face(const std::string& front_script, CardData& card);
+static Ability equip_keyword_ability(const std::string &kw_line, const std::string &category,
+                                     const std::string &label);
 // Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
 // card's gift effect (Into the Flood Maw's tapped-Fish token).
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
@@ -393,6 +395,30 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
     }
 }
 
+// One of the sorcery-speed activated abilities an equip-style keyword line (K:Equip:<cost>,
+// K:Reconfigure:<cost>) represents, with the cost after the first ':' and `label` shown in the
+// action menu. `category` "Attach" is "[Cost]: Attach this permanent to target creature you
+// control" (CR 702.6a, 702.151a), activatable only while the Equipment can equip some creature
+// its controller controls (Activation$ gate "CanEquip", CR 301.5c); "Unattach" is reconfigure's
+// "[Cost]: Unattach this permanent", activatable only while it is attached (gate "Attached").
+static Ability equip_keyword_ability(const std::string &kw_line, const std::string &category,
+                                     const std::string &label) {
+    Ability ab;
+    ab.ability_type = Ability::ACTIVATED;
+    ab.category = category;
+    ab.sorcery_speed_only = true;
+    ab.keyword_label = label;
+    if (category == "Attach") {
+        ab.valid_tgts = "Creature.Other+YouCtrl";
+        ab.activation_condition = "CanEquip";
+    } else {
+        ab.activation_condition = "Attached";
+    }
+    size_t colon = kw_line.find(':');
+    if (colon != std::string::npos) parse_activation_cost(kw_line.substr(colon + 1), ab);
+    return ab;
+}
+
 Entity parse_card_script(std::string path) {
     auto stream = std::ifstream(path);
     if (!stream.is_open()) {
@@ -689,27 +715,27 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.static_abilities.push_back(sa);
             continue;
         }
-        // K:Equip:1 R  (equip cost after "Equip:")
+        // K:Equip:<cost> (CR 702.6a): "[Cost]: Attach this permanent to target creature you
+        // control. Activate only as a sorcery." Stored as an ordinary activated ability on the
+        // card (resolved by effects::attach), gated on the Equipment being able to equip some
+        // creature (CR 301.5c).
         if (kw_line.rfind("Equip", 0) == 0) {
             card.is_equipment = true;
-            size_t colon = kw_line.find(':');
-            if (colon != std::string::npos) {
-                card.equip_cost = parse_mana_cost(kw_line.substr(colon + 1));
-            }
+            card.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Equip"));
             card.keywords.push_back("Equip");
             continue;
         }
-        // K:Reconfigure:2  (CR 702.151) — an Equipment keyword on a creature card. Parsed like
-        // Equip (the cost grants an attach ability and shares the equip-attach machinery), plus the
-        // reconfigure-specific behaviour flagged by is_reconfigure: attach only to a creature you
-        // control, an unattach ability while attached, and "while attached this isn't a creature".
+        // K:Reconfigure:<cost> (CR 702.151a): an Equipment keyword on a creature card, two
+        // activated abilities: "[Cost]: Attach this permanent to another target creature you
+        // control. Activate only as a sorcery." and "[Cost]: Unattach this permanent. Activate
+        // only if this permanent is attached to a creature and only as a sorcery." It shares the
+        // equip-attach machinery; is_reconfigure additionally lets it equip while a creature
+        // (CR 301.5c) and makes it stop being a creature while attached (CR 702.151b).
         if (kw_line.rfind("Reconfigure", 0) == 0) {
             card.is_equipment = true;
             card.is_reconfigure = true;
-            size_t colon = kw_line.find(':');
-            if (colon != std::string::npos) {
-                card.equip_cost = parse_mana_cost(kw_line.substr(colon + 1));
-            }
+            card.abilities.push_back(equip_keyword_ability(kw_line, "Attach", "Reconfigure"));
+            card.abilities.push_back(equip_keyword_ability(kw_line, "Unattach", "Unattach"));
             card.keywords.push_back("Reconfigure");
             continue;
         }

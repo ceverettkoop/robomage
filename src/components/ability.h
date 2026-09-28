@@ -176,6 +176,9 @@ struct Ability{
     // it is activatable whenever such an attacker exists. On the stack it puts THIS card onto the
     // battlefield tapped and attacking (effects::ninjutsu).
     bool is_ninjutsu = false;
+    // The keyword an ability derived from a keyword line stands for, shown as its action label
+    // ("Equip", "Reconfigure", "Unattach"); empty for an ability from an A: line.
+    std::string keyword_label = "";
     // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
     // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
     Entity ninjutsu_attack_target = 0;

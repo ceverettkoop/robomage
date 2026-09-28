@@ -1279,6 +1279,15 @@ inline bool activation_condition_met(const Ability &ab, Zone::Ownership controll
         return source != 0 &&
                global_coordinator.entity_has_component<Permanent>(source) &&
                !global_coordinator.GetComponent<Permanent>(source).is_monstrous;
+    // CanEquip (CR 702.6a, 301.5c): an equip ability (K:Equip / K:Reconfigure) is activatable
+    // only while its Equipment can equip some creature its controller controls.
+    if (ab.activation_condition == "CanEquip")
+        return source != 0 && !equip_candidates(source, controller, entities).empty();
+    // Attached (CR 702.151a): reconfigure's unattach ability — "Activate only if this permanent
+    // is attached to a creature".
+    if (ab.activation_condition == "Attached")
+        return source != 0 && global_coordinator.entity_has_component<Permanent>(source) &&
+               global_coordinator.GetComponent<Permanent>(source).equipped_to != 0;
     return false;
 }
 
