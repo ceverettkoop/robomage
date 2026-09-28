@@ -107,15 +107,20 @@ def _card_to_deck_name(name):
 
 _TEMP_DECKS_DIR = _DECKS_DIR / "temp"
 
+# Printed when a --play script ends (game over or decision cap) before every
+# spec was applied; the scenarios tier treats it as a failure.
+SCRIPT_INCOMPLETE = "SCRIPT INCOMPLETE"
+
 
 def _make_deck_file(hand, library, label):
     """Write a .dk file into decks/temp/ with hand cards first.
 
     Returns the deck name (relative to decks/) for --deck-a/--deck-b args.
-    The engine loads decks from resources/decks/<name>.dk.
+    The engine loads decks from resources/decks/<name>.dk. The name carries the
+    process id so concurrent harness runs (the scenarios tier) never share a file.
     """
     _TEMP_DECKS_DIR.mkdir(exist_ok=True)
-    name = f"temp/_test_{label}"
+    name = f"temp/_test_{label}_{os.getpid()}"
     path = str(_DECKS_DIR / f"{name}.dk")
     with open(path, "w") as f:
         for card in hand:
@@ -428,6 +433,10 @@ def main():
         # can be replayed deterministically as a plain --actions integer list.
         if isinstance(ctrl_a, PlayController) and ctrl_a.resolved:
             print(f"\nresolved --actions: {','.join(map(str, ctrl_a.resolved))}")
+        if isinstance(ctrl_a, PlayController) and ctrl_a.unused_specs():
+            unused = ctrl_a.unused_specs()
+            print(f"\n{SCRIPT_INCOMPLETE}: {len(unused)} --play spec(s) never "
+                  f"applied: {', '.join(unused)}")
     finally:
         for p in cleanup_paths:
             try:

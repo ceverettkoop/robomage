@@ -1217,6 +1217,10 @@ class PlayController(_ScriptedLine):
         self.label = label
         self.resolved: list[int] = []
 
+    def unused_specs(self) -> list[str]:
+        """The specs not yet applied (empty once the script has run out)."""
+        return [str(s) for s in self._specs[self._i:]]
+
     def _player_choice(self, obs, num_choices, action_masks, decoded_actions) -> int:
         """A decision the script does not make: the priority seat's player's."""
         idx = self._player_for(obs).choose(obs, num_choices,
