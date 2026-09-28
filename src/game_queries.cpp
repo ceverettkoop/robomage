@@ -969,9 +969,8 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player) {
 
 int exiled_card_counters(Entity card) {
     int n = 0;
-    const int *time = cur_game.suspend_time_counters.find(card);
-    if (time && *time > 0) n += *time;
-    if (cur_game.void_countered.count(card)) n += 1;
+    for (const auto &c : global_coordinator.GetComponent<Zone>(card).counters)
+        if (c.second > 0) n += c.second;
     return n;
 }
 
@@ -980,12 +979,9 @@ int object_counters(Entity e, const std::string &type) {
     if (!global_coordinator.entity_has_component<Zone>(e) ||
         global_coordinator.GetComponent<Zone>(e).location != Zone::EXILE)
         return 0;
-    if (type == "VOID") return cur_game.void_countered.count(e) ? 1 : 0;
-    if (type == "TIME") {
-        const int *time = cur_game.suspend_time_counters.find(e);
-        return time ? std::max(*time, 0) : 0;
-    }
-    return 0;
+    const CounterMap &counters = global_coordinator.GetComponent<Zone>(e).counters;
+    auto it = counters.find(type);
+    return it == counters.end() ? 0 : std::max(it->second, 0);
 }
 
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt) {

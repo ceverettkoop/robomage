@@ -754,7 +754,6 @@ struct Game {
         std::vector<CombatDamagePreventionShield> combat_damage_prevention_shields;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
-        ObjectSet void_countered;  // cards exiled with void counters (Dauthi Voidwalker)
         // Miracle (CR 702.94): miracle_reveal_pending is a first-of-turn miracle card just drawn,
         // awaiting its owner's PRIVATE reveal decision — the "you may reveal it as you draw it"
         // special action (off the stack, hidden from the opponent until they choose to reveal),
@@ -815,13 +814,6 @@ struct Game {
             bool warp = false;
         };
         ObjectMap<ImpulseCastPermission> impulse_cast_permission;
-        // Suspend time counters (CR 702.62 / 122): a card exiled with suspend carries N time
-        // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
-        // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
-        // iff it is in this map with a positive count and still in the exile zone. Removed to 0 at
-        // its owner's upkeep (effects::suspend_tick); removing the last counter triggers the free
-        // cast (CR 702.62a third ability, effects::suspend_cast).
-        ObjectMap<int> suspend_time_counters;
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass
         // can suspend and resume): they entered the battlefield together, so none of them is on the
         // battlefield yet when another one's "as it enters" condition is checked (CR 614.12, e.g.

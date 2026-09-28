@@ -492,8 +492,8 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
     // stack (players get priority, opponents can respond), NOT applied as an immediate step side
     // effect. The removal is handled by the SuspendTick effect on resolution, and removing the last
     // counter triggers the free cast (SuspendCast); see effect_suspend_tick. A suspended card is one in the
-    // exile zone with a positive time-counter count (702.62b), tracked in suspend_time_counters
-    // (an exiled card is not a permanent). General over any Suspend card.
+    // exile zone with a positive time-counter count (702.62b), kept on its Zone (an exiled card
+    // is not a permanent). General over any Suspend card.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::UPKEEP_BEGAN || !ev.HasParam(Params::PLAYER)) continue;
         Entity upkeep_player = ev.GetParam<Entity>(Params::PLAYER);
@@ -501,10 +501,11 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                              : (upkeep_player == game.player_b_entity) ? Zone::PLAYER_B
                                                                        : Zone::UNKNOWN;
         if (ctrl == Zone::UNKNOWN) continue;
-        for (Entity card : game.suspend_time_counters.live_keys()) {
-            if (*game.suspend_time_counters.find(card) <= 0) continue;
+        for (Entity card : mEntities) {
             auto &cz = global_coordinator.GetComponent<Zone>(card);
             if (cz.location != Zone::EXILE || cz.owner != ctrl) continue;  // still suspended, this player's
+            auto time = cz.counters.find("TIME");
+            if (time == cz.counters.end() || time->second <= 0) continue;
             std::string cname = global_coordinator.entity_has_component<CardData>(card)
                                     ? global_coordinator.GetComponent<CardData>(card).name : "card";
 

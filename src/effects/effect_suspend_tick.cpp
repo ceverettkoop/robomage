@@ -20,8 +20,8 @@ namespace effects {
 // is suspended, remove a time counter from it."
 //
 // The suspended card lives in the EXILE zone and is not a permanent, so its time counters can't be
-// stored in Permanent::counters; they are tracked in cur_game.suspend_time_counters keyed by the
-// card entity (ab.source). This handler decrements that count. When it reaches 0 the card stops
+// stored in Permanent::counters; they are on its Zone (Zone::counters). This handler decrements
+// that count. When it reaches 0 the card stops
 // being suspended (702.62b), and removing the last counter triggers the third ability ("When the
 // last time counter is removed from this card, if it's exiled, you may play it without paying its
 // mana cost if able"), queued as its own triggered ability so players get priority before it
@@ -32,13 +32,16 @@ HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameC
     // The card must still be the suspended object in exile (one that left exile is a new object
     // with no time counters, CR 400.7 / 122.2).
     Entity card = ab.source.get();
-    int *counters = cur_game.suspend_time_counters.find(card);
-    if (counters == nullptr || !is_exiled(card)) return HandlerResult::DONE_RUN_SUBS;
-    *counters -= 1;
+    if (card == 0 || !is_exiled(card)) return HandlerResult::DONE_RUN_SUBS;
+    CounterMap &counters = global_coordinator.GetComponent<Zone>(card).counters;
+    auto time = counters.find("TIME");
+    if (time == counters.end()) return HandlerResult::DONE_RUN_SUBS;
+    time->second -= 1;
+    const int remaining = time->second;
     game_log("Removed a time counter from %s (%d remaining).\n", entity_name(card).c_str(),
-             *counters);
-    if (*counters > 0) return HandlerResult::DONE_RUN_SUBS;
-    cur_game.suspend_time_counters.erase(card);
+             remaining);
+    if (remaining > 0) return HandlerResult::DONE_RUN_SUBS;
+    counters.erase("TIME");
     Ability cast_trigger;
     cast_trigger.ability_type = Ability::TRIGGERED;
     cast_trigger.category = "SuspendCast";

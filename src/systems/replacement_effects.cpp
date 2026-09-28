@@ -555,7 +555,7 @@ size_t g_choose_one_prompts = 0;
 //   - MOVE_TO_ZONE -> GRAVEYARD: two EXILE_INSTEAD sources in play at once
 //     (wrb_energy runs 4x Leyline of the Void; doomsday runs 2x Dauthi
 //     Voidwalker). The outcome of every choice is identical (exile the card;
-//     void_countered records no source), only the prompt itself differs.
+//     the void counter records no source), only the prompt itself differs.
 //   - MOVE_TO_ZONE -> BATTLEFIELD: two PREVENT_ETB / EXILE_INSTEAD_OF_ETB
 //     sources (wrb_energy runs 2x Containment Priest).
 //   - UNTAP: two SKIP_UNTAP sources matching one permanent (gw_maverick runs

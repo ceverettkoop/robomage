@@ -3297,8 +3297,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // SUSPEND (CR 702.62a): pay the suspend cost and exile the card from hand with N time
             // counters on it. This is a special action (doesn't use the stack). The legal-action
             // gate already verified sorcery-speed timing, no cast prohibition, and affordability of
-            // the suspend mana cost. Time counters are tracked in cur_game.suspend_time_counters
-            // (an exiled card is not a permanent, so its counters can't live in Permanent::counters).
+            // the suspend mana cost. Its time counters are on its Zone (an exiled card is not a
+            // permanent, so its counters can't live in Permanent::counters).
             if (action.suspend_action) {
                 Entity card = action.source_entity;
                 auto &zone = global_coordinator.GetComponent<Zone>(card);
@@ -3312,7 +3312,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     break;
                 }
                 orderer->add_to_zone(false, card, Zone::EXILE);
-                cur_game.suspend_time_counters[card] = cd.suspend_count;
+                zone.counters["TIME"] = cd.suspend_count;
                 game_log("%s suspends %s (exiled with %d time counter(s)).\n",
                          player_name(owner).c_str(), cd.name.c_str(), cd.suspend_count);
                 game.take_action();

@@ -202,7 +202,7 @@
 //                impulse-cast grants — Light Up the Stage, Ugin's -11, Amped Raptor,
 //                a suspend free cast, warp), then
 //                  [4]  counters / ZONE_COUNTER_NORMALIZER — suspend time counters
-//                       (Game::suspend_time_counters, Rift Bolt) plus a void counter
+//                       (Zone::counters, Rift Bolt) plus a void counter
 //                       (Dauthi Voidwalker); exiled_card_counters in game_queries.h
 //                Exile is public except an opponent's FACE-DOWN card (CR 708.2, The
 //                Creation of Avacyn chapter I): that slot is filled but hidden — the

@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <string>
 
+#include "counter_map.h"
+
 struct Zone {
         enum ZoneValue: int { LIBRARY, BATTLEFIELD, HAND, STACK, GRAVEYARD, EXILE, SIDEBOARD };
         enum Ownership: int {UNKNOWN, PLAYER_A, PLAYER_B};
@@ -39,6 +41,11 @@ struct Zone {
         // later effect (a SetState$ TurnFaceUp) turns it face up by clearing this flag. Reset
         // on every zone change (a card that leaves exile is no longer the face-down object).
         bool is_face_down = false;
+        // Counters on this card while it is not a permanent (a permanent's are
+        // Permanent::counters): suspend's TIME counters (CR 702.62) and a VOID counter (Dauthi
+        // Voidwalker) on an exiled card. Cleared on every zone change — counters are not retained
+        // by the object the card becomes (CR 122.2 / 400.7).
+        CounterMap counters;
 };
 
 #endif /* ZONE_H */

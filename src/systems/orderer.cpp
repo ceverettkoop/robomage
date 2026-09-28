@@ -148,10 +148,6 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // stale mark would describe a later entry of the same card (Animate Dead reanimating a
     // countered Amped Raptor wrongly fired its "if you cast it from your hand" clause).
     if (destination != Zone::BATTLEFIELD) drop_entry_info(target);
-    // A void counter on an exiled card (Dauthi Voidwalker) doesn't follow the card out of exile:
-    // it is a new object with no counters (CR 400.7, 122.2).
-    if (target_zone.location == Zone::EXILE && destination != Zone::EXILE)
-        cur_game.void_countered.erase(target);
 
     // CR 400.7: a card that already left the battlefield becomes a new object again with this
     // move, so its snapshot from that exit no longer describes it (a departure from the
@@ -301,8 +297,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // An open follow window keeps the old object findable for the rest of the effect (CR 400.7j).
     note_object_moved(target, target_zone.obj_gen);
     target_zone.obj_gen = cur_game.next_obj_gen++;
-    // The void counter a replacement put on the card goes on the object it became in exile.
-    if (with_void_counter && destination == Zone::EXILE) cur_game.void_countered.insert(target);
+    // Counters on the card (a void counter, time counters) don't follow it: the object it became
+    // has none (CR 122.2). The void counter a replacement put on it goes on that new object.
+    target_zone.counters.clear();
+    if (with_void_counter && destination == Zone::EXILE) target_zone.counters["VOID"] = 1;
 
     // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
     // components are normally gone already — stripped by the state-based pass while it was away —
@@ -439,9 +437,9 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
 
 // See declaration in orderer.h.
 void Orderer::complete_cast_move(Entity card, const Zone &origin) {
-    // A void counter on an exiled card (Dauthi Voidwalker) doesn't follow it out of exile
-    // (CR 400.7, 122.2).
-    if (origin.location == Zone::EXILE) cur_game.void_countered.erase(card);
+    // Counters on the card in its origin zone (Dauthi Voidwalker's void counter) don't follow it
+    // onto the stack (CR 122.2); a reversed cast restores its origin Zone with them.
+    global_coordinator.GetComponent<Zone>(card).counters.clear();
     supersede_last_known_info(card);
     Event ev(Events::CARD_CHANGED_ZONE);
     ev.SetParam(Params::ENTITY, card);

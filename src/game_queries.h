@@ -765,10 +765,9 @@ CardPlayPermission card_play_permission(Entity card, Zone::Ownership player);
 // identically, so a choice menu offers one of them. Defined in game_queries.cpp.
 bool interchangeable_cards(Entity a, Entity b);
 
-// Counters on a card in exile: its suspend time counters (Game::suspend_time_counters) plus
-// 1 for a void counter (Game::void_countered, Dauthi Voidwalker). An exiled card is not a
-// permanent, so these live in Game rather than Permanent::counters. Defined in
-// game_queries.cpp.
+// Counters on a card in exile: its suspend time counters plus a void counter (Dauthi
+// Voidwalker). An exiled card is not a permanent, so these are on its Zone (Zone::counters)
+// rather than Permanent::counters. Defined in game_queries.cpp.
 int exiled_card_counters(Entity card);
 
 // Number of `type` counters on an object (CR 122.1): a battlefield permanent's

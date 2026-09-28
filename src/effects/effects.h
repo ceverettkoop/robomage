@@ -241,8 +241,8 @@ HandlerResult add_turn(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
 HandlerResult store_svar(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
 // Suspend upkeep tick (CR 702.62a, second ability): remove one suspend time counter from
-// ab.source (an exiled suspended card, tracked in cur_game.suspend_time_counters — an exiled card
-// is not a permanent, so its counters can't live in Permanent::counters). Removing the last one
+// ab.source (an exiled suspended card, counted on its Zone::counters — an exiled card is not a
+// permanent, so its counters can't live in Permanent::counters). Removing the last one
 // triggers the third ability (suspend_cast). General over any Suspend card. See
 // effect_suspend_tick.cpp.
 HandlerResult suspend_tick(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx);
