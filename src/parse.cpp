@@ -36,6 +36,20 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
+// A color's script spellings: its mana-symbol letter and its name as a Colors: word or filter
+// qualifier.
+static const struct {
+    char letter;
+    const char *word;
+    Colors color;
+} kColorNames[] = {
+    {'W', "White", WHITE}, {'U', "Blue", BLUE}, {'B', "Black", BLACK},
+    {'R', "Red", RED},     {'G', "Green", GREEN}, {'C', "Colorless", COLORLESS},
+};
+static Colors mana_letter_color(char c);
+static bool is_colored_mana_letter(char c);
+static Colors color_word_color(const std::string &word);
+static Colors filter_color(const std::string &filter);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
@@ -431,11 +445,7 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
         std::string filter = cost_str.substr(slash + 1);
         size_t close = filter.find('>');
         if (close != std::string::npos) filter = filter.substr(0, close);
-        if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
-        else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
-        else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
-        else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
-        else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
+        ac.exile_from_hand_color = filter_color(filter);
         matched_special = true;
     }
     // Sac<N/Type> — an ALTERNATIVE casting cost paid by sacrificing N permanents matching Type
@@ -1449,15 +1459,31 @@ static std::vector<std::string> multi_values_from_script(const std::string &scri
 
 // Map a single mana-cost color letter to its color, or NO_COLOR for a non-color char.
 static Colors mana_letter_color(char c) {
-    switch (c) {
-        case 'W': return WHITE;
-        case 'U': return BLUE;
-        case 'B': return BLACK;
-        case 'R': return RED;
-        case 'G': return GREEN;
-        case 'C': return COLORLESS;
-        default:  return NO_COLOR;
-    }
+    for (const auto &cn : kColorNames)
+        if (cn.letter == c) return cn.color;
+    return NO_COLOR;
+}
+
+// A mana-cost letter naming one of the five colors (W U B R G; not C).
+static bool is_colored_mana_letter(char c) {
+    Colors color = mana_letter_color(c);
+    return color != NO_COLOR && color != COLORLESS;
+}
+
+// The color a Colors: field word names ("green", case-insensitive), or NO_COLOR.
+static Colors color_word_color(const std::string &word) {
+    const std::string lower = ascii_lower(word);
+    for (const auto &cn : kColorNames)
+        if (lower == ascii_lower(cn.word)) return cn.color;
+    return NO_COLOR;
+}
+
+// The first of the five colors a card filter names as a qualifier ("Card.Blue+Other" → BLUE), or
+// NO_COLOR.
+static Colors filter_color(const std::string &filter) {
+    for (const auto &cn : kColorNames)
+        if (cn.color != COLORLESS && filter.find(cn.word) != std::string::npos) return cn.color;
+    return NO_COLOR;
 }
 
 // Recognize a HYBRID mana token (CR 107.4b/107.4e) within a single space-separated ManaCost
@@ -1472,11 +1498,8 @@ static Colors mana_letter_color(char c) {
 // as Forge has no {C/x} color-hybrid pip.
 static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *hybrid_out) {
     if (!hybrid_out) return false;
-    auto is_color_letter = [](char c) {
-        return c == 'W' || c == 'U' || c == 'B' || c == 'R' || c == 'G';
-    };
     // Two adjacent color letters: "WU" (color hybrid, no slash).
-    if (tok.size() == 2 && is_color_letter(tok[0]) && is_color_letter(tok[1])) {
+    if (tok.size() == 2 && is_colored_mana_letter(tok[0]) && is_colored_mana_letter(tok[1])) {
         HybridPip pip;
         pip.colors = {mana_letter_color(tok[0]), mana_letter_color(tok[1])};
         pip.generic_alt = 0;
@@ -1495,7 +1518,7 @@ static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *h
         bool lhs_num = !lhs.empty() &&
                        std::all_of(lhs.begin(), lhs.end(),
                                    [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
-        if (lhs_num && rhs.size() == 1 && is_color_letter(rhs[0])) {
+        if (lhs_num && rhs.size() == 1 && is_colored_mana_letter(rhs[0])) {
             HybridPip pip;
             pip.colors = {mana_letter_color(rhs[0])};
             pip.generic_alt = std::stoi(lhs);
@@ -1504,7 +1527,7 @@ static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *h
             return true;
         }
         // Slashed color hybrid "W/U".
-        if (lhs.size() == 1 && rhs.size() == 1 && is_color_letter(lhs[0]) && is_color_letter(rhs[0])) {
+        if (lhs.size() == 1 && rhs.size() == 1 && is_colored_mana_letter(lhs[0]) && is_colored_mana_letter(rhs[0])) {
             HybridPip pip;
             pip.colors = {mana_letter_color(lhs[0]), mana_letter_color(rhs[0])};
             pip.generic_alt = 0;
@@ -1535,57 +1558,23 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
     auto len = value.length();
     for (size_t i = 0; i < len; i++) {
         // Check for Phyrexian mana: XP where X is a color letter
-        bool is_phyrexian = false;
-        if (i + 1 < len && value[i + 1] == 'P') {
-            Colors phyrexian_color = NO_COLOR;
-            switch (value[i]) {
-                case 'W': phyrexian_color = WHITE; break;
-                case 'U': phyrexian_color = BLUE; break;
-                case 'B': phyrexian_color = BLACK; break;
-                case 'R': phyrexian_color = RED; break;
-                case 'G': phyrexian_color = GREEN; break;
-                default: break;
-            }
-            if (phyrexian_color != NO_COLOR) {
-                if (phyrexian_out) phyrexian_out->push_back(phyrexian_color);
-                i++;  // skip the 'P'
-                is_phyrexian = true;
-            }
+        if (i + 1 < len && value[i + 1] == 'P' && is_colored_mana_letter(value[i])) {
+            if (phyrexian_out) phyrexian_out->push_back(mana_letter_color(value[i]));
+            i++;  // skip the 'P'
+            continue;
         }
-        if (is_phyrexian) continue;
-        switch (value[i]) {
-            case 'W':
-                ret_val.emplace(WHITE);
-                break;
-            case 'U':
-                ret_val.emplace(BLUE);
-                break;
-            case 'B':
-                ret_val.emplace(BLACK);
-                break;
-            case 'R':
-                ret_val.emplace(RED);
-                break;
-            case 'G':
-                ret_val.emplace(GREEN);
-                break;
-            case 'C':
-                ret_val.emplace(COLORLESS);
-                break;
-            case 'X':
-                // X is variable; handled separately by has_x_cost flag
-                break;
-            default:
-                if (std::isdigit(static_cast<unsigned char>(value[i]))) {
-                    // Consume the entire run of digits so a multi-digit generic cost
-                    // (e.g. "10") parses as one number, not one generic per digit.
-                    size_t j = i;
-                    while (j < len && std::isdigit(static_cast<unsigned char>(value[j]))) j++;
-                    int generic = std::stoi(value.substr(i, j - i));
-                    for (int g = 0; g < generic; g++) ret_val.emplace(GENERIC);
-                    i = j - 1;  // for-loop ++ advances past the last digit
-                }
-                break;
+        // X is variable (no letter color, not a digit); handled separately by has_x_cost flag
+        Colors color = mana_letter_color(value[i]);
+        if (color != NO_COLOR) {
+            ret_val.emplace(color);
+        } else if (std::isdigit(static_cast<unsigned char>(value[i]))) {
+            // Consume the entire run of digits so a multi-digit generic cost
+            // (e.g. "10") parses as one number, not one generic per digit.
+            size_t j = i;
+            while (j < len && std::isdigit(static_cast<unsigned char>(value[j]))) j++;
+            int generic = std::stoi(value.substr(i, j - i));
+            for (int g = 0; g < generic; g++) ret_val.emplace(GENERIC);
+            i = j - 1;  // for-loop ++ advances past the last digit
         }
     }
     return ret_val;
@@ -1604,12 +1593,8 @@ static std::set<Colors> parse_colors_field(const std::string &colors_field) {
         size_t sp = colors_field.find_first_of(" ,", cp);
         if (sp == std::string::npos) sp = colors_field.size();
         std::string ctok = colors_field.substr(cp, sp - cp);
-        if      (ctok == "white")    ret.insert(WHITE);
-        else if (ctok == "blue")     ret.insert(BLUE);
-        else if (ctok == "black")    ret.insert(BLACK);
-        else if (ctok == "red")      ret.insert(RED);
-        else if (ctok == "green")    ret.insert(GREEN);
-        else if (ctok == "colorless")ret.insert(COLORLESS);
+        Colors color = color_word_color(ctok);
+        if (color != NO_COLOR) ret.insert(color);
         cp = sp + 1;
     }
     return ret;
@@ -3786,14 +3771,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                     size_t pp = 0; std::string k, v;
                     while (next_param(body, pp, k, v)) {
                         if (k != "ReplaceMana" || v.empty()) continue;
-                        switch (v[0]) {
-                            case 'W': produce_replacement_color = WHITE;     break;
-                            case 'U': produce_replacement_color = BLUE;      break;
-                            case 'B': produce_replacement_color = BLACK;     break;
-                            case 'R': produce_replacement_color = RED;       break;
-                            case 'G': produce_replacement_color = GREEN;     break;
-                            default:  produce_replacement_color = COLORLESS; break;
-                        }
+                        Colors color = mana_letter_color(v[0]);
+                        produce_replacement_color = (color == NO_COLOR) ? COLORLESS : color;
                     }
                 }
                 if (body.find("DB$ Tap") != std::string::npos &&
