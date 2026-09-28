@@ -9,6 +9,7 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/spell.h"
@@ -49,13 +50,13 @@ static std::string object_display_name(Entity e) { return entity_name(e); }
 // CR 303.4f/g: an Aura entering the battlefield WITHOUT being cast (any ChangeZone move to
 // the battlefield — Show and Tell's put-from-hand, a reanimation, a blink return) has no
 // cast-time enchant target, so the player it enters under chooses a legal object for it to
-// enchant AS it enters (303.4f). The choice is seeded into pending_aura_target so the
+// enchant AS it enters (303.4f). The choice is seeded into EntryInfo::aura_target so the
 // Permanent-creation SBA finalizes the attach link exactly like a resolved Aura spell — and a
 // graveyard-card choice (Animate Dead's "enchant creature card in a graveyard") stays pending
 // there so the aura's ETB trigger reanimates-and-attaches through the existing machinery.
 // With NO legal object the Aura never enters at all: it stays in its current zone (303.4g;
 // the stack-origin special case — graveyard instead — never reaches here, because a resolving
-// Aura SPELL goes through the cast path with its target already in pending_aura_target).
+// Aura SPELL goes through the cast path with its target already in EntryInfo::aura_target).
 // Returns true when the battlefield move may proceed. Driven purely by the card's Enchant
 // spec (CardData::enchant_filter), reusing the cast path's target legality machinery, so the
 // two paths can never disagree about what the aura may enchant.
@@ -68,7 +69,8 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, F
     if (!global_coordinator.entity_has_component<CardData>(e)) return true;
     const auto &cd = global_coordinator.GetComponent<CardData>(e);
     if (cd.enchant_filter.empty()) return true;              // not an Aura
-    if (cur_game.pending_aura_target.count(e)) return true;  // enchant object already chosen
+    const EntryInfo *entry = find_entry_info(e);
+    if (entry && !entry->aura_target.empty()) return true;  // enchant object already chosen
     // It enters under its owner's control for every ChangeZone put (CR 110.2a), so the owner
     // chooses what it will enchant (CR 303.4f).
     Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(e).owner;
@@ -83,7 +85,7 @@ static bool aura_enters_choose_object(const std::shared_ptr<Orderer> &orderer, F
     if (run_target_select(enchant_ab, tsel, asker, orderer, ctrl) == TargetStatus::SUSPENDED)
         return false;
     if (enchant_ab.target.empty()) return false;  // defensive: target_min=1 never offers "No target"
-    cur_game.pending_aura_target[e] = PendingAuraTarget{enchant_ab.target};
+    entry_info(e).aura_target = enchant_ab.target;
     return true;
 }
 
@@ -126,15 +128,10 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     // the entry's replacement effects see the face it will have on the battlefield (CR 614.12:
     // Containment Priest judges a returning Ajani by his planeswalker back face). The mark is
     // consumed when its Permanent is built, or dropped if the move is replaced elsewhere.
-    if (dest == Zone::BATTLEFIELD && enters_transformed) cur_game.pending_enters_transformed.insert(e);
+    if (dest == Zone::BATTLEFIELD && enters_transformed) entry_info(e).enters_transformed = true;
     const bool exile_face_down = ab.exile_face_down && dest == Zone::EXILE;
     orderer->add_to_zone(false, e, dest, LibraryTopView::OWNER, exile_face_down);
-    Zone::ZoneValue landed = global_coordinator.GetComponent<Zone>(e).location;
-    if (landed != Zone::BATTLEFIELD) {
-        cur_game.pending_enters_transformed.erase(e);
-        cur_game.pending_aura_target.erase(e);
-    }
-    return landed;
+    return global_coordinator.GetComponent<Zone>(e).location;
 }
 
 Zone::ZoneValue put_onto_battlefield(const std::shared_ptr<Orderer> &orderer, FrameCtx fctx, Entity e) {
@@ -418,7 +415,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                                          ab.origin != Zone::BATTLEFIELD && ab.enters_transformed;
                 if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD &&
                     ab.enters_tapped)
-                    cur_game.pending_enters_tapped.insert(tgt);
+                    entry_info(tgt).enters_tapped = true;
                 landed = change_zone_move(orderer, FrameCtx::blocking(), ab, tgt, ab.destination,
                                           transformed_entry);
                 if (landed == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD)
@@ -447,19 +444,19 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
 
     // Defined$ Enchanted — move the object this Aura enchants (CR 303.4 / 608.2c). Animate Dead's
     // ETB reanimation: the aura was cast "enchanting" a creature card in a graveyard (recorded at
-    // cast in pending_aura_target since the card had no Permanent to attach to), and this trigger
+    // cast in EntryInfo::aura_target since the card had no Permanent to attach to), and this trigger
     // returns THAT card to the battlefield under the aura controller's control (GainControl$) and
     // remembers it (RememberChanged$) so the chained DB$ Attach re-attaches the aura to it. For a
     // normal already-attached aura reading "enchanted", fall back to its live attachment link.
     if (ab.defined == "Enchanted" && !ab.source.empty()) {
         Entity enchanted = 0;
         const Entity aura = ab.source.get();
-        auto pat = cur_game.pending_aura_target.find(ab.source.lki_entity());
-        if (pat != cur_game.pending_aura_target.end()) {
+        const EntryInfo *aura_entry = find_entry_info(ab.source.lki_entity());
+        if (aura_entry && !aura_entry->aura_target.empty()) {
             // The card the aura was put onto the battlefield enchanting — only while it is still
             // that object: one that left its zone in response is a new object (CR 400.7) that
             // this aura does not enchant.
-            enchanted = pat->second.target.get();
+            enchanted = aura_entry->aura_target.get();
         } else if (aura != 0 && global_coordinator.entity_has_component<Permanent>(aura)) {
             enchanted = global_coordinator.GetComponent<Permanent>(aura).equipped_to.get();
         }
@@ -469,7 +466,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             in_declared_origin(ab, enchanted)) {
             std::string ename = entity_name(enchanted);
             if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
-                cur_game.pending_enters_tapped.insert(enchanted);
+                entry_info(enchanted).enters_tapped = true;
             Zone::ZoneValue landed = change_zone_move(orderer, fctx, ab, enchanted, ab.destination);
             if (decision_suspended()) return HandlerResult::SUSPENDED;
             if (landed == Zone::BATTLEFIELD)
@@ -486,7 +483,10 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // The reanimation is done; drop the pending marker so the "unattached aura" state-based
         // action resumes governing this aura (the immediately following apply_permanent_components
         // pass finalizes the DB$ Attach that this chain queues, before that SBA runs).
-        cur_game.pending_aura_target.erase(ab.source.lki_entity());
+        if (EntryInfo *aura_entry = find_entry_info(ab.source.lki_entity())) {
+            aura_entry->aura_target = ObjectRef{};
+            drop_entry_info_if_consumed(ab.source.lki_entity());
+        }
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -498,7 +498,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (self == 0) return HandlerResult::DONE_RUN_SUBS;
         std::string sname = entity_name(self);
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
-            cur_game.pending_enters_tapped.insert(self);
+            entry_info(self).enters_tapped = true;
         Zone::ZoneValue landed = change_zone_move(orderer, fctx, ab, self, ab.destination);
         if (decision_suspended()) return HandlerResult::SUSPENDED;
         // RememberChanged$ True — record the moved card so a later chained sub-ability can act on
@@ -511,7 +511,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             szone.controller = szone.owner;
             // Unearth (CR 702.84): flag the returning permanent so its Permanent is created
             // unearthed (haste + delayed end-step exile + leaves-the-battlefield exile).
-            if (ab.is_unearth) cur_game.pending_unearthed.insert(self);
+            if (ab.is_unearth) entry_info(self).unearthed = true;
         }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
@@ -544,7 +544,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             if (yc == 0) return HandlerResult::DONE_RUN_SUBS;  // declined — stays in exile for the hand leg
         }
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
-            cur_game.pending_enters_tapped.insert(card);
+            entry_info(card).enters_tapped = true;
         Zone::ZoneValue landed = change_zone_move(orderer, FrameCtx::blocking(), ab, card, ab.destination);
         if (landed == Zone::BATTLEFIELD)
             // The exiled card enters under its OWNER's control (CR 110.2a).
@@ -655,7 +655,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                 // the ability controller here let an attacker steal an opponent's permanent.
                 auto &ezone = global_coordinator.GetComponent<Zone>(e);
                 ezone.controller = ezone.owner;
-                if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(e);
+                if (ab.enters_tapped) entry_info(e).enters_tapped = true;
             }
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", nm.c_str(), dest_str);
@@ -827,7 +827,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
                                                       ab.destination, ab.enters_transformed);
             if (landed == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
-                if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
+                if (ab.enters_tapped) entry_info(chosen).enters_tapped = true;
             }
             // Duration$ UntilHostLeavesPlay on a search-based exile (Cloak and Dagger,
             // Entwined): register the linked return (which also records exiled_with), like the

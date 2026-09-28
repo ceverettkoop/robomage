@@ -14,6 +14,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
 #include "../components/effect.h"
@@ -64,7 +65,7 @@ static bool player_loss_reason(Zone::Ownership who, const Player &player, std::s
 static bool check_player_losses(Game &game);
 
 // Whether an Aura is attached to an illegal object or to nothing (CR 704.5m).
-static bool aura_attached_illegally(Game &game, Entity aura, const CardData &cd,
+static bool aura_attached_illegally(Entity aura, const CardData &cd,
                                     const Permanent &perm);
 
 // One pass over the battlefield collecting every permanent state-based action that applies to
@@ -266,18 +267,19 @@ static bool check_player_losses(Game &game) {
 // The structural part of "illegal": no attachment, the enchanted object has left the battlefield
 // / is no longer a creature (the common fall-off when the enchanted creature dies or is bounced),
 // or it enchants itself or is a creature (303.4d).
-static bool aura_attached_illegally(Game &game, Entity aura, const CardData &cd,
+static bool aura_attached_illegally(Entity aura, const CardData &cd,
                                     const Permanent &perm) {
     // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4) awaiting its
     // ETB reanimation: it entered unattached (its enchant target is still a graveyard card)
-    // and its trigger has not yet returned+attached the creature. Its pending_aura_target
-    // entry is retained (see state_manager_statics.cpp) to mark this window — skip the
+    // and its trigger has not yet returned+attached the creature. Its EntryInfo::aura_target
+    // is retained (see state_manager_statics.cpp) to mark this window — skip the
     // unattached-aura check until the reanimation resolves and attaches it, for as long as
     // that card is still a legal object for it (a card that left the graveyard in
     // response is gone, and the aura goes to the graveyard, CR 704.5m).
-    if (game.pending_aura_target.count(aura)) {
+    if (EntryInfo *entry = find_entry_info(aura); entry && !entry->aura_target.empty()) {
         if (pending_aura_target_legal(aura, perm.controller)) return false;
-        game.pending_aura_target.erase(aura);
+        entry->aura_target = ObjectRef{};
+        drop_entry_info_if_consumed(aura);
     }
     Entity enchanted = perm.equipped_to.get();
     if (enchanted == 0 || enchanted == aura || !is_battlefield_permanent(enchanted) ||
@@ -328,7 +330,7 @@ static void find_permanent_sbas(Game &game, const std::set<Entity> &entities, Sb
         // other non-Aura permanent attached to something, becomes unattached and stays on the
         // battlefield.
         if (cd && !cd->enchant_filter.empty()) {
-            if (aura_attached_illegally(game, entity, *cd, perm))
+            if (aura_attached_illegally(entity, *cd, perm))
                 out.put_into_graveyard(
                     entity, name + " is put into the graveyard (Aura not attached to a legal object)");
         } else if (!perm.equipped_to.empty() &&

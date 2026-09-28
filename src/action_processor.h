@@ -95,7 +95,7 @@ bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer)
 // resolution re-check — so they never disagree about what the Aura may enchant.
 Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership chooser);
 
-// True if `aura`'s recorded pending_aura_target is still a legal object for it to enchant
+// True if `aura`'s recorded EntryInfo::aura_target is still a legal object for it to enchant
 // (CR 608.2b / 608.3b): still the same object (CR 400.7) and still matching its enchant ability
 // for `controller`. False with no recorded target.
 bool pending_aura_target_legal(Entity aura, Zone::Ownership controller);

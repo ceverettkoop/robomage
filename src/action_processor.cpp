@@ -9,6 +9,7 @@
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/creature.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
@@ -244,9 +245,7 @@ static void rewind_cast(Game::PendingCast &pc, std::shared_ptr<Orderer> orderer)
     if (global_coordinator.entity_has_component<Spell>(spell_entity))
         global_coordinator.RemoveComponent<Spell>(spell_entity);
     orderer->rewind_cast_move(spell_entity, pc.cast_origin);
-    cur_game.pending_aura_target.erase(spell_entity);
-    cur_game.cast_from_hand.erase(spell_entity);
-    cur_game.pending_enters_transformed.erase(spell_entity);
+    drop_entry_info(spell_entity);
     cur_game.pending_gift_promised = false;
     cur_game.x_paid = pc.x_paid_before;
     pc = Game::PendingCast{};
@@ -1031,10 +1030,10 @@ Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership 
 }
 
 bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
-    auto pat = cur_game.pending_aura_target.find(aura);
-    if (pat == cur_game.pending_aura_target.end()) return false;
+    const EntryInfo *entry = find_entry_info(aura);
+    if (!entry || entry->aura_target.empty()) return false;
     if (!global_coordinator.entity_has_component<CardData>(aura)) return false;
-    Entity tgt = pat->second.target.get();
+    Entity tgt = entry->aura_target.get();
     if (tgt == 0) return false;
     const auto &cd = global_coordinator.GetComponent<CardData>(aura);
     return enchant_target_ability(aura, cd, controller).is_legal_target(tgt, controller);
@@ -1514,14 +1513,13 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
 
 // Every object or player the stack object `targeting_entity` targets, each listed once: the
 // targets of its Ability (all modes and sub-abilities), and — for an Aura spell — the object
-// its enchant ability targets (CR 115.1b, recorded in Game::pending_aura_target at cast).
+// its enchant ability targets (CR 115.1b, recorded in EntryInfo::aura_target at cast).
 static std::vector<Entity> chosen_targets_of(Entity targeting_entity) {
     std::vector<Entity> out;
     if (global_coordinator.entity_has_component<Ability>(targeting_entity))
         append_chosen_targets(global_coordinator.GetComponent<Ability>(targeting_entity), out);
-    auto pat = cur_game.pending_aura_target.find(targeting_entity);
-    const Entity aura_tgt =
-        pat != cur_game.pending_aura_target.end() ? pat->second.target.get() : Entity{0};
+    const EntryInfo *entry = find_entry_info(targeting_entity);
+    const Entity aura_tgt = entry ? entry->aura_target.get() : Entity{0};
     if (aura_tgt != 0 && std::find(out.begin(), out.end(), aura_tgt) == out.end())
         out.push_back(aura_tgt);
     return out;
@@ -2808,7 +2806,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     TargetStatus::DONE)
                     return;
                 if (!pc.enchant_ab.target.empty()) {
-                    cur_game.pending_aura_target[spell_entity] = PendingAuraTarget{pc.enchant_ab.target};
+                    entry_info(spell_entity).aura_target = pc.enchant_ab.target;
                     game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
                              card_data.name.c_str(),
                              target_display_name(cur_game, pc.enchant_ab.target.lki_entity()).c_str());
@@ -3352,12 +3350,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             // Modal DFC played as its back face (a land): the entity's CardData is the front
             // face, but it enters showing its back face. Reuse the transform machinery — mark it
-            // pending_enters_transformed so apply_permanent_components flips it to the back face
+            // EntryInfo::enters_transformed so apply_permanent_components flips it to the back face
             // at entry (suppressing the front-face ETBs). As a modal card it doesn't flip again.
             const CardData *played_face = &card_data;
             if (action.play_back_face && card_data.backside) {
                 played_face = card_data.backside.get();
-                cur_game.pending_enters_transformed.insert(land_entity);
+                entry_info(land_entity).enters_transformed = true;
             }
 
             // Move to battlefield. A land enters under the control of the player who played it
@@ -3402,7 +3400,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // needed and none is marked.
             if (action.cast_back_face && front_data.backside &&
                 is_permanent_card(*front_data.backside))
-                cur_game.pending_enters_transformed.insert(spell_entity);
+                entry_info(spell_entity).enters_transformed = true;
 
             // Record whether this spell is being cast from its caster's own hand (a normal
             // CR 601 hand cast), so a permanent that later resolves onto the battlefield can
@@ -3410,9 +3408,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // set here, consumed when the Permanent is created (state_manager_statics). Casts
             // from graveyard/exile (flashback, impulse) clear it so they don't count.
             if (zone.location == Zone::HAND && zone.owner == caster)
-                cur_game.cast_from_hand.insert(spell_entity);
-            else
-                cur_game.cast_from_hand.erase(spell_entity);
+                entry_info(spell_entity).cast_from_hand = true;
+            else if (EntryInfo *entry = find_entry_info(spell_entity))
+                entry->cast_from_hand = false;
 
             // Initialize the persisted cast state machine (Game::PendingCast) from the
             // consumed LegalAction and hand control to run_cast_flow — the extracted

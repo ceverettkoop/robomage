@@ -9,6 +9,7 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
@@ -78,13 +79,13 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             // Tapped$ / Attacking$ (Raph & Mikey): the found creature enters tapped and attacking
             // the same defender the source is attacking (CR 508.4). Reuse the ninjutsu one-shots —
             // apply_permanent_components consumes them once the card's Creature component exists.
-            if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(found);
+            if (ab.enters_tapped) entry_info(found).enters_tapped = true;
             if (ab.dig_until_attacking) {
                 ObjectRef attack_target;
                 const Entity src = ab.source.get();
                 if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
                     attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
-                if (attack_target.get() != 0) cur_game.pending_enters_attacking[found] = attack_target;
+                if (attack_target.get() != 0) entry_info(found).enters_attacking = attack_target;
             }
             // The shared uncast entry (an Aura picks what it enchants, CR 303.4f/g). The card
             // enters under the digging player's control (CR 608.2 — it comes from their own
@@ -94,8 +95,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
                 game_log("%s puts %s onto the battlefield tapped and attacking.\n",
                          player_name(owner).c_str(), nm.c_str());
             } else {
-                cur_game.pending_enters_tapped.erase(found);
-                cur_game.pending_enters_attacking.erase(found);
+                drop_entry_info(found);
             }
         } else {
             orderer->add_to_zone(false, found, found_dest);

@@ -4,6 +4,7 @@
 
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../components/entry_info.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
@@ -29,9 +30,9 @@ HandlerResult ninjutsu(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         game_log("%s is no longer in hand; ninjutsu does nothing.\n", name.c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
-    cur_game.pending_enters_tapped.insert(card);
-    if (ab.ninjutsu_attack_target.get() != 0)
-        cur_game.pending_enters_attacking[card] = ab.ninjutsu_attack_target;
+    EntryInfo &entry = entry_info(card);
+    entry.enters_tapped = true;
+    if (ab.ninjutsu_attack_target.get() != 0) entry.enters_attacking = ab.ninjutsu_attack_target;
     orderer->add_to_zone(false, card, Zone::BATTLEFIELD);
     game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",
              player_name(ab.controller).c_str(), name.c_str());

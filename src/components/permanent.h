@@ -74,7 +74,7 @@ struct Permanent {
     // set: it gained haste on entry, a delayed triggered ability exiles it at the beginning of the
     // next end step (CR 603.7b), and a leaves-the-battlefield replacement exiles it instead of
     // letting it go anywhere else (the redirect in Orderer::add_to_zone). Set when the Permanent is
-    // created from a card whose unearth ChangeZone resolved (game.pending_unearthed); a fresh
+    // created from a card whose unearth ChangeZone resolved (EntryInfo::unearthed); a fresh
     // re-entry by any other means leaves it false.
     bool unearthed = false;
     // This permanent entered the battlefield as a spell its controller cast from their own
@@ -87,12 +87,12 @@ struct Permanent {
     // 614.12. Read by the Card.wasCastByYou cast-condition on an "enters, if you cast it" ETB
     // trigger (The One Ring's protection grant). True only for a permanent that resolved onto the
     // battlefield from the stack as a cast spell; false for tokens, reanimation, ChangeZone-to-
-    // battlefield, and any other non-cast entry. Set one-shot from cur_game.cast_to_battlefield
+    // battlefield, and any other non-cast entry. Set one-shot from EntryInfo::cast
     // when the Permanent is created.
     bool entered_by_cast = false;
     // CR 107.3m: the X chosen for the spell that became this permanent as it resolved (0 for any
     // other entry). Its enters-the-battlefield triggered abilities use this X, though the
-    // permanent's own X is 0. Set one-shot from cur_game.pending_etb_xpaid.
+    // permanent's own X is 0. Set one-shot from EntryInfo::x_paid.
     int entered_x = 0;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
@@ -200,7 +200,7 @@ struct Permanent {
     // CR 702.175: this permanent entered the battlefield for its Impending alternate cost, so its
     // TIME counters are *impending* time counters — it is a noncreature until they all shed, and it
     // sheds one at the controller's end step. Set when the impending TIME counters are applied (the
-    // same place pending_impending is consumed). Required (in addition to TIME > 0) by both the
+    // same place EntryInfo::impending is consumed). Required (in addition to TIME > 0) by both the
     // impending creature-suppression strip and the end-step shed, so a future Vanishing/Suspend card
     // that also uses generic TIME counters does NOT get treated as an impending permanent.
     bool entered_via_impending = false;

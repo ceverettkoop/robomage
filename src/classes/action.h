@@ -89,13 +89,13 @@ struct LegalAction {
         bool impulse_cast = false;   // cast from exile under a cur_game.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
         // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
         // CardData is the front face), but it is being played as its back face (a land). The
-        // processor marks it pending_enters_transformed so it enters showing the back face.
+        // processor marks it EntryInfo::enters_transformed so it enters showing the back face.
         bool play_back_face = false;
         // CAST_SPELL of a modal DFC's BACK face when that back face is a NONLAND spell
         // (Tergrid, God of Fright // Tergrid's Lantern). The source entity is the combined
         // card (whose CardData is the front face); it is cast paying the BACK face's mana cost
         // and using the back face's characteristics/abilities (CR 712.8). If the back is a
-        // permanent the processor marks it pending_enters_transformed so it enters showing the
+        // permanent the processor marks it EntryInfo::enters_transformed so it enters showing the
         // back face (reusing the transform machinery, parallel to play_back_face for lands).
         bool cast_back_face = false;
         // SPECIAL_ACTION that puts the player's chosen Companion (CR 702.139) from the sideboard

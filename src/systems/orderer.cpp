@@ -17,6 +17,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../game_queries.h"
 #include "../transform.h"
@@ -112,7 +113,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         rev.origin = target_zone.location;
         rev.destination = destination;
         replacement::dispatch(rev);
-        if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
+        if (rev.prevented) {
+            // 614.13 — the move is prevented; the card remains in its origin zone, and an entry
+            // onto the battlefield it was headed for doesn't happen.
+            if (destination == Zone::BATTLEFIELD) drop_entry_info(target);
+            return;
+        }
         destination = rev.destination;
         with_void_counter = rev.with_void_counter;
         // Mox Diamond / Chrome Mox additional cost: the affected player chose to discard a card as
@@ -134,24 +140,14 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         destination = Zone::EXILE;
     }
 
-    // One-shot cast-time ETB markers (Amped Raptor's cast_from_hand, a modal back face's
-    // pending_enters_transformed) describe THIS cast's eventual battlefield entry; they are set
-    // when the cast begins and consumed when the resolved permanent is created. A spell leaving
-    // the stack for anywhere else — countered (CR 701.5a), fizzled (608.2b), a resolved
-    // instant/sorcery — ends that cast without a battlefield entry, so the markers must die with
-    // it: a stale entry would mark a later NON-cast entry of the same card as this cast (Animate
-    // Dead reanimating a countered Amped Raptor wrongly fired its "if you cast it from your
-    // hand" impulse clause).
-    if (target_zone.location == Zone::STACK && destination != Zone::BATTLEFIELD) {
-        cur_game.cast_from_hand.erase(target);
-        cur_game.pending_enters_transformed.erase(target);
-    }
-    // An Aura's chosen enchant object (pending_aura_target) belongs to the one battlefield entry
-    // it was chosen for; an Aura leaving the stack or the battlefield for any other zone (countered,
-    // or removed before its Animate Dead-style reanimation resolved) drops it (CR 400.7).
-    if ((target_zone.location == Zone::STACK || target_zone.location == Zone::BATTLEFIELD) &&
-        destination != Zone::BATTLEFIELD)
-        cur_game.pending_aura_target.erase(target);
+    // What was recorded about the card's battlefield entry (EntryInfo: how it was cast, an Aura's
+    // chosen enchant object, entering tapped/transformed/attacking) describes one entry onto the
+    // battlefield. A card going anywhere else — a spell countered (CR 701.5a) or fizzled
+    // (608.2b), a resolved instant/sorcery, a move redirected by a replacement, a permanent that
+    // left before its entry was complete — takes none of it into its next entry (CR 400.7): a
+    // stale mark would describe a later entry of the same card (Animate Dead reanimating a
+    // countered Amped Raptor wrongly fired its "if you cast it from your hand" clause).
+    if (destination != Zone::BATTLEFIELD) drop_entry_info(target);
     // A void counter on an exiled card (Dauthi Voidwalker) doesn't follow the card out of exile:
     // it is a new object with no counters (CR 400.7, 122.2).
     if (target_zone.location == Zone::EXILE && destination != Zone::EXILE)
@@ -316,7 +312,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // attachments, damage). Strip them here, at entry, AFTER the departure-side LKI snapshot
     // above captured last-known info; the next state-based pass then rebuilds the permanent fresh
     // exactly like any other entry — including the ENTERS_BATTLEFIELD replacement dispatch
-    // (enters tapped / with counters) and the pending_enters_tapped/_transformed one-shots.
+    // (enters tapped / with counters) and the EntryInfo recorded for this entry.
     // (Phasing never passes through add_to_zone; a phased-out permanent keeps its state, 702.26.)
     if (destination == Zone::BATTLEFIELD && origin != Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<Permanent>(target)) {
@@ -403,9 +399,6 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
         global_coordinator.RemoveComponent<Spell>(target);
     if (!is_card) {
         close_zone_gap(target);
-        cur_game.cast_from_hand.erase(target);
-        cur_game.pending_enters_transformed.erase(target);
-        cur_game.pending_aura_target.erase(target);
         global_coordinator.DestroyEntity(target);
         return false;
     }
@@ -900,7 +893,7 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         // A preset named by a double-faced card's back face starts showing that face (built
         // from it when its Permanent is created, like any entry transformed).
         if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
-            cur_game.pending_enters_transformed.insert(card_id);
+            entry_info(card_id).enters_transformed = true;
 
         placed.push_back(card_id);
     }

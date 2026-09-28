@@ -12,6 +12,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
 #include "../components/effect.h"
@@ -51,6 +52,9 @@ static std::vector<Entity> permanents_matching_static_filter(const ActiveStatic 
                                                              const std::set<Entity> &entities);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void mark_warp_permanent(Entity entity, Permanent &perm);
+static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm);
+static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm);
+static void enter_attacking_if_recorded(Entity entity);
 // One layer-4 (CR 613.1d) continuous effect, ordered by its timestamp (613.7): a static
 // ability's effect (`as`), or a resolved Animate's type grant recorded on the permanent it
 // animated (`animated`, its `animate_types` plus Creature when `animate_creature`).
@@ -623,6 +627,115 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
+// Hand the facts recorded about a card's battlefield entry (EntryInfo) to the Permanent `perm`
+// being built for it, and narrate how it enters. Each fact is consumed, so a later entry of the
+// same card starts with none of them; the entry's attachments are made by attach_on_entry.
+static void enter_as_recorded(Entity entity, const CardData &card_data, Permanent &perm) {
+    EntryInfo *entry = find_entry_info(entity);
+    if (entry) {
+        // It was cast (The One Ring's Card.wasCastByYou ETB gate); a later non-cast re-entry
+        // isn't treated as a cast.
+        if (entry->cast) perm.entered_by_cast = true;
+        // The X its spell was cast with, for its ETB triggered abilities (CR 107.3m).
+        if (entry->x_paid > 0) perm.entered_x = entry->x_paid;
+        // Cast from its controller's own hand (Amped Raptor's Card.wasCastFromYourHandByYou
+        // gate). Any other entry (reanimation, tokens, ChangeZone, impulse cast from exile)
+        // leaves it false.
+        if (entry->cast_from_hand) perm.cast_from_hand_by_controller = true;
+        // A card put onto the battlefield transformed enters with its back face up
+        // (CR 712.14a), as does a modal DFC played or cast as its back face (CR 712.8f):
+        // it shows that face from the start, so only that face's ETB triggers fire.
+        if (entry->enters_transformed && card_data.backside) {
+            perm.transformed = true;
+            if (!card_data.is_modal_dfc)
+                game_log("%s enters transformed.\n", perm.name.c_str());
+        }
+        entry->cast = false;
+        entry->x_paid = 0;
+        entry->cast_from_hand = false;
+        entry->enters_transformed = false;
+    }
+    if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
+    if (!entry) return;
+    // Cast for its evoke cost: its evoke self-sacrifice ETB trigger fires.
+    if (entry->evoked) perm.evoked = true;
+    // Cast from the graveyard for its Escape cost: it "escaped" (Uro's sacrifice-unless).
+    if (entry->escaped) perm.cast_with_escape = true;
+    // Cast with its Offspring additional cost: its offspring token-copy ETB trigger fires.
+    if (entry->offspring) perm.entered_with_offspring = true;
+    // Cast for its Impending alternate cost (CR 702.175d): the permanent enters with N time
+    // counters. Set them on the Permanent being built (before it is added) so this same pass's
+    // creature-suppression check already sees them and strips the Creature component — it
+    // enters as a noncreature.
+    if (entry->impending && card_data.alt_cost.impending_count > 0) {
+        perm.counters["TIME"] = card_data.alt_cost.impending_count;
+        perm.entered_via_impending = true;  // marks these TIME counters as impending
+        game_log("%s enters with %d time counter(s) (impending).\n",
+                 card_data.name.c_str(), card_data.alt_cost.impending_count);
+    }
+    // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains haste,
+    // gets the delayed end-step exile, and the leaves→exile redirect.
+    if (entry->unearthed) mark_unearthed_permanent(entity, perm);
+    // Warp: cast for its warp alternate cost — register the delayed end-step exile that then
+    // grants the recast-from-exile permission (no haste, no leaves→exile redirect).
+    if (entry->warp) mark_warp_permanent(entity, perm);
+    entry->evoked = false;
+    entry->escaped = false;
+    entry->offspring = false;
+    entry->impending = false;
+    entry->unearthed = false;
+    entry->warp = false;
+}
+
+// Make the attachments recorded on a card's entry (EntryInfo) as its Permanent `perm` is created.
+static void attach_on_entry(Entity entity, EntryInfo &entry, Permanent &perm) {
+    // A DB$ Attach resolved onto this creature before its Permanent existed (reanimate-then-
+    // attach, Pre-War Formalwear): finalize the equip link now that the Permanent is being
+    // created. The equipment kept its own Permanent.
+    if (!entry.attach_equipment.empty()) {
+        Entity equip = entry.attach_equipment.get();
+        if (equip != 0 && global_coordinator.entity_has_component<Permanent>(equip)) {
+            global_coordinator.GetComponent<Permanent>(equip).equipped_to = ObjectRef::of(entity);
+            game_log("Equipment attached.\n");
+        }
+        entry.attach_equipment = ObjectRef{};
+    }
+    // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it was cast
+    // targeting (EntryInfo::aura_target). Reuse the equipped_to attachment link so the aura's
+    // static buffs (Affected$ Creature.EnchantedBy) and the aura state-based check find the
+    // enchanted object.
+    if (!entry.aura_target.empty()) {
+        Entity enchanted = entry.aura_target.get();
+        if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
+            perm.equipped_to = ObjectRef::of(enchanted);
+            game_log("%s is attached to %s.\n", perm.name.c_str(), entity_name(enchanted).c_str());
+            entry.aura_target = ObjectRef{};
+        }
+        // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4): its enchant
+        // target is a creature card still in a graveyard, so it has no Permanent to attach to
+        // yet — the aura enters UNATTACHED and its ETB trigger reanimates the card and attaches.
+        // Leave the aura target recorded so (a) the trigger's Defined$ Enchanted can find the
+        // card and (b) the "unattached aura" state-based action skips this aura until the
+        // reanimation resolves (see state_manager.cpp). It is cleared by the reanimating
+        // ChangeZone (Defined$ Enchanted) once the card is returned.
+    }
+}
+
+// Ninjutsu / Attacking$ (CR 702.49e, 508.4): a creature `entity` whose entry recorded
+// EntryInfo::enters_attacking attacks that player or planeswalker, now that it has its Creature
+// component. It was never declared as an attacker.
+static void enter_attacking_if_recorded(Entity entity) {
+    EntryInfo *entry = find_entry_info(entity);
+    if (!entry || entry->enters_attacking.empty()) return;
+    auto &ncr = global_coordinator.GetComponent<Creature>(entity);
+    ncr.is_attacking = true;
+    ncr.attack_target = entry->enters_attacking;
+    ncr.is_blocked = false;
+    game_log("%s is attacking.\n", entity_name(entity).c_str());
+    entry->enters_attacking = ObjectRef{};
+    drop_entry_info_if_consumed(entity);
+}
+
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
 void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -657,10 +770,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
             // double-faced card, it enters transformed." Mark a daybound DFC entering while
             // it's night so it is built from its back (night) face below, through the same
-            // pending_enters_transformed path Ajani-style transformed entries use.
+            // EntryInfo::enters_transformed path Ajani-style transformed entries use.
             if (!global_coordinator.entity_has_component<Permanent>(entity) &&
                 card_has_daybound(card_data) && game.day_night == Game::DN_NIGHT)
-                game.pending_enters_transformed.insert(entity);
+                entry_info(entity).enters_transformed = true;
             // The face this permanent shows (CR 712.8d-f): the back face of a transformed DFC or
             // of one entering transformed (CR 712.14a), else the front. Every printed
             // characteristic installed below — name, types, P/T, keywords, abilities, statics,
@@ -715,98 +828,17 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     etb_p1p1 = rev.etb_p1p1;
                     etb_counter_type = rev.etb_counter_type;
                 }
-                // It was cast and is now becoming a real permanent — consume the one-shot
-                // "was cast" marker so a later non-cast re-entry isn't treated as a cast, and
-                // record it on the permanent (The One Ring's Card.wasCastByYou ETB gate).
-                if (game.cast_to_battlefield.erase(entity)) perm.entered_by_cast = true;
-                // The X its spell was cast with, for its ETB triggered abilities (CR 107.3m).
-                auto xit = game.pending_etb_xpaid.find(entity);
-                if (xit != game.pending_etb_xpaid.end()) {
-                    perm.entered_x = xit->second;
-                    game.pending_etb_xpaid.erase(xit);
-                }
-                // Likewise consume the "cast from your hand by you" marker and record it on
-                // the permanent (Amped Raptor's Card.wasCastFromYourHandByYou gate). Only a
-                // spell the controller cast from their own hand sets this; any other entry
-                // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
-                if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
-                // A card put onto the battlefield transformed enters with its back face up
-                // (CR 712.14a), as does a modal DFC played or cast as its back face (CR 712.8f):
-                // it shows that face from the start, so only that face's ETB triggers fire.
-                if (game.pending_enters_transformed.erase(entity) && card_data.backside) {
-                    perm.transformed = true;
-                    if (!card_data.is_modal_dfc)
-                        game_log("%s enters transformed.\n", perm.name.c_str());
-                }
-                if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
-                // Spell was cast for its evoke cost — mark the permanent so its evoke
-                // self-sacrifice ETB trigger fires (consumed one-shot here).
-                if (game.pending_evoked.erase(entity)) perm.evoked = true;
-                // Spell was cast from the graveyard for its Escape cost — mark the permanent as
-                // having "escaped" so an "if it escaped" clause (Uro's sacrifice-unless) reads it.
-                if (game.pending_escaped.erase(entity)) perm.cast_with_escape = true;
-                // Spell was cast with its Offspring additional cost — mark the permanent so
-                // its offspring token-copy ETB trigger fires (consumed one-shot here).
-                if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
-                // Spell was cast for its Impending alternate cost (CR 702.175d): the permanent
-                // enters with N time counters. Set them on the Permanent being built (before it
-                // is added below) so this same pass's creature-suppression check already sees
-                // them and strips the Creature component — it enters as a noncreature.
-                if (game.pending_impending.erase(entity) && card_data.alt_cost.impending_count > 0) {
-                    perm.counters["TIME"] = card_data.alt_cost.impending_count;
-                    perm.entered_via_impending = true;  // marks these TIME counters as impending
-                    game_log("%s enters with %d time counter(s) (impending).\n",
-                             card_data.name.c_str(), card_data.alt_cost.impending_count);
-                }
-                // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
-                // haste, gets the delayed end-step exile, and the leaves→exile redirect.
-                if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
-                // Warp: cast for its warp alternate cost — register the delayed end-step exile that
-                // then grants the recast-from-exile permission (no haste, no leaves→exile redirect).
-                if (game.pending_warp.erase(entity)) mark_warp_permanent(entity, perm);
+                // How it entered, as recorded before its Permanent existed (EntryInfo).
+                enter_as_recorded(entity, card_data, perm);
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b) —
                 // the printed loyalty of the face it enters with.
                 if (is_planeswalker_card(*face)) perm.counters["LOYALTY"] = face->starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
-                // A DB$ Attach resolved onto this creature before its Permanent existed
-                // (reanimate-then-attach, Pre-War Formalwear): finalize the equip link now
-                // that the Permanent is being created. The equipment kept its own Permanent.
-                {
-                    if (const ObjectRef *pa = game.pending_attach.find(entity)) {
-                        Entity equip = pa->get();
-                        if (equip != 0 && global_coordinator.entity_has_component<Permanent>(equip)) {
-                            global_coordinator.GetComponent<Permanent>(equip).equipped_to = ObjectRef::of(entity);
-                            game_log("Equipment attached.\n");
-                        }
-                        game.pending_attach.erase(entity);
-                    }
-                }
-                // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it
-                // was cast targeting. The aura is the entity whose Permanent is being created;
-                // its enchanted object was recorded at cast (pending_aura_target). Reuse the
-                // equipped_to attachment link so the aura's static buffs (Affected$
-                // Creature.EnchantedBy) and the aura state-based check find the enchanted object.
-                {
-                    auto pat = game.pending_aura_target.find(entity);
-                    if (pat != game.pending_aura_target.end()) {
-                        Entity enchanted = pat->second.target.get();
-                        if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
-                            perm.equipped_to = ObjectRef::of(enchanted);
-                            game_log("%s is attached to %s.\n", perm.name.c_str(),
-                                     entity_name(enchanted).c_str());
-                            game.pending_aura_target.erase(pat);
-                        }
-                        // Animate Dead-style aura (K:Enchant:Creature.inZoneGraveyard, CR 303.4):
-                        // its enchant target is a creature card still in a graveyard, so it has no
-                        // Permanent to attach to yet — the aura enters UNATTACHED and its ETB
-                        // trigger reanimates the card and attaches. Leave the pending_aura_target
-                        // entry in place so (a) the trigger's Defined$ Enchanted can find the card
-                        // and (b) the "unattached aura" state-based action skips this aura until the
-                        // reanimation resolves (see state_manager.cpp). The entry is cleared by the
-                        // reanimating ChangeZone (Defined$ Enchanted) once the card is returned.
-                    }
-                }
+                // Attachments chosen before it entered (EntryInfo): an Equipment a DB$ Attach
+                // attached to it, an Aura's enchant object.
+                if (EntryInfo *entry = find_entry_info(entity)) attach_on_entry(entity, *entry, perm);
+                drop_entry_info_if_consumed(entity);
                 global_coordinator.AddComponent(entity, perm);
                 game.entering_together.insert(entity);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
@@ -934,23 +966,13 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
             // ninjutsu ability. A normal creature ninja has its Creature component now, so mark it
             // attacking the defender the returned attacker had been attacking (it already entered
-            // tapped via pending_enters_tapped). A ninja that becomes a creature only via a
+            // tapped via EntryInfo::enters_tapped). A ninja that becomes a creature only via a
             // conditional static — Kaito, a planeswalker that's a 3/4 Ninja creature during your
             // turn — has no Creature component yet (it is bootstrapped later this pass in layer 4),
             // so LEAVE the mark pending; the layer-4 self-animate bootstrap consumes it and sets the
             // attacking state once the Creature exists.
-            {
-                auto pea = game.pending_enters_attacking.find(entity);
-                if (pea != game.pending_enters_attacking.end() &&
-                    global_coordinator.entity_has_component<Creature>(entity)) {
-                    auto &ncr = global_coordinator.GetComponent<Creature>(entity);
-                    ncr.is_attacking = true;
-                    ncr.attack_target = pea->second;
-                    ncr.is_blocked = false;
-                    game_log("%s is attacking.\n", entity_name(entity).c_str());
-                    game.pending_enters_attacking.erase(pea);
-                }
-            }
+            if (global_coordinator.entity_has_component<Creature>(entity))
+                enter_attacking_if_recorded(entity);
 
             // ETBReplacement: choose creature type (Cavern of Souls)
             if (card_data.has_etb_choose_creature_type) {
@@ -1443,15 +1465,7 @@ static void sync_self_animate_creature(const ActiveStatic &a) {
     // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
     // attacking" had its enters-attacking mark left pending by apply_permanent_components
     // (it had no Creature yet). Consume it now that the Creature exists.
-    auto pea = cur_game.pending_enters_attacking.find(a.entity);
-    if (pea != cur_game.pending_enters_attacking.end()) {
-        auto &ncr = global_coordinator.GetComponent<Creature>(a.entity);
-        ncr.is_attacking = true;
-        ncr.attack_target = pea->second;
-        ncr.is_blocked = false;
-        game_log("%s is attacking.\n", entity_name(a.entity).c_str());
-        cur_game.pending_enters_attacking.erase(pea);
-    }
+    enter_attacking_if_recorded(a.entity);
 }
 
 // Layer-4 epilogue: make each battlefield land's SUBTYPE-DERIVED mana abilities a pure

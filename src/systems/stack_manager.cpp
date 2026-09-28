@@ -8,6 +8,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/damage.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
@@ -90,8 +91,26 @@ static void frame_finish() {
 bool StackManager::aura_spell_target_illegal(Entity spell) {
     const auto &cd = global_coordinator.GetComponent<CardData>(spell);
     if (cd.enchant_filter.empty()) return false;
-    if (!cur_game.pending_aura_target.count(spell)) return false;
+    const EntryInfo *entry = find_entry_info(spell);
+    if (!entry || entry->aura_target.empty()) return false;
     return !pending_aura_target_legal(spell, source_controller(spell));
+}
+
+void StackManager::record_cast_entry(Entity spell_entity, const Spell &spell) {
+    EntryInfo &entry = entry_info(spell_entity);
+    // Evoke: its evoke self-sacrifice ETB trigger fires.
+    if (spell.cast_with_evoke) entry.evoked = true;
+    // Offspring: its token-copy ETB trigger fires.
+    if (spell.cast_with_offspring) entry.offspring = true;
+    // Escape: Uro's "sacrifice it unless it escaped" reads it.
+    if (spell.cast_with_escape) entry.escaped = true;
+    // Impending (CR 702.175): it enters with time counters, a noncreature until they shed.
+    if (spell.cast_with_impending) entry.impending = true;
+    // Warp: its "exile at the next end step" delayed trigger is registered as it enters.
+    if (spell.cast_with_warp) entry.warp = true;
+    // The X paid for an X-cost permanent, for an "enters with X counters" replacement (Chalice
+    // of the Void).
+    if (spell.x_paid > 0) entry.x_paid = spell.x_paid;
 }
 
 void StackManager::init() {
@@ -153,38 +172,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             orderer->remove_from_stack(top_entity, Zone::GRAVEYARD);
         } else if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
-            // Capture evoke status before the Spell component (which carries it) is removed;
-            // apply_permanent_components consumes pending_evoked to set Permanent::evoked.
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).cast_with_evoke)
-                cur_game.pending_evoked.insert(top_entity);
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
-                cur_game.pending_offspring.insert(top_entity);
-            // Spell was cast from the graveyard for its Escape cost: carry the "escaped" bit onto
-            // the permanent (apply_permanent_components consumes pending_escaped → Permanent::
-            // cast_with_escape) so Uro's "sacrifice it unless it escaped" reads it.
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).cast_with_escape)
-                cur_game.pending_escaped.insert(top_entity);
-            // Spell was cast for its Impending alternate cost (CR 702.175): carry the impending
-            // bit onto the permanent so apply_permanent_components puts its time counters on it
-            // (consumes pending_impending) — it enters as a noncreature until they shed.
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).cast_with_impending)
-                cur_game.pending_impending.insert(top_entity);
-            // Spell was cast for its Warp alternate cost: carry the warp bit onto the permanent so
-            // apply_permanent_components registers its "exile at the next end step" delayed trigger
-            // (consumes pending_warp via mark_warp_permanent).
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).cast_with_warp)
-                cur_game.pending_warp.insert(top_entity);
-            // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
-            // counters" replacement can read it (Chalice of the Void).
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
-                cur_game.pending_etb_xpaid[top_entity] =
-                    global_coordinator.GetComponent<Spell>(top_entity).x_paid;
+            // Carry how it was cast onto its entry before the Spell component (which records
+            // it) is removed; apply_permanent_components hands each fact to the Permanent.
+            if (global_coordinator.entity_has_component<Spell>(top_entity))
+                record_cast_entry(top_entity, global_coordinator.GetComponent<Spell>(top_entity));
             // A resolving permanent spell enters under the control of the spell's controller
             // (CR 608.3a), who need not be its owner. Read before the Spell component goes.
             Zone::Ownership entering_controller = source_controller(top_entity);
@@ -195,7 +186,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             // This permanent is entering the battlefield because it was cast (CR 614.12):
             // mark it so an ETB replacement that cares about "wasn't cast" (Containment Priest)
             // lets it through. Consumed when its Permanent component is created.
-            cur_game.cast_to_battlefield.insert(top_entity);
+            entry_info(top_entity).cast = true;
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = entering_controller;

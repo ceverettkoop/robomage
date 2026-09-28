@@ -10,6 +10,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
 #include "../components/static_ability.h"
 #include "../components/token.h"
@@ -172,8 +173,8 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                             n++;
                 }
                 else if (sa.counter_count_from_xpaid) {
-                    auto it = cur_game.pending_etb_xpaid.find(ev.entity);
-                    if (it != cur_game.pending_etb_xpaid.end()) n = it->second;
+                    const EntryInfo *entry = find_entry_info(ev.entity);
+                    if (entry && entry->x_paid > 0) n = entry->x_paid;
                 }
                 else n = sa.counter_count;  // literal count (etbCounter:M1M1:6 → 6)
                 if (n <= 0) continue;
@@ -189,7 +190,8 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             }
         }
         // A resolving ChangeZone effect may have requested this permanent enter tapped.
-        if (cur_game.pending_enters_tapped.count(ev.entity)) {
+        const EntryInfo *entry = find_entry_info(ev.entity);
+        if (entry && entry->enters_tapped) {
             Candidate c;
             c.source = ev.entity;
             c.kind = PENDING_TAPPED;
@@ -271,8 +273,9 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             // Containment Priest (614.1a): a non-token creature that wasn't cast is exiled
             // instead of entering, regardless of which zone it would have entered from
             // (reanimation, blink out of exile, put onto the battlefield from hand, ...). A
-            // creature spell resolving from the stack is in cast_to_battlefield and let through.
-            if (nontoken_creature && cur_game.cast_to_battlefield.count(ev.entity) == 0) {
+            // creature spell resolving from the stack is marked cast (EntryInfo) and let through.
+            const EntryInfo *entry = find_entry_info(ev.entity);
+            if (nontoken_creature && !(entry && entry->cast)) {
                 for_each_battlefield_replacement(
                     Effect::Replacement::EXILE_INSTEAD_OF_ETB, Zone::UNKNOWN,
                     [&](Entity e, const Effect::Replacement &, size_t i) {
@@ -437,7 +440,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             break;
         case PENDING_TAPPED:
             ev.enters_tapped = true;
-            cur_game.pending_enters_tapped.erase(ev.entity);
+            entry_info(ev.entity).enters_tapped = false;
             break;
         case ETB_COUNTERS:
             ev.etb_p1p1 += c.amount;

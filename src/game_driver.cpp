@@ -21,6 +21,7 @@
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/effect.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
@@ -255,6 +256,7 @@ EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Spell>();
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Token>();
+    global_coordinator.RegisterComponent<EntryInfo>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();

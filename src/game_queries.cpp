@@ -8,6 +8,7 @@
 #include "classes/game.h"
 #include "cli_output.h"
 #include "components/ability.h"
+#include "components/entry_info.h"
 #include "components/player.h"
 #include "ecs/events.h"
 #include "machine_io.h"
@@ -75,8 +76,30 @@ std::string last_known_name(Entity e) {
 }
 
 const CardData &entering_face(Entity e, const CardData &cd) {
-    if (cd.backside && cur_game.pending_enters_transformed.count(e)) return *cd.backside;
+    const EntryInfo *entry = find_entry_info(e);
+    if (cd.backside && entry && entry->enters_transformed) return *cd.backside;
     return active_face(e, cd);
+}
+
+EntryInfo &entry_info(Entity e) {
+    if (!global_coordinator.entity_has_component<EntryInfo>(e))
+        global_coordinator.AddComponent(e, EntryInfo{});
+    return global_coordinator.GetComponent<EntryInfo>(e);
+}
+
+EntryInfo *find_entry_info(Entity e) {
+    if (!global_coordinator.entity_has_component<EntryInfo>(e)) return nullptr;
+    return &global_coordinator.GetComponent<EntryInfo>(e);
+}
+
+void drop_entry_info(Entity e) {
+    if (global_coordinator.entity_has_component<EntryInfo>(e))
+        global_coordinator.RemoveComponent<EntryInfo>(e);
+}
+
+void drop_entry_info_if_consumed(Entity e) {
+    const EntryInfo *entry = find_entry_info(e);
+    if (entry && entry->consumed()) global_coordinator.RemoveComponent<EntryInfo>(e);
 }
 
 int effective_power(Entity e) {

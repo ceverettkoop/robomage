@@ -68,19 +68,6 @@ void Game::forget_entity(Entity e) {
     last_known_info.erase(e);
     erase_refs_to(remembered_entities, e);
     payment_fail_counts.erase(e);
-    pending_enters_tapped.erase(e);
-    pending_enters_attacking.erase(e);
-    pending_enters_transformed.erase(e);
-    pending_evoked.erase(e);
-    pending_offspring.erase(e);
-    pending_escaped.erase(e);
-    pending_unearthed.erase(e);
-    pending_impending.erase(e);
-    cast_to_battlefield.erase(e);
-    cast_from_hand.erase(e);
-    pending_warp.erase(e);
-    pending_etb_xpaid.erase(e);
-    pending_aura_target.erase(e);
     entering_together.erase(e);
 }
 

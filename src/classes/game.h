@@ -179,13 +179,6 @@ struct Emblem {
     int source_vocab_idx = -1;
 };
 
-// The object an Aura will enchant, chosen before the Aura enters the battlefield: its cast
-// target (CR 303.4a) or the object chosen as it enters without being cast (CR 303.4f). A card
-// that changed zones in between (a new object, CR 400.7) no longer counts as the chosen one.
-struct PendingAuraTarget {
-    ObjectRef target;
-};
-
 struct Game {
         Game() {};
         Game(size_t _seed) {
@@ -783,16 +776,6 @@ struct Game {
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
         std::vector<ObjectRef> imprinted_entities;  // the set of cards "imprinted" (recorded) by a resolving DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$. Distinct from remembered_entities (which holds the chosen cards taken to hand).
         std::string chosen_type = "";  // the current card type set by a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per card type present among the imprinted cards); read by a ChooseCard Choices$ Card.ChosenType filter, cleared when the loop ends
-        std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
-        std::map<Entity, ObjectRef> pending_enters_attacking;  // one-shot: {ninja -> attack target} a K:Ninjutsu (CR 702.49e) put this card onto the battlefield attacking; consumed when its Creature component is created (a non-creature ninja, e.g. a planeswalker, drops the mark — it can't be a combatant)
-        std::set<Entity> pending_enters_transformed;  // one-shot: a ChangeZone effect (Transformed$ True) put this card onto the battlefield showing its DFC back face; consumed when its Permanent is created
-        std::set<Entity> pending_evoked;  // one-shot: a spell cast for its evoke cost is resolving; consumed when its Permanent is created (sets Permanent::evoked)
-        std::set<Entity> pending_offspring;  // one-shot: a spell cast with its Offspring additional cost is resolving; consumed when its Permanent is created (sets Permanent::entered_with_offspring)
-        std::set<Entity> pending_escaped;  // one-shot: a spell cast from the graveyard for its Escape cost is resolving; consumed when its Permanent is created (sets Permanent::cast_with_escape) — Uro's "sacrifice it unless it escaped"
-        std::set<Entity> pending_unearthed;  // one-shot: an Unearth ChangeZone (CR 702.84) returned this card to the battlefield; consumed when its Permanent is created (sets Permanent::unearthed → haste + delayed end-step exile + leaves→exile replacement)
-        std::set<Entity> pending_impending;  // one-shot: a spell cast for its Impending alternate cost (CR 702.175) is resolving; consumed when its Permanent is created (puts impending_count TIME counters on it → not a creature until they shed)
-        std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
-        std::set<Entity> cast_from_hand;  // one-shot: a spell now resolving onto the battlefield was cast from its controller's own hand (a normal CR 601 hand cast); consumed when its Permanent is created → Permanent::cast_from_hand_by_controller (Amped Raptor's Card.wasCastFromYourHandByYou gate)
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution
@@ -832,11 +815,6 @@ struct Game {
             bool warp = false;
         };
         ObjectMap<ImpulseCastPermission> impulse_cast_permission;
-        // Warp (a 2025 keyword): cards cast for their warp cost, pending the delayed end-step exile.
-        // Set from Spell::cast_with_warp as the spell resolves onto the battlefield (stack_manager),
-        // consumed when the permanent is created (apply_permanent_components) to register the
-        // one-shot "exile at the next end step" delayed triggered ability (mark_warp_permanent).
-        std::set<Entity> pending_warp;
         // Suspend time counters (CR 702.62 / 122): a card exiled with suspend carries N time
         // counters. It is NOT a permanent, so its counters can't live in Permanent::counters —
         // they are tracked here, keyed by the exiled card entity. A card is "suspended" (702.62b)
@@ -844,14 +822,11 @@ struct Game {
         // its owner's upkeep (effects::suspend_tick); removing the last counter triggers the free
         // cast (CR 702.62a third ability, effects::suspend_cast).
         ObjectMap<int> suspend_time_counters;
-        std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created (→ Permanent::entered_x, CR 107.3m)
-        ObjectMap<ObjectRef> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
         // Cards whose Permanent the running apply_permanent_components pass has created (the pass
         // can suspend and resume): they entered the battlefield together, so none of them is on the
         // battlefield yet when another one's "as it enters" condition is checked (CR 614.12, e.g.
         // "enters tapped unless you control a basic land"). Cleared when the pass completes.
         std::set<Entity> entering_together;
-        std::map<Entity, PendingAuraTarget> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
         // Known top-of-library cards of one library, per player who knows them. Index 0 is the
         // top of the library; -1 = unknown (default). `by_owner` is what the library's owner
