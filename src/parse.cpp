@@ -285,6 +285,7 @@ static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string,
 static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
                                        const std::map<std::string, std::string>& svars);
 static bool is_runtime_amount_expr(const std::string& sv);
+static size_t delirium_scale_pos(const std::string& sv);
 static void resolve_condition_svars(AbilityDef& ability,
                                     const std::map<std::string, std::string>& svars);
 static void resolve_xpaid_target_counts(AbilityDef& ability,
@@ -2667,11 +2668,7 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
     // meaning "<yes> if the caster has delirium, else <no>":
     //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
     //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
-    size_t delirium_pos = sv.find("Count$Delirium");
-    size_t ge_pos = sv.find("GE");
-    size_t scale_pos = delirium_pos != std::string::npos
-                           ? delirium_pos + std::string("Count$Delirium").size()
-                           : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+    size_t scale_pos = delirium_scale_pos(sv);
     if (scale_pos != std::string::npos) {
         std::string rest = sv.substr(scale_pos);
         size_t d1 = rest.find('.');
@@ -2685,6 +2682,20 @@ static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string,
         return;
     }
     if (is_runtime_amount_expr(sv)) ability.dynamic_amount_expr = sv;
+}
+
+// Where the ".<yes>.<no>" tail of a delirium-conditional amount starts in `sv`: right after
+// "Count$Delirium", or after the "GE<n>" compare of the explicit "Count$Compare <var> GE<n>." form
+// (a <var> that is an SVar$ chain is resolve_conditional_amount's). npos for any other amount —
+// a "GE" elsewhere in the string (Count$CardCounters.CHARGE, a cmcGE4 filter) is not this form.
+static size_t delirium_scale_pos(const std::string &sv) {
+    static const std::string kDelirium = "Count$Delirium";
+    static const std::string kCompare = "Count$Compare ";
+    if (sv.rfind(kDelirium, 0) == 0) return kDelirium.size();
+    if (sv.rfind(kCompare, 0) != 0) return std::string::npos;
+    size_t sp = sv.find(' ', kCompare.size());
+    if (sp == std::string::npos || sv.compare(sp + 1, 2, "GE") != 0) return std::string::npos;
+    return sp + 3;
 }
 
 // The generalized conditional amount (Flow State): "Count$Compare <Var> <op><n>.<t>.<f>" where
