@@ -44,7 +44,8 @@ static_assert(STACK_TGT_START == 17, "stack target sub-slots start at slot offse
 
 // Block ENDs the sideboard obs mask below needs; machine_io.h names each block's
 // start, and one block's end is the next one's start.
-static constexpr int KNOWN_TOP_LIB_END = OPP_KNOWN_HAND_START;
+static constexpr int KNOWN_TOP_LIB_END = OPP_KNOWN_TOP_LIB_START;
+static constexpr int OPP_KNOWN_TOP_LIB_END = OPP_KNOWN_HAND_START;
 static constexpr int OPP_KNOWN_HAND_END = PENDING_DECISION_START;
 static constexpr int PENDING_DECISION_END = EXTRAS_START;
 static constexpr int SELF_LIVE_LIB_END = SELF_DECK_MAIN_START;
@@ -194,6 +195,7 @@ static const SideboardMask& sideboard_mask() {
         }
         for (int i = HAND_START; i < HAND_START + MAX_HAND_SLOTS; i++) card_id_slot(i);       // self hand
         for (int i = KNOWN_TOP_LIB_START; i < KNOWN_TOP_LIB_END; i++) card_id_slot(i);        // known top-5
+        for (int i = OPP_KNOWN_TOP_LIB_START; i < OPP_KNOWN_TOP_LIB_END; i++) card_id_slot(i);  // known opp top-5
         for (int i = OPP_KNOWN_HAND_START; i < OPP_KNOWN_HAND_END; i++) card_id_slot(i);      // known opp hand
         // Every decklist block's card-id position (card_id_slot skips the kept ones,
         // so this stays "all card-id positions" rather than "the masked ones").

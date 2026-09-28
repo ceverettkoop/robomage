@@ -44,6 +44,7 @@ from env import (
     _GY_START, _GY_SLOT_SIZE, _EXILE_START, _EXILE_SLOT_SIZE,
     _HAND_START, _HAND_SLOT_SIZE, MAX_GY_SLOTS, MAX_HAND_SLOTS,
     _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
+    _OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END,
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
     _PENDING_DECISION_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
@@ -78,6 +79,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     CAT_PASS_PRIORITY, CAT_DISCARD, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
                     CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT,
+                    CAT_OTHER_CHOICE,
                     _MC_NAMES,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
@@ -160,6 +162,8 @@ def _card_id_slots():
         yield "self_hand", i, _HAND_START + i * _HAND_SLOT_SIZE
     for i, off in enumerate(range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)):
         yield "known_top", i, off
+    for i, off in enumerate(range(_OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END)):
+        yield "opp_known_top", i, off
     for i, off in enumerate(range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END)):
         yield "opp_known_hand", i, off
     yield "pending_decision", 0, _PENDING_DECISION_START
@@ -1294,6 +1298,123 @@ def _zone_block_ids(state, start, slot_size):
     return [_decode_card_id(state[o]) for o in _zone_block_offsets(start, slot_size)]
 
 
+def _write_known_top_decks():
+    """Stacked temp decks for check_public_known_top: A opens with seven Islands
+    and has Brainstorm on top of its library; B holds only Mountains. Returns the
+    two deck specs (relative to decks/)."""
+    specs = []
+    for stem, lines in (("obsinv_knowntop_a", ["7 Island", "1 Brainstorm", "22 Island"]),
+                        ("obsinv_knowntop_b", ["30 Mountain"])):
+        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, "w") as f:
+            f.write("\n".join(lines) + "\n")
+        specs.append("temp/" + stem)
+    return specs
+
+
+def _run_known_top_line(reveal):
+    """One game of check_public_known_top: A's Delver of Secrets looks at the
+    Brainstorm on top of A's library at A's first upkeep and reveals it (reveal
+    =True) or not; in the not-revealed line B then cracks Mishra's Bauble on A's
+    library. Returns (B decisions that saw Brainstorm atop A's library, B
+    decisions before that knowledge was earned that did not). Fails if B sees it
+    before it is revealed / looked at, if the knowledge leaks to A's view of B's
+    library, or if it outlives the card leaving the top of A's library."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    brainstorm = names["Brainstorm"]
+    bauble = names["Mishra's Bauble"]
+    deck_a, deck_b = _write_known_top_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, no_shuffle=True,
+                      battlefield_a="Delver of Secrets,Island",
+                      battlefield_b="Mishras Bauble", bo3=False)
+    looked = False       # A's Delver trigger has shown A the top card
+    earned = False       # B has legitimately learned it (reveal / Bauble look)
+    bauble_used = False
+    seen = unseen = 0
+    try:
+        env.reset(options={"engine_seed": 1})
+        deck_blocks = {}
+        for i in range(200):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            ids = [_decode_card_id(v) for v in decode.action_card_ids(obs)[:num]]
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            opp_top = _decode_card_id(state[_OPP_KNOWN_TOP_LIB_START])
+            choice = 0
+            if priority_is_a:
+                if _decode_card_id(state[_OPP_KNOWN_TOP_LIB_START]) != _CARD_ID_SENTINEL:
+                    _fail(i, "A", "opp_known_top", 0, opp_top,
+                          "A learned the top of B's library without looking at it")
+                if (num == 2 and all(c == CAT_OTHER_CHOICE for c in cats)
+                        and all(cid == brainstorm for cid in ids)):
+                    looked = True
+                    choice = 1 if reveal else 0      # [0] Don't reveal, [1] Reveal
+                    earned = earned or reveal
+                if looked and brainstorm in [_decode_card_id(state[o]) for o in
+                                             range(_HAND_START, _HAND_START + MAX_HAND_SLOTS)]:
+                    break                            # A drew it: the window is over
+            else:
+                if opp_top == brainstorm:
+                    if not earned:
+                        _fail(i, "B", "opp_known_top", 0, opp_top,
+                              "B sees the top of A's library before it was revealed "
+                              "or looked at")
+                    seen += 1
+                elif looked:
+                    if earned and seen:
+                        _fail(i, "B", "opp_known_top", 0, opp_top,
+                              "B forgot the known top of A's library while it is "
+                              "still there")
+                    unseen += 1
+                if looked and not reveal and not bauble_used:
+                    for a in range(num):
+                        if int(cats[a]) == CAT_ACTIVATE_ABILITY and ids[a] == bauble:
+                            choice, bauble_used = a, True
+                            break
+                elif bauble_used and not earned:
+                    zones = decode.action_zone_refs(obs, num)
+                    for a in range(num):
+                        if (int(cats[a]) == CAT_SELECT_TARGET
+                                and int(zones[a]) == _REF_BY_NAME["opp"]):
+                            choice, earned = a, True
+                            break
+            env.step(choice)
+        if not looked or not seen:
+            raise InvariantError(
+                f"known-top window not observed (reveal={reveal}, looked={looked}, "
+                f"bauble={bauble_used}, B decisions that saw it={seen})")
+        # After A draws it, the card must leave B's view of A's library top.
+        return seen, unseen
+    finally:
+        env.close()
+        for spec in (deck_a, deck_b):
+            try:
+                os.remove(os.path.join(_DECKS_DIR, spec + ".dk"))
+            except OSError:
+                pass
+
+
+def check_public_known_top():
+    """Knowledge of a library's top is per player (Game::KnownLibraryTop): when
+    A's Delver of Secrets reveals the Brainstorm on top of A's library (CR
+    701.20a), B's opp_known_top block names it; when A declines to reveal, B does
+    not see it until B looks with Mishra's Bauble. A's own view of B's library
+    stays unknown throughout. Returns (B decisions that saw it after the reveal,
+    after the Bauble look, and B decisions in the declined line before the
+    look)."""
+    seen_reveal, _ = _run_known_top_line(reveal=True)
+    seen_bauble, unseen = _run_known_top_line(reveal=False)
+    if unseen == 0:
+        raise InvariantError("the declined-reveal line never gave B a decision before "
+                             "the Bauble look — the hidden window went unchecked")
+    return seen_reveal, seen_bauble, unseen
+
+
 def check_face_down_exile_hidden():
     """A face-down exiled card is hidden from the opponent (CR 406.3): seat A
     casts The Creation of Avacyn and its chapter I exiles the searched Lightning
@@ -1647,7 +1768,8 @@ def check_squelcher_player_effects():
 # perspective-relative battlefield slot refs (stack targets, delayed-trigger and
 # pending-decision refs).
 _MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "self_hand",
-                       "known_top_library", "opp_known_hand", "opp_revealed",
+                       "known_top_library", "opp_known_top_library",
+                       "opp_known_hand", "opp_revealed",
                        "stack", "delayed_triggers", "pending_decision"}
 # Engine seeds of the scripted games check_mirrored_view drives.
 _MIRROR_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
@@ -2416,6 +2538,15 @@ def main():
         return 1
     print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
           f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
+
+    try:
+        kt_reveal, kt_bauble, kt_hidden = check_public_known_top()
+    except InvariantError as e:
+        print(f"FAIL  public known top of library\n  {e}", flush=True)
+        return 1
+    print(f"ok    public known top of library: B saw A's revealed top at {kt_reveal} "
+          f"decisions, its Bauble look at {kt_bauble}, and nothing at {kt_hidden} "
+          f"decisions before the look", flush=True)
 
     try:
         n_fd_hidden, n_fd_visible = check_face_down_exile_hidden()

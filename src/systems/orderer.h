@@ -10,21 +10,27 @@
 struct Deck;
 struct Ability;
 
+// Who looked at a card an effect puts on top of a library (Orderer::add_to_zone): its OWNER
+// (Brainstorm / Ponder put-backs, surveil, the owner's own dig), the owner's OPPONENT (a
+// fateseal-class dig on that library, Jace's +2), or NOBODY (cards put there in a random order).
+// Under OWNER or OPPONENT a card whose identity was public as it left its zone (a public zone, or
+// revealed in the library) is known to both players.
+enum class LibraryTopView { OWNER, OPPONENT, NOBODY };
+
 class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 
 public:
     static void init();
-    // top_seen_by_owner (only meaningful for a non-bottom LIBRARY placement): does the library's
-    // OWNER see the identity of the card being placed on top? True for self-facing effects
-    // (Brainstorm/Ponder put-backs, surveil, own dig) where the actor IS the owner. False for a
-    // fateseal-class dig on an OPPONENT's library (Jace +2), where the looker is the controller and
-    // the owner must NOT learn the card. When false the owner's known-top cache still shifts down
-    // (positions stay honest) but records an UNKNOWN marker at slot 0 instead of the real identity.
+    // top_view (only meaningful for a non-bottom LIBRARY placement): who sees the identity of the
+    // card being placed on top (LibraryTopView). The known-top record shifts down for both players
+    // either way (positions stay honest); a player who didn't see the card gets an UNKNOWN marker
+    // at slot 0 instead of its identity.
     // exile_face_down (CR 708): when true and destination is EXILE, the card is exiled FACE DOWN —
     // its Zone::is_face_down flag is set and it is NOT accumulated into the owner's public revealed
     // multi-hot (its identity stays hidden from the opponent until an effect turns it face up).
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                     bool top_seen_by_owner = true, bool exile_face_down = false);
+                     LibraryTopView top_view = LibraryTopView::OWNER,
+                     bool exile_face_down = false);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
@@ -52,9 +58,9 @@ public:
     // re-sorting inline at each call site.
     std::vector<Entity> get_library_top(Zone::Ownership owner, size_t n);
     std::vector<Entity> get_hand(Zone::Ownership owner);
-    // Records `card` (in a library) on its owner's known-top cache at its current depth,
-    // without moving it: the owner has looked at it and it stays where it is (a scry keep).
-    void note_library_card_known(Entity card);
+    // Records `card` (in a library) at its current depth as known to `knower`, without moving
+    // it: `knower` looked at it and it stays where it is (Delver's look, Mishra's Bauble).
+    void note_library_card_known(Entity card, Zone::Ownership knower);
     // Puts `card` on its owner's library `depth` cards from the top (0 = the top), under the
     // cards already there: a top placement through add_to_zone (the same zone-change semantics,
     // known-top push included) that then sinks below the `depth` cards above it, carrying its

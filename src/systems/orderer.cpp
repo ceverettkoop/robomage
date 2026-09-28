@@ -36,6 +36,7 @@
 // --- file-local helpers (forward declarations) ---
 static void restore_printed_card(Entity target);
 static int card_vocab_of(Entity target);
+static bool identity_public_leaving(Entity target, Zone::ZoneValue origin);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -83,7 +84,7 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                          bool top_seen_by_owner, bool exile_face_down) {
+                          LibraryTopView top_view, bool exile_face_down) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
@@ -240,20 +241,25 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
+    const bool public_identity = identity_public_leaving(target, origin);
     close_zone_gap(target);
 
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
     }
 
-    // If a card is being placed on top of a library, it becomes the new known top.
-    // The push is unconditional even for a fateseal (top_seen_by_owner == false): the owner's
-    // previously-known top entries must still shift one position deeper. But when the owner does
-    // NOT see the card (the looker is the opponent), record an UNKNOWN marker (-1) instead of the
-    // real identity, so the cache positions stay honest without leaking a card they never saw.
+    // If a card is being placed on top of a library, it becomes the new known top. The push is
+    // unconditional: both players' previously-known entries must shift one position deeper. A
+    // player who did not see the card (a fateseal's owner, the owner's opponent at a Brainstorm
+    // put-back, everyone for a random-order placement) records an UNKNOWN marker (-1) instead of
+    // its identity, so the positions stay honest without leaking a card they never saw.
     if (!on_bottom && destination == Zone::LIBRARY) {
-        int vocab_idx = top_seen_by_owner ? card_vocab_of(target) : -1;
-        cur_game.known_top_library_push(target_zone.owner == Zone::PLAYER_A, vocab_idx);
+        const int vocab_idx = card_vocab_of(target);
+        const bool seen = top_view != LibraryTopView::NOBODY;
+        const bool owner_knows = seen && (public_identity || top_view == LibraryTopView::OWNER);
+        const bool opp_knows = seen && (public_identity || top_view == LibraryTopView::OPPONENT);
+        cur_game.known_top_library_push(target_zone.owner, owner_knows ? vocab_idx : -1,
+                                        opp_knows ? vocab_idx : -1);
     }
 
     for (auto &&card : mEntities) {
@@ -303,8 +309,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // card is now either public, or a fresh hidden object). Reveal sites set this
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
-    const bool left_face_down = target_zone.is_face_down;
-    const bool left_revealed = cur_game.revealed_in_library.erase(target) > 0;
+    cur_game.revealed_in_library.erase(target);
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
@@ -318,11 +323,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // exile face down: its identity was hidden there too (CR 406.3).
     // A card revealed in the library by the effect moving it (Atraxa, Goblin Guide) was seen by
     // both players too (CR 701.20a).
-    if (destination == Zone::HAND &&
-        (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
-         (origin == Zone::EXILE && !left_face_down) || left_revealed)) {
-        target_zone.identity_known = true;
-    }
+    if (destination == Zone::HAND && public_identity) target_zone.identity_known = true;
 
     // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
     // to both players, so accumulate it in the owner's revealed multi-hot. This
@@ -365,7 +366,7 @@ void Orderer::close_zone_gap(Entity target) {
     // If a card left the library within the tracked top window, drop it
     // from the known-top cache and shift the rest up.
     if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
-        cur_game.known_top_library_remove_pos(owner == Zone::PLAYER_A, static_cast<int>(departing_pos));
+        cur_game.known_top_library_remove_pos(owner, static_cast<int>(departing_pos));
     }
 }
 
@@ -428,11 +429,11 @@ std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
     return contents;
 }
 
-void Orderer::note_library_card_known(Entity card) {
+void Orderer::note_library_card_known(Entity card, Zone::Ownership knower) {
     const auto &zone = global_coordinator.GetComponent<Zone>(card);
     if (zone.location != Zone::LIBRARY) return;
-    cur_game.known_top_library_set(zone.owner == Zone::PLAYER_A,
-                                   static_cast<int>(zone.distance_from_top), card_vocab_of(card));
+    cur_game.known_top_library_note(zone.owner, static_cast<int>(zone.distance_from_top),
+                                    card_vocab_of(card), knower);
 }
 
 void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
@@ -451,10 +452,7 @@ void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
         }
     }
     zone.distance_from_top = sunk_to;
-    bool is_a = zone.owner == Zone::PLAYER_A;
-    int vocab_idx = (is_a ? cur_game.known_top_library_a : cur_game.known_top_library_b)[0];
-    cur_game.known_top_library_remove_pos(is_a, 0);
-    cur_game.known_top_library_insert(is_a, static_cast<int>(sunk_to), vocab_idx);
+    cur_game.known_top_library_move(zone.owner, 0, static_cast<int>(sunk_to));
 }
 
 void Orderer::shuffle_library(Zone::Ownership owner) {
@@ -475,11 +473,21 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 
     // Shuffling destroys any knowledge of which cards are on top of the library, and a revealed
     // card that is reordered stops being revealed (CR 701.20d).
-    cur_game.clear_known_top_library(owner == Zone::PLAYER_A);
+    cur_game.clear_known_top_library(owner);
     for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
 }
 
 extern bool no_shuffle;
+
+// Whether both players know the identity of `target` as it leaves `origin`: it was in a public
+// zone (the battlefield, the stack, a graveyard, or face up in exile — CR 400.2, 406.3), or it
+// was revealed where it sat in a library (CR 701.20a).
+static bool identity_public_leaving(Entity target, Zone::ZoneValue origin) {
+    if (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD)
+        return true;
+    if (origin == Zone::EXILE) return !global_coordinator.GetComponent<Zone>(target).is_face_down;
+    return cur_game.revealed_in_library.count(target) > 0;
+}
 
 // The card's vocab index, or -1 when it has no CardData (a token).
 static int card_vocab_of(Entity target) {

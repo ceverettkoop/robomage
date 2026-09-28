@@ -33,7 +33,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF, ZONE_PLAYABLE_OPP_OFF,
                  ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF, ZONE_COUNTER_NORMALIZER,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
-                 _KNOWN_TOP_LIB_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _OPP_KNOWN_TOP_LIB_START,
                  _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
                  _OPP_DECKLIST_SLOT_SIZE, _OPP_DECKLIST_REVEALED_OFF,
                  DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
@@ -419,9 +419,10 @@ def hidden_info_fingerprint(state):
     Returns ``(self_counts, opp_counts)``, int arrays of length N_CARD_TYPES.
     Self counts cover hand, permanents, graveyard, exile, own stack objects
     and the known-top-of-library ids; opp counts cover their permanents,
-    graveyard, exile, stack objects and the known-opponent-hand ids. A card
-    moving BETWEEN visible zones conserves its count (cast from hand, die to
-    graveyard, draw a known top card), so a count exceeding an earlier
+    graveyard, exile, stack objects, the known-opponent-hand ids and the known
+    top of their library. A card moving BETWEEN visible zones conserves its
+    count (cast from hand, die to graveyard, draw a known top card), so a
+    count exceeding an earlier
     fingerprint's means an identity became newly visible since — a draw, a
     play from a hidden hand, a mill, a tutor/scry reveal. Token permanents
     are excluded: the shared TOKEN sentinel id carries no hidden identity and
@@ -448,6 +449,8 @@ def hidden_info_fingerprint(state):
     _add(opp_counts, _OPP_EXILE_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, EXILE_SLOT_SIZE)
     _add(opp_counts, _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
          _OPP_KNOWN_HAND_SLOT_SIZE)
+    _add(opp_counts, _OPP_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
+         _KNOWN_TOP_LIB_SLOT_SIZE)
     for i in range(_STACK_SLOTS):
         base = _STACK_START + i * STACK_SLOT_SIZE
         idx = _slot_card_idx(state, base + 1)  # card id; sentinel = empty slot
@@ -785,17 +788,20 @@ def fmt_zone_cards(names, marks):
     return ", ".join(f"{n} [{m}]" if m else n for n, m in zip(names, marks))
 
 
-def _decode_known_top_library(state):
-    """Decode the viewer's known top-of-library block (belief state).
+def _decode_known_top_library(state, start=_KNOWN_TOP_LIB_START):
+    """Decode a known top-of-library block (belief state): the viewer's own
+    library (default) or, with ``start=_OPP_KNOWN_TOP_LIB_START``, the
+    opponent's library as far as the viewer knows it.
 
     Returns a list of one entry per known-window slot (index 0 = top), each a
     card name or "?" for an unknown (sentinel) slot, but ONLY when at least one
     slot is known; otherwise returns [] so callers can hide the block. Set by
-    Ponder/Brainstorm/Rearrange/Sylvan, cleared to unknown on shuffle."""
+    Ponder/Brainstorm/Rearrange/Sylvan, a look or a reveal, cleared to unknown
+    on shuffle."""
     names = []
     any_known = False
     for i in range(_KNOWN_TOP_LIB_SLOTS):
-        idx = onehot_to_index(state, _KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE)
+        idx = onehot_to_index(state, start + i * _KNOWN_TOP_LIB_SLOT_SIZE)
         if idx >= 0:
             any_known = True
             names.append(card_index_to_name(idx))
@@ -904,7 +910,8 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
 # these, so a new per-player key gets its entry here alongside its decoder. The
 # "extras" keys appear only when non-default, so a pair may be half-present.
 # Viewer-only keys with no counterpart (self_hand, known_top_library,
-# opp_known_hand, opp_revealed, extras' bottom_remaining) are not pairs: the
+# opp_known_top_library, opp_known_hand, opp_revealed, extras' bottom_remaining)
+# are not pairs: the
 # priority player's private knowledge, which a mirrored front end hides instead.
 SELF_OPP_PAIRS = {
     None: (("self", "opponent"),
@@ -1002,6 +1009,7 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
                                             labels),
         },
         "known_top_library": _decode_known_top_library(state),
+        "opp_known_top_library": _decode_known_top_library(state, _OPP_KNOWN_TOP_LIB_START),
         "opp_known_hand": _decode_opp_known_hand(state),
         "opp_revealed": _decode_opp_revealed(state),
         "pending_decision": _decode_pending_decision(state),
@@ -1734,6 +1742,8 @@ def format_state_lines(gs):
     # Belief-state blocks (shown only when the viewer actually knows something).
     if gs.get("known_top_library"):
         lines.append(f"Known top: {', '.join(gs['known_top_library'])}")
+    if gs.get("opp_known_top_library"):
+        lines.append(f"Known opp top: {', '.join(gs['opp_known_top_library'])}")
     if gs.get("opp_known_hand"):
         lines.append(f"Known opp hand: {', '.join(gs['opp_known_hand'])}")
     if gs.get("opp_revealed"):

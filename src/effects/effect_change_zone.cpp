@@ -128,7 +128,7 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
     // consumed when its Permanent is built, or dropped if the move is replaced elsewhere.
     if (dest == Zone::BATTLEFIELD && enters_transformed) cur_game.pending_enters_transformed.insert(e);
     const bool exile_face_down = ab.exile_face_down && dest == Zone::EXILE;
-    orderer->add_to_zone(false, e, dest, /*top_seen_by_owner=*/true, exile_face_down);
+    orderer->add_to_zone(false, e, dest, LibraryTopView::OWNER, exile_face_down);
     Zone::ZoneValue landed = global_coordinator.GetComponent<Zone>(e).location;
     if (landed != Zone::BATTLEFIELD) {
         cur_game.pending_enters_transformed.erase(e);

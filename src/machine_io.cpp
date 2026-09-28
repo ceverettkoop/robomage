@@ -740,7 +740,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->self_exile[i].card_idx     = -1;
         gs->opp_exile[i].card_idx      = -1;
     }
-    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) {
+        gs->known_top_library_self[i] = -1;
+        gs->known_top_library_opp[i] = -1;
+    }
     // Deck-identity tail blocks: id = -1 (empty sentinel), count 0.
     for (int i = 0; i < DECKLIST_MAIN_SLOTS; i++) {
         gs->self_live_library_id[i] = -1;
@@ -823,11 +826,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->sideboard_swaps_made = sideboard_phase_state ? sideboard_phase_state->sb_swaps : 0;
     gs->sideboard_delta      = sideboard_phase_state ? sideboard_phase_state->delta : 0;
 
-    // Viewer's known top-of-library cache
-    const int* viewer_known = (viewer == Zone::PLAYER_A)
-        ? cur_game.known_top_library_a : cur_game.known_top_library_b;
-    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
+    // What the viewer knows about the top of each library.
+    const int* viewer_known = cur_game.known_top_library_seen_by(viewer, viewer);
+    const int* viewer_known_opp = cur_game.known_top_library_seen_by(opponent_of(viewer), viewer);
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) {
         gs->known_top_library_self[i] = viewer_known[i];
+        gs->known_top_library_opp[i] = viewer_known_opp[i];
+    }
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -1295,6 +1300,10 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // Sentinel id = unknown.
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         state.push_back(norm_card_id(gs->known_top_library_self[i]));
+    // Known top-of-library cards of the opponent's library, as far as the viewer knows them
+    // (5 slots x 1 float = 5). Sentinel id = unknown.
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
+        state.push_back(norm_card_id(gs->known_top_library_opp[i]));
 
     // Known opponent-hand cards (10 x 1 = 10): specific card identities the viewer
     // has had revealed from the opponent's hand and that are still in hand. Sentinel

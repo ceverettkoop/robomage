@@ -20,7 +20,7 @@ from env import (OBS_SIZE, STATE_SIZE, _SELF_IS_A_IDX,
                  _GY_START, _EXILE_START, _GY_SLOT_SIZE, _EXILE_SLOT_SIZE,
                  MAX_GY_SLOTS,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
-                 _KNOWN_TOP_LIB_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _OPP_KNOWN_TOP_LIB_START,
                  _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
                  _OPP_KNOWN_HAND_SLOT_SIZE,
                  _STACK_START, _STACK_SLOT_SIZE, _STACK_SLOTS)
@@ -60,6 +60,7 @@ def blank_obs():
             obs[start + i * size] = _SENT
     for i in range(_KNOWN_TOP_LIB_SLOTS):
         obs[_KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE] = _SENT
+        obs[_OPP_KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE] = _SENT
     for i in range(_OPP_KNOWN_HAND_SLOTS):
         obs[_OPP_KNOWN_HAND_START + i * _OPP_KNOWN_HAND_SLOT_SIZE] = _SENT
     for s in range(_STACK_SLOTS):

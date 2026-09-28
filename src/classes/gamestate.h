@@ -241,9 +241,11 @@ typedef struct GameState_tag {
     int  self_library_ct;
     int  opp_library_ct;
 
-    // Known top-of-library cards (viewer's library only). Index 0 = top.
-    // -1 = unknown.
+    // Known top-of-library cards: the viewer's own library, and the opponent's library as far
+    // as the viewer knows it (a card revealed there, the viewer's fateseal or Mishra's Bauble
+    // look). Index 0 = top. -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
+    int known_top_library_opp[KNOWN_TOP_LIBRARY_SIZE];
 
     // bo3 match state
     int  match_game_number;  // -1 = single game, else the 0-based bo3 game index (< MAX_MATCH_GAMES)

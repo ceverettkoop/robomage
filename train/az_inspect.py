@@ -544,7 +544,7 @@ def load_shard_sample(data_dir=AZ_DATA_DIR, max_rows=4000, window=None, seed=0):
 # perm / stack / entity encoders all embed the slot's id). Dict-valued zones
 # carry {"name": ...}; the rest are plain name lists.
 _EMB_DICT_ZONES = ("self_battlefield", "opp_battlefield", "self_hand", "stack",
-                   "known_top_library", "opp_known_hand")
+                   "known_top_library", "opp_known_top_library", "opp_known_hand")
 _EMB_STR_ZONES = ("self_graveyard", "opp_graveyard", "self_exile", "opp_exile")
 
 
@@ -781,7 +781,8 @@ def obs_blocks():
         ("match context", e._MATCH_CTX_START, e._LIBRARY_CTX_START),
         ("library context", e._LIBRARY_CTX_START, e._CUR_TURN_IDX),
         ("turn", e._CUR_TURN_IDX, e._KNOWN_TOP_LIB_START),
-        ("known top library", e._KNOWN_TOP_LIB_START, e._OPP_KNOWN_HAND_START),
+        ("known top library", e._KNOWN_TOP_LIB_START, e._OPP_KNOWN_TOP_LIB_START),
+        ("opp known top library", e._OPP_KNOWN_TOP_LIB_START, e._OPP_KNOWN_HAND_START),
         ("opp known hand", e._OPP_KNOWN_HAND_START, e._PENDING_DECISION_START),
         ("pending decision", e._PENDING_DECISION_START, e._EXTRAS_START),
         ("global extras", e._EXTRAS_START, e._SELF_LIVE_LIB_START),

@@ -7,6 +7,7 @@
 #include "../components/zone.h"
 #include "../classes/game.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -33,11 +34,22 @@ void mark_card_revealed(Entity e, Zone::Ownership owner) {
     // so the observation can carry the exact card, not just "seen once this match".
     // Cleared by Orderer::add_to_zone when the card next changes zones.
     // A card revealed in a library is remembered as revealed for the rest of the effect, so one
-    // it then puts into a hand stays known there (Orderer::add_to_zone).
+    // it then puts into a hand stays known there (Orderer::add_to_zone), and both players know it
+    // at its place in the library until it moves or the library is shuffled (the known-top
+    // record, Game::KnownLibraryTop).
     if (global_coordinator.entity_has_component<Zone>(e)) {
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location == Zone::HAND) z.identity_known = true;
-        if (z.location == Zone::LIBRARY) cur_game.revealed_in_library.insert(e);
+        if (z.location == Zone::LIBRARY) {
+            cur_game.revealed_in_library.insert(e);
+            if (global_coordinator.entity_has_component<CardData>(e)) {
+                const int lib_idx =
+                    card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+                const int pos = static_cast<int>(z.distance_from_top);
+                cur_game.known_top_library_note(z.owner, pos, lib_idx, z.owner);
+                cur_game.known_top_library_note(z.owner, pos, lib_idx, opponent_of(z.owner));
+            }
+        }
     }
 
     // Resolve the card's vocab index the same way machine_io does: a battlefield

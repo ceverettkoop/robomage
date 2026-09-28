@@ -46,8 +46,8 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log_private(ab.controller, "%s looks at top of %s's library: %s\n",
                     player_name(ab.controller).c_str(), player_name(peek_owner).c_str(), cd.name.c_str());
-                // Looking at your own library's top cards puts them in your known-top cache.
-                if (peek_owner == ab.controller) orderer->note_library_card_known(e);
+                // The looker now knows these cards, in whichever library they are.
+                orderer->note_library_card_known(e, ab.controller);
             }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
@@ -103,7 +103,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // pinned against determinize by collect_pending_pins) without re-logging.
     if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
-        orderer->note_library_card_known(top_card);
+        orderer->note_library_card_known(top_card, ab.controller);
     }
     int reveal_choice = 1;
     if (pp && pp->reveal_optional) {

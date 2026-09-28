@@ -152,8 +152,9 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
                                                                : "zone";
 
     // Cards put into a library in a random order land in positions no player knows (Triumph of
-    // Saint Katherine's shuffled pile), so the owner's known-top cache records them as unknown.
-    const bool top_seen_by_owner = !ab.rest_random_order;
+    // Saint Katherine's shuffled pile), so the known-top record keeps them unknown.
+    const LibraryTopView top_view =
+        ab.rest_random_order ? LibraryTopView::NOBODY : LibraryTopView::OWNER;
     size_t moved = 0;
     for (auto entity : to_move) {
         // The shared uncast battlefield entry first: an Aura picks what it enchants, or stays
@@ -172,7 +173,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             }
         }
         if (ab.destination != Zone::BATTLEFIELD)
-            orderer->add_to_zone(on_bottom, entity, ab.destination, top_seen_by_owner);
+            orderer->add_to_zone(on_bottom, entity, ab.destination, top_view);
         // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
         // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
         // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each

@@ -813,11 +813,18 @@ struct Game {
         std::set<Entity> entering_together;
         std::map<Entity, PendingAuraTarget> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
-        // Known top-of-library cards (one array per player). Index 0 is the top of the
-        // library. -1 = unknown (default). Updated when a card is placed on top of a
-        // library or when a card is removed from the top; cleared to all -1 on shuffle.
-        int known_top_library_a[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
-        int known_top_library_b[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+        // Known top-of-library cards of one library, per player who knows them. Index 0 is the
+        // top of the library; -1 = unknown (default). `by_owner` is what the library's owner
+        // knows (their Brainstorm put-backs, a scry keep, Delver's look), `by_opponent` what the
+        // owner's opponent knows (their fateseal or Mishra's Bauble look at it); a card revealed
+        // there (CR 701.20a) or put there from a public zone is known to both. The entries follow
+        // the cards as cards are placed on or removed from the top, and are cleared on shuffle.
+        struct KnownLibraryTop {
+            int by_owner[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+            int by_opponent[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+        };
+        KnownLibraryTop known_top_library_a;  // Player A's library
+        KnownLibraryTop known_top_library_b;  // Player B's library
 
         // CR 725: make `player` the monarch. The previous monarch (if any) ceases to be the
         // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
@@ -852,15 +859,25 @@ struct Game {
         // player loses.
         void players_lose(bool a_loses, bool b_loses, const std::string &reason);
 
-        void clear_known_top_library(bool player_a_owner);
-        void known_top_library_push(bool player_a_owner, int card_vocab_idx);
-        void known_top_library_remove_pos(bool player_a_owner, int pos);
-        // Records card_vocab_idx at `pos` without moving any entry (a card already sitting at
-        // that depth became known). No-op outside the tracked window.
-        void known_top_library_set(bool player_a_owner, int pos, int card_vocab_idx);
-        // Inserts card_vocab_idx at `pos`, shifting the entries at pos.. one deeper (the deepest
-        // falls off the window). No-op outside the tracked window.
-        void known_top_library_insert(bool player_a_owner, int pos, int card_vocab_idx);
+        // The known-top record of `library_owner`'s library.
+        KnownLibraryTop &known_top_library(Zone::Ownership library_owner);
+        const KnownLibraryTop &known_top_library(Zone::Ownership library_owner) const;
+        // What `viewer` knows about the top of `library_owner`'s library (KNOWN_TOP_LIBRARY_SIZE
+        // vocab ids, -1 = unknown).
+        const int *known_top_library_seen_by(Zone::Ownership library_owner,
+                                             Zone::Ownership viewer) const;
+        void clear_known_top_library(Zone::Ownership library_owner);
+        // A card was placed on top of the library: every known entry moves one deeper, and the new
+        // top is known to the owner as `owner_idx` and to the opponent as `opp_idx` (-1 = unseen).
+        void known_top_library_push(Zone::Ownership library_owner, int owner_idx, int opp_idx);
+        // The card at `pos` left the library: the entries below it move up one.
+        void known_top_library_remove_pos(Zone::Ownership library_owner, int pos);
+        // `knower` learned the card sitting at `pos` (no card moves). No-op outside the window.
+        void known_top_library_note(Zone::Ownership library_owner, int pos, int card_vocab_idx,
+                                    Zone::Ownership knower);
+        // The card at `from` moved to depth `to` (the cards in between shift to close the gap),
+        // carrying both players' knowledge of it. Positions outside the window are unknown.
+        void known_top_library_move(Zone::Ownership library_owner, int from, int to);
 
         bool ready_to_resolve();
         // CR 514.2: all damage marked on permanents is removed and all "until end of turn" and

@@ -502,7 +502,10 @@ _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
-_OPP_KNOWN_HAND_START = _KNOWN_TOP_LIB_END
+# The opponent's library top as far as the viewer knows it (same slot layout).
+_OPP_KNOWN_TOP_LIB_START = _KNOWN_TOP_LIB_END
+_OPP_KNOWN_TOP_LIB_END = _OPP_KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
+_OPP_KNOWN_HAND_START = _OPP_KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
@@ -778,6 +781,8 @@ def _build_sideboard_mask():
     for i in range(_HAND_START, _HAND_START + _HAND_SLOTS_TOTAL):      # self hand
         card_id_idx.append(i)
     for i in range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END):          # known top-5 library
+        card_id_idx.append(i)
+    for i in range(_OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END):  # known opp top-5 library
         card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)

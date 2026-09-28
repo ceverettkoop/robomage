@@ -61,7 +61,8 @@ from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
     _LIBRARY_CTX_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
-    _SELF_PERM_START, _STACK_START, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)
+    _SELF_PERM_START, _STACK_START, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
+    _OPP_KNOWN_TOP_LIB_START, _SELF_IS_A_IDX)
 from cli_spec import BINARY, BIN_DIR
 
 # The binary payload framing after every BQUERY header, WITHOUT --narrative:
@@ -3088,6 +3089,72 @@ def test_determinize_invariants():
     return "hand/step/battlefield/life/counts invariant under DETERMINIZE; RESTORE exact"
 
 
+def test_determinize_pins_public_known_top():
+    """A library position the searcher knows is pinned by DETERMINIZE even in
+    the OPPONENT's library: A's Delver of Secrets reveals the Brainstorm on top
+    of A's library (CR 701.20a), so at B's next decision B knows it (the
+    opp-known-top block) and every sampled world from B's seat must keep
+    Brainstorm there. Unpinned, it would be dealt among A's 7 unknown hand cards
+    and 22 other library cards, and the known-top entry rewritten to whatever
+    card landed on top. RESTORE returns byte-identically."""
+    seed = 1
+    brainstorm = _VOCAB_NAMES.index("Brainstorm")
+    deck_paths = _write_decks([
+        ("kt_det_a", "7 Island\n1 Brainstorm\n22 Island\n"),
+        ("kt_det_b", "30 Mountain\n"),
+    ])
+    extra = ["--deck-a", "temp/kt_det_a", "--deck-b", "temp/kt_det_b", "--no-shuffle",
+             "--battlefield-a", "Delver of Secrets,Island",
+             "--battlefield-b", "Mishras Bauble"]
+
+    def opp_top(payload):
+        return int(round(float(_state(payload)[_OPP_KNOWN_TOP_LIB_START]) * N_CARD_TYPES))
+
+    eng = Engine(seed, extra=extra)
+    try:
+        cur = eng.read()
+        revealed = False
+        for _ in range(60):
+            if cur.kind != "q":
+                raise ProtocolError("game ended before the known-top root")
+            is_a = _state(cur.payload)[_SELF_IS_A_IDX] > 0.5
+            ids = np.round(_query_ids(cur.payload)[:cur.nc] * N_CARD_TYPES).astype(int)
+            if (is_a and not revealed and cur.nc == 2 and
+                    bool((_query_cats(cur.payload)[:2] == CAT_OTHER_CHOICE).all()) and
+                    bool((ids == brainstorm).all())):
+                cur = eng.play(1)   # [1] Reveal
+                revealed = True
+                continue
+            if revealed and not is_a and cur.safe:
+                break
+            cur = eng.play(0)
+        else:
+            raise ProtocolError("no safe B decision after the Delver reveal")
+        if opp_top(cur.payload) != brainstorm:
+            raise ProtocolError(f"B's opp-known-top slot 0 is {opp_top(cur.payload)} after "
+                                f"the reveal, expected Brainstorm ({brainstorm})")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        for ds in (2, 3, 4, 5, 6, 7):
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, f"known-top RESTORE (seed {ds})")
+            dq = eng.determinize(ds)
+            if opp_top(dq.payload) != brainstorm:
+                raise ProtocolError(f"world {ds}: the revealed top of A's library was "
+                                    f"resampled (opp-known-top slot 0 = "
+                                    f"{opp_top(dq.payload)})")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "known-top final RESTORE")
+    finally:
+        eng.kill()
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    return "revealed opponent library top pinned in 6 worlds; RESTORE exact"
+
+
 def _write_sb_decks():
     """Stacked bo3 decks for the sideboard-determinize test: identical 60-Swamp
     mains, and a MARKER basic in each sideboard that exists nowhere else (A:
@@ -3775,6 +3842,7 @@ TESTS = [
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),
     ("determinize_invariants", test_determinize_invariants),
+    ("determinize_pins_public_known_top", test_determinize_pins_public_known_top),
     ("sideboard_determinize", test_sideboard_determinize),
     ("sideboard_search_roundtrip", test_sideboard_search_roundtrip),
     ("sideboard_sim_result", test_sideboard_sim_result),

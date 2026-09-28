@@ -66,7 +66,7 @@
 // sentinel/slot-0 collision); decode with round(v * 108) - 1. The BQUERY per-action
 // refs array stays raw int32 with -1 sentinel; env.py normalizes.
 //
-// Fixed-size state vector layout (STATE_SIZE = 6516 floats):
+// Fixed-size state vector layout (STATE_SIZE = 6521 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -228,10 +228,17 @@
 //
 //  [5777-5781]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
 //                Per slot: card_id (sentinel = unknown). Index 0 is the top of
-//                the library. Entries are set when a card is placed on top (e.g.
-//                Ponder, Brainstorm, Rearrange) and cleared when shuffled.
+//                the library. Entries are set when the viewer sees a card placed on
+//                top (Ponder, Brainstorm, Rearrange), looks at it where it sits
+//                (Delver), or it is revealed there, and cleared when shuffled.
 //
-//  [5782-5791]   Known opponent-hand cards: 10 slots x 1 float = 10
+//  [5782-5786]   Known top-5 cards of the OPPONENT's library, as far as the viewer knows
+//                them: 5 slots x 1 float = 5. Per slot: card_id (sentinel = unknown),
+//                index 0 = the top. Set by a card revealed there (the opponent's Delver
+//                reveal, CR 701.20a), put there from a public zone, or seen by the
+//                viewer's own look (a fateseal, Mishra's Bauble); cleared on shuffle.
+//
+//  [5787-5796]   Known opponent-hand cards: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty/unknown). The specific
 //                identities of opponent-hand cards the viewer has had revealed
 //                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
@@ -239,51 +246,51 @@
 //                tracks the exact card and a slot clears when that card leaves the
 //                hand for another zone.
 //
-//  [5792-5793]   Pending decision context: 2 floats.
-//                [5792] card_id of the spell/ability currently making a
+//  [5797-5798]   Pending decision context: 2 floats.
+//                [5797] card_id of the spell/ability currently making a
 //                mid-resolution choice (target select, dig/scry/surveil pick,
 //                search, discard, modal, ...; sentinel = none). Set via
 //                PendingDecisionScope — the source may not be on the stack yet,
 //                since targets are announced before the spell moves there
 //                (CR 601.2b/c), so this is the only place the observation shows
 //                WHAT is asking for the current choice.
-//                [5793] 1.0 if that source's controller is the viewer, else 0.0
+//                [5798] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 //
-//  [5794-5820]   Global extras (27 floats):
-//                  [5794] self lands_played_this_turn / 10
-//                  [5795] opp  lands_played_this_turn / 10
-//                  [5796] self is_monarch (CR 725)
-//                  [5797] opp  is_monarch
-//                  [5798] self city's blessing (CR 702.131c)
-//                  [5799] opp  city's blessing
-//                  [5800] self revolt (a permanent self controlled left the battlefield this turn)
-//                  [5801] opp  revolt
-//                  [5802] self pending extra turns / 3
-//                  [5803] opp  pending extra turns / 3
-//                  [5804] is_day  (CR 731.1; both 0.0 = neither)
-//                  [5805] is_night
+//  [5799-5825]   Global extras (27 floats):
+//                  [5799] self lands_played_this_turn / 10
+//                  [5800] opp  lands_played_this_turn / 10
+//                  [5801] self is_monarch (CR 725)
+//                  [5802] opp  is_monarch
+//                  [5803] self city's blessing (CR 702.131c)
+//                  [5804] opp  city's blessing
+//                  [5805] self revolt (a permanent self controlled left the battlefield this turn)
+//                  [5806] opp  revolt
+//                  [5807] self pending extra turns / 3
+//                  [5808] opp  pending extra turns / 3
+//                  [5809] is_day  (CR 731.1; both 0.0 = neither)
+//                  [5810] is_night
 //                  Priority-window context (EXTRAS_PRIORITY_SIZE = 3). All three are
 //                  0.0 unless the current decision is an ordinary priority window
 //                  (priority_window_open(), game_driver.h): never set for a mandatory
 //                  choice, a mid-resolution / mid-cast choice, a pregame decision, or
 //                  a sideboard decision.
-//                  [5806] self_has_passed — the viewer's Game::a/b_has_passed flag
-//                  [5807] opp_has_passed — the other seat's flag. 1.0 means passing
+//                  [5811] self_has_passed — the viewer's Game::a/b_has_passed flag
+//                  [5812] opp_has_passed — the other seat's flag. 1.0 means passing
 //                       now resolves the top of the stack (or ends the step when the
 //                       stack is empty). Forced and voluntary passes read the same.
-//                  [5808] is_priority_window — 1.0 for an ordinary priority window
+//                  [5813] is_priority_window — 1.0 for an ordinary priority window
 //                       (pass = pass priority), 0.0 for every other decision kind
 //                  Mulligan state (EXTRAS_MULLIGAN_SIZE = 3), from Game::pregame:
-//                  [5809] self mulligans taken / MULLIGAN_NORMALIZER
-//                  [5810] opp  mulligans taken / MULLIGAN_NORMALIZER (public)
-//                  [5811] self cards still to bottom / MULLIGAN_NORMALIZER — nonzero
+//                  [5814] self mulligans taken / MULLIGAN_NORMALIZER
+//                  [5815] opp  mulligans taken / MULLIGAN_NORMALIZER (public)
+//                  [5816] self cards still to bottom / MULLIGAN_NORMALIZER — nonzero
 //                       only while the viewer is bottoming (CR 103.5 London mulligan)
 //                  All three are 0.0 during a bo3 sideboard phase.
-//                  [5812-5817] MandatoryChoice one-hot x6 (NONE at index 0, then
+//                  [5817-5822] MandatoryChoice one-hot x6 (NONE at index 0, then
 //                       DECLARE_ATTACKERS_CHOICE, DECLARE_BLOCKERS_CHOICE,
 //                       CLEANUP_DISCARD, CHOOSE_ENTITY, ASSIGN_COMBAT_DAMAGE_CHOICE)
-//                  [5818] self_plays_first — the viewer is the starting player of the
+//                  [5823] self_plays_first — the viewer is the starting player of the
 //                       game this observation PERTAINS TO. In-game that is the current
 //                       game (Game::pregame.a_goes_first); during a bo3 between-games
 //                       sideboard phase it is the UPCOMING game, whose starting player
@@ -292,9 +299,9 @@
 //                       differ substantially on the play vs the draw, and at 1-1 the
 //                       upcoming starting player is otherwise unrecoverable from the
 //                       observation.
-//                  [5819] sideboard swaps completed this phase / SIDEBOARD_SWAP_CAP
+//                  [5824] sideboard swaps completed this phase / SIDEBOARD_SWAP_CAP
 //                       (0.0 outside the phase)
-//                  [5820] sideboard maindeck drift from its phase-start size: 0.0
+//                  [5825] sideboard maindeck drift from its phase-start size: 0.0
 //                       balanced, 1.0 one card over. The menu is IN-FIRST, so drift is
 //                       only ever 0 or +1 (see run_sideboard_phase in
 //                       src/game_driver.cpp). 0.0 outside the phase.
@@ -307,13 +314,13 @@
 //  encoding byte-stable across actors). Overflow (more distinct names than slots)
 //  or a name absent from the vocab is a fatal_error, never a silent truncation.
 //
-//  [5821-5916]   Self LIVE library: 48 slots x (card_id, count) = 96.
+//  [5826-5921]   Self LIVE library: 48 slots x (card_id, count) = 96.
 //                The viewer's LIBRARY zone tallied live at serialization time, so
 //                cards leaving/returning to the library are always reflected.
 //                Viewer-only — the opponent's live library stays hidden.
 //
-//  [5917-6012]   Self LIVE maindeck:  48 slots x (card_id, count) = 96.
-//  [6013-6044]   Self LIVE sideboard: 16 slots x (card_id, count) = 32.
+//  [5922-6017]   Self LIVE maindeck:  48 slots x (card_id, count) = 96.
+//  [6018-6049]   Self LIVE sideboard: 16 slots x (card_id, count) = 32.
 //                (16, not 15: a legal sideboard is 15 cards, but this block is
 //                also written mid-swap, when a cut card is momentarily the
 //                sideboard's 16th — see DECKLIST_SIDE_SLOTS in gamestate.h.)
@@ -327,8 +334,8 @@
 //                picking a card to bring in and its remaining sideboard while picking
 //                a card to cut.
 //
-//  [6045-6188]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count, revealed) = 144.
-//  [6189-6236]   Opponent-of-viewer REGISTERED sideboard: 16 slots x (card_id, count, revealed) = 48.
+//  [6050-6193]   Opponent-of-viewer REGISTERED maindeck: 48 slots x (card_id, count, revealed) = 144.
+//  [6194-6241]   Opponent-of-viewer REGISTERED sideboard: 16 slots x (card_id, count, revealed) = 48.
 //                (Registered, so only 15 slots can ever fill; the width just
 //                follows DECKLIST_SIDE_SLOTS.)
 //                The opponent's decklist as REGISTERED at match start (open-decklist
@@ -353,7 +360,7 @@
 //  Counts and mana are normalized by MANA_COUNT_NORMALIZER, land drops by
 //  LAND_DROPS_NORMALIZER. Self first, then the opponent, like every other block.
 //
-//  [6237-6246]   Self mana development (10 floats):
+//  [6242-6251]   Self mana development (10 floats):
 //                  [0-5] potential_W/U/B/R/G/C — how many of this player's UNTAPPED
 //                        battlefield mana sources could produce that color right now
 //                        (mana_potential(), mana_system.h): a permanent with an
@@ -373,7 +380,7 @@
 //                        may still play this turn, from the SAME expression the PLAY_LAND
 //                        legal-action gate uses (rules_mod::land_drops_remaining, which
 //                        folds in AdjustLandPlays statics), clamped at 0.
-//  [6247-6255]   Opponent mana development (9 floats): the same fields MINUS
+//  [6252-6260]   Opponent mana development (9 floats): the same fields MINUS
 //                lands_in_hand, i.e. potential_W/U/B/R/G/C, potential_total,
 //                lands_in_play, land_drops_remaining.
 //
@@ -399,8 +406,8 @@
 //  EXCEED 1.0 above it (life > 20, library > 60) — exactly like the linear floats,
 //  which are likewise unclamped above their normalizer.
 //
-//  [6256-6257]   Self log vitals (2 floats): log_life, log_library
-//  [6258-6259]   Opponent log vitals (2 floats): same two fields. Library size is
+//  [6261-6262]   Self log vitals (2 floats): log_life, log_library
+//  [6263-6264]   Opponent log vitals (2 floats): same two fields. Library size is
 //                public information, so unlike lands_in_hand above there is nothing
 //                to withhold from the opponent half.
 //
@@ -416,8 +423,8 @@
 //                  [5]  life_lost_this_turn / 20
 //                  [6-10] spell_colors_cast_this_turn multi-hot W, U, B, R, G
 //
-//  [6260-6270]   Self per-turn counters (11 floats)
-//  [6271-6281]   Opponent per-turn counters (11 floats)
+//  [6265-6275]   Self per-turn counters (11 floats)
+//  [6276-6286]   Opponent per-turn counters (11 floats)
 //
 //  ── Pending delayed triggers (CR 603.7) ──────────────────────────────────────
 //  A derived view, built at serialization time, of every delayed trigger from
@@ -429,7 +436,7 @@
 //  ascending registration seq; more than 16 entries truncate (debug builds print a
 //  stderr WARNING). All fields are public information.
 //
-//  [6282-6489]   Delayed triggers: 16 slots x 13 floats = 208
+//  [6287-6494]   Delayed triggers: 16 slots x 13 floats = 208
 //                Per slot (offsets within the slot):
 //                  [0]  present
 //                  [1]  controller_is_self — the trigger's controller is the viewer
@@ -481,10 +488,10 @@
 //                       Scholar's +2, Forth Eorlingas!), captured at creation; sentinel =
 //                       none
 //
-//  [6490-6502]   Self player effects (13 floats)
-//  [6503-6515]   Opponent player effects (13 floats)
+//  [6495-6507]   Self player effects (13 floats)
+//  [6508-6520]   Opponent player effects (13 floats)
 
-static constexpr int STATE_SIZE             = 6516;
+static constexpr int STATE_SIZE             = 6521;
 // Max sideboard swaps a player may complete in one between-games phase. Both the
 // engine's phase cap and the normalizer for the serialized swaps-made scalar, so
 // the two can never drift apart.
@@ -528,7 +535,7 @@ static constexpr int STACK_TGT_FIELDS  = 5;    // present + is_player + controll
 static constexpr int PLAYER_BLOCK_SIZE = 10;   // life, hand_ct, poison, mana[WUBRGC], energy
 static constexpr int STEP_ONEHOT_SIZE  = 13;   // UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
 static constexpr int HEADER_FLAGS      = 3;    // is_active + self_is_a + stack_size
-static constexpr int CARD_ID_SLOT_SIZE = 1;    // hand / known-top / known-opp-hand
+static constexpr int CARD_ID_SLOT_SIZE = 1;    // hand / known-top (self + opp) / known-opp-hand
 // Graveyard and exile slots (see the layout comment above): card id FIRST, then the
 // play-permission flags; an exile slot appends its counters.
 static constexpr int GY_SLOT_SIZE      = 4;    // card id + playable_by_self + playable_by_opp + expires
@@ -648,7 +655,8 @@ static constexpr int MATCH_CTX_START      = HAND_START + MAX_HAND_SLOTS * CARD_I
 static constexpr int LIBRARY_CTX_START    = MATCH_CTX_START + MATCH_CTX_SIZE;
 static constexpr int CUR_TURN_IDX         = LIBRARY_CTX_START + LIBRARY_CTX_SIZE;
 static constexpr int KNOWN_TOP_LIB_START  = CUR_TURN_IDX + CUR_TURN_SIZE;
-static constexpr int OPP_KNOWN_HAND_START = KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE * CARD_ID_SLOT_SIZE;
+static constexpr int OPP_KNOWN_TOP_LIB_START = KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE * CARD_ID_SLOT_SIZE;
+static constexpr int OPP_KNOWN_HAND_START = OPP_KNOWN_TOP_LIB_START + KNOWN_TOP_LIBRARY_SIZE * CARD_ID_SLOT_SIZE;
 static constexpr int PENDING_DECISION_START = OPP_KNOWN_HAND_START + MAX_HAND_SLOTS * CARD_ID_SLOT_SIZE;
 static constexpr int EXTRAS_START         = PENDING_DECISION_START + PENDING_DECISION_SIZE;
 // Within the extras block: the priority-window context, the mulligan state, the

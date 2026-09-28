@@ -92,7 +92,8 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // must NOT learn any card placed back on top, and private card-name logs are pinned to the
     // looker and redacted from the owner.
     Zone::Ownership looker = ab.controller;
-    bool owner_sees = (dig_owner == looker);
+    LibraryTopView top_view = (dig_owner == looker) ? LibraryTopView::OWNER
+                                                    : LibraryTopView::OPPONENT;
     // Narrative actor: the ability's controller when the dug player is a chosen target (Jace
     // +2 looks at the target's library), else the dug player acting on their own library
     // (Goblin Guide: the defending player reveals and takes the card). Zones are the dig owner's
@@ -237,7 +238,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             // (CR 303.4f/g) — the shared uncast battlefield entry.
             if (put_onto_battlefield(orderer, FrameCtx::blocking(), chosen) != Zone::BATTLEFIELD) continue;
         } else {
-            orderer->add_to_zone(on_bottom, chosen, chosen_dest, owner_sees, chosen_face_down);
+            orderer->add_to_zone(on_bottom, chosen, chosen_dest, top_view, chosen_face_down);
         }
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (blind) {
@@ -289,7 +290,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         Zone::ZoneValue rest_dest = dig_rest_destination(ab);
         const bool rest_face_down = dig_exiles_face_down(ab, rest_dest);
         for (auto e : remaining) {
-            orderer->add_to_zone(false, e, rest_dest, owner_sees, rest_face_down);
+            orderer->add_to_zone(false, e, rest_dest, top_view, rest_face_down);
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             if (rest_face_down) {
                 game_log_private(looker, "%s puts %s into exile face down.\n", actor_name.c_str(),
@@ -309,7 +310,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
     bool rest_on_bottom = dig_rest_on_bottom(ab);
     for (auto e : remaining) {
-        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, owner_sees);
+        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, top_view);
     }
     game_log("%s puts %zu card(s) on the %s of %s library.\n", actor_name.c_str(), remaining.size(),
              rest_on_bottom ? "bottom" : "top", owner_poss.c_str());
