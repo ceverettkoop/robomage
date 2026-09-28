@@ -17,6 +17,7 @@ class Orderer;
 struct Permanent;
 struct Ability;
 struct HybridPip;
+struct CardData;
 struct Player;
 
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
@@ -208,7 +209,16 @@ bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
 bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
                          const std::vector<HybridPip>& hybrids, Entity paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr);
+                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
+                         int life_reserve = 0);
+
+// Can `caster` pay `base_flat_cost` plus the hybrid pips (CR 107.4e, via resolve_hybrid_cost) and
+// the Phyrexian pips (CR 107.4f) of `cd`, the face being cast? Each Phyrexian pip is paid with its
+// colored mana or with 2 life (CR 119.4: only life the player has), and the life so committed is
+// reserved from painful mana sources. The cast-legality gate for every path that pays the card's
+// own mana cost, so a Phyrexian spell is never offered when neither half of a pip can be paid.
+bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
+                        const CardData& cd, Entity paid_for, std::shared_ptr<Orderer> orderer);
 
 // A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
 // sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g

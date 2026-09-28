@@ -247,10 +247,9 @@ bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_wind
         // No cost to pay (Ugin -11 grant) — always affordable.
     } else if (is_normal_play) {
         // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
-        // the full (cost-increase-adjusted, hybrid-resolved) base cost can be paid.
-        ManaValue base = effective_base_cost(ecd, caster);
-        if (!resolve_hybrid_cost(caster, base, ecd.hybrid_mana, card, orderer, ecd.has_delve,
-                                 ecd.has_improvise))
+        // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
+        // paid.
+        if (!can_pay_spell_mana(caster, effective_base_cost(ecd, caster), ecd, card, orderer))
             return false;
     } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
         if (player_energy(ppl) < perm_grant.amount) return false;
@@ -734,9 +733,8 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
                           /*ignore_timing=*/false, orderer))
             continue;
 
-        ManaValue cost = effective_base_cost(back, priority_player);
-        if (!can_pay_mana(priority_player, cost, card_entity, orderer,
-                          back.has_delve, back.has_improvise))
+        if (!can_pay_spell_mana(priority_player, effective_base_cost(back, priority_player), back,
+                                card_entity, orderer))
             continue;
 
         LegalAction la = cast_action(card_entity, "Cast " + back.name, 3);
@@ -847,11 +845,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor. Hybrid pips ({W/U}, {2/W})
-            // are folded in via resolve_hybrid_cost (castable iff SOME hybrid assignment is
-            // payable); with no hybrids this is exactly can_pay_mana.
-            bool can_regular = resolve_hybrid_cost(priority_player, effective_cost,
-                                                   card_data.hybrid_mana, card_entity, orderer,
-                                                   card_data.has_delve, card_data.has_improvise);
+            // and Phyrexian pips ({B/P}: its mana or 2 life) are folded in via
+            // can_pay_spell_mana (castable iff SOME assignment is payable); with neither this is
+            // exactly can_pay_mana.
+            bool can_regular = can_pay_spell_mana(priority_player, effective_cost, card_data,
+                                                  card_entity, orderer);
 
             // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
             // "As an additional cost to cast this spell, sacrifice a green creature").
@@ -884,9 +882,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
-                if (resolve_hybrid_cost(priority_player, offspring_total, card_data.hybrid_mana,
-                                        card_entity, orderer, card_data.has_delve,
-                                        card_data.has_improvise)) {
+                if (can_pay_spell_mana(priority_player, offspring_total, card_data, card_entity,
+                                       orderer)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.option_ordinal = 2;  // cast variant: 2 = offspring
@@ -1001,8 +998,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                           /*ignore_timing=*/false, orderer))
             continue;
 
-        ManaValue gy_cost = effective_base_cost(gcd, priority_player);
-        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve, gcd.has_improvise))
+        if (!can_pay_spell_mana(priority_player, effective_base_cost(gcd, priority_player), gcd,
+                                gy_entity, orderer))
             continue;
 
         actions.push_back(cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6));
