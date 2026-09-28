@@ -106,7 +106,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
     dt.fire_on_turn = cur_game.turn;
-    register_delayed_trigger(dt, entity);
+    register_delayed_trigger(dt, fire_ab.source);
     game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
 }
 
@@ -124,14 +124,14 @@ static void mark_warp_permanent(Entity entity, Permanent &perm) {
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "WarpExile";
     fire_ab.source = ObjectRef::of(entity);
-    fire_ab.delayed_link.subjects = {entity};  // the permanent it exiles
+    fire_ab.delayed_link.subjects = {fire_ab.source};  // the permanent it exiles
 
     DelayedTrigger dt;
     dt.ability = fire_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(perm.controller);
     dt.fire_on_turn = cur_game.turn;
-    register_delayed_trigger(dt, entity);
+    register_delayed_trigger(dt, fire_ab.source);
     game_log("%s was cast with warp (exiled at the next end step; castable from exile later).\n",
              perm.name.c_str());
 }

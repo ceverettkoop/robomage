@@ -88,10 +88,10 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     dt.fire_on = Events::CARD_CHANGED_ZONE;
     dt.owner_entity = get_player_entity(perm.controller);
     dt.fire_on_turn = cur_game.turn;
-    dt.watch_entity = tgt;
+    dt.watched = ObjectRef::of(tgt);
     dt.fire_on_leave_battlefield = true;
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
-    register_delayed_trigger(dt, ab.source.lki_entity());
+    register_delayed_trigger(dt, ab.source);
 
     return HandlerResult::DONE_RUN_SUBS;
 }

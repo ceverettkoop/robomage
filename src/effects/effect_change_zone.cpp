@@ -183,9 +183,9 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
     dt.fire_on = Events::CARD_CHANGED_ZONE;
     dt.owner_entity = get_player_entity(source_controller(host));
     dt.fire_on_turn = cur_game.turn;
-    dt.watch_entity = host;
+    dt.watched = ObjectRef::of(host);
     dt.fire_on_leave_battlefield = true;
-    register_delayed_trigger(dt, host);
+    register_delayed_trigger(dt, dt.watched);
 }
 
 // True if `e` sits in one of the ability's declared Origin$ zones, or the ability declares none

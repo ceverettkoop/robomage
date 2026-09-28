@@ -142,6 +142,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
 // Tokens keep no abilities to look back at once off the battlefield.
 static bool is_self_etb_event(const Event &ev, Entity entity);
 static bool trigger_needs_target(const Ability &ab);
+static ObjectRef moved_object(const Event &ev);
 static void match_departed_watcher_triggers(const std::vector<Event> &events,
                                             std::shared_ptr<Orderer> orderer,
                                             std::vector<PendingTrigger> &pending);
@@ -154,6 +155,14 @@ static void match_departed_watcher_triggers(const std::vector<Event> &events,
 // True when it targets and no target was bound from its trigger event.
 static bool trigger_needs_target(const Ability &ab) {
     return ab.valid_tgts != "N_A" && ab.target.empty();
+}
+
+// The object a CARD_CHANGED_ZONE event moved, as it was before the move.
+static ObjectRef moved_object(const Event &ev) {
+    ObjectRef moved;
+    moved.e = ev.GetParam<Entity>(Params::ENTITY);
+    moved.gen = ev.HasParam(Params::OBJECT_GEN) ? ev.GetParam<uint64_t>(Params::OBJECT_GEN) : 0;
+    return moved;
 }
 
 // Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own
@@ -214,7 +223,7 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 if (dt.fire_on_leave_battlefield) {
                     if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
                     if (!ev.HasParam(Params::ENTITY)) continue;
-                    if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
+                    if (moved_object(ev) != dt.watched) continue;
                     if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
                     // Destination filter (e.g. earthbend's "when it dies or is exiled"): when the
                     // trigger names specific destination zones, a move to any other zone (bounce
@@ -255,14 +264,15 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 // to the last-known controller of the object whose departure fired this trigger
                 // (CR 608.2g — it is in the graveyard by now). Shares triggered_player storage.
                 if (trigger_ab.defined_triggered_card_controller && dt.fire_on_leave_battlefield)
-                    trigger_ab.triggered_player = last_known_controller(dt.watch_entity);
+                    trigger_ab.triggered_player = last_known_controller(dt.watched.lki_entity());
                 // CR 400.7e: an ability that triggers on the watched object leaving the
                 // battlefield can find the new object it became in a public zone (earthbend's
                 // "return it to the battlefield").
-                if (dt.fire_on_leave_battlefield && trigger_ab.source.lki_entity() == dt.watch_entity &&
-                    global_coordinator.entity_has_component<Zone>(dt.watch_entity) &&
-                    is_public_zone(global_coordinator.GetComponent<Zone>(dt.watch_entity).location))
-                    trigger_ab.source = ObjectRef::of(dt.watch_entity);
+                const Entity departed = dt.watched.lki_entity();
+                if (dt.fire_on_leave_battlefield && trigger_ab.source == dt.watched &&
+                    global_coordinator.entity_has_component<Zone>(departed) &&
+                    is_public_zone(global_coordinator.GetComponent<Zone>(departed).location))
+                    trigger_ab.source = ObjectRef::of(departed);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ctrl;

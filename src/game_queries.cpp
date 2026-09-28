@@ -18,7 +18,7 @@ extern Coordinator global_coordinator;
 
 static DelayedTriggerLink::FireKind delayed_fire_kind(const DelayedTrigger &dt);
 static Step delayed_fire_step(uint32_t fire_on);
-static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt);
+static std::vector<ObjectRef> derive_delayed_subjects(const DelayedTrigger &dt);
 static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
                                                  Zone::Ownership source_ctrl,
                                                  Zone::Ownership player);
@@ -983,19 +983,21 @@ static Step delayed_fire_step(uint32_t fire_on) {
     return CLEANUP;
 }
 
-static std::vector<Entity> derive_delayed_subjects(const DelayedTrigger &dt) {
-    if (!dt.remembered_objects.empty()) return live_entities(dt.remembered_objects);
-    std::vector<Entity> targets;
-    for (Entity t : live_entities(dt.ability.targets))
-        if (!global_coordinator.entity_has_component<Player>(t)) targets.push_back(t);
+static std::vector<ObjectRef> derive_delayed_subjects(const DelayedTrigger &dt) {
+    if (!dt.remembered_objects.empty()) return dt.remembered_objects;
+    std::vector<ObjectRef> targets;
+    for (const ObjectRef &t : dt.ability.targets) {
+        const Entity e = t.get();
+        if (e != 0 && !global_coordinator.entity_has_component<Player>(e)) targets.push_back(t);
+    }
     if (!targets.empty()) return targets;
     if (!dt.ability.restore_remembered_exiled_with.empty())
-        return live_entities(dt.ability.restore_remembered_exiled_with);
-    if (dt.watch_entity != 0) return {dt.watch_entity};
+        return dt.ability.restore_remembered_exiled_with;
+    if (!dt.watched.empty()) return {dt.watched};
     return {};
 }
 
-void register_delayed_trigger(DelayedTrigger dt, Entity creator) {
+void register_delayed_trigger(DelayedTrigger dt, const ObjectRef &creator) {
     stamp_source_transforms(dt.ability);  // CR 701.27f: since the delayed trigger was created
     // CR 107.3n: a delayed trigger created by a resolving spell or ability uses that object's X.
     if (dt.ability.x_paid < 0 && cur_game.resolution.active)
@@ -1003,9 +1005,10 @@ void register_delayed_trigger(DelayedTrigger dt, Entity creator) {
     DelayedTriggerLink &link = dt.ability.delayed_link;
     link.seq = cur_game.next_delayed_seq++;
     link.creator = creator;
-    link.creator_vocab_idx = action_card_vocab_idx(creator);
+    link.creator_vocab_idx = action_card_vocab_idx(creator.lki_entity());
     if (link.subjects.empty()) link.subjects = derive_delayed_subjects(dt);
-    link.subject_vocab_idx = link.subjects.empty() ? -1 : action_card_vocab_idx(link.subjects[0]);
+    link.subject_vocab_idx =
+        link.subjects.empty() ? -1 : action_card_vocab_idx(link.subjects[0].lki_entity());
     link.fire_kind = delayed_fire_kind(dt);
     cur_game.delayed_triggers.push_back(std::move(dt));
 }
@@ -1013,9 +1016,8 @@ void register_delayed_trigger(DelayedTrigger dt, Entity creator) {
 bool is_waiting_delayed_trigger_subject(Entity e) {
     if (e == 0) return false;
     for (const auto &dt : cur_game.delayed_triggers) {
-        if (dt.watch_entity == e) return true;
-        for (Entity s : dt.ability.delayed_link.subjects)
-            if (s == e) return true;
+        if (dt.watched.get() == e) return true;
+        if (refs_contain(dt.ability.delayed_link.subjects, e)) return true;
     }
     return false;
 }

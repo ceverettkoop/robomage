@@ -79,7 +79,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(ctrl);
     dt.fire_on_turn = cur_game.turn;
-    register_delayed_trigger(dt, ab.source.lki_entity());
+    register_delayed_trigger(dt, ab.source);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

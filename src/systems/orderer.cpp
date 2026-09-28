@@ -168,6 +168,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         Entity owner_entity = get_player_entity(target_zone.owner);
         Event ev(Events::CARD_CHANGED_ZONE);
         ev.SetParam(Params::ENTITY,      target);
+        ev.SetParam(Params::OBJECT_GEN,  target_zone.obj_gen);
         ev.SetParam(Params::PLAYER,      owner_entity);
         ev.SetParam(Params::ORIGIN,      target_zone.location);
         ev.SetParam(Params::DESTINATION, destination);
@@ -451,6 +452,7 @@ void Orderer::complete_cast_move(Entity card, const Zone &origin) {
     supersede_last_known_info(card);
     Event ev(Events::CARD_CHANGED_ZONE);
     ev.SetParam(Params::ENTITY, card);
+    ev.SetParam(Params::OBJECT_GEN, origin.obj_gen);
     ev.SetParam(Params::PLAYER, get_player_entity(origin.owner));
     ev.SetParam(Params::ORIGIN, origin.location);
     ev.SetParam(Params::DESTINATION, Zone::STACK);

@@ -774,8 +774,8 @@ struct DelayedTrigger;
 // now) and appends the trigger to cur_game.delayed_triggers. The subjects are the fire
 // ability's delayed_link.subjects when the caller pre-set them, else the first non-empty of
 // dt.remembered_objects, the fire ability's non-player targets, its
-// restore_remembered_exiled_with, and dt.watch_entity. Defined in game_queries.cpp.
-void register_delayed_trigger(DelayedTrigger dt, Entity creator);
+// restore_remembered_exiled_with, and dt.watched. Defined in game_queries.cpp.
+void register_delayed_trigger(DelayedTrigger dt, const ObjectRef &creator);
 
 // True when `e` is the watched object or one of the subjects of a delayed trigger still
 // waiting in cur_game.delayed_triggers (not yet fired). Defined in game_queries.cpp.

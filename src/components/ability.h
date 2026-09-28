@@ -37,12 +37,12 @@ struct DelayedTriggerLink {
         FIRE_LEAVES_BATTLEFIELD = 3,
     };
     uint32_t seq = 0;          // registration order (Game::next_delayed_seq); 0 = not delayed
-    Entity creator = 0;        // the card whose ability set the trigger up
+    ObjectRef creator;         // the object whose ability set the trigger up
     int creator_vocab_idx = -1;  // creator's vocab idx captured at registration (tokens: token band)
     // The objects the trigger acts on or watches (a blinked/exiled card, the tokens it will
     // sacrifice or exile, the watched land). subject_vocab_idx is subjects[0]'s vocab idx,
     // captured at registration so a token that has since ceased to exist keeps its identity.
-    std::vector<Entity> subjects;
+    std::vector<ObjectRef> subjects;
     int subject_vocab_idx = -1;
     FireKind fire_kind = FIRE_OTHER;
 };

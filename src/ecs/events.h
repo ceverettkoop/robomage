@@ -37,6 +37,7 @@ namespace Params {
     constexpr ParamId AMOUNT      = 5;  // Numeric amount (e.g. damage dealt)
     constexpr ParamId FIRST_IN_STEP = 6;  // 1 if a PLAYER_DREW_CARD is the first card drawn in the drawer's draw step, else 0
     constexpr ParamId TARGET      = 7;  // The permanent that became a target (BECAME_TARGET), distinct from ENTITY (the targeting object)
+    constexpr ParamId OBJECT_GEN  = 8;  // uint64_t: the moved object's Zone::obj_gen before the move (CARD_CHANGED_ZONE)
 }
 
 #endif /* EVENTS_H */

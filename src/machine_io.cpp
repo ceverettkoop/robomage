@@ -63,7 +63,7 @@ static void fill_attached_by_refs(GameState* gs, int self_bf, int opp_bf);
 static void fill_stack_entry(StackEntry& se, Entity e, Zone::Ownership viewer);
 static int battlefield_slot_ref_of(Entity e);
 static int creator_slot_ref(const DelayedTriggerLink& link);
-static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched);
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, const ObjectRef& watched);
 static int visible_subject_card_idx(const DelayedTriggerLink& link, Zone::Ownership viewer);
 static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
                                   const std::vector<Entity>& stack_delayed);
@@ -595,19 +595,19 @@ static int battlefield_slot_ref_of(Entity e) {
     return (r >= 0 && r < 2 * MAX_BATTLEFIELD_SLOTS) ? r : -1;
 }
 
-// The delayed trigger's creator slot when it is on the battlefield or the stack. The entity
-// must still be the same card (its vocab idx matches the one captured at registration), so a
-// creator that left play and whose entity id was reused never points at an unrelated object.
+// The delayed trigger's creator slot when it is on the battlefield or the stack, while it is
+// still the object that set the trigger up (a creator that became a new object, or whose entity
+// id was reused, never points at an unrelated object).
 static int creator_slot_ref(const DelayedTriggerLink& link) {
-    if (link.creator == 0 || action_card_vocab_idx(link.creator) != link.creator_vocab_idx) return -1;
-    return slot_ref_of(link.creator);
+    const Entity creator = link.creator.get();
+    return creator == 0 ? -1 : slot_ref_of(creator);
 }
 
 // Battlefield slot of the watched object if it is there, else of the first subject still there.
-static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity watched) {
-    int r = battlefield_slot_ref_of(watched);
+static int first_subject_battlefield_ref(const DelayedTriggerLink& link, const ObjectRef& watched) {
+    int r = battlefield_slot_ref_of(watched.get());
     if (r >= 0) return r;
-    for (Entity s : link.subjects) {
+    for (Entity s : live_entities(link.subjects)) {
         r = battlefield_slot_ref_of(s);
         if (r >= 0) return r;
     }
@@ -615,13 +615,11 @@ static int first_subject_battlefield_ref(const DelayedTriggerLink& link, Entity 
 }
 
 // The delayed trigger's subject card id as `viewer` may see it: the sentinel while that subject is
-// a face-down exiled card another player owns (CR 406.3, 708.2), like the exile zone slots. The
-// subject must still be the same card (its vocab idx matches the one captured at registration).
+// a face-down exiled card another player owns (CR 406.3, 708.2), like the exile zone slots, while
+// it is still that object.
 static int visible_subject_card_idx(const DelayedTriggerLink& link, Zone::Ownership viewer) {
-    if (!link.subjects.empty() &&
-        action_card_vocab_idx(link.subjects[0]) == link.subject_vocab_idx &&
-        face_down_hidden_from(link.subjects[0], viewer))
-        return -1;
+    const Entity first = link.subjects.empty() ? 0 : link.subjects[0].get();
+    if (first != 0 && face_down_hidden_from(first, viewer)) return -1;
     return link.subject_vocab_idx;
 }
 
@@ -642,7 +640,7 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
         d.stack_ref          = -1;
         d.creator_card_idx   = link.creator_vocab_idx;
         d.creator_ref        = creator_slot_ref(link);
-        d.subject_ref        = first_subject_battlefield_ref(link, dt.watch_entity);
+        d.subject_ref        = first_subject_battlefield_ref(link, dt.watched);
         d.subject_card_idx   = visible_subject_card_idx(link, viewer);
         d.fire_kind          = link.fire_kind;
         d.fires_this_turn    = delayed_trigger_fires_this_turn(dt);
@@ -657,7 +655,7 @@ static void fill_delayed_triggers(GameState* gs, Zone::Ownership viewer,
         d.stack_ref          = slot_ref_of(e);
         d.creator_card_idx   = link.creator_vocab_idx;
         d.creator_ref        = creator_slot_ref(link);
-        d.subject_ref        = first_subject_battlefield_ref(link, 0);
+        d.subject_ref        = first_subject_battlefield_ref(link, ObjectRef{});
         d.subject_card_idx   = visible_subject_card_idx(link, viewer);
         d.fire_kind          = link.fire_kind;
         d.fires_this_turn    = false;

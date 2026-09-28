@@ -66,10 +66,10 @@ struct DelayedTrigger {
     Entity restrict_player = 0;
     // "When THIS specific permanent leaves the battlefield" delayed trigger (CR 603.6e), set up
     // by the earthbend resolution: fire_on is CARD_CHANGED_ZONE, and the trigger fires only when
-    // `watch_entity` is the card that left the battlefield (origin BATTLEFIELD). General over any
-    // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
-    Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
-    bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
+    // `watched` is the object that left the battlefield (origin BATTLEFIELD). General over any
+    // "when X leaves, do Y" delayed trigger; empty = not object-watched (the phase-based default).
+    ObjectRef watched;                // the specific permanent whose departure fires this trigger
+    bool fire_on_leave_battlefield = false;  // true: match `watched` leaving the battlefield, not a phase
     // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
     // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
     // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a

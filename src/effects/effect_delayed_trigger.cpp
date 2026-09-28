@@ -88,7 +88,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         dt.fire_on = Events::CARD_CHANGED_ZONE;
         dt.owner_entity = owner_entity;
         dt.fire_on_turn = cur_game.turn;
-        dt.watch_entity = watched;
+        dt.watched = ObjectRef::of(watched);
         if (dp->remember_objects_lki) dt.remembered_objects = objects;
         dt.fire_on_leave_battlefield = true;
         // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
@@ -98,7 +98,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             ab.destination == Zone::HAND || ab.destination == Zone::LIBRARY)
             dt.fire_dest_zones = {ab.destination};
         dt.expires_end_of_turn = dp->this_turn;
-        register_delayed_trigger(dt, ab.source.lki_entity());
+        register_delayed_trigger(dt, ab.source);
         game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
                  fire_ab.category.c_str());
         return HandlerResult::DONE_NO_SUBS;
@@ -138,7 +138,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             dt.restrict_player = get_player_entity(opponent_of(owner));
     }
     dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
-    register_delayed_trigger(dt, ab.source.lki_entity());
+    register_delayed_trigger(dt, ab.source);
     game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());
     // Return false so resolve() does NOT chain this DB$ DelayedTrigger's subabilities inline:
