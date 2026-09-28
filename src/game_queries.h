@@ -285,7 +285,8 @@ std::string last_known_name(Entity e);
 
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — first unattaching every Equipment and Aura among `entities`
-// attached to it, so no link names the old object (CR 400.7) or a later reuse of its id. Shared
+// attached to it (logging each non-Aura as it becomes unattached, CR 704.5n), so no link names
+// the old object (CR 400.7) or a later reuse of its id. Shared
 // by the state-based off-battlefield strip (apply_permanent_components) and by add_to_zone's battlefield-entry reset: a card that left
 // and returned within a single resolution (same-resolution flicker, Ajani's exile-and-return
 // transform) re-enters before the state-based pass could strip it, and per CR 400.7 the

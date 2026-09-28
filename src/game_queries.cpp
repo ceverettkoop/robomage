@@ -156,8 +156,9 @@ std::string entity_name(Entity e) {
 // Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as
 // a new object, CR 400.7). Every Equipment and Aura attached to it becomes unattached first, so no
 // link survives to name the entity once it is a new object or its id is reused (an Equipment
-// stays on the battlefield; an unattached Aura goes to the graveyard, 704.5m). Contract
-// documented at the declaration in game_queries.h.
+// stays on the battlefield and is logged as unattached, 704.5n; an unattached Aura goes to the
+// graveyard, 704.5m, which logs its own line). Contract documented at the declaration in
+// game_queries.h.
 void strip_permanent_components(Entity entity, const std::set<Entity> &entities) {
     if (global_coordinator.entity_has_component<Permanent>(entity)) {
         // Every attachment link, whatever the attached permanent's zone or phasing: this clears
@@ -165,7 +166,11 @@ void strip_permanent_components(Entity entity, const std::set<Entity> &entities)
         for (auto e : entities) {
             if (e == entity || !global_coordinator.entity_has_component<Permanent>(e)) continue;
             auto &attached = global_coordinator.GetComponent<Permanent>(e);
-            if (attached.equipped_to == entity) attached.equipped_to = 0;
+            if (attached.equipped_to != entity) continue;
+            attached.equipped_to = 0;
+            const bool is_aura = global_coordinator.entity_has_component<CardData>(e) &&
+                                 !global_coordinator.GetComponent<CardData>(e).enchant_filter.empty();
+            if (!is_aura) game_log("%s becomes unattached\n", entity_name(e).c_str());
         }
         global_coordinator.RemoveComponent<Permanent>(entity);
     }
