@@ -42,10 +42,10 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
     ImmediateRt &rt = ctx.can_suspend() ? ctx.rt<ImmediateRt>() : local_rt;
 
     if (!rt.init) {
-        bool fire = ab.condition_present.empty();
+        bool fire = ab.def.condition_present.empty();
         if (!fire) {
             for (auto e : orderer->mEntities) {
-                if (permanent_matches_filter(e, ab.condition_present, MatchCtx{ab.controller, ab.source.lki_entity()})) {
+                if (permanent_matches_filter(e, ab.def.condition_present, MatchCtx{ab.controller, ab.source.lki_entity()})) {
                     fire = true;
                     break;
                 }
@@ -54,22 +54,22 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
 
         // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to
         // pay and has the energy to do so (CR 122.1c). Decline / insufficient ⇒ skip Execute.
-        if (fire && ab.energy_cost > 0) {
+        if (fire && ab.def.energy_cost > 0) {
             Entity ctrl_entity = get_player_entity(ab.controller);
             auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-            if (player_energy(pl) < ab.energy_cost) {
+            if (player_energy(pl) < ab.def.energy_cost) {
                 fire = false;  // can't pay — not offered
             } else {
                 // The request_optional_yesno menu, asked through ctx so it can
                 // suspend (same "Decline:/Accept:" entries, same chooser
                 // repoint-and-restore), with the ability's source as the
                 // pending-decision source.
-                std::string prompt = "Pay " + std::to_string(ab.energy_cost) + " energy";
+                std::string prompt = "Pay " + std::to_string(ab.def.energy_cost) + " energy";
                 std::vector<LegalAction> yn = optional_yesno_menu(prompt);
                 int yc = ctx.ask(std::move(yn), ab.controller, ab.source.lki_entity());
                 if (yc < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-                if (yc == 1 && pay_energy(pl, ab.energy_cost)) {
-                    game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.energy_cost);
+                if (yc == 1 && pay_energy(pl, ab.def.energy_cost)) {
+                    game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.def.energy_cost);
                 } else {
                     fire = false;  // declined
                 }
@@ -81,7 +81,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
 
     for (; rt.sub_idx < static_cast<int>(ab.subabilities.size()); ++rt.sub_idx) {
         Ability &stored = ab.subabilities[static_cast<size_t>(rt.sub_idx)];
-        if (stored.from_delayed_execute) {
+        if (stored.def.from_delayed_execute) {
             if (rt.fire) queue_reflexive_trigger(ab, stored);
             continue;
         }
@@ -111,7 +111,7 @@ HandlerResult immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, F
 // trigger placement.
 static void queue_reflexive_trigger(const Ability &parent, const Ability &execute) {
     Ability reflexive = execute;
-    reflexive.from_delayed_execute = false;
+    reflexive.def.from_delayed_execute = false;
     reflexive.source = parent.source;
     reflexive.controller = parent.controller;
     reflexive.targeted_player = parent.player_target_for_subs();

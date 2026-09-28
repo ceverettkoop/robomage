@@ -34,29 +34,29 @@ static bool dig_chosen_revealed(const Ability &ab, Zone::ZoneValue dest);
 
 // Where the chosen cards go: DestinationZone$, else the hand.
 static Zone::ZoneValue dig_chosen_destination(const Ability &ab) {
-    return ab.dig_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.dig_destination) : Zone::HAND;
+    return ab.def.dig_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.def.dig_destination) : Zone::HAND;
 }
 
 // Whether chosen cards put into a library go on the bottom (LibraryPosition$ 0 = top). Only
 // meaningful with DestinationZone$ set.
 static bool dig_chosen_on_bottom(const Ability &ab) {
-    return ab.dig_destination >= 0 && ab.dig_library_position != 0;
+    return ab.def.dig_destination >= 0 && ab.def.dig_library_position != 0;
 }
 
 // Where the unchosen rest go: DestinationZone2$, else the library.
 static Zone::ZoneValue dig_rest_destination(const Ability &ab) {
-    return ab.dig_rest_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.dig_rest_destination)
+    return ab.def.dig_rest_destination >= 0 ? static_cast<Zone::ZoneValue>(ab.def.dig_rest_destination)
                                         : Zone::LIBRARY;
 }
 
 // Whether the unchosen rest go on the bottom of the library (LibraryPosition2$ 0 keeps them on
 // top — Fateseal).
-static bool dig_rest_on_bottom(const Ability &ab) { return ab.dig_rest_library_position != 0; }
+static bool dig_rest_on_bottom(const Ability &ab) { return ab.def.dig_rest_library_position != 0; }
 
 // ExileFaceDown$ True (Triumph of Saint Katherine): the cards this dig moves into exile are
 // exiled face down (CR 406.3), so their identities stay hidden and are not publicly revealed.
 static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest) {
-    return ab.exile_face_down && dest == Zone::EXILE;
+    return ab.def.exile_face_down && dest == Zone::EXILE;
 }
 
 // Whether a chosen card is shown to all players. Every looked-at card is with Reveal$ True
@@ -64,18 +64,18 @@ static bool dig_exiles_face_down(const Ability &ab, Zone::ZoneValue dest) {
 // that quality (Once Upon a Time's "you may reveal a creature or land card from among them and
 // put it into your hand"), unless the ability says NoReveal$ True or exiles it face down.
 static bool dig_chosen_revealed(const Ability &ab, Zone::ZoneValue dest) {
-    if (ab.dig_reveal) return true;
-    const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
+    if (ab.def.dig_reveal) return true;
+    const PeekParams *pp = std::get_if<PeekParams>(&ab.def.params);
     if (pp && pp->no_reveal) return false;
-    return !ab.change_valid.empty() && !dig_exiles_face_down(ab, dest);
+    return !ab.def.change_valid.empty() && !dig_exiles_face_down(ab, dest);
 }
 
 // A face-down exile of every card in the slice, with no filter and no reveal, is a blind move:
 // no player is instructed to look at the cards (Triumph's "exile ... the top six cards of your
 // library in a face-down pile"), so none of them becomes known to anyone (CR 406.3).
 static bool dig_is_blind(const Ability &ab) {
-    return dig_exiles_face_down(ab, dig_chosen_destination(ab)) && ab.change_num_all &&
-           ab.change_valid.empty() && !ab.dig_reveal;
+    return dig_exiles_face_down(ab, dig_chosen_destination(ab)) && ab.def.change_num_all &&
+           ab.def.change_valid.empty() && !ab.def.dig_reveal;
 }
 
 namespace effects {
@@ -99,7 +99,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // +2 looks at the target's library), else the dug player acting on their own library
     // (Goblin Guide: the defending player reveals and takes the card). Zones are the dig owner's
     // ("their" when the actor owns them, else "Player B's").
-    Zone::Ownership actor = (ab.valid_tgts != "N_A") ? looker : dig_owner;
+    Zone::Ownership actor = (ab.def.valid_tgts != "N_A") ? looker : dig_owner;
     const std::string actor_name = player_name(actor);
     const std::string owner_poss = owner_possessive(actor, dig_owner);
 
@@ -112,9 +112,9 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     DigRt &rt = ctx.can_suspend() ? ctx.rt<DigRt>() : local_rt;
     if (!rt.init) {
         // Resolve dynamic dig count (e.g. Count$Devotion.Blue)
-        size_t effective_dig_num = ab.dig_num;
-        if (!ab.dig_num_expr.empty()) {
-            effective_dig_num = evaluate_dynamic_amount(ab.dig_num_expr, dig_owner, orderer, 0);
+        size_t effective_dig_num = ab.def.dig_num;
+        if (!ab.def.dig_num_expr.empty()) {
+            effective_dig_num = evaluate_dynamic_amount(ab.def.dig_num_expr, dig_owner, orderer, 0);
         }
         rt.lib = orderer->get_library_top(dig_owner, effective_dig_num);
 
@@ -125,15 +125,15 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         MatchCtx mctx;
         mctx.controller = dig_owner;
         mctx.source = ab.source.lki_entity();
-        if (!ab.change_valid.empty() && ab.change_valid.find("cmcLE") != std::string::npos &&
-            !ab.dynamic_amount_expr.empty()) {
+        if (!ab.def.change_valid.empty() && ab.def.change_valid.find("cmcLE") != std::string::npos &&
+            !ab.def.dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
-                evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target.get()));
+                evaluate_dynamic_amount(ab.def.dynamic_amount_expr, dig_owner, orderer, ab.target.get()));
             mctx.cmc_op = "LE";
         }
         std::vector<Entity> matching;
         for (auto e : rt.lib)
-            if (ab.change_valid.empty() || card_matches_filter(e, ab.change_valid, mctx))
+            if (ab.def.change_valid.empty() || card_matches_filter(e, ab.def.change_valid, mctx))
                 matching.push_back(e);
 
         if (dig_is_blind(ab))
@@ -147,7 +147,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
         // multi-hot so the non-owner's observation carries the revealed identity, regardless of
         // where each card subsequently goes (hand if it matches, else back on top).
-        if (ab.dig_reveal) {
+        if (ab.def.dig_reveal) {
             for (auto e : rt.lib) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log("%s reveals %s from the top of %s library.\n", actor_name.c_str(), cd.name.c_str(),
@@ -161,24 +161,24 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // graveyard counts satisfy the compare; a plain numeric ChangeNum$ uses amount.
         // ChangeNum$ Any (Fateseal) means the player may take any number (0..pool) of the
         // looked-at cards; treat it as optional with a take limit of the whole pool.
-        bool any_count = ab.change_num_any;
-        rt.optional = ab.optional_choice || any_count;
+        bool any_count = ab.def.change_num_any;
+        rt.optional = ab.def.optional_choice || any_count;
         rt.take_count = 1;
-        if (ab.change_num >= 0) {
+        if (ab.def.change_num >= 0) {
             // Explicit ChangeNum$ N (incl. 0 = "look but take nothing", Birthing Ritual DBDigBis).
-            rt.take_count = static_cast<size_t>(ab.change_num);
-        } else if (ab.cond_amount_active) {
+            rt.take_count = static_cast<size_t>(ab.def.change_num);
+        } else if (ab.def.cond_amount_active) {
             int sum = 0;
-            for (auto &expr : ab.cond_amount_exprs)
+            for (auto &expr : ab.def.cond_amount_exprs)
                 sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
-            rt.take_count = compare_svar(sum, ab.cond_amount_compare) ? ab.cond_amount_if_true : ab.amount;
+            rt.take_count = compare_svar(sum, ab.def.cond_amount_compare) ? ab.def.cond_amount_if_true : ab.def.amount;
         } else if (any_count) {
             rt.take_count = matching.size();
-        } else if (ab.change_num_all) {
+        } else if (ab.def.change_num_all) {
             // ChangeNum$ All (Goblin Guide): take every matching card, automatically.
             rt.take_count = matching.size();
-        } else if (ab.amount > 0) {
-            rt.take_count = ab.amount;
+        } else if (ab.def.amount > 0) {
+            rt.take_count = ab.def.amount;
         }
         rt.pool = matching;
         rt.init = true;
@@ -209,7 +209,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // ChangeNum$ All (Goblin Guide): the take is mandatory and automatic — no player choice
         // / DIG_CHOICE prompt. Take the next pooled card (rt.optional is false here, so index 0
         // is the first matching card).
-        if (ab.change_num_all) {
+        if (ab.def.change_num_all) {
             Entity sel = rt.pool.front();
             rt.chosen.push_back(sel);
             rt.pool.erase(rt.pool.begin());
@@ -273,7 +273,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // RememberChanged$ True (Light Up the Stage): stash the moved (chosen) cards in
     // cur_game.remembered_entities so a paired DB$ Effect sub-ability can grant a play
     // permission on exactly those cards (mirrors ChangeZone's RememberChanged behaviour).
-    if (ab.remember_changed)
+    if (ab.def.remember_changed)
         for (Entity chosen : rt.chosen) cur_game.remembered_entities.push_back(ObjectRef::of(chosen));
 
     // Remaining cards go to bottom of library
@@ -281,7 +281,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     for (auto e : rt.lib) {
         if (std::find(rt.chosen.begin(), rt.chosen.end(), e) == rt.chosen.end()) remaining.push_back(e);
     }
-    if (ab.rest_random_order) {
+    if (ab.def.rest_random_order) {
         // Shuffle remaining with game RNG (platform-stable — see stable_rng.h)
         stable_shuffle(remaining, cur_game.rng.engine);
     }
@@ -318,7 +318,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "DigNum") {
         // Value may be a literal int or an SVar reference (e.g. "X")
         if (!value.empty() && (std::isdigit(value[0]) || value[0] == '-')) {

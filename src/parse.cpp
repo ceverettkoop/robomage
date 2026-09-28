@@ -37,12 +37,12 @@ static std::set<Type> parse_types(std::string value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
-static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
+static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name = "");
-static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
+static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars,
                                             const std::string& card_name = "");
-static std::vector<Ability> parse_triggered_abilities(const std::string& script,
+static std::vector<AbilityDef> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars,
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
@@ -50,27 +50,27 @@ static StaticAbility parse_one_static_ability(const std::string& line, const std
 // Parses one T:/trigger SVar line into a TRIGGERED Ability (trigger_on == 0 if unrecognised).
 // Forward-declared so parse_svar_ability can build a DB$ Effect | Triggers$ <SVar> floating
 // triggered ability from the named trigger SVar.
-static Ability parse_one_trigger(const std::string& line, const std::map<std::string, std::string>& svars,
+static AbilityDef parse_one_trigger(const std::string& line, const std::map<std::string, std::string>& svars,
                                  const std::string& card_name);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
-static bool take_direct_amount_expr(Ability& ability);
-static void warn_unresolved_amount_svar(const Ability& ability, const std::string& card_name);
+static bool take_direct_amount_expr(AbilityDef& ability);
+static void warn_unresolved_amount_svar(const AbilityDef& ability, const std::string& card_name);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 static std::vector<std::string> find_trigger_lines(const std::string &script);
-static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
+static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name = "");
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
 static std::string svar_key_param(const std::string& line, const std::string& want_key);
 static void parse_card_face(const std::string& front_script, CardData& card);
-static Ability equip_keyword_ability(const std::string &kw_line, const std::string &category,
+static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label);
 // Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
 // card's gift effect (Into the Flood Maw's tapped-Fish token).
-static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
                                   const std::map<std::string, std::string>& svars,
                                   const std::string& card_name);
 
@@ -300,7 +300,7 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
 // CARDNAME>, Return<N/Type>, and bare mana symbols. Single source for the cost-token
 // grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
 // Cycling/Flashback open-coded partial copies that silently dropped tokens).
-static void parse_activation_cost(const std::string &cost_str, Ability &ability) {
+static void parse_activation_cost(const std::string &cost_str, AbilityDef &ability) {
     size_t tok_pos = 0;
     while (tok_pos < cost_str.size()) {
         size_t tok_end = cost_str.find(' ', tok_pos);
@@ -411,10 +411,10 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
 // control" (CR 702.6a, 702.151a), activatable only while the Equipment can equip some creature
 // its controller controls (Activation$ gate "CanEquip", CR 301.5c); "Unattach" is reconfigure's
 // "[Cost]: Unattach this permanent", activatable only while it is attached (gate "Attached").
-static Ability equip_keyword_ability(const std::string &kw_line, const std::string &category,
+static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label) {
-    Ability ab;
-    ab.ability_type = Ability::ACTIVATED;
+    AbilityDef ab;
+    ab.ability_type = AbilityDef::ACTIVATED;
     ab.category = category;
     ab.sorcery_speed_only = true;
     ab.keyword_label = label;
@@ -530,7 +530,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             for (auto &ab : card.abilities) {
                 ab.subabilities.erase(
                     std::remove_if(ab.subabilities.begin(), ab.subabilities.end(),
-                        [](const Ability &sub) {
+                        [](const AbilityDef &sub) {
                             return sub.category == "ChangeZone" &&
                                    sub.origin == Zone::STACK &&
                                    sub.destination == Zone::LIBRARY;
@@ -849,9 +849,9 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                     auto it = svars.find(name);
                     if (it != svars.end())
                         card.saga_chapters.push_back(
-                            parse_svar_ability(it->second, Ability::TRIGGERED, svars, card.name));
+                            parse_svar_ability(it->second, AbilityDef::TRIGGERED, svars, card.name));
                     else
-                        card.saga_chapters.push_back(Ability{});  // keep chapter indexing aligned
+                        card.saga_chapters.push_back(AbilityDef{});  // keep chapter indexing aligned
                 }
             }
             card.keywords.push_back("Chapter");
@@ -879,8 +879,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // K:Cycling:<cost> — activated ability from hand: pay cost, discard this card, draw a card
         if (kw_line.rfind("Cycling:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Cycling:"));
-            Ability ab;
-            ab.ability_type = Ability::ACTIVATED;
+            AbilityDef ab;
+            ab.ability_type = AbilityDef::ACTIVATED;
             ab.category = "Draw";
             ab.amount = 1;
             ab.activation_zone = Zone::HAND;
@@ -898,8 +898,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // activating it doesn't consume the card from hand. General over any K:Ninjutsu.
         if (kw_line.rfind("Ninjutsu:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Ninjutsu:"));
-            Ability ab;
-            ab.ability_type = Ability::ACTIVATED;
+            AbilityDef ab;
+            ab.ability_type = AbilityDef::ACTIVATED;
             ab.category = "Ninjutsu";
             ab.is_ninjutsu = true;
             ab.defined_self = true;
@@ -921,8 +921,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             size_t colon = rest.find(':');
             std::string subtype = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
             std::string cost_str = (colon != std::string::npos) ? rest.substr(colon + 1) : "";
-            Ability ab;
-            ab.ability_type = Ability::ACTIVATED;
+            AbilityDef ab;
+            ab.ability_type = AbilityDef::ACTIVATED;
             ab.category = "ChangeZone";
             ab.activation_zone = Zone::HAND;
             ab.origin = Zone::LIBRARY;
@@ -942,7 +942,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             // Shared Cost$ token grammar, then map onto the flashback cost fields the
             // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
             // mana and life — which the token-by-token grammar handles in one pass.
-            Ability fb;
+            AbilityDef fb;
             parse_activation_cost(cost_str, fb);
             card.flashback_mana_cost = fb.activation_mana_cost;
             card.flashback_alt_cost.life_cost = fb.life_cost;
@@ -961,8 +961,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // delayed exile + leaves-the-battlefield replacement). General over any K:Unearth:<cost>.
         if (kw_line.rfind("Unearth:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Unearth:"));
-            Ability ab;
-            ab.ability_type = Ability::ACTIVATED;
+            AbilityDef ab;
+            ab.ability_type = AbilityDef::ACTIVATED;
             ab.category = "ChangeZone";
             ab.activation_zone = Zone::GRAVEYARD;
             ab.origin = Zone::GRAVEYARD;
@@ -1014,8 +1014,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.alt_cost = ac;
             card.keywords.push_back("Evoke");
 
-            Ability sac;
-            sac.ability_type = Ability::TRIGGERED;
+            AbilityDef sac;
+            sac.ability_type = AbilityDef::TRIGGERED;
             sac.category = "ChangeZone";
             sac.trigger_on = Events::CARD_CHANGED_ZONE;
             sac.trigger_zone_destination = Zone::BATTLEFIELD;
@@ -1041,8 +1041,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.has_offspring = true;
             card.keywords.push_back("Offspring");
 
-            Ability tok;
-            tok.ability_type = Ability::TRIGGERED;
+            AbilityDef tok;
+            tok.ability_type = AbilityDef::TRIGGERED;
             tok.category = "CopyPermanent";
             tok.trigger_on = Events::CARD_CHANGED_ZONE;
             tok.trigger_zone_destination = Zone::BATTLEFIELD;
@@ -1100,7 +1100,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             auto git = svars.find("GiftAbility");
             if (git != svars.end()) {
                 card.gift_abilities.push_back(
-                    parse_svar_ability(git->second, Ability::SPELL, svars, card.name));
+                    parse_svar_ability(git->second, AbilityDef::SPELL, svars, card.name));
                 size_t gd = git->second.find("GiftDescription$");
                 if (gd != std::string::npos) {
                     gd += strlen("GiftDescription$");
@@ -1128,7 +1128,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                 auto oit = svars.find(parts[1]);
                 if (oit != svars.end())
                     card.opening_hand_abilities.push_back(
-                        parse_svar_ability(oit->second, Ability::SPELL, svars, card.name));
+                        parse_svar_ability(oit->second, AbilityDef::SPELL, svars, card.name));
             }
             for (size_t pi = 2; pi < parts.size(); pi++)
                 if (parts[pi] == "!PlayFirst") card.opening_hand_not_first = true;
@@ -1142,8 +1142,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // (effects::storm). The trigger itself takes no target — each copy chooses its own.
         if (kw_line == "Storm") {
             card.keywords.push_back("Storm");
-            Ability st;
-            st.ability_type = Ability::TRIGGERED;
+            AbilityDef st;
+            st.ability_type = AbilityDef::TRIGGERED;
             st.category = "Storm";
             st.trigger_on = Events::SPELL_CAST;
             st.trigger_only_self = true;  // ValidCard$ Card.Self — fires for the cast spell itself
@@ -1163,8 +1163,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             size_t colon = kw_line.find(':');
             int n = (colon != std::string::npos) ? std::stoi(kw_line.substr(colon + 1)) : 1;
             card.keywords.push_back(kw_line);
-            Ability ab;
-            ab.ability_type = Ability::TRIGGERED;
+            AbilityDef ab;
+            ab.ability_type = AbilityDef::TRIGGERED;
             ab.category = "Sacrifice";
             ab.trigger_on = Events::CREATURE_ATTACKED;
             ab.trigger_only_self = true;  // ValidCard$ Card.Self — only this creature's own attack
@@ -1563,7 +1563,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 }
 
 // Applies a single key/value parameter to an ability struct.
-static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
+static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
         key == "TokenAmount" || key == "ScryNum" || key == "Num" || key == "NumTurns") {
@@ -2139,7 +2139,7 @@ static std::string normalize_category(std::string category) {
 // targeting (Candelabra of Tawnos, Hide on the Ceiling); a lone TargetMax$ X gives "up to X"
 // (Kozilek's Command). Other count-SVar caps keep the "effectively unlimited" fallback already
 // stored by apply_param_to_ability. Shared by the top-level and sub-ability parse paths.
-static void resolve_xpaid_target_counts(Ability& ability,
+static void resolve_xpaid_target_counts(AbilityDef& ability,
                                         const std::map<std::string, std::string>& svars,
                                         const std::string& line) {
     const std::string min_key = svar_key_param(line, "TargetMin");
@@ -2173,7 +2173,7 @@ static void resolve_xpaid_target_counts(Ability& ability,
 // "X") to its runtime Count$ expression (e.g. Count$xPaid), so the pump effect can evaluate the
 // signed magnitude at resolution (Toxic Deluge's -X/-X; Eldrazi Linebreaker's +X). The sign was
 // captured separately (att_sign/def_sign) by parse_pump_amount. Shared by both parse paths.
-static void resolve_pump_exprs(Ability& ability,
+static void resolve_pump_exprs(AbilityDef& ability,
                                const std::map<std::string, std::string>& svars) {
     if (auto *pp = std::get_if<PumpParams>(&ability.params)) {
         for (std::string *expr : {&pp->att_expr, &pp->def_expr}) {
@@ -2188,7 +2188,7 @@ static void resolve_pump_exprs(Ability& ability,
 // expression rather than an SVar name (Kaito, Bane of Nightmares: NumCards$
 // PlayerCountRegisteredOpponents$HasPropertyLostLifeThisTurn; The Creation of Avacyn:
 // ExiledWith$CardManaCost). Keep it verbatim for evaluate_dynamic_amount at resolution (CR 608.2c).
-static bool take_direct_amount_expr(Ability &ability) {
+static bool take_direct_amount_expr(AbilityDef &ability) {
     if (ability.amount_svar.find('$') == std::string::npos) return false;
     ability.dynamic_amount_expr = ability.amount_svar;
     ability.amount_svar = "";
@@ -2197,7 +2197,7 @@ static bool take_direct_amount_expr(Ability &ability) {
 
 // An amount SVar name with no SVar body cannot be evaluated; flag it instead of silently falling
 // back to the effect's default amount.
-static void warn_unresolved_amount_svar(const Ability &ability, const std::string &card_name) {
+static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::string &card_name) {
     std::string msg = "Unresolved amount SVar: " + ability.amount_svar;
     if (!card_name.empty()) msg += " (card: " + card_name + ")";
     warning(msg);
@@ -2209,7 +2209,7 @@ static void warn_unresolved_amount_svar(const Ability &ability, const std::strin
 // gate candidates by mana value at resolution. Shared by the top-level activated-ability path
 // (parse_abilities) and the sub-ability path (parse_svar_ability) — Blast Zone's DestroyAll is a
 // top-level AB$ line, so this must not live only in the sub-ability resolver.
-static void resolve_destroyall_svars(Ability &ability,
+static void resolve_destroyall_svars(AbilityDef &ability,
                                      const std::map<std::string, std::string> &svars) {
     if (ability.category != "DestroyAll") return;
     auto &dp = effect_params<DestroyAllParams>(ability);
@@ -2241,15 +2241,15 @@ static void resolve_destroyall_svars(Ability &ability,
 }
 
 // Forward declaration so parse_svar_ability can recurse via SubAbility$.
-static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
                                   const std::map<std::string, std::string>& svars,
                                   const std::string& card_name = "");
 
 // Parses a SVar's DB$ content string into an Ability. Resolves SubAbility$ chains.
-static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
                                   const std::map<std::string, std::string>& svars,
                                   const std::string& card_name) {
-    Ability sub;
+    AbilityDef sub;
     sub.ability_type = ability_type;
     // An Execute$/SubAbility$ SVar normally holds a DB$ ability, but some hold an AB$
     // (e.g. Guide of Souls' TrigImmediateTrig: "AB$ ImmediateTrigger | Cost$ PayEnergy<3>").
@@ -2293,7 +2293,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 std::string svar_name = value.substr(cpos, comma - cpos);
                 auto cit = svars.find(svar_name);
                 if (cit != svars.end()) {
-                    Ability choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
+                    AbilityDef choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
                     std::string desc;
                     size_t sd = cit->second.find("SpellDescription$");
                     if (sd != std::string::npos) {
@@ -2320,14 +2320,14 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 auto it = svars.find(svar_name);
                 if (it != svars.end())
                     sub.animate_granted_abilities.push_back(
-                        parse_svar_ability(it->second, Ability::ACTIVATED, svars, card_name));
+                        parse_svar_ability(it->second, AbilityDef::ACTIVATED, svars, card_name));
             }
         } else if (key == "Execute") {
             // Execute$ references an SVar containing the ability to fire (delayed triggers)
             effect_params<DelayedTriggerParams>(sub).execute_svar = value;
             auto it = svars.find(value);
             if (it != svars.end()) {
-                Ability exec = parse_svar_ability(it->second, ability_type, svars, card_name);
+                AbilityDef exec = parse_svar_ability(it->second, ability_type, svars, card_name);
                 exec.from_delayed_execute = true;  // delayed_trigger() fires this one
                 sub.subabilities.push_back(exec);
             }
@@ -2340,7 +2340,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
                 auto it = svars.find(svar_name);
                 if (it != svars.end()) {
-                    Ability trig = parse_one_trigger(it->second, svars, card_name);
+                    AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                     if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
                 }
             }
@@ -2567,12 +2567,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
 // grammar via parse_svar_ability. Used to materialize an AddAbility$ static's granted
 // ability (Petrified Hamlet). No SVar table is available at the grant site, so an empty map
 // is passed; the granted bodies in use are self-contained (no SVar references).
-Ability parse_ability_body(const std::string &body, Ability::AbilityType type) {
+AbilityDef parse_ability_body(const std::string &body, AbilityDef::AbilityType type) {
     static const std::map<std::string, std::string> kNoSvars;
     return parse_svar_ability(body, type, kNoSvars, "");
 }
 
-Ability parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
+AbilityDef parse_granted_trigger(const std::string &trigger_line, const std::string &svar_name,
                               const std::string &svar_body) {
     // Build the minimal svars table the trigger's Execute$ resolves against (its named execute
     // SVar), then run the shared trigger parser — so the granted trigger honours the full trigger
@@ -2614,24 +2614,24 @@ static void resolve_additive_svar(const std::string& expr, const std::map<std::s
 }
 
 // fed each ability line
-static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
+static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars,
                                             const std::string& card_name) {
     size_t pos = 0;
-    std::vector<Ability> ret_val;
+    std::vector<AbilityDef> ret_val;
     for (auto &&line : lines) {
         pos = 0;
-        Ability ability;
+        AbilityDef ability;
         size_t sp_pos = line.find("SP$");
         size_t ab_pos = line.find("AB$");
         bool is_sp = (sp_pos != std::string::npos);
         bool is_ab = (ab_pos != std::string::npos);
         if (!is_sp && !is_ab) continue;
         if (is_sp && (!is_ab || sp_pos < ab_pos)) {
-            ability.ability_type = Ability::AbilityType::SPELL;
+            ability.ability_type = AbilityDef::AbilityType::SPELL;
             pos = sp_pos + 4;  // skip "SP$ "
         } else {
-            ability.ability_type = Ability::AbilityType::ACTIVATED;
+            ability.ability_type = AbilityDef::AbilityType::ACTIVATED;
             pos = ab_pos + 4;  // skip "AB$ "
         }
         // Check if we're past the end of the string
@@ -2679,7 +2679,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     std::string svar_name = value.substr(cpos, comma - cpos);
                     auto it = svars.find(svar_name);
                     if (it != svars.end()) {
-                        Ability choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
+                        AbilityDef choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
                         // Extract SpellDescription from the choice for display
                         std::string desc;
                         size_t sd = it->second.find("SpellDescription$");
@@ -2924,17 +2924,17 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // classify its ValidPlayer scope relative to the effect's controller so the GrantCast
         // handler registers the right player(s). General over any CantGainLife-granting Effect.
         if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
-            ability.effect_cant_gain_life == Ability::CantGainLifeScope::NONE) {
+            ability.effect_cant_gain_life == AbilityDef::CantGainLifeScope::NONE) {
             auto it = svars.find(ability.effect_static_ability);
             if (it != svars.end() && it->second.find("CantGainLife") != std::string::npos) {
                 const std::string &body = it->second;
                 if (body.find("ValidPlayer$ Player.Opponent") != std::string::npos ||
                     body.find("ValidPlayer$ Opponent") != std::string::npos)
-                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::OPPONENTS;
+                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::OPPONENTS;
                 else if (body.find("ValidPlayer$ You") != std::string::npos)
-                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::YOU;
+                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::YOU;
                 else
-                    ability.effect_cant_gain_life = Ability::CantGainLifeScope::ALL;
+                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::ALL;
             }
         }
 
@@ -2972,7 +2972,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 for (const std::string &svar_name : split(tval, ',', /*skip_empty=*/true)) {
                     auto it = svars.find(svar_name);
                     if (it != svars.end()) {
-                        Ability trig = parse_one_trigger(it->second, svars, card_name);
+                        AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
                         if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
                     }
                 }
@@ -3012,11 +3012,11 @@ static std::vector<std::string> find_trigger_lines(const std::string &script) {
 
 // Parses a single T: trigger line and its Execute$ SVar into a triggered Ability.
 // Returns a default Ability with trigger_on == 0 if the trigger is unrecognised.
-static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
+static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name) {
     // The Execute$ SVar supplies the effect; the trigger metadata parsed from the T: line below is
     // written directly onto it, so no trigger field has to be carried over by hand.
-    Ability ability;
+    AbilityDef ability;
     auto exec_it = svars.find(param_value(line, "Execute"));
     if (exec_it != svars.end()) {
         // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
@@ -3024,9 +3024,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             exec_it->second.find("DrawnThisTurn") != std::string::npos)
             ability.category = "SylvanLibrary";
         else
-            ability = parse_svar_ability(exec_it->second, Ability::TRIGGERED, svars, card_name);
+            ability = parse_svar_ability(exec_it->second, AbilityDef::TRIGGERED, svars, card_name);
     }
-    ability.ability_type = Ability::TRIGGERED;
+    ability.ability_type = AbilityDef::TRIGGERED;
 
     // 603.4 intervening-if from the trigger line (IsPresent$ / CheckSVar$). It replaces any
     // condition the Execute SVar declared; an SVar-only intervening-if (Uro's TrigSac
@@ -3551,12 +3551,12 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     return ability;
 }
 
-static std::vector<Ability> parse_triggered_abilities(const std::string &script,
+static std::vector<AbilityDef> parse_triggered_abilities(const std::string &script,
                                                       const std::map<std::string, std::string> &svars,
                                                       const std::string& card_name) {
-    std::vector<Ability> result;
+    std::vector<AbilityDef> result;
     for (const auto &line : find_trigger_lines(script)) {
-        Ability ab = parse_one_trigger(line, svars, card_name);
+        AbilityDef ab = parse_one_trigger(line, svars, card_name);
         // Keep event-driven triggers (trigger_on != 0) and state-triggered abilities
         // (Mode$ Always, CR 603.8), which have no event but are fired by the state-trigger scan.
         if (ab.trigger_on != 0 || ab.trigger_state_condition)

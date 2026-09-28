@@ -21,7 +21,7 @@ HandlerResult untap(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     if (ab.targets.empty()) {
         if (!ab.target.empty()) {
             targets.push_back(ab.target.get());  // single chosen target (0 = its object is gone)
-        } else if (ab.valid_tgts == "N_A") {
+        } else if (ab.def.valid_tgts == "N_A") {
             // Untargeted Untap (Grim Monolith) untaps its own source. A TARGETED untap that
             // resolved with NO chosen target (e.g. Candelabra's "Untap X target lands" with
             // X=0) untaps NOTHING — it must NOT fall back to its source. Doing so would untap

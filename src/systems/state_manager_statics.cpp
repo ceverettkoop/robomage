@@ -106,13 +106,13 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
     if (!has_haste) perm.animate_added_keywords.push_back("Haste");
 
     Ability fire_ab;
-    fire_ab.ability_type = Ability::TRIGGERED;
-    fire_ab.category = "ChangeZone";
-    fire_ab.defined_remembered = true;
+    fire_ab.def.ability_type = AbilityDef::TRIGGERED;
+    fire_ab.def.category = "ChangeZone";
+    fire_ab.def.defined_remembered = true;
     fire_ab.restore_remembered_exiled_with = {ObjectRef::of(entity)};  // resolve() seeds the remembered set to this card
     fire_ab.source = ObjectRef::of(entity);
-    fire_ab.origin = Zone::BATTLEFIELD;
-    fire_ab.destination = Zone::EXILE;
+    fire_ab.def.origin = Zone::BATTLEFIELD;
+    fire_ab.def.destination = Zone::EXILE;
 
     DelayedTrigger dt;
     dt.ability = fire_ab;
@@ -134,8 +134,8 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
 // step). General over any warp card.
 static void mark_warp_permanent(Entity entity, Permanent &perm) {
     Ability fire_ab;
-    fire_ab.ability_type = Ability::TRIGGERED;
-    fire_ab.category = "WarpExile";
+    fire_ab.def.ability_type = AbilityDef::TRIGGERED;
+    fire_ab.def.category = "WarpExile";
     fire_ab.source = ObjectRef::of(entity);
     fire_ab.delayed_link.subjects = {fire_ab.source};  // the permanent it exiles
 
@@ -874,7 +874,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
             for (const auto &ab : face->abilities) {
-                if (ab.ability_type != Ability::ACTIVATED) continue;
+                if (ab.ability_type != AbilityDef::ACTIVATED) continue;
                 auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
                 bool already_present = false;
                 for (auto &existing : perm_abilities) {
@@ -887,7 +887,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Copy only the ability actually added (in steady state this copies nothing —
                 // the already-present check short-circuits every pass after the first), instead
                 // of copying every card_data ability by value just to discard it each pass.
-                perm_abilities.push_back(ab);
+                perm_abilities.emplace_back(ab);
                 perm_abilities.back().source = ObjectRef::of(entity);
             }
             // Re-merge rest-of-game ability grants (DB$ Animate | Abilities$ | Duration$
@@ -1183,7 +1183,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         auto &perm_abilities = perm.abilities;
         bool already_present = false;
         for (const auto &ab : perm_abilities) {
-            if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
+            if (ab.def.category == "AddMana" && ab.def.color == required_color && ab.def.amount == 1) {
                 already_present = true;
                 break;
             }
@@ -1191,12 +1191,12 @@ void StateManager::apply_land_abilities(Entity entity) {
         if (already_present) continue;
 
         Ability mana_ability;
-        mana_ability.ability_type = Ability::ACTIVATED;
-        mana_ability.category = "AddMana";
-        mana_ability.color = required_color;
-        mana_ability.amount = 1;
-        mana_ability.tap_cost = true;
-        mana_ability.subtype_derived = true;
+        mana_ability.def.ability_type = AbilityDef::ACTIVATED;
+        mana_ability.def.category = "AddMana";
+        mana_ability.def.color = required_color;
+        mana_ability.def.amount = 1;
+        mana_ability.def.tap_cost = true;
+        mana_ability.def.subtype_derived = true;
 
         mana_ability.source = ObjectRef::of(entity);
         perm_abilities.push_back(mana_ability);
@@ -1215,7 +1215,7 @@ static void remerge_animate_granted_abilities(Entity entity) {
     for (const auto &granted : perm.animate_granted_abilities) {
         bool present = false;
         for (auto &existing : perm.abilities)
-            if (existing.identical_activated_ability(granted)) { present = true; break; }
+            if (existing.identical_activated_ability(granted.def)) { present = true; break; }
         if (!present) perm.abilities.push_back(granted);
     }
 }
@@ -1230,12 +1230,12 @@ void StateManager::apply_keyword_abilities(Entity entity) {
     // an effect removed or stopped granting it — takes its triggered ability with it.
     std::vector<std::string> wanted;
     for (const auto &kw : permanent_keywords(entity))
-        if (keyword_triggered_ability(kw).trigger_on != 0) wanted.push_back(kw);
+        if (keyword_triggered_ability(kw).def.trigger_on != 0) wanted.push_back(kw);
     perm_abilities.erase(
         std::remove_if(perm_abilities.begin(), perm_abilities.end(),
                        [&](const Ability &ab) {
-                           if (ab.derived_from_keyword.empty()) return false;
-                           auto it = std::find(wanted.begin(), wanted.end(), ab.derived_from_keyword);
+                           if (ab.def.derived_from_keyword.empty()) return false;
+                           auto it = std::find(wanted.begin(), wanted.end(), ab.def.derived_from_keyword);
                            if (it == wanted.end()) return true;  // no instance left for it
                            wanted.erase(it);                     // this instance is kept
                            return false;
@@ -1243,7 +1243,7 @@ void StateManager::apply_keyword_abilities(Entity entity) {
         perm_abilities.end());
     for (const auto &kw : wanted) {
         Ability ab = keyword_triggered_ability(kw);
-        ab.derived_from_keyword = kw;
+        ab.def.derived_from_keyword = kw;
         ab.source = ObjectRef::of(entity);
         perm_abilities.push_back(ab);
     }
@@ -1254,26 +1254,26 @@ void StateManager::apply_keyword_abilities(Entity entity) {
 static Ability keyword_triggered_ability(const std::string &keyword) {
     Ability ab;
     if (keyword == "Prowess") {
-        ab.ability_type = Ability::TRIGGERED;
-        ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
-        ab.trigger_valid_player_is_controller = true;
-        ab.category = "ProwessBonus";
-        ab.amount = 1;
+        ab.def.ability_type = AbilityDef::TRIGGERED;
+        ab.def.trigger_on = Events::NONCREATURE_SPELL_CAST;
+        ab.def.trigger_valid_player_is_controller = true;
+        ab.def.category = "ProwessBonus";
+        ab.def.amount = 1;
     } else if (keyword == "Exalted") {
-        ab.ability_type = Ability::TRIGGERED;
-        ab.trigger_on = Events::CREATURE_ATTACKED_ALONE;
-        ab.trigger_valid_player_is_controller = true;
-        ab.category = "ExaltedBonus";
-        ab.amount = 1;
+        ab.def.ability_type = AbilityDef::TRIGGERED;
+        ab.def.trigger_on = Events::CREATURE_ATTACKED_ALONE;
+        ab.def.trigger_valid_player_is_controller = true;
+        ab.def.category = "ExaltedBonus";
+        ab.def.amount = 1;
     } else if (keyword.rfind("Mobilize:", 0) == 0) {
         // Mobilize N (702.176): whenever this creature attacks, create N tapped and
         // attacking 1/1 red Warrior creature tokens; sacrifice them at the beginning
         // of the next end step. trigger_only_self restricts it to this creature attacking.
-        ab.ability_type = Ability::TRIGGERED;
-        ab.trigger_on = Events::CREATURE_ATTACKED;
-        ab.trigger_only_self = true;
-        ab.category = "Mobilize";
-        ab.amount = static_cast<size_t>(std::stoi(keyword.substr(9)));
+        ab.def.ability_type = AbilityDef::TRIGGERED;
+        ab.def.trigger_on = Events::CREATURE_ATTACKED;
+        ab.def.trigger_only_self = true;
+        ab.def.category = "Mobilize";
+        ab.def.amount = static_cast<size_t>(std::stoi(keyword.substr(9)));
     }
     return ab;
 }
@@ -1503,8 +1503,8 @@ void StateManager::sync_subtype_mana_abilities() {
         auto &abilities = perm.abilities;
         abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                        [&](const Ability &ab) {
-                                           return ab.subtype_derived &&
-                                                  subtype_colors.count(ab.color) == 0;
+                                           return ab.def.subtype_derived &&
+                                                  subtype_colors.count(ab.def.color) == 0;
                                        }),
                         abilities.end());
         if (!subtype_colors.empty()) apply_land_abilities(entity);
@@ -1899,8 +1899,8 @@ void StateManager::apply_layer6_ability_grants() {
 
         // Materialize the granted ability once from the stored body (full Forge ability
         // grammar via the parser), then attach a per-recipient copy tagged with the source.
-        Ability granted = parse_ability_body(a.sa()->add_ability);
-        if (granted.category.empty()) continue;  // unparsable body — grant nothing
+        Ability granted(parse_ability_body(a.sa()->add_ability));
+        if (granted.def.category.empty()) continue;  // unparsable body — grant nothing
         granted.granted_by_static = a.entity;
 
         for (Entity e : targets) {
@@ -1913,7 +1913,7 @@ void StateManager::apply_layer6_ability_grants() {
             for (auto &saved : saved_runtime) {
                 if (saved.recipient != e) continue;
                 if (saved.granted_by_static != a.entity) continue;
-                if (!saved.ability.identical_activated_ability(copy)) continue;
+                if (!saved.ability.identical_activated_ability(copy.def)) continue;
                 copy.activations_this_turn = saved.ability.activations_this_turn;
                 break;
             }
@@ -1921,7 +1921,7 @@ void StateManager::apply_layer6_ability_grants() {
             // the recipient, so a land that already has "{T}: Add {C}" isn't given a duplicate.
             bool dup = false;
             for (auto &existing : abilities) {
-                if (existing.identical_activated_ability(copy)) { dup = true; break; }
+                if (existing.identical_activated_ability(copy.def)) { dup = true; break; }
             }
             if (dup) continue;
             abilities.push_back(copy);
@@ -1947,10 +1947,10 @@ void StateManager::apply_layer6_ability_grants() {
 
         // Materialize the granted trigger once (full trigger grammar + its Execute$ SVar), then
         // attach a per-recipient copy tagged with the source static.
-        Ability granted = parse_granted_trigger(a.sa()->add_trigger, a.sa()->add_trigger_svar_name,
-                                                a.sa()->add_trigger_svar);
-        if (granted.trigger_on == 0 && !granted.trigger_state_condition) continue;  // unparsable
-        granted.ability_type = Ability::TRIGGERED;
+        Ability granted(parse_granted_trigger(a.sa()->add_trigger, a.sa()->add_trigger_svar_name,
+                                              a.sa()->add_trigger_svar));
+        if (granted.def.trigger_on == 0 && !granted.def.trigger_state_condition) continue;  // unparsable
+        granted.def.ability_type = AbilityDef::TRIGGERED;
         granted.granted_by_static = a.entity;
 
         for (Entity e : targets) {
@@ -1959,10 +1959,10 @@ void StateManager::apply_layer6_ability_grants() {
             // sits on the recipient this pass.
             bool dup = false;
             for (auto &existing : abilities) {
-                if (existing.ability_type == Ability::TRIGGERED &&
+                if (existing.def.ability_type == AbilityDef::TRIGGERED &&
                     existing.granted_by_static == a.entity &&
-                    existing.category == granted.category &&
-                    existing.trigger_on == granted.trigger_on) {
+                    existing.def.category == granted.def.category &&
+                    existing.def.trigger_on == granted.def.trigger_on) {
                     dup = true;
                     break;
                 }
@@ -2095,9 +2095,9 @@ static void strip_rules_text_abilities(Entity entity, Permanent &perm) {
     abilities.erase(
         std::remove_if(abilities.begin(), abilities.end(),
                        [&](const Ability &ab) {
-                           if (ab.subtype_derived || ab.granted_by_static != 0) return false;
+                           if (ab.def.subtype_derived || ab.granted_by_static != 0) return false;
                            for (auto &granted : perm.animate_granted_abilities)
-                               if (granted.identical_activated_ability(ab)) return false;
+                               if (granted.identical_activated_ability(ab.def)) return false;
                            return true;
                        }),
         abilities.end());
@@ -2122,7 +2122,7 @@ static bool granted_after(const Ability &ab, Permanent &perm, size_t removal_ts)
                        .timestamp_entered_battlefield > removal_ts;
     if (perm.animate_timestamp <= removal_ts) return false;
     for (auto &granted : perm.animate_granted_abilities)
-        if (granted.identical_activated_ability(ab)) return true;
+        if (granted.identical_activated_ability(ab.def)) return true;
     return false;
 }
 

@@ -104,13 +104,13 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
-    if (ab.target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def.target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
 
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
-    if (ab.defined_triggered_attacker_lki) {
-        const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    if (ab.def.defined_triggered_attacker_lki) {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.def.params);
         int pump_att = 0, pump_def = 0;
         resolve_pump_amounts(pp, ab.controller, orderer, ab.target.get(), pump_att, pump_def);
         apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
@@ -122,7 +122,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // a player-scoped turn-long grant, NOT a single-target creature pump. Register it and skip
     // target selection.
     {
-        const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
+        const PumpParams *hp = std::get_if<PumpParams>(&ab.def.params);
         if (hp && !hp->grant_hexproof_from_colors.empty()) {
             grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
             return HandlerResult::DONE_RUN_SUBS;
@@ -130,7 +130,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // KW$ Protection from everything | Defined$ You (The One Ring): a player-scoped grant for
         // the controller, NOT a single-target creature pump. Register it and skip target selection.
         if (hp && hp->grant_protection_from_everything) {
-            grant_player_protection_from_everything(ab.controller, ab.duration_until_your_next_turn);
+            grant_player_protection_from_everything(ab.controller, ab.def.duration_until_your_next_turn);
             return HandlerResult::DONE_RUN_SUBS;
         }
     }
@@ -149,12 +149,12 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
     // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
-    if (ab.remember_pumped && ab.target.get() != 0)
+    if (ab.def.remember_pumped && ab.target.get() != 0)
         cur_game.remembered_entities.push_back(ObjectRef::of(ab.target.get()));
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.
-    const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    const PumpParams *pp = std::get_if<PumpParams>(&ab.def.params);
     int pump_att = 0, pump_def = 0;
     resolve_pump_amounts(pp, ctrl, orderer, ab.target.get(), pump_att, pump_def);
     apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
@@ -185,7 +185,7 @@ static void parse_pump_amount(const std::string &value, int &out_static, std::st
     }
 }
 
-bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "IsCurse") {
         // IsCurse$ True is Forge's AI hint that the pump is detrimental (Dismember's -5/-5,
         // Carpet of Flowers' player-targeted curse). It changes nothing about resolution —

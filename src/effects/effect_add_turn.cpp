@@ -19,7 +19,7 @@ HandlerResult add_turn(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     // Defined$ You is the only player this effect targets in the current vocab; the player who
     // takes the extra turn(s) is the ability's controller (CR 109.5). amount holds NumTurns$.
     Zone::Ownership taker = ab.controller;
-    size_t num_turns = (ab.amount > 0) ? ab.amount : 1;
+    size_t num_turns = (ab.def.amount > 0) ? ab.def.amount : 1;
     for (size_t i = 0; i < num_turns; ++i) cur_game.turn_state.extra_turns.push_back(taker);
     game_log("%s takes %zu extra turn%s.\n", player_name(taker).c_str(), num_turns,
              num_turns == 1 ? "" : "s");

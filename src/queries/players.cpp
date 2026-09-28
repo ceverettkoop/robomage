@@ -111,14 +111,14 @@ Zone::Ownership last_known_controller(Entity e) {
 }
 
 Zone::Ownership resolve_defined_player(const Ability &ab) {
-    if (ab.defined_you)                 return ab.controller;
-    if (ab.defined_each_opponent)       return opponent_of(ab.controller);
-    if (ab.defined_targeted_controller)
+    if (ab.def.defined_you)                 return ab.controller;
+    if (ab.def.defined_each_opponent)       return opponent_of(ab.controller);
+    if (ab.def.defined_targeted_controller)
         return !ab.target.empty() ? last_known_controller(ab.target.lki_entity()) : Zone::UNKNOWN;
-    if (ab.defined_triggered_activator) return ab.triggered_activator;
-    if (ab.defined_triggered_player)    return ab.triggered_player;
+    if (ab.def.defined_triggered_activator) return ab.triggered_activator;
+    if (ab.def.defined_triggered_player)    return ab.triggered_player;
     // TriggeredCardController shares triggered_player storage; bound at fire time (see
     // collect_triggered_abilities' delayed-trigger leave-battlefield path).
-    if (ab.defined_triggered_card_controller) return ab.triggered_player;
+    if (ab.def.defined_triggered_card_controller) return ab.triggered_player;
     return Zone::UNKNOWN;
 }

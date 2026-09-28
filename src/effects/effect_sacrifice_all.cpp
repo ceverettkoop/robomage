@@ -27,12 +27,12 @@ HandlerResult sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // trigger): sacrifice exactly the remembered object(s) — the creature the aura animated,
     // restored into cur_game.remembered_entities before this ability resolves (CR 603.7a) — rather
     // than every permanent matching a filter. Only those still on the battlefield are sacrificed.
-    if (ab.defined_remembered) {
+    if (ab.def.defined_remembered) {
         for (Entity e : live_entities(cur_game.remembered_entities))
             if (is_battlefield_permanent(e)) to_sac.push_back(e);
     } else {
         for (auto e : orderer->mEntities)
-            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
+            if (permanent_matches_filter(e, ab.def.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
                 to_sac.push_back(e);
     }
 

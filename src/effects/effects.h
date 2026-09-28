@@ -285,31 +285,31 @@ HandlerResult ninjutsu(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // shared keys and delegates anything left over to apply_parse_hook(), which
 // tries each hook in turn. Keys are partitioned so at most one hook claims any
 // given key — relocation is therefore byte-identical to the old flat parser.
-bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &value);
+bool apply_parse_hook(AbilityDef &ab, const std::string &key, const std::string &value);
 
-bool parse_deal_damage(Ability &ab, const std::string &key, const std::string &value);
-bool parse_pump(Ability &ab, const std::string &key, const std::string &value);
-bool parse_token(Ability &ab, const std::string &key, const std::string &value);
-bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value);
-bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value);
-bool parse_change_zone(Ability &ab, const std::string &key, const std::string &value);
-bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value);
-bool parse_dig(Ability &ab, const std::string &key, const std::string &value);
-bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value);
-bool parse_discard(Ability &ab, const std::string &key, const std::string &value);
-bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
-bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
-bool parse_reveal(Ability &ab, const std::string &key, const std::string &value);
-bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
-bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
-bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value);
-bool parse_play(Ability &ab, const std::string &key, const std::string &value);
+bool parse_deal_damage(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_token(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_destroy_all(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_change_zone(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_dig(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_delayed_trigger(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_mill(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_peek_and_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_reveal(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_choose_number(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &value);
+bool parse_play(AbilityDef &ab, const std::string &key, const std::string &value);
 // AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
-bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
+bool parse_animate_all(AbilityDef &ab, const std::string &key, const std::string &value);
 // DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
-bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value);
+bool parse_store_svar(AbilityDef &ab, const std::string &key, const std::string &value);
 // DB$ SetState Mode$ <mode> (The Creation of Avacyn). See effect_set_state.cpp.
-bool parse_set_state(Ability &ab, const std::string &key, const std::string &value);
+bool parse_set_state(AbilityDef &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

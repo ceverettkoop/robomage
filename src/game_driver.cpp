@@ -940,7 +940,7 @@ static void pregame_opening_actions(EcsSystems &sys) {
                 pg.oh_card_idx++;
                 continue;
             }
-            const Ability &first_ab = cd.opening_hand_abilities.front();
+            const AbilityDef &first_ab = cd.opening_hand_abilities.front();
             std::string prompt =
                 (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
                     ? "begin the game with " + cd.name + " on the battlefield"
@@ -969,7 +969,8 @@ static void pregame_opening_actions(EcsSystems &sys) {
                 // parsed template, wire this card as the source and its holder as controller,
                 // and run it through the normal resolve pipeline so zone-change replacements/
                 // ETB machinery apply.
-                for (Ability ab : cd.opening_hand_abilities) {
+                for (const AbilityDef &oh_def : cd.opening_hand_abilities) {
+                    Ability ab(oh_def);
                     ab.source = ObjectRef::of(card);
                     ab.controller = player;
                     ab.resolve(sys.orderer);

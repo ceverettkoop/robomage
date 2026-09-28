@@ -22,7 +22,7 @@ struct Token {
     // card_vocab.h) — display names collide across scripts, script stems do not.
     std::string script_name = "";
     std::set<Type> types;
-    std::vector<Ability> abilities;    // triggered abilities (e.g. Prowess)
+    std::vector<AbilityDef> abilities;    // triggered abilities (e.g. Prowess)
     // Continuous static abilities from the token script's S: lines (e.g. the Urza's Saga
     // Construct token's "This creature gets +1/+1 for each artifact you control."). Copied onto
     // the Permanent at bootstrap so gather_active_statics applies them like a real card's statics.

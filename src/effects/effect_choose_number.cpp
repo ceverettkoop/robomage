@@ -23,9 +23,9 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // ask seats the query on the choosing player and carries ab.source as the
     // pending-decision context, replicating the old scope + priority swap.
     int max = 0;
-    if (!ab.dynamic_amount_expr.empty())
+    if (!ab.def.dynamic_amount_expr.empty())
         max = static_cast<int>(
-            evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
+            evaluate_dynamic_amount(ab.def.dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
     if (max < 0) max = 0;
 
     std::vector<LegalAction> choices;
@@ -47,7 +47,7 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
 
 // Max$ — the SVar (resolved at parse time to a runtime Count$ expression) bounding the choice;
 // stored in dynamic_amount_expr and evaluated at resolution. ListTitle$ is cosmetic prompt prose.
-bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_choose_number(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "Max") { ab.dynamic_amount_expr = value; return true; }
     if (key == "ListTitle") return true;  // cosmetic prompt text
     return false;

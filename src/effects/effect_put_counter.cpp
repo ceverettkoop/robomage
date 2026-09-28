@@ -47,12 +47,12 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // Monstrosity$ (CR 701.37): set the monstrous designation + fire the event first, then fall
     // through to place the N +1/+1 counters on the source via the normal counter path below. If
     // already monstrous, the ability does nothing at all.
-    if (ab.is_monstrosity && !apply_monstrosity(ab)) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def.is_monstrosity && !apply_monstrosity(ab)) return HandlerResult::DONE_RUN_SUBS;
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
-    if (ab.defined_you) {
-        const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    if (ab.def.defined_you) {
+        const CounterParams *cp = std::get_if<CounterParams>(&ab.def.params);
         if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
         // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the
         // player gets X {E}) is evaluated at resolution.
@@ -77,7 +77,7 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     Entity counter_tgt =
         (t != 0 && global_coordinator.entity_has_component<Permanent>(t)) ? t : ab.source.get();
     if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return HandlerResult::DONE_RUN_SUBS;
-    const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    const CounterParams *cp = std::get_if<CounterParams>(&ab.def.params);
     if (cp && !cp->type.empty()) {
         // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
         // resolution, as in the Defined$ You and PutCounterAll paths.
@@ -109,7 +109,7 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "CounterType") {
         auto &cp = effect_params<CounterParams>(ab);
         cp.type = value;

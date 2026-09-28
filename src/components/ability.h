@@ -47,7 +47,13 @@ struct DelayedTriggerLink {
     FireKind fire_kind = FIRE_OTHER;
 };
 
-struct Ability{
+// The parsed definition of a spell, activated or triggered ability (CR 113.3): what its card
+// script (or the keyword / engine rule that synthesizes it) says — category, costs, targeting
+// spec, trigger conditions, effect params and the sub-ability chain. Built by the parser and
+// never changed by play; every per-instance fact (source, controller, targets, X, ...) lives on
+// the runtime Ability that refers to it.
+struct AbilityDef {
+
 
     enum AbilityType{
         TRIGGERED,
@@ -75,21 +81,6 @@ struct Ability{
     // resolved count of 0 makes the ability target nothing and do nothing (CR: zero targets).
     std::string target_min_count_expr = "";
     std::string target_max_count_expr = "";
-    // The object this ability comes from (CR 113.7), as it was when the ability was created: a
-    // spell's card once it is on the stack, an activated ability's source after its costs were
-    // paid (CR 400.7j), a trigger's source when it triggered (CR 400.7e). get() is that object
-    // while it remains it; sub-abilities inherit it. The card's printed identity and last-known
-    // information read lki_entity().
-    ObjectRef source;
-    // The chosen targets (CR 601.2c / 603.3d), each the object it was when chosen: at resolution
-    // a target that changed zones since is a new object and illegal (CR 400.7 / 608.2b), even
-    // when the same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed).
-    ObjectRef target;
-    std::vector<ObjectRef> targets;    // used when target_max > 1
-    // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
-    // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
-    int64_t source_transforms = -1;
-    Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
@@ -114,11 +105,6 @@ struct Ability{
     // it goes away with the keyword. Empty for any other ability.
     std::string derived_from_keyword = "";
 
-    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
-    // attached this activated ability to the permanent. Holds the granting static's SOURCE
-    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
-    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
-    Entity granted_by_static = 0;
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
@@ -128,13 +114,6 @@ struct Ability{
                                         // Blast Zone is "{X}{X}, {T}: put X charge counters" — one X is
                                         // chosen (CR 601.2b) and paid once PER PIP, so the mana owed is
                                         // X * activation_x_count. A bool alone silently charged {X}.
-    // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
-    // put on the stack (0 for an activation with no X) and restored into cur_game.x_paid when it
-    // resolves, so its Count$xPaid / cmcLEX reads this ability's X rather than the X of whatever
-    // spell or ability resolved in between. A triggered ability gets its X when it is put on
-    // the stack (CR 107.3m/n; 0 when nothing defines it). -1 = no X recorded with this stack
-    // object: resolution leaves cur_game.x_paid unchanged.
-    int x_paid = -1;
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),
@@ -174,9 +153,6 @@ struct Ability{
     // The keyword an ability derived from a keyword line stands for, shown as its action label
     // ("Equip", "Reconfigure", "Unattach"); empty for an ability from an A: line.
     std::string keyword_label = "";
-    // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
-    // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
-    ObjectRef ninjutsu_attack_target;
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
@@ -190,7 +166,6 @@ struct Ability{
     // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
     bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
-    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
     // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
     // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —
@@ -294,7 +269,6 @@ struct Ability{
     // is paid" (paying {R}{R} ENABLES the copy). (DestroyAll's switched energy cost rides on
     // DestroyAllParams::energy_unless_switched instead — see parse.cpp.)
     bool unless_switched = false;
-    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
@@ -305,16 +279,6 @@ struct Ability{
     // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
     // N_A sentinel; the specific bools remain authoritative for their effects.
     std::string defined = "";
-    // The nearest PLAYER target up the resolving sub-ability chain, bound by bind_sub_target as
-    // chains push (CR 608.2c). A sub whose own inherited target is a CARD can still resolve
-    // DefinedPlayer$ Targeted to the player an outer ability targeted — Cloak and Dagger,
-    // Entwined: TrigRevealHand targets the opponent, DBPump retargets their creature, yet
-    // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
-    // way). 0 = no player target anywhere up the chain.
-    Entity targeted_player = 0;
-    // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:
-    // this ability's own target when it is a player, else the one it inherited.
-    Entity player_target_for_subs() const;
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the
@@ -360,9 +324,6 @@ struct Ability{
     // who cast the noncreature spell loses 2 life), but general to any effect reading a
     // Defined player.
     bool defined_triggered_activator = false;
-    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
-    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
-    Zone::Ownership triggered_activator = Zone::UNKNOWN;
     // Defined$ TriggeredDefendingPlayer — the effect's player is the defending player of the
     // attack that fired this trigger (Goblin Guide: the DEFENDER reveals/draws). In a two-player
     // game the defender is the opponent of the attacker's controller (the non-active player).
@@ -374,9 +335,6 @@ struct Ability{
     // triggering event's PLAYER param (e.g. the upkeep's active player), captured into
     // `triggered_player`. General to any effect reading a Defined player off the event's player.
     bool defined_triggered_player = false;
-    // The player whose event fired this triggered ability. Populated at trigger-fire time when
-    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
-    Zone::Ownership triggered_player = Zone::UNKNOWN;
     // Defined$ TriggeredCardController — the effect's player is the controller of the card that
     // changed zones to fire this trigger (Searing Blood: the dead creature's controller takes 3
     // damage). Fired by a Mode$ ChangesZone delayed trigger; the controller is read from the
@@ -396,7 +354,7 @@ struct Ability{
     // (e.g. "{T}: Add {C}." or "{2}, {T}: Create a Construct token"). The Animate handler pushes
     // them onto the permanent's activated-ability list for a Duration$ Permanent grant. Empty when
     // the Animate grants no abilities (Guide of Souls' type-only animate).
-    std::vector<Ability> animate_granted_abilities;
+    std::vector<AbilityDef> animate_granted_abilities;
     bool animate_duration_permanent = false;
     // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
     // of the animating player's NEXT turn — longer than the Forge default (until end of turn)
@@ -485,8 +443,6 @@ struct Ability{
     // PLAYER_DREW_CARD event (Params::AMOUNT, 1-based). 0 = no Nth-draw gate (every draw fires).
     size_t trigger_draw_number_eq = 0;
 
-    // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
-    size_t trigger_damage_amount = 0;
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
@@ -609,16 +565,7 @@ struct Ability{
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
-    // Leaves-the-battlefield ability that operates on the cards its source had exiled
-    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
-    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
-    // and resolve() restores it into cur_game.remembered_entities so the body's
-    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
-    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
-    std::vector<ObjectRef> restore_remembered_exiled_with;
 
-    // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
-    DelayedTriggerLink delayed_link;
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
@@ -706,15 +653,7 @@ struct Ability{
     // cur_game.resolved_effects.floating_triggers (controller bound) so the trigger scan fires it through the
     // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
-    std::vector<Ability> effect_floating_triggers;
-    // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
-    // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
-    // GrantCast handler on the copy it pushes into cur_game.resolved_effects.floating_triggers, with its vocab idx
-    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
-    // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
-    // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
-    Entity floating_creator = 0;
-    int floating_creator_vocab_idx = -1;
+    std::vector<AbilityDef> effect_floating_triggers;
 
     // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
     // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
@@ -866,6 +805,124 @@ struct Ability{
     std::string stored_svar_set_name = "";
     int stored_svar_set_value = 0;
 
+
+
+    std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
+    int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+
+    // SubAbility$ chain: the DB$ abilities resolved, in order, after this one (CR 608.2c).
+    std::vector<AbilityDef> subabilities;
+    // Charm/modal spell modes (CR 700.2) — each entry is a fully-parsed ability.
+    std::vector<AbilityDef> charm_choices;
+};
+
+// Returns the effect-param block of type P held in `ab.params`, default-
+// constructing (and switching the variant to P) if it isn't already active.
+// Use from parse hooks before writing effect-exclusive params. Resolution-time
+// readers should use std::get_if<P>(&def.params) and treat nullptr as "defaults",
+// which is exception-free under -fno-exceptions.
+template <typename P>
+P& effect_params(AbilityDef& ab) {
+    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
+    return std::get<P>(ab.params);
+}
+
+// One instance of an ability: a stack object (CR 113.7 / 405.1), an ability a permanent has, a
+// pending activation or trigger, or a sub-ability being resolved. Carries its definition plus
+// the per-instance state the rules attach as it is activated, triggered, put on the stack and
+// resolved.
+struct Ability {
+    using AbilityType = AbilityDef::AbilityType;
+
+    AbilityDef def;
+
+    Ability() = default;
+    // An instance of `d` with fresh per-instance state; its sub-ability and mode instances
+    // mirror d's chains.
+    explicit Ability(const AbilityDef &d);
+
+    // The object this ability comes from (CR 113.7), as it was when the ability was created: a
+    // spell's card once it is on the stack, an activated ability's source after its costs were
+    // paid (CR 400.7j), a trigger's source when it triggered (CR 400.7e). get() is that object
+    // while it remains it; sub-abilities inherit it. The card's printed identity and last-known
+    // information read lki_entity().
+    ObjectRef source;
+
+    // The chosen targets (CR 601.2c / 603.3d), each the object it was when chosen: at resolution
+    // a target that changed zones since is a new object and illegal (CR 400.7 / 608.2b), even
+    // when the same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed).
+    ObjectRef target;
+
+    std::vector<ObjectRef> targets;    // used when target_max > 1
+
+    // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
+    // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
+    int64_t source_transforms = -1;
+
+    Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
+
+    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
+    // attached this activated ability to the permanent. Holds the granting static's SOURCE
+    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
+    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
+    Entity granted_by_static = 0;
+
+    // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
+    // put on the stack (0 for an activation with no X) and restored into cur_game.x_paid when it
+    // resolves, so its Count$xPaid / cmcLEX reads this ability's X rather than the X of whatever
+    // spell or ability resolved in between. A triggered ability gets its X when it is put on
+    // the stack (CR 107.3m/n; 0 when nothing defines it). -1 = no X recorded with this stack
+    // object: resolution leaves cur_game.x_paid unchanged.
+    int x_paid = -1;
+
+    // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
+    // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
+    ObjectRef ninjutsu_attack_target;
+
+    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
+
+    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
+
+    // The nearest PLAYER target up the resolving sub-ability chain, bound by bind_sub_target as
+    // chains push (CR 608.2c). A sub whose own inherited target is a CARD can still resolve
+    // DefinedPlayer$ Targeted to the player an outer ability targeted — Cloak and Dagger,
+    // Entwined: TrigRevealHand targets the opponent, DBPump retargets their creature, yet
+    // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
+    // way). 0 = no player target anywhere up the chain.
+    Entity targeted_player = 0;
+
+    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
+    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
+    Zone::Ownership triggered_activator = Zone::UNKNOWN;
+
+    // The player whose event fired this triggered ability. Populated at trigger-fire time when
+    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
+    Zone::Ownership triggered_player = Zone::UNKNOWN;
+
+    // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
+    size_t trigger_damage_amount = 0;
+
+    // Leaves-the-battlefield ability that operates on the cards its source had exiled
+    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
+    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
+    // and resolve() restores it into cur_game.remembered_entities so the body's
+    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
+    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
+    std::vector<ObjectRef> restore_remembered_exiled_with;
+
+    // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
+    DelayedTriggerLink delayed_link;
+
+    // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
+    // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
+    // GrantCast handler on the copy it pushes into cur_game.resolved_effects.floating_triggers, with its vocab idx
+    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
+    // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
+    // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
+    Entity floating_creator = 0;
+
+    int floating_creator_vocab_idx = -1;
+
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 
@@ -878,8 +935,7 @@ struct Ability{
 
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;
-    std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
-    int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+
     // Mode indices (into charm_choices) chosen when the spell was CAST (CR 601.2b), in pick
     // order. Each chosen mode's targets were selected at the same time (CR 601.2c) and live on
     // the charm_choices entry itself. effects::charm resolves exactly these modes; empty means
@@ -887,12 +943,16 @@ struct Ability{
     // at resolution).
     std::vector<int> charm_chosen;
 
+    // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:
+    // this ability's own target when it is a player, else the one it inherited.
+    Entity player_target_for_subs() const;
+
     // Resolution entry point. Only StackManager::resolve_top passes
     // FrameCtx::root() (the suspendable path); every other caller uses the
     // transitional blocking shim below, which resolves inline exactly as before.
     ResolveStatus resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx);
     void resolve(std::shared_ptr<Orderer> orderer);  // blocking shim (discards the status)
-    bool identical_activated_ability(const Ability& other);
+    bool identical_activated_ability(const AbilityDef& other) const;
     // Single source of truth for target legality. Returns true if `cand` is a legal
     // target for this ability when controlled by `caster`. Used both to enumerate
     // legal targets (build_valid_targets) and to re-verify chosen targets at
@@ -907,16 +967,6 @@ private:
 
 };
 
-// Returns the effect-param block of type P held in `ab.params`, default-
-// constructing (and switching the variant to P) if it isn't already active.
-// Use from parse hooks before writing effect-exclusive params. Resolution-time
-// readers should use std::get_if<P>(&ab.params) and treat nullptr as "defaults",
-// which is exception-free under -fno-exceptions.
-template <typename P>
-P& effect_params(Ability& ab) {
-    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
-    return std::get<P>(ab.params);
-}
 
 // (search_zone / search_multi_zone are declared in effects/effects.h — they
 // thread a FrameCtx, which this header cannot include without a cycle.)

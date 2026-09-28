@@ -22,7 +22,7 @@ namespace effects {
 // PutCounterAll (Ajani's +2): put CounterNum counters of CounterType on every permanent
 // matching the ValidCards$ filter (e.g. a +1/+1 counter on each Cat you control).
 HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    const CounterParams *cp = std::get_if<CounterParams>(&ab.def.params);
     std::string ctype = (cp && !cp->type.empty()) ? cp->type : "P1P1";
     int n = cp ? resolve_counter_num(ab, *cp, orderer) : 1;
     const std::string ctype2 = cp ? cp->type2 : "";
@@ -34,12 +34,12 @@ HandlerResult put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // The parent (a DB$ Pump) chose the target; PutCounterAll inherited it as ab.target.
     // CR 109/115: this picks out exactly that targeted permanent (Guide of Souls puts the
     // +1/+1s and flying counter on the attacking creature the trigger targeted).
-    if (ab.valid_cards_filter.find("targetedBy") != std::string::npos) {
+    if (ab.def.valid_cards_filter.find("targetedBy") != std::string::npos) {
         const Entity t = ab.target.get();
         if (t != 0 && is_battlefield_permanent(t)) targets.push_back(t);
     } else {
         for (auto e : orderer->mEntities)
-            if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
+            if (permanent_matches_filter(e, ab.def.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
                 targets.push_back(e);
     }
 

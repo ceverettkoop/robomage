@@ -14,14 +14,14 @@ static bool unfiltered_counter_protection_covers(const Effect::Replacement &r,
 
 std::string spell_additional_sac_spec(const CardData &cd) {
     for (const auto &ab : cd.abilities)
-        if (ab.ability_type == Ability::SPELL && !ab.sac_cost_spec.empty())
+        if (ab.ability_type == AbilityDef::SPELL && !ab.sac_cost_spec.empty())
             return ab.sac_cost_spec;
     return "";
 }
 
 bool spell_has_variable_life_cost(const CardData &cd) {
     for (const auto &ab : cd.abilities)
-        if (ab.ability_type == Ability::SPELL && ab.life_cost_is_x)
+        if (ab.ability_type == AbilityDef::SPELL && ab.life_cost_is_x)
             return true;
     return false;
 }

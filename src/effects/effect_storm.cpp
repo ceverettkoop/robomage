@@ -39,11 +39,11 @@ HandlerResult effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     // so a copy's target pick suspends as a loop-top pending decision through the
     // ResolutionTargetAsker (tag RESOLUTION — storm runs under a resolution frame).
     if (ab.source.empty()) return HandlerResult::DONE_RUN_SUBS;
-    if (ab.amount <= 0) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def.amount <= 0) return HandlerResult::DONE_RUN_SUBS;
     CopySpellRT local_rt;
     CopySpellRT &rt = ctx.can_suspend() ? ctx.rt<CopySpellRT>() : local_rt;
     if (!rt.active) {
-        copy_spell_begin(rt, ab.source.lki_entity(), static_cast<int>(ab.amount), ab.controller);
+        copy_spell_begin(rt, ab.source.lki_entity(), static_cast<int>(ab.def.amount), ab.controller);
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (no CardData)
     }
     // The copies' new targets are chosen by the copies' controller (CR 707.10c).

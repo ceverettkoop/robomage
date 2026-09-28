@@ -47,7 +47,7 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
     if (!is_land) return HandlerResult::DONE_RUN_SUBS;
 
-    int n = static_cast<int>(ab.amount);
+    int n = static_cast<int>(ab.def.amount);
     if (n <= 0) n = 1;
 
     // "becomes a 0/0 creature with haste that's still a land" — bake the land-animation onto the
@@ -78,13 +78,13 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // itself (Defined$ Self) from wherever it went back onto the battlefield, entering tapped.
     // The destination filter restricts firing to graveyard/exile departures per the oracle text.
     Ability fire_ab;
-    fire_ab.ability_type = Ability::TRIGGERED;
-    fire_ab.category = "ChangeZone";
-    fire_ab.defined_self = true;
+    fire_ab.def.ability_type = AbilityDef::TRIGGERED;
+    fire_ab.def.category = "ChangeZone";
+    fire_ab.def.defined_self = true;
     fire_ab.source = ObjectRef::of(tgt);  // the card to return (its Zone.owner names its owner)
-    fire_ab.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
-    fire_ab.destination = Zone::BATTLEFIELD;
-    fire_ab.enters_tapped = true;
+    fire_ab.def.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
+    fire_ab.def.destination = Zone::BATTLEFIELD;
+    fire_ab.def.enters_tapped = true;
 
     DelayedTrigger dt;
     dt.ability = fire_ab;

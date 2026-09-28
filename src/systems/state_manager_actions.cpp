@@ -105,7 +105,7 @@ static bool machine_masks_conditional_destroy(const CardData &face, Zone::Owners
                                               const std::set<Entity> &entities) {
     if (!InputLogger::instance().is_machine_schedule()) return false;
     for (const auto &ab : face.abilities) {
-        if (ab.ability_type != Ability::SPELL) continue;
+        if (ab.ability_type != AbilityDef::SPELL) continue;
         if (ab.condition_present.find("cmcLEX") == std::string::npos ||
             ab.dynamic_amount_expr.empty())
             return false;
@@ -157,8 +157,8 @@ static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownersh
     // blue) is not offered. A ConditionPresent$ "if ..." clause is checked only at resolution
     // (CR 608.2c), so it never gates the cast.
     for (const auto &ab : face.abilities) {
-        if (ab.ability_type != Ability::SPELL) continue;
-        if (!spell_has_castable_targets(cast_gate_probe(ab, card_entity, caster), orderer, caster,
+        if (ab.ability_type != AbilityDef::SPELL) continue;
+        if (!spell_has_castable_targets(cast_gate_probe(Ability(ab), card_entity, caster), orderer, caster,
                                         face.has_gift))
             return false;
         break;
@@ -192,7 +192,7 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     if (rules_mod::activation_prohibited(source)) return false;
     // SorcerySpeed$ True (Ba Sing Se's earthbend, unearth): activatable only any time its
     // controller could cast a sorcery (CR 602.5d).
-    if (ab.sorcery_speed_only && !sorcery_window) return false;
+    if (ab.def.sorcery_speed_only && !sorcery_window) return false;
     if (!activation_source_ready(ab, source, activator, orderer->mEntities)) return false;
     // Gate on the post-ReduceCost$ cost (Eiganjo's Channel is cheaper per legendary creature you
     // control) so legality matches what payment will charge. A {T} in the ability's own cost
@@ -204,24 +204,24 @@ static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership a
     ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
     if (!cost.empty() &&
         !can_pay_mana(activator, cost, source, orderer, /*has_delve=*/false,
-                      /*has_improvise=*/false, /*exclude_entity=*/ab.tap_cost ? source : 0,
-                      /*life_reserve=*/ab.life_cost))
+                      /*has_improvise=*/false, /*exclude_entity=*/ab.def.tap_cost ? source : 0,
+                      /*life_reserve=*/ab.def.life_cost))
         return false;
     const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
     // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-    if (ab.energy_cost > 0 && player_energy(player) < ab.energy_cost) return false;
+    if (ab.def.energy_cost > 0 && player_energy(player) < ab.def.energy_cost) return false;
     // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A fetch land
     // (Pay 1 life) at 1 life is still legal (you pay down to 0, then die); only an ability
     // costing MORE life than you have is filtered out here.
-    if (!can_pay_life(player, ab.life_cost)) return false;
+    if (!can_pay_life(player, ab.def.life_cost)) return false;
     // sac_cost_spec: require controller has a permanent matching type (honouring a .Other
     // self-exclusion against the ability's source — "another creature").
-    if (!ab.sac_cost_spec.empty() &&
-        controlled_permanents_matching(activator, ab.sac_cost_spec, orderer->mEntities, source).empty())
+    if (!ab.def.sac_cost_spec.empty() &&
+        controlled_permanents_matching(activator, ab.def.sac_cost_spec, orderer->mEntities, source).empty())
         return false;
     // Return cost: require controller has a land of given subtype
-    if (!ab.return_cost_type.empty() &&
-        controlled_permanents_matching(activator, ab.return_cost_type, orderer->mEntities).empty())
+    if (!ab.def.return_cost_type.empty() &&
+        controlled_permanents_matching(activator, ab.def.return_cost_type, orderer->mEntities).empty())
         return false;
     // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
     // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
@@ -342,10 +342,10 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
         if (!global_coordinator.entity_has_component<Ability>(e)) continue;
         auto &ab = global_coordinator.GetComponent<Ability>(e);
         bool exiles_permanent =
-            ab.category == "ChangeZone" && ab.destination == Zone::EXILE &&
-            (ab.origin == Zone::BATTLEFIELD ||
-             std::find(ab.origins.begin(), ab.origins.end(), Zone::BATTLEFIELD) != ab.origins.end());
-        if (ab.category != "Destroy" && !exiles_permanent) continue;
+            ab.def.category == "ChangeZone" && ab.def.destination == Zone::EXILE &&
+            (ab.def.origin == Zone::BATTLEFIELD ||
+             std::find(ab.def.origins.begin(), ab.def.origins.end(), Zone::BATTLEFIELD) != ab.def.origins.end());
+        if (ab.def.category != "Destroy" && !exiles_permanent) continue;
         if (Entity t = ab.target.get()) tgts.push_back(t);
         for (Entity t : live_entities(ab.targets)) tgts.push_back(t);
     }
@@ -357,11 +357,11 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 // action menu so the player sees each ability's loyalty cost, not just its
 // effect category.
 static std::string loyalty_cost_label(const Ability &ab) {
-    if (!ab.is_loyalty_ability) return "";
-    if (ab.loyalty_cost_is_x) return ab.loyalty_cost < 0 ? " [-X]" : " [+X]";
-    if (ab.loyalty_cost == 0) return " [0]";
-    int magnitude = ab.loyalty_cost < 0 ? -ab.loyalty_cost : ab.loyalty_cost;
-    std::string sign = ab.loyalty_cost < 0 ? "-" : "+";
+    if (!ab.def.is_loyalty_ability) return "";
+    if (ab.def.loyalty_cost_is_x) return ab.def.loyalty_cost < 0 ? " [-X]" : " [+X]";
+    if (ab.def.loyalty_cost == 0) return " [0]";
+    int magnitude = ab.def.loyalty_cost < 0 ? -ab.def.loyalty_cost : ab.def.loyalty_cost;
+    std::string sign = ab.def.loyalty_cost < 0 ? "-" : "+";
     return " [" + sign + std::to_string(magnitude) + "]";
 }
 
@@ -528,34 +528,34 @@ static bool count_intervening_condition(const std::string &expr, Zone::Ownership
 }
 
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
-    if (ab.condition_present.empty()) return true;
+    if (ab.def.condition_present.empty()) return true;
     // Empty compare means the bare "if you control a <thing>" form → at least one.
-    std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
+    std::string compare = ab.def.condition_compare.empty() ? "GE1" : ab.def.condition_compare;
 
     // ConditionDefined$ ExiledWith (The Creation of Avacyn II & III): the condition is a property
     // check on the card the source Saga exiled face down — is it a Creature card? Match the card's
     // PRINTED characteristics against condition_present (card_matches_filter is battlefield-agnostic;
     // the exiled card sits in exile). Absent card ⇒ 0 matches (condition unmet).
-    if (ab.condition_on_exiled_with) {
+    if (ab.def.condition_on_exiled_with) {
         Entity ew = exiled_with_card(ab.source.get());
         int matches = 0;
         if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew)) {
             MatchCtx ctx;
             ctx.controller = caster;
             ctx.source = ab.source.lki_entity();
-            if (card_matches_filter(ew, ab.condition_present, ctx)) matches = 1;
+            if (card_matches_filter(ew, ab.def.condition_present, ctx)) matches = 1;
         }
         return compare_svar(matches, compare);
     }
 
     // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
-    if (ab.condition_on_remembered) {
+    if (ab.def.condition_on_remembered) {
         // ConditionPresent$ Card.ExiledWithSource (Skyclave Apparition's TrigToken): only the
         // remembered cards that are STILL exiled (currently in the exile zone) count. CR 707/the
         // card's reminder text: when Skyclave leaves, the token is made only if the exiled card
         // is still exiled — if it has already returned to another zone, no token (and a card that
         // can't be found / is gone yields none either).
-        if (ab.condition_present == "Card.ExiledWithSource") {
+        if (ab.def.condition_present == "Card.ExiledWithSource") {
             size_t still_exiled = 0;
             for (Entity e : live_entities(cur_game.remembered_entities))
                 if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE) still_exiled++;
@@ -567,13 +567,13 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         // Card.YouCtrl+ThisTurnEntered — count the returned card iff it is now a permanent the
         // ability's controller controls that entered this turn (CR 122 / the card text). Phelia's
         // counter gate checks the card the delayed trigger just put back onto the battlefield.
-        if (!ab.condition_present.empty() && ab.condition_present != "Card") {
+        if (!ab.def.condition_present.empty() && ab.def.condition_present != "Card") {
             MatchCtx ctx;
             ctx.controller = caster;
             ctx.source = ab.source.lki_entity();
             size_t matching = 0;
             for (Entity e : lki_entities(cur_game.remembered_entities)) {
-                if (permanent_matches_filter(e, ab.condition_present, ctx)) {
+                if (permanent_matches_filter(e, ab.def.condition_present, ctx)) {
                     matching++;
                     continue;
                 }
@@ -591,13 +591,13 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     // PRINTED characteristics — permanent_matches_filter is battlefield-only, so
                     // fall back to card_matches_filter for the type/color portion of the filter
                     // (a YouCtrl/OppCtrl qualifier is a no-op off the battlefield there).
-                    if (!card_matches_filter(e, ab.condition_present, ctx)) continue;
+                    if (!card_matches_filter(e, ab.def.condition_present, ctx)) continue;
                     // A controller qualifier on a card that LEFT the battlefield (Boomerang
                     // Basics: "If you controlled that permanent" against the bounced permanent) is
                     // resolved from last-known information — the controller it had as it left
                     // (CR 608.2g) — captured in cur_game.last_known_info when it left play.
-                    bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
-                    bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                    bool youctrl = ab.def.condition_present.find("YouCtrl") != std::string::npos;
+                    bool oppctrl = ab.def.condition_present.find("OppCtrl") != std::string::npos;
                     if (youctrl || oppctrl) {
                         const LastKnownInfo *lki = lki_for(e);
                         Zone::Ownership lc = lki ? lki->controller : Zone::UNKNOWN;
@@ -609,8 +609,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     continue;
                 }
                 if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above
-                bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
-                bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                bool youctrl = ab.def.condition_present.find("YouCtrl") != std::string::npos;
+                bool oppctrl = ab.def.condition_present.find("OppCtrl") != std::string::npos;
                 bool ctrl_ok = youctrl ? (z.controller == caster)
                              : oppctrl ? (z.controller != caster)
                                        : true;
@@ -630,7 +630,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // killed in response to its own ETB trigger), the Permanent is gone; fall back to the
     // last-known-information snapshot captured as it left play (CR 603.10 / 608.2h) so the
     // exile-cast clause is not silently lost.
-    if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
+    if (ab.def.condition_present == "Card.wasCastFromYourHandByYou") {
         const Entity self = ab.source.get();
         if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
             return global_coordinator.GetComponent<Permanent>(self).cast_from_hand_by_controller;
@@ -640,7 +640,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
     // "Whenever another artifact you control enters" only functions while Kappa is in play).
-    if (ab.condition_present == "Card.Self") {
+    if (ab.def.condition_present == "Card.Self") {
         return ability_source_on_battlefield(ab);
     }
 
@@ -651,7 +651,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // enters" idiom, so the source's own entry satisfies it (no trigger_self_excluded in
     // parse.cpp). Must not fall through to the generic presence scan below, which would read
     // the type token "Card" as any-permanent and pass vacuously whenever anything is in play.
-    if (ab.condition_present == "Card.StrictlySelf") {
+    if (ab.def.condition_present == "Card.StrictlySelf") {
         return ability_source_on_battlefield(ab);
     }
 
@@ -660,7 +660,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Uro's TrigSac uses ConditionNotPresent$ Card.Self+escaped ("sacrifice it unless it
     // escaped"), so condition_negate inverts this in the wrapper below. General — any escape
     // card with an "if it escaped" clause reuses it.
-    if (ab.condition_present == "Card.Self+escaped") {
+    if (ab.def.condition_present == "Card.Self+escaped") {
         const Entity self = ab.source.get();
         return self != 0 && global_coordinator.entity_has_component<Permanent>(self) &&
                global_coordinator.GetComponent<Permanent>(self).cast_with_escape;
@@ -672,9 +672,9 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // counters_GE1_M1M1; Dark Depths: "when this has no ice counters on it" → counters_EQ0_ICE.
     // CR 122.1/603.4/603.8 — the counter count is re-checked whenever the condition is evaluated
     // (trigger placement, resolution, and each state-based check for a Mode$ Always state trigger).
-    if (ab.condition_present.rfind("Card.Self+counters_", 0) == 0) {
+    if (ab.def.condition_present.rfind("Card.Self+counters_", 0) == 0) {
         if (!ability_source_on_battlefield(ab)) return false;
-        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_").size());
+        std::string rest = ab.def.condition_present.substr(std::string("Card.Self+counters_").size());
         // rest is "<OP><N>_<TYPE>", e.g. "EQ0_ICE" / "GE1_M1M1".
         std::string op = rest.substr(0, 2);          // two-letter comparator
         std::string after = rest.substr(2);          // "<N>_<TYPE>"
@@ -691,11 +691,11 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // rather than falling through to the permanent-presence scan below — where the raw
     // "Count$..." string would be read as a permanent type name, match nothing, and yield a
     // confident-but-wrong count (silently suppressing or firing the trigger).
-    if (ab.condition_present.rfind("Count$", 0) == 0) {
+    if (ab.def.condition_present.rfind("Count$", 0) == 0) {
         int value = 0;
-        if (!count_intervening_condition(ab.condition_present, caster, value)) {
+        if (!count_intervening_condition(ab.def.condition_present, caster, value)) {
             game_log("WARNING: unrecognized Count$ intervening-if condition '%s' — treated as unmet.\n",
-                     ab.condition_present.c_str());
+                     ab.def.condition_present.c_str());
             return false;
         }
         return compare_svar(value, compare);
@@ -705,7 +705,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the
     // whole filter by their current characteristics (a Clue token is not a creature; an animated
     // manland is), relative to this ability's controller and source.
-    int count = count_battlefield_matching(ab.condition_present, caster, ab.source.lki_entity());
+    int count = count_battlefield_matching(ab.def.condition_present, caster, ab.source.lki_entity());
     return compare_svar(count, compare);
 }
 
@@ -715,7 +715,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
 // trigger checks (CR 603.4) and the resolution-time condition gate (CR 608.2c) alike.
 bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     bool raw = present_condition_raw(ab, caster, orderer);
-    return ab.condition_negate ? !raw : raw;
+    return ab.def.condition_negate ? !raw : raw;
 }
 
 
@@ -1071,18 +1071,18 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int ability_index = -1;
         for (const auto &ab : permanent.abilities) {
             ++ability_index;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
-            if (ab.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
+            if (ab.def.ability_type != AbilityDef::ACTIVATED) continue;
+            if (ab.def.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
             // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
             // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
             // is legal — may go to exactly 0 and die to the SBA).
-            if (ab.is_loyalty_ability) {
+            if (ab.def.is_loyalty_ability) {
                 if (!sorcery_window) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
                 // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
-                if (!ab.loyalty_cost_is_x && ab.loyalty_cost < 0 &&
-                    get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
+                if (!ab.def.loyalty_cost_is_x && ab.def.loyalty_cost < 0 &&
+                    get_counters(entity, "LOYALTY") < -ab.def.loyalty_cost) continue;
             }
             // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
             // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve
@@ -1090,10 +1090,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ability_is_mana(ab)) continue;
             // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
             if (!can_activate_now(ab, entity, priority_player, sorcery_window, orderer)) continue;
-            std::string desc = !ab.keyword_label.empty()
-                                   ? ab.keyword_label + " " + entity_name(entity)
+            std::string desc = !ab.def.keyword_label.empty()
+                                   ? ab.def.keyword_label + " " + entity_name(entity)
                                    : "Activate " + entity_name(entity) + loyalty_cost_label(ab) +
-                                         " (" + ab.category + ")";
+                                         " (" + ab.def.category + ")";
             actions.push_back(activate_action(entity, ab, desc, ability_index));
         }
     }
@@ -1103,13 +1103,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int hand_ability_index = -1;  // ordinal: see the battlefield loop above
         for (const auto &ab : card_data.abilities) {
             ++hand_ability_index;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.ability_type != AbilityDef::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
-            if (!can_activate_now(ab, card_entity, priority_player, sorcery_window, orderer)) continue;
+            const Ability hand_ab(ab);
+            if (!can_activate_now(hand_ab, card_entity, priority_player, sorcery_window, orderer))
+                continue;
             std::string desc = ab.is_ninjutsu
                 ? ("Ninjutsu " + card_data.name)
                 : ("Activate " + card_data.name + " from hand (" + ab.category + ")");
-            actions.push_back(activate_action(card_entity, ab, desc, hand_ability_index));
+            actions.push_back(activate_action(card_entity, hand_ab, desc, hand_ability_index));
         }
     }
 
@@ -1122,11 +1124,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int gy_ability_index = -1;  // ordinal: see the battlefield loop above
         for (const auto &ab : card_data.abilities) {
             ++gy_ability_index;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.ability_type != AbilityDef::ACTIVATED) continue;
             if (ab.activation_zone != Zone::GRAVEYARD) continue;
-            if (!can_activate_now(ab, card_entity, priority_player, sorcery_window, orderer))
+            const Ability gy_ab(ab);
+            if (!can_activate_now(gy_ab, card_entity, priority_player, sorcery_window, orderer))
                 continue;
-            actions.push_back(activate_action(card_entity, ab, "Unearth " + card_data.name,
+            actions.push_back(activate_action(card_entity, gy_ab, "Unearth " + card_data.name,
                                               gy_ability_index));
         }
     }
@@ -1142,7 +1145,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // instant-speed sources (e.g. LED, only activatable here), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield).
-        if (machine && !ma.ability.instant_speed &&
+        if (machine && !ma.ability.def.instant_speed &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

@@ -26,9 +26,9 @@ namespace effects {
 
 HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Destroy all permanents matching the filter (e.g. Meltdown: "Artifact.cmcLEX")
-    const std::string &filter = ab.valid_cards_filter;
+    const std::string &filter = ab.def.valid_cards_filter;
 
-    const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.params);
+    const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.def.params);
 
     // UnlessCost$ PayEnergy<N> (Wrath of the Skies: with UnlessSwitched$ True). N
     // (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
@@ -91,7 +91,7 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_destroy_all(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key != "ValidCards") return false;
     // Shared by DestroyAll / SacrificeAll / PutCounterAll — a plain member so it can
     // coexist with each effect's own params block.

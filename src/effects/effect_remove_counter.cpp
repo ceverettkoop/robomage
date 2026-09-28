@@ -24,7 +24,7 @@ HandlerResult remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     const Entity t = ab.target.get();
     Entity tgt = (t != 0 && global_coordinator.entity_has_component<Permanent>(t)) ? t : ab.source.get();
     if (!global_coordinator.entity_has_component<Permanent>(tgt)) return HandlerResult::DONE_RUN_SUBS;
-    const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    const CounterParams *cp = std::get_if<CounterParams>(&ab.def.params);
     if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
     int have = get_counters(tgt, cp->type);
     if (have <= 0) return HandlerResult::DONE_RUN_SUBS;

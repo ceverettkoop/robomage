@@ -63,17 +63,18 @@ static void sync_face_creature_state(Entity e, const CardData &face) {
 static void swap_face_abilities(Entity e, Permanent &perm, const CardData &old_face,
                                 const CardData &new_face) {
     auto from_face = [](const CardData &face, Ability &ab) {
-        if (ab.ability_type != Ability::ACTIVATED || ab.granted_by_static != 0) return false;
+        if (ab.def.ability_type != AbilityDef::ACTIVATED || ab.granted_by_static != 0) return false;
         for (const auto &printed : face.abilities)
-            if (printed.ability_type == Ability::ACTIVATED && ab.identical_activated_ability(printed))
+            if (printed.ability_type == AbilityDef::ACTIVATED && ab.identical_activated_ability(printed))
                 return true;
         return false;
     };
     perm.abilities.erase(std::remove_if(perm.abilities.begin(), perm.abilities.end(),
                                         [&](Ability &ab) { return from_face(old_face, ab); }),
                          perm.abilities.end());
-    for (auto ab : new_face.abilities) {
-        if (ab.ability_type != Ability::ACTIVATED) continue;
+    for (const AbilityDef &printed : new_face.abilities) {
+        if (printed.ability_type != AbilityDef::ACTIVATED) continue;
+        Ability ab(printed);
         ab.source = ObjectRef::of(e);
         perm.abilities.push_back(ab);
     }

@@ -24,7 +24,7 @@ HandlerResult untap_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     MatchCtx ctx{ab.controller, ab.source.lki_entity()};
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e)) continue;
-        if (!permanent_matches_filter(e, ab.valid_cards_filter, ctx)) continue;
+        if (!permanent_matches_filter(e, ab.def.valid_cards_filter, ctx)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (!perm.is_tapped) continue;
         perm.is_tapped = false;

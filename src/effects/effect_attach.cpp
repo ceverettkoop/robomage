@@ -23,11 +23,11 @@ HandlerResult attach(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     (void)orderer;
     // Equip the source equipment to the remembered entity
     Entity equip_entity = ab.source.get();
-    Entity target_creature = (ab.defined_remembered && !cur_game.remembered_entities.empty())
+    Entity target_creature = (ab.def.defined_remembered && !cur_game.remembered_entities.empty())
                                  ? cur_game.remembered_entities[0].get()
                                  : ab.target.get();
 
-    if (ab.optional_choice && target_creature != 0) {
+    if (ab.def.optional_choice && target_creature != 0) {
         // Optional$ True — "you MAY attach ..." (Cori-Steel Cutter's DBAttach). The ability's
         // controller decides at resolution through the shared yes/no menu, asked through ctx
         // so it can suspend (same "Decline:/Accept:" entries, same chooser repoint-and-

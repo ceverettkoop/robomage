@@ -47,7 +47,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     }
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
 
-    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
+    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def.params);
     std::string discard_valid = dp ? dp->valid : std::string();
     std::string mode = dp ? dp->mode : std::string();
 
@@ -57,7 +57,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // are deterministic. This path runs before the hand is revealed because a random discard
     // does not reveal the hand.
     if (mode == "Random") {
-        size_t count = ab.amount;  // NumCards$ N (do not hardcode); 0 means none.
+        size_t count = ab.def.amount;  // NumCards$ N (do not hardcode); 0 means none.
         if (count > hand.size()) count = hand.size();
         if (count == 0) {
             game_log("No cards to discard at random.\n");
@@ -121,7 +121,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // runs out of matching cards, discard as many as possible. The DiscardValid$ pool is
     // rebuilt from the LIVE hand each pick (a picked card left the hand), and the pick count
     // persists in the level's DiscardRt so a machine-mode suspension resumes at the next pick.
-    size_t count = ab.amount > 0 ? ab.amount : 1;
+    size_t count = ab.def.amount > 0 ? ab.def.amount : 1;
     DiscardRt local_rt;
     DiscardRt &rt = ctx.can_suspend() ? ctx.rt<DiscardRt>() : local_rt;
     for (; rt.discards_done < count; ++rt.discards_done) {
@@ -152,7 +152,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "DiscardValid") { effect_params<DiscardParams>(ab).valid = value; return true; }
     // Discard Mode$ — only the discard modes are claimed here (other effects, e.g.
     // SetState's Mode$ Transform, use the same key with a different meaning).

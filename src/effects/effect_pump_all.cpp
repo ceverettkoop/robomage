@@ -25,12 +25,12 @@ namespace effects {
 // and the per-creature application reuses apply_pump_to_creature so the EOT bucket / keyword /
 // logging logic is identical to single-target Pump.
 HandlerResult pump_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    const PumpParams *pp = std::get_if<PumpParams>(&ab.def.params);
 
     std::vector<Entity> targets;
     for (auto e : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
+        if (permanent_matches_filter(e, ab.def.valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
             targets.push_back(e);
     }
     if (targets.empty()) {

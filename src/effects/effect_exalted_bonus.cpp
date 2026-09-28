@@ -18,7 +18,7 @@ HandlerResult exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     const Entity src = ab.source.lki_entity();
     if (tgt != 0 && global_coordinator.entity_has_component<Creature>(tgt)) {
         auto &cr = global_coordinator.GetComponent<Creature>(tgt);
-        cr.prowess_bonus += static_cast<int>(ab.amount);
+        cr.prowess_bonus += static_cast<int>(ab.def.amount);
         recompute_pt(cr);
         std::string tgt_name = global_coordinator.entity_has_component<CardData>(tgt)
                                    ? global_coordinator.GetComponent<CardData>(tgt).name
@@ -31,7 +31,7 @@ HandlerResult exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
                                              ? global_coordinator.GetComponent<Permanent>(src).name
                                              : "permanent");
         game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n", src_name.c_str(), tgt_name.c_str(),
-            ab.amount, ab.amount);
+            ab.def.amount, ab.def.amount);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

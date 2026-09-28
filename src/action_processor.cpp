@@ -386,7 +386,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.
     // Same flow: select targets, choose and pay the costs, and the ability becomes activated (the
     // ZONE_TARGET step, converging on the shared cost steps).
-    if ((ability.activation_zone == Zone::HAND || ability.activation_zone == Zone::GRAVEYARD) &&
+    if ((ability.def.activation_zone == Zone::HAND || ability.def.activation_zone == Zone::GRAVEYARD) &&
         !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(permanent_entity);
         Zone::Ownership ctrl = card_zone.owner;
@@ -439,12 +439,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets;
-    const std::string &vt = ability.valid_tgts;
+    const std::string &vt = ability.def.valid_tgts;
 
     // Stack targets: spells (counterspells) or standalone abilities (Stifle)
-    if (ability.target_type == "Spell" ||
-        ability.target_type.find("Activated") != std::string::npos ||
-        ability.target_type.find("Triggered") != std::string::npos) {
+    if (ability.def.target_type == "Spell" ||
+        ability.def.target_type.find("Activated") != std::string::npos ||
+        ability.def.target_type.find("Triggered") != std::string::npos) {
         for (auto e : orderer->get_stack()) {
             // A spell/ability can't target itself (CR 115.5) — a spell choosing its targets
             // as it is cast (CR 601.2a/c), a modal spell (Pyroblast/Hydroblast) that picks its
@@ -467,8 +467,8 @@ static std::vector<Entity> build_valid_targets(
     // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
     // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
-    if (ability.target_in_graveyard ||
-        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD)) {
+    if (ability.def.target_in_graveyard ||
+        (ability.def.category == "ChangeZone" && ability.def.origin == Zone::GRAVEYARD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {
@@ -1035,10 +1035,10 @@ Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership 
     Ability enchant_ab;
     enchant_ab.source = ObjectRef::of(aura);
     enchant_ab.controller = chooser;
-    enchant_ab.valid_tgts = cd.enchant_filter;
+    enchant_ab.def.valid_tgts = cd.enchant_filter;
     // "Enchant creature card in a graveyard" (Animate Dead): the legal objects are graveyard
     // cards, not battlefield permanents (CR 303.4).
-    enchant_ab.target_in_graveyard = enchant_targets_graveyard(cd.enchant_filter);
+    enchant_ab.def.target_in_graveyard = enchant_targets_graveyard(cd.enchant_filter);
     return enchant_ab;
 }
 
@@ -1053,7 +1053,7 @@ bool pending_aura_target_legal(Entity aura, Zone::Ownership controller) {
 }
 
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
-    if (ability.valid_tgts == "N_A") return true;
+    if (ability.def.valid_tgts == "N_A") return true;
     // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
     // targets must be evaluated from the controlling player's perspective (see above), or a
     // ".YouOwn" ability could be offered with no legal target and crash on an empty target menu.
@@ -1073,20 +1073,20 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
 // gate) it counts as 0 — X may legally be 0, so it must not gate castability.
 static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
                                 std::shared_ptr<Orderer> orderer, bool x_announced) {
-    if (ab.target_min_from_xpaid) return x_announced ? static_cast<int>(cur_game.x_paid) : 0;
-    if (!ab.target_min_count_expr.empty())
-        return static_cast<int>(evaluate_dynamic_amount(ab.target_min_count_expr, perspective,
+    if (ab.def.target_min_from_xpaid) return x_announced ? static_cast<int>(cur_game.x_paid) : 0;
+    if (!ab.def.target_min_count_expr.empty())
+        return static_cast<int>(evaluate_dynamic_amount(ab.def.target_min_count_expr, perspective,
                                                         orderer, 0, ab.source.lki_entity()));
-    return ab.target_min;
+    return ab.def.target_min;
 }
 
 // Gather a spell's targeting abilities: the primary spell ability plus any chained sub-ability
 // that targets (each picks its own target as the spell is cast — CR 601.2c).
 static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary) {
     std::vector<const Ability *> targeting;
-    if (primary.valid_tgts != "N_A") targeting.push_back(&primary);
+    if (primary.def.valid_tgts != "N_A") targeting.push_back(&primary);
     for (const Ability &sub : primary.subabilities)
-        if (sub.valid_tgts != "N_A") targeting.push_back(&sub);
+        if (sub.def.valid_tgts != "N_A") targeting.push_back(&sub);
     return targeting;
 }
 
@@ -1131,12 +1131,12 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     // legally be 0 — matching effective_target_min).
     if (!primary.charm_choices.empty()) {
         int choosable = 0;
-        int needed = primary.charm_num < 1 ? 1 : primary.charm_num;
+        int needed = primary.def.charm_num < 1 ? 1 : primary.def.charm_num;
         for (const Ability &mode : primary.charm_choices) {
             Ability probe = mode;
             probe.source = primary.source;
             probe.controller = caster;
-            if (mode.valid_tgts == "N_A" ||
+            if (mode.def.valid_tgts == "N_A" ||
                 effective_target_min(probe, caster, orderer, false) <= 0 ||
                 !build_valid_targets(probe, orderer, caster).empty()) {
                 if (++choosable >= needed) return true;
@@ -1178,9 +1178,10 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
                                      Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     size_t cap = SIZE_MAX;
     for (const auto &ab : card_data.abilities) {
-        if (ab.ability_type != Ability::SPELL) continue;
-        for (const Ability *t : spell_targeting_abilities(ab)) {
-            if (!t->target_min_from_xpaid) continue;  // only X-driven MANDATORY target counts
+        if (ab.ability_type != AbilityDef::SPELL) continue;
+        const Ability primary(ab);
+        for (const Ability *t : spell_targeting_abilities(primary)) {
+            if (!t->def.target_min_from_xpaid) continue;  // only X-driven MANDATORY target counts
             Ability probe = *t;
             probe.source = ObjectRef::of(spell_entity);
             probe.controller = caster;
@@ -1208,7 +1209,7 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
         game_log("Choose target for %s:\n", src_name.c_str());
     }
     std::vector<LegalAction> tgt_actions;
-    if (ability.target_min == 0 || allow_done) {
+    if (ability.def.target_min == 0 || allow_done) {
         std::string label = allow_done ? "Done selecting targets" : "No target";
         LegalAction la(PASS_PRIORITY, label);
         la.category = ActionCategory::SELECT_TARGET;
@@ -1237,7 +1238,7 @@ static int select_single_target(Ability &ability, const std::vector<Entity> &val
         std::string src_name = !ability.source.empty() ? entity_name(ability.source.lki_entity())
                                                        : std::string("(unknown source)");
         fatal_error("Zero legal targets when choosing a required target for " + src_name +
-                    " (ValidTgts$ " + ability.valid_tgts + ") — a targeted spell/ability with no "
+                    " (ValidTgts$ " + ability.def.valid_tgts + ") — a targeted spell/ability with no "
                     "legal target was offered/forced (CR 601.2c violated upstream).");
     }
     int choice = asker.ask(tgt_actions, ability.source.lki_entity());
@@ -1256,15 +1257,15 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
         // target_min/target_max so resolution (is_target_valid) sees the same bounds. Stamped
         // ONCE — a resume re-enters with rt.active set and never re-evaluates.
-        int effective_max = ability.target_max;
-        if (ability.target_max_from_xpaid)
+        int effective_max = ability.def.target_max;
+        if (ability.def.target_max_from_xpaid)
             effective_max = static_cast<int>(cur_game.x_paid);
-        else if (!ability.target_max_count_expr.empty())
+        else if (!ability.def.target_max_count_expr.empty())
             effective_max = static_cast<int>(evaluate_dynamic_amount(
-                ability.target_max_count_expr, priority_player, orderer, 0, ability.source.lki_entity()));
+                ability.def.target_max_count_expr, priority_player, orderer, 0, ability.source.lki_entity()));
         int effective_min = effective_target_min(ability, priority_player, orderer, true);
-        ability.target_min = effective_min;
-        ability.target_max = effective_max;
+        ability.def.target_min = effective_min;
+        ability.def.target_max = effective_max;
 
         // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count
         // to 0): the ability targets nothing and does nothing on resolution. Choose no target.
@@ -1344,16 +1345,16 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // (effective_target_min, with the X already announced — X is chosen before modes).
 static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster) {
-    if (candidate.valid_tgts == "N_A") return true;
+    if (candidate.def.valid_tgts == "N_A") return true;
     if (effective_target_min(candidate, caster, orderer, true) <= 0) return true;
     return !build_valid_targets(candidate, orderer, caster).empty();
 }
 
 // The display label for one charm mode: its script description, else a positional fallback.
 static std::string charm_mode_desc(const Ability &ability, size_t idx) {
-    return (idx < ability.charm_choice_descriptions.size() &&
-            !ability.charm_choice_descriptions[idx].empty())
-               ? ability.charm_choice_descriptions[idx]
+    return (idx < ability.def.charm_choice_descriptions.size() &&
+            !ability.def.charm_choice_descriptions[idx].empty())
+               ? ability.def.charm_choice_descriptions[idx]
                : ("Mode " + std::to_string(idx + 1));
 }
 
@@ -1459,13 +1460,13 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         for (const WardInstance &w : wards) {
             if (w.cost <= 0) continue;
             Ability ward;
-            ward.ability_type = Ability::TRIGGERED;
-            ward.category = "Counter";
+            ward.def.ability_type = AbilityDef::TRIGGERED;
+            ward.def.category = "Counter";
             ward.source = ObjectRef::of(tgt);
             ward.controller = opp;            // the Ward permanent's controller
             ward.target = ObjectRef::of(targeting_entity);  // counter the spell/ability that targeted it
-            ward.unless_generic_cost = static_cast<size_t>(w.cost);
-            ward.unless_cost_is_life = w.is_life;  // Ward—Pay N life pays life, not mana
+            ward.def.unless_generic_cost = static_cast<size_t>(w.cost);
+            ward.def.unless_cost_is_life = w.is_life;  // Ward—Pay N life pays life, not mana
 
             // Ward is a triggered ability: it goes on the stack with everything else that
             // triggered before a player next receives priority (CR 603.3b), so a cast trigger
@@ -1511,7 +1512,7 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
 // skipping an object already listed. A non-targeting ability (ValidTgts$ absent, "N_A") adds
 // nothing of its own even if its `target` field carries a bound reference.
 static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
-    if (ab.valid_tgts != "N_A") {
+    if (ab.def.valid_tgts != "N_A") {
         std::vector<Entity> mine =
             ab.targets.empty() ? std::vector<Entity>{ab.target.get()} : live_entities(ab.targets);
         for (Entity t : mine)
@@ -1521,7 +1522,7 @@ static void append_chosen_targets(const Ability &ab, std::vector<Entity> &out) {
         if (ci >= 0 && static_cast<size_t>(ci) < ab.charm_choices.size())
             append_chosen_targets(ab.charm_choices[static_cast<size_t>(ci)], out);
     for (const Ability &sub : ab.subabilities)
-        if (!sub.from_delayed_execute) append_chosen_targets(sub, out);  // not a later trigger's
+        if (!sub.def.from_delayed_execute) append_chosen_targets(sub, out);  // not a later trigger's
 }
 
 // Every object or player the stack object `targeting_entity` targets, each listed once: the
@@ -1697,7 +1698,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
     for (;;) switch (pa.step) {
         case Game::PendingActivation::ZONE_TARGET: {
             // Select targets before paying costs
-            if (pa.stack_ab.valid_tgts != "N_A") {
+            if (pa.stack_ab.def.valid_tgts != "N_A") {
                 FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
                                       permanent_entity);
                 if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
@@ -1715,7 +1716,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // available beyond the rest of the cost), record it as x_paid, and add X generic
             // to the mana cost paid at PAY. Arms with the activated card as the
             // pending-decision source.
-            if (!is_mana_ability && ability.activation_has_x) {
+            if (!is_mana_ability && ability.def.activation_has_x) {
                 if (resume_choice >= 0) {
                     pa.x_activation = static_cast<size_t>(resume_choice);
                     resume_choice = -1;
@@ -1729,9 +1730,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     // ability can't also fund X (Blast Zone offered X=3 off 2 real mana by
                     // counting its own {C}). Each {X} in the cost is paid separately, so a
                     // {X}{X} ability can only afford half the budget (CR 601.2b).
-                    Entity x_exclude = ability.tap_cost ? permanent_entity : 0;
+                    Entity x_exclude = ability.def.tap_cost ? permanent_entity : 0;
                     size_t max_x = max_available_mana(controller, base_cost, orderer, x_exclude);
-                    size_t x_pips = std::max<size_t>(1, ability.activation_x_count);
+                    size_t x_pips = std::max<size_t>(1, ability.def.activation_x_count);
                     max_x /= x_pips;
                     max_x = payable_max_x(controller, base_cost, max_x, x_pips, permanent_entity,
                                           x_exclude, orderer, /*has_delve=*/false,
@@ -1759,7 +1760,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // than it has, 606.5). Recorded as x_paid, so the loyalty cost (PAY_APPLY) and the
             // effect's Count$xPaid (NumDmg$ X) both read it. This is a loyalty cost, not mana —
             // it never touches the PAY cost.
-            if (ability.loyalty_cost_is_x) {
+            if (ability.def.loyalty_cost_is_x) {
                 if (resume_choice >= 0) {
                     int x_choice = resume_choice;
                     resume_choice = -1;
@@ -1767,7 +1768,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     pa.stack_ab.x_paid = x_choice;
                     game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
                 } else {
-                    int max_x = (ability.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
+                    int max_x = (ability.def.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
                     if (max_x < 0) max_x = 0;
                     game_log("Choose X value (0-%d):\n", max_x);
                     std::vector<LegalAction> x_actions;
@@ -1788,7 +1789,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
 
         case Game::PendingActivation::TARGET: {
             // SELECT TARGETS BEFORE PAYING COSTS
-            if (!is_mana_ability && pa.stack_ab.valid_tgts != "N_A") {
+            if (!is_mana_ability && pa.stack_ab.def.valid_tgts != "N_A") {
                 FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
                                       permanent_entity);
                 if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
@@ -1803,9 +1804,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary): CHOOSE
             // the permanent now; it is sacrificed at PAY_APPLY, once the mana committed. The
             // pool re-derives identically at apply — nothing runs between arm and resume.
-            if (!ability.sac_cost_spec.empty()) {
+            if (!ability.def.sac_cost_spec.empty()) {
                 std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.sac_cost_spec, orderer->mEntities, permanent_entity);
+                    controller, ability.def.sac_cost_spec, orderer->mEntities, permanent_entity);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
                         arm_flow_query(game, PendingQuery::ACTIVATION,
@@ -1825,9 +1826,9 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         case Game::PendingActivation::COST_RETURN: {
             // Return-to-hand cost (Scryb Ranger: return a Forest to hand) — chosen now, returned
             // at PAY_APPLY, like the sacrifice pick above.
-            if (!ability.return_cost_type.empty()) {
+            if (!ability.def.return_cost_type.empty()) {
                 std::vector<Entity> choices = controlled_permanents_matching(
-                    controller, ability.return_cost_type, orderer->mEntities);
+                    controller, ability.def.return_cost_type, orderer->mEntities);
                 if (!choices.empty()) {
                     if (resume_choice < 0) {
                         arm_flow_query(game, PendingQuery::ACTIVATION,
@@ -1840,7 +1841,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                     resume_choice = -1;
                     // Ninjutsu's ninja attacks what the returned creature was attacking (CR
                     // 702.49c), read while the creature is still in combat.
-                    if (ability.is_ninjutsu)
+                    if (ability.def.is_ninjutsu)
                         pa.stack_ab.ninjutsu_attack_target =
                             global_coordinator.GetComponent<Creature>(pa.return_choice).attack_target;
                 }
@@ -1856,14 +1857,14 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             pa.mana_snap = snapshot_mana_state(controller, orderer);
             pa.mana_snap_taken = true;
             // Tap cost
-            if (ability.tap_cost && global_coordinator.entity_has_component<Permanent>(permanent_entity))
+            if (ability.def.tap_cost && global_coordinator.entity_has_component<Permanent>(permanent_entity))
                 global_coordinator.GetComponent<Permanent>(permanent_entity).is_tapped = true;
             // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only; Eiganjo's Channel
             // is cheaper per legendary creature). For an X-cost ability the chosen X is added as
             // generic mana on top of the base cost — once per {X} pip in the cost, so Blast
             // Zone's {X}{X} charges 2X, not X.
             ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
-            size_t x_pips = std::max<size_t>(1, ability.activation_x_count);
+            size_t x_pips = std::max<size_t>(1, ability.def.activation_x_count);
             for (size_t i = 0; i < pa.x_activation * x_pips; i++) activate_cost.insert(GENERIC);
             // CR 601.2g: a permanent about to be sacrificed or returned for this cost is still on
             // the battlefield, so it may be tapped for mana on its way out.
@@ -1888,8 +1889,8 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // reversed — then the loyalty, sacrifice, return and discard costs.
             auto &activating_player =
                 global_coordinator.GetComponent<Player>(get_player_entity(controller));
-            if (!can_pay_life(activating_player, ability.life_cost) ||
-                player_energy(activating_player) < ability.energy_cost) {
+            if (!can_pay_life(activating_player, ability.def.life_cost) ||
+                player_energy(activating_player) < ability.def.energy_cost) {
                 fail_activation_payment(pa, orderer);
                 return;
             }
@@ -1897,34 +1898,34 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
             // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability
             // still goes on the stack and resolves later; the loyalty change is the cost, paid
             // now.
-            if (ability.is_loyalty_ability &&
+            if (ability.def.is_loyalty_ability &&
                 global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
                 auto &perm = global_coordinator.GetComponent<Permanent>(permanent_entity);
                 // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at
                 // activation (cur_game.x_paid); loyalty_cost carries only the sign. A fixed
                 // cost uses loyalty_cost as-is.
-                int loyalty_delta = ability.loyalty_cost_is_x
-                    ? (ability.loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
+                int loyalty_delta = ability.def.loyalty_cost_is_x
+                    ? (ability.def.loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
                                                 :  static_cast<int>(cur_game.x_paid))
-                    : ability.loyalty_cost;
+                    : ability.def.loyalty_cost;
                 int loyalty = add_counters(permanent_entity, "LOYALTY", loyalty_delta);
                 perm.loyalty_ability_activated_this_turn = true;
                 game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
                          entity_name(permanent_entity).c_str(), loyalty_delta, loyalty);
             }
             // Life cost
-            if (ability.life_cost > 0) {
-                pay_life(activating_player, ability.life_cost);
-                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
+            if (ability.def.life_cost > 0) {
+                pay_life(activating_player, ability.def.life_cost);
+                game_log("%s pays %d life\n", player_name(controller).c_str(), ability.def.life_cost);
             }
             // Energy cost (PayEnergy<N>, CR 122.1c).
-            if (ability.energy_cost > 0) {
-                pay_energy(activating_player, ability.energy_cost);
-                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.energy_cost);
+            if (ability.def.energy_cost > 0) {
+                pay_energy(activating_player, ability.def.energy_cost);
+                game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.def.energy_cost);
             }
             // Sacrifice self: move to graveyard; apply_permanent_components SBA removes
             // Permanent next pass
-            if (ability.sac_self) {
+            if (ability.def.sac_self) {
                 std::string sname = entity_name(permanent_entity);
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
@@ -1942,14 +1943,14 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                          ret_name.c_str());
             }
             // Discard self from hand cost (Faerie Macabre)
-            if (ability.discard_self_cost) {
+            if (ability.def.discard_self_cost) {
                 std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
                     ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
                 orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
             }
             // Discard hand cost (Lion's Eye Diamond)
-            if (ability.discard_hand_cost) {
+            if (ability.def.discard_hand_cost) {
                 for (auto card : orderer->get_hand(controller)) {
                     std::string cname = global_coordinator.entity_has_component<CardData>(card)
                         ? global_coordinator.GetComponent<CardData>(card).name : "card";
@@ -1967,7 +1968,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 // relocates it itself (Defined$ Self) or it was already discarded as an
                 // explicit cost (discard_self_cost, paid above) — guarding against a double
                 // move.
-                if (!ability.defined_self && !ability.discard_self_cost) {
+                if (!ability.def.defined_self && !ability.def.discard_self_cost) {
                     orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
                 }
 
@@ -1981,7 +1982,7 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
                 fire_targeting_hooks(pa.stack_entity, controller);
 
                 auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
-                const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
+                const char *from_zone = (ability.def.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
                 if (!pa.stack_ab.target.empty()) {
                     std::string tgt_names = chosen_targets_display(pa.stack_ab);
                     game_log("%s activates %s from %s targeting %s\n",
@@ -2631,13 +2632,13 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                     bool must_promise = false;
                     bool can_promise = true;
                     for (const auto &t : card_data.abilities) {
-                        if (t.ability_type != Ability::SPELL) continue;
+                        if (t.ability_type != AbilityDef::SPELL) continue;
                         // Probe with the real spell source/controller so a mode's target legality
                         // (protection from this spell's color, OppCtrl) matches select_target below —
                         // otherwise can_promise/must_promise can green-light a mode whose only target
                         // is protected (Scryb Ranger vs blue Into the Flood Maw), then select_target
                         // finds zero targets and aborts (CR 601.2c / 702.16e).
-                        Ability probe = cast_gate_probe(t, spell_entity, caster);
+                        Ability probe = cast_gate_probe(Ability(t), spell_entity, caster);
                         std::vector<const Ability *> targeting = spell_targeting_abilities(probe);
                         if (!targeting.empty()) {
                             must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
@@ -2670,13 +2671,15 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // (end of SUB_TARGET), the blocking flow's exact position, so component state at
             // every announce prompt matches it (absent during announcement, present after).
             for (const auto &ability_template : card_data.abilities) {
-                if (ability_template.ability_type != Ability::SPELL) continue;
-                pc.ability = ability_template;
+                if (ability_template.ability_type != AbilityDef::SPELL) continue;
+                pc.ability = Ability(ability_template);
                 pc.ability.source = ObjectRef::of(spell_entity);  // the spell on the stack (601.2a)
                 pc.ability.controller = caster;
                 // Carry the Gift keyword's gift effect onto the resolving spell's primary ability;
                 // it fires at resolution only if the gift was promised (Ability::resolve).
-                if (card_data.has_gift) pc.ability.gift_abilities = card_data.gift_abilities;
+                if (card_data.has_gift)
+                    for (const AbilityDef &gift : card_data.gift_abilities)
+                        pc.ability.gift_abilities.emplace_back(gift);
                 pc.have_ability = true;
                 break;  // TODO: support spells with multiple abilities
             }
@@ -2708,7 +2711,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // ability.charm_chosen — which also reconstructs the taken[] filter on resume —
             // and pc.charm_picks_done counts completed iterations.
             Ability &ability = pc.ability;
-            int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
+            int to_pick = ability.def.charm_num < 1 ? 1 : ability.def.charm_num;
             if (pc.charm_picks_done >= to_pick) {
                 pc.step = Game::PendingCast::PRIMARY_TARGET;
                 break;
@@ -2728,7 +2731,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 Ability &chosen = ability.charm_choices[chosen_idx];
                 game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
                          charm_mode_desc(ability, chosen_idx).c_str());
-                if (chosen.valid_tgts != "N_A") {
+                if (chosen.def.valid_tgts != "N_A") {
                     pc.tsel = TargetSelectRT{};
                     pc.step = Game::PendingCast::CHARM_TARGET;
                 } else {
@@ -2767,7 +2770,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         }
 
         case Game::PendingCast::PRIMARY_TARGET: {
-            if (pc.ability.valid_tgts != "N_A") {
+            if (pc.ability.def.valid_tgts != "N_A") {
                 FlowTargetAsker asker(game, caster, resume_choice);
                 if (run_target_select(pc.ability, pc.tsel, asker, orderer, caster) !=
                     TargetStatus::DONE)
@@ -2786,7 +2789,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
             // template; resolution preserves it (see Ability::resolve).
             while (pc.sub_idx < pc.ability.subabilities.size()) {
                 Ability &sub = pc.ability.subabilities[pc.sub_idx];
-                if (sub.valid_tgts != "N_A") {
+                if (sub.def.valid_tgts != "N_A") {
                     sub.source = pc.ability.source;
                     sub.controller = caster;
                     sub.targeted_player = pc.ability.player_target_for_subs();  // ParentTarget
@@ -3690,8 +3693,8 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     mark_card_revealed(card, owner);
     game_log("%s reveals %s for its miracle cost.\n", player_name(owner).c_str(), nm.c_str());
     Ability trig;
-    trig.ability_type = Ability::TRIGGERED;
-    trig.category = "MiracleCast";
+    trig.def.ability_type = AbilityDef::TRIGGERED;
+    trig.def.category = "MiracleCast";
     trig.source = ObjectRef::of(card);
     trig.controller = owner;
     orderer->push_ability_onto_stack(trig, owner);

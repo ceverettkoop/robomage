@@ -23,7 +23,7 @@ extern Coordinator global_coordinator;
 
 static const char *zone_str(Zone::ZoneValue z);
 static const char *owner_str(Zone::Ownership o);
-static const char *ability_type_str(Ability::AbilityType t);
+static const char *ability_type_str(AbilityDef::AbilityType t);
 static void print_backtrace();
 
 static const char *zone_str(Zone::ZoneValue z) {
@@ -48,11 +48,11 @@ static const char *owner_str(Zone::Ownership o) {
     return "?";
 }
 
-static const char *ability_type_str(Ability::AbilityType t) {
+static const char *ability_type_str(AbilityDef::AbilityType t) {
     switch (t) {
-    case Ability::TRIGGERED: return "TRIGGERED";
-    case Ability::ACTIVATED: return "ACTIVATED";
-    case Ability::SPELL:     return "SPELL";
+    case AbilityDef::TRIGGERED: return "TRIGGERED";
+    case AbilityDef::ACTIVATED: return "ACTIVATED";
+    case AbilityDef::SPELL:     return "SPELL";
     }
     return "?";
 }
@@ -143,14 +143,14 @@ void dump_entity(Entity e) {
         auto &a = global_coordinator.GetComponent<Ability>(e);
         fprintf(stderr, "  Ability:\n");
         fprintf(stderr, "    type=%s  category=%s\n",
-                ability_type_str(a.ability_type), a.category.c_str());
+                ability_type_str(a.def.ability_type), a.def.category.c_str());
         fprintf(stderr, "    source=%u(gen %llu)  target=%u(gen %llu)  controller=%s\n",
                 a.source.lki_entity(), static_cast<unsigned long long>(a.source.gen),
                 a.target.lki_entity(), static_cast<unsigned long long>(a.target.gen),
                 owner_str(a.controller));
-        fprintf(stderr, "    amount=%zu  color=%s\n", a.amount, mana_symbol(a.color).c_str());
+        fprintf(stderr, "    amount=%zu  color=%s\n", a.def.amount, mana_symbol(a.def.color).c_str());
         fprintf(stderr, "    valid_tgts=%s  tap_cost=%d  sac_self=%d  life_cost=%d\n",
-                a.valid_tgts.c_str(), a.tap_cost, a.sac_self, a.life_cost);
+                a.def.valid_tgts.c_str(), a.def.tap_cost, a.def.sac_self, a.def.life_cost);
         fprintf(stderr, "    subabilities: %zu\n", a.subabilities.size());
     }
 

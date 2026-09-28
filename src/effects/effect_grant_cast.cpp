@@ -39,10 +39,10 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // source; its statics are gathered into g_active_statics every SBA pass with the controller as
     // their owner (see gather_active_statics), so they apply through the normal layer engine. The
     // statics were parsed onto the ability at parse time. General over any emblem-making Effect.
-    if (!ab.effect_emblem_statics.empty()) {
+    if (!ab.def.effect_emblem_statics.empty()) {
         Emblem emblem;
         emblem.controller = ab.controller;
-        emblem.statics = ab.effect_emblem_statics;
+        emblem.statics = ab.def.effect_emblem_statics;
         emblem.source = ab.source.lki_entity();
         emblem.source_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
         cur_game.resolved_effects.emblems.push_back(std::move(emblem));
@@ -56,15 +56,15 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // trigger is bound to this effect's controller and pushed into cur_game.resolved_effects.floating_triggers,
     // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
     // over any DB$ Effect that names a Triggers$ SVar.
-    if (!ab.effect_floating_triggers.empty()) {
+    if (!ab.def.effect_floating_triggers.empty()) {
         // Duration$ UntilYourNextTurn (Tamiyo, Seasoned Scholar's +2 Effect) extends the floating
         // trigger past the end of this turn — it persists until the start of the controller's next
         // turn (removed at their untap, see game.cpp). The Forge default (no flag) lapses at cleanup.
-        bool until_next_turn = ab.duration_until_your_next_turn;
-        for (const auto &trig : ab.effect_floating_triggers) {
-            Ability ft = trig;
+        bool until_next_turn = ab.def.duration_until_your_next_turn;
+        for (const auto &trig : ab.def.effect_floating_triggers) {
+            Ability ft(trig);
             ft.controller = ab.controller;
-            ft.duration_until_your_next_turn = until_next_turn;
+            ft.def.duration_until_your_next_turn = until_next_turn;
             ft.floating_creator = ab.source.lki_entity();
             ft.floating_creator_vocab_idx = action_card_vocab_idx(ab.source.lki_entity());
             cur_game.resolved_effects.floating_triggers.push_back(ft);
@@ -86,8 +86,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // normal costs; a land may be played unless the static's Affected$ is nonLand (Ugin: "cast").
     // It lasts this turn, or until the end of the caster's next turn (Light Up the Stage), and
     // lapses once the card leaves exile (ForgetOnMoved$ Exile).
-    if (ab.effect_may_play_from_exile) {
-        const std::vector<Entity> cards = ab.effect_remember_chosen_card
+    if (ab.def.effect_may_play_from_exile) {
+        const std::vector<Entity> cards = ab.def.effect_remember_chosen_card
                                               ? cur_game.chosen_cards.live()
                                               : live_entities(cur_game.remembered_entities);
         for (Entity card : cards) {
@@ -95,17 +95,17 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
             if (global_coordinator.GetComponent<Zone>(card).location != Zone::EXILE) continue;
             if (!global_coordinator.entity_has_component<CardData>(card)) continue;
             Game::ImpulseCastPermission perm;
-            perm.resource = ab.effect_may_play_free ? Game::ImpulseCastPermission::FREE
+            perm.resource = ab.def.effect_may_play_free ? Game::ImpulseCastPermission::FREE
                                                     : Game::ImpulseCastPermission::NORMAL;
             perm.caster = ab.controller;
-            perm.allow_land = ab.effect_may_play_lands;
-            perm.persist_until_end_of_next_turn = ab.duration_until_end_of_your_next_turn;
+            perm.allow_land = ab.def.effect_may_play_lands;
+            perm.persist_until_end_of_next_turn = ab.def.duration_until_end_of_your_next_turn;
             perm.grant_turn = cur_game.turn_state.turn;
             cur_game.resolved_effects.impulse_cast_permission[card] = perm;
             game_log("%s may %s %s from exile%s%s.\n", player_name(ab.controller).c_str(),
                      perm.allow_land ? "play" : "cast",
                      global_coordinator.GetComponent<CardData>(card).name.c_str(),
-                     ab.effect_may_play_free ? " without paying its mana cost" : "",
+                     ab.def.effect_may_play_free ? " without paying its mana cost" : "",
                      perm.persist_until_end_of_next_turn ? " until the end of their next turn"
                                                          : " this turn");
         }
@@ -118,8 +118,8 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // remembered creature (the source), set here and cleared at the cleanup step (514.2),
     // rather than instantiating a continuous-effect object. The mark is read by the combat
     // blocker-legality check so the creature is removed from every blocker's legal list.
-    if (ab.effect_static_ability == "Unblockable") {
-        Entity who = ab.effect_remember_self ? ab.source.get() : ab.target.get();
+    if (ab.def.effect_static_ability == "Unblockable") {
+        Entity who = ab.def.effect_remember_self ? ab.source.get() : ab.target.get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who) &&
             is_battlefield_permanent(who)) {
             global_coordinator.GetComponent<Creature>(who).cant_be_blocked_this_turn = true;
@@ -136,7 +136,7 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // turn-long can't-be-countered set; consulted by effects::counter and cleared at cleanup.
     // A sourceless turn-long grant (the instant resolves to the graveyard), unlike Hexing
     // Squelcher's battlefield static.
-    if (ab.effect_spells_uncounterable_this_turn) {
+    if (ab.def.effect_spells_uncounterable_this_turn) {
         cur_game.resolved_effects.cant_counter_spells_of.insert(ab.controller);
         game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
@@ -149,14 +149,14 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // the ability's inherited target (RememberObjects$ Targeted also stashed it in
     // remembered_entities). Sourceless turn-long grant, cleared at cleanup. General over any such
     // Effect (reusable by future fog/prevention cards).
-    if (ab.effect_prevent_combat_damage_by_remembered || ab.effect_prevent_combat_damage_to_remembered) {
+    if (ab.def.effect_prevent_combat_damage_by_remembered || ab.def.effect_prevent_combat_damage_to_remembered) {
         Entity who = ab.target.get();
         if (who == 0 && !cur_game.remembered_entities.empty()) who = cur_game.remembered_entities.front().get();
         if (who != 0 && global_coordinator.entity_has_component<Creature>(who)) {
             Game::CombatDamagePreventionShield shield;
             shield.creature = ObjectRef::of(who);
-            shield.prevent_as_source = ab.effect_prevent_combat_damage_by_remembered;
-            shield.prevent_as_target = ab.effect_prevent_combat_damage_to_remembered;
+            shield.prevent_as_source = ab.def.effect_prevent_combat_damage_by_remembered;
+            shield.prevent_as_target = ab.def.effect_prevent_combat_damage_to_remembered;
             cur_game.resolved_effects.combat_damage_prevention_shields.push_back(shield);
             game_log("All combat damage dealt to and dealt by %s is prevented this turn.\n",
                      entity_name(who).c_str());
@@ -169,19 +169,19 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // turn-long can't-gain-life set (CR 119.x); consulted centrally in player_gain_life and cleared
     // at cleanup. Scope is resolved relative to this effect's controller. A sourceless turn-long
     // grant, unlike a battlefield static.
-    if (ab.effect_cant_gain_life != Ability::CantGainLifeScope::NONE) {
+    if (ab.def.effect_cant_gain_life != AbilityDef::CantGainLifeScope::NONE) {
         Zone::Ownership me = ab.controller;
         Zone::Ownership opp = opponent_of(me);
-        switch (ab.effect_cant_gain_life) {
-            case Ability::CantGainLifeScope::OPPONENTS:
+        switch (ab.def.effect_cant_gain_life) {
+            case AbilityDef::CantGainLifeScope::OPPONENTS:
                 cur_game.resolved_effects.cant_gain_life_this_turn.insert(opp);
                 game_log("%s can't gain life this turn.\n", player_name(opp).c_str());
                 break;
-            case Ability::CantGainLifeScope::YOU:
+            case AbilityDef::CantGainLifeScope::YOU:
                 cur_game.resolved_effects.cant_gain_life_this_turn.insert(me);
                 game_log("%s can't gain life this turn.\n", player_name(me).c_str());
                 break;
-            case Ability::CantGainLifeScope::ALL:
+            case AbilityDef::CantGainLifeScope::ALL:
                 cur_game.resolved_effects.cant_gain_life_this_turn.insert(me);
                 cur_game.resolved_effects.cant_gain_life_this_turn.insert(opp);
                 game_log("No player can gain life this turn.\n");
@@ -198,16 +198,16 @@ HandlerResult grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     // filter, good for the effect's Duration — until the controller's next turn (Duration$
     // UntilYourNextTurn) or, absent that, until cleanup. Consulted by the cast-speed gate
     // (rules_mod::cast_with_flash_active). A sourceless turn-scoped grant, like the ones above.
-    if (ab.effect_cast_with_flash) {
+    if (ab.def.effect_cast_with_flash) {
         Game::CastWithFlashPermission perm;
         perm.controller = ab.controller;
-        perm.filter = ab.effect_cast_with_flash_filter;
-        perm.until_your_next_turn = ab.duration_until_your_next_turn;
+        perm.filter = ab.def.effect_cast_with_flash_filter;
+        perm.until_your_next_turn = ab.def.duration_until_your_next_turn;
         cur_game.resolved_effects.cast_with_flash_permissions.push_back(std::move(perm));
         game_log("%s may cast %s spells as though they had flash%s.\n",
                  player_name(ab.controller).c_str(),
-                 ab.effect_cast_with_flash_filter.empty() ? "" : ab.effect_cast_with_flash_filter.c_str(),
-                 ab.duration_until_your_next_turn ? " until their next turn" : " this turn");
+                 ab.def.effect_cast_with_flash_filter.empty() ? "" : ab.def.effect_cast_with_flash_filter.c_str(),
+                 ab.def.duration_until_your_next_turn ? " until their next turn" : " this turn");
         return HandlerResult::DONE_RUN_SUBS;
     }
 

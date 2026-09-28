@@ -64,8 +64,8 @@ static bool spell_uncounterable_by_own_condition(Entity spell, const std::set<En
 }
 
 bool target_color_condition_met(const Ability &ab, Entity target) {
-    if (ab.condition_present.empty()) return true;
-    const std::string &c = ab.condition_present;
+    if (ab.def.condition_present.empty()) return true;
+    const std::string &c = ab.def.condition_present;
     Colors required = NO_COLOR;
     if (c.find(".Red") != std::string::npos) required = RED;
     else if (c.find(".Blue") != std::string::npos) required = BLUE;
@@ -95,29 +95,29 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 game_log("%s is not the required color — not countered\n", tname.c_str());
                 do_counter = false;
             }
-            if (do_counter && ab.unless_generic_cost > 0) {
+            if (do_counter && ab.def.unless_generic_cost > 0) {
                 std::string tname = entity_name(tgt);
                 // UnlessPayer$ (Reality Smasher: TriggeredSourceSAController) selects WHO pays —
                 // the controller of the spell that targeted the source. When unset, default to the
                 // countered spell's controller (Ward / Mana Leak / Daze).
                 Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer
                                                                           : target_controller;
-                UnlessPayKind kind = ab.unless_cost_is_discard ? UnlessPayKind::DISCARD
-                                   : ab.unless_cost_is_life     ? UnlessPayKind::LIFE
+                UnlessPayKind kind = ab.def.unless_cost_is_discard ? UnlessPayKind::DISCARD
+                                   : ab.def.unless_cost_is_life     ? UnlessPayKind::LIFE
                                                                 : UnlessPayKind::MANA;
                 // Arm-only log: a resume re-enters the suspended unless prompt
                 // without re-announcing it.
                 if (!ctx.resuming()) {
                     if (kind == UnlessPayKind::DISCARD)
                         game_log("%s may discard %zu card%s to save %s:\n", player_name(payer).c_str(),
-                                 ab.unless_generic_cost, ab.unless_generic_cost == 1 ? "" : "s", tname.c_str());
+                                 ab.def.unless_generic_cost, ab.def.unless_generic_cost == 1 ? "" : "s", tname.c_str());
                     else if (kind == UnlessPayKind::LIFE)
-                        game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                        game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.def.unless_generic_cost);
                     else
-                        game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                        game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.def.unless_generic_cost);
                 }
                 bool suspended = false;
-                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
+                do_counter = run_unless_loop(ab.def.unless_generic_cost, payer, orderer, tgt, ab.source.lki_entity(), ctx,
                                              suspended, UnlessSubject{UnlessEffect::COUNTER, tgt, false},
                                              kind);
                 if (suspended) return HandlerResult::SUSPENDED;
@@ -146,7 +146,7 @@ HandlerResult counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
                 std::string name = entity_name(tgt);
                 // A countered card goes to its owner's graveyard, or to exile when the counter
                 // spell says so ("counter, then exile"); a copy or an ability ceases to exist.
-                orderer->remove_from_stack(tgt, ab.destination == Zone::EXILE ? Zone::EXILE
+                orderer->remove_from_stack(tgt, ab.def.destination == Zone::EXILE ? Zone::EXILE
                                                                                    : Zone::GRAVEYARD);
                 game_log("%s is countered\n", name.c_str());
             }

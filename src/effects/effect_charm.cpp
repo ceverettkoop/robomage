@@ -73,7 +73,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         rt.pick = 0;
         rt.init = true;
     }
-    const int to_pick = ab.charm_num < 1 ? 1 : ab.charm_num;
+    const int to_pick = ab.def.charm_num < 1 ? 1 : ab.def.charm_num;
 
     while (rt.pick < to_pick) {
         if (rt.chosen_idx < 0) {
@@ -86,13 +86,13 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
                 Ability &candidate = ab.charm_choices[i];
                 stamp_mode(ab, candidate);
                 // Skip modes that require targets but have none available.
-                if (candidate.valid_tgts != "N_A" && candidate.target_min > 0 &&
+                if (candidate.def.valid_tgts != "N_A" && candidate.def.target_min > 0 &&
                     !has_legal_targets(candidate, orderer)) {
                     continue;
                 }
                 std::string desc =
-                    (i < ab.charm_choice_descriptions.size() && !ab.charm_choice_descriptions[i].empty())
-                        ? ab.charm_choice_descriptions[i]
+                    (i < ab.def.charm_choice_descriptions.size() && !ab.def.charm_choice_descriptions[i].empty())
+                        ? ab.def.charm_choice_descriptions[i]
                         : ("Mode " + std::to_string(i + 1));
                 // Ground every mode to the charm's source card so the serialized
                 // action carries that card's id/zone/controller instead of the
@@ -130,7 +130,7 @@ HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         // suspendable; the copy carries the just-chosen targets).
         Ability &chosen = ab.charm_choices[static_cast<size_t>(rt.chosen_idx)];
         stamp_mode(ab, chosen);
-        if (!rt.targets_done && chosen.valid_tgts != "N_A") {
+        if (!rt.targets_done && chosen.def.valid_tgts != "N_A") {
             ResolutionTargetAsker asker(ctx);
             if (run_target_select(chosen, rt.tsel, asker, orderer, ab.controller) ==
                 TargetStatus::SUSPENDED)

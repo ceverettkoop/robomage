@@ -16,12 +16,12 @@ namespace effects {
 HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
     Zone::Ownership mana_controller = ab.controller;
-    size_t mana_amount = (ab.amount > 0) ? ab.amount : 1;
+    size_t mana_amount = (ab.def.amount > 0) ? ab.def.amount : 1;
     // Dynamic amount (Cabal Ritual: Amount$ X, X = Count$Threshold.5.3 → BBBBB with threshold,
     // else BBB). Routed through the shared runtime-amount evaluator so a mana-adding spell scales
     // by the same Count$/Targeted$ grammar as dynamic damage/draw/token counts.
-    if (!ab.dynamic_amount_expr.empty())
-        mana_amount = evaluate_dynamic_amount(ab.dynamic_amount_expr, mana_controller, orderer, ab.target.get());
+    if (!ab.def.dynamic_amount_expr.empty())
+        mana_amount = evaluate_dynamic_amount(ab.def.dynamic_amount_expr, mana_controller, orderer, ab.target.get());
     // A dynamic amount can resolve to 0 (Carpet of Flowers when the opponent controls no Islands):
     // adding 0 mana is a legal no-op. Skip the color choice (don't prompt to pick a color for no
     // mana) and add nothing.
@@ -29,12 +29,12 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         game_log("%s adds no mana.\n", player_name(mana_controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
-    Colors mana_color = ab.color;
-    if (!ab.mana_choices.empty()) {
+    Colors mana_color = ab.def.color;
+    if (!ab.def.mana_choices.empty()) {
         // Prompt player to choose a color (e.g. LED: "Any" → 3 mana of one chosen color).
         // Menu build is pure (amount + choices re-derive identically on resume).
         std::vector<LegalAction> color_actions;
-        for (auto c : ab.mana_choices) {
+        for (auto c : ab.def.mana_choices) {
             std::string desc = "Add " + std::to_string(mana_amount) + "{" + mana_symbol(c) + "}";
             LegalAction la(PASS_PRIORITY, std::string(desc));
             la.category = ActionCategory::CHOOSE_MANA_COLOR;
@@ -43,14 +43,14 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         }
         int choice = ctx.ask(std::move(color_actions), mana_controller, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        mana_color = ab.mana_choices[static_cast<size_t>(choice)];
+        mana_color = ab.def.mana_choices[static_cast<size_t>(choice)];
     }
     ::add_mana(mana_controller, mana_color, mana_amount);
     game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(), mana_amount, mana_symbol(mana_color).c_str());
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_add_mana(AbilityDef &ab, const std::string &key, const std::string &value) {
     // AB$ ManaReflected (Mox Amber): a mana ability that produces "one mana of any color among"
     // the permanents its Valid$ filter matches (CR 605). Valid$ holds the (controller-scoped)
     // permanent filter whose colors are reflected; ColorOrType$ Color / ReflectProperty$ Is are

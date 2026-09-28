@@ -60,7 +60,7 @@ static void frame_enter(Entity top_entity, const Ability &ab, bool count_trigger
     fr.prev_priority = cur_game.priority.player_a_has_priority;
     fr.saved_remembered = cur_game.remembered_entities;
     cur_game.remembered_entities.clear();
-    if (count_triggered && ab.ability_type == Ability::TRIGGERED) {
+    if (count_triggered && ab.def.ability_type == AbilityDef::TRIGGERED) {
         cur_game.ability_resolution_counts[ab.source]++;
         fr.counted_resolution = true;
     }

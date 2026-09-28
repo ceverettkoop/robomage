@@ -27,8 +27,8 @@ namespace effects {
 // If you control no Army, first create a 0/0 black Army creature token of the
 // amassed type, then put the counters on it.
 HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    int n = static_cast<int>(ab.amount);
-    const AmassParams *ap = std::get_if<AmassParams>(&ab.params);
+    int n = static_cast<int>(ab.def.amount);
+    const AmassParams *ap = std::get_if<AmassParams>(&ab.def.params);
     std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
 
     Zone::Ownership ctrl = ab.controller;  // "you amass" = the ability's controller (CR 109.5)
@@ -79,7 +79,7 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_amass(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (ab.category != "Amass") return false;
     if (key == "Type") { effect_params<AmassParams>(ab).subtype = value; return true; }
     if (key == "Num")  { ab.amount = static_cast<size_t>(std::stoi(value)); return true; }
