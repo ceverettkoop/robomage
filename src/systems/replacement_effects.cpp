@@ -166,7 +166,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     MatchCtx dctx;
                     dctx.controller = ev.affected_player;
                     dctx.source = ev.entity;
-                    for (Entity ex : lki_entities(cur_game.delve_exiled))
+                    for (Entity ex : live_entities(cur_game.delve_exiled))
                         if (sa.counter_count_delve_filter.empty() ||
                             card_matches_any(ex, sa.counter_count_delve_filter, dctx))
                             n++;

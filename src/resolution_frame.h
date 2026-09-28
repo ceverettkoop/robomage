@@ -274,7 +274,7 @@ class TargetAsker {
 struct PendingTriggerRT {
     Ability ab;                 // fully prepared (source / controller / event-derived fields set)
     Zone::Ownership controller; // whose trigger this is (drives APNAP partitioning)
-    Entity source = 0;          // source permanent (for logging)
+    Entity source = 0;          // source permanent (logging / menu grounding only; ab.source is the ref)
     std::string label;          // choice label when its controller orders simultaneous triggers
     std::string log_line;       // narrative line emitted when it is placed on the stack
     bool needs_target = false;  // select a target at placement time if it still has legal targets

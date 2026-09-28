@@ -173,7 +173,8 @@ struct Emblem {
     std::vector<StaticAbility> statics;
     // The card whose ability created the emblem (Kaito, Bane of Nightmares; Tamiyo, Seasoned
     // Scholar) and its vocab idx captured at creation. The emblem's identity in the observation's
-    // player-effects block.
+    // player-effects block. Display-only (the vocab idx is what the observation reads), so a plain
+    // Entity.
     Entity source = 0;
     int source_vocab_idx = -1;
 };
@@ -876,10 +877,12 @@ struct Game {
         // the scan labels it for the ordering choice.
         void queue_trigger(const Ability &ab, const std::string &log_line);
 
-        // Drop everything this Game recorded under entity id `e` (per-entity maps and sets, and
-        // `e`'s entries in the remembered / imprinted / delve / prevention-shield lists), so an
-        // object issued a reused id never inherits state of the id's previous holder (CR 400.7).
-        // Called for every id the coordinator issues (see forget_reissued_entity).
+        // Drop what this Game recorded under entity id `e` that an ObjectRef does not already
+        // disown, so an object issued a reused id never inherits state of the id's previous
+        // holder (CR 400.7): the last-known information and the remembered entries (both read as
+        // the objects as they last existed), the per-id payment-failure guard, and the one-shot
+        // entry markers keyed by raw id. Called for every id the coordinator issues (see
+        // forget_reissued_entity).
         void forget_entity(Entity e);
 
         // The one place a game ends (CR 104.1): marks the game over, records `result` as the

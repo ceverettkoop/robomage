@@ -735,7 +735,7 @@ struct Ability{
     // GrantCast handler on the copy it pushes into cur_game.floating_triggers, with its vocab idx
     // captured at that moment. 0 / -1 on every other ability. Read by the observation's
     // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
-    // a floating trigger (the trigger itself has no source object).
+    // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
     Entity floating_creator = 0;
     int floating_creator_vocab_idx = -1;
 

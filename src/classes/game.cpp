@@ -66,17 +66,8 @@ Entity Game::gen_player(const Deck &deck) {
 
 void Game::forget_entity(Entity e) {
     last_known_info.erase(e);
-    combat_damage_assignment.erase(e);
-    for (auto &kv : combat_damage_assignment) kv.second.erase(e);
     erase_refs_to(remembered_entities, e);
-    erase_refs_to(imprinted_entities, e);
-    erase_refs_to(delve_exiled, e);
-    ability_resolution_counts.erase(e);
     payment_fail_counts.erase(e);
-    void_countered.erase(e);
-    may_cast_this_turn.erase(e);
-    chosen_cards.erase(e);
-    revealed_in_library.erase(e);
     pending_enters_tapped.erase(e);
     pending_enters_attacking.erase(e);
     pending_enters_transformed.erase(e);
@@ -87,11 +78,8 @@ void Game::forget_entity(Entity e) {
     pending_impending.erase(e);
     cast_to_battlefield.erase(e);
     cast_from_hand.erase(e);
-    impulse_cast_permission.erase(e);
     pending_warp.erase(e);
-    suspend_time_counters.erase(e);
     pending_etb_xpaid.erase(e);
-    pending_attach.erase(e);
     pending_aura_target.erase(e);
     entering_together.erase(e);
 }
