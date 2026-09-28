@@ -40,19 +40,14 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 static std::string normalize_category(std::string category, const std::string& card_name);
 static void apply_param_to_ability(AbilityDef& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name = "");
-static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
-                                            const std::map<std::string, std::string>& svars,
-                                            const std::string& card_name = "");
+static std::vector<AbilityDef> parse_abilities(const std::vector<std::string>& lines,
+                                               const std::map<std::string, std::string>& svars,
+                                               const std::string& card_name);
 static std::vector<AbilityDef> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars,
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static StaticAbility parse_one_static_ability(const std::string& line, const std::map<std::string, std::string>& svars);
-// Parses one T:/trigger SVar line into a TRIGGERED Ability (trigger_on == 0 if unrecognised).
-// Forward-declared so parse_svar_ability can build a DB$ Effect | Triggers$ <SVar> floating
-// triggered ability from the named trigger SVar.
-static AbilityDef parse_one_trigger(const std::string& line, const std::map<std::string, std::string>& svars,
-                                 const std::string& card_name);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static bool take_direct_amount_expr(AbilityDef& ability);
@@ -61,7 +56,7 @@ static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 static std::vector<std::string> find_trigger_lines(const std::string &script);
 static AbilityDef parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
-                                 const std::string& card_name = "");
+                                 const std::string& card_name);
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static std::string param_value(const std::string& line, const std::string& want_key);
@@ -83,11 +78,35 @@ static bool parse_card_file(const std::string &path, CardData &card);
 static bool parse_token_file(const std::string &script_name, Token &tok);
 static AbilityDef equip_keyword_ability(const std::string &kw_line, const std::string &category,
                                      const std::string &label);
-// Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
-// card's gift effect (Into the Flood Maw's tapped-Fish token).
+static AbilityDef parse_ability_text(const std::string& text, size_t category_pos,
+                                     AbilityDef::AbilityType type,
+                                     const std::map<std::string, std::string>& svars,
+                                     const std::string& card_name);
 static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
+                                     const std::map<std::string, std::string>& svars,
+                                     const std::string& card_name);
+static bool apply_composite_param(AbilityDef& ability, const std::string& key, const std::string& value,
                                   const std::map<std::string, std::string>& svars,
                                   const std::string& card_name);
+static void resolve_ability_svars(AbilityDef& ability, const std::string& text,
+                                  const std::map<std::string, std::string>& svars,
+                                  const std::string& card_name);
+static void resolve_effect_static_svars(AbilityDef& ability, const std::string& text,
+                                        const std::map<std::string, std::string>& svars);
+static void resolve_amount_svar(AbilityDef& ability, const std::map<std::string, std::string>& svars,
+                                const std::string& card_name);
+static bool resolve_conditional_amount(AbilityDef& ability, const std::string& sv,
+                                       const std::map<std::string, std::string>& svars);
+static bool is_runtime_amount_expr(const std::string& sv);
+static void resolve_condition_svars(AbilityDef& ability,
+                                    const std::map<std::string, std::string>& svars);
+static void resolve_xpaid_target_counts(AbilityDef& ability,
+                                        const std::map<std::string, std::string>& svars,
+                                        const std::string& line);
+static void resolve_pump_exprs(AbilityDef& ability, const std::map<std::string, std::string>& svars);
+static void resolve_destroyall_svars(AbilityDef& ability, const std::map<std::string, std::string>& svars);
+static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
+                                  std::vector<std::string>& terms);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
@@ -542,7 +561,7 @@ static void parse_card_face_body(const std::string& front_script, CardData& card
     }
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
-    face_defs.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
+    face_defs.abilities = parse_abilities(multi_values_from_script(front_script, "A"), svars, card.name);
     // Detect "shuffle into library" pattern: SVar with DB$ ChangeZone from Stack to Library + Defined$ Parent
     // (e.g. Green Sun's Zenith) — sets a flag so stack manager moves to library instead of graveyard.
     // Strip the sub-ability since the stack manager handles it via the flag.
@@ -1296,8 +1315,7 @@ static bool parse_token_file(const std::string &script_name, Token &tok) {
     // Lotus Petal's.
     auto svars = parse_svars(script_data);
     std::vector<AbilityDef> tok_defs = parse_triggered_abilities(script_data, svars, tok.name);
-    for (auto &ab : parse_abilities(multi_values_from_script(script_data, "A"), tok.types,
-                                    svars, tok.name))
+    for (auto &ab : parse_abilities(multi_values_from_script(script_data, "A"), svars, tok.name))
         tok_defs.push_back(ab);
     tok.abilities = intern_ability_defs(std::move(tok_defs));
     // S: lines — continuous static abilities (e.g. the Construct token's "+1/+1 for each
@@ -1818,10 +1836,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
         // RememberObjects$ ChosenCard — a DB$ Effect applies to the card the preceding ChooseCard
         // chose (Dauthi Voidwalker's "You may play it this turn").
         if (value.find("ChosenCard") != std::string::npos) ability.effect_remember_chosen_card = true;
-    } else if (key == "StaticAbilities") {
-        // DB$ Effect | StaticAbilities$ <name> — names the continuous static the transient
-        // effect grants (e.g. Unblockable). Stored for the Effect handler to interpret.
-        ability.effect_static_ability = value;
     } else if (key == "TgtZone") {
         if (value == "Graveyard") ability.target_in_graveyard = true;
     } else if (key == "RememberRevealed") {
@@ -1841,7 +1855,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "TargetMin") {
         // A numeric minimum (TargetMin$ 0 = optional, TargetMin$ 2 = at least 2) is used
         // directly. A non-numeric value is an SVar key (TargetMin$ X, X = Count$xPaid →
-        // "exactly X targets"): stash the token; parse_abilities' post-pass resolves it and,
+        // "exactly X targets"): stash the token; resolve_ability_svars resolves it and,
         // when it is Count$xPaid, sets target_min_from_xpaid so select_target requires X targets.
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
             ability.target_min = std::stoi(value);
@@ -1870,12 +1884,10 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "ReduceCost") {
         // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
         // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
-        // resolved to its Count$/dynamic expression in parse_abilities' post-pass. The
+        // resolved to its Count$/dynamic expression by resolve_ability_svars. The
         // generic mana portion of the activation cost is reduced by the resolved amount at
         // activation time (CR 601.2f).
         ability.reduce_cost_expr = value;
-    } else if (key == "ChangeNum") {
-        ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "RestrictValid") {
         if (filter_names_token(value, "Creature") &&
             value.find("ChosenType") != std::string::npos) {
@@ -1910,9 +1922,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
     } else if (key == "Cost") {
         parse_activation_cost(value, ability);
     } else if (key == "ConditionCheckSVar") {
-        // ConditionCheckSVar$ <SVar> on a top-level A: ability (Veil of Summer's SP$ Draw gate).
-        // Store the raw SVar name; parse_abilities' post-pass resolves it to its Count$ expression
-        // and defaults the comparator (ConditionSVarCompare) to GE1 when none is given.
+        // ConditionCheckSVar$ <SVar> (Veil of Summer's SP$ Draw gate). Store the raw SVar name;
+        // resolve_condition_svars resolves it to its Count$ expression and defaults the
+        // comparator (ConditionSVarCompare) to GE1 when none is given.
         ability.condition_check_svar = value;
     } else if (key == "ConditionSVarCompare") {
         ability.condition_svar_compare = value;
@@ -2042,7 +2054,7 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             "ConditionDescription",
             // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its
             // art — both cosmetic. Duration$ is read load-bearingly from the raw line in
-            // parse_abilities (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
+            // resolve_effect_static_svars (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
             // Animate/UntilHostLeavesPlay/UntilYourNextTurn Duration forms are consumed by their
             // own branches above, so any Duration reaching here is already handled or cosmetic.
             "Name", "Image", "Duration",
@@ -2084,10 +2096,6 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // Ultimate$ True is informational: ultimate legality is already covered by the
             // minus-loyalty cost check, so the flag is unused.
             "Ultimate",
-            // AB$ Effect | Triggers$ <SVar> (Tamiyo, Seasoned Scholar's +2): the floating triggered
-            // ability is resolved in the parse_abilities post-loop (where svars are in scope), not
-            // in apply_param_to_ability — so suppress the spurious "unrecognized" warning here.
-            "Triggers",
             // Stackable$ False on an emblem-making Effect (Tamiyo's ultimate): tells Forge not to
             // create a second identical emblem. We don't model emblem de-duplication; cosmetic.
             "Stackable",
@@ -2194,7 +2202,7 @@ static std::string normalize_category(std::string category, const std::string& c
 // selected). Setting BOTH target_min_from_xpaid and target_max_from_xpaid yields EXACTLY-X
 // targeting (Candelabra of Tawnos, Hide on the Ceiling); a lone TargetMax$ X gives "up to X"
 // (Kozilek's Command). Other count-SVar caps keep the "effectively unlimited" fallback already
-// stored by apply_param_to_ability. Shared by the top-level and sub-ability parse paths.
+// stored by apply_param_to_ability.
 static void resolve_xpaid_target_counts(AbilityDef& ability,
                                         const std::map<std::string, std::string>& svars,
                                         const std::string& line) {
@@ -2228,7 +2236,7 @@ static void resolve_xpaid_target_counts(AbilityDef& ability,
 // Resolves a Pump/PumpAll NumAtt$/NumDef$ count-SVar key (e.g. "X" or "-X" → att_expr/def_expr
 // "X") to its runtime Count$ expression (e.g. Count$xPaid), so the pump effect can evaluate the
 // signed magnitude at resolution (Toxic Deluge's -X/-X; Eldrazi Linebreaker's +X). The sign was
-// captured separately (att_sign/def_sign) by parse_pump_amount. Shared by both parse paths.
+// captured separately (att_sign/def_sign) by parse_pump_amount.
 static void resolve_pump_exprs(AbilityDef& ability,
                                const std::map<std::string, std::string>& svars) {
     if (auto *pp = std::get_if<PumpParams>(&ability.params)) {
@@ -2262,9 +2270,7 @@ static void warn_unresolved_amount_svar(const AbilityDef &ability, const std::st
 // Resolve a DestroyAll ValidCards$ dynamic mana-value bound (Blast Zone:
 // "Permanent.nonLand+cmcEQY", Y = Count$CardCounters.CHARGE) and an energy UnlessCost SVar into
 // their runtime Count$ expressions + comparator on DestroyAllParams, so effect_destroy_all can
-// gate candidates by mana value at resolution. Shared by the top-level activated-ability path
-// (parse_abilities) and the sub-ability path (parse_svar_ability) — Blast Zone's DestroyAll is a
-// top-level AB$ line, so this must not live only in the sub-ability resolver.
+// gate candidates by mana value at resolution.
 static void resolve_destroyall_svars(AbilityDef &ability,
                                      const std::map<std::string, std::string> &svars) {
     if (ability.category != "DestroyAll") return;
@@ -2296,277 +2302,278 @@ static void resolve_destroyall_svars(AbilityDef &ability,
     }
 }
 
-// Forward declaration so parse_svar_ability can recurse via SubAbility$.
-static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
-                                  const std::map<std::string, std::string>& svars,
-                                  const std::string& card_name = "");
-
-// Parses a SVar's DB$ content string into an Ability. Resolves SubAbility$ chains.
-static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::AbilityType ability_type,
-                                  const std::map<std::string, std::string>& svars,
-                                  const std::string& card_name) {
-    AbilityDef sub;
-    sub.ability_type = ability_type;
-    // An Execute$/SubAbility$ SVar normally holds a DB$ ability, but some hold an AB$
-    // (e.g. Guide of Souls' TrigImmediateTrig: "AB$ ImmediateTrigger | Cost$ PayEnergy<3>").
-    // All three prefixes (DB$/AB$/SP$) are 3 chars + a space, so the category offset is the
-    // same; accept whichever leads the content.
-    size_t db_pos = content.find("DB$");
-    if (db_pos == std::string::npos) db_pos = content.find("AB$");
-    if (db_pos == std::string::npos) db_pos = content.find("SP$");
-    if (db_pos == std::string::npos) return sub;
-    size_t p = db_pos + 4;  // skip the "XX$ " prefix
-    size_t cat_end = content.find_first_of(" |", p);
-    if (cat_end == std::string::npos) cat_end = content.length();
-    if (cat_end > p)
-        sub.category = normalize_category(content.substr(p, cat_end - p), card_name);
+// Parses a spell, activated or DB$ ability body: the category at `category_pos` (just past its
+// SP$/AB$/DB$ prefix), then every `| Key$ Value` param — the sub-ability chain, modes, granted
+// bodies and plain params alike — then the SVar references those params name. Its sub-abilities
+// and modes share its `type`. The one ability parser behind a card's A: lines, SVar bodies,
+// trigger Execute$ bodies and granted ability bodies.
+static AbilityDef parse_ability_text(const std::string &text, size_t category_pos,
+                                     AbilityDef::AbilityType type,
+                                     const std::map<std::string, std::string> &svars,
+                                     const std::string &card_name) {
+    AbilityDef ability;
+    ability.ability_type = type;
+    size_t cat_end = text.find_first_of(" |", category_pos);
+    if (cat_end == std::string::npos) cat_end = text.length();
+    if (cat_end > category_pos)
+        ability.category = normalize_category(text.substr(category_pos, cat_end - category_pos), card_name);
 
     // Earthbend (CR keyword action) inherently targets a land the controller controls; the
     // Forge scripts carry no ValidTgts$, so default it here (overridden if the script ever
     // states one explicitly).
-    if (sub.category == "Earthbend") sub.valid_tgts = "Land.YouCtrl";
+    if (ability.category == "Earthbend") ability.valid_tgts = "Land.YouCtrl";
 
-    size_t param_pos = content.find("|", p);
+    size_t param_pos = text.find('|', category_pos);
     std::string key, value;
-    while (next_param(content, param_pos, key, value)) {
-        if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
-            // RepeatSubAbility$ (RepeatEach) / VoteSubAbility$ (Vote) resolve like SubAbility$: the
-            // value names an SVar holding a DB$ ability, pushed as a sub-ability. For a per-type
-            // RepeatEach (Atraxa) the RepeatSubAbility entries are the per-iteration body; count
-            // them so repeat_each_types knows how many leading subs are the body vs. trailing links.
-            auto it = svars.find(value);
+    while (next_param(text, param_pos, key, value))
+        if (!apply_composite_param(ability, key, value, svars, card_name))
+            apply_param_to_ability(ability, key, value, card_name);
+    resolve_ability_svars(ability, text, svars, card_name);
+    return ability;
+}
+
+// Parses a SVar's content (normally a DB$ ability; an AB$ or SP$ body parses the same way, e.g.
+// Guide of Souls' TrigImmediateTrig: "AB$ ImmediateTrigger | Cost$ PayEnergy<3>") into an
+// ability of `ability_type`. Content with no ability prefix yields an empty ability.
+static AbilityDef parse_svar_ability(const std::string &content, AbilityDef::AbilityType ability_type,
+                                     const std::map<std::string, std::string> &svars,
+                                     const std::string &card_name) {
+    size_t prefix = content.find("DB$");
+    if (prefix == std::string::npos) prefix = content.find("AB$");
+    if (prefix == std::string::npos) prefix = content.find("SP$");
+    if (prefix == std::string::npos) {
+        AbilityDef empty;
+        empty.ability_type = ability_type;
+        return empty;
+    }
+    // All three prefixes are 3 chars + a space.
+    return parse_ability_text(content, prefix + 4, ability_type, svars, card_name);
+}
+
+// The params whose value names SVars to parse as further abilities or bodies (the sub-ability
+// chain, modes, granted abilities, triggers, replacement and static effects). Returns false for
+// any other key, which apply_param_to_ability handles.
+static bool apply_composite_param(AbilityDef &ability, const std::string &key, const std::string &value,
+                                  const std::map<std::string, std::string> &svars,
+                                  const std::string &card_name) {
+    if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
+        // RepeatSubAbility$ (RepeatEach) / VoteSubAbility$ (Vote, Council's Judgment) resolve like
+        // SubAbility$: the value names an SVar holding a DB$ ability, pushed as a sub-ability. For a
+        // per-type RepeatEach (Atraxa) the RepeatSubAbility entries are the per-iteration body; count
+        // them so repeat_each_types knows how many leading subs are the body vs. trailing links.
+        auto it = svars.find(value);
+        if (it == svars.end()) return true;
+        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+        if (key == "RepeatSubAbility") ability.repeat_sub_count++;
+        return true;
+    }
+    if (key == "Choices" && ability.category != "ChooseCard") {
+        // Charm modal: resolve comma-separated SVar names into modes. Excludes ChooseCard, whose
+        // Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+IsImprinted) consumed by
+        // apply_param_to_ability, not a list of modal SVars.
+        for (const std::string &svar_name : split(value, ',')) {
+            auto it = svars.find(svar_name);
+            if (it == svars.end()) continue;
+            ability.charm_choices.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+            // The mode's SpellDescription$, shown when the modes are offered.
+            ability.charm_choice_descriptions.push_back(param_value(it->second, "SpellDescription"));
+        }
+        return true;
+    }
+    if (key == "CharmNum") {
+        ability.charm_num = std::stoi(value);
+        return true;
+    }
+    if (key == "Abilities" && ability.category == "Animate") {
+        // DB$ Animate | Abilities$ <svar>[,<svar>...] — the activated ability(ies) the Animate
+        // grants to the target permanent (Urza's Saga: ABMana "{T}: Add {C}." / ABToken
+        // "{2},{T}: Create a Construct"). Each named SVar is a self-contained AB$ ability;
+        // parse it as an ACTIVATED ability and store it for the Animate handler to attach.
+        for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+            auto it = svars.find(svar_name);
             if (it != svars.end())
-                sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
-            if (key == "RepeatSubAbility" && it != svars.end()) sub.repeat_sub_count++;
-        } else if (key == "Choices" && sub.category != "ChooseCard") {
-            // Charm modal in DB$ context (e.g. Knight of Autumn ETB). Excludes DB$ ChooseCard,
-            // whose Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+IsImprinted) consumed
-            // by apply_param_to_ability, not a list of modal SVars.
-            size_t cpos = 0;
-            while (cpos < value.size()) {
-                size_t comma = value.find(',', cpos);
-                if (comma == std::string::npos) comma = value.size();
-                std::string svar_name = value.substr(cpos, comma - cpos);
-                auto cit = svars.find(svar_name);
-                if (cit != svars.end()) {
-                    AbilityDef choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
-                    std::string desc;
-                    size_t sd = cit->second.find("SpellDescription$");
-                    if (sd != std::string::npos) {
-                        sd += 17;
-                        while (sd < cit->second.size() && cit->second[sd] == ' ') sd++;
-                        size_t de = cit->second.find('|', sd);
-                        if (de == std::string::npos) de = cit->second.size();
-                        desc = cit->second.substr(sd, de - sd);
-                        while (!desc.empty() && desc.back() == ' ') desc.pop_back();
-                    }
-                    sub.charm_choices.push_back(choice);
-                    sub.charm_choice_descriptions.push_back(desc);
-                }
-                cpos = comma + 1;
-            }
-        } else if (key == "CharmNum") {
-            sub.charm_num = std::stoi(value);
-        } else if (key == "Abilities" && sub.category == "Animate") {
-            // DB$ Animate | Abilities$ <svar>[,<svar>...] — the activated ability(ies) the Animate
-            // grants to the target permanent (Urza's Saga: ABMana "{T}: Add {C}." / ABToken
-            // "{2},{T}: Create a Construct"). Each named SVar is a self-contained AB$ ability;
-            // parse it as an ACTIVATED ability and store it for the Animate handler to attach.
-            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
-                auto it = svars.find(svar_name);
-                if (it != svars.end())
-                    sub.animate_granted_abilities.push_back(
-                        parse_svar_ability(it->second, AbilityDef::ACTIVATED, svars, card_name));
-            }
-        } else if (key == "Execute") {
-            // Execute$ references an SVar containing the ability to fire (delayed triggers)
-            effect_params<DelayedTriggerParams>(sub).execute_svar = value;
-            auto it = svars.find(value);
+                ability.animate_granted_abilities.push_back(
+                    parse_svar_ability(it->second, AbilityDef::ACTIVATED, svars, card_name));
+        }
+        return true;
+    }
+    if (key == "Execute") {
+        // Execute$ references an SVar containing the ability to fire (delayed triggers)
+        effect_params<DelayedTriggerParams>(ability).execute_svar = value;
+        auto it = svars.find(value);
+        if (it != svars.end()) {
+            AbilityDef exec = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
+            exec.from_delayed_execute = true;  // delayed_trigger() fires this one
+            ability.subabilities.push_back(exec);
+        }
+        return true;
+    }
+    if (key == "Triggers") {
+        // Effect | Triggers$ <SVar>[,<SVar>...] — a transient floating triggered ability (Forth
+        // Eorlingas!'s monarch trigger; Tamiyo, Seasoned Scholar's +2, whose Duration$ the
+        // GrantCast handler applies to it). Each named SVar holds a trigger line (Mode$ ... |
+        // Execute$ ...); parse it like a card's T: line so it carries the same trigger metadata and
+        // its Execute$ effect, and store it on the Effect to be registered (controller-bound) into
+        // cur_game.resolved_effects.floating_triggers at resolution.
+        for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+            auto it = svars.find(svar_name);
             if (it != svars.end()) {
-                AbilityDef exec = parse_svar_ability(it->second, ability_type, svars, card_name);
-                exec.from_delayed_execute = true;  // delayed_trigger() fires this one
-                sub.subabilities.push_back(exec);
-            }
-        } else if (key == "Triggers") {
-            // DB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient until-end-of-turn floating
-            // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line
-            // (Mode$ ... | Execute$ ...); parse it like a card's T: line so it carries the same
-            // trigger metadata and its Execute$ effect, and store it on the Effect to be
-            // registered (controller-bound) into cur_game.resolved_effects.floating_triggers at resolution.
-            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
-                auto it = svars.find(svar_name);
-                if (it != svars.end()) {
-                    AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
-                    if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
-                }
-            }
-        } else if (key == "ReplacementEffects") {
-            // DB$ Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement
-            // effects the transient Effect carries. Two forms are recognized:
-            //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
-            //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
-            //    GrantCast handler records the controller in cur_game.resolved_effects.cant_counter_spells_of.
-            //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
-            //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
-            //    combat damage dealt by/to the remembered creature this turn (CR 615); the
-            //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
-            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
-                auto it = svars.find(svar_name);
-                if (it == svars.end()) continue;
-                const std::string &body = it->second;
-                if (body.find("Event$ Counter") != std::string::npos &&
-                    body.find("CantHappen") != std::string::npos &&
-                    body.find("YouCtrl") != std::string::npos) {
-                    sub.effect_spells_uncounterable_this_turn = true;
-                } else if (body.find("Event$ DamageDone") != std::string::npos &&
-                           body.find("Prevent$ True") != std::string::npos &&
-                           body.find("IsCombat$ True") != std::string::npos &&
-                           body.find("IsRemembered") != std::string::npos) {
-                    if (body.find("ValidSource$") != std::string::npos)
-                        sub.effect_prevent_combat_damage_by_remembered = true;
-                    if (body.find("ValidTarget$") != std::string::npos)
-                        sub.effect_prevent_combat_damage_to_remembered = true;
-                }
-            }
-        } else if (key == "StaticAbilities") {
-            // DB$ Effect | StaticAbilities$ <name>. The value may be a literal keyword
-            // (Unblockable) or a named SVar holding a continuous static-ability line. Keep the
-            // raw value (the Unblockable path reads it), and additionally resolve a named SVar to
-            // detect a MayPlay$ True grant over exiled cards (Light Up the Stage, Ugin -11, Dauthi
-            // Voidwalker), which the GrantCast handler turns into play-from-exile permissions:
-            // free with MayPlayWithoutManaCost$ True, lands included unless Affected$ says nonLand.
-            sub.effect_static_ability = value;
-            auto it = svars.find(value);
-            if (it != svars.end() && param_value(it->second, "MayPlay") == "True" &&
-                param_value(it->second, "AffectedZone") == "Exile") {
-                sub.effect_may_play_from_exile = true;
-                sub.effect_may_play_free =
-                    param_value(it->second, "MayPlayWithoutManaCost") == "True";
-                sub.effect_may_play_lands =
-                    !filter_names_token(param_value(it->second, "Affected"), "nonLand");
-            }
-        } else if (key == "ConditionCheckSVar") {
-            // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
-            auto it = svars.find(value);
-            sub.condition_check_svar = (it != svars.end()) ? it->second : value;
-        } else if (key == "ConditionSVarCompare") {
-            sub.condition_svar_compare = value;
-        } else if (key == "TargetMax" && !value.empty() &&
-                   !std::isdigit(static_cast<unsigned char>(value[0]))) {
-            // A count-SVar cap. If it resolves to Count$xPaid (Kozilek's Command:
-            // "up to X target cards"), the true cap is the X paid at cast — flag it so
-            // select_target can clamp the multi-target loop to x_paid at resolution.
-            // Other count-SVar caps fall back to "any number" (MAX_ENTITIES).
-            auto it = svars.find(value);
-            if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
-                sub.target_max_from_xpaid = true;
-            // resolve_xpaid_target_counts also resolves a non-xPaid count-SVar cap (Into the
-            // Flood Maw's DBChangeZone: TargetMax$ Y = Count$PromisedGift) into
-            // target_max_count_expr, evaluated at cast (0 → targets nothing).
-            sub.target_max = MAX_ENTITIES;
-        } else {
-            apply_param_to_ability(sub, key, value, card_name);
-        }
-    }
-    // DB$ Effect | StaticAbilities$ <SVar> | Duration$ Permanent — an emblem-making SUB-ability
-    // (Tamiyo, Seasoned Scholar's ultimate DBEmblem: "You get an emblem with 'You have no maximum
-    // hand size.'"). Mirror the top-level emblem resolution in parse_abilities so a sub-ability
-    // Effect also carries its permanent continuous static into effect_emblem_statics, which the
-    // GrantCast handler turns into a player-owned emblem. General over any emblem-making sub-Effect.
-    if (sub.category == "Effect" && !sub.effect_static_ability.empty() &&
-        content.find("Duration$ Permanent") != std::string::npos) {
-        auto it = svars.find(sub.effect_static_ability);
-        if (it != svars.end() && it->second.find("Mode$ Continuous") != std::string::npos) {
-            StaticAbility est = parse_one_static_ability(it->second, svars);
-            if (!est.category.empty()) sub.effect_emblem_statics.push_back(est);
-        }
-    }
-    // Mirror the top-level CastWithFlash resolution for a DB$ Effect sub-ability (Teferi-style
-    // "cast ... as though they had flash" granted from a sub-effect). General over any
-    // CastWithFlash-granting sub-Effect.
-    if (sub.category == "Effect" && !sub.effect_static_ability.empty() &&
-        !sub.effect_cast_with_flash) {
-        auto it = svars.find(sub.effect_static_ability);
-        if (it != svars.end() && it->second.find("CastWithFlash") != std::string::npos) {
-            sub.effect_cast_with_flash = true;
-            sub.effect_cast_with_flash_filter = param_value(it->second, "ValidCard");
-        }
-    }
-    // Resolve amount_svar through SVars map (same logic as parse_abilities)
-    if (!sub.amount_svar.empty() && !take_direct_amount_expr(sub)) {
-        auto it = svars.find(sub.amount_svar);
-        if (it == svars.end()) warn_unresolved_amount_svar(sub, card_name);
-        if (it != svars.end()) {
-            const std::string &sv = it->second;
-            // TriggerCount$DamageAmount → use combat damage trigger's damage amount at runtime
-            if (sv == "TriggerCount$DamageAmount") {
-                sub.amount_from_damage = true;
-                sub.amount_svar = "";
-                return sub;
-            }
-            // Delirium-conditional value: Count$Delirium.<yes>.<no> or Count$...GE4.<yes>.<no>.
-            size_t delirium_pos = sv.find("Count$Delirium");
-            size_t ge_pos = sv.find("GE");
-            size_t scale_pos = delirium_pos != std::string::npos
-                                   ? delirium_pos + std::string("Count$Delirium").size()
-                                   : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
-            if (scale_pos != std::string::npos) {
-                std::string rest = sv.substr(scale_pos);
-                size_t d1 = rest.find('.');
-                if (d1 != std::string::npos) {
-                    size_t d2 = rest.find('.', d1 + 1);
-                    if (d2 != std::string::npos) {
-                        sub.amount = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
-                        DamageParams &dp = effect_params<DamageParams>(sub);
-                        dp.delirium_amount = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
-                        dp.is_delirium_scale = true;
-                    }
-                }
-            } else if (sv.find("Count$Valid") != std::string::npos ||
-                       sv.find("Targeted$") != std::string::npos ||
-                       sv.find("Count$InYourLibrary") != std::string::npos ||
-                       sv.find("Count$YourLifeTotal") != std::string::npos ||
-                       // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a
-                       // RememberChanged$ ChangeZoneAll) cards matching the filter (Canoptek
-                       // Scarab Swarm: TokenAmount$ X, X = Remembered$Valid Land,Artifact). The
-                       // RememberedLKI$ form reads the same remembered set, but populated from a
-                       // RememberLKI$ ChangeZone last-known-info snapshot (Reanimate: LifeAmount$
-                       // X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
-                       sv.find("Remembered$") != std::string::npos ||
-                       sv.find("RememberedLKI$") != std::string::npos ||
-                       // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
-                       // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
-                       sv.find("xPaid") != std::string::npos ||
-                       // Count$CardCounters.<TYPE> — counters on the source permanent (The One
-                       // Ring: NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN). Evaluated at
-                       // resolution against the source by evaluate_amount.
-                       sv.find("Count$CardCounters") != std::string::npos) {
-                sub.dynamic_amount_expr = sv;
+                AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
+                if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
             }
         }
-        sub.amount_svar = "";
+        return true;
     }
-    // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid
-    // Eldrazi.YouCtrl) to its runtime Count$ expression (Eldrazi Linebreaker), and a
-    // TargetMin$/TargetMax$ SVar to its exactly-X / up-to-X meaning.
-    resolve_pump_exprs(sub, svars);
-    resolve_xpaid_target_counts(sub, svars, content);
+    if (key == "ReplacementEffects") {
+        // Effect | ReplacementEffects$ <SVar>[,<SVar>...] — one or more named replacement
+        // effects the transient Effect carries. Two forms are recognized:
+        //  * Veil of Summer's AntiMagic = "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$
+        //    CantHappen" — a turn-long "spells you control can't be countered" grant; the
+        //    GrantCast handler records the controller in cur_game.resolved_effects.cant_counter_spells_of.
+        //  * Maze of Ith's RPrevent1/RPrevent2 = "Event$ DamageDone | Prevent$ True |
+        //    IsCombat$ True | ValidSource$/ValidTarget$ Card.IsRemembered" — prevent all
+        //    combat damage dealt by/to the remembered creature this turn (CR 615); the
+        //    GrantCast handler registers a turn-scoped combat-damage prevention shield.
+        for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+            auto it = svars.find(svar_name);
+            if (it == svars.end()) continue;
+            const std::string &body = it->second;
+            if (body.find("Event$ Counter") != std::string::npos &&
+                body.find("CantHappen") != std::string::npos &&
+                body.find("YouCtrl") != std::string::npos) {
+                ability.effect_spells_uncounterable_this_turn = true;
+            } else if (body.find("Event$ DamageDone") != std::string::npos &&
+                       body.find("Prevent$ True") != std::string::npos &&
+                       body.find("IsCombat$ True") != std::string::npos &&
+                       body.find("IsRemembered") != std::string::npos) {
+                if (body.find("ValidSource$") != std::string::npos)
+                    ability.effect_prevent_combat_damage_by_remembered = true;
+                if (body.find("ValidTarget$") != std::string::npos)
+                    ability.effect_prevent_combat_damage_to_remembered = true;
+            }
+        }
+        return true;
+    }
+    if (key == "StaticAbilities") {
+        // Effect | StaticAbilities$ <name> — names the continuous static the transient effect
+        // grants. The value may be a literal keyword (Unblockable) or a named SVar holding a
+        // continuous static-ability line. Keep the raw value (the Unblockable path reads it), and
+        // additionally resolve a named SVar to detect a MayPlay$ True grant over exiled cards
+        // (Light Up the Stage, Ugin -11, Dauthi Voidwalker), which the GrantCast handler turns into
+        // play-from-exile permissions: free with MayPlayWithoutManaCost$ True, lands included
+        // unless Affected$ says nonLand.
+        ability.effect_static_ability = value;
+        auto it = svars.find(value);
+        if (it != svars.end() && param_value(it->second, "MayPlay") == "True" &&
+            param_value(it->second, "AffectedZone") == "Exile") {
+            ability.effect_may_play_from_exile = true;
+            ability.effect_may_play_free =
+                param_value(it->second, "MayPlayWithoutManaCost") == "True";
+            ability.effect_may_play_lands =
+                !filter_names_token(param_value(it->second, "Affected"), "nonLand");
+        }
+        return true;
+    }
+    return false;
+}
+
+// Resolves the SVar references an ability's params named (amounts, counts, bounds, conditions and
+// the statics an Effect grants) into the runtime expressions its effect evaluates. `text` is the
+// ability's own script text.
+static void resolve_ability_svars(AbilityDef &ability, const std::string &text,
+                                  const std::map<std::string, std::string> &svars,
+                                  const std::string &card_name) {
+    resolve_effect_static_svars(ability, text, svars);
+    // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
+    // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
+    // amount_svar would be empty and the revolt-scaled threshold never resolves.
+    // Wire the referenced SVar into amount_svar so resolve_amount_svar resolves it into
+    // dynamic_amount_expr (evaluated at resolution by effects::destroy).
+    if (ability.amount_svar.empty()) {
+        size_t lex = ability.condition_present.find("cmcLE");
+        if (lex != std::string::npos) {
+            std::string svar_ref = ability.condition_present.substr(lex + 5);
+            size_t end = 0;
+            while (end < svar_ref.size() &&
+                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                end++;
+            svar_ref = svar_ref.substr(0, end);
+            if (!svar_ref.empty() && svars.find(svar_ref) != svars.end())
+                ability.amount_svar = svar_ref;
+        }
+    }
+    resolve_amount_svar(ability, svars, card_name);
+    // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
+    // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
+    // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
+    // expanded to its Count$/dynamic expression for evaluation at activation time. The
+    // generic mana portion is reduced by the resolved amount (CR 601.2f).
+    if (!ability.reduce_cost_expr.empty() &&
+        !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0]))) {
+        auto it = svars.find(ability.reduce_cost_expr);
+        if (it != svars.end()) ability.reduce_cost_expr = it->second;
+    }
+    // Aether Vial pattern: a ChangeType search filter whose mana-value bound is dynamic,
+    // e.g. "Creature.cmcEQX+YouCtrl" with SVar:X:Count$CardCounters.CHARGE. Resolve the
+    // "cmcEQ<svar>"/"cmcLE<svar>" SVar reference to its runtime Count$ expression and stash
+    // it (with the comparator) so the ChangeZone search can gate hand cards by mana value
+    // == the source's charge-counter count at resolution time.
+    if (ability.change_type_cmc_expr.empty() && !ability.change_type.empty()) {
+        for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+            size_t pos = ability.change_type.find(op);
+            if (pos == std::string::npos) continue;
+            std::string svar_ref = ability.change_type.substr(pos + 5);
+            size_t end = 0;
+            while (end < svar_ref.size() &&
+                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                end++;
+            svar_ref = svar_ref.substr(0, end);
+            auto it = svars.find(svar_ref);
+            if (it != svars.end()) {
+                ability.change_type_cmc_expr = it->second;
+                ability.change_type_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+            }
+            break;
+        }
+    }
+    // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
+    // Skies, Blast Zone): resolve the "cmc<op><SVar>" threshold from the ValidCards$ filter and
+    // the PayEnergy<SVar> amount into their runtime Count$ expressions.
+    resolve_destroyall_svars(ability, svars);
+    resolve_condition_svars(ability, svars);
+    // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (Toxic Deluge: -X/-X → Count$xPaid;
+    // Eldrazi Linebreaker: +X, X = Count$Valid Eldrazi.YouCtrl) to its runtime Count$ expression,
+    // and a TargetMin$/TargetMax$ SVar to its exactly-X / up-to-X meaning (Candelabra, Hide on
+    // the Ceiling, Kozilek's Command).
+    resolve_pump_exprs(ability, svars);
+    resolve_xpaid_target_counts(ability, svars, text);
+    // Resolve AB$ Animate Power$/Toughness$ SVar tokens (Karn: Power$ X, X =
+    // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
+    // the animate target at resolution. A token that is not an SVar key is left as no dynamic
+    // expr (the numeric base, parsed by apply_param_to_ability, stands).
+    if (ability.category == "Animate") {
+        for (int which = 0; which < 2; which++) {
+            const std::string tok = svar_key_param(text, which == 0 ? "Power" : "Toughness");
+            std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
+            if (tok.empty()) continue;
+            auto it = svars.find(tok);
+            if (it != svars.end()) expr = it->second;
+        }
+    }
     // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
-    if (!sub.dig_num_expr.empty()) {
-        auto it = svars.find(sub.dig_num_expr);
-        if (it != svars.end()) {
-            sub.dig_num_expr = it->second;
-        }
+    if (!ability.dig_num_expr.empty()) {
+        auto it = svars.find(ability.dig_num_expr);
+        if (it != svars.end()) ability.dig_num_expr = it->second;
     }
     // ChooseNumber Max$ and a dynamic CounterNum$ both stash a raw SVar token (Wrath of the
     // Skies: Max$ Max → Count$YourCountersEnergy; CounterNum$ X → Count$xPaid). Resolve those
     // SVar references to their runtime Count$ expressions so the effect can evaluate them at
     // resolution.
-    if (sub.category == "ChooseNumber" && !sub.dynamic_amount_expr.empty()) {
-        auto it = svars.find(sub.dynamic_amount_expr);
-        if (it != svars.end()) sub.dynamic_amount_expr = it->second;
+    if (ability.category == "ChooseNumber" && !ability.dynamic_amount_expr.empty()) {
+        auto it = svars.find(ability.dynamic_amount_expr);
+        if (it != svars.end()) ability.dynamic_amount_expr = it->second;
     }
-    if (auto *cp = std::get_if<CounterParams>(&sub.params)) {
+    if (auto *cp = std::get_if<CounterParams>(&ability.params)) {
         if (!cp->count_expr.empty()) {
             auto it = svars.find(cp->count_expr);
             if (it != svars.end()) cp->count_expr = it->second;
@@ -2575,50 +2582,203 @@ static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::Abi
     // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →
     // Remembered$CardManaCost): resolve the reference to its runtime expression so the Token
     // effect can size the created token's P/T at creation time.
-    if (auto *tkp = std::get_if<TokenParams>(&sub.params)) {
+    if (auto *tkp = std::get_if<TokenParams>(&ability.params)) {
         for (std::string *expr : {&tkp->power_expr, &tkp->toughness_expr}) {
             if (expr->empty()) continue;
             auto it = svars.find(*expr);
             if (it != svars.end()) *expr = it->second;
         }
     }
-    // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
-    // Skies): resolve the "cmcLE<SVar>" threshold from the ValidCards$ filter and the
-    // PayEnergy<SVar> amount into their runtime Count$ expressions. The numeric/cmcLEX legacy
-    // paths are unchanged; this only fires when the SVar is non-numeric (e.g. cmcLEY, Y =
-    // Count$ChosenNumber).
-    resolve_destroyall_svars(sub, svars);
     // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
     // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
-    if (sub.dynamic_amount_expr.empty() && !sub.change_valid.empty()) {
-        size_t lex = sub.change_valid.find("cmcLE");
+    if (ability.dynamic_amount_expr.empty() && !ability.change_valid.empty()) {
+        size_t lex = ability.change_valid.find("cmcLE");
         if (lex != std::string::npos) {
-            std::string svar_ref = sub.change_valid.substr(lex + 5);
+            std::string svar_ref = ability.change_valid.substr(lex + 5);
             size_t end = 0;
             while (end < svar_ref.size() &&
                    (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
                 end++;
             svar_ref = svar_ref.substr(0, end);
             auto it = svars.find(svar_ref);
-            if (it != svars.end()) sub.dynamic_amount_expr = it->second;
+            if (it != svars.end()) ability.dynamic_amount_expr = it->second;
         }
     }
-    // A bare ConditionCheckSVar$ passes when the value is at least 1 (Forge's default comparator).
-    if (!sub.condition_check_svar.empty() && sub.condition_svar_compare.empty())
-        sub.condition_svar_compare = "GE1";
-    // Resolve ConditionSVarCompare$ when RHS is an SVar reference (e.g. "LEX" where X = "Count$Devotion.Blue")
-    if (sub.condition_svar_compare.size() >= 3) {
-        std::string rhs_str = sub.condition_svar_compare.substr(2);
+}
+
+// Resolves the statics an Effect's StaticAbilities$ SVar names into what the GrantCast handler
+// registers: an emblem's permanent continuous static, a CantGainLife scope, a CastWithFlash
+// permission.
+static void resolve_effect_static_svars(AbilityDef &ability, const std::string &text,
+                                        const std::map<std::string, std::string> &svars) {
+    if (ability.category != "Effect" || ability.effect_static_ability.empty()) return;
+    auto it = svars.find(ability.effect_static_ability);
+    if (it == svars.end()) return;
+    const std::string &body = it->second;
+    // Emblem (CR 114): an Effect that grants a permanent continuous static to its controller —
+    // Kaito's "[+1]: You get an emblem with 'Ninjas you control get +1/+1.'"; Tamiyo, Seasoned
+    // Scholar's ultimate "You get an emblem with 'You have no maximum hand size.'"
+    // (StaticAbilities$ <SVar> + Duration$ Permanent). Resolve the named continuous static SVar
+    // into a StaticAbility and store it on the ability; the Effect handler creates a player-owned
+    // emblem carrying it at resolution. Distinguished from the transient StaticAbilities$ Effects
+    // (Unblockable, Ugin's MayPlay) by Duration$ Permanent — those are EOT/until-leaves and
+    // handled by their own flags.
+    if (text.find("Duration$ Permanent") != std::string::npos &&
+        body.find("Mode$ Continuous") != std::string::npos) {
+        StaticAbility est = parse_one_static_ability(body, svars);
+        if (!est.category.empty()) ability.effect_emblem_statics.push_back(est);
+    }
+    // StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a turn-long life-gain
+    // prohibition (CR 119.x, Roiling Vortex's {R}: "Your opponents can't gain life this turn.").
+    // Classify its ValidPlayer scope relative to the effect's controller so the GrantCast
+    // handler registers the right player(s).
+    if (body.find("CantGainLife") != std::string::npos) {
+        if (body.find("ValidPlayer$ Player.Opponent") != std::string::npos ||
+            body.find("ValidPlayer$ Opponent") != std::string::npos)
+            ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::OPPONENTS;
+        else if (body.find("ValidPlayer$ You") != std::string::npos)
+            ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::YOU;
+        else
+            ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::ALL;
+    }
+    // StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$ You)> (Teferi,
+    // Time Raveler's +1): a cast-timing PERMISSION — the controller may cast matching (sorcery)
+    // spells as though they had flash for the effect's Duration. The GrantCast handler records a
+    // cur_game.resolved_effects.cast_with_flash_permissions entry for the effect's Duration
+    // (duration_until_your_next_turn).
+    if (body.find("CastWithFlash") != std::string::npos) {
+        ability.effect_cast_with_flash = true;
+        ability.effect_cast_with_flash_filter = param_value(body, "ValidCard");
+    }
+}
+
+// Resolves a non-numeric amount param (NumCards$, NumDmg$, LifeAmount$, ...) that named an SVar:
+// a direct dynamic expression is kept as is; otherwise the SVar body becomes the combat-damage
+// amount, a conditional amount (Flow State), a delirium scale (Unholy Heat), or a runtime
+// expression evaluated at activation/resolution.
+static void resolve_amount_svar(AbilityDef &ability, const std::map<std::string, std::string> &svars,
+                                const std::string &card_name) {
+    if (ability.amount_svar.empty() || take_direct_amount_expr(ability)) return;
+    auto it = svars.find(ability.amount_svar);
+    if (it == svars.end()) warn_unresolved_amount_svar(ability, card_name);
+    ability.amount_svar = "";
+    if (it == svars.end()) return;
+    const std::string &sv = it->second;
+    // TriggerCount$DamageAmount → use combat damage trigger's damage amount at runtime
+    if (sv == "TriggerCount$DamageAmount") {
+        ability.amount_from_damage = true;
+        return;
+    }
+    if (resolve_conditional_amount(ability, sv, svars)) return;
+    // Delirium-conditional value. Two equivalent Forge spellings, both
+    // meaning "<yes> if the caster has delirium, else <no>":
+    //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
+    //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
+    size_t delirium_pos = sv.find("Count$Delirium");
+    size_t ge_pos = sv.find("GE");
+    size_t scale_pos = delirium_pos != std::string::npos
+                           ? delirium_pos + std::string("Count$Delirium").size()
+                           : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+    if (scale_pos != std::string::npos) {
+        std::string rest = sv.substr(scale_pos);
+        size_t d1 = rest.find('.');
+        if (d1 == std::string::npos) return;
+        size_t d2 = rest.find('.', d1 + 1);
+        if (d2 == std::string::npos) return;
+        ability.amount = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
+        DamageParams &dp = effect_params<DamageParams>(ability);
+        dp.delirium_amount = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
+        dp.is_delirium_scale = true;
+        return;
+    }
+    if (is_runtime_amount_expr(sv)) ability.dynamic_amount_expr = sv;
+}
+
+// The generalized conditional amount (Flow State): "Count$Compare <Var> <op><n>.<t>.<f>" where
+// <Var> is an SVar that resolves to a sum of (capped) runtime counts. The effective amount is <t>
+// when the summed counts satisfy the compare, else <f>. Distinguished from the delirium GE form by
+// <Var> being a nested SVar$ chain (e.g. SVar$Z1/Plus.Z2) rather than a direct Count$ expression.
+// Returns true when `sv` is such an amount (now set on `ability`).
+static bool resolve_conditional_amount(AbilityDef &ability, const std::string &sv,
+                                       const std::map<std::string, std::string> &svars) {
+    if (sv.rfind("Count$Compare ", 0) != 0) return false;
+    std::string rest = sv.substr(14);  // "Y GE2.2.1"
+    size_t sp = rest.find(' ');
+    if (sp == std::string::npos) return false;
+    std::string var = rest.substr(0, sp);    // "Y"
+    std::string tail = rest.substr(sp + 1);  // "GE2.2.1"
+    auto vit = svars.find(var);
+    if (vit == svars.end() || vit->second.rfind("SVar$", 0) != 0) return false;
+    size_t d2 = tail.rfind('.');
+    size_t d1 = (d2 == std::string::npos || d2 == 0) ? std::string::npos : tail.rfind('.', d2 - 1);
+    if (d1 == std::string::npos) return false;
+    std::vector<std::string> terms;
+    resolve_additive_svar(vit->second, svars, terms);
+    if (terms.empty()) return false;
+    ability.cond_amount_active = true;
+    ability.cond_amount_exprs = terms;
+    ability.cond_amount_compare = tail.substr(0, d1);  // "GE2"
+    ability.cond_amount_if_true = static_cast<size_t>(std::stoi(tail.substr(d1 + 1, d2 - d1 - 1)));
+    ability.amount = static_cast<size_t>(std::stoi(tail.substr(d2 + 1)));
+    return true;
+}
+
+// An amount SVar body that is a runtime expression, kept verbatim for evaluate_amount at
+// activation/resolution.
+static bool is_runtime_amount_expr(const std::string &sv) {
+    static const char *const kRuntimeMarkers[] = {
+        "Count$Valid", "Targeted$", "Count$InYourLibrary", "Count$YourLifeTotal", "Count$Revolt",
+        // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling (Cabal Ritual: Amount$ X,
+        // X = Count$Threshold.5.3 → BBBBB if the caster has 7+ cards in their graveyard, else BBB).
+        "Count$Threshold",
+        // Count$UrzaLands.<hi>.<lo> — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): hi
+        // colorless mana if the controller controls a complete set of all three, else lo
+        // (mana-ability path via eval_mana_amount).
+        "Count$UrzaLands",
+        // Count$CardCounters.<TYPE> — counters on the source permanent (The One Ring:
+        // NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN), evaluated against the source.
+        "Count$CardCounters",
+        // Count$Converge (Prismatic Ending) — the distinct colors of mana spent to cast the spell,
+        // from current_converge(). Used as the cmcLEY exile threshold.
+        "Count$Converge",
+        // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a RememberChanged$
+        // ChangeZoneAll) cards matching the filter (Canoptek Scarab Swarm: TokenAmount$ X, X =
+        // Remembered$Valid Land,Artifact). The RememberedLKI$ form reads the same remembered set,
+        // but populated from a RememberLKI$ ChangeZone last-known-info snapshot (Reanimate:
+        // LifeAmount$ X, X = RememberedLKI$CardManaCost = the reanimated creature's mana value).
+        "Remembered$", "RememberedLKI$",
+        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command: TokenAmount$/ScryNum$
+        // = X; Forth Eorlingas!: TokenAmount$ X → X 2/2 Human Knight tokens).
+        "xPaid",
+    };
+    for (const char *marker : kRuntimeMarkers)
+        if (sv.find(marker) != std::string::npos) return true;
+    return false;
+}
+
+// Resolves a ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
+// "Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black"; Thassa's Oracle) to its Count$
+// expression, defaults a bare ConditionCheckSVar's comparator to Forge's GE1 (the value must be
+// >= 1), and resolves a ConditionSVarCompare$ whose right-hand side is an SVar (e.g. "LEX" where
+// X = "Count$Devotion.Blue").
+static void resolve_condition_svars(AbilityDef &ability,
+                                    const std::map<std::string, std::string> &svars) {
+    if (!ability.condition_check_svar.empty()) {
+        auto it = svars.find(ability.condition_check_svar);
+        if (it != svars.end()) ability.condition_check_svar = it->second;
+        if (ability.condition_svar_compare.empty()) ability.condition_svar_compare = "GE1";
+    }
+    if (ability.condition_svar_compare.size() >= 3) {
+        std::string rhs_str = ability.condition_svar_compare.substr(2);
         // If RHS is not a pure integer, it might be an SVar reference
-        if (!rhs_str.empty() && !std::isdigit(rhs_str[0]) && rhs_str[0] != '-') {
+        if (!rhs_str.empty() && !std::isdigit(static_cast<unsigned char>(rhs_str[0])) && rhs_str[0] != '-') {
             auto it = svars.find(rhs_str);
             if (it != svars.end()) {
-                sub.condition_compare_svar_expr = it->second;
-                sub.condition_svar_compare = sub.condition_svar_compare.substr(0, 2);  // keep just "LE"
+                ability.condition_compare_svar_expr = it->second;
+                ability.condition_svar_compare = ability.condition_svar_compare.substr(0, 2);  // keep just "LE"
             }
         }
     }
-    return sub;
 }
 
 // Public entry: parse one activated/spell ability body (the resolved RHS of an SVar, e.g.
@@ -2681,375 +2841,26 @@ static void resolve_additive_svar(const std::string& expr, const std::map<std::s
     }
 }
 
-// fed each ability line
-static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
-                                            const std::map<std::string, std::string>& svars,
-                                            const std::string& card_name) {
-    size_t pos = 0;
+// Parses a card's (or token's) A: lines: "SP$ <category> | ..." is a spell ability, "AB$ <category>
+// | ..." an activated ability (whichever prefix comes first names it). A line with neither, or with
+// no category, is skipped.
+static std::vector<AbilityDef> parse_abilities(const std::vector<std::string> &lines,
+                                               const std::map<std::string, std::string> &svars,
+                                               const std::string &card_name) {
     std::vector<AbilityDef> ret_val;
-    for (auto &&line : lines) {
-        pos = 0;
-        AbilityDef ability;
+    for (const auto &line : lines) {
         size_t sp_pos = line.find("SP$");
         size_t ab_pos = line.find("AB$");
-        bool is_sp = (sp_pos != std::string::npos);
-        bool is_ab = (ab_pos != std::string::npos);
-        if (!is_sp && !is_ab) continue;
-        if (is_sp && (!is_ab || sp_pos < ab_pos)) {
-            ability.ability_type = AbilityDef::AbilityType::SPELL;
-            pos = sp_pos + 4;  // skip "SP$ "
-        } else {
-            ability.ability_type = AbilityDef::AbilityType::ACTIVATED;
-            pos = ab_pos + 4;  // skip "AB$ "
-        }
-        // Check if we're past the end of the string
+        if (sp_pos == std::string::npos && ab_pos == std::string::npos) continue;
+        bool is_spell = sp_pos != std::string::npos && (ab_pos == std::string::npos || sp_pos < ab_pos);
+        size_t pos = (is_spell ? sp_pos : ab_pos) + 4;  // skip "SP$ " / "AB$ "
         if (pos >= line.length()) continue;
-
-        // Extract category (before first space or pipe)
         size_t category_end = line.find_first_of(" |", pos);
         if (category_end == std::string::npos) category_end = line.length();
-
-        // Check if category_end is valid
         if (category_end <= pos) continue;
-
-        ability.category = normalize_category(line.substr(pos, category_end - pos), card_name);
-
-        // Earthbend (CR keyword action) inherently targets a land the controller controls; the
-        // activated form (Ba Sing Se) carries no ValidTgts$, so default it here.
-        if (ability.category == "Earthbend") ability.valid_tgts = "Land.YouCtrl";
-
-        // Parse pipe-delimited parameters — applies to all ability categories
-        size_t param_pos = line.find("|", pos);
-        std::string key, value;
-        while (next_param(line, param_pos, key, value)) {
-            if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
-                // RepeatSubAbility$ (RepeatEach) resolves the same way as SubAbility$: the
-                // value names an SVar holding a DB$ ability. For RepeatEach the parsed
-                // sub-ability is the per-iteration body the handler resolves once per player.
-                // VoteSubAbility$ (Vote, Council's Judgment) likewise names an SVar holding the
-                // DB$ ChangeZone applied to the voted-for permanent; the vote handler remembers
-                // the chosen permanent so this Defined$ Remembered sub-ability exiles it.
-                auto it = svars.find(value);
-                if (it != svars.end())
-                    ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
-                // Count the RepeatSubAbility$ entries so a per-type RepeatEach (Atraxa) knows how
-                // many leading subabilities are the per-iteration body (vs. trailing SubAbility$
-                // links resolved once after the loop). The per-player RepeatEach ignores this.
-                if (key == "RepeatSubAbility" && it != svars.end()) ability.repeat_sub_count++;
-            } else if (key == "Choices" && ability.category != "ChooseCard") {
-                // Charm modal: resolve comma-separated SVar names into sub-abilities. Excludes DB$
-                // ChooseCard, whose Choices$ is a card FILTER (Atraxa: Card.ChosenType+YouOwn+
-                // IsImprinted), not a list of modal SVars — it falls through to apply_param_to_ability.
-                size_t cpos = 0;
-                while (cpos < value.size()) {
-                    size_t comma = value.find(',', cpos);
-                    if (comma == std::string::npos) comma = value.size();
-                    std::string svar_name = value.substr(cpos, comma - cpos);
-                    auto it = svars.find(svar_name);
-                    if (it != svars.end()) {
-                        AbilityDef choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
-                        // Extract SpellDescription from the choice for display
-                        std::string desc;
-                        size_t sd = it->second.find("SpellDescription$");
-                        if (sd != std::string::npos) {
-                            sd += 17; // skip "SpellDescription$"
-                            while (sd < it->second.size() && it->second[sd] == ' ') sd++;
-                            size_t de = it->second.find('|', sd);
-                            if (de == std::string::npos) de = it->second.size();
-                            desc = it->second.substr(sd, de - sd);
-                            while (!desc.empty() && desc.back() == ' ') desc.pop_back();
-                        }
-                        ability.charm_choices.push_back(choice);
-                        ability.charm_choice_descriptions.push_back(desc);
-                    }
-                    cpos = comma + 1;
-                }
-            } else if (key == "CharmNum") {
-                ability.charm_num = std::stoi(value);
-            } else {
-                apply_param_to_ability(ability, key, value, card_name);
-            }
-        }
-        // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
-        // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
-        // amount_svar would be empty and the revolt-scaled threshold never resolves.
-        // Wire the referenced SVar into amount_svar so the block below resolves it into
-        // dynamic_amount_expr (evaluated at resolution by effects::destroy).
-        if (ability.amount_svar.empty()) {
-            size_t lex = ability.condition_present.find("cmcLE");
-            if (lex != std::string::npos) {
-                std::string svar_ref = ability.condition_present.substr(lex + 5);
-                size_t end = 0;
-                while (end < svar_ref.size() &&
-                       (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                    end++;
-                svar_ref = svar_ref.substr(0, end);
-                if (!svar_ref.empty() && svars.find(svar_ref) != svars.end())
-                    ability.amount_svar = svar_ref;
-            }
-        }
-        // Aether Vial pattern: a ChangeType search filter whose mana-value bound is dynamic,
-        // e.g. "Creature.cmcEQX+YouCtrl" with SVar:X:Count$CardCounters.CHARGE. Resolve the
-        // "cmcEQ<svar>"/"cmcLE<svar>" SVar reference to its runtime Count$ expression and stash
-        // it (with the comparator) so the ChangeZone search can gate hand cards by mana value
-        // == the source's charge-counter count at resolution time.
-        if (ability.change_type_cmc_expr.empty() && !ability.change_type.empty()) {
-            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
-                size_t pos = ability.change_type.find(op);
-                if (pos == std::string::npos) continue;
-                std::string svar_ref = ability.change_type.substr(pos + 5);
-                size_t end = 0;
-                while (end < svar_ref.size() &&
-                       (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
-                    end++;
-                svar_ref = svar_ref.substr(0, end);
-                auto it = svars.find(svar_ref);
-                if (it != svars.end()) {
-                    ability.change_type_cmc_expr = it->second;
-                    ability.change_type_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
-                }
-                break;
-            }
-        }
-        // DestroyAll with a dynamic mana-value bound (Blast Zone's cmcEQY) — resolve the
-        // ValidCards$ cmc<op><SVar> reference for this top-level activated ability too.
-        resolve_destroyall_svars(ability, svars);
-        // Resolve a top-level ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
-        // "Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black") to its Count$ expression, and
-        // default the comparator to GE1 (Forge's default for a bare ConditionCheckSVar with no
-        // ConditionSVarCompare — the value must be >= 1). Sub-ability ConditionCheckSVars are
-        // resolved separately in parse_svar_ability and keep their existing behavior.
-        if (!ability.condition_check_svar.empty()) {
-            auto it = svars.find(ability.condition_check_svar);
-            if (it != svars.end()) ability.condition_check_svar = it->second;
-            if (ability.condition_svar_compare.empty()) ability.condition_svar_compare = "GE1";
-        }
-        // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
-        // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
-        // Also handles runtime SVar expressions: Count$Valid ..., Targeted$CardPower
-        if (!ability.amount_svar.empty() && !take_direct_amount_expr(ability)) {
-            auto it = svars.find(ability.amount_svar);
-            if (it == svars.end()) warn_unresolved_amount_svar(ability, card_name);
-            if (it != svars.end()) {
-                const std::string &sv = it->second;
-                // Generalized conditional amount (Flow State): "Count$Compare <Var>
-                // <op><n>.<t>.<f>" where <Var> is an SVar that resolves to a sum of
-                // (capped) runtime counts. The effective amount is <t> when the summed
-                // counts satisfy the compare, else <f>. Distinguished from the delirium
-                // GE form below by <Var> being a nested SVar$ chain (e.g. SVar$Z1/Plus.Z2)
-                // rather than a direct Count$ expression.
-                bool handled_conditional = false;
-                if (sv.rfind("Count$Compare ", 0) == 0) {
-                    std::string rest = sv.substr(14);  // "Y GE2.2.1"
-                    size_t sp = rest.find(' ');
-                    if (sp != std::string::npos) {
-                        std::string var = rest.substr(0, sp);    // "Y"
-                        std::string tail = rest.substr(sp + 1);  // "GE2.2.1"
-                        auto vit = svars.find(var);
-                        if (vit != svars.end() && vit->second.rfind("SVar$", 0) == 0) {
-                            size_t d2 = tail.rfind('.');
-                            size_t d1 = (d2 == std::string::npos || d2 == 0)
-                                            ? std::string::npos : tail.rfind('.', d2 - 1);
-                            if (d1 != std::string::npos) {
-                                std::vector<std::string> terms;
-                                resolve_additive_svar(vit->second, svars, terms);
-                                if (!terms.empty()) {
-                                    ability.cond_amount_active = true;
-                                    ability.cond_amount_exprs = terms;
-                                    ability.cond_amount_compare = tail.substr(0, d1);  // "GE2"
-                                    ability.cond_amount_if_true =
-                                        static_cast<size_t>(std::stoi(tail.substr(d1 + 1, d2 - d1 - 1)));
-                                    ability.amount = static_cast<size_t>(std::stoi(tail.substr(d2 + 1)));
-                                    handled_conditional = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                // Delirium-conditional value. Two equivalent Forge spellings, both
-                // meaning "<yes> if the caster has delirium, else <no>":
-                //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
-                //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
-                size_t delirium_pos = handled_conditional ? std::string::npos : sv.find("Count$Delirium");
-                size_t ge_pos = handled_conditional ? std::string::npos : sv.find("GE");
-                size_t scale_pos = delirium_pos != std::string::npos
-                                       ? delirium_pos + std::string("Count$Delirium").size()
-                                       : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
-                if (handled_conditional) {
-                    // already routed to the conditional-amount fields above
-                } else if (scale_pos != std::string::npos) {
-                    std::string rest = sv.substr(scale_pos);
-                    size_t d1 = rest.find('.');
-                    if (d1 != std::string::npos) {
-                        size_t d2 = rest.find('.', d1 + 1);
-                        if (d2 != std::string::npos) {
-                            size_t delirium_amt = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
-                            size_t default_amt  = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
-                            ability.amount = default_amt;
-                            DamageParams &dp = effect_params<DamageParams>(ability);
-                            dp.delirium_amount = delirium_amt;
-                            dp.is_delirium_scale = true;
-                        }
-                    }
-                } else if (sv.find("Count$Valid") != std::string::npos ||
-                           sv.find("Targeted$") != std::string::npos ||
-                           sv.find("Count$InYourLibrary") != std::string::npos ||
-                           sv.find("Count$YourLifeTotal") != std::string::npos ||
-                           sv.find("Count$Revolt") != std::string::npos ||
-                           // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling
-                           // (Cabal Ritual: Amount$ X, X = Count$Threshold.5.3 → BBBBB if the
-                           // caster has 7+ cards in their graveyard, else BBB). Preserved here
-                           // and evaluated at activation by evaluate_amount.
-                           sv.find("Count$Threshold") != std::string::npos ||
-                           // Count$UrzaLands.<hi>.<lo> — the "Tron" mana lands (Urza's Mine/Power
-                           // Plant/Tower): hi colorless mana if the controller controls a complete
-                           // set of all three, else lo. Preserved here and evaluated at activation
-                           // by evaluate_amount (mana-ability path via eval_mana_amount).
-                           sv.find("Count$UrzaLands") != std::string::npos ||
-                           // Count$CardCounters.<TYPE> — counters on the source permanent (The One
-                           // Ring's burden-counter scaling). Evaluated at resolution by
-                           // evaluate_amount against the ability's source.
-                           sv.find("Count$CardCounters") != std::string::npos ||
-                           // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
-                           // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
-                           // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$
-                           // ability scales by X too, instead of falling back to the count==1
-                           // single-token default.
-                           // Count$Converge (Prismatic Ending) — the distinct colors of mana spent
-                           // to cast the spell, resolved at cast/resolution by evaluate_amount
-                           // from current_converge(). Used as the cmcLEY exile threshold.
-                           sv.find("Count$Converge") != std::string::npos ||
-                           sv.find("xPaid") != std::string::npos) {
-                    // Runtime expression — preserve for evaluation at activation/resolve time
-                    ability.dynamic_amount_expr = sv;
-                }
-            }
-            ability.amount_svar = "";
-        }
-
-        // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
-        // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
-        // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
-        // expanded to its Count$/dynamic expression for evaluation at activation time. The
-        // generic mana portion is reduced by the resolved amount (CR 601.2f).
-        if (!ability.reduce_cost_expr.empty() &&
-            !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0]))) {
-            auto it = svars.find(ability.reduce_cost_expr);
-            if (it != svars.end()) ability.reduce_cost_expr = it->second;
-        }
-
-        // Resolve a dynamic PutCounter CounterNum$ SVar reference (Wrath of the Skies:
-        // CounterNum$ X, X = Count$xPaid) into its runtime Count$ expression so the
-        // put_counter effect can evaluate the count at resolution.
-        if (auto *cp = std::get_if<CounterParams>(&ability.params)) {
-            if (!cp->count_expr.empty()) {
-                auto it = svars.find(cp->count_expr);
-                if (it != svars.end()) cp->count_expr = it->second;
-            }
-        }
-
-        // Resolve a top-level Pump/PumpAll NumAtt$/NumDef$ count-SVar (Toxic Deluge: -X/-X →
-        // Count$xPaid) and a TargetMin$/TargetMax$ SVar (exactly-X / up-to-X targeting). The
-        // sub-ability path resolves these in parse_svar_ability; do the same for primary SP$/AB$
-        // abilities whose effect/targeting scales by X (Toxic Deluge, Candelabra, Hide on the Ceiling).
-        resolve_pump_exprs(ability, svars);
-        resolve_xpaid_target_counts(ability, svars, line);
-
-        // Resolve AB$ Animate Power$/Toughness$ SVar tokens (Karn: Power$ X, X =
-        // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
-        // the animate target at resolution. A token that is not an SVar key is left as no dynamic
-        // expr (the numeric base, parsed above, stands).
-        if (ability.category == "Animate") {
-            for (int which = 0; which < 2; which++) {
-                const std::string tok = svar_key_param(line, which == 0 ? "Power" : "Toughness");
-                std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
-                if (tok.empty()) continue;
-                auto it = svars.find(tok);
-                if (it != svars.end()) expr = it->second;
-            }
-        }
-
-        // Emblem (CR 114): an AB$ Effect that grants a permanent continuous static to its
-        // controller — Kaito's "[+1]: You get an emblem with 'Ninjas you control get +1/+1.'"
-        // (StaticAbilities$ <SVar> + Duration$ Permanent). Resolve the named continuous static
-        // SVar into a StaticAbility and store it on the ability; the Effect handler creates a
-        // player-owned emblem carrying it at resolution. Distinguished from the transient
-        // StaticAbilities$ Effects (Unblockable, Ugin's MayPlay) by Duration$ Permanent — those
-        // are EOT/until-leaves and handled by their own flags. General over any emblem-making
-        // Effect that names a permanent-duration continuous-static SVar.
-        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
-            line.find("Duration$ Permanent") != std::string::npos) {
-            auto it = svars.find(ability.effect_static_ability);
-            if (it != svars.end() && it->second.find("Mode$ Continuous") != std::string::npos) {
-                StaticAbility est = parse_one_static_ability(it->second, svars);
-                if (!est.category.empty()) ability.effect_emblem_statics.push_back(est);
-            }
-        }
-
-        // AB$ Effect | StaticAbilities$ <SVar(Mode$ CantGainLife | ValidPlayer$ ...)> — a
-        // turn-long life-gain prohibition (CR 119.x, Roiling Vortex's {R}: "Your opponents can't
-        // gain life this turn."). Resolve the named static SVar; if it is a CantGainLife mode,
-        // classify its ValidPlayer scope relative to the effect's controller so the GrantCast
-        // handler registers the right player(s). General over any CantGainLife-granting Effect.
-        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
-            ability.effect_cant_gain_life == AbilityDef::CantGainLifeScope::NONE) {
-            auto it = svars.find(ability.effect_static_ability);
-            if (it != svars.end() && it->second.find("CantGainLife") != std::string::npos) {
-                const std::string &body = it->second;
-                if (body.find("ValidPlayer$ Player.Opponent") != std::string::npos ||
-                    body.find("ValidPlayer$ Opponent") != std::string::npos)
-                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::OPPONENTS;
-                else if (body.find("ValidPlayer$ You") != std::string::npos)
-                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::YOU;
-                else
-                    ability.effect_cant_gain_life = AbilityDef::CantGainLifeScope::ALL;
-            }
-        }
-
-        // AB$ Effect | StaticAbilities$ <SVar(Mode$ CastWithFlash | ValidCard$ <filter> | Caster$
-        // You)> (Teferi, Time Raveler's +1): a cast-timing PERMISSION — the controller may cast
-        // matching (sorcery) spells as though they had flash for the effect's Duration. Resolve the
-        // named static SVar; if it is a CastWithFlash mode, capture its ValidCard$ filter. The
-        // GrantCast handler records a cur_game.resolved_effects.cast_with_flash_permissions entry for the effect's
-        // Duration (duration_until_your_next_turn). General over any CastWithFlash-granting Effect.
-        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
-            !ability.effect_cast_with_flash) {
-            auto it = svars.find(ability.effect_static_ability);
-            if (it != svars.end() && it->second.find("CastWithFlash") != std::string::npos) {
-                ability.effect_cast_with_flash = true;
-                ability.effect_cast_with_flash_filter = param_value(it->second, "ValidCard");
-            }
-        }
-
-        // AB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient floating triggered ability
-        // hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2: "until your next turn,
-        // whenever a creature an opponent controls attacks you or a planeswalker you control, it
-        // gets -1/-0"). The sub-ability path (parse_svar_ability) resolves Triggers$ for DB$
-        // Effects; do the same here for a TOP-LEVEL AB$ Effect, where svars are in scope. The
-        // Duration$ (UntilYourNextTurn, parsed onto the ability above) is applied to the registered
-        // floating trigger by the GrantCast handler. General over any AB$ Effect naming a Triggers$.
-        if (ability.category == "Effect" && ability.effect_floating_triggers.empty()) {
-            size_t tp = line.find("Triggers$");
-            if (tp != std::string::npos) {
-                size_t vstart = tp + strlen("Triggers$");
-                while (vstart < line.size() && line[vstart] == ' ') vstart++;
-                size_t vend = line.find('|', vstart);
-                std::string tval = line.substr(vstart,
-                    (vend == std::string::npos ? line.size() : vend) - vstart);
-                while (!tval.empty() && (tval.back() == ' ' || tval.back() == '\r')) tval.pop_back();
-                for (const std::string &svar_name : split(tval, ',', /*skip_empty=*/true)) {
-                    auto it = svars.find(svar_name);
-                    if (it != svars.end()) {
-                        AbilityDef trig = parse_one_trigger(it->second, svars, card_name);
-                        if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
-                    }
-                }
-            }
-        }
-
-        ret_val.push_back(ability);
+        ret_val.push_back(parse_ability_text(
+            line, pos, is_spell ? AbilityDef::SPELL : AbilityDef::ACTIVATED, svars, card_name));
     }
-
     return ret_val;
 }
 
