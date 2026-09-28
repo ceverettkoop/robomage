@@ -2103,9 +2103,9 @@ static void apply_param_to_ability(AbilityDef& ability, const std::string& key, 
             // stays in exile (card_play_permission), so the tag needs no separate handling.
             "ForgetOnMoved",
             // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
-            // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
-            // Reveal$ are captured by / cosmetic to the choose_each handler.
-            "Choices", "ControlledByPlayer", "Reveal",
+            // ChooseEach$; ControlledByPlayer$ Chooser and Reveal$ are captured by / cosmetic to
+            // the choose_each handler. (A ChooseCard's Choices$ is read as its filter above.)
+            "ControlledByPlayer", "Reveal",
             // ChoiceTitle$ <text> (Dauthi Voidwalker's ChooseCard): the prose prompt shown for the
             // choice. Purely cosmetic — the load-bearing Choices$ / ChoiceZone$ are parsed above.
             "ChoiceTitle",
@@ -3388,10 +3388,6 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.add_trigger_svar = (it != svars.end()) ? it->second : value;
             } else if (key == "Affected") {
                 sa.affected = value;
-                // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)
-                if (sa.category == "Continuous" && value.find("EquippedBy") == std::string::npos) {
-                    sa.affected_subtype = value;
-                }
                 // Per-source counter gate (Kaito: Affected$ Permanent.Self+counters_GE1_LOYALTY).
                 // Forge spells the qualifier "counters_<CMP><N>_<TYPE>" (e.g. counters_GE1_LOYALTY =
                 // "the source has 1 or more LOYALTY counters"). Extract compare ("GE1") and counter
@@ -3497,12 +3493,8 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 // The spell is prohibited when its mana value exceeds the number of lands the
                 // caster controls. Enforced in rules_mod::cast_prohibited on the opponent path.
                 if (sa.category == "CantBeCast" && value == "Land") sa.cant_cast_cmc_gt_land = true;
-            } else if (key == "AddHiddenKeyword") {
-                sa.hidden_keyword = value;
             } else if (key == "ValidCause") {
                 sa.disable_triggers_cause = value;
-            } else if (key == "ValidMode") {
-                sa.disable_triggers_mode = value;
             } else if (key == "CharacteristicDefining") {
                 sa.characteristic_defining = (value == "True");
             } else if (key == "SetPower") {
@@ -3591,9 +3583,9 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
     return result;
 }
 
-// Parses R: replacement-effect lines from a card script.
-// Only the ETB-tapped pattern is recognised for now:
-//   Event$ Moved | ValidCard$ Card.Self | Destination$ Battlefield | ReplaceWith$ ETBTapped
+// Parses R: replacement-effect lines from a card script into the Effect::Replacement kinds they
+// express (enters tapped, can't be countered, exile instead, untap/entry prevention, mana and draw
+// replacements); an R: line of no recognized kind yields nothing.
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars) {
     std::vector<Effect::Replacement> result;
