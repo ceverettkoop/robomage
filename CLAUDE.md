@@ -246,11 +246,12 @@ Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared 
 **Per-object state lives on components; `Game` holds only game-scoped state and cross-object
 registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
 
-**Components:** `CardData` (printed card: name, types, cost, P/T, ability/static/replacement
-templates), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
+**Components:** `CardData` (printed card: name, types, cost, P/T, ability definitions, statics,
+replacements), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
 battlefield: controller, tapped, summoning sickness, abilities, statics, typed `counters`),
-`Creature` (P/T, combat state), `Damage`, `Spell` (card entity on the stack), `Ability` (also a
-standalone stack entity for activated/triggered abilities, `Orderer::push_ability_onto_stack`),
+`Creature` (P/T, combat state), `Damage`, `Spell` (card entity on the stack), `Ability` (an
+ability instance — see below; also a standalone stack entity for activated/triggered abilities,
+`Orderer::push_ability_onto_stack`),
 `Token`, `Player` (life, mana, per-turn counters), `EntryInfo` (what a cast or effect recorded
 about a card's next battlefield entry — tapped, transformed, attacking, how it was cast, an Aura's
 chosen object; consumed as its Permanent is built, dropped if it goes elsewhere); an object's color is read through
@@ -287,6 +288,23 @@ re-enters with the answer. All state lives in `cur_game`/ECS, never in statics, 
 (MCTS search, `src/snapshot.cpp`) covers it.
 
 ### Ability resolution
+
+**Definition vs instance** (`src/components/ability.h`). `AbilityDef` is what a script (or a
+keyword / engine rule) says about an ability — category, costs, targeting spec, trigger
+conditions, effect params (`params` variant, `ability_params.h`), `SubAbility$` / mode chains —
+built by the parser and never changed afterwards. It lives in a process-wide append-only store
+(`intern_ability_def` / `keyed_ability_def` / `derived_ability_def`), so a `const AbilityDef *`
+stays valid across snapshot restores and per-game ECS resets; `CardData`/`Token` hold such
+pointers, and card/token scripts and granted-ability bodies are parsed once per process. `Ability`
+is one instance — `def` plus source, controller, targets, X, trigger-fire bindings, and instance
+sub-ability/mode children mirroring `def`'s chains — so it is cheap to copy into a `LegalAction`,
+`DelayedTrigger`, `FrameLevel` or trigger record. Never write through `def`: an engine-built
+ability gets a keyed definition, a variant of an existing one a `derived_ability_def`, and
+anything fixed per instance (target bounds, a mana ability's chosen color) is an instance field.
+What a resolution remembers/chooses/names for its later instructions (remembered, imprinted,
+chosen cards, named card, chosen number/type) is `cur_game.resolution.memory`; X and Converge
+are read through `current_x_paid()` / `current_converge()` (`src/queries/spells.h`) — the cast or
+activation in flight, else the resolving object's own values — never a global.
 
 `Ability::resolve()` (`src/components/ability.cpp`) is a phased state machine that maps the
 category string to an `EffectKind` (`src/effects/effect_kind.{h,cpp}`), dispatches through
@@ -326,7 +344,7 @@ demand by `load_card` (`src/card_db.cpp`) into the `card_db` map and parsed by
 `Loyalty`, `K:` keywords, `A:` spell/activated abilities (`SP$`/`AB$ <category>`; `Mana` →
 `AddMana`), `T:` triggers, `S:` statics, `R:` replacements, `SVar:` bodies (`DB$` sub-abilities
 chained by `SubAbility$`). Per-ability `Key$ Value` params land in `apply_param_to_ability`
-(fields on `Ability` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
+(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
 lowercases, maps space/`-`/`/` to `_`, drops other characters, collapses `__`. Basic land types
 get their mana ability from `StateManager::apply_land_abilities`, not the script.
 Decks (`.dk`, `bin/resources/decks/`) are `<quantity> <card name>` lines, then an optional
