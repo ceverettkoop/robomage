@@ -612,9 +612,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                         auto &creature = global_coordinator.GetComponent<Creature>(entity);
                         creature.is_attacking = false;
-                        creature.attack_target = 0;
+                        creature.attack_target = ObjectRef{};
                         creature.is_blocking = false;
-                        creature.blocking_target = 0;
+                        creature.blocking_target = ObjectRef{};
                         creature.is_blocked = false;
                     }
                     combat_damage_assignment.clear();  // T3.10: drop any per-attacker assignments

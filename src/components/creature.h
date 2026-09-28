@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "../ecs/entity.h"
+#include "../object_ref.h"
 #include "../classes/colors.h"
 
 struct Creature {
@@ -17,9 +18,10 @@ struct Creature {
     uint32_t toughness = 0;
 
     bool is_attacking = false;
-    Entity attack_target = 0;  // Entity of player or planeswalker being attacked (0 = none)
+    ObjectRef attack_target;  // player or planeswalker being attacked (empty = none); a
+                              // planeswalker that left combat reads 0 (CR 506.4)
     bool is_blocking = false;
-    Entity blocking_target = 0;  // Entity of attacker being blocked (0 = none)
+    ObjectRef blocking_target;  // attacker being blocked (empty = none)
     bool is_blocked = false;     // attacker was blocked at declare-blockers; stays blocked even if all blockers leave (509.1h)
     std::vector<std::string> keywords;
     // Keywords granted "until end of turn" by a one-shot effect (e.g. Eldrazi Linebreaker's

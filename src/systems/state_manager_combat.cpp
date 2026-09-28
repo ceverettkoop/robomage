@@ -58,13 +58,14 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
         std::vector<Entity> blockers = blockers_of(entity, mEntities);
         // CR 506.4c: an attacker whose planeswalker was removed from combat (it left or phased
         // out) keeps attacking but, unblocked, deals no combat damage; no trample damage either.
-        bool target_in_combat = global_coordinator.entity_has_component<Player>(cr.attack_target) ||
-                                is_battlefield_permanent(cr.attack_target);
+        const Entity attacked = cr.attack_target.get();
+        bool target_in_combat = global_coordinator.entity_has_component<Player>(attacked) ||
+                                is_battlefield_permanent(attacked);
 
         if (!cr.is_blocked) {
             // Unblocked — deal damage to attack target
             if (attacker_deals && target_in_combat)
-                deal_damage(entity, cr.attack_target, cr.power, true);
+                deal_damage(entity, attacked, cr.power, true);
         } else {
             // Blocked — assign damage to blockers, blockers deal damage back.
             // T3.10: if the controller was prompted to divide damage (it couldn't kill every
@@ -111,7 +112,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             }
             // Trample: excess damage goes to attack target
             if (has_trample && remaining > 0 && target_in_combat)
-                deal_damage(entity, cr.attack_target, remaining, true);
+                deal_damage(entity, attacked, remaining, true);
         }
     }
 

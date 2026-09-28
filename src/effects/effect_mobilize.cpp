@@ -33,7 +33,7 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     Zone::Ownership ctrl = ab.controller;  // the tokens are created by the ability's controller (CR 111.2)
 
     // The defender the Mobilize creature is attacking; the tokens attack the same target.
-    Entity attack_target = 0;
+    ObjectRef attack_target;
     const Entity src = ab.source.get();
     if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
         attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;

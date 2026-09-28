@@ -433,8 +433,8 @@ static void fill_permanent_state(PermanentState& ps, Entity e, Zone::Ownership v
         ps.is_blocked   = cr.is_blocked;
         // attack_target is a player or planeswalker entity; a player is not in the
         // reference space, so "attacking the player" serializes as -1 (+ is_attacking).
-        ps.attack_target_ref   = slot_ref_of(cr.attack_target);
-        ps.blocking_target_ref = slot_ref_of(cr.blocking_target);
+        ps.attack_target_ref   = slot_ref_of(cr.attack_target.get());
+        ps.blocking_target_ref = slot_ref_of(cr.blocking_target.get());
     } else {
         ps.power = ps.toughness = 0;
         ps.is_attacking = ps.is_blocking = ps.is_blocked = false;

@@ -30,7 +30,7 @@ HandlerResult ninjutsu(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
         return HandlerResult::DONE_RUN_SUBS;
     }
     cur_game.pending_enters_tapped.insert(card);
-    if (ab.ninjutsu_attack_target != 0)
+    if (ab.ninjutsu_attack_target.get() != 0)
         cur_game.pending_enters_attacking[card] = ab.ninjutsu_attack_target;
     orderer->add_to_zone(false, card, Zone::BATTLEFIELD);
     game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",

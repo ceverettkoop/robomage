@@ -561,9 +561,9 @@ static void resume_attack_target(Game &game) {
     Entity chosen_attacker = game.pending_attacker;
     auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
     cr.is_attacking = true;
-    cr.attack_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    cr.attack_target = ObjectRef::of(pq.menu[static_cast<size_t>(pq.answer)].source_entity);
     game_log("%s attacking %s.\n", entity_name(chosen_attacker).c_str(),
-        target_display_name(game, cr.attack_target).c_str());
+        target_display_name(game, cr.attack_target.lki_entity()).c_str());
     game.pending_attacker = 0;
     pq = PendingQuery{};
 }
@@ -576,14 +576,14 @@ static void resume_block_target(Game &game) {
     Entity chosen = game.pending_blocker;
     auto &cr = global_coordinator.GetComponent<Creature>(chosen);
     cr.is_blocking = true;
-    cr.blocking_target = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    const Entity attacker = pq.menu[static_cast<size_t>(pq.answer)].source_entity;
+    cr.blocking_target = ObjectRef::of(attacker);
     // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
     // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
     // the player unless it has trample.
-    if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
-        global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
-    game_log("%s blocking %s.\n", entity_name(chosen).c_str(),
-        entity_name(cr.blocking_target).c_str());
+    if (global_coordinator.entity_has_component<Creature>(attacker))
+        global_coordinator.GetComponent<Creature>(attacker).is_blocked = true;
+    game_log("%s blocking %s.\n", entity_name(chosen).c_str(), entity_name(attacker).c_str());
     game.pending_blocker = 0;
     pq = PendingQuery{};
 }
@@ -638,7 +638,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (!cr.must_attack || cr.is_attacking) continue;
         cr.is_attacking = true;
-        cr.attack_target = defending_entity;
+        cr.attack_target = ObjectRef::of(defending_entity);
         game_log("%s must attack and is declared as an attacker.\n",
             global_coordinator.GetComponent<Permanent>(entity).name.c_str());
     }
@@ -660,7 +660,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             if (!cr.is_attacking) continue;
             std::string ename = entity_name(entity);
             game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness,
-                target_display_name(game, cr.attack_target).c_str());
+                target_display_name(game, cr.attack_target.lki_entity()).c_str());
         }
         // Build attacker selection actions
         std::vector<LegalAction> atk_actions;
@@ -721,9 +721,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             return;
         }
         cr.is_attacking = true;
-        cr.attack_target = tgt_actions[0].source_entity;
+        cr.attack_target = ObjectRef::of(tgt_actions[0].source_entity);
         game_log("%s attacking %s.\n", chosen_name.c_str(),
-            target_display_name(game, cr.attack_target).c_str());
+            target_display_name(game, cr.attack_target.lki_entity()).c_str());
     }
 
     game_log("\nAttackers declared:\n");
@@ -736,7 +736,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         attacker_count++;
         sole_attacker = entity;
         game_log("  %s -> %s\n", entity_name(entity).c_str(),
-                 target_display_name(game, cr.attack_target).c_str());
+                 target_display_name(game, cr.attack_target.lki_entity()).c_str());
 
         // Tap the attacker, unless it has vigilance (702.21).
         if (!creature_has_keyword(cr, "Vigilance"))
@@ -845,12 +845,12 @@ static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
         std::vector<Entity> blockers;
         for (auto b : eligible) {
             auto &bcr = global_coordinator.GetComponent<Creature>(b);
-            if (bcr.is_blocking && bcr.blocking_target == atk) blockers.push_back(b);
+            if (bcr.is_blocking && bcr.blocking_target.get() == atk) blockers.push_back(b);
         }
         if (blockers.size() == 1) {
             auto &bcr = global_coordinator.GetComponent<Creature>(blockers[0]);
             bcr.is_blocking = false;
-            bcr.blocking_target = 0;
+            bcr.blocking_target = ObjectRef{};
             acr.is_blocked = false;  // no other blocker assigned this attacker
             game_log("%s cannot block %s alone (menace) — block released.\n",
                      entity_name(blockers[0]).c_str(), entity_name(atk).c_str());
@@ -918,7 +918,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_blocking) continue;
             std::string ename = entity_name(entity);
-            std::string atk_name = entity_name(cr.blocking_target);
+            std::string atk_name = entity_name(cr.blocking_target.lki_entity());
             game_log("  (assigned) %s [%d/%d] blocking %s\n", ename.c_str(), cr.power, cr.toughness, atk_name.c_str());
         }
         // Build blocker selection actions
@@ -984,7 +984,8 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (cr.is_blocking) {
             any = true;
-            game_log("  %s blocking %s\n", entity_name(entity).c_str(), entity_name(cr.blocking_target).c_str());
+            game_log("  %s blocking %s\n", entity_name(entity).c_str(),
+                     entity_name(cr.blocking_target.lki_entity()).c_str());
         }
     }
     if (!any) game_log("  (none)\n");

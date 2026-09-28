@@ -80,7 +80,7 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 
     // TokenAttacking$ True (Geist of Saint Traft): the token is put onto the battlefield attacking
     // the same defender the source creature is attacking (CR 508.4a). Read the source's target.
-    Entity attack_target = 0;
+    ObjectRef attack_target;
     const Entity src = ab.source.get();
     if (tp && tp->attacking && src != 0 && global_coordinator.entity_has_component<Creature>(src))
         attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;

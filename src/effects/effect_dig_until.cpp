@@ -80,11 +80,11 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             // apply_permanent_components consumes them once the card's Creature component exists.
             if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(found);
             if (ab.dig_until_attacking) {
-                Entity attack_target = 0;
+                ObjectRef attack_target;
                 const Entity src = ab.source.get();
                 if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
                     attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
-                if (attack_target != 0) cur_game.pending_enters_attacking[found] = attack_target;
+                if (attack_target.get() != 0) cur_game.pending_enters_attacking[found] = attack_target;
             }
             // The shared uncast entry (an Aura picks what it enchants, CR 303.4f/g). The card
             // enters under the digging player's control (CR 608.2 — it comes from their own

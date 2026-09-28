@@ -855,7 +855,7 @@ inline std::vector<Entity> blockers_of(Entity attacker, const std::set<Entity> &
     std::vector<Entity> out;
     for (auto b : entities)
         if (is_blocking_creature(b) &&
-            global_coordinator.GetComponent<Creature>(b).blocking_target == attacker)
+            global_coordinator.GetComponent<Creature>(b).blocking_target.get() == attacker)
             out.push_back(b);
     return out;
 }

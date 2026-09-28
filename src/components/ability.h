@@ -179,7 +179,7 @@ struct Ability{
     std::string keyword_label = "";
     // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
     // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
-    Entity ninjutsu_attack_target = 0;
+    ObjectRef ninjutsu_attack_target;
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so

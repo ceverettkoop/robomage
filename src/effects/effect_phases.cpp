@@ -46,15 +46,15 @@ static void remove_from_combat(Entity e, const std::set<Entity> &entities) {
     auto &cr = global_coordinator.GetComponent<Creature>(e);
     bool was_attacking = cr.is_attacking;
     cr.is_attacking = false;
-    cr.attack_target = 0;
+    cr.attack_target = ObjectRef{};
     cr.is_blocked = false;
     cr.is_blocking = false;
-    cr.blocking_target = 0;
+    cr.blocking_target = ObjectRef{};
     if (!was_attacking) return;
     for (auto b : entities) {
         if (!global_coordinator.entity_has_component<Creature>(b)) continue;
         auto &bcr = global_coordinator.GetComponent<Creature>(b);
-        if (bcr.is_blocking && bcr.blocking_target == e) bcr.blocking_target = 0;
+        if (bcr.is_blocking && bcr.blocking_target.get() == e) bcr.blocking_target = ObjectRef{};
     }
 }
 

@@ -109,8 +109,10 @@ void dump_entity(Entity e) {
         auto &c = global_coordinator.GetComponent<Creature>(e);
         fprintf(stderr, "  Creature:\n");
         fprintf(stderr, "    power=%u  toughness=%u\n", c.power, c.toughness);
-        fprintf(stderr, "    is_attacking=%d  attack_target=%u\n", c.is_attacking, c.attack_target);
-        fprintf(stderr, "    is_blocking=%d  blocking_target=%u\n", c.is_blocking, c.blocking_target);
+        fprintf(stderr, "    is_attacking=%d  attack_target=%u\n", c.is_attacking,
+                c.attack_target.lki_entity());
+        fprintf(stderr, "    is_blocking=%d  blocking_target=%u\n", c.is_blocking,
+                c.blocking_target.lki_entity());
         fprintf(stderr, "    must_attack=%d  counter_pt_bonus=%d  prowess_bonus=%d\n",
                 c.must_attack, c.counter_pt_bonus, c.prowess_bonus);
         fprintf(stderr, "    keywords:");
