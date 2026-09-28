@@ -680,7 +680,7 @@ int draw_count_bonus(Zone::Ownership player) {
             // Count$ expression for the drawing player and test it against the comparator. An
             // empty expression means the additive draw is unconditional.
             if (!r.draw_condition_count_expr.empty()) {
-                int val = evaluate_sa_svar(r.draw_condition_count_expr, player, e);
+                int val = evaluate_svar(r.draw_condition_count_expr, player, e);
                 if (!compare_svar(val, r.draw_condition_compare)) return;
             }
             bonus += r.draw_add;

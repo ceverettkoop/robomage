@@ -1146,8 +1146,8 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
         if (ability.def->target_max_from_xpaid)
             effective_max = current_x_paid();
         else if (!ability.def->target_max_count_expr.empty())
-            effective_max = static_cast<int>(evaluate_dynamic_amount(
-                ability.def->target_max_count_expr, priority_player, orderer, 0, ability.source.lki_entity()));
+            effective_max = static_cast<int>(evaluate_amount(
+                ability.def->target_max_count_expr, priority_player, ability.source.lki_entity()));
         int effective_min = effective_target_min(ability, priority_player, orderer, true);
         ability.target_min = effective_min;
         ability.target_max = effective_max;

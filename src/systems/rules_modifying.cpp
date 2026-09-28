@@ -16,7 +16,7 @@
 #include "../queries/players.h"
 #include "../queries/types.h"
 #include "../mana_system.h"  // get_player_entity
-#include "../svar_eval.h"  // evaluate_sa_svar (CantAttack dynamic-X hand count)
+#include "../svar_eval.h"  // evaluate_svar (CantAttack dynamic-X hand count)
 
 namespace rules_mod {
 
@@ -215,7 +215,7 @@ bool attack_prohibited(Entity creature_entity) {
         // "your hand" is the source controller's hand — the threshold is the same for every
         // creature, matching the card (it affects all creatures vs. its controller's hand).
         if (!as.sa()->cant_attack_x_svar.empty())
-            ctx.x_bound = evaluate_sa_svar(as.sa()->cant_attack_x_svar, as.controller, as.entity);
+            ctx.x_bound = evaluate_svar(as.sa()->cant_attack_x_svar, as.controller, as.entity);
         if (permanent_matches_filter(creature_entity, as.sa()->cant_attack_filter, ctx)) return true;
     }
     return false;

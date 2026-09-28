@@ -34,8 +34,7 @@ HandlerResult deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
         // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
         // control) can exclude the source itself via the +Other qualifier.
-        dmg = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
-                                      ab.source.lki_entity());
+        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
     if (dp && dp->is_delirium_scale) {

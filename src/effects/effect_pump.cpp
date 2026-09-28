@@ -68,9 +68,9 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
     out_att = pp ? pp->att : 0;
     out_def = pp ? pp->def : 0;
     if (pp && !pp->att_expr.empty())
-        out_att = pp->att_sign * static_cast<int>(evaluate_dynamic_amount(pp->att_expr, ctrl, orderer, target));
+        out_att = pp->att_sign * static_cast<int>(evaluate_amount(pp->att_expr, ctrl, 0, target));
     if (pp && !pp->def_expr.empty())
-        out_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, target));
+        out_def = pp->def_sign * static_cast<int>(evaluate_amount(pp->def_expr, ctrl, 0, target));
 }
 
 // Register a turn-long "hexproof from <color(s)>" grant for `ctrl` and the permanents they

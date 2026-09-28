@@ -391,8 +391,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         if (ab.def->condition_on_target && !ab.def->dynamic_amount_expr.empty() &&
             ab.def->condition_present.find("cmcLE") != std::string::npos)
             cmc_threshold = static_cast<int>(
-                evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
-                                        ab.source.lki_entity()));
+                evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get()));
 
         for (auto tgt : to_move) {
             if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;
@@ -769,7 +768,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     ChangeZoneSearchRt &rt = fctx.can_suspend() ? fctx.rt<ChangeZoneSearchRt>() : local_rt;
     if (!rt.init) {
         if (!ab.def->dynamic_amount_expr.empty())
-            rt.num_to_move = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, 0);
+            rt.num_to_move = evaluate_amount(ab.def->dynamic_amount_expr, owner);
         else
             rt.num_to_move = (ab.def->amount > 0) ? ab.def->amount : 1;
         // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
@@ -777,7 +776,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         // the hand search only offers creatures of the matching mana value (CR 122.1).
         rt.cmc_bound = -1;
         if (!ab.def->change_type_cmc_expr.empty())
-            rt.cmc_bound = evaluate_sa_svar(ab.def->change_type_cmc_expr, owner, ab.source.lki_entity());
+            rt.cmc_bound = evaluate_svar(ab.def->change_type_cmc_expr, owner, ab.source.lki_entity());
         rt.prev_priority = cur_game.priority.player_a_has_priority;
         rt.init = true;
     }

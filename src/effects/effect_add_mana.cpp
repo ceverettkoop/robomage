@@ -22,7 +22,7 @@ HandlerResult add_mana(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     // else BBB). Routed through the shared runtime-amount evaluator so a mana-adding spell scales
     // by the same Count$/Targeted$ grammar as dynamic damage/draw/token counts.
     if (!ab.def->dynamic_amount_expr.empty())
-        mana_amount = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, mana_controller, orderer, ab.target.get());
+        mana_amount = evaluate_amount(ab.def->dynamic_amount_expr, mana_controller, 0, ab.target.get());
     // A dynamic amount can resolve to 0 (Carpet of Flowers when the opponent controls no Islands):
     // adding 0 mana is a legal no-op. Skip the color choice (don't prompt to pick a color for no
     // mana) and add nothing.

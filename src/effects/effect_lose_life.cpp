@@ -26,7 +26,8 @@ HandlerResult lose_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         lose_controller = ab.triggered_activator;
     size_t lose_amount = ab.def->amount;
     if (!ab.def->dynamic_amount_expr.empty())
-        lose_amount = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, lose_controller, orderer, ab.target.get(), ab.source.lki_entity());
+        lose_amount = evaluate_amount(ab.def->dynamic_amount_expr, lose_controller, ab.source.lki_entity(),
+                                      ab.target.get());
     // "Target player/opponent loses N life" (Witherbloom Command): the chosen target
     // player is the one who loses the life. The dynamic-amount reference above stays the
     // controller's "you"; only the loser is redirected to the targeted player. Redirect

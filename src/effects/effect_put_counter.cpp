@@ -41,7 +41,7 @@ static bool apply_monstrosity(Ability &ab) {
 
 int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_ptr<Orderer> orderer) {
     if (cp.count_expr.empty()) return cp.count;
-    return static_cast<int>(evaluate_dynamic_amount(cp.count_expr, ab.controller, orderer, ab.target.get()));
+    return static_cast<int>(evaluate_amount(cp.count_expr, ab.controller, 0, ab.target.get()));
 }
 
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {

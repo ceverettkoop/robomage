@@ -43,7 +43,6 @@
 #include "orderer.h"
 #include "../targeting.h"
 
-static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer);
@@ -387,33 +386,13 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
 
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
-        const std::string &cond = alt_cost.condition_svar;
-        // Mindbreak Trap (Trap alt cost, CR 702.59): "If an opponent cast three or more
-        // spells this turn, you may pay {0}…". Scripted as
-        // PlayerCountOpponents$Condition<OP><N> SpellsCastThisTurn — the alt cost is
-        // enabled when at least one opponent's per-turn spell count satisfies the
-        // condition. condition_compare is unset; the comparison op/threshold are embedded
-        // in the SVar's "Condition<OP><N>" token.
-        if (cond.find("PlayerCountOpponents$") != std::string::npos &&
-            cond.find("SpellsCastThisTurn") != std::string::npos) {
-            std::string compare;  // e.g. "GE3"
-            size_t cpos = cond.find("Condition");
-            if (cpos != std::string::npos) compare = cond.substr(cpos + 9);  // strip "Condition"
-            // Truncate at the first space (the count metric follows the condition token).
-            size_t sp = compare.find(' ');
-            if (sp != std::string::npos) compare = compare.substr(0, sp);
-            Zone::Ownership opp = opponent_of(priority_player);
-            int opp_spells =
-                static_cast<int>(global_coordinator.GetComponent<Player>(get_player_entity(opp)).spells_cast_this_turn);
-            if (!compare_svar(opp_spells, compare)) return false;
-        } else {
-            int svar_value = 0;
-            if (cond.find("Count$YouCastThisGame") != std::string::npos) {
-                Entity pp_entity = get_player_entity(priority_player);
-                svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
-            }
-            if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
-        }
+        // The condition's SVar (Once Upon a Time: Count$YouCastThisGame EQ0; Mindbreak Trap:
+        // PlayerCountOpponents$ConditionGE3 SpellsCastThisTurn — an opponent cast three or more
+        // spells this turn), compared as scripted, else at least 1 (Forge's default comparator).
+        const std::string compare =
+            alt_cost.condition_compare.empty() ? std::string("GE1") : alt_cost.condition_compare;
+        if (!compare_svar(evaluate_svar(alt_cost.condition_svar, priority_player), compare))
+            return false;
     }
 
     // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
@@ -502,32 +481,6 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
 // Counts battlefield permanents matching the filter (or remembered cards when
 // condition_on_remembered) and compares against the threshold (default ">= 1").
 // Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
-// Evaluate a Count$<...> intervening-if expression (CR 603.4 dynamic condition) to an integer.
-// Returns true and sets `out` when the token is recognized; returns false for an unrecognized
-// Count$ token so the caller fails loudly instead of mis-reading the raw string as a board
-// filter. This is the single place the intervening-if Count$ tokens are listed — a new
-// "count X this turn / this game" condition is added here, once, rather than as another literal
-// branch in evaluate_present_condition. Each token mirrors a count the engine tracks on Player.
-static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out) {
-    Entity pe = get_player_entity(caster);
-    const Player *pl = global_coordinator.entity_has_component<Player>(pe)
-                           ? &global_coordinator.GetComponent<Player>(pe)
-                           : nullptr;
-    // Ocelot Pride: "if you gained life this turn".
-    if (expr.find("LifeYouGainedThisTurn") != std::string::npos) {
-        out = pl ? pl->life_gained_this_turn : 0;
-        return true;
-    }
-    // Arclight Phoenix: "if you've cast three or more instant and sorcery spells this turn"
-    // (the engine tracks the combined instant+sorcery count on the player).
-    if (expr.find("ThisTurnCast") != std::string::npos &&
-        (expr.find("Instant") != std::string::npos || expr.find("Sorcery") != std::string::npos)) {
-        out = pl ? static_cast<int>(pl->instant_sorcery_spells_cast_this_turn) : 0;
-        return true;
-    }
-    return false;
-}
-
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     if (ab.def->condition_present.empty()) return true;
     // Empty compare means the bare "if you control a <thing>" form → at least one.
@@ -688,19 +641,11 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Count$<...> dynamic intervening-if (Ocelot Pride's life gained this turn, Arclight
     // Phoenix's instant/sorcery spells cast this turn, ...). These are counts over game history
     // / player state, NOT board presence, so route every Count$ condition through the shared
-    // count helper and compare. A Count$ token the helper does not recognize fails loudly here
-    // rather than falling through to the permanent-presence scan below — where the raw
-    // "Count$..." string would be read as a permanent type name, match nothing, and yield a
-    // confident-but-wrong count (silently suppressing or firing the trigger).
-    if (ab.def->condition_present.rfind("Count$", 0) == 0) {
-        int value = 0;
-        if (!count_intervening_condition(ab.def->condition_present, caster, value)) {
-            game_log("WARNING: unrecognized Count$ intervening-if condition '%s' — treated as unmet.\n",
-                     ab.def->condition_present.c_str());
-            return false;
-        }
-        return compare_svar(value, compare);
-    }
+    // SVar evaluator and compare, rather than falling through to the permanent-presence scan
+    // below — where the raw "Count$..." string would be read as a permanent type name.
+    if (ab.def->condition_present.rfind("Count$", 0) == 0)
+        return compare_svar(evaluate_svar(ab.def->condition_present, caster, ab.source.lki_entity()),
+                            compare);
 
     // A board-presence condition (Birthing Ritual's Creature.YouCtrl, Edge of Autumn's
     // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the

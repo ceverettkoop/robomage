@@ -143,9 +143,9 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         int base_p = ab.def->animate_base_power;
         int base_t = ab.def->animate_base_toughness;
         if (!ab.def->animate_power_expr.empty())
-            base_p = static_cast<int>(evaluate_dynamic_amount(ab.def->animate_power_expr, ab.controller, orderer, tgt));
+            base_p = static_cast<int>(evaluate_amount(ab.def->animate_power_expr, ab.controller, 0, tgt));
         if (!ab.def->animate_toughness_expr.empty())
-            base_t = static_cast<int>(evaluate_dynamic_amount(ab.def->animate_toughness_expr, ab.controller, orderer, tgt));
+            base_t = static_cast<int>(evaluate_amount(ab.def->animate_toughness_expr, ab.controller, 0, tgt));
         perm.animate_set_pt = true;
         perm.animate_power = base_p;
         perm.animate_toughness = base_t;

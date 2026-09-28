@@ -1685,7 +1685,7 @@ void StateManager::gather_active_statics(Game &game) {
         } else if (!a.sa()->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.
-            int svar_val = evaluate_sa_svar(a.sa()->check_svar_expr, a.controller, a.entity);
+            int svar_val = evaluate_svar(a.sa()->check_svar_expr, a.controller, a.entity);
             a.condition_met = compare_svar(svar_val, a.sa()->svar_compare);
         } else {
             a.condition_met = false;  // unrecognised condition — treat as unmet
@@ -2245,9 +2245,9 @@ void StateManager::apply_layer7_pt_effects() {
         if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
         cr.base_power = !a.sa()->set_power_svar.empty()
-            ? evaluate_sa_svar(a.sa()->set_power_svar, a.controller, a.entity) : 0;
+            ? evaluate_svar(a.sa()->set_power_svar, a.controller, a.entity) : 0;
         cr.base_toughness = !a.sa()->set_toughness_svar.empty()
-            ? evaluate_sa_svar(a.sa()->set_toughness_svar, a.controller, a.entity) : 0;
+            ? evaluate_svar(a.sa()->set_toughness_svar, a.controller, a.entity) : 0;
         a.sa()->applied = true;
     }
 
@@ -2288,9 +2288,9 @@ void StateManager::apply_layer7_pt_effects() {
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
                 cr.set_power = !winner->sa()->set_power_svar.empty()
-                    ? evaluate_sa_svar(winner->sa()->set_power_svar, winner->controller, winner->entity) : 0;
+                    ? evaluate_svar(winner->sa()->set_power_svar, winner->controller, winner->entity) : 0;
                 cr.set_toughness = !winner->sa()->set_toughness_svar.empty()
-                    ? evaluate_sa_svar(winner->sa()->set_toughness_svar, winner->controller, winner->entity) : 0;
+                    ? evaluate_svar(winner->sa()->set_toughness_svar, winner->controller, winner->entity) : 0;
             }
         }
     }
@@ -2310,10 +2310,10 @@ void StateManager::apply_layer7_pt_effects() {
         // Count$CardCounters.P1P1) must read the counters on Lion Sash itself, not return 0.
         int dp = a.sa()->add_power_svar.empty()
                      ? a.sa()->add_power
-                     : evaluate_sa_svar(a.sa()->add_power_svar, a.controller, a.entity);
+                     : evaluate_svar(a.sa()->add_power_svar, a.controller, a.entity);
         int dt = a.sa()->add_toughness_svar.empty()
                      ? a.sa()->add_toughness
-                     : evaluate_sa_svar(a.sa()->add_toughness_svar, a.controller, a.entity);
+                     : evaluate_svar(a.sa()->add_toughness_svar, a.controller, a.entity);
         // 613.7a — a static ability's effect has its source object's timestamp.
         size_t ts = static_timestamp(a);
 

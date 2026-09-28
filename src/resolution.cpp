@@ -28,11 +28,9 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-// Evaluate a ConditionCheckSVar$ expression. Forward-declared per CLAUDE.md.
-static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ownership ctrl,
-                                   std::shared_ptr<Orderer> orderer);
-static bool compare_svar(int val, const std::string &spec, const std::string &svar_rhs, Entity src,
-                         Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer);
+// ConditionCheckSVar$ / ConditionSVarCompare$ (CR 608.2c): does the checked SVar pass its
+// comparison, against a number or another SVar? Forward-declared per CLAUDE.md.
+static bool condition_svar_passes(const Ability &ab);
 // Bind a chained sub-ability's target before it resolves, reading the script's stated
 // Defined$ intent rather than blanket-inheriting the parent's target. See definition below
 // (CR 608.2c). Forward-declared per CLAUDE.md.
@@ -51,36 +49,14 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
 // CR 608.2b: every target of `ab` became illegal; it is removed from the stack without effect.
 static void fizzle(const Ability &ab);
 
-// Evaluates a condition SVar expression against cur_game state.
-static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ownership ctrl,
-                                   std::shared_ptr<Orderer> orderer) {
-    if (expr == "Count$ResolvedThisTurn") return ability_resolutions_this_turn(src);
-    // Delegate to evaluate_dynamic_amount for Count$ expressions
-    if (orderer && expr.find("Count$") != std::string::npos) {
-        return static_cast<int>(evaluate_dynamic_amount(expr, ctrl, orderer, 0));
-    }
-    return 0;
-}
-
-// Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
-// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int
-// from spec. Unlike svar_eval::compare_svar this is permissive — a missing/unknown
-// operator passes — so the operator application (but not the defaulting) is shared
-// via apply_svar_op.
-static bool compare_svar(int val, const std::string &spec, const std::string &svar_rhs, Entity src,
-                         Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer) {
-    if (spec.size() < 2) return true;
-    std::string op = spec.substr(0, 2);
-    int rhs;
-    if (!svar_rhs.empty() && orderer) {
-        rhs = evaluate_condition_svar(svar_rhs, src, ctrl, orderer);
-    } else {
-        if (spec.size() < 3) return true;
-        rhs = std::stoi(spec.substr(2));
-    }
-    if (op == "EQ" || op == "NE" || op == "GE" ||
-        op == "LE" || op == "GT" || op == "LT") return apply_svar_op(val, op, rhs);
-    return true;  // unknown operator passes (permissive)
+static bool condition_svar_passes(const Ability &ab) {
+    const Entity src = ab.source.lki_entity();
+    int val = evaluate_svar(ab.def->condition_check_svar, ab.controller, src);
+    if (ab.def->condition_compare_svar_expr.empty())
+        return compare_svar(val, ab.def->condition_svar_compare);
+    // An SVar right-hand side (Thassa's Oracle: LEX, X = Count$Devotion.Blue).
+    return apply_svar_op(val, ab.def->condition_svar_compare,
+                         evaluate_svar(ab.def->condition_compare_svar_expr, ab.controller, src));
 }
 
 // Bind a chained sub-ability's target before it resolves. CR 608.2c: as a spell/ability
@@ -170,7 +146,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         int n = cp->count;
         if (!cp->count_expr.empty())
             n = static_cast<int>(
-                evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target.get()));
+                evaluate_amount(cp->count_expr, ab.controller, 0, ab.target.get()));
         return ", amount: " + std::to_string(n);
     }
     // Discard only counts by Ability::amount in Random mode (Hymn to Tourach); the
@@ -190,8 +166,7 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
         // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
         if (amt == 0 && (ab.def->category == "Draw" || ab.def->category == "Mill")) amt = 1;
         if (!ab.def->dynamic_amount_expr.empty())
-            amt = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer,
-                                          ab.target.get(), ab.source.lki_entity());
+            amt = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
         return ", amount: " + std::to_string(amt);
     }
     return "";
@@ -459,11 +434,7 @@ ResolveStatus resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     if (phase == 3) {
         // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
         bool condition_passed = true;
-        if (!ab.def->condition_check_svar.empty()) {
-            int val = evaluate_condition_svar(ab.def->condition_check_svar, ab.source.lki_entity(), ab.controller, orderer);
-            condition_passed = compare_svar(val, ab.def->condition_svar_compare, ab.def->condition_compare_svar_expr,
-                                            ab.source.lki_entity(), ab.controller, orderer);
-        }
+        if (!ab.def->condition_check_svar.empty()) condition_passed = condition_svar_passes(ab);
         // ConditionPresent$ / ConditionCompare$ gate (CR 608.2c): the "if ..." clause is checked
         // as the ability resolves. Covers the plain board-presence form (Edge of Autumn: "If you
         // control four or fewer lands"), ConditionDefined$ Remembered (Birthing Ritual: the dig

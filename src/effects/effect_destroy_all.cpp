@@ -34,7 +34,7 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     // (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
     if (dp && !dp->energy_unless_expr.empty()) {
         int n = static_cast<int>(
-            evaluate_dynamic_amount(dp->energy_unless_expr, ab.controller, orderer, ab.target.get()));
+            evaluate_amount(dp->energy_unless_expr, ab.controller, 0, ab.target.get()));
         Entity ctrl_entity = get_player_entity(ab.controller);
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
         if (dp->energy_unless_switched) {
@@ -72,7 +72,7 @@ HandlerResult destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     mctx.source = ab.source.lki_entity();
     if (dp && !dp->cmc_expr.empty()) {
         mctx.cmc_bound = static_cast<int>(
-            evaluate_dynamic_amount(dp->cmc_expr, ab.controller, orderer, ab.target.get(), ab.source.lki_entity()));
+            evaluate_amount(dp->cmc_expr, ab.controller, ab.source.lki_entity(), ab.target.get()));
         mctx.cmc_op = dp->cmc_op.empty() ? "LE" : dp->cmc_op;
     }
     std::vector<Entity> to_destroy;

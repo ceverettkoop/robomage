@@ -1096,7 +1096,7 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
                 if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
                 int spell_mv = object_mana_value(
                     spell_e, global_coordinator.GetComponent<CardData>(spell_e));
-                int bound = evaluate_sa_svar(ab.trigger_cmc_expr, controller, entity);
+                int bound = evaluate_svar(ab.trigger_cmc_expr, controller, entity);
                 const std::string &op = ab.trigger_cmc_op;
                 bool ok = (op == "EQ") ? (spell_mv == bound)
                         : (op == "LE") ? (spell_mv <= bound)

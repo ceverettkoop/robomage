@@ -2236,7 +2236,7 @@ static void resolve_pump_exprs(AbilityDef& ability,
 // A non-numeric amount param (NumCards$, LifeAmount$, ...) that contains '$' is a DIRECT dynamic
 // expression rather than an SVar name (Kaito, Bane of Nightmares: NumCards$
 // PlayerCountRegisteredOpponents$HasPropertyLostLifeThisTurn; The Creation of Avacyn:
-// ExiledWith$CardManaCost). Keep it verbatim for evaluate_dynamic_amount at resolution (CR 608.2c).
+// ExiledWith$CardManaCost). Keep it verbatim for evaluate_amount at resolution (CR 608.2c).
 static bool take_direct_amount_expr(AbilityDef &ability) {
     if (ability.amount_svar.find('$') == std::string::npos) return false;
     ability.dynamic_amount_expr = ability.amount_svar;
@@ -2532,7 +2532,7 @@ static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::Abi
                        sv.find("xPaid") != std::string::npos ||
                        // Count$CardCounters.<TYPE> — counters on the source permanent (The One
                        // Ring: NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN). Evaluated at
-                       // resolution against the source by evaluate_dynamic_amount.
+                       // resolution against the source by evaluate_amount.
                        sv.find("Count$CardCounters") != std::string::npos) {
                 sub.dynamic_amount_expr = sv;
             }
@@ -2596,6 +2596,9 @@ static AbilityDef parse_svar_ability(const std::string& content, AbilityDef::Abi
             if (it != svars.end()) sub.dynamic_amount_expr = it->second;
         }
     }
+    // A bare ConditionCheckSVar$ passes when the value is at least 1 (Forge's default comparator).
+    if (!sub.condition_check_svar.empty() && sub.condition_svar_compare.empty())
+        sub.condition_svar_compare = "GE1";
     // Resolve ConditionSVarCompare$ when RHS is an SVar reference (e.g. "LEX" where X = "Count$Devotion.Blue")
     if (sub.condition_svar_compare.size() >= 3) {
         std::string rhs_str = sub.condition_svar_compare.substr(2);
@@ -2889,16 +2892,16 @@ static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, c
                            // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling
                            // (Cabal Ritual: Amount$ X, X = Count$Threshold.5.3 → BBBBB if the
                            // caster has 7+ cards in their graveyard, else BBB). Preserved here
-                           // and evaluated at activation by evaluate_dynamic_amount.
+                           // and evaluated at activation by evaluate_amount.
                            sv.find("Count$Threshold") != std::string::npos ||
                            // Count$UrzaLands.<hi>.<lo> — the "Tron" mana lands (Urza's Mine/Power
                            // Plant/Tower): hi colorless mana if the controller controls a complete
                            // set of all three, else lo. Preserved here and evaluated at activation
-                           // by evaluate_dynamic_amount (mana-ability path via eval_mana_amount).
+                           // by evaluate_amount (mana-ability path via eval_mana_amount).
                            sv.find("Count$UrzaLands") != std::string::npos ||
                            // Count$CardCounters.<TYPE> — counters on the source permanent (The One
                            // Ring's burden-counter scaling). Evaluated at resolution by
-                           // evaluate_dynamic_amount against the ability's source.
+                           // evaluate_amount against the ability's source.
                            sv.find("Count$CardCounters") != std::string::npos ||
                            // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
                            // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
@@ -2906,7 +2909,7 @@ static std::vector<AbilityDef> parse_abilities(std::vector<std::string> lines, c
                            // ability scales by X too, instead of falling back to the count==1
                            // single-token default.
                            // Count$Converge (Prismatic Ending) — the distinct colors of mana spent
-                           // to cast the spell, resolved at cast/resolution by evaluate_dynamic_amount
+                           // to cast the spell, resolved at cast/resolution by evaluate_amount
                            // from current_converge(). Used as the cmcLEY exile threshold.
                            sv.find("Count$Converge") != std::string::npos ||
                            sv.find("xPaid") != std::string::npos) {
@@ -3306,7 +3309,7 @@ static AbilityDef parse_one_trigger(const std::string &line, const std::map<std:
                 } else if (!svar_key.empty() &&
                            svar_key.find_first_not_of("0123456789") == std::string::npos) {
                     // A LITERAL numeric bound (Eidolon of the Great Revel: Card.cmcLE3).
-                    // evaluate_sa_svar returns a plain integer literal as itself, so store
+                    // evaluate_svar returns a plain integer literal as itself, so store
                     // the number directly; without this the filter would be dropped and the
                     // trigger would fire on every spell.
                     ability.trigger_cmc_expr = svar_key;

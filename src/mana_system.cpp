@@ -153,7 +153,7 @@ void empty_mana_pool(Zone::Ownership player_owner) {
 ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
                                          std::shared_ptr<Orderer> orderer) {
     if (ab.def->reduce_cost_expr.empty()) return ab.def->activation_mana_cost;
-    size_t reduction = evaluate_dynamic_amount(ab.def->reduce_cost_expr, controller, orderer, ab.target.get());
+    size_t reduction = evaluate_amount(ab.def->reduce_cost_expr, controller, 0, ab.target.get());
     if (reduction == 0) return ab.def->activation_mana_cost;
     ManaValue cost = ab.def->activation_mana_cost;
     // Remove up to `reduction` generic ({1}) symbols; never below zero, never a colored pip.
@@ -189,7 +189,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
     // shared runtime-amount evaluator, so mana production scales by the same Count$/Targeted$
     // grammar used for dynamic damage/draw/token counts rather than re-implementing each form here.
     if (!ab.def->dynamic_amount_expr.empty())
-        return evaluate_dynamic_amount(ab.def->dynamic_amount_expr, controller, orderer, ab.target.get());
+        return evaluate_amount(ab.def->dynamic_amount_expr, controller, 0, ab.target.get());
     return ab.def->amount;
 }
 

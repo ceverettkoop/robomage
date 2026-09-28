@@ -65,7 +65,7 @@ HandlerResult destroy(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")
         int threshold = 2;  // default fallback
         if (!ab.def->dynamic_amount_expr.empty()) {
-            threshold = static_cast<int>(evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
+            threshold = static_cast<int>(evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, 0, ab.target.get()));
         }
         Entity tgt = ab.target.get();
         if (global_coordinator.entity_has_component<CardData>(tgt)) {

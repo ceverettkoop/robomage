@@ -519,7 +519,7 @@ sections above are not repeated here.
 - `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
 - `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
   candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
-  — unless-cost payment; `src/svar_eval.cpp` — SVar (`Count$` …) evaluation
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator
 - `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
   accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
   `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,

@@ -49,7 +49,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     if (!rt.init) {
         size_t num_cards = ab.def->amount;
         if (!ab.def->dynamic_amount_expr.empty())
-            num_cards = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, ab.target.get());
+            num_cards = evaluate_amount(ab.def->dynamic_amount_expr, owner, 0, ab.target.get());
 
         // looking at top n only
         rt.lib = orderer->get_library_top(owner, num_cards);

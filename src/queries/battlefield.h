@@ -52,6 +52,10 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// battlefield_permanents for code that runs outside a system (an SVar evaluation, a count helper)
+// and so has no mEntities: scans every issued entity id. Defined in battlefield.cpp.
+std::vector<Entity> battlefield_permanents_scan(Zone::Ownership ctrl = Zone::UNKNOWN);
+
 // True if the ability's source is still the object it was when the ability was created (CR
 // 400.7) and is a battlefield permanent (phased-in). Defined in battlefield.cpp.
 bool ability_source_on_battlefield(const Ability &ab);
@@ -63,8 +67,8 @@ bool ability_source_on_battlefield(const Ability &ab);
 bool entered_battlefield_this_turn(long entered_on_turn);
 
 // Count the battlefield permanents matching a Forge `Count$Valid <filter>` spec — the single
-// shared implementation behind both the spell/ability dynamic-amount path (evaluate_dynamic_amount)
-// and the static-buff svar path (evaluate_sa_svar), so the `controller` ("you") reference, the
+// shared implementation behind the SVar evaluator's Count$Valid (svar_eval.h) and presence
+// conditions, so the `controller` ("you") reference, the
 // `source` reference (for source-relative qualifiers like +Other / sameName), and the
 // battlefield/phasing guard are identical on both. `filter_spec` is the bare filter (the text after
 // "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.

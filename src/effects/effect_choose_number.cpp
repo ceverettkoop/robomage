@@ -26,7 +26,7 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     int max = 0;
     if (!ab.def->dynamic_amount_expr.empty())
         max = static_cast<int>(
-            evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get()));
+            evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, 0, ab.target.get()));
     if (max < 0) max = 0;
 
     std::vector<LegalAction> choices;

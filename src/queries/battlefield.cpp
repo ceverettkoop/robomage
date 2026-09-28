@@ -19,17 +19,23 @@ bool entered_battlefield_this_turn(long entered_on_turn) {
     return entered_on_turn == static_cast<long>(cur_game.turn_state.turn);
 }
 
+std::vector<Entity> battlefield_permanents_scan(Zone::Ownership ctrl) {
+    std::vector<Entity> out;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e)
+        if (is_battlefield_permanent(e, ctrl)) out.push_back(e);
+    return out;
+}
+
 int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
                                Entity source) {
     MatchCtx mctx;
     mctx.controller = controller;  // the "you" reference for YouCtrl/OppCtrl in the spec
     mctx.source = source;          // for source-relative qualifiers (e.g. +Other, sameName)
     int count = 0;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; ++e) {
-        if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
+    // Control is enforced by the filter.
+    for (Entity e : battlefield_permanents_scan())
         if (permanent_matches_filter(e, filter_spec, mctx)) count++;
-    }
     return count;
 }
 

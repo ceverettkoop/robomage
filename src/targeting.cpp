@@ -415,7 +415,6 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
                          std::shared_ptr<Orderer> orderer, bool x_announced) {
     if (ab.def->target_min_from_xpaid) return x_announced ? current_x_paid() : 0;
     if (!ab.def->target_min_count_expr.empty())
-        return static_cast<int>(evaluate_dynamic_amount(ab.def->target_min_count_expr, perspective,
-                                                        orderer, 0, ab.source.lki_entity()));
+        return static_cast<int>(evaluate_amount(ab.def->target_min_count_expr, perspective, ab.source.lki_entity()));
     return ab.target_min;
 }

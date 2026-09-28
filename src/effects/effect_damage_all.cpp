@@ -24,8 +24,7 @@ namespace effects {
 HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     size_t dmg = ab.def->amount;
     if (!ab.def->dynamic_amount_expr.empty())
-        dmg = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ab.controller, orderer, ab.target.get(),
-                                      ab.source.lki_entity());
+        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
     std::vector<Entity> recipients;
     if (!ab.def->valid_cards_filter.empty())
         for (auto e : orderer->mEntities)

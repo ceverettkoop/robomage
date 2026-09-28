@@ -69,15 +69,15 @@ HandlerResult token(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     // override the token script's printed P/T so the created token enters as an X/X. Evaluated
     // once here against the live remembered card; both default to the script's value when absent.
     if (tp && !tp->power_expr.empty())
-        tok.power = static_cast<uint32_t>(evaluate_dynamic_amount(tp->power_expr, ctrl, orderer, ab.target.get()));
+        tok.power = static_cast<uint32_t>(evaluate_amount(tp->power_expr, ctrl, 0, ab.target.get()));
     if (tp && !tp->toughness_expr.empty())
-        tok.toughness = static_cast<uint32_t>(evaluate_dynamic_amount(tp->toughness_expr, ctrl, orderer, ab.target.get()));
+        tok.toughness = static_cast<uint32_t>(evaluate_amount(tp->toughness_expr, ctrl, 0, ab.target.get()));
 
     // TokenAmount$ N (default 1): create N identical tokens. The count may be dynamic
     // (Count$xPaid → X). amount==0 with no dynamic expr means the single-token default.
     size_t count = ab.def->amount;
     if (!ab.def->dynamic_amount_expr.empty())
-        count = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, ctrl, orderer, ab.target.get());
+        count = evaluate_amount(ab.def->dynamic_amount_expr, ctrl, 0, ab.target.get());
     else if (count == 0)
         count = 1;
 

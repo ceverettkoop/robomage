@@ -114,7 +114,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         // Resolve dynamic dig count (e.g. Count$Devotion.Blue)
         size_t effective_dig_num = ab.def->dig_num;
         if (!ab.def->dig_num_expr.empty()) {
-            effective_dig_num = evaluate_dynamic_amount(ab.def->dig_num_expr, dig_owner, orderer, 0);
+            effective_dig_num = evaluate_amount(ab.def->dig_num_expr, dig_owner);
         }
         rt.lib = orderer->get_library_top(dig_owner, effective_dig_num);
 
@@ -128,7 +128,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         if (!ab.def->change_valid.empty() && ab.def->change_valid.find("cmcLE") != std::string::npos &&
             !ab.def->dynamic_amount_expr.empty()) {
             mctx.cmc_bound = static_cast<int>(
-                evaluate_dynamic_amount(ab.def->dynamic_amount_expr, dig_owner, orderer, ab.target.get()));
+                evaluate_amount(ab.def->dynamic_amount_expr, dig_owner, 0, ab.target.get()));
             mctx.cmc_op = "LE";
         }
         std::vector<Entity> matching;
@@ -170,7 +170,7 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
         } else if (ab.def->cond_amount_active) {
             int sum = 0;
             for (auto &expr : ab.def->cond_amount_exprs)
-                sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
+                sum += static_cast<int>(evaluate_amount(expr, dig_owner));
             rt.take_count = compare_svar(sum, ab.def->cond_amount_compare) ? ab.def->cond_amount_if_true : ab.def->amount;
         } else if (any_count) {
             rt.take_count = matching.size();

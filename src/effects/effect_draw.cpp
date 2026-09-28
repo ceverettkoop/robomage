@@ -80,7 +80,7 @@ HandlerResult draw(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // A dynamic NumCards$ (The One Ring: NumCards$ X, X = Count$CardCounters.BURDEN — "draw a card
         // for each burden counter on it") is evaluated at resolution against the source permanent.
         if (!ab.def->dynamic_amount_expr.empty())
-            count = evaluate_dynamic_amount(ab.def->dynamic_amount_expr, owner, orderer, ab.target.get(), ab.source.lki_entity());
+            count = evaluate_amount(ab.def->dynamic_amount_expr, owner, ab.source.lki_entity(), ab.target.get());
         rt.owner = owner;
         rt.total = count;
         rt.init = true;
