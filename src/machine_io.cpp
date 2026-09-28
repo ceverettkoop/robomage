@@ -914,11 +914,11 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     // reference fields (attachments, combat pairing, stack-target slots) can resolve
     // forward as well as backward.
 
-    // Stack items sorted by distance_from_top after the scan (the engine's true
-    // stack order; 0 = top of stack).
+    // Every stack object, sorted by distance_from_top after the scan (the engine's true
+    // stack order; 0 = top of stack) and only then cut to the MAX_STACK_DISPLAY slots, so
+    // the slots always hold the TOP of the stack.
     struct StackItem { size_t dist; Entity ent; };
-    StackItem stack_items[MAX_STACK_DISPLAY + 8];
-    int stack_item_count = 0;
+    std::vector<StackItem> stack_items;
 
     // Graveyard/exile cards as (distance_from_top, entity), sorted for recency order.
     struct GyItem { size_t dist; Entity ent; };
@@ -996,8 +996,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
             case Zone::STACK:
                 gs->stack_size++;
-                if (stack_item_count < MAX_STACK_DISPLAY + 8)
-                    stack_items[stack_item_count++] = {zone.distance_from_top, e};
+                stack_items.push_back({zone.distance_from_top, e});
                 // A fired delayed trigger's stack object (delayed-trigger block).
                 if (global_coordinator.entity_has_component<Ability>(e) &&
                     global_coordinator.GetComponent<Ability>(e).delayed_link.seq != 0)
@@ -1023,9 +1022,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     }
 
     // Sort stack entries by distance_from_top ascending (index 0 = top of stack)
-    std::sort(stack_items, stack_items + stack_item_count,
+    std::sort(stack_items.begin(), stack_items.end(),
               [](const StackItem& a, const StackItem& b) { return a.dist < b.dist; });
-    int stored_stack = std::min(stack_item_count, MAX_STACK_DISPLAY);
+    int stored_stack = std::min(static_cast<int>(stack_items.size()), MAX_STACK_DISPLAY);
 
     // Build the entity->slot reference map (see its declaration for the invariant):
     // 0-47 self perms, 48-95 opp perms, 96-107 stack top-first; overflow stays absent.
@@ -1035,7 +1034,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     for (int i = 0; i < opp_bf; i++)
         g_entity_slot_map[opp_ents[i]] = MAX_BATTLEFIELD_SLOTS + i;
     for (int i = 0; i < stored_stack; i++)
-        g_entity_slot_map[stack_items[i].ent] = 2 * MAX_BATTLEFIELD_SLOTS + i;
+        g_entity_slot_map[stack_items[static_cast<size_t>(i)].ent] = 2 * MAX_BATTLEFIELD_SLOTS + i;
 
     // ── Pass B (fill) ────────────────────────────────────────────────────────
     for (int i = 0; i < self_bf; i++)
@@ -1044,7 +1043,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         fill_permanent_state(gs->opp_permanents[i], opp_ents[i], viewer);
     fill_attached_by_refs(gs, self_bf, opp_bf);
     for (int i = 0; i < stored_stack; i++)
-        fill_stack_entry(gs->stack[i], stack_items[i].ent, viewer);
+        fill_stack_entry(gs->stack[i], stack_items[static_cast<size_t>(i)].ent, viewer);
     fill_delayed_triggers(gs, viewer, stack_delayed);
 
     // ── Mana development + player effects ────────────────────────────────────
