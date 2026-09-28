@@ -41,6 +41,7 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 
@@ -3852,18 +3853,52 @@ TESTS = [
 ]
 
 
+# Tests that write the same temp deck files (each deletes its decks when done)
+# run in one sequence; every other test is independent and runs concurrently.
+_SHARED_DECK_GROUPS = [
+    ("pool_loop_roundtrip", "pool_determinize_pin"),
+    ("sideboard_determinize", "sideboard_search_roundtrip", "sideboard_sim_result"),
+]
+# Timed alone, after the others, so its measurement isn't taken under load.
+_RUN_LAST = ("perf",)
+
+
+def _run_tests(names):
+    """[(name, passed, detail)] for the named TESTS, run in order (a
+    process-pool task)."""
+    fns = dict(TESTS)
+    out = []
+    for name in names:
+        try:
+            out.append((name, True, fns[name]()))
+        except (ProtocolError, EOFError, AssertionError) as e:
+            out.append((name, False, str(e)))
+    return out
+
+
+def _test_batches():
+    """TESTS split into the units that may run concurrently."""
+    grouped = {n for g in _SHARED_DECK_GROUPS for n in g}
+    return list(_SHARED_DECK_GROUPS) + [
+        (name,) for name, _fn in TESTS if name not in grouped and name not in _RUN_LAST]
+
+
 def main():
     if not os.path.exists(BINARY):
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
+    with ProcessPoolExecutor(max_workers=min(16, os.cpu_count() or 4)) as ex:
+        results = [r for batch in ex.map(_run_tests, _test_batches()) for r in batch]
+    results += _run_tests(_RUN_LAST)
+    by_name = {name: (passed, detail) for name, passed, detail in results}
     failures = 0
-    for name, fn in TESTS:
-        try:
-            detail = fn()
+    for name, _fn in TESTS:
+        passed, detail = by_name[name]
+        if passed:
             print(f"ok    {name}: {detail}", flush=True)
-        except (ProtocolError, EOFError, AssertionError) as e:
+        else:
             failures += 1
-            print(f"FAIL  {name}: {e}", flush=True)
+            print(f"FAIL  {name}: {detail}", flush=True)
     print(f"\nsnapshot search-server: {len(TESTS) - failures}/{len(TESTS)} tests "
           f"passed", flush=True)
     return 1 if failures else 0
