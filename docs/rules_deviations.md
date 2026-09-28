@@ -109,6 +109,22 @@ Entry format: **CR** rule(s) · **Rules:** what the CR says · **Engine:** what 
 - **CR 101.4 / 303.4f — Show and Tell puts cards in sequentially.** The active player's card is put onto the battlefield before the non-active player chooses, instead of both choosing in APNAP order and the cards entering together. As a result, an Aura put by the non-active player can enchant the active player's just-entered creature, and "enters" triggers see a sequential order. `src/effects/effect_change_zone.cpp`: `each_player_put_from_hand`.
 - **Until-your-next-turn Animate reversal.** `revert_until_turn_animates` clears the rest-of-game animate fields (`animate_make_creature`, `animate_set_pt`, and the base P/T) and strips Creature/Damage whenever the printed card isn't a creature. This happens even if another Animate (earthbend, `Duration$ Permanent`, end of turn) still animates the permanent. Latent: it needs Karn, the Great Creator's +1 on an already-animated artifact. `src/effects/effect_animate.cpp`: `revert_until_turn_animates`.
 
+### 2.7 Script shortcuts that bypass the card's own tags
+Two cards are recognised by a fingerprint of their script and handled by special-case code, not by the general mechanics their tags name (this goes against `CLAUDE.md`, "Parse script tags as intended"). Each fingerprint matches exactly one script in the cardsfolder today. Both are left as they are for now, by decision.
+
+- **Sylvan Library**
+  - **CR** 608.2c (follow the ability's instructions as written)
+  - **Rules:** the script is `AB$ ChooseCard` with `Cost$ Draw<2/You>`, `Amount$ 2` over `Card.YouOwn+DrawnThisTurn`, then `DB$ RepeatEach` over `Card.ChosenCard`, whose body is a `DB$ ChangeZone` to the library with `UnlessCost$ PayLife<4>`.
+  - **Engine:** any trigger whose `Execute$` body contains both `ChooseCard` and `DrawnThisTurn` has its parsed body thrown away and replaced by a synthetic `SylvanLibrary` category. Its handler hard-codes draw two, choose two cards drawn this turn, and "pay 4 life or put it on top", ignoring the script's own tags.
+  - **Effect:** none for Sylvan Library itself. A different card with that fingerprint would silently get Sylvan Library's behavior. The proper fix is to make ChooseCard with a draw cost, RepeatEach over chosen cards and ChangeZone with a PayLife unless-cost work generically, then delete the category and the handler.
+  - **Code:** `src/parse.cpp`: `parse_one_trigger`; `src/effects/effect_sylvan_library.cpp`: `sylvan_library`.
+- **Green Sun's Zenith**
+  - **CR** 608.2c, 608.2n
+  - **Rules:** "Shuffle Green Sun's Zenith into its owner's library" is part of the spell's resolution: the script's `DB$ ChangeZone | Origin$ Stack | Destination$ Library | Shuffle$ True | Defined$ Parent` sub-ability moves the resolving spell itself.
+  - **Engine:** any SVar containing `DB$ ChangeZone`, `Origin$ Stack`, `Destination$ Library` and `Defined$ Parent` sets `CardData::shuffle_into_library` and strips that sub-ability from the card's spell abilities. When the spell finishes resolving, the stack manager puts the card into its owner's library and shuffles, instead of putting it into the graveyard.
+  - **Effect:** none for Green Sun's Zenith. The proper fix is to support ChangeZone of the resolving spell itself from the stack (`Defined$ Parent`) as a step of its resolution, shuffling as the script says, then delete the flag and the strip.
+  - **Code:** `src/parse.cpp`: `parse_card_face_body` (the fingerprint scan after `parse_abilities`); `src/systems/stack_manager.cpp`: the spell's final move in `resolve_top`.
+
 ---
 
 ## 3. Out of scope because no vocab card needs it
