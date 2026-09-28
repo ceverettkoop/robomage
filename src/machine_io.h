@@ -160,7 +160,8 @@
 //                       cast_with_flashback, cast_with_evoke, cast_with_escape,
 //                       cast_with_offspring, cast_with_impending
 //                  [11-16] chosen-mode multi-hot: 1.0 at index i if modal mode i (of the
-//                       spell's charm_choices) was announced at cast (CR 601.2b); all
+//                       object's charm_choices) was announced as it was put on the stack
+//                       (cast, activated or triggered — CR 601.2b, 602.2b, 603.3c); all
 //                       zeros when the object is not modal
 //                  [17-36] 4 target sub-slots x 5 floats. Target sub-slots carry the
 //                       object's ANNOUNCED targets (public info, CR 601.2c) in

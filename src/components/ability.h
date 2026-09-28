@@ -968,11 +968,10 @@ struct Ability {
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;
 
-    // Mode indices (into charm_choices) chosen when the spell was CAST (CR 601.2b), in pick
-    // order. Each chosen mode's targets were selected at the same time (CR 601.2c) and live on
-    // the charm_choices entry itself. effects::charm resolves exactly these modes; empty means
-    // the spell reached the stack through a path that didn't announce (legacy fallback: choose
-    // at resolution).
+    // Mode indices (into charm_choices) announced as the modal object was put on the stack
+    // (CR 601.2b, 602.2b, 603.3c; run_announce), in printed order once the announcement is
+    // complete. Each chosen mode's targets were selected at the same time (CR 601.2c) and live
+    // on the charm_choices entry itself. effects::charm resolves exactly these modes.
     std::vector<int> charm_chosen;
 
     // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:

@@ -3,15 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "../action_processor.h"
-#include "../classes/action.h"
 #include "../classes/game.h"
-#include "../cli_output.h"
-#include "../input_logger.h"
-#include "../queries/players.h"
-#include "../systems/orderer.h"
+#include "../error.h"
+#include "../queries/characteristics.h"
 #include "../resolution.h"
-#include "../targeting.h"
 
 namespace effects {
 
@@ -25,133 +20,39 @@ static void stamp_mode(const Ability &parent, Ability &mode) {
     mode.controller = parent.controller;
 }
 
-// Modal spell (CR 700.2): "Choose one/two —". The mode(s) and their targets were announced
-// when the spell was CAST (CR 601.2b/c) — see run_cast_flow's CHARM_MODE step — and recorded in
-// charm_chosen. Resolution only replays those picks in order: each mode's own resolve()
+// Modal spell or ability (CR 700.2): "Choose one/two —". The mode(s) and their targets were
+// announced as the object was put on the stack — cast (CR 601.2b/c), activated (602.2b) or
+// triggered (603.3c/d), all through run_announce — and recorded in charm_chosen, in printed
+// order. Resolution follows those modes in that order (CR 608.2c): each mode's own resolve()
 // re-verifies its targets (CR 608.2b), so a mode whose targets became illegal fizzles
 // individually without any prompting here. In a suspendable context each mode resolves as a
 // persisted CHARM_MODE FrameLevel (a COPY of the stored charm_choices entry — the stored
-// entry is never read again after its mode resolves, so the old by-reference resolution and
-// the copy are indistinguishable), with CharmRt.announced_idx as the persisted loop cursor.
-// The choose-at-resolution loop below remains as a FALLBACK for a charm that reached the
-// stack without an announcement (a cast path not routed through run_cast_flow).
+// entry is never read again after its mode resolves), with CharmRt.announced_idx as the
+// persisted loop cursor.
 HandlerResult charm(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     PendingDecisionScope pending_scope(ab.source.lki_entity());
-    if (!ab.charm_chosen.empty()) {
-        if (ctx.can_suspend()) {
-            CharmRt &rt = ctx.rt<CharmRt>();
-            for (; rt.announced_idx < static_cast<int>(ab.charm_chosen.size());
-                 ++rt.announced_idx) {
-                int idx = ab.charm_chosen[static_cast<size_t>(rt.announced_idx)];
-                if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
-                Ability *parent = &ab;
-                auto bind = [parent](Ability &mode) { stamp_mode(*parent, mode); };
-                if (ctx.resolve_child(ab.charm_choices[static_cast<size_t>(idx)],
-                                      FrameLevel::CHARM_MODE, idx, rt.announced_idx, bind,
-                                      orderer) == ResolveStatus::SUSPENDED)
-                    return HandlerResult::SUSPENDED;
-            }
-        } else {
-            for (int idx : ab.charm_chosen) {
-                if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
-                Ability &chosen = ab.charm_choices[static_cast<size_t>(idx)];
-                stamp_mode(ab, chosen);
-                resolve_ability(chosen, orderer);
-            }
-        }
-        // Skip subabilities — charm handles its own resolution
-        return HandlerResult::DONE_NO_SUBS;
-    }
-
-    // Resolution-time fallback: choose the mode(s) now. A staged machine over
-    // CharmRt so every prompt — the mode pick, a chosen mode's target pick
-    // (the shared run_target_select with a RESOLUTION asker), and any prompt
-    // inside the mode's own resolution — can suspend and resume.
-    CharmRt local_rt;
-    CharmRt &rt = ctx.can_suspend() ? ctx.rt<CharmRt>() : local_rt;
-    if (!rt.init) {
-        game_log("(modes were not announced at cast — choosing at resolution)\n");
-        rt.taken.assign(ab.charm_choices.size(), 0);  // CR 601.2b: a mode only once
-        rt.pick = 0;
-        rt.init = true;
-    }
-    const int to_pick = ab.def->charm_num < 1 ? 1 : ab.def->charm_num;
-
-    while (rt.pick < to_pick) {
-        if (rt.chosen_idx < 0) {
-            // Arm-only log: a resume re-enters with the mode ask latched.
-            if (!ctx.resuming()) game_log("Choose mode:\n");
-            std::vector<LegalAction> mode_actions;
-            std::vector<size_t> mode_indices;  // map action index -> charm_choices index
-            for (size_t i = 0; i < ab.charm_choices.size(); i++) {
-                if (rt.taken[i]) continue;
-                Ability &candidate = ab.charm_choices[i];
-                stamp_mode(ab, candidate);
-                // Skip modes that require targets but have none available.
-                if (candidate.def->valid_tgts != "N_A" && candidate.target_min > 0 &&
-                    !has_legal_targets(candidate, orderer)) {
-                    continue;
-                }
-                std::string desc =
-                    (i < ab.def->charm_choice_descriptions.size() && !ab.def->charm_choice_descriptions[i].empty())
-                        ? ab.def->charm_choice_descriptions[i]
-                        : ("Mode " + std::to_string(i + 1));
-                // Ground every mode to the charm's source card so the serialized
-                // action carries that card's id/zone/controller instead of the
-                // null-source sentinel — otherwise each mode emits card_id -1 and
-                // the modes differ only by the raw option_ordinal scalar, which
-                // reads as "all modes identical" to the policy/search (they were
-                // indistinguishable apart from a lone ordinal). The distinct
-                // option_ordinal still separates the modes from one another.
-                LegalAction la(PASS_PRIORITY, ab.source.lki_entity(), desc);
-                la.category = ActionCategory::CHOOSE_MODE;
-                la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
-                mode_actions.push_back(la);
-                mode_indices.push_back(i);
-            }
-            if (mode_actions.empty()) {
-                // No further legal mode (all taken or none with legal targets). A modal
-                // spell with too few legal modes simply resolves with what it could pick.
-                if (rt.pick == 0) game_log("No valid modes — charm fizzles\n");
-                break;
-            }
-            // Asked on the ambient seat (the resolving controller — a no-op
-            // repoint, exactly the seat the old inline get_input read from),
-            // under the handler's pending scope source.
-            Zone::Ownership seat = priority_seat();
-            int choice = ctx.ask(mode_actions, seat, ab.source.lki_entity());
-            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-            rt.chosen_idx = static_cast<int>(mode_indices[static_cast<size_t>(choice)]);
-            rt.taken[static_cast<size_t>(rt.chosen_idx)] = 1;
-        }
-
-        // Resolve the chosen mode: select its target(s) if any — on the STORED
-        // charm_choices entry, matching the old by-reference resolve_chosen_mode
-        // (the parent ability persists, so an in-flight selection survives a
-        // suspension) — then resolve it (as a persisted CHARM_MODE child when
-        // suspendable; the copy carries the just-chosen targets).
-        Ability &chosen = ab.charm_choices[static_cast<size_t>(rt.chosen_idx)];
-        stamp_mode(ab, chosen);
-        if (!rt.targets_done && chosen.def->valid_tgts != "N_A") {
-            ResolutionTargetAsker asker(ctx);
-            if (run_target_select(chosen, rt.tsel, asker, orderer, ab.controller) ==
-                TargetStatus::SUSPENDED)
-                return HandlerResult::SUSPENDED;
-        }
-        rt.targets_done = true;
-        if (ctx.can_suspend()) {
+    if (ab.charm_chosen.empty())
+        fatal_error("modal ability of " + entity_name(ab.source.lki_entity()) +
+                    " reached resolution with no announced mode (CR 700.2)");
+    if (ctx.can_suspend()) {
+        CharmRt &rt = ctx.rt<CharmRt>();
+        for (; rt.announced_idx < static_cast<int>(ab.charm_chosen.size()); ++rt.announced_idx) {
+            int idx = ab.charm_chosen[static_cast<size_t>(rt.announced_idx)];
+            if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
             Ability *parent = &ab;
             auto bind = [parent](Ability &mode) { stamp_mode(*parent, mode); };
-            if (ctx.resolve_child(chosen, FrameLevel::CHARM_MODE, rt.chosen_idx, rt.pick, bind,
+            if (ctx.resolve_child(ab.charm_choices[static_cast<size_t>(idx)],
+                                  FrameLevel::CHARM_MODE, idx, rt.announced_idx, bind,
                                   orderer) == ResolveStatus::SUSPENDED)
                 return HandlerResult::SUSPENDED;
-        } else {
+        }
+    } else {
+        for (int idx : ab.charm_chosen) {
+            if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
+            Ability &chosen = ab.charm_choices[static_cast<size_t>(idx)];
+            stamp_mode(ab, chosen);
             resolve_ability(chosen, orderer);
         }
-        rt.chosen_idx = -1;
-        rt.targets_done = false;
-        rt.tsel = TargetSelectRT{};
-        rt.pick++;
     }
     // Skip subabilities — charm handles its own resolution
     return HandlerResult::DONE_NO_SUBS;

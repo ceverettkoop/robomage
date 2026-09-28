@@ -191,9 +191,9 @@ static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership
 }
 
 // Fill a stack entry's announced choices — targets and chosen modal modes — from the
-// object's Ability (all public info, announced as it was cast / put on the stack,
-// CR 601.2b/c). Targets are recorded in announcement order: the primary ability's,
-// then targeting sub-abilities', then each cast-chosen mode's.
+// object's Ability (all public info, announced as it was put on the stack, CR 601.2b/c,
+// 602.2b, 603.3c/d). Targets are recorded in this order: the primary ability's, then
+// targeting sub-abilities', then each chosen mode's.
 static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer) {
     int n = 0;
     auto add_ability_targets = [&](const Ability& a) {

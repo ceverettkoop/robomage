@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "../action_processor.h"
+#include "../announce.h"
 #include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/ability.h"
@@ -117,21 +118,11 @@ static size_t storm_count_this_turn(const Game &game) {
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
 
-// One placement-time target choice (CR 603.3d) for `ab` — the trigger itself or one of its
-// targeting sub-abilities — on the persisted tp.tsel machine (blocking when the placement can't
-// suspend). SUSPENDED means the pick parked a TRIGGER_PLACE query; re-enter with the same tp.
-static TargetStatus choose_placement_target(Ability &ab, TriggerPlacementRT &tp, bool suspendable,
-                                            std::shared_ptr<Orderer> orderer,
-                                            Zone::Ownership controller);
-
-// The placement-time target choices of the trigger at the queue front (CR 603.3d, which applies
-// 601.2c): its own target, then each chained sub-ability's that targets (Cloak and Dagger,
-// Entwined's "and up to one target creature they control"), a sub's "ParentTarget" player
-// bound from the ability's chosen player target first. Returns SUSPENDED on a parked pick; sets
-// `removed` when a required target has no legal choice, so the ability is removed instead.
-static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementRT &tp,
-                                           bool suspendable, std::shared_ptr<Orderer> orderer,
-                                           bool &removed);
+// Announce the modes and targets of the trigger at the queue front as it is put on the stack
+// (CR 603.3c/d, run_announce) — asking through a parked TRIGGER_PLACE query, or inline when the
+// placement can't suspend. SUSPENDED means a pick parked; re-enter with the same tp.
+static AnnounceStatus announce_trigger(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                       bool suspendable, std::shared_ptr<Orderer> orderer);
 
 // Queue every ability in `ab_defs` that one of `events` triggers (CR 603.2), for the source
 // `entity` controlled by `controller`. `perm` is its Permanent while it is on the battlefield; a
@@ -158,7 +149,6 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
 // in one state-based-action check) still triggers, with its last-known abilities and controller.
 // Tokens keep no abilities to look back at once off the battlefield.
 static bool is_self_etb_event(const Event &ev, Entity entity);
-static bool trigger_needs_target(const Ability &ab);
 static ObjectRef moved_object(const Event &ev);
 static void match_departed_watcher_triggers(const std::vector<Event> &events,
                                             std::shared_ptr<Orderer> orderer,
@@ -193,12 +183,6 @@ static std::vector<const AbilityDef *> permanent_ability_defs(Entity entity, con
     }
     append_ability_defs(defs, perm.abilities);
     return defs;
-}
-
-// Does triggered ability `ab` still need its targets chosen as it is put on the stack (CR 603.3d)?
-// True when it targets and no target was bound from its trigger event.
-static bool trigger_needs_target(const Ability &ab) {
-    return ab.def->valid_tgts != "N_A" && ab.target.empty();
 }
 
 // The object a CARD_CHANGED_ZONE event moved, as it was before the move.
@@ -322,7 +306,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = trigger_ab.source.lki_entity();
                 pt.label = "Delayed trigger";
                 pt.log_line = "Delayed trigger fires.";
-                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
                 to_remove.push_back(i);
             } else if (expired) {
@@ -365,7 +348,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = 0;
                 pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
                 pt.log_line = "A floating triggered ability triggers.";
-                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
             continue;
@@ -391,7 +373,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         pt.source = 0;
         pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
         pt.log_line = "A floating triggered ability triggers.";
-        pt.needs_target = trigger_needs_target(trigger_ab);
         pending.push_back(pt);
     }
 
@@ -415,7 +396,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = 0;
                 pt.label = "Monarch (end-step draw)";
                 pt.log_line = "The monarch draws a card at the beginning of their end step.";
-                pt.needs_target = false;
                 pending.push_back(pt);
             }
             // Steal: a creature dealing combat damage to the monarch makes its controller the
@@ -436,7 +416,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = 0;
                 pt.label = "Monarch (steal on combat damage)";
                 pt.log_line = "A creature dealt combat damage to the monarch.";
-                pt.needs_target = false;
                 pending.push_back(pt);
             }
         }
@@ -479,7 +458,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
         pt.source = saga;
         pt.label = entity_name(saga) + " (chapter " + std::to_string(chapter) + ")";
         pt.log_line = entity_name(saga) + " chapter " + std::to_string(chapter) + " triggers.";
-        pt.needs_target = trigger_needs_target(trigger_ab);
         pending.push_back(pt);
     }
 
@@ -521,7 +499,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = entity;
             pt.label = perm.name + " (impending: remove a time counter)";
             pt.log_line = perm.name + " triggers: remove a time counter (impending).";
-            pt.needs_target = false;
             pending.push_back(pt);
         }
     }
@@ -559,7 +536,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = card;
             pt.label = cname + " (suspend: remove a time counter)";
             pt.log_line = cname + " triggers: remove a time counter (suspend).";
-            pt.needs_target = false;
             pending.push_back(pt);
         }
     }
@@ -720,7 +696,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = entity;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
     }
@@ -775,7 +750,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
             pt.source = spell_e;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
     }
@@ -821,7 +795,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
         }
@@ -870,7 +843,6 @@ void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Order
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = trigger_needs_target(trigger_ab);
                 pending.push_back(pt);
             }
         }
@@ -1236,7 +1208,6 @@ static void match_event_triggers(Entity entity, Zone::Ownership controller, cons
             // Triggered abilities that require a target (e.g. Talon Gates of Madara's
             // "up to one target creature phases out") choose their target as the ability
             // goes on the stack, by the controller, in APNAP placement order.
-            pt.needs_target = trigger_needs_target(trigger_ab);
             pending.push_back(pt);
         }
     }
@@ -1270,9 +1241,7 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     TriggerPlacementRT &tp = game.pending.trigger_placement;
     tp.active = true;
     tp.saved_priority = cur_game.priority.player_a_has_priority;
-    tp.target_in_flight = false;
-    tp.tsel = TargetSelectRT{};
-    tp.sub_idx = 0;
+    tp.announce = AnnounceRT{};
     tp.queue.clear();
     tp.placed.clear();
     for (Zone::Ownership owner : apnap)
@@ -1281,63 +1250,14 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     resume_trigger_placement(game, orderer);
 }
 
-static TargetStatus choose_placement_target(Ability &ab, TriggerPlacementRT &tp, bool suspendable,
-                                            std::shared_ptr<Orderer> orderer,
-                                            Zone::Ownership controller) {
+static AnnounceStatus announce_trigger(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                       bool suspendable, std::shared_ptr<Orderer> orderer) {
     if (!suspendable) {
-        select_target(ab, orderer, controller);
-        return TargetStatus::DONE;
-    }
-    if (!tp.target_in_flight) {
-        tp.target_in_flight = true;
-        tp.tsel = TargetSelectRT{};
+        BlockingTargetAsker asker;
+        return run_announce(pt.ab, tp.announce, asker, orderer, pt.controller, true);
     }
     TriggerPlaceTargetAsker asker;
-    if (run_target_select(ab, tp.tsel, asker, orderer, controller) == TargetStatus::SUSPENDED)
-        return TargetStatus::SUSPENDED;
-    tp.target_in_flight = false;
-    return TargetStatus::DONE;
-}
-
-static TargetStatus choose_trigger_targets(PendingTrigger &pt, TriggerPlacementRT &tp,
-                                           bool suspendable, std::shared_ptr<Orderer> orderer,
-                                           bool &removed) {
-    removed = false;
-    // The legality checks run once per choice, before its pick begins (target_in_flight clear);
-    // nothing runs between a parked pick and its resume.
-    if (pt.needs_target) {
-        if (!tp.target_in_flight && !has_legal_targets(pt.ab, orderer)) {
-            removed = true;
-            return TargetStatus::DONE;
-        }
-        if (choose_placement_target(pt.ab, tp, suspendable, orderer, pt.controller) ==
-            TargetStatus::SUSPENDED)
-            return TargetStatus::SUSPENDED;
-        pt.needs_target = false;  // chosen: a resume inside a sub's pick must not re-ask it
-    }
-    for (; tp.sub_idx < pt.ab.subabilities.size(); ++tp.sub_idx) {
-        Ability &sub = pt.ab.subabilities[tp.sub_idx];
-        if (!tp.target_in_flight) {
-            // An Execute$ body (a reflexive or delayed trigger's effect) belongs to the ability
-            // that triggers later and chooses its targets then (CR 603.12, 603.7).
-            if (sub.def->from_delayed_execute || sub.def->valid_tgts == "N_A" || !sub.target.empty() ||
-                !sub.targets.empty())
-                continue;
-            sub.source = pt.ab.source;
-            sub.controller = pt.ab.controller;
-            sub.targeted_player = pt.ab.player_target_for_subs();
-            if (!has_legal_targets(sub, orderer)) {
-                removed = true;
-                tp.sub_idx = 0;
-                return TargetStatus::DONE;
-            }
-        }
-        if (choose_placement_target(sub, tp, suspendable, orderer, pt.controller) ==
-            TargetStatus::SUSPENDED)
-            return TargetStatus::SUSPENDED;
-    }
-    tp.sub_idx = 0;
-    return TargetStatus::DONE;
+    return run_announce(pt.ab, tp.announce, asker, orderer, pt.controller, true);
 }
 
 void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -1366,7 +1286,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // order of their choosing. We place one at a time; the first chosen ends up on the
         // bottom of the stack (resolves last). A single trigger needs no choice.
         size_t pick = 0;  // position within the group
-        if (!tp.target_in_flight && group_size > 1) {
+        if (!tp.announce.active && group_size > 1) {
             PendingQuery &pq = game.pending.query;
             if (suspendable && pq.active) {
                 // Consume the latched ordering answer (the queue is untouched between
@@ -1420,17 +1340,17 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                         tp.queue.begin() + static_cast<ptrdiff_t>(pick) + 1);
 
         PendingTrigger &pt = tp.queue.front();
-        bool removed = false;
-        if (choose_trigger_targets(pt, tp, suspendable, orderer, removed) ==
-            TargetStatus::SUSPENDED)
-            return;
-        if (removed) {
-            // CR 603.3d: if no legal choices can be made for a required target as the
-            // triggered ability would go on the stack, the ability is simply removed —
-            // never placed target-less (it would fizzle confusingly, or worse, resolve
-            // against target 0). Optional targeting (target_min 0) always passes.
-            game_log("%s's trigger is removed - no legal targets (603.3d)\n",
-                     entity_name(pt.source).c_str());
+        const AnnounceStatus announced = announce_trigger(pt, tp, suspendable, orderer);
+        if (announced == AnnounceStatus::SUSPENDED) return;
+        if (announced == AnnounceStatus::REMOVED) {
+            // CR 603.3c/d: if no mode can be chosen, or no legal choice can be made for a
+            // required target, as the triggered ability would go on the stack, the ability is
+            // simply removed — never placed mode- or target-less (it would fizzle confusingly,
+            // or worse, resolve against target 0). Optional targeting (target_min 0) always
+            // passes.
+            const bool no_mode = is_modal(pt.ab) && pt.ab.charm_chosen.empty();
+            game_log("%s's trigger is removed - no legal %s\n", entity_name(pt.source).c_str(),
+                     no_mode ? "modes (603.3c)" : "targets (603.3d)");
             tp.queue.erase(tp.queue.begin());
             continue;
         }

@@ -87,7 +87,6 @@ void Game::queue_trigger(const Ability &ab, const std::string &log_line) {
     pt.controller = ab.controller;
     pt.source = ab.source.lki_entity();
     pt.log_line = log_line;
-    pt.needs_target = (ab.def->valid_tgts != "N_A" && ab.target.empty() && ab.targets.empty());
     waiting_triggers.push_back(std::move(pt));
 }
 

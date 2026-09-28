@@ -354,10 +354,8 @@ struct Game {
                 LIFE_X,           // variable life X ANNOUNCEMENT (Toxic Deluge's PayLife<X>;
                                   // CR 601.2b announces the value, the life is paid at PAY_APPLY)
                 GIFT,             // gift promise y/n (incl. the forced-promise no-prompt path)
-                CHARM_MODE,       // modal mode announcement (one pick per entry, CR 601.2b)
-                CHARM_TARGET,     // the just-picked mode's targets (before the next mode pick)
-                PRIMARY_TARGET,   // primary spell target
-                SUB_TARGET,       // targeting chained sub-abilities' targets (ends with AddComponent)
+                MODES_TARGETS,    // modes (CR 601.2b) and every target (601.2c) via run_announce
+                                  // (pc.announce; ends with AddComponent)
                 AURA_TARGET,      // aura enchant target (pc.enchant_ab)
                 ANNOUNCE,         // primary-template setup; dispatches into the announce steps
                 // ── payment phase (CR 601.2f-h), all of it after targets ──
@@ -479,22 +477,17 @@ struct Game {
             std::vector<CostRemoval> cost_removals;
             // The half-built primary spell ability. The ENTITY's Ability
             // component is added at the same point as the blocking flow did
-            // (at the end of SUB_TARGET, once every announce target is
+            // (at the end of MODES_TARGETS, once every announce target is
             // chosen), so component state at every prompt matches the blocking
             // flow's exactly: absent at the announce prompts, present from the
             // payment steps on.
             Ability ability;
             bool have_ability = false;
             // ── Announce-stage progress (Batch 10) ──
-            // Charm announcement: completed mode iterations (a mode counts
-            // once its targets are chosen). The picked modes themselves
-            // persist in ability.charm_chosen, which reconstructs the taken[]
-            // menu filter on resume.
-            int charm_picks_done = 0;
-            // Which chained sub-ability's target selection is in flight.
-            size_t sub_idx = 0;
-            // The shared in-flight target pick (charm-mode / primary / sub /
-            // aura — one at a time, reset between). Member field per the
+            // The modes-and-targets announcement (MODES_TARGETS); the picked
+            // modes persist in ability.charm_chosen.
+            AnnounceRT announce;
+            // The aura enchant-target pick (AURA_TARGET). Member field per the
             // Batch 4 finding (never its own EffectRuntime alternative).
             TargetSelectRT tsel;
             // AURA cast (CR 303.4): the transient targeting ability built from
@@ -548,10 +541,10 @@ struct Game {
             // the non-mana costs only once the mana committed, so a proposal reversed
             // at any step before PAY_APPLY (CR 733.1) leaves no trace.
             enum Step {
-                ZONE_TARGET,       // hand/graveyard activation: pre-cost target select
+                ZONE_TARGET,       // hand/graveyard activation: pre-cost modes/targets
                 X_LADDER,          // X activation cost (Candelabra of Tawnos)
                 LOYALTY_X,         // X loyalty cost (Chandra, Flamecaller's [-X])
-                TARGET,            // battlefield pre-cost select_target
+                TARGET,            // battlefield pre-cost modes/targets (run_announce)
                 COST_SAC,          // type-based sacrifice-cost pick (chosen, not yet moved)
                 COST_RETURN,       // return-to-hand-cost pick (chosen, not yet moved)
                 PAY,               // tap cost + mana payment (failure rewinds; sync)
@@ -589,10 +582,10 @@ struct Game {
             // fails (mana_snap_taken).
             ManaPaymentSnapshot mana_snap;
             bool mana_snap_taken = false;
-            // The shared in-flight target pick (ZONE_TARGET / TARGET). Member
+            // The modes-and-targets announcement (ZONE_TARGET / TARGET). Member
             // field per the Batch 4 finding (never its own EffectRuntime
             // alternative).
-            TargetSelectRT tsel;
+            AnnounceRT announce;
         };
         // Pre-game phase state (Family F): mulligans and CR 103.6b opening-hand
         // actions run as loop-top decisions driven by the main loop's pregame

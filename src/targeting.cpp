@@ -401,6 +401,8 @@ static Zone::Ownership ability_perspective_player(const Ability &ability) {
 }
 
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
+    if (is_modal(ability))
+        return has_choosable_modes(ability, orderer, ability_perspective_player(ability), false);
     if (ability.def->valid_tgts == "N_A") return true;
     // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
     // targets must be evaluated from the controlling player's perspective (see above), or a
@@ -417,4 +419,29 @@ int effective_target_min(const Ability &ab, Zone::Ownership perspective,
     if (!ab.def->target_min_count_expr.empty())
         return static_cast<int>(evaluate_amount(ab.def->target_min_count_expr, perspective, ab.source.lki_entity()));
     return ab.target_min;
+}
+
+bool is_modal(const Ability &ab) { return ab.def->kind == EffectKind::Charm; }
+
+bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,
+                    Zone::Ownership chooser, bool x_announced) {
+    const Ability &mode = modal.charm_choices[idx];
+    if (mode.def->valid_tgts == "N_A") return true;
+    // Probed as the modal object's own: its source and controller decide protection and the
+    // YouCtrl/OppCtrl perspective of the mode's targets.
+    Ability probe = mode;
+    probe.source = modal.source;
+    probe.controller = chooser;
+    if (effective_target_min(probe, chooser, orderer, x_announced) <= 0) return true;
+    return !build_valid_targets(probe, orderer, chooser).empty();
+}
+
+bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
+                         Zone::Ownership chooser, bool x_announced) {
+    const int needed = modal.def->charm_num < 1 ? 1 : modal.def->charm_num;
+    int choosable = 0;
+    for (size_t i = 0; i < modal.charm_choices.size(); i++)
+        if (mode_choosable(modal, i, orderer, chooser, x_announced) && ++choosable >= needed)
+            return true;
+    return false;
 }

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include "announce.h"
 #include "classes/match_state.h"
 #include "choice_labels.h"
 #include "cli_output.h"
@@ -124,14 +125,6 @@ static std::vector<const Ability *> spell_targeting_abilities(const Ability &pri
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised);
-static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
-                                 Zone::Ownership caster);
-static std::string charm_mode_desc(const Ability &ability, size_t idx);
-static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
-                                                      std::shared_ptr<Orderer> orderer,
-                                                      Zone::Ownership caster,
-                                                      const std::vector<bool> &taken,
-                                                      std::vector<size_t> &mode_indices);
 static void arm_flow_query(Game &game, PendingQuery::Tag tag, std::vector<LegalAction> &&menu,
                            Zone::Ownership chooser, Entity decision_source);
 static void arm_cast_query(Game &game, std::vector<LegalAction> &&menu, Zone::Ownership chooser,
@@ -1007,28 +1000,12 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
     // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes can be legally
-    // chosen — a choosable mode needs no target, or has a legal target available. The modes
-    // live in charm_choices (not subabilities), so the ordinary targeting walk below never
-    // sees them; without this a Charm whose every mode lacked a target (Red Elemental Blast
-    // with nothing blue anywhere) was offered and then hit an empty mode menu at cast.
-    // Mirrors charm_mode_choosable, the filter the CHARM_MODE cast step applies (X isn't
-    // chosen yet at gate time, so an xPaid-driven target minimum counts as 0 here — X may
-    // legally be 0 — matching effective_target_min).
-    if (!primary.charm_choices.empty()) {
-        int choosable = 0;
-        int needed = primary.def->charm_num < 1 ? 1 : primary.def->charm_num;
-        for (const Ability &mode : primary.charm_choices) {
-            Ability probe = mode;
-            probe.source = primary.source;
-            probe.controller = caster;
-            if (mode.def->valid_tgts == "N_A" ||
-                effective_target_min(probe, caster, orderer, false) <= 0 ||
-                !build_valid_targets(probe, orderer, caster).empty()) {
-                if (++choosable >= needed) return true;
-            }
-        }
-        return false;
-    }
+    // chosen. The modes live in charm_choices (not subabilities), so the ordinary targeting walk
+    // below never sees them; without this a Charm whose every mode lacked a target (Red
+    // Elemental Blast with nothing blue anywhere) would be offered and then hit an empty mode
+    // menu at cast. X isn't chosen yet at gate time, so an xPaid-driven target minimum counts as
+    // 0 here — X may legally be 0.
+    if (is_modal(primary)) return has_choosable_modes(primary, orderer, caster, false);
 
     std::vector<const Ability *> targeting = spell_targeting_abilities(primary);
     if (targeting.empty()) return true;  // no targets required
@@ -1045,7 +1022,7 @@ Ability cast_gate_probe(const Ability &tmpl, Entity card_entity, Zone::Ownership
     // Chained targeting sub-abilities (Into the Flood Maw's DBChangeZone, Cabal Therapy's
     // DB$ Discard) pick their own target as the spell is cast (CR 601.2c) and are probed via
     // spell_targeting_abilities, so they need the same source/controller. Charm modes are stamped
-    // by spell_has_castable_targets from primary.source, so they inherit the stamp set here.
+    // by mode_choosable from the modal ability's source, so they inherit the stamp set here.
     for (auto &sub : probe.subabilities) {
         sub.source = probe.source;
         sub.controller = caster;
@@ -1204,75 +1181,16 @@ TargetStatus run_target_select(Ability &ability, TargetSelectRT &rt, TargetAsker
     return TargetStatus::DONE;
 }
 
-namespace {
-// Blocking asker — exactly the pre-suspension select_target convention: expose
-// the asking source as the pending-decision context and read one choice inline
-// (the caller has already seated priority at the choosing player; no repoint).
-class BlockingTargetAsker final : public TargetAsker {
-    public:
-        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
-            PendingDecisionScope pending_scope(decision_source);
-            return InputLogger::instance().get_input(menu);
-        }
-        bool resuming() const override { return false; }
-};
-}  // namespace
+int BlockingTargetAsker::ask(const std::vector<LegalAction> &menu, Entity decision_source) {
+    PendingDecisionScope pending_scope(decision_source);
+    return InputLogger::instance().get_input(menu);
+}
 
 void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
     BlockingTargetAsker asker;
     TargetSelectRT rt;
     if (run_target_select(ability, rt, asker, orderer, priority_player) != TargetStatus::DONE)
         fatal_error("blocking select_target suspended — a blocking asker can never park a query");
-}
-
-// Can this charm mode be legally chosen right now (CR 601.2b/c)? A mode is unchoosable only
-// when it REQUIRES a target and none exists. The required minimum is select_target's
-// (effective_target_min, with the X already announced — X is chosen before modes).
-static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
-                                 Zone::Ownership caster) {
-    if (candidate.def->valid_tgts == "N_A") return true;
-    if (effective_target_min(candidate, caster, orderer, true) <= 0) return true;
-    return !build_valid_targets(candidate, orderer, caster).empty();
-}
-
-// The display label for one charm mode: its script description, else a positional fallback.
-static std::string charm_mode_desc(const Ability &ability, size_t idx) {
-    return (idx < ability.def->charm_choice_descriptions.size() &&
-            !ability.def->charm_choice_descriptions[idx].empty())
-               ? ability.def->charm_choice_descriptions[idx]
-               : ("Mode " + std::to_string(idx + 1));
-}
-
-// One mode pick's menu (CR 601.2b): the not-yet-taken, currently-choosable modes, with
-// mode_indices mapping action index -> charm_choices index. Pure ECS reads (choosability is
-// re-evaluated per pick), so the suspended CHARM_MODE step re-derives the identical menu on
-// resume. Used by the run_cast_flow CHARM_MODE step.
-static std::vector<LegalAction> build_charm_mode_menu(Ability &ability,
-                                                      std::shared_ptr<Orderer> orderer,
-                                                      Zone::Ownership caster,
-                                                      const std::vector<bool> &taken,
-                                                      std::vector<size_t> &mode_indices) {
-    std::vector<LegalAction> mode_actions;
-    mode_indices.clear();
-    for (size_t i = 0; i < ability.charm_choices.size(); i++) {
-        if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
-        Ability &candidate = ability.charm_choices[i];
-        candidate.source = ability.source;
-        candidate.controller = caster;
-        if (!charm_mode_choosable(candidate, orderer, caster)) continue;
-        // Ground every mode to the charm's source card so the serialized action
-        // carries that card's id/zone/controller instead of the null-source
-        // sentinel — otherwise each mode emits card_id -1 and the modes differ
-        // only by the raw option_ordinal scalar, which reads as "all modes
-        // identical" to the policy/search. The distinct option_ordinal still
-        // separates the modes from one another.
-        LegalAction la(PASS_PRIORITY, ability.source.lki_entity(), charm_mode_desc(ability, i));
-        la.category = ActionCategory::CHOOSE_MODE;
-        la.option_ordinal = static_cast<int>(i);  // mode index (into charm_choices)
-        mode_actions.push_back(la);
-        mode_indices.push_back(i);
-    }
-    return mode_actions;
 }
 
 // Ward (CR 702.21): "Whenever this permanent becomes the target of a spell or ability an
@@ -1590,14 +1508,12 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
 
     for (;;) switch (pa.step) {
         case Game::PendingActivation::ZONE_TARGET: {
-            // Select targets before paying costs
-            if (pa.stack_ab.def->valid_tgts != "N_A") {
-                FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
-                                      permanent_entity);
-                if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
-                    TargetStatus::DONE)
-                    return;
-            }
+            // Announce modes and select targets before paying costs (CR 602.2b)
+            FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
+                                  permanent_entity);
+            if (run_announce(pa.stack_ab, pa.announce, asker, orderer, controller, false) ==
+                AnnounceStatus::SUSPENDED)
+                return;
             pa.step = Game::PendingActivation::COST_SAC;
             break;
         }
@@ -1679,12 +1595,12 @@ static void run_activation_flow(Game::PendingActivation &pa, Game &game,
         }
 
         case Game::PendingActivation::TARGET: {
-            // SELECT TARGETS BEFORE PAYING COSTS
-            if (!is_mana_ability && pa.stack_ab.def->valid_tgts != "N_A") {
+            // ANNOUNCE MODES AND SELECT TARGETS BEFORE PAYING COSTS (CR 602.2b)
+            if (!is_mana_ability) {
                 FlowTargetAsker asker(game, controller, resume_choice, PendingQuery::ACTIVATION,
                                       permanent_entity);
-                if (run_target_select(pa.stack_ab, pa.tsel, asker, orderer, controller) !=
-                    TargetStatus::DONE)
+                if (run_announce(pa.stack_ab, pa.announce, asker, orderer, controller, false) ==
+                    AnnounceStatus::SUSPENDED)
                     return;
             }
             pa.step = Game::PendingActivation::COST_SAC;
@@ -2557,7 +2473,7 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
         case Game::PendingCast::ANNOUNCE: {
             // Find the primary spell ability template and copy it into pc BY VALUE — the
             // ENTITY's Ability component is added only once every announce target is chosen
-            // (end of SUB_TARGET), the blocking flow's exact position, so component state at
+            // (end of MODES_TARGETS), the blocking flow's exact position, so component state at
             // every announce prompt matches it (absent during announcement, present after).
             for (const auto &ability_template : card_data.abilities) {
                 if (ability_template->ability_type != AbilityDef::SPELL) continue;
@@ -2573,122 +2489,25 @@ static void run_cast_flow(Game::PendingCast &pc, Game &game, std::shared_ptr<Ord
                 break;  // TODO: support spells with multiple abilities
             }
 
-            // Announce cast-time choices (CR 601.2b/c) across the steps below: modal mode(s)
-            // interleaved with their targets (CHARM_MODE/CHARM_TARGET), the primary target
-            // (PRIMARY_TARGET), targeting sub-abilities' targets (SUB_TARGET), and the aura
-            // enchant target (AURA_TARGET). NOTE on ordering: strict CR 601.2b announces modes
-            // before X, but X was chosen above in the cost branch — mode choosability can
-            // depend on X (Kozilek's Command's "Creature.cmcLEX" exile mode), and both are
-            // the caster's own announcements made atomically before any opponent priority,
-            // so the swap is not opponent-observable.
-            pc.charm_picks_done = 0;
-            pc.sub_idx = 0;
+            // Announce cast-time choices (CR 601.2b/c): the modal mode(s) interleaved with
+            // their targets, the primary target and targeting sub-abilities' targets
+            // (MODES_TARGETS, run_announce), then the aura enchant target (AURA_TARGET). NOTE on
+            // ordering: strict CR 601.2b announces modes before X, but X was chosen above in
+            // the cost branch — mode choosability can depend on X (Kozilek's Command's
+            // "Creature.cmcLEX" exile mode), and both are the caster's own announcements made
+            // atomically before any opponent priority, so the swap is not opponent-observable.
+            pc.announce = AnnounceRT{};
             pc.tsel = TargetSelectRT{};
-            if (!pc.have_ability)
-                pc.step = Game::PendingCast::AURA_TARGET;
-            else if (!pc.ability.charm_choices.empty())
-                pc.step = Game::PendingCast::CHARM_MODE;
-            else
-                pc.step = Game::PendingCast::PRIMARY_TARGET;
+            pc.step = pc.have_ability ? Game::PendingCast::MODES_TARGETS
+                                      : Game::PendingCast::AURA_TARGET;
             break;
         }
 
-        case Game::PendingCast::CHARM_MODE: {
-            // Modal spell announcement (CR 601.2b): one mode pick per pass; the just-picked
-            // mode's targets are chosen (CHARM_TARGET) before the NEXT mode pick. The picked
-            // modes persist in
-            // ability.charm_chosen — which also reconstructs the taken[] filter on resume —
-            // and pc.charm_picks_done counts completed iterations.
-            Ability &ability = pc.ability;
-            int to_pick = ability.def->charm_num < 1 ? 1 : ability.def->charm_num;
-            if (pc.charm_picks_done >= to_pick) {
-                pc.step = Game::PendingCast::PRIMARY_TARGET;
-                break;
-            }
-            std::vector<bool> taken(ability.charm_choices.size(), false);
-            for (int ci : ability.charm_chosen)
-                if (ci >= 0 && static_cast<size_t>(ci) < taken.size())
-                    taken[static_cast<size_t>(ci)] = true;
-            std::vector<size_t> mode_indices;  // map action index -> charm_choices index
-            if (resume_choice >= 0) {
-                // Apply the latched mode pick against the re-derived (identical) menu.
-                std::vector<LegalAction> mode_actions =
-                    build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
-                size_t chosen_idx = mode_indices[static_cast<size_t>(resume_choice)];
-                resume_choice = -1;
-                ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
-                Ability &chosen = ability.charm_choices[chosen_idx];
-                game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
-                         charm_mode_desc(ability, chosen_idx).c_str());
-                if (chosen.def->valid_tgts != "N_A") {
-                    pc.tsel = TargetSelectRT{};
-                    pc.step = Game::PendingCast::CHARM_TARGET;
-                } else {
-                    pc.charm_picks_done++;  // no targets — straight to the next mode pick
-                }
-                break;
-            }
-            game_log("Choose mode:\n");
-            std::vector<LegalAction> mode_actions =
-                build_charm_mode_menu(ability, orderer, caster, taken, mode_indices);
-            if (mode_actions.empty()) {
-                // No further legal mode (all taken or none with legal targets). The
-                // cast-legality gate (spell_has_castable_targets) requires CharmNum$
-                // choosable modes up front, so this is only reachable when an earlier pick's
-                // target choice changed the board — proceed with the modes picked so far
-                // rather than aborting the cast. Re-evaluated at arm, like the blocking loop.
-                game_log("No further legal mode — %d chosen\n", pc.charm_picks_done);
-                pc.step = Game::PendingCast::PRIMARY_TARGET;
-                break;
-            }
-            arm_cast_query(game, std::move(mode_actions), caster, ability.source.lki_entity());
-            return;
-        }
-
-        case Game::PendingCast::CHARM_TARGET: {
-            // The just-picked mode's targets (CR 601.2c), before the next mode pick.
-            Ability &chosen = pc.ability.charm_choices[
-                static_cast<size_t>(pc.ability.charm_chosen.back())];
+        case Game::PendingCast::MODES_TARGETS: {
             FlowTargetAsker asker(game, caster, resume_choice);
-            if (run_target_select(chosen, pc.tsel, asker, orderer, caster) !=
-                TargetStatus::DONE)
+            if (run_announce(pc.ability, pc.announce, asker, orderer, caster, false) ==
+                AnnounceStatus::SUSPENDED)
                 return;
-            pc.charm_picks_done++;
-            pc.step = Game::PendingCast::CHARM_MODE;
-            break;
-        }
-
-        case Game::PendingCast::PRIMARY_TARGET: {
-            if (pc.ability.def->valid_tgts != "N_A") {
-                FlowTargetAsker asker(game, caster, resume_choice);
-                if (run_target_select(pc.ability, pc.tsel, asker, orderer, caster) !=
-                    TargetStatus::DONE)
-                    return;
-            }
-            pc.sub_idx = 0;
-            pc.step = Game::PendingCast::SUB_TARGET;
-            break;
-        }
-
-        case Game::PendingCast::SUB_TARGET: {
-            // A spell whose top-level effect doesn't itself target, but whose chained
-            // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal Therapy:
-            // SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$ Player).
-            // Select each targeting sub-ability's target now and store it on the sub-ability
-            // template; resolution preserves it (see resolve_ability).
-            while (pc.sub_idx < pc.ability.subabilities.size()) {
-                Ability &sub = pc.ability.subabilities[pc.sub_idx];
-                if (sub.def->valid_tgts != "N_A") {
-                    sub.source = pc.ability.source;
-                    sub.controller = caster;
-                    sub.targeted_player = pc.ability.player_target_for_subs();  // ParentTarget
-                    FlowTargetAsker asker(game, caster, resume_choice);
-                    if (run_target_select(sub, pc.tsel, asker, orderer, caster) !=
-                        TargetStatus::DONE)
-                        return;
-                }
-                pc.sub_idx++;
-            }
             // Announcement complete: add the fully-targeted Ability to the entity.
             global_coordinator.AddComponent(spell_entity, pc.ability);
             pc.step = Game::PendingCast::AURA_TARGET;

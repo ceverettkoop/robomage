@@ -151,6 +151,21 @@ struct TargetSelectRT {
     int picked = 0;          // multi-target picks completed so far
 };
 
+// The persisted progress of announcing a stack object's modes and targets (run_announce,
+// announce.h; CR 601.2b/c, 602.2b, 603.3c/d): the stage, the completed mode picks, and the
+// in-flight target pick. Embedded BY VALUE in the cast, activation and trigger-placement state
+// (a member field, per the Batch 4 finding). The picked modes themselves persist in the
+// announced ability's charm_chosen.
+struct AnnounceRT {
+    enum Stage { MODES, MODE_TARGETS, PRIMARY, SUBS };
+    bool active = false;          // an announcement is under way (a choice may be parked)
+    Stage stage = MODES;
+    int mode_picks = 0;           // completed mode iterations (a mode counts once its targets are chosen)
+    size_t sub_idx = 0;           // next chained sub-ability to target (SUBS)
+    bool pick_in_flight = false;  // the current target choice passed its legality check and is being picked
+    TargetSelectRT tsel;          // the in-flight target pick
+};
+
 // ── Batch 8: container effects (nested resolves as persisted FrameLevels) ───
 // These rts persist a CONTAINER handler's own loop progress; the children they
 // drive resolve as persisted deeper FrameLevels via FrameCtx::resolve_child
@@ -158,16 +173,9 @@ struct TargetSelectRT {
 // TargetSelectRT machines are member fields per the Batch 4 finding (a variant
 // alternative of their own would dangle the host's rt reference).
 struct CharmRt {
-    // Announced path (modes + targets chosen at cast): next charm_chosen
-    // position to resolve.
+    // Next charm_chosen position to resolve (the modes were announced as the object was put
+    // on the stack).
     int announced_idx = 0;
-    // Resolution-time fallback (a charm that reached the stack unannounced):
-    bool init = false;            // "(modes were not announced...)" log printed; taken sized
-    std::vector<char> taken;      // CR 601.2b: a mode can be chosen only once
-    int pick = 0;                 // mode picks completed
-    int chosen_idx = -1;          // mode chosen for the CURRENT pick (-1 = ask pending)
-    bool targets_done = false;    // current pick's target selection completed
-    TargetSelectRT tsel;          // current mode's in-flight target selection
 };
 struct RepeatRt {
     bool init = false;            // saved_remembered captured
@@ -268,6 +276,15 @@ class TargetAsker {
         virtual bool resuming() const = 0;
 };
 
+// The blocking asker: exposes the asking source as the pending-decision context and reads one
+// choice inline. The caller seats priority at the choosing player; it never repoints the seat.
+// Used where no loop top can take a parked query (select_target; pre-game trigger placement).
+class BlockingTargetAsker final : public TargetAsker {
+    public:
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override;
+        bool resuming() const override { return false; }
+};
+
 // ── Trigger placement (Batch 5) ─────────────────────────────────────────────
 // One collected trigger waiting to be put on the stack (the persisted form of
 // state_manager_triggers.cpp's PendingTrigger; Ability is a pure value type).
@@ -277,7 +294,6 @@ struct PendingTriggerRT {
     Entity source = 0;          // source permanent (logging / menu grounding only; ab.source is the ref)
     std::string label;          // choice label when its controller orders simultaneous triggers
     std::string log_line;       // narrative line emitted when it is placed on the stack
-    bool needs_target = false;  // select a target at placement time if it still has legal targets
 };
 
 // The whole persisted APNAP placement (CR 603.3b): armed by place_triggers_apnap
@@ -291,9 +307,7 @@ struct TriggerPlacementRT {
     bool active = false;
     std::vector<PendingTriggerRT> queue;
     bool saved_priority = false;   // priority.player_a_has_priority to restore at completion
-    bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
-    TargetSelectRT tsel;           // the front trigger's in-flight target selection
-    size_t sub_idx = 0;            // next of the front trigger's sub-abilities to target (603.3d)
+    AnnounceRT announce;           // the front trigger's mode/target announcement (603.3c/d)
     std::vector<Entity> placed;    // abilities already put on the stack by this placement; their
                                    // targeting hooks (Ward, becomes-target) fire once it completes
 };
@@ -433,8 +447,8 @@ class FrameCtx {
 };
 
 // TargetAsker with the RESOLUTION family tag (Batch 8): the suspendable form
-// of a resolution-time select_target (charm's fallback mode targeting,
-// immediate_trigger's per-sub selection). Delegates each pick straight to
+// of a resolution-time select_target (a storm or spell copy's new targets, an
+// Aura put onto the battlefield choosing what it enchants). Delegates each pick straight to
 // FrameCtx::ask — consume-or-park with tag RESOLUTION — asking on the AMBIENT
 // seat, so it never repoints priority itself (Batch 5 finding: the call site
 // seats the chooser, exactly as blocking select_target expects; during a root

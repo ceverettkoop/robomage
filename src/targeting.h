@@ -33,8 +33,25 @@ std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<
 
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 // "Requirement" is the ability's minimum target count (CR 601.2c) as effective_target_min reads it
-// before X is announced: an X-driven minimum counts as 0, since X may legally be 0.
+// before X is announced: an X-driven minimum counts as 0, since X may legally be 0. A modal
+// ability (CR 700.2) needs its required number of choosable modes (has_choosable_modes).
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer);
+
+// ── Modes (CR 700.2) ─────────────────────────────────────────────────────────
+// A modal spell or ability ("Choose one —", DB$/SP$/AB$ Charm): its modes live in
+// charm_choices, and the ones announced as it was put on the stack in charm_chosen.
+bool is_modal(const Ability &ab);
+
+// Can mode `idx` of `modal` be chosen by `chooser` now (CR 700.2a/b, 603.3c)? A mode can't be
+// chosen only when it requires a target and none is legal. The required minimum is
+// effective_target_min's, reading the announced X when `x_announced`.
+bool mode_choosable(const Ability &modal, size_t idx, std::shared_ptr<Orderer> orderer,
+                    Zone::Ownership chooser, bool x_announced);
+
+// Can `modal`'s required number of different modes (CharmNum$, default one) be chosen now?
+// The legality gate for casting a modal spell or activating a modal ability (CR 601.2b, 602.2b).
+bool has_choosable_modes(const Ability &modal, std::shared_ptr<Orderer> orderer,
+                         Zone::Ownership chooser, bool x_announced);
 
 // The minimum number of targets `ab` requires (CR 601.2c), the one rule behind the cast- and
 // activation-legality gates (has_legal_targets), the charm-mode filter and target selection. A
