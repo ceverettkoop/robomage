@@ -16,14 +16,14 @@
 #include "components/spell.h"
 #include "components/effect.h"
 #include "components/token.h"
-#include "components/color_identity.h"
 #include "classes/colors.h"
+#include "queries/characteristics.h"
 
 extern Coordinator global_coordinator;
 
 static const char *zone_str(Zone::ZoneValue z);
 static const char *owner_str(Zone::Ownership o);
-static const char *ability_type_str(Ability::AbilityType t);
+static const char *ability_type_str(AbilityDef::AbilityType t);
 static void print_backtrace();
 
 static const char *zone_str(Zone::ZoneValue z) {
@@ -48,11 +48,11 @@ static const char *owner_str(Zone::Ownership o) {
     return "?";
 }
 
-static const char *ability_type_str(Ability::AbilityType t) {
+static const char *ability_type_str(AbilityDef::AbilityType t) {
     switch (t) {
-    case Ability::TRIGGERED: return "TRIGGERED";
-    case Ability::ACTIVATED: return "ACTIVATED";
-    case Ability::SPELL:     return "SPELL";
+    case AbilityDef::TRIGGERED: return "TRIGGERED";
+    case AbilityDef::ACTIVATED: return "ACTIVATED";
+    case AbilityDef::SPELL:     return "SPELL";
     }
     return "?";
 }
@@ -97,7 +97,7 @@ void dump_entity(Entity e) {
         fprintf(stderr, "    is_token=%d  is_tapped=%d  has_summoning_sickness=%d\n",
                 p.is_token, p.is_tapped, p.has_summoning_sickness);
         fprintf(stderr, "    transformed=%d  is_phased_out=%d\n", p.transformed, p.is_phased_out);
-        fprintf(stderr, "    equipped_to=%u  equipped_by=%u\n", p.equipped_to, p.equipped_by);
+        fprintf(stderr, "    equipped_to=%u\n", p.equipped_to.lki_entity());
         fprintf(stderr, "    abilities: %zu  static_abilities: %zu\n",
                 p.abilities.size(), p.static_abilities.size());
         fprintf(stderr, "    types:");
@@ -109,8 +109,10 @@ void dump_entity(Entity e) {
         auto &c = global_coordinator.GetComponent<Creature>(e);
         fprintf(stderr, "  Creature:\n");
         fprintf(stderr, "    power=%u  toughness=%u\n", c.power, c.toughness);
-        fprintf(stderr, "    is_attacking=%d  attack_target=%u\n", c.is_attacking, c.attack_target);
-        fprintf(stderr, "    is_blocking=%d  blocking_target=%u\n", c.is_blocking, c.blocking_target);
+        fprintf(stderr, "    is_attacking=%d  attack_target=%u\n", c.is_attacking,
+                c.attack_target.lki_entity());
+        fprintf(stderr, "    is_blocking=%d  blocking_target=%u\n", c.is_blocking,
+                c.blocking_target.lki_entity());
         fprintf(stderr, "    must_attack=%d  counter_pt_bonus=%d  prowess_bonus=%d\n",
                 c.must_attack, c.counter_pt_bonus, c.prowess_bonus);
         fprintf(stderr, "    keywords:");
@@ -141,12 +143,14 @@ void dump_entity(Entity e) {
         auto &a = global_coordinator.GetComponent<Ability>(e);
         fprintf(stderr, "  Ability:\n");
         fprintf(stderr, "    type=%s  category=%s\n",
-                ability_type_str(a.ability_type), a.category.c_str());
-        fprintf(stderr, "    source=%u  target=%u  controller=%s\n",
-                a.source, a.target, owner_str(a.controller));
-        fprintf(stderr, "    amount=%zu  color=%s\n", a.amount, mana_symbol(a.color).c_str());
+                ability_type_str(a.def->ability_type), a.def->category.c_str());
+        fprintf(stderr, "    source=%u(gen %llu)  target=%u(gen %llu)  controller=%s\n",
+                a.source.lki_entity(), static_cast<unsigned long long>(a.source.gen),
+                a.target.lki_entity(), static_cast<unsigned long long>(a.target.gen),
+                owner_str(a.controller));
+        fprintf(stderr, "    amount=%zu  color=%s\n", a.def->amount, mana_symbol(a.color).c_str());
         fprintf(stderr, "    valid_tgts=%s  tap_cost=%d  sac_self=%d  life_cost=%d\n",
-                a.valid_tgts.c_str(), a.tap_cost, a.sac_self, a.life_cost);
+                a.def->valid_tgts.c_str(), a.def->tap_cost, a.def->sac_self, a.def->life_cost);
         fprintf(stderr, "    subabilities: %zu\n", a.subabilities.size());
     }
 
@@ -166,12 +170,9 @@ void dump_entity(Entity e) {
         fprintf(stderr, "\n");
     }
 
-    if (global_coordinator.entity_has_component<ColorIdentity>(e)) {
-        auto &ci = global_coordinator.GetComponent<ColorIdentity>(e);
-        fprintf(stderr, "  ColorIdentity:");
-        for (auto col : ci.colors) fprintf(stderr, " %s", mana_symbol(col).c_str());
-        fprintf(stderr, "\n");
-    }
+    fprintf(stderr, "  Colors:");
+    for (auto col : effective_colors(e)) fprintf(stderr, " %s", mana_symbol(col).c_str());
+    fprintf(stderr, "\n");
 
     fprintf(stderr, "=== end dump_entity(%u) ===\n", e);
 }

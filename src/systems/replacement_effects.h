@@ -38,7 +38,10 @@ struct ReplacementEvent {
     Entity entity = 0;                                 // affected object (drawing player entity for DRAW_CARD)
     Zone::Ownership affected_player = Zone::PLAYER_A;   // 616.1 chooser
 
-    // ENTERS_BATTLEFIELD outcome
+    // ENTERS_BATTLEFIELD in/out. `ask_inline`: a choice the entry needs (pay life to enter
+    // untapped) is asked on the spot rather than parked for the state-based pass to re-run —
+    // set for a token, which enters in the middle of the effect that creates it.
+    bool ask_inline = false;
     bool enters_tapped = false;
     int  etb_p1p1 = 0;                                 // counters to add when the permanent enters (614.1c); count of etb_counter_type
     std::string etb_counter_type = "P1P1";             // kind of "enters with" counter ("P1P1", "CHARGE", ...)
@@ -47,6 +50,7 @@ struct ReplacementEvent {
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
     Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
     bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
+    bool with_void_counter = false;                    // out: the card is exiled with a void counter (Dauthi Voidwalker); the caller records it on the new object
     // DISCARD_ELSE_GRAVEYARD additional cost (Mox Diamond / Chrome Mox): the card the affected
     // player chose to discard as this permanent enters. dispatch() has no orderer, so the caller
     // (Orderer::add_to_zone) performs the discard when this is non-zero (destination stays

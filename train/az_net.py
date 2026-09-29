@@ -147,7 +147,8 @@ class ScriptTrunk(nn.Module):
     __constants__ = [
         "N_CARD_TYPES", "ACTION_CATEGORY_MAX", "REF_ZONE_MAX",
         "GLOBAL_SIZE", "SEAT_FLAG_IDX", "MATCH_CTX_START", "KNOWN_TOP_LIB_START",
-        "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "PENDING_START", "PENDING_END", "EXTRAS_START",
+        "KNOWN_TOP_LIB_END", "KNOWN_TOP_LIB_SLOTS", "OPP_KNOWN_TOP_LIB_START",
+        "OPP_KNOWN_TOP_LIB_END", "OPP_KNOWN_TOP_LIB_SLOTS", "PENDING_START", "PENDING_END", "EXTRAS_START",
         "EXTRAS_END", "MANA_DEV_START", "MANA_DEV_END",
         "LOG_VITALS_START", "LOG_VITALS_END", "PER_TURN_START", "PER_TURN_END",
         "DELAYED_START", "DELAYED_END", "DELAYED_SLOTS", "DELAYED_SLOT_SIZE",
@@ -213,6 +214,9 @@ class ScriptTrunk(nn.Module):
         self.KNOWN_TOP_LIB_START = int(_ex._KNOWN_TOP_LIB_START)
         self.KNOWN_TOP_LIB_END = int(_ex._KNOWN_TOP_LIB_END)
         self.KNOWN_TOP_LIB_SLOTS = int(_ex._KNOWN_TOP_LIB_SLOTS)
+        self.OPP_KNOWN_TOP_LIB_START = int(_ex._OPP_KNOWN_TOP_LIB_START)
+        self.OPP_KNOWN_TOP_LIB_END = int(_ex._OPP_KNOWN_TOP_LIB_END)
+        self.OPP_KNOWN_TOP_LIB_SLOTS = int(_ex._OPP_KNOWN_TOP_LIB_SLOTS)
         self.PENDING_START = int(_ex._PENDING_START)
         self.PENDING_END = int(_ex._PENDING_END)
         self.EXTRAS_START = int(_ex._EXTRAS_START)
@@ -359,6 +363,8 @@ class ScriptTrunk(nn.Module):
             -1, self.OPP_KNOWN_HAND_SLOTS, 1)
         top_lib = obs[:, self.KNOWN_TOP_LIB_START:self.KNOWN_TOP_LIB_END].reshape(
             -1, self.KNOWN_TOP_LIB_SLOTS, 1)
+        opp_top_lib = obs[:, self.OPP_KNOWN_TOP_LIB_START:self.OPP_KNOWN_TOP_LIB_END].reshape(
+            -1, self.OPP_KNOWN_TOP_LIB_SLOTS, 1)
         self_main = obs[:, self.SELF_DECK_MAIN_START:self.SELF_DECK_MAIN_END].reshape(
             -1, self.DECKLIST_MAIN_SLOTS, self.DECKLIST_SLOT_SIZE)
         self_side = obs[:, self.SELF_DECK_SIDE_START:self.SELF_DECK_SIDE_END].reshape(
@@ -412,9 +418,11 @@ class ScriptTrunk(nn.Module):
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, self.ZONE_CARD_OFF])
         ex_emb_in, ex_present = self._embed_ids(exile[:, :, self.ZONE_CARD_OFF])
-        opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
+        # Known opponent hand + library top, laid out like the viewer's own below.
+        opp_hand_emb_in, opp_hand_present = self._embed_ids(
+            torch.cat([opp_hand[:, :, 0], opp_top_lib[:, :, 0]], dim=1))
         # Combined hand + known-top-library block with the draw-distance column
-        # (0.0 in hand and for the known opponent hand; (i+1)/5 for top slot i).
+        # (0.0 in hand; (i+1)/5 for top slot i).
         hl_emb, hl_present = self._embed_ids(
             torch.cat([hand[:, :, 0], top_lib[:, :, 0]], dim=1))
         hl_dist = hl_emb.new_zeros(hl_emb.shape[0],
@@ -424,13 +432,15 @@ class ScriptTrunk(nn.Module):
                          device=hl_emb.device) / self.KNOWN_TOP_LIB_SLOTS)
         hl_in = torch.cat([hl_emb, hl_dist], dim=-1)
         next_draw_feat = hl_emb[:, self.HAND_SLOTS]
-        zero_dist = hl_emb.new_zeros(hl_emb.shape[0], 1, 1)
         gy_in = torch.cat([gy_emb_in, graveyard[:, :, 1:],
                            torch.zeros_like(graveyard[:, :, :1])], dim=-1)
         ex_in = torch.cat([ex_emb_in, exile[:, :, 1:]], dim=-1)
-        opp_hand_in = torch.cat(
-            [opp_hand_emb_in,
-             zero_dist.expand(-1, self.OPP_KNOWN_HAND_SLOTS, -1)], dim=-1)
+        opp_hl_dist = hl_emb.new_zeros(hl_emb.shape[0],
+                                       self.OPP_KNOWN_HAND_SLOTS + self.OPP_KNOWN_TOP_LIB_SLOTS, 1)
+        opp_hl_dist[:, self.OPP_KNOWN_HAND_SLOTS:, 0] = (
+            torch.arange(1, self.OPP_KNOWN_TOP_LIB_SLOTS + 1, dtype=hl_emb.dtype,
+                         device=hl_emb.device) / self.OPP_KNOWN_TOP_LIB_SLOTS)
+        opp_hand_in = torch.cat([opp_hand_emb_in, opp_hl_dist], dim=-1)
 
         self_lib_emb, self_lib_present = self._embed_ids(self_lib[:, :, self.DECKLIST_CARD_OFF])
         self_main_emb, self_main_present = self._embed_ids(self_main[:, :, self.DECKLIST_CARD_OFF])

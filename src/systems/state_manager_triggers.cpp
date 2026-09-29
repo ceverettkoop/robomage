@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "../action_processor.h"
+#include "../announce.h"
 #include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
@@ -30,19 +30,28 @@
 #include "../cli_output.h"
 #include "../error.h"
 #include "../game_driver.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/counters.h"
+#include "../queries/filters.h"
+#include "../queries/lki.h"
+#include "../queries/players.h"
+#include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
+#include "../resolution.h"
+#include "../targeting.h"
 
 // A triggered ability that has fired and is waiting to be put on the stack. We collect every
 // trigger from the current batch of events first, then place them all in APNAP order (603.3b);
 // the old code pushed each trigger the instant it was found (raw entity-ID order), which is not
 // APNAP and gave no player a chance to order their own simultaneous triggers. The persisted
-// struct lives in resolution_frame.h (Game::trigger_placement holds the flattened queue while
+// struct lives in resolution_frame.h (Game::pending.trigger_placement holds the flattened queue while
 // a placement decision is parked); this alias keeps the collection code unchanged.
 using PendingTrigger = PendingTriggerRT;
 
@@ -56,7 +65,7 @@ namespace {
 class TriggerPlaceTargetAsker final : public TargetAsker {
     public:
         int ask(const std::vector<LegalAction> &menu, Entity decision_source) override {
-            PendingQuery &pq = cur_game.pending_query;
+            PendingQuery &pq = cur_game.pending.query;
             if (pq.active) {
                 // Consume the latched answer for THIS ask. The re-entered
                 // machine must have rebuilt the identical menu (pure builds,
@@ -68,7 +77,7 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
                                 std::to_string(pq.menu.size()) + " vs " +
                                 std::to_string(menu.size()) + ")");
                 int answer = pq.answer;
-                cur_game.player_a_has_priority = pq.prev_priority;
+                cur_game.priority.player_a_has_priority = pq.prev_priority;
                 pq = PendingQuery{};
                 return answer;
             }
@@ -77,13 +86,13 @@ class TriggerPlaceTargetAsker final : public TargetAsker {
             pq.tag = PendingQuery::TRIGGER_PLACE;
             pq.active = true;
             pq.menu = menu;
-            pq.chooser_is_a = cur_game.player_a_has_priority;
+            pq.chooser_is_a = cur_game.priority.player_a_has_priority;
             pq.decision_source = decision_source;
-            pq.prev_priority = cur_game.player_a_has_priority;
+            pq.prev_priority = cur_game.priority.player_a_has_priority;
             return -1;
         }
         bool resuming() const override {
-            return cur_game.pending_query.active && cur_game.pending_query.answered;
+            return cur_game.pending.query.active && cur_game.pending.query.answered;
         }
 };
 }  // namespace
@@ -109,35 +118,91 @@ static size_t storm_count_this_turn(const Game &game) {
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
 
-// The CardData face a card presents for an ENTERS-the-battlefield trigger match, honoring a
-// transform-on-entry. Ajani, Nacatl Pariah returns to the battlefield already transformed to his
-// planeswalker back face; the CARD_CHANGED_ZONE event still carries the entity whose (front)
-// CardData is the creature Cat, but CR 712.2/712.14 make the entering object's characteristics its
-// active BACK face. So an external "a creature you control enters" trigger (Guide of Souls) must
-// test the back face — a noncreature planeswalker back does NOT satisfy "a creature enters" (and a
-// creature back WOULD). apply_permanent_components sets Permanent::transformed before triggers are
-// collected (it runs first in the SBA loop), so the flipped face is already reflected here. Falls
-// back to the front CardData for a non-transformed card, a card with no back face, or one no longer
-// on the battlefield.
-static const CardData *etb_effective_face(Entity e) {
-    if (!global_coordinator.entity_has_component<CardData>(e)) return nullptr;
-    const CardData &front = global_coordinator.GetComponent<CardData>(e);
-    if (front.backside &&
-        global_coordinator.entity_has_component<Permanent>(e) &&
-        global_coordinator.GetComponent<Permanent>(e).transformed)
-        return front.backside.get();
-    return &front;
-}
+// Announce the modes and targets of the trigger at the queue front as it is put on the stack
+// (CR 603.3c/d, run_announce) — asking through a parked TRIGGER_PLACE query, or inline when the
+// placement can't suspend. SUSPENDED means a pick parked; re-enter with the same tp.
+static AnnounceStatus announce_trigger(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                       bool suspendable, std::shared_ptr<Orderer> orderer);
+
+// Queue every ability in `ab_defs` that one of `events` triggers (CR 603.2), for the source
+// `entity` controlled by `controller`. `perm` is its Permanent while it is on the battlefield; a
+// `departed` source (nullptr perm) left the battlefield with the objects its abilities watch and
+// triggers only through the leaves-the-battlefield look-back (CR 603.10a).
+static void append_ability_defs(std::vector<const AbilityDef *> &out,
+                                const std::vector<const AbilityDef *> &defs);
+static void append_ability_defs(std::vector<const AbilityDef *> &out,
+                                const std::vector<Ability> &abilities);
+// The definitions of every ability battlefield permanent `entity` has that can trigger: its
+// active face's (or token's) printed abilities, unless layer-6 removal took them (CR 613.1f /
+// 305.7), then the abilities on its Permanent (grants, keyword-derived triggers).
+static std::vector<const AbilityDef *> permanent_ability_defs(Entity entity, const Permanent &perm);
+static void match_event_triggers(Entity entity, Zone::Ownership controller, const Permanent *perm,
+                                 const std::string &ent_name,
+                                 const std::vector<const AbilityDef *> &ab_defs,
+                                 const std::vector<Event> &events, bool departed,
+                                 std::shared_ptr<Orderer> orderer,
+                                 std::vector<PendingTrigger> &pending);
+
+// Leaves-the-battlefield abilities of the cards that left the battlefield in this batch of events
+// (CR 603.10a): each looks back to just before the event, so a watcher that left along with the
+// objects it watches (Super Shredder's "another permanent leaves the battlefield" when both die
+// in one state-based-action check) still triggers, with its last-known abilities and controller.
+// Tokens keep no abilities to look back at once off the battlefield.
+static bool is_self_etb_event(const Event &ev, Entity entity);
+static ObjectRef moved_object(const Event &ev);
+static void match_departed_watcher_triggers(const std::vector<Event> &events,
+                                            std::shared_ptr<Orderer> orderer,
+                                            std::vector<PendingTrigger> &pending);
 
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
 // LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
 // subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
+static void append_ability_defs(std::vector<const AbilityDef *> &out,
+                                const std::vector<const AbilityDef *> &defs) {
+    out.insert(out.end(), defs.begin(), defs.end());
+}
+
+static void append_ability_defs(std::vector<const AbilityDef *> &out,
+                                const std::vector<Ability> &abilities) {
+    for (const Ability &ab : abilities) out.push_back(ab.def);
+}
+
+// Face selection happens here (a transformed permanent reads its back face), so a scan never
+// needs a per-ability front-face skip.
+static std::vector<const AbilityDef *> permanent_ability_defs(Entity entity, const Permanent &perm) {
+    std::vector<const AbilityDef *> defs;
+    if (!perm.abilities_removed) {
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+            append_ability_defs(defs, (perm.transformed && cd.backside) ? cd.backside->abilities
+                                                                        : cd.abilities);
+        }
+        if (global_coordinator.entity_has_component<Token>(entity))
+            append_ability_defs(defs, global_coordinator.GetComponent<Token>(entity).abilities);
+    }
+    append_ability_defs(defs, perm.abilities);
+    return defs;
+}
+
+// The object a CARD_CHANGED_ZONE event moved, as it was before the move.
+static ObjectRef moved_object(const Event &ev) {
+    return ObjectRef::of_object(
+        ev.GetParam<Entity>(Params::ENTITY),
+        ev.HasParam(Params::OBJECT_GEN) ? ev.GetParam<uint64_t>(Params::OBJECT_GEN) : 0);
+}
+
+// Is `ev` the object `entity` itself entering the battlefield (an ETB event for its own
+// enters-the-battlefield triggered abilities)?
+static bool is_self_etb_event(const Event &ev, Entity entity) {
+    return ev.GetType() == Events::CARD_CHANGED_ZONE && ev.HasParam(Params::ENTITY) &&
+           ev.GetParam<Entity>(Params::ENTITY) == entity &&
+           ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD;
+}
+
 static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
-    Zone::Ownership activator = (activator_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
-                              : (activator_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
-                                                                                        : Zone::UNKNOWN;
-    if (ab.defined_triggered_activator) ab.triggered_activator = activator;
+    Zone::Ownership activator = seat_of_player(activator_entity);
+    if (ab.def->defined_triggered_activator) ab.triggered_activator = activator;
     for (auto &sub : ab.subabilities) bind_triggered_activator(sub, activator_entity);
     for (auto &c : ab.charm_choices) bind_triggered_activator(c, activator_entity);
 }
@@ -148,27 +213,25 @@ static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
 // so recurse into subabilities/charm_choices. Only abilities flagged defined_triggered_player
 // are touched.
 static void bind_triggered_player(Ability &ab, Entity player_entity) {
-    Zone::Ownership who = (player_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
-                        : (player_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
-                                                                               : Zone::UNKNOWN;
-    if (ab.defined_triggered_player) ab.triggered_player = who;
+    Zone::Ownership who = seat_of_player(player_entity);
+    if (ab.def->defined_triggered_player) ab.triggered_player = who;
     for (auto &sub : ab.subabilities) bind_triggered_player(sub, player_entity);
     for (auto &c : ab.charm_choices) bind_triggered_player(c, player_entity);
 }
 
-// Drains all buffered events since the last call and puts any triggered abilities
-// from battlefield permanents whose trigger condition matches onto the stack.
-void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
+// Drains all buffered events since the last call and records every ability they trigger (CR
+// 603.2) in Game::waiting_triggers, to be put on the stack by place_waiting_triggers.
+void StateManager::collect_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
     // A suspended trigger placement owns the trigger flow: the main loop's
     // TRIGGER_PLACE dispatch (resume_trigger_placement) drives it to
     // completion, and this scan must not drain events or collect a second
     // batch underneath it. (Belt-and-braces — the main loop never reaches a
     // state_based_effects call while a pending query is parked.)
-    if (game.trigger_placement.active) return;
+    if (game.pending.trigger_placement.active) return;
     auto events = global_coordinator.drain_pending_events();
 
-    // Every ability that triggers off this batch of events is collected here first, then placed
-    // on the stack together in APNAP order (603.3b) — nothing is pushed mid-scan.
+    // Every ability that triggers off this batch of events is collected here, then recorded as
+    // waiting to be put on the stack — nothing is pushed mid-scan.
     std::vector<PendingTrigger> pending;
 
     // Fire any delayed triggers that match current events
@@ -187,7 +250,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (dt.fire_on_leave_battlefield) {
                     if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
                     if (!ev.HasParam(Params::ENTITY)) continue;
-                    if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
+                    if (moved_object(ev) != dt.watched) continue;
                     if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
                     // Destination filter (e.g. earthbend's "when it dies or is exiled"): when the
                     // trigger names specific destination zones, a move to any other zone (bounce
@@ -205,7 +268,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     matched = true;
                     break;
                 }
-                if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
+                if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn_state.turn < dt.fire_on_turn) continue;
                 // Phase-player restriction: only an explicit ValidPlayer$ restriction pins the
                 // trigger to one player's phase. Unrestricted (restrict_player == 0), "the next
                 // turn's upkeep" / "the next end step" fires at the next occurrence of the phase
@@ -218,8 +281,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             }
             if (matched) {
                 // Determine controller from owner_entity
-                Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
-                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+                Zone::Ownership ctrl = seat_of_player(dt.owner_entity);
                 // The copy carries dt.ability.delayed_link (seq, creator, subjects) onto the
                 // stack object, so the observation's delayed-trigger block keeps following
                 // this trigger until its stack object leaves the stack.
@@ -228,15 +290,22 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Defined$ TriggeredCardController (Searing Blood): bind the fire ability's player
                 // to the last-known controller of the object whose departure fired this trigger
                 // (CR 608.2g — it is in the graveyard by now). Shares triggered_player storage.
-                if (trigger_ab.defined_triggered_card_controller && dt.fire_on_leave_battlefield)
-                    trigger_ab.triggered_player = last_known_controller(dt.watch_entity);
+                if (trigger_ab.def->defined_triggered_card_controller && dt.fire_on_leave_battlefield)
+                    trigger_ab.triggered_player = last_known_controller(dt.watched.lki_entity());
+                // CR 400.7e: an ability that triggers on the watched object leaving the
+                // battlefield can find the new object it became in a public zone (earthbend's
+                // "return it to the battlefield").
+                const Entity departed = dt.watched.lki_entity();
+                if (dt.fire_on_leave_battlefield && trigger_ab.source == dt.watched &&
+                    global_coordinator.entity_has_component<Zone>(departed) &&
+                    is_public_zone(global_coordinator.GetComponent<Zone>(departed).location))
+                    trigger_ab.source = ObjectRef::of(departed);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ctrl;
-                pt.source = trigger_ab.source;
+                pt.source = trigger_ab.source.lki_entity();
                 pt.label = "Delayed trigger";
                 pt.log_line = "Delayed trigger fires.";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
                 pending.push_back(pt);
                 to_remove.push_back(i);
             } else if (expired) {
@@ -253,42 +322,41 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // one supported floating trigger is "Mode$ DamageAll | ValidSource$ Creature.YouCtrl |
     // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
     // more creatures the trigger's controller controls deal combat damage to one or more players.
-    for (const auto &ft : game.floating_triggers) {
+    for (const auto &ft : game.resolved_effects.floating_triggers) {
         // Mode$ Attacks hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2:
         // "whenever a creature an opponent controls attacks you or a planeswalker you control, it
         // gets -1/-0"). Fires once per matching attacker (CREATURE_ATTACKED), binding the attacker
         // as the effect's (Pump) target. The Attacked$ You,Planeswalker.YouCtrl clause is satisfied
         // whenever an opponent's creature attacks, in the two-player engine (the only defender it
         // can have is this effect's controller or their planeswalker).
-        if (ft.trigger_on == Events::CREATURE_ATTACKED) {
+        if (ft.def->trigger_on == Events::CREATURE_ATTACKED) {
             for (const auto &ev : events) {
                 if (ev.GetType() != Events::CREATURE_ATTACKED) continue;
                 if (!ev.HasParam(Params::ENTITY)) continue;
                 Entity attacker = ev.GetParam<Entity>(Params::ENTITY);
                 // ValidCard$ Creature.OppCtrl — the attacker is controlled by an opponent of the
                 // effect's controller.
-                if (ft.trigger_attacker_opp_ctrl &&
+                if (ft.def->trigger_attacker_opp_ctrl &&
                     source_controller(attacker) == ft.controller) continue;
                 Ability trigger_ab = ft;
                 trigger_ab.controller = ft.controller;
                 // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
-                if (trigger_ab.defined_triggered_attacker_lki) trigger_ab.target = attacker;
+                if (trigger_ab.def->defined_triggered_attacker_lki) trigger_ab.target = ObjectRef::of(attacker);
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = ft.controller;
                 pt.source = 0;
-                pt.label = "Floating trigger (" + trigger_ab.category + ")";
+                pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
                 pt.log_line = "A floating triggered ability triggers.";
-                pt.needs_target = false;
                 pending.push_back(pt);
             }
             continue;
         }
-        if (ft.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+        if (ft.def->trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
         bool matched = false;
         for (const auto &ev : events) {
             if (ev.GetType() != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
-            if (ft.trigger_damage_source_youctrl) {
+            if (ft.def->trigger_damage_source_youctrl) {
                 if (!ev.HasParam(Params::ENTITY)) continue;
                 Entity dmg_src = ev.GetParam<Entity>(Params::ENTITY);
                 if (source_controller(dmg_src) != ft.controller) continue;
@@ -303,9 +371,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         pt.ab = trigger_ab;
         pt.controller = ft.controller;
         pt.source = 0;
-        pt.label = "Floating trigger (" + trigger_ab.category + ")";
+        pt.label = "Floating trigger (" + trigger_ab.def->category + ")";
         pt.log_line = "A floating triggered ability triggers.";
-        pt.needs_target = false;
         pending.push_back(pt);
     }
 
@@ -315,25 +382,20 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // card abilities, so they are produced here directly from the drained events against
     // game.monarch_entity. General over any monarch card (Forth Eorlingas! and future ones).
     if (game.monarch_entity != MAX_ENTITIES) {
-        Zone::Ownership monarch_ctrl = (game.monarch_entity == game.player_a_entity)
-                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Zone::Ownership monarch_ctrl = seat_of_player(game.monarch_entity);
         for (const auto &ev : events) {
             // End-step draw: the monarch draws an extra card at the beginning of their end step.
             if (ev.GetType() == Events::END_STEP_BEGAN && ev.HasParam(Params::PLAYER) &&
                 ev.GetParam<Entity>(Params::PLAYER) == game.monarch_entity) {
-                Ability draw_ab;
-                draw_ab.ability_type = Ability::TRIGGERED;
-                draw_ab.category = "Draw";
-                draw_ab.amount = 1;
+                Ability draw_ab(draw_one_trigger_def());
                 draw_ab.controller = monarch_ctrl;
-                draw_ab.target = game.monarch_entity;  // effect_draw reads target player when set
+                draw_ab.target = ObjectRef::of(game.monarch_entity);  // effect_draw reads target player when set
                 PendingTrigger pt;
                 pt.ab = draw_ab;
                 pt.controller = monarch_ctrl;
                 pt.source = 0;
                 pt.label = "Monarch (end-step draw)";
                 pt.log_line = "The monarch draws a card at the beginning of their end step.";
-                pt.needs_target = false;
                 pending.push_back(pt);
             }
             // Steal: a creature dealing combat damage to the monarch makes its controller the
@@ -346,9 +408,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (attacker_ctrl == Zone::UNKNOWN) continue;
                 Entity new_monarch = get_player_entity(attacker_ctrl);
                 if (new_monarch == game.monarch_entity) continue;  // already the monarch
-                Ability steal_ab;
-                steal_ab.ability_type = Ability::TRIGGERED;
-                steal_ab.category = "BecomeMonarch";
+                Ability steal_ab(triggered_effect_def("BecomeMonarch"));
                 steal_ab.controller = attacker_ctrl;
                 PendingTrigger pt;
                 pt.ab = steal_ab;
@@ -356,7 +416,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 pt.source = 0;
                 pt.label = "Monarch (steal on combat damage)";
                 pt.log_line = "A creature dealt combat damage to the monarch.";
-                pt.needs_target = false;
                 pending.push_back(pt);
             }
         }
@@ -389,11 +448,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(saga).controller;
 
-        Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
-        trigger_ab.ability_type = Ability::TRIGGERED;
-        trigger_ab.source = saga;
+        Ability trigger_ab(cd.saga_chapters[static_cast<size_t>(chapter - 1)]);
+        trigger_ab.source = ObjectRef::of(saga);
         trigger_ab.controller = ctrl;
-        trigger_ab.is_saga_chapter = true;
 
         PendingTrigger pt;
         pt.ab = trigger_ab;
@@ -401,7 +458,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         pt.source = saga;
         pt.label = entity_name(saga) + " (chapter " + std::to_string(chapter) + ")";
         pt.log_line = entity_name(saga) + " chapter " + std::to_string(chapter) + " triggers.";
-        pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
         pending.push_back(pt);
     }
 
@@ -426,12 +482,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             if (!perm.entered_via_impending) continue;
             if (get_counters(entity, "TIME") <= 0) continue;
 
-            Ability shed_ab;
-            shed_ab.ability_type = Ability::TRIGGERED;
-            shed_ab.category = "RemoveCounter";  // reuses effect_remove_counter (Defined$ Self)
-            shed_ab.source = entity;             // remove_counter falls back to source (target == 0)
+            // Reuses effect_remove_counter (Defined$ Self).
+            Ability shed_ab(keyed_ability_def("impending_shed", [] {
+                AbilityDef d;
+                d.ability_type = AbilityDef::TRIGGERED;
+                d.category = "RemoveCounter";
+                d.params = CounterParams{"TIME", 1};
+                return d;
+            }));
+            shed_ab.source = ObjectRef::of(entity);             // remove_counter falls back to source (target == 0)
             shed_ab.controller = ctrl;
-            shed_ab.params = CounterParams{"TIME", 1};
 
             PendingTrigger pt;
             pt.ab = shed_ab;
@@ -439,7 +499,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             pt.source = entity;
             pt.label = perm.name + " (impending: remove a time counter)";
             pt.log_line = perm.name + " triggers: remove a time counter (impending).";
-            pt.needs_target = false;
             pending.push_back(pt);
         }
     }
@@ -448,10 +507,10 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // suspended, remove a time counter from it." This is a genuine triggered ability — one per
     // suspended card its owner controls — produced from the UPKEEP_BEGAN event and placed on the
     // stack (players get priority, opponents can respond), NOT applied as an immediate step side
-    // effect. The removal (and, when the last counter comes off, the free cast) is handled by the
-    // SuspendTick effect on resolution; see effect_suspend_tick. A suspended card is one in the
-    // exile zone with a positive time-counter count (702.62b), tracked in suspend_time_counters
-    // (an exiled card is not a permanent). General over any Suspend card.
+    // effect. The removal is handled by the SuspendTick effect on resolution, and removing the last
+    // counter triggers the free cast (SuspendCast); see effect_suspend_tick. A suspended card is one in the
+    // exile zone with a positive time-counter count (702.62b), kept on its Zone (an exiled card
+    // is not a permanent). General over any Suspend card.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::UPKEEP_BEGAN || !ev.HasParam(Params::PLAYER)) continue;
         Entity upkeep_player = ev.GetParam<Entity>(Params::PLAYER);
@@ -459,18 +518,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                              : (upkeep_player == game.player_b_entity) ? Zone::PLAYER_B
                                                                        : Zone::UNKNOWN;
         if (ctrl == Zone::UNKNOWN) continue;
-        for (const auto &[card, count] : game.suspend_time_counters) {
-            if (count <= 0) continue;
-            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+        for (Entity card : mEntities) {
             auto &cz = global_coordinator.GetComponent<Zone>(card);
             if (cz.location != Zone::EXILE || cz.owner != ctrl) continue;  // still suspended, this player's
+            auto time = cz.counters.find("TIME");
+            if (time == cz.counters.end() || time->second <= 0) continue;
             std::string cname = global_coordinator.entity_has_component<CardData>(card)
                                     ? global_coordinator.GetComponent<CardData>(card).name : "card";
 
-            Ability tick_ab;
-            tick_ab.ability_type = Ability::TRIGGERED;
-            tick_ab.category = "SuspendTick";
-            tick_ab.source = card;  // the exiled suspended card
+            Ability tick_ab(triggered_effect_def("SuspendTick"));
+            tick_ab.source = ObjectRef::of(card);  // the exiled suspended card
             tick_ab.controller = ctrl;
 
             PendingTrigger pt;
@@ -479,7 +536,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             pt.source = card;
             pt.label = cname + " (suspend: remove a time counter)";
             pt.log_line = cname + " triggers: remove a time counter (suspend).";
-            pt.needs_target = false;
             pending.push_back(pt);
         }
     }
@@ -502,410 +558,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // perm.abilities stays in the list: the layer pass already filtered it down to what
         // survives the removal (an ability granted by the remover itself, or the regenerated
         // subtype-derived mana ability), so anything still there is legitimately functioning.
-        std::vector<const std::vector<Ability>*> ab_sources;
-        if (!perm.abilities_removed) {
-            if (global_coordinator.entity_has_component<CardData>(entity)) {
-                const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
-                if (perm.transformed && cd.backside)
-                    ab_sources.push_back(&cd.backside->abilities);
-                else
-                    ab_sources.push_back(&cd.abilities);
-            }
-            if (global_coordinator.entity_has_component<Token>(entity))
-                ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
-        }
-        ab_sources.push_back(&perm.abilities);
-        if (ab_sources.empty()) continue;
+        std::vector<const AbilityDef *> ab_defs = permanent_ability_defs(entity, perm);
+        if (ab_defs.empty()) continue;
 
-        const std::string ent_name = entity_name(entity);
-
-        // Mode$ ChangesZoneAll batch triggers (CR 603.2c) fire once for a whole group of
-        // simultaneous zone changes, not once per matching card. Track which of this permanent's
-        // batch triggers have already queued this scan so later matching events in the same batch
-        // are skipped. Keyed by the ability template address (&ab), which is stable across the
-        // event loop (it lives in CardData/Token/perm.abilities).
-        std::set<const Ability *> batch_zone_all_fired;
-
-        for (const auto &ev : events) {
-            for (const auto *src : ab_sources) {
-            for (const auto &ab : *src) {
-                if (ab.ability_type != Ability::TRIGGERED) continue;
-                // Static$ True mana-additional triggers (Badgermole Cub's TapsForMana) never go
-                // on the stack — they resolve immediately inside the mana system (CR 605.1a).
-                if (ab.trigger_taps_for_mana_static) continue;
-                // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
-                // Phoenix's begin-combat return) functions ONLY while its source is in the
-                // graveyard — TriggerZones overrides the default battlefield functioning
-                // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
-                // from the battlefield would place a spurious (no-op) trigger on the stack.
-                if (ab.trigger_from_graveyard) continue;
-                // Match the primary trigger event OR any additional event in trigger_on_extra (a
-                // phase trigger listing several phases, e.g. Carpet of Flowers' Phase$ Main1,Main2).
-                {
-                    bool fires = (ab.trigger_on != 0) &&
-                                 (ab.trigger_on == ev.GetType() ||
-                                  std::find(ab.trigger_on_extra.begin(), ab.trigger_on_extra.end(),
-                                            ev.GetType()) != ab.trigger_on_extra.end());
-                    if (!fires) continue;
-                }
-                // "another" check: skip if the event entity is the triggering permanent itself
-                if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
-                    ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
-                // Card.Self: only fire when the event entity is the triggering permanent itself.
-                // BECAME_TARGET is exempt: there ENTITY is the targeting object (not the source),
-                // and ValidTarget$ Card.Self is matched against the TARGET param in the dedicated
-                // BECAME_TARGET block below instead.
-                if (ab.trigger_only_self && ev.GetType() != Events::BECAME_TARGET &&
-                    ev.HasParam(Params::ENTITY) &&
-                    ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
-                // "If you cast it" (ValidCard$ Card.wasCastByYou): a self ETB trigger that only
-                // fires when its source permanent entered the battlefield by being cast (CR
-                // 614.12; The One Ring's protection grant). perm is the source (trigger_only_self).
-                if (ab.trigger_requires_entered_by_cast && !perm.entered_by_cast) continue;
-                // Evoke self-sacrifice only fires when this permanent was cast via evoke
-                if (ab.is_evoke_sacrifice && !perm.evoked) continue;
-                // Offspring token copy only fires when this permanent was cast with offspring
-                if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
-                // (Front/back face selection is done once when ab_sources is built above, so a
-                // transformed permanent already only sees its active face's triggers here.)
-                // ValidPlayer$ You: only fire when the event's player matches the permanent's
-                // controller. BECAME_TARGET is exempt, like trigger_only_self above: there the
-                // PLAYER param is the targeting spell's controller (the OPPONENT, typically), not
-                // a "you" reference, so gating on it would wrongly suppress a becomes-target
-                // trigger authored with ValidPlayer$ You. Such a trigger's own ValidSource$/
-                // ValidTarget$ clauses constrain it in the dedicated BECAME_TARGET block below.
-                if (ab.trigger_valid_player_is_controller && ev.GetType() != Events::BECAME_TARGET &&
-                    ev.HasParam(Params::PLAYER)) {
-                    Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
-                    Entity ctrl_entity = get_player_entity(perm.controller);
-                    if (event_player != ctrl_entity) continue;
-                }
-                // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): only fire when the
-                // acting player is an OPPONENT of this source's controller (the event's PLAYER is
-                // the caster on SPELL_CAST). In a two-player game "opponent" = not the controller.
-                if (ab.trigger_valid_player_is_opponent && ev.GetType() != Events::BECAME_TARGET &&
-                    ev.HasParam(Params::PLAYER)) {
-                    Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
-                    Entity ctrl_entity = get_player_entity(perm.controller);
-                    if (event_player == ctrl_entity) continue;
-                }
-                // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
-                if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
-                    ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD) {
-                    Entity entering = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
-                    if (rules_mod::etb_triggers_suppressed(entering)) continue;
-                }
-
-                // CARD_CHANGED_ZONE filters: origin, destination, card type
-                if (ev.GetType() == Events::CARD_CHANGED_ZONE) {
-                    Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
-                    Zone::ZoneValue ev_dest   = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
-                    if (ab.trigger_zone_origin >= 0 &&
-                        ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
-                    if (ab.trigger_zone_destination >= 0 &&
-                        ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
-                    // ValidCard$ Creature filter. Honor a transform-on-entry: a permanent that
-                    // entered already flipped to a NONCREATURE back face (Ajani, Nacatl Pariah ->
-                    // his planeswalker side) must not satisfy "a creature enters" (CR 712.2/712.14,
-                    // via etb_effective_face), which is what wrongly fired Guide of Souls.
-                    if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature) {
-                            const CardData *face = etb_effective_face(ev_card);
-                            if (face) is_creature = is_creature_card(*face);
-                        }
-                        if (!is_creature) continue;
-                    }
-                    // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
-                    // the triggering spell must NOT be a creature.
-                    if (ab.trigger_valid_card_non_creature && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
-                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
-                        if (is_creature) continue;
-                    }
-                    // ValidCard$ Instant/Sorcery filter (Murktide Regent)
-                    if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
-                        bool ok = false;
-                        for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                            if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
-                        if (!ok) continue;
-                    }
-                    // ValidCard$ Land.* filter (landfall)
-                    if (ab.trigger_valid_card_is_land && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_land = global_coordinator.entity_has_component<CardData>(ev_card) &&
-                                       is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
-                        if (!is_land) continue;
-                    }
-                    // ValidCard$ Artifact.* filter (Kappa Cannoneer: another artifact entering).
-                    // Token artifacts have their types on the Token component, not CardData.
-                    if (ab.trigger_valid_card_is_artifact && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_art = false;
-                        if (global_coordinator.entity_has_component<CardData>(ev_card))
-                            is_art = card_has_type(global_coordinator.GetComponent<CardData>(ev_card),
-                                                   "Artifact");
-                        if (!is_art && global_coordinator.entity_has_component<Token>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
-                                if (t.name == "Artifact") { is_art = true; break; }
-                        }
-                        if (!is_art) continue;
-                    }
-                    // ValidCard$ ...+!token — only real cards match, not tokens (CR 110.1).
-                    // Token permanents carry a Token component (their identity lives there
-                    // rather than on CardData). Moonshadow's "permanent CARDS put into your
-                    // graveyard" must ignore a dying token you own.
-                    if (ab.trigger_valid_card_non_token && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (global_coordinator.entity_has_component<Token>(ev_card)) continue;
-                    }
-                    // ValidCard$ Permanent — only permanent card types match (CR 110.4a);
-                    // an instant/sorcery moving to the graveyard must not trigger (Moonshadow:
-                    // "permanent cards put into your graveyard").
-                    if (ab.trigger_valid_card_is_permanent && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
-                        if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
-                            continue;
-                    }
-                    // ValidCard$ ...+untapped filter (Mystic Sanctuary: "When this land enters
-                    // untapped"): the changing card must be an untapped battlefield permanent
-                    // right now. The enters-tapped replacement dispatch (T2.2) runs inside
-                    // apply_permanent_components, which precedes this trigger scan in the SBA
-                    // loop, so Permanent::is_tapped already reflects how the card entered.
-                    if (ab.trigger_valid_card_untapped && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        if (!global_coordinator.entity_has_component<Permanent>(ev_card)) continue;
-                        if (global_coordinator.GetComponent<Permanent>(ev_card).is_tapped) continue;
-                    }
-                    // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
-                    // against the changing card's CardData or Token subtypes.
-                    if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {
-                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool has_sub = false;
-                        if (global_coordinator.entity_has_component<CardData>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        if (!has_sub && global_coordinator.entity_has_component<Token>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
-                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        // 603.10 look-back: a token that died has already ceased to exist, so
-                        // fall back to its last-known type names captured at battlefield-leave.
-                        if (!has_sub) {
-                            auto it = game.lk_battlefield_types.find(ev_card);
-                            if (it != game.lk_battlefield_types.end())
-                                for (auto &n : it->second)
-                                    if (n == ab.trigger_valid_card_subtype) { has_sub = true; break; }
-                        }
-                        if (!has_sub) continue;
-                    }
-                }
-                // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
-                if (ev.GetType() == Events::PLAYER_DREW_CARD) {
-                    // ValidCard$ Card.OppOwn — the drawn card must be owned by an
-                    // opponent of the source's controller (drawer != controller).
-                    if (ab.trigger_valid_card_opp_own && ev.HasParam(Params::PLAYER)) {
-                        Entity drawer = ev.GetParam<Entity>(Params::PLAYER);
-                        Entity ctrl_entity = get_player_entity(perm.controller);
-                        if (drawer == ctrl_entity) continue;
-                    }
-                    // FirstCardInDrawStep$ False — ignore the first card drawn in the
-                    // drawer's draw step (the turn-based draw).
-                    if (ab.trigger_exclude_first_draw_step && ev.HasParam(Params::FIRST_IN_STEP) &&
-                        ev.GetParam<int>(Params::FIRST_IN_STEP) == 1)
-                        continue;
-                    // Number$ N (Tamiyo, Inquisitive Student: "your THIRD card in a turn") — fire
-                    // only when this draw is the drawer's Nth this turn. AMOUNT is the per-draw
-                    // running ordinal stamped on the event (1-based), so exactly the Nth draw fires.
-                    if (ab.trigger_draw_number_eq > 0) {
-                        if (!ev.HasParam(Params::AMOUNT) ||
-                            ev.GetParam<uint32_t>(Params::AMOUNT) != ab.trigger_draw_number_eq)
-                            continue;
-                    }
-                }
-
-                // Colorless filter (Glaring Fleshraker): the cast spell (SPELL_CAST) or the
-                // entering card (CARD_CHANGED_ZONE) must be colorless (CR 105.2c). The card is
-                // carried as Params::ENTITY on both event types.
-                if (ab.trigger_valid_card_colorless && ev.HasParam(Params::ENTITY)) {
-                    Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                    if (!is_colorless_entity(ev_card)) continue;
-                }
-
-                // Spell count filter (Cori-Steel Cutter)
-                if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
-                    Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
-                    if (!global_coordinator.entity_has_component<Player>(ev_player)) continue;
-                    auto &pl = global_coordinator.GetComponent<Player>(ev_player);
-                    // The Fantasticar counts only noncreature spells; Cori-Steel Cutter counts all.
-                    size_t cast_count = ab.trigger_spell_count_noncreature
-                                            ? pl.noncreature_spells_cast_this_turn
-                                            : pl.spells_cast_this_turn;
-                    if (cast_count != ab.trigger_spell_count_eq) continue;
-                }
-
-                // Dynamic mana-value filter on the cast spell (Chalice of the Void:
-                // ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE). Compare the cast
-                // spell's mana value to the count resolved against this source permanent.
-                if (!ab.trigger_cmc_expr.empty() && ev.GetType() == Events::SPELL_CAST) {
-                    if (!ev.HasParam(Params::ENTITY)) continue;
-                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
-                    if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
-                    int spell_mv = card_mana_value(
-                        global_coordinator.GetComponent<CardData>(spell_e));
-                    int bound = evaluate_sa_svar(ab.trigger_cmc_expr, perm.controller, entity);
-                    const std::string &op = ab.trigger_cmc_op;
-                    bool ok = (op == "EQ") ? (spell_mv == bound)
-                            : (op == "LE") ? (spell_mv <= bound)
-                            : (op == "GE") ? (spell_mv >= bound)
-                            : (op == "LT") ? (spell_mv <  bound)
-                            : (op == "GT") ? (spell_mv >  bound)
-                            : (op == "NE") ? (spell_mv != bound)
-                            : (spell_mv == bound);
-                    if (!ok) continue;
-                }
-
-                // ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent
-                // to cast that spell" = ManaSpent EQ0). Compare the cast spell's recorded
-                // Spell::mana_spent (CR 106/601.2g) to the trigger's bound. The spell is still on
-                // the stack when SPELL_CAST fires, so its Spell component is present.
-                if (!ab.trigger_mana_spent_op.empty() && ev.GetType() == Events::SPELL_CAST) {
-                    if (!ev.HasParam(Params::ENTITY)) continue;
-                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
-                    if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
-                    int spent = global_coordinator.GetComponent<Spell>(spell_e).mana_spent;
-                    int bound = ab.trigger_mana_spent_val;
-                    const std::string &op = ab.trigger_mana_spent_op;
-                    bool ok = (op == "EQ") ? (spent == bound)
-                            : (op == "LE") ? (spent <= bound)
-                            : (op == "GE") ? (spent >= bound)
-                            : (op == "LT") ? (spent <  bound)
-                            : (op == "GT") ? (spent >  bound)
-                            : (op == "NE") ? (spent != bound)
-                            : (spent == bound);
-                    if (!ok) continue;
-                }
-
-                // BECAME_TARGET filters (Reality Smasher): the trigger fires only for the
-                // permanent that became a target (TARGET == this source, i.e. ValidTarget$
-                // Card.Self, already enforced by trigger_only_self against ENTITY below is NOT
-                // applicable here because ENTITY is the targeting object, not the targeted
-                // permanent — so the self check is done explicitly against TARGET) and only when
-                // the targeting object is a spell controlled by an opponent (ValidSource$
-                // Spell.OppCtrl).
-                if (ev.GetType() == Events::BECAME_TARGET) {
-                    // ValidTarget$ Card.Self: the permanent that became a target must be this one.
-                    Entity targeted = ev.HasParam(Params::TARGET) ? ev.GetParam<Entity>(Params::TARGET) : 0;
-                    if (ab.trigger_only_self && targeted != entity) continue;
-                    Entity targeting = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
-                    // ValidSource$ Spell — the targeting object must be a spell on the stack.
-                    if (ab.trigger_source_must_be_spell &&
-                        !global_coordinator.entity_has_component<Spell>(targeting)) continue;
-                    // ValidSource$ ...OppCtrl — controlled by an opponent of this source's controller.
-                    if (ab.trigger_source_opp_ctrl && ev.HasParam(Params::PLAYER)) {
-                        Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
-                        if (src_player == get_player_entity(perm.controller)) continue;
-                    }
-                }
-
-                // Prepare the triggered ability and queue it; APNAP placement (and any target
-                // selection) happens after the full scan, in place_triggers_apnap().
-                Ability trigger_ab = ab;
-                trigger_ab.source = entity;
-                trigger_ab.controller = perm.controller;
-                // Defined$ TriggeredSourceSA — the Counter effect acts on the spell that targeted
-                // this permanent. Bind it as the ability's target from the event's ENTITY (the
-                // targeting object). UnlessPayer$ TriggeredSourceSAController binds the payer of the
-                // unless-cost to that spell's controller (the opponent), captured from PLAYER.
-                if (ev.GetType() == Events::BECAME_TARGET) {
-                    if (trigger_ab.defined_triggered_source_sa && ev.HasParam(Params::ENTITY))
-                        trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
-                    if (trigger_ab.unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
-                        Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
-                        trigger_ab.unless_payer = (src_player == get_player_entity(Zone::PLAYER_A))
-                                                  ? Zone::PLAYER_A : Zone::PLAYER_B;
-                    }
-                }
-                // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
-                // fired this trigger. Capture it from the event as the ability's target.
-                if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
-                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
-                // Defined$ TriggeredActivator — bind the player who caused the trigger (the
-                // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability
-                // and its subabilities, so the effect (LoseLife etc.) resolves against them.
-                if (ev.HasParam(Params::PLAYER)) {
-                    bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
-                    // Defined$ TriggeredPlayer — bind the player whose event fired (e.g. the active
-                    // player whose upkeep began, Roiling Vortex's "each player's upkeep").
-                    bind_triggered_player(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
-                }
-                // Defined$ TriggeredDefendingPlayer — bind the defending player of the attack
-                // (Goblin Guide's Dig acts on the DEFENDER's library). CREATURE_ATTACKED carries
-                // PLAYER = the attacker's controller (active player); in a two-player game the
-                // defender is that player's opponent. Bind it as the ability's target (a player
-                // entity), which the Dig handler reads as the library owner.
-                if (trigger_ab.defined_triggered_defending_player &&
-                    ev.GetType() == Events::CREATURE_ATTACKED && ev.HasParam(Params::PLAYER)) {
-                    Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
-                    trigger_ab.target = (attacker_player == get_player_entity(Zone::PLAYER_A))
-                                            ? get_player_entity(Zone::PLAYER_B)
-                                            : get_player_entity(Zone::PLAYER_A);
-                }
-                // For exalted, target the sole attacker from the event
-                if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
-                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
-                // For combat damage triggers, capture the damage amount
-                if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
-                    trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
-
-                // 603.4 intervening-if: a trigger whose "if" condition is false right now does
-                // not go on the stack at all (it is re-checked again on resolution).
-                if (trigger_ab.intervening_if &&
-                    !evaluate_present_condition(trigger_ab, perm.controller, orderer))
-                    continue;
-                // Per-permanent stored-SVar gate (Carpet of Flowers' once-per-turn CheckSVar latch,
-                // "if you haven't added mana with this ability this turn"): the trigger does not go
-                // on the stack unless the source's latched scratch int satisfies the comparison.
-                if (!stored_svar_gate_passes(entity, trigger_ab.stored_svar_gate_name,
-                                             trigger_ab.stored_svar_gate_compare))
-                    continue;
-
-                // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup reset): resolve its
-                // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
-                // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
-                if (trigger_ab.trigger_static_offstack) {
-                    trigger_ab.resolve(orderer);
-                    continue;
-                }
-
-                // Mode$ ChangesZoneAll batch trigger (CR 603.2c): dedupe to a single firing for
-                // the whole simultaneous group. The first matching event queues it; further
-                // matching events for this same ability template are skipped.
-                if (ab.trigger_batch_zone_all && !batch_zone_all_fired.insert(&ab).second)
-                    continue;
-
-                PendingTrigger pt;
-                pt.ab = trigger_ab;
-                pt.controller = perm.controller;
-                pt.source = entity;
-                pt.label = trigger_label(ent_name, trigger_ab);
-                pt.log_line = ent_name + " triggered";
-                // Triggered abilities that require a target (e.g. Talon Gates of Madara's
-                // "up to one target creature phases out") choose their target as the ability
-                // goes on the stack, by the controller, in APNAP placement order.
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
-                pending.push_back(pt);
-            }
-            }
-        }
+        match_event_triggers(entity, perm.controller, &perm, entity_name(entity), ab_defs,
+                             events, /*departed=*/false, orderer, pending);
     }
+    match_departed_watcher_triggers(events, orderer, pending);
 
     // Self zone-change triggers that fire as the source itself moves (CR 603.6b / 603.10): a
     // triggered ability that watches its own source change zones (Flagstones of Trokair: "When
@@ -974,10 +633,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // gate above. (The subtype-derived mana ability / remover-granted abilities that survive
         // removal live on perm.abilities, not on the printed CardData scanned here.)
         if (lki && lki->abilities_removed) continue;
-        const std::vector<Ability> &self_abs =
+        const std::vector<const AbilityDef *> &self_abs =
             (lki && lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities;
-        for (const auto &ab : self_abs) {
-            if (ab.ability_type != Ability::TRIGGERED) continue;
+        for (const AbilityDef *abp : self_abs) {
+            const AbilityDef &ab = *abp;
+            if (ab.ability_type != AbilityDef::TRIGGERED) continue;
             if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
             if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
             if (ab.trigger_zone_origin >= 0 &&
@@ -995,8 +655,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             // Be conservative and don't fire the untapped-gated trigger here.
             if (ab.trigger_valid_card_untapped) continue;
 
-            Ability trigger_ab = ab;
-            trigger_ab.source = entity;
+            Ability trigger_ab(&ab);
+            trigger_ab.source = ObjectRef::of(entity);
             trigger_ab.controller = ctrl;
 
             // A leaves-the-battlefield ability that operates on the cards the source had exiled
@@ -1015,7 +675,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
                     bind_triggered_player(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
                 }
-                if (trigger_ab.intervening_if &&
+                if (trigger_ab.def->intervening_if &&
                     !evaluate_present_condition(trigger_ab, ctrl, orderer))
                     continue;
             }
@@ -1025,8 +685,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             // the StoreSVar latch write is a graceful no-op (the per-permanent store reset naturally
             // when the permanent left) — but routing it here keeps Static$ True triggers off the
             // stack as the rules require, rather than queueing a spurious StoreSVar trigger.
-            if (trigger_ab.trigger_static_offstack) {
-                trigger_ab.resolve(orderer);
+            if (trigger_ab.def->trigger_static_offstack) {
+                resolve_ability(trigger_ab, orderer);
                 continue;
             }
 
@@ -1036,7 +696,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             pt.source = entity;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
             pending.push_back(pt);
         }
     }
@@ -1058,17 +717,17 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         Zone::Ownership ctrl = spell.caster;
         const std::string ent_name = entity_name(spell_e);
         for (const auto &ab : global_coordinator.GetComponent<CardData>(spell_e).abilities) {
-            if (ab.ability_type != Ability::TRIGGERED) continue;
-            if (ab.trigger_on != Events::SPELL_CAST) continue;
-            if (!ab.trigger_only_self) continue;  // ValidCard$ Card.Self — only the cast spell itself
+            if (ab->ability_type != AbilityDef::TRIGGERED) continue;
+            if (ab->trigger_on != Events::SPELL_CAST) continue;
+            if (!ab->trigger_only_self) continue;  // ValidCard$ Card.Self — only the cast spell itself
             // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
-            if (ab.trigger_kicked_index > 0) {
-                size_t idx = static_cast<size_t>(ab.trigger_kicked_index - 1);
+            if (ab->trigger_kicked_index > 0) {
+                size_t idx = static_cast<size_t>(ab->trigger_kicked_index - 1);
                 if (idx >= spell.kicked.size() || !spell.kicked[idx]) continue;
             }
 
-            Ability trigger_ab = ab;
-            trigger_ab.source = spell_e;
+            Ability trigger_ab(ab);
+            trigger_ab.source = ObjectRef::of(spell_e);
             trigger_ab.controller = ctrl;
 
             // Storm (CR 702.40a): lock in the copy count = number of OTHER spells cast before
@@ -1077,8 +736,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             // cast first), so the both-player total minus this spell is the storm count. Snapshot
             // it now, at trigger-fire time — spells cast in RESPONSE to the storm trigger come
             // after this spell and must not inflate the count.
-            if (trigger_ab.category == "Storm")
-                trigger_ab.amount = storm_count_this_turn(game);
+            if (trigger_ab.def->kind == EffectKind::Storm) {
+                const int storm_count = static_cast<int>(storm_count_this_turn(game));
+                trigger_ab.def = derived_ability_def(trigger_ab.def, "storm_count", storm_count,
+                                                     [storm_count](AbilityDef &d) {
+                                                         d.amount = static_cast<size_t>(storm_count);
+                                                     });
+            }
 
             PendingTrigger pt;
             pt.ab = trigger_ab;
@@ -1086,7 +750,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             pt.source = spell_e;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
-            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
             pending.push_back(pt);
         }
     }
@@ -1107,22 +770,22 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         const std::string ent_name = entity_name(entity);
         for (const auto &ev : events) {
             for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
-                if (ab.ability_type != Ability::TRIGGERED) continue;
-                if (!ab.trigger_from_graveyard) continue;
-                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                if (ab->ability_type != AbilityDef::TRIGGERED) continue;
+                if (!ab->trigger_from_graveyard) continue;
+                if (ab->trigger_on == 0 || ab->trigger_on != ev.GetType()) continue;
                 // ValidPlayer$ You: the source's owner must be the event's player (the
                 // active player whose combat / phase began).
-                if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
+                if (ab->trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
                     if (ev.GetParam<Entity>(Params::PLAYER) != get_player_entity(owner)) continue;
                 }
 
-                Ability trigger_ab = ab;
-                trigger_ab.source = entity;
+                Ability trigger_ab(ab);
+                trigger_ab.source = ObjectRef::of(entity);
                 trigger_ab.controller = owner;
 
                 // 603.4 intervening-if: a trigger whose "if" condition is false right now
                 // does not go on the stack at all (re-checked again on resolution).
-                if (trigger_ab.intervening_if &&
+                if (trigger_ab.def->intervening_if &&
                     !evaluate_present_condition(trigger_ab, owner, orderer))
                     continue;
 
@@ -1132,7 +795,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
                 pending.push_back(pt);
             }
         }
@@ -1152,25 +814,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        std::vector<const std::vector<Ability> *> st_sources;
-        if (!perm.abilities_removed) {
-            if (global_coordinator.entity_has_component<CardData>(entity)) {
-                const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
-                st_sources.push_back((perm.transformed && cd.backside) ? &cd.backside->abilities
-                                                                       : &cd.abilities);
-            }
-            if (global_coordinator.entity_has_component<Token>(entity))
-                st_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
-        }
-        st_sources.push_back(&perm.abilities);
         const std::string ent_name = entity_name(entity);
-        for (const auto *src : st_sources) {
-            for (const auto &ab : *src) {
-                if (ab.ability_type != Ability::TRIGGERED) continue;
+        for (const AbilityDef *abp : permanent_ability_defs(entity, perm)) {
+            {
+                const AbilityDef &ab = *abp;
+                if (ab.ability_type != AbilityDef::TRIGGERED) continue;
                 if (!ab.trigger_state_condition) continue;
 
-                Ability trigger_ab = ab;
-                trigger_ab.source = entity;
+                Ability trigger_ab(&ab);
+                trigger_ab.source = ObjectRef::of(entity);
                 trigger_ab.controller = perm.controller;
 
                 // Stable per-trigger signature for the latch (category + the state condition),
@@ -1191,44 +843,394 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 pt.source = entity;
                 pt.label = trigger_label(ent_name, trigger_ab);
                 pt.log_line = ent_name + " triggered";
-                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
                 pending.push_back(pt);
             }
         }
     }
 
+    for (PendingTrigger &pt : pending) game.waiting_triggers.push_back(std::move(pt));
+}
+
+void StateManager::place_waiting_triggers(Game &game, std::shared_ptr<Orderer> orderer) {
+    if (game.pending.trigger_placement.active) return;
+    std::vector<PendingTrigger> pending;
+    for (PendingTrigger &pt : game.waiting_triggers) {
+        // A trigger queued outside the event scan (Ward, a reflexive trigger) is labeled here
+        // for its controller's ordering choice.
+        if (pt.label.empty()) pt.label = trigger_label(entity_name(pt.source), pt.ab);
+        pending.push_back(std::move(pt));
+    }
+    game.waiting_triggers.clear();
     place_triggers_apnap(game, orderer, pending);
-    // Last-known type snapshots are only valid for this batch of leave-the-battlefield
-    // events; clear them so a later, unrelated trigger can't match a stale entity id.
-    // The clear happens at placement COMPLETION (resume_trigger_placement, or the
-    // empty-batch early return in place_triggers_apnap) rather than here: a placement
-    // suspended on an ordering/target decision still needs the look-back data intact
-    // when it resumes, and as a Game member it is snapshot-covered while parked.
+}
+
+static void match_departed_watcher_triggers(const std::vector<Event> &events,
+                                            std::shared_ptr<Orderer> orderer,
+                                            std::vector<PendingTrigger> &pending) {
+    std::set<Entity> seen;
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::CARD_CHANGED_ZONE || !ev.HasParam(Params::ENTITY)) continue;
+        if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
+        Entity watcher = ev.GetParam<Entity>(Params::ENTITY);
+        if (!seen.insert(watcher).second) continue;
+        // Back on the battlefield already: the battlefield scan reads it as the object it is now.
+        if (is_battlefield_permanent(watcher)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(watcher)) continue;
+        const LastKnownInfo *lki = departed_lki_for(watcher);
+        if (!lki || lki->abilities_removed) continue;
+        const CardData &cd = lki->copied_card ? *lki->copied_card
+                                              : global_coordinator.GetComponent<CardData>(watcher);
+        std::vector<const AbilityDef *> ab_defs;
+        append_ability_defs(ab_defs,
+                            (lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities);
+        const std::string name = lki->name.empty() ? entity_name(watcher) : lki->name;
+        match_event_triggers(watcher, last_known_controller(watcher), nullptr, name, ab_defs,
+                             events, /*departed=*/true, orderer, pending);
+    }
+}
+
+static void match_event_triggers(Entity entity, Zone::Ownership controller, const Permanent *perm,
+                                 const std::string &ent_name,
+                                 const std::vector<const AbilityDef *> &ab_defs,
+                                 const std::vector<Event> &events, bool departed,
+                                 std::shared_ptr<Orderer> orderer,
+                                 std::vector<PendingTrigger> &pending) {
+    // Mode$ ChangesZoneAll batch triggers (CR 603.2c) fire once for a whole group of
+    // simultaneous zone changes, not once per matching card. Track which of this permanent's
+    // batch triggers have already queued this scan so later matching events in the same batch
+    // are skipped. Keyed by the ability template address (&ab), which is stable across the
+    // event loop (it lives in CardData/Token/perm.abilities).
+    std::set<const AbilityDef *> batch_zone_all_fired;
+
+    for (const auto &ev : events) {
+        for (const AbilityDef *abp : ab_defs) {
+            const AbilityDef &ab = *abp;
+            if (ab.ability_type != AbilityDef::TRIGGERED) continue;
+            // Static$ True mana-additional triggers (Badgermole Cub's TapsForMana) never go
+            // on the stack — they resolve immediately inside the mana system (CR 605.1a).
+            if (ab.trigger_taps_for_mana_static) continue;
+            // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
+            // Phoenix's begin-combat return) functions ONLY while its source is in the
+            // graveyard — TriggerZones overrides the default battlefield functioning
+            // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
+            // from the battlefield would place a spurious (no-op) trigger on the stack.
+            if (ab.trigger_from_graveyard) continue;
+            // Match the primary trigger event OR any additional event in trigger_on_extra (a
+            // phase trigger listing several phases, e.g. Carpet of Flowers' Phase$ Main1,Main2).
+            {
+                bool fires = (ab.trigger_on != 0) &&
+                             (ab.trigger_on == ev.GetType() ||
+                              std::find(ab.trigger_on_extra.begin(), ab.trigger_on_extra.end(),
+                                        ev.GetType()) != ab.trigger_on_extra.end());
+                if (!fires) continue;
+            }
+            // A source that left the battlefield along with the moving objects triggers only
+            // through the leaves-the-battlefield look-back (CR 603.10a): its Origin$ Battlefield
+            // zone-change abilities, on a move off the battlefield. Its own Card.Self departure is
+            // the self zone-change look-back's (collect_triggered_abilities).
+            if (departed && (ab.trigger_on != Events::CARD_CHANGED_ZONE || ab.trigger_only_self ||
+                             ab.trigger_zone_origin != static_cast<int>(Zone::BATTLEFIELD) ||
+                             ev.GetType() != Events::CARD_CHANGED_ZONE ||
+                             ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD))
+                continue;
+            // "another" check: skip if the event entity is the triggering permanent itself
+            if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
+                ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
+            // Card.Self: only fire when the event entity is the triggering permanent itself.
+            // BECAME_TARGET is exempt: there ENTITY is the targeting object (not the source),
+            // and ValidTarget$ Card.Self is matched against the TARGET param in the dedicated
+            // BECAME_TARGET block below instead.
+            if (ab.trigger_only_self && ev.GetType() != Events::BECAME_TARGET &&
+                ev.HasParam(Params::ENTITY) &&
+                ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
+            // "If you cast it" (ValidCard$ Card.wasCastByYou): a self ETB trigger that only
+            // fires when its source permanent entered the battlefield by being cast (CR
+            // 614.12; The One Ring's protection grant). perm is the source (trigger_only_self).
+            if (ab.trigger_requires_entered_by_cast && !(perm && perm->entered_by_cast)) continue;
+            // Evoke self-sacrifice only fires when this permanent was cast via evoke
+            if (ab.is_evoke_sacrifice && !(perm && perm->evoked)) continue;
+            // Offspring token copy only fires when this permanent was cast with offspring
+            if (ab.is_offspring_token && !(perm && perm->entered_with_offspring)) continue;
+            // (Front/back face selection is done once when ab_sources is built above, so a
+            // transformed permanent already only sees its active face's triggers here.)
+            // ValidPlayer$ You: only fire when the event's player matches the permanent's
+            // controller. BECAME_TARGET is exempt, like trigger_only_self above: there the
+            // PLAYER param is the targeting spell's controller (the OPPONENT, typically), not
+            // a "you" reference, so gating on it would wrongly suppress a becomes-target
+            // trigger authored with ValidPlayer$ You. Such a trigger's own ValidSource$/
+            // ValidTarget$ clauses constrain it in the dedicated BECAME_TARGET block below.
+            if (ab.trigger_valid_player_is_controller && ev.GetType() != Events::BECAME_TARGET &&
+                ev.HasParam(Params::PLAYER)) {
+                Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
+                Entity ctrl_entity = get_player_entity(controller);
+                if (event_player != ctrl_entity) continue;
+            }
+            // ValidActivatingPlayer$ Opponent (Lavinia, Azorius Renegade): only fire when the
+            // acting player is an OPPONENT of this source's controller (the event's PLAYER is
+            // the caster on SPELL_CAST). In a two-player game "opponent" = not the controller.
+            if (ab.trigger_valid_player_is_opponent && ev.GetType() != Events::BECAME_TARGET &&
+                ev.HasParam(Params::PLAYER)) {
+                Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
+                Entity ctrl_entity = get_player_entity(controller);
+                if (event_player == ctrl_entity) continue;
+            }
+            // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
+            if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
+                ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD) {
+                Entity entering = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+                if (rules_mod::etb_triggers_suppressed(entering)) continue;
+            }
+
+            // CARD_CHANGED_ZONE filters: origin, destination, card type
+            if (ev.GetType() == Events::CARD_CHANGED_ZONE) {
+                Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
+                Zone::ZoneValue ev_dest   = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+                if (ab.trigger_zone_origin >= 0 &&
+                    ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
+                if (ab.trigger_zone_destination >= 0 &&
+                    ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+                // ValidCard$ filter (Guide of Souls' Creature.Other+YouCtrl, Kappa Cannoneer's
+                // Artifact.YouCtrl, landfall's Land.YouCtrl, Ajani's Cat.Other+YouCtrl,
+                // Moonshadow's Permanent.YouOwn+!token, Murktide's Instant/Sorcery): the moving
+                // object as it exists after the event, or as it last existed on the battlefield
+                // for a departure (CR 603.6a / 603.10a) — its live types (an animated land is a
+                // creature, a Clue token isn't, an entering-transformed face is its back face)
+                // and its controller (a creature reanimated from an opponent's graveyard is
+                // YouCtrl for the reanimator).
+                if (!ab.trigger_valid_card.empty() && ev.HasParam(Params::ENTITY)) {
+                    MatchCtx vctx;
+                    vctx.controller = controller;
+                    vctx.source = entity;
+                    if (!zone_change_object_matches(ev.GetParam<Entity>(Params::ENTITY), ev_origin,
+                                                    ev_dest, ab.trigger_valid_card, vctx))
+                        continue;
+                }
+            }
+            // ValidCard$ Card.nonCreature on a SpellCast trigger (The Fantasticar): the cast
+            // spell must NOT be a creature spell.
+            if (ab.trigger_valid_card_non_creature && ev.GetType() == Events::SPELL_CAST &&
+                ev.HasParam(Params::ENTITY)) {
+                Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                if (global_coordinator.entity_has_component<CardData>(spell_e) &&
+                    is_creature_card(global_coordinator.GetComponent<CardData>(spell_e)))
+                    continue;
+            }
+            // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
+            if (ev.GetType() == Events::PLAYER_DREW_CARD) {
+                // ValidCard$ Card.OppOwn — the drawn card must be owned by an
+                // opponent of the source's controller (drawer != controller).
+                if (ab.trigger_valid_card_opp_own && ev.HasParam(Params::PLAYER)) {
+                    Entity drawer = ev.GetParam<Entity>(Params::PLAYER);
+                    Entity ctrl_entity = get_player_entity(controller);
+                    if (drawer == ctrl_entity) continue;
+                }
+                // FirstCardInDrawStep$ False — ignore the first card drawn in the
+                // drawer's draw step (the turn-based draw).
+                if (ab.trigger_exclude_first_draw_step && ev.HasParam(Params::FIRST_IN_STEP) &&
+                    ev.GetParam<int>(Params::FIRST_IN_STEP) == 1)
+                    continue;
+                // Number$ N (Tamiyo, Inquisitive Student: "your THIRD card in a turn") — fire
+                // only when this draw is the drawer's Nth this turn. AMOUNT is the per-draw
+                // running ordinal stamped on the event (1-based), so exactly the Nth draw fires.
+                if (ab.trigger_draw_number_eq > 0) {
+                    if (!ev.HasParam(Params::AMOUNT) ||
+                        ev.GetParam<uint32_t>(Params::AMOUNT) != ab.trigger_draw_number_eq)
+                        continue;
+                }
+            }
+
+            // Colorless filter (Glaring Fleshraker): the cast spell (SPELL_CAST) or the
+            // entering card (CARD_CHANGED_ZONE) must be colorless (CR 105.2c). The card is
+            // carried as Params::ENTITY on both event types.
+            if (ab.trigger_valid_card_colorless && ev.HasParam(Params::ENTITY)) {
+                Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                if (!is_colorless(ev_card)) continue;
+            }
+
+            // Spell count filter (Cori-Steel Cutter)
+            if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
+                Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
+                if (!global_coordinator.entity_has_component<Player>(ev_player)) continue;
+                auto &pl = global_coordinator.GetComponent<Player>(ev_player);
+                // The Fantasticar counts only noncreature spells; Cori-Steel Cutter counts all.
+                size_t cast_count = ab.trigger_spell_count_noncreature
+                                        ? pl.noncreature_spells_cast_this_turn
+                                        : pl.spells_cast_this_turn;
+                if (cast_count != ab.trigger_spell_count_eq) continue;
+            }
+
+            // Dynamic mana-value filter on the cast spell (Chalice of the Void:
+            // ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE). Compare the cast
+            // spell's mana value to the count resolved against this source permanent.
+            if (!ab.trigger_cmc_expr.empty() && ev.GetType() == Events::SPELL_CAST) {
+                if (!ev.HasParam(Params::ENTITY)) continue;
+                Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
+                int spell_mv = object_mana_value(
+                    spell_e, global_coordinator.GetComponent<CardData>(spell_e));
+                int bound = evaluate_svar(ab.trigger_cmc_expr, controller, entity);
+                const std::string &op = ab.trigger_cmc_op;
+                bool ok = (op == "EQ") ? (spell_mv == bound)
+                        : (op == "LE") ? (spell_mv <= bound)
+                        : (op == "GE") ? (spell_mv >= bound)
+                        : (op == "LT") ? (spell_mv <  bound)
+                        : (op == "GT") ? (spell_mv >  bound)
+                        : (op == "NE") ? (spell_mv != bound)
+                        : (spell_mv == bound);
+                if (!ok) continue;
+            }
+
+            // ValidSA$ Spell.ManaSpent <op><n> filter (Roiling Vortex: "if no mana was spent
+            // to cast that spell" = ManaSpent EQ0). Compare the cast spell's recorded
+            // Spell::mana_spent (CR 106/601.2g) to the trigger's bound. The spell is still on
+            // the stack when SPELL_CAST fires, so its Spell component is present.
+            if (!ab.trigger_mana_spent_op.empty() && ev.GetType() == Events::SPELL_CAST) {
+                if (!ev.HasParam(Params::ENTITY)) continue;
+                Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
+                int spent = global_coordinator.GetComponent<Spell>(spell_e).mana_spent;
+                int bound = ab.trigger_mana_spent_val;
+                const std::string &op = ab.trigger_mana_spent_op;
+                bool ok = (op == "EQ") ? (spent == bound)
+                        : (op == "LE") ? (spent <= bound)
+                        : (op == "GE") ? (spent >= bound)
+                        : (op == "LT") ? (spent <  bound)
+                        : (op == "GT") ? (spent >  bound)
+                        : (op == "NE") ? (spent != bound)
+                        : (spent == bound);
+                if (!ok) continue;
+            }
+
+            // BECAME_TARGET filters (Reality Smasher): the trigger fires only for the
+            // permanent that became a target (TARGET == this source, i.e. ValidTarget$
+            // Card.Self, already enforced by trigger_only_self against ENTITY below is NOT
+            // applicable here because ENTITY is the targeting object, not the targeted
+            // permanent — so the self check is done explicitly against TARGET) and only when
+            // the targeting object is a spell controlled by an opponent (ValidSource$
+            // Spell.OppCtrl).
+            if (ev.GetType() == Events::BECAME_TARGET) {
+                // ValidTarget$ Card.Self: the permanent that became a target must be this one.
+                Entity targeted = ev.HasParam(Params::TARGET) ? ev.GetParam<Entity>(Params::TARGET) : 0;
+                if (ab.trigger_only_self && targeted != entity) continue;
+                Entity targeting = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+                // ValidSource$ Spell — the targeting object must be a spell on the stack.
+                if (ab.trigger_source_must_be_spell &&
+                    !global_coordinator.entity_has_component<Spell>(targeting)) continue;
+                // ValidSource$ ...OppCtrl — controlled by an opponent of this source's controller.
+                if (ab.trigger_source_opp_ctrl && ev.HasParam(Params::PLAYER)) {
+                    Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
+                    if (src_player == get_player_entity(controller)) continue;
+                }
+            }
+
+            // Prepare the triggered ability and queue it; APNAP placement (and any target
+            // selection) happens after the full scan, in place_triggers_apnap().
+            Ability trigger_ab(&ab);
+            trigger_ab.source = ObjectRef::of(entity);
+            trigger_ab.controller = controller;
+            // CR 107.3m: an enters-the-battlefield trigger of a permanent uses the X its spell was
+            // cast with.
+            if (perm && is_self_etb_event(ev, entity)) trigger_ab.x_paid = perm->entered_x;
+            // Defined$ TriggeredSourceSA — the Counter effect acts on the spell that targeted
+            // this permanent. Bind it as the ability's target from the event's ENTITY (the
+            // targeting object). UnlessPayer$ TriggeredSourceSAController binds the payer of the
+            // unless-cost to that spell's controller (the opponent), captured from PLAYER.
+            if (ev.GetType() == Events::BECAME_TARGET) {
+                if (trigger_ab.def->defined_triggered_source_sa && ev.HasParam(Params::ENTITY))
+                    trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+                if (trigger_ab.def->unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
+                    Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
+                    trigger_ab.unless_payer = seat_of_player(src_player);
+                }
+            }
+            // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
+            // fired this trigger. Capture it from the event as the ability's target.
+            if (trigger_ab.def->defined_triggered_spell && ev.HasParam(Params::ENTITY))
+                trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+            // Defined$ TriggeredActivator — bind the player who caused the trigger (the
+            // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability
+            // and its subabilities, so the effect (LoseLife etc.) resolves against them.
+            if (ev.HasParam(Params::PLAYER)) {
+                bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                // Defined$ TriggeredPlayer — bind the player whose event fired (e.g. the active
+                // player whose upkeep began, Roiling Vortex's "each player's upkeep").
+                bind_triggered_player(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+            }
+            // Defined$ TriggeredDefendingPlayer — bind the defending player of the attack
+            // (Goblin Guide's Dig acts on the DEFENDER's library). CREATURE_ATTACKED carries
+            // PLAYER = the attacker's controller (active player); in a two-player game the
+            // defender is that player's opponent. Bind it as the ability's target (a player
+            // entity), which the Dig handler reads as the library owner.
+            if (trigger_ab.def->defined_triggered_defending_player &&
+                ev.GetType() == Events::CREATURE_ATTACKED && ev.HasParam(Params::PLAYER)) {
+                Entity attacker_player = ev.GetParam<Entity>(Params::PLAYER);
+                trigger_ab.target = ObjectRef::of(get_player_entity(opponent_of(seat_of_player(attacker_player))));
+            }
+            // For exalted, target the sole attacker from the event
+            if (trigger_ab.def->kind == EffectKind::ExaltedBonus && ev.HasParam(Params::ENTITY))
+                trigger_ab.target = ObjectRef::of(ev.GetParam<Entity>(Params::ENTITY));
+            // For combat damage triggers, capture the damage amount
+            if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
+                trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
+
+            // 603.4 intervening-if: a trigger whose "if" condition is false right now does
+            // not go on the stack at all (it is re-checked again on resolution).
+            if (trigger_ab.def->intervening_if &&
+                !evaluate_present_condition(trigger_ab, controller, orderer))
+                continue;
+            // Per-permanent stored-SVar gate (Carpet of Flowers' once-per-turn CheckSVar latch,
+            // "if you haven't added mana with this ability this turn"): the trigger does not go
+            // on the stack unless the source's latched scratch int satisfies the comparison.
+            if (!stored_svar_gate_passes(entity, trigger_ab.def->stored_svar_gate_name,
+                                         trigger_ab.def->stored_svar_gate_compare))
+                continue;
+
+            // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup reset): resolve its
+            // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
+            // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
+            if (trigger_ab.def->trigger_static_offstack) {
+                resolve_ability(trigger_ab, orderer);
+                continue;
+            }
+
+            // Mode$ ChangesZoneAll batch trigger (CR 603.2c): dedupe to a single firing for
+            // the whole simultaneous group. The first matching event queues it; further
+            // matching events for this same ability template are skipped.
+            if (ab.trigger_batch_zone_all && !batch_zone_all_fired.insert(&ab).second)
+                continue;
+
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = controller;
+            pt.source = entity;
+            pt.label = trigger_label(ent_name, trigger_ab);
+            pt.log_line = ent_name + " triggered";
+            // Triggered abilities that require a target (e.g. Talon Gates of Madara's
+            // "up to one target creature phases out") choose their target as the ability
+            // goes on the stack, by the controller, in APNAP placement order.
+            pending.push_back(pt);
+        }
+    }
 }
 
 static std::string trigger_label(const std::string &name, const Ability &ab) {
-    if (ab.is_evoke_sacrifice) return name + " (evoke: sacrifice)";
-    if (ab.is_offspring_token) return name + " (offspring: token copy)";
-    std::string s = name + " (" + ab.category;
-    if (ab.valid_tgts != "N_A" && !ab.valid_tgts.empty()) s += ", targeted";
+    if (ab.def->is_evoke_sacrifice) return name + " (evoke: sacrifice)";
+    if (ab.def->is_offspring_token) return name + " (offspring: token copy)";
+    std::string s = name + " (" + ab.def->category;
+    if (ab.def->valid_tgts != "N_A" && !ab.def->valid_tgts.empty()) s += ", targeted";
     s += ")";
     return s;
 }
 
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending) {
-    if (pending.empty()) {
-        // Nothing fired this batch: the look-back type snapshots are stale the moment the
-        // batch is over (they'd wrongly match a reused entity id in a later batch).
-        game.lk_battlefield_types.clear();
-        return;
-    }
-    if (game.trigger_placement.active)
+    if (pending.empty()) return;
+    if (game.pending.trigger_placement.active)
         fatal_error("place_triggers_apnap re-entered with a placement already in flight");
 
-    Zone::Ownership active = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     Zone::Ownership apnap[2] = {active,
-                                active == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A};
+                                opponent_of(active)};
 
     // Flatten into the persisted APNAP queue — the active player's group first
     // (so their triggers end up on the bottom and resolve last), collection
@@ -1236,20 +1238,30 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
     // needed mid-queue, resume_trigger_placement parks it as a loop-top
     // pending decision and returns; the main loop dispatches the answer back
     // into it until the queue empties.
-    TriggerPlacementRT &tp = game.trigger_placement;
+    TriggerPlacementRT &tp = game.pending.trigger_placement;
     tp.active = true;
-    tp.saved_priority = cur_game.player_a_has_priority;
-    tp.target_in_flight = false;
-    tp.tsel = TargetSelectRT{};
+    tp.saved_priority = cur_game.priority.player_a_has_priority;
+    tp.announce = AnnounceRT{};
     tp.queue.clear();
+    tp.placed.clear();
     for (Zone::Ownership owner : apnap)
         for (const auto &pt : pending)
             if (pt.controller == owner) tp.queue.push_back(pt);
     resume_trigger_placement(game, orderer);
 }
 
+static AnnounceStatus announce_trigger(PendingTrigger &pt, TriggerPlacementRT &tp,
+                                       bool suspendable, std::shared_ptr<Orderer> orderer) {
+    if (!suspendable) {
+        BlockingTargetAsker asker;
+        return run_announce(pt.ab, tp.announce, asker, orderer, pt.controller, true);
+    }
+    TriggerPlaceTargetAsker asker;
+    return run_announce(pt.ab, tp.announce, asker, orderer, pt.controller, true);
+}
+
 void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
-    TriggerPlacementRT &tp = game.trigger_placement;
+    TriggerPlacementRT &tp = game.pending.trigger_placement;
     if (!tp.active)
         fatal_error("resume_trigger_placement without an active trigger placement");
     // Pre-game placements (test-harness preplaced permanents) have no loop top
@@ -1261,9 +1273,9 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // Placement-time decisions (the 603.3b ordering pick and 603.3d target selection)
         // belong to the TRIGGER'S controller, who need not be the player holding priority
         // (e.g. the opponent's draw fired our Orcish Bowmasters). The input/BQUERY seat
-        // follows cur_game.player_a_has_priority, so seat the queries on the owner;
+        // follows cur_game.priority.player_a_has_priority, so seat the queries on the owner;
         // tp.saved_priority is restored when the whole placement completes.
-        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+        cur_game.priority.player_a_has_priority = (owner == Zone::PLAYER_A);
 
         // The current group: the leading run of queue entries sharing the front's controller.
         size_t group_size = 1;
@@ -1274,8 +1286,8 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
         // order of their choosing. We place one at a time; the first chosen ends up on the
         // bottom of the stack (resolves last). A single trigger needs no choice.
         size_t pick = 0;  // position within the group
-        if (!tp.target_in_flight && group_size > 1) {
-            PendingQuery &pq = game.pending_query;
+        if (!tp.announce.active && group_size > 1) {
+            PendingQuery &pq = game.pending.query;
             if (suspendable && pq.active) {
                 // Consume the latched ordering answer (the queue is untouched between
                 // arm and resume, so the group it indexes is identical).
@@ -1314,7 +1326,7 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                     pq.menu = std::move(choices);
                     pq.chooser_is_a = (owner == Zone::PLAYER_A);
                     pq.decision_source = order_source;
-                    pq.prev_priority = cur_game.player_a_has_priority;
+                    pq.prev_priority = cur_game.priority.player_a_has_priority;
                     pq.answered = false;
                     pq.answer = -1;
                     pq.active = true;
@@ -1328,43 +1340,35 @@ void resume_trigger_placement(Game &game, std::shared_ptr<Orderer> orderer) {
                         tp.queue.begin() + static_cast<ptrdiff_t>(pick) + 1);
 
         PendingTrigger &pt = tp.queue.front();
-        if (pt.needs_target) {
-            if (!tp.target_in_flight) {
-                // CR 603.3d: if no legal choices can be made for a required target as the
-                // triggered ability would go on the stack, the ability is simply removed —
-                // never placed target-less (it would fizzle confusingly, or worse, resolve
-                // against target 0). Optional targeting (target_min 0) always passes.
-                // Checked at placement time exactly as before — nothing can run between
-                // the ordering prompt and this check.
-                if (!has_legal_targets(pt.ab, orderer)) {
-                    game_log("%s's trigger is removed - no legal targets (603.3d)\n",
-                             entity_name(pt.source).c_str());
-                    tp.queue.erase(tp.queue.begin());
-                    continue;
-                }
-            }
-            if (!suspendable) {
-                select_target(pt.ab, orderer, pt.controller);
-            } else {
-                if (!tp.target_in_flight) {
-                    tp.target_in_flight = true;
-                    tp.tsel = TargetSelectRT{};
-                }
-                TriggerPlaceTargetAsker asker;
-                if (run_target_select(pt.ab, tp.tsel, asker, orderer, pt.controller) ==
-                    TargetStatus::SUSPENDED)
-                    return;
-                tp.target_in_flight = false;
-            }
+        const AnnounceStatus announced = announce_trigger(pt, tp, suspendable, orderer);
+        if (announced == AnnounceStatus::SUSPENDED) return;
+        if (announced == AnnounceStatus::REMOVED) {
+            // CR 603.3c/d: if no mode can be chosen, or no legal choice can be made for a
+            // required target, as the triggered ability would go on the stack, the ability is
+            // simply removed — never placed mode- or target-less (it would fizzle confusingly,
+            // or worse, resolve against target 0). Optional targeting (target_min 0) always
+            // passes.
+            const bool no_mode = is_modal(pt.ab) && pt.ab.charm_chosen.empty();
+            game_log("%s's trigger is removed - no legal %s\n", entity_name(pt.source).c_str(),
+                     no_mode ? "modes (603.3c)" : "targets (603.3d)");
+            tp.queue.erase(tp.queue.begin());
+            continue;
         }
-        orderer->push_ability_onto_stack(pt.ab, pt.controller);
+        // A triggered ability whose X nothing defined (CR 107.3m/n) has X = 0 (CR 107.3i: the
+        // source's own X is 0 off the stack), so it never reads a stale X from another spell.
+        if (pt.ab.x_paid < 0) pt.ab.x_paid = 0;
+        tp.placed.push_back(orderer->push_ability_onto_stack(pt.ab, pt.controller));
         game_log("%s\n", pt.log_line.c_str());
         tp.queue.erase(tp.queue.begin());
     }
 
-    // Placement complete: restore the pre-placement priority seat and retire the
-    // look-back type snapshots for this batch (see check_triggered_abilities).
-    cur_game.player_a_has_priority = tp.saved_priority;
+    // The placed abilities' targets became their targets as each went on the stack (CR 603.3d);
+    // the Ward and becomes-target abilities that triggered meanwhile are put on the stack after
+    // this placement, above every ability it placed (CR 603.3b).
+    for (Entity placed : tp.placed)
+        fire_targeting_hooks(placed, global_coordinator.GetComponent<Ability>(placed).controller);
+
+    // Placement complete: restore the pre-placement priority seat.
+    cur_game.priority.player_a_has_priority = tp.saved_priority;
     tp = TriggerPlacementRT{};
-    game.lk_battlefield_types.clear();
 }

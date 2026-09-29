@@ -1,0 +1,13 @@
+{
+  "name": "cr613_1f_no_printed_ward_under_humility",
+  "why": "CR 613.1f: Kappa Cannoneer under Humility has no Ward, so Lightning Bolt resolves and kills it - 98950c6",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Kappa Cannoneer", "Humility"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Kappa Cannoneer"],
+  "max_decisions": 6,
+  "expect_not": ["Ward"],
+  "expect_order": ["Player A casts Lightning Bolt targeting Kappa Cannoneer", "Lightning Bolt deals 3 damage to Kappa Cannoneer", "Kappa Cannoneer is destroyed"]
+}

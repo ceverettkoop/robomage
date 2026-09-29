@@ -34,12 +34,12 @@ std::string player_name(Zone::Ownership owner);
 std::string owner_possessive(Zone::Ownership actor, Zone::Ownership owner);
 
 // Logging: printf in CLI; no-op in machine mode
-void game_log(const char* fmt, ...);
+void game_log(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 // Like game_log, but suppressed when a human player is designated and private_to is their opponent
-void game_log_private(Zone::Ownership private_to, const char* fmt, ...);
+void game_log_private(Zone::Ownership private_to, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
 // Complement of game_log_private: the generic line shown only to an opponent
 // viewer (in place of owner's hidden card). Pair with game_log_private per event.
-void game_log_redacted(Zone::Ownership owner, const char* fmt, ...);
+void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) __attribute__((format(printf, 2, 3)));
 // True (setting *owner) when narrative should be limited to one player's view
 // (--player human seat, or --log-viewer spectator seat); false for full narrative
 bool resolve_narrative_viewer(Zone::Ownership* owner);

@@ -4,6 +4,7 @@
 #include <memory>
 #include <numeric>
 
+#include "../error.h"
 #include "../stable_rng.h"
 
 #include "../card_db.h"
@@ -15,10 +16,17 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/permanent.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/entry.h"
+#include "../queries/keywords.h"
+#include "../queries/lki.h"
+#include "../queries/players.h"
+#include "../queries/spells.h"
+#include "../transform.h"
 #include "../components/player.h"
 #include "../components/effect.h"
 #include "../components/spell.h"
@@ -29,13 +37,14 @@
 #include "../input_logger.h"
 #include "replacement_effects.h"
 #include "../machine_io.h"
+#include "../saga.h"
 #include "../type_constants.h"
 #include "../components/types.h"
 
 // --- file-local helpers (forward declarations) ---
-static ColorIdentity color_identity_from(const CardData &cd);
 static void restore_printed_card(Entity target);
 static int card_vocab_of(Entity target);
+static bool identity_public_leaving(Entity target, Zone::ZoneValue origin);
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -51,8 +60,19 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     Zone ab_zone(Zone::HAND, controller, controller);
     global_coordinator.AddComponent(ability_entity, ab_zone);
     add_to_zone(false, ability_entity, Zone::STACK);
-    global_coordinator.AddComponent(ability_entity, ability);
+    global_coordinator.AddComponent(ability_entity, Ability{});
+    set_stack_ability(ability_entity, ability, controller);
     return ability_entity;
+}
+
+void Orderer::set_stack_ability(Entity ability_entity, const Ability &ability,
+                                Zone::Ownership controller) {
+    // The player who put the ability on the stack controls it (CR 113.8 / 603.3a): stamp that onto
+    // the stack object so every "you" it resolves reads Ability::controller.
+    Ability &stack_ab = global_coordinator.GetComponent<Ability>(ability_entity);
+    stack_ab = ability;
+    stack_ab.controller = controller;
+    stamp_source_transforms(stack_ab);
 }
 
 void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) {
@@ -68,6 +88,12 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
         if (cmp_zone.location == Zone::STACK) cmp_zone.distance_from_top++;
     }
     global_coordinator.AddComponent(target, z);
+    // The copy's own ability was built before it had a Zone; it comes from the object now on
+    // the stack.
+    if (global_coordinator.entity_has_component<Ability>(target)) {
+        Ability &ab = global_coordinator.GetComponent<Ability>(target);
+        if (ab.source.lki_entity() == target) ab.source = ObjectRef::of(target);
+    }
     // A stack object is public information (CR 400.2), but a copy of a spell is not a card
     // (CR 707.10) and reveals nothing from its controller's deck, so only a created object that
     // is a card is recorded in the owner's revealed set.
@@ -77,9 +103,10 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
-                          bool top_seen_by_owner, bool exile_face_down) {
+                          LibraryTopView top_view, bool exile_face_down) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
+    bool with_void_counter = false;
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
     // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
@@ -92,8 +119,14 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         rev.origin = target_zone.location;
         rev.destination = destination;
         replacement::dispatch(rev);
-        if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
+        if (rev.prevented) {
+            // 614.13 — the move is prevented; the card remains in its origin zone, and an entry
+            // onto the battlefield it was headed for doesn't happen.
+            if (destination == Zone::BATTLEFIELD) drop_entry_info(target);
+            return;
+        }
         destination = rev.destination;
+        with_void_counter = rev.with_void_counter;
         // Mox Diamond / Chrome Mox additional cost: the affected player chose to discard a card as
         // this permanent enters (dispatch has no orderer, so the discard is performed here). The
         // land moves to its owner's graveyard; the permanent then enters normally (destination
@@ -113,18 +146,14 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         destination = Zone::EXILE;
     }
 
-    // One-shot cast-time ETB markers (Amped Raptor's cast_from_hand, a modal back face's
-    // pending_enters_transformed) describe THIS cast's eventual battlefield entry; they are set
-    // when the cast begins and consumed when the resolved permanent is created. A spell leaving
-    // the stack for anywhere else — countered (CR 701.5a), fizzled (608.2b), a resolved
-    // instant/sorcery — ends that cast without a battlefield entry, so the markers must die with
-    // it: a stale entry would mark a later NON-cast entry of the same card as this cast (Animate
-    // Dead reanimating a countered Amped Raptor wrongly fired its "if you cast it from your
-    // hand" impulse clause).
-    if (target_zone.location == Zone::STACK && destination != Zone::BATTLEFIELD) {
-        cur_game.cast_from_hand.erase(target);
-        cur_game.pending_enters_transformed.erase(target);
-    }
+    // What was recorded about the card's battlefield entry (EntryInfo: how it was cast, an Aura's
+    // chosen enchant object, entering tapped/transformed/attacking) describes one entry onto the
+    // battlefield. A card going anywhere else — a spell countered (CR 701.5a) or fizzled
+    // (608.2b), a resolved instant/sorcery, a move redirected by a replacement, a permanent that
+    // left before its entry was complete — takes none of it into its next entry (CR 400.7): a
+    // stale mark would describe a later entry of the same card (Animate Dead reanimating a
+    // countered Amped Raptor wrongly fired its "if you cast it from your hand" clause).
+    if (destination != Zone::BATTLEFIELD) drop_entry_info(target);
 
     // CR 400.7: a card that already left the battlefield becomes a new object again with this
     // move, so its snapshot from that exit no longer describes it (a departure from the
@@ -134,10 +163,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
-        Entity owner_entity = target_zone.owner == Zone::PLAYER_A
-                              ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity owner_entity = get_player_entity(target_zone.owner);
         Event ev(Events::CARD_CHANGED_ZONE);
         ev.SetParam(Params::ENTITY,      target);
+        ev.SetParam(Params::OBJECT_GEN,  target_zone.obj_gen);
         ev.SetParam(Params::PLAYER,      owner_entity);
         ev.SetParam(Params::ORIGIN,      target_zone.location);
         ev.SetParam(Params::DESTINATION, destination);
@@ -148,17 +177,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (target_zone.location == Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<Permanent>(target)) {
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(target).controller;
-        if (ctrl == Zone::PLAYER_A) cur_game.revolt_player_a = true;
-        else                        cur_game.revolt_player_b = true;
-
-        // 603.10 look-back: snapshot the permanent's type/subtype names as it leaves the
-        // battlefield so a "dies"/leaves-the-battlefield trigger can still match it after a
-        // token has ceased to exist (and after CardData/Permanent are stripped). Consumed
-        // and cleared by check_triggered_abilities.
-        std::vector<std::string> &names = cur_game.lk_battlefield_types[target];
-        names.clear();
-        for (const auto &t : global_coordinator.GetComponent<Permanent>(target).types)
-            names.push_back(t.name);
+        global_coordinator.GetComponent<Player>(get_player_entity(ctrl))
+            .permanent_left_battlefield_this_turn = true;
 
         // Full last-known-information snapshot (CR 608.2h / 112.7a): the permanent's effective
         // characteristics as it last existed in play, so the effective_* accessors can answer a
@@ -167,7 +187,9 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // CardData components are still intact (they are stripped later, by the SBA pass).
         LastKnownInfo &lki = cur_game.last_known_info[target];
         lki = LastKnownInfo{};
-        lki.type_names = names;
+        lki.issue = global_coordinator.GetIssueCount(target);
+        lki.types = global_coordinator.GetComponent<Permanent>(target).types;
+        lki.keywords = permanent_keywords(target);
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
         // Identity (name, token-ness, token script): a token ceases to exist once it leaves the
         // battlefield (CR 111.7), taking every component with it, but an unless-cost prompt or a
@@ -186,7 +208,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         lki.exiled_with = global_coordinator.GetComponent<Permanent>(target).exiled_with;
         // How-it-entered markers: an ETB trigger of a permanent that leaves again before trigger
         // collection (legend rule, 0-toughness SBA) is fired by the look-back scan in
-        // check_triggered_abilities, which needs these gates after Permanent is stripped.
+        // collect_triggered_abilities, which needs these gates after Permanent is stripped.
         {
             const auto &p = global_coordinator.GetComponent<Permanent>(target);
             lki.entered_by_cast = p.entered_by_cast;
@@ -232,44 +254,26 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
-    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
     Zone::ZoneValue origin = target_zone.location;
-    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD ||
-        origin == Zone::EXILE) {
-        size_t departing_pos = target_zone.distance_from_top;
-        Zone::Ownership owner = target_zone.owner;
-        for (auto &&card : mEntities) {
-            if (card == target) continue;
-            auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
-            if (cmp_zone.location != origin) continue;
-            // Library, graveyard, and exile are per-player; stack is shared
-            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
-                cmp_zone.owner != owner)
-                continue;
-            if (cmp_zone.distance_from_top > departing_pos) {
-                cmp_zone.distance_from_top--;
-            }
-        }
-
-        // If a card left the library within the tracked top window, drop it
-        // from the known-top cache and shift the rest up.
-        if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
-            cur_game.known_top_library_remove_pos(owner == Zone::PLAYER_A, static_cast<int>(departing_pos));
-        }
-    }
+    const bool public_identity = identity_public_leaving(target, origin);
+    close_zone_gap(target);
 
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
     }
 
-    // If a card is being placed on top of a library, it becomes the new known top.
-    // The push is unconditional even for a fateseal (top_seen_by_owner == false): the owner's
-    // previously-known top entries must still shift one position deeper. But when the owner does
-    // NOT see the card (the looker is the opponent), record an UNKNOWN marker (-1) instead of the
-    // real identity, so the cache positions stay honest without leaking a card they never saw.
+    // If a card is being placed on top of a library, it becomes the new known top. The push is
+    // unconditional: both players' previously-known entries must shift one position deeper. A
+    // player who did not see the card (a fateseal's owner, the owner's opponent at a Brainstorm
+    // put-back, everyone for a random-order placement) records an UNKNOWN marker (-1) instead of
+    // its identity, so the positions stay honest without leaking a card they never saw.
     if (!on_bottom && destination == Zone::LIBRARY) {
-        int vocab_idx = top_seen_by_owner ? card_vocab_of(target) : -1;
-        cur_game.known_top_library_push(target_zone.owner == Zone::PLAYER_A, vocab_idx);
+        const int vocab_idx = card_vocab_of(target);
+        const bool seen = top_view != LibraryTopView::NOBODY;
+        const bool owner_knows = seen && (public_identity || top_view == LibraryTopView::OWNER);
+        const bool opp_knows = seen && (public_identity || top_view == LibraryTopView::OPPONENT);
+        cur_game.known_top_library_push(target_zone.owner, owner_knows ? vocab_idx : -1,
+                                        opp_knows ? vocab_idx : -1);
     }
 
     for (auto &&card : mEntities) {
@@ -297,7 +301,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // spell/ability that targeted the OLD object can detect at resolution that the object it chose
     // no longer exists (Tamiyo/Ajani exile-and-return-transformed, any same-resolution flicker),
     // even when the same entity id re-enters its former zone as a same-type object. See Zone::obj_gen.
-    target_zone.obj_gen = cur_game.next_obj_gen++;
+    // An open follow window keeps the old object findable for the rest of the effect (CR 400.7j).
+    note_object_moved(target, target_zone.obj_gen);
+    target_zone.obj_gen = cur_game.identity.next_obj_gen++;
+    // Counters on the card (a void counter, time counters) don't follow it: the object it became
+    // has none (CR 122.2). The void counter a replacement put on it goes on that new object.
+    target_zone.counters.clear();
+    if (with_void_counter && destination == Zone::EXILE) target_zone.counters["VOID"] = 1;
 
     // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
     // components are normally gone already — stripped by the state-based pass while it was away —
@@ -307,11 +317,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // attachments, damage). Strip them here, at entry, AFTER the departure-side LKI snapshot
     // above captured last-known info; the next state-based pass then rebuilds the permanent fresh
     // exactly like any other entry — including the ENTERS_BATTLEFIELD replacement dispatch
-    // (enters tapped / with counters) and the pending_enters_tapped/_transformed one-shots.
+    // (enters tapped / with counters) and the EntryInfo recorded for this entry.
     // (Phasing never passes through add_to_zone; a phased-out permanent keeps its state, 702.26.)
     if (destination == Zone::BATTLEFIELD && origin != Zone::BATTLEFIELD &&
         global_coordinator.entity_has_component<Permanent>(target)) {
-        strip_permanent_components(target);
+        strip_permanent_components(target, mEntities);
     }
 
     // A zone change re-derives visibility from the new zone: any prior "identity
@@ -319,6 +329,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // card is now either public, or a fresh hidden object). Reveal sites set this
     // flag again if the destination is a revealed hidden zone.
     target_zone.identity_known = false;
+    cur_game.revealed_in_library.erase(target);
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
@@ -328,12 +339,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // hidden zone (e.g. Overlord of the Balemurk returning a creature card from the
     // graveyard to hand, or bouncing a permanent to its owner's hand). Keep that
     // belief so the observation carries the exact opponent-hand card. A draw
-    // (LIBRARY→HAND) is a hidden move and is intentionally excluded.
-    if (destination == Zone::HAND &&
-        (origin == Zone::BATTLEFIELD || origin == Zone::STACK ||
-         origin == Zone::GRAVEYARD || origin == Zone::EXILE)) {
-        target_zone.identity_known = true;
-    }
+    // (LIBRARY→HAND) is a hidden move and is intentionally excluded, as is a card leaving
+    // exile face down: its identity was hidden there too (CR 406.3).
+    // A card revealed in the library by the effect moving it (Atraxa, Goblin Guide) was seen by
+    // both players too (CR 701.20a).
+    if (destination == Zone::HAND && public_identity) target_zone.identity_known = true;
 
     // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
     // to both players, so accumulate it in the owner's revealed multi-hot. This
@@ -348,6 +358,124 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
+}
+
+// See declaration in orderer.h.
+void Orderer::close_zone_gap(Entity target) {
+    // LIBRARY, STACK, GRAVEYARD, and EXILE are ordered zones where distance_from_top is meaningful.
+    const auto &target_zone = global_coordinator.GetComponent<Zone>(target);
+    Zone::ZoneValue origin = target_zone.location;
+    if (origin != Zone::LIBRARY && origin != Zone::STACK && origin != Zone::GRAVEYARD &&
+        origin != Zone::EXILE)
+        return;
+    size_t departing_pos = target_zone.distance_from_top;
+    Zone::Ownership owner = target_zone.owner;
+    for (auto &&card : mEntities) {
+        if (card == target) continue;
+        auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+        if (cmp_zone.location != origin) continue;
+        // Library, graveyard, and exile are per-player; stack is shared
+        if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD || origin == Zone::EXILE) &&
+            cmp_zone.owner != owner)
+            continue;
+        if (cmp_zone.distance_from_top > departing_pos) {
+            cmp_zone.distance_from_top--;
+        }
+    }
+
+    // If a card left the library within the tracked top window, drop it
+    // from the known-top cache and shift the rest up.
+    if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
+        cur_game.known_top_library_remove_pos(owner, static_cast<int>(departing_pos));
+    }
+}
+
+// See declaration in orderer.h.
+bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
+    bool is_copy = global_coordinator.entity_has_component<Spell>(target) &&
+                   global_coordinator.GetComponent<Spell>(target).is_copy;
+    bool is_card = global_coordinator.entity_has_component<CardData>(target) && !is_copy;
+    if (spell_cast_with_flashback(target)) destination = Zone::EXILE;
+    if (global_coordinator.entity_has_component<Ability>(target)) {
+        decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(target));
+        global_coordinator.RemoveComponent<Ability>(target);
+    }
+    if (global_coordinator.entity_has_component<Spell>(target))
+        global_coordinator.RemoveComponent<Spell>(target);
+    if (!is_card) {
+        close_zone_gap(target);
+        global_coordinator.DestroyEntity(target);
+        return false;
+    }
+    add_to_zone(false, target, destination);
+    return true;
+}
+
+// See declaration in orderer.h.
+Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    const Zone origin = z;
+    // Every cast-offering path casts from a hand, graveyard or exile; nothing is cast from a
+    // library, whose known-top record the rewind would also have to restore.
+    if (origin.location != Zone::HAND && origin.location != Zone::GRAVEYARD &&
+        origin.location != Zone::EXILE)
+        fatal_error("begin_cast_move: a card can't be cast from zone " +
+                    std::to_string(static_cast<int>(origin.location)));
+    close_zone_gap(card);
+    for (auto &&e : mEntities) {
+        if (e == card) continue;
+        auto &cz = global_coordinator.GetComponent<Zone>(e);
+        if (cz.location == Zone::STACK) cz.distance_from_top++;
+    }
+    z.location = Zone::STACK;
+    z.distance_from_top = 0;
+    z.controller = caster;
+    const uint64_t origin_gen = z.obj_gen;
+    note_object_moved(card, origin_gen);  // CR 400.7h: a cast made by an effect stays findable
+    z.obj_gen = cur_game.identity.next_obj_gen++;
+    // CR 400.7g: a permission to cast the card applies to the object it becomes on the stack.
+    cur_game.resolved_effects.impulse_cast_permission.follow(card, origin_gen);
+    z.identity_known = false;
+    z.is_face_down = false;
+    // A spell on the stack is public (CR 400.2).
+    mark_card_revealed(card, z.owner);
+    return origin;
+}
+
+// See declaration in orderer.h.
+void Orderer::complete_cast_move(Entity card, const Zone &origin) {
+    // Counters on the card in its origin zone (Dauthi Voidwalker's void counter) don't follow it
+    // onto the stack (CR 122.2); a reversed cast restores its origin Zone with them.
+    global_coordinator.GetComponent<Zone>(card).counters.clear();
+    supersede_last_known_info(card);
+    Event ev(Events::CARD_CHANGED_ZONE);
+    ev.SetParam(Params::ENTITY, card);
+    ev.SetParam(Params::OBJECT_GEN, origin.obj_gen);
+    ev.SetParam(Params::PLAYER, get_player_entity(origin.owner));
+    ev.SetParam(Params::ORIGIN, origin.location);
+    ev.SetParam(Params::DESTINATION, Zone::STACK);
+    global_coordinator.SendEvent(ev);
+}
+
+// See declaration in orderer.h.
+void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
+    close_zone_gap(card);
+    // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
+    if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
+        for (auto &&e : mEntities) {
+            if (e == card) continue;
+            auto &cz = global_coordinator.GetComponent<Zone>(e);
+            if (cz.location != origin.location || cz.owner != origin.owner) continue;
+            if (cz.distance_from_top >= origin.distance_from_top) cz.distance_from_top++;
+        }
+    }
+    auto &z = global_coordinator.GetComponent<Zone>(card);
+    const uint64_t stack_gen = z.obj_gen;
+    z = origin;
+    if (origin.location == Zone::HAND) z.identity_known = true;
+    // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
+    // permission that followed it onto the stack is back on it.
+    cur_game.resolved_effects.impulse_cast_permission.follow(card, stack_gen);
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER
@@ -385,11 +513,11 @@ std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
     return contents;
 }
 
-void Orderer::note_library_card_known(Entity card) {
+void Orderer::note_library_card_known(Entity card, Zone::Ownership knower) {
     const auto &zone = global_coordinator.GetComponent<Zone>(card);
     if (zone.location != Zone::LIBRARY) return;
-    cur_game.known_top_library_set(zone.owner == Zone::PLAYER_A,
-                                   static_cast<int>(zone.distance_from_top), card_vocab_of(card));
+    cur_game.known_top_library_note(zone.owner, static_cast<int>(zone.distance_from_top),
+                                    card_vocab_of(card), knower);
 }
 
 void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
@@ -408,10 +536,7 @@ void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
         }
     }
     zone.distance_from_top = sunk_to;
-    bool is_a = zone.owner == Zone::PLAYER_A;
-    int vocab_idx = (is_a ? cur_game.known_top_library_a : cur_game.known_top_library_b)[0];
-    cur_game.known_top_library_remove_pos(is_a, 0);
-    cur_game.known_top_library_insert(is_a, static_cast<int>(sunk_to), vocab_idx);
+    cur_game.known_top_library_move(zone.owner, 0, static_cast<int>(sunk_to));
 }
 
 void Orderer::shuffle_library(Zone::Ownership owner) {
@@ -421,7 +546,7 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     std::iota(placements.begin(), placements.end(), 0);
     // stable_shuffle, not std::shuffle: std::shuffle output differs between
     // libstdc++ and libc++ for the same seed (see stable_rng.h).
-    stable_shuffle(placements, cur_game.gen);
+    stable_shuffle(placements, cur_game.rng.engine);
 
     size_t i = 0;
     for (auto &&card : contents) {
@@ -430,20 +555,22 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
         i++;
     }
 
-    // Shuffling destroys any knowledge of which cards are on top of the library
-    cur_game.clear_known_top_library(owner == Zone::PLAYER_A);
+    // Shuffling destroys any knowledge of which cards are on top of the library, and a revealed
+    // card that is reordered stops being revealed (CR 701.20d).
+    cur_game.clear_known_top_library(owner);
+    for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
 }
 
 extern bool no_shuffle;
 
-// Derive a card's color identity from its mana cost, honoring an explicit
-// color-identity override (e.g. Dryad Arbor) when present. Routed through the shared
-// card_colors() (game_queries.h) so hybrid and Phyrexian pips (CR 202.2d: {B/P} makes the
-// card black however it is paid) color the card here the same way they do everywhere else.
-static ColorIdentity color_identity_from(const CardData &cd) {
-    ColorIdentity ci;
-    ci.colors = card_colors(cd);
-    return ci;
+// Whether both players know the identity of `target` as it leaves `origin`: it was in a public
+// zone (the battlefield, the stack, a graveyard, or face up in exile — CR 400.2, 406.3), or it
+// was revealed where it sat in a library (CR 701.20a).
+static bool identity_public_leaving(Entity target, Zone::ZoneValue origin) {
+    if (origin == Zone::BATTLEFIELD || origin == Zone::STACK || origin == Zone::GRAVEYARD)
+        return true;
+    if (origin == Zone::EXILE) return !global_coordinator.GetComponent<Zone>(target).is_face_down;
+    return cur_game.revealed_in_library.count(target) > 0;
 }
 
 // The card's vocab index, or -1 when it has no CardData (a token).
@@ -493,8 +620,6 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                     auto &z = coordinator.GetComponent<Zone>(card_id);
                     z.distance_from_top = deck_position++;
                 }
-                auto &cd = coordinator.GetComponent<CardData>(card_id);
-                coordinator.AddComponent(card_id, color_identity_from(cd));
             }
         }
     }
@@ -577,8 +702,7 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
     // with a dredge from their graveyard. If they do, no card is drawn.
     {
-        Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity
-                                                          : cur_game.player_b_entity;
+        Entity player_entity = get_player_entity(player);
         ReplacementEvent rev;
         rev.type = ReplacementEvent::DRAW_CARD;
         rev.entity = player_entity;
@@ -632,16 +756,11 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // decking out. Scan the drawing player's battlefield permanents for the replacement.
         for (auto e : mEntities) {
             if (!is_battlefield_permanent(e, player)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            const auto &cd = global_coordinator.GetComponent<CardData>(e);
             bool has_win = false;
-            for (const auto &r : cd.replacement_effects)
+            for (const auto &r : permanent_replacement_effects(e))
                 if (r.kind == Effect::Replacement::DRAW_EMPTY_WIN) { has_win = true; break; }
             if (!has_win) continue;
-            printf("\n%s wins the game! (%s)\n", player_name(player).c_str(), cd.name.c_str());
-            game_log("%s wins the game!\n", player_name(player).c_str());
-            cur_game.winner = static_cast<int>(player);
-            cur_game.ended = true;
+            cur_game.end_game(player, global_coordinator.GetComponent<Permanent>(e).name);
             return;
         }
 
@@ -649,15 +768,14 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // record the attempt and let the resolving effect finish (a "then if your library is empty,
         // you win" sub-ability like Jace, Wielder of Mysteries' -8 decides the game first); the
         // player loses at the next state-based-action check (state_based_effects).
-        Entity player_entity_deck =
-            (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity player_entity_deck = get_player_entity(player);
         global_coordinator.GetComponent<Player>(player_entity_deck).attempted_draw_from_empty = true;
         game_log("%s attempts to draw from an empty library.\n", player_name(player).c_str());
         return;
     }
 
     // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
-    Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity player_entity = get_player_entity(player);
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
              global_coordinator.GetComponent<CardData>(top).name.c_str());
@@ -672,7 +790,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     // Inquisitive Student's "your third card in a turn") never matches, and Sylvan Library would
     // treat the opening hand as cards drawn this turn. This mirrors the fire_draw_event gate the
     // miracle/event logic below already uses.
-    if (fire_draw_event) pl.cards_drawn_this_turn.push_back(top);
+    if (fire_draw_event) pl.cards_drawn_this_turn.push_back(ObjectRef::of(top));
 
     // Miracle (CR 702.94): if this is the FIRST card its controller has drawn this turn and it
     // carries the Miracle keyword, its owner may reveal it and cast it for its miracle
@@ -691,15 +809,15 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // presented to the owner before they proceed (proc_mandatory_choice's miracle-reveal
         // branch). The card is NOT made public and NO cast window opens yet — only on reveal does
         // the card become public and the linked "you may cast it" trigger go on the stack.
-        cur_game.miracle_reveal_pending = top;
+        cur_game.pending.miracle_reveal = top;
     }
 
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
     // drawer's draw step" is flagged so triggers like Orcish Bowmasters can
     // ignore the turn-based draw while punishing every extra draw.
-    Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership active = active_seat();
     bool first_in_draw_step = false;
-    if (cur_game.cur_step == DRAW && player == active) {
+    if (cur_game.turn_state.step == DRAW && player == active) {
         first_in_draw_step = (pl.cards_drawn_this_draw_step == 0);
         pl.cards_drawn_this_draw_step++;
     }
@@ -777,9 +895,11 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         coordinator.AddComponent(card_id, Zone(Zone::BATTLEFIELD, owner, owner));
         auto &z = coordinator.GetComponent<Zone>(card_id);
         z.controller = owner;
+        // A preset named by a double-faced card's back face starts showing that face (built
+        // from it when its Permanent is created, like any entry transformed).
+        if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
+            entry_info(card_id).enters_transformed = true;
 
-        auto &cd = coordinator.GetComponent<CardData>(card_id);
-        coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);
     }
 
@@ -801,8 +921,6 @@ std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
         coordinator.AddComponent(card_id, Zone(zone, owner, owner));
-        auto &cd = coordinator.GetComponent<CardData>(card_id);
-        coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);
     }
 

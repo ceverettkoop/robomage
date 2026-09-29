@@ -17,11 +17,14 @@ struct CardData;
 namespace rules_mod {
 
 // CantBeActivated (Null Rod, Collector Ouphe, Disruptor Flute). `activation_prohibited` is
-// the general check for a permanent's non-mana activated abilities (artifact filter +
-// Disruptor Flute NamedCard). `mana_activation_prohibited` is the mana-ability variant: it
-// ignores NamedCard prohibitions, since Disruptor Flute's restriction excludes mana
-// abilities (ValidSA$ Activated.!ManaAbility).
-bool activation_prohibited(Entity permanent);
+// the general check for a source's non-mana activated abilities: a type filter (Null Rod's
+// artifacts) applies to permanents, and a NamedCard prohibition (Pithing Needle, Disruptor
+// Flute: "activated abilities of sources with the chosen name") applies to the source in any
+// zone — a channel or ninjutsu ability in hand, an unearth in the graveyard (CR 602.5).
+// `mana_activation_prohibited` is the mana-ability variant: it ignores NamedCard
+// prohibitions, since Disruptor Flute's restriction excludes mana abilities
+// (ValidSA$ Activated.!ManaAbility).
+bool activation_prohibited(Entity source);
 bool mana_activation_prohibited(Entity permanent);
 
 // CantBeCast: may `caster` not cast `card` right now? The spell's printed characteristics are
@@ -32,6 +35,12 @@ bool mana_activation_prohibited(Entity permanent);
 // matches.
 bool cast_prohibited(Zone::Ownership caster, const CardData &card,
                      Zone::ZoneValue cast_from = Zone::HAND);
+
+// CR 601.2b/601.2e: the largest X `caster` may announce for `card` without a mana-value
+// prohibition (Lavinia, Azorius Renegade's lands bound) making the proposed spell illegal — on the
+// stack its mana value includes X (CR 202.3e). INT_MAX when nothing bounds it. The X menu offers
+// only values up to this, since announcing a larger X would return the game to before the cast.
+int max_castable_x(Zone::Ownership caster, const CardData &card);
 
 // Opponent sorcery-speed lock (Teferi, Time Raveler's static "Each opponent can cast spells only
 // any time they could cast a sorcery"): is `caster` currently forced to cast at sorcery speed by an
@@ -44,7 +53,7 @@ bool opponent_sorcery_speed_locked(Zone::Ownership caster);
 
 // Cast-with-flash permission (Teferi, Time Raveler's +1 "you may cast sorcery spells as though they
 // had flash"): may `caster` cast `card` as though it had flash right now? True when an active
-// cur_game.cast_with_flash_permissions entry owned by `caster` covers the spell (its ValidCard$
+// cur_game.resolved_effects.cast_with_flash_permissions entry owned by `caster` covers the spell (its ValidCard$
 // filter matches, e.g. "Sorcery"). Lifts the sorcery-speed timing restriction for a matching spell
 // (CR 702.8). An opponent sorcery-speed lock, if also active against the caster, still overrides
 // this (the lock is applied after in the gate).

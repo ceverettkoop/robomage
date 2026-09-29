@@ -32,6 +32,7 @@ from textual.widgets.option_list import Option, OptionDoesNotExist
 
 from env import _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
 import decode
+from _enums import CAT_PASS_PRIORITY
 from game_driver import (GameDriver, build_session, decode_human_frame,
                          actions_for_card, action_zone, stack_target_refs,
                          menu_label, prompt_text, hand_type_icon, _edge_colors,
@@ -706,7 +707,7 @@ class GameApp(App):
         no-op, so it can never fire a non-pass action."""
         if not self._awaiting:
             return
-        if self._actions and self._actions[0]["category"] == 0:
+        if self._actions and self._actions[0]["category"] == CAT_PASS_PRIORITY:
             self._submit(0)
 
     def action_inspect(self) -> None:
@@ -780,7 +781,7 @@ class GameApp(App):
     def _submit(self, idx: int) -> None:
         if not self._awaiting:
             return
-        if 0 <= idx < len(self._actions) and self._actions[idx]["category"] != 0:
+        if 0 <= idx < len(self._actions) and self._actions[idx]["category"] != CAT_PASS_PRIORITY:
             self._write_event(f"[You] {self._actions[idx]['description']}")
         self._awaiting = False
         self.query_one("#actions", OptionList).clear_options()

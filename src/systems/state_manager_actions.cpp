@@ -12,7 +12,6 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/static_ability.h"
 #include "../components/damage.h"
@@ -26,22 +25,295 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
-#include "../game_queries.h"
+#include "../queries/activation.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/counters.h"
+#include "../queries/filters.h"
+#include "../queries/lki.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
+#include "../queries/spells.h"
+#include "../queries/types.h"
+#include "../queries/zones.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
+#include "../targeting.h"
 
-static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer);
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
                                         Zone::Ownership priority_player,
-                                        std::shared_ptr<Orderer> orderer, bool stack_empty);
+                                        std::shared_ptr<Orderer> orderer, bool sorcery_window);
 static std::string loyalty_cost_label(const Ability &ab);
 static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> orderer);
+static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty);
+static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window);
+static bool payment_blocked(Entity paid_for);
+static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
+                                              const std::set<Entity> &entities);
+static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                         Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
+                         std::shared_ptr<Orderer> orderer);
+static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal);
+static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
+                             bool sorcery_window, std::shared_ptr<Orderer> orderer);
+static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
+                                   int ability_index);
+
+// The sorcery-timing window for `seat` (CR 307.1): its own turn, a main phase, and an empty
+// stack. Casting a sorcery, playing a land (CR 305.2), activating Equip (CR 702.6a), a loyalty
+// ability (CR 606.3) or any "activate only as a sorcery" ability, and the companion special
+// action (CR 702.139a) all wait for it.
+static bool sorcery_timing_ok(const Game &game, Zone::Ownership seat, bool stack_empty) {
+    return stack_empty && (game.turn_state.step == FIRST_MAIN || game.turn_state.step == SECOND_MAIN) &&
+           game.turn_state.player_a_turn == (seat == Zone::PLAYER_A);
+}
+
+// May `caster` cast a spell with `face`'s characteristics now, as far as timing goes (CR 601.3,
+// 307.1)? An instant, a Flash card, or a spell a cast-with-flash permission covers (Teferi, Time
+// Raveler's +1, CR 702.8) may be cast any time its caster holds priority; any other spell only in
+// the caster's sorcery window. An opponent's sorcery-speed lock (Teferi's static "each opponent can
+// cast spells only any time they could cast a sorcery") overrides both, so under it every spell —
+// even an instant, or one the caster's own permission grants flash — waits for the sorcery window.
+// Every cast-offering path shares this one rule: hand, split / modal DFC back face, flashback,
+// escape, the graveyard and exile cast permissions, and the suspend special action.
+static bool spell_timing_ok(const CardData &face, Zone::Ownership caster, bool sorcery_window) {
+    if (sorcery_window) return true;
+    if (rules_mod::opponent_sorcery_speed_locked(caster)) return false;
+    return card_has_type(face, "Instant") || card_has_keyword(face, "Flash") ||
+           rules_mod::cast_with_flash_active(caster, face);
+}
+
+// Machine mode: stop offering a spell or ability whose payment already failed twice (the payer
+// bumps priority.payment_fail_counts on each cancelled payment), so an agent can't loop on it.
+static bool payment_blocked(Entity paid_for) {
+    const int *fails = cur_game.priority.payment_fail_counts.find(paid_for);
+    return fails && *fails >= 2;
+}
+
+// Machine mode only: action-masking optimization — don't offer a conditional-destroy spell to
+// the RL agent when no target on the board would currently pass the condition (e.g. Fatal Push:
+// only show if a creature with mana value <= the current revolt-aware threshold exists). This is
+// a masking heuristic, NOT a rules gate — the spell can still legally target any creature in
+// CLI/interactive play.
+static bool machine_masks_conditional_destroy(const CardData &face, Zone::Ownership caster,
+                                              const std::set<Entity> &entities) {
+    if (!InputLogger::instance().is_machine_schedule()) return false;
+    for (const auto &ab : face.abilities) {
+        if (ab->ability_type != AbilityDef::SPELL) continue;
+        if (ab->condition_present.find("cmcLEX") == std::string::npos ||
+            ab->dynamic_amount_expr.empty())
+            return false;
+        // Evaluate Revolt threshold inline
+        int threshold = 2;
+        if (ab->dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
+            size_t dot1 = ab->dynamic_amount_expr.find("Revolt.") + 7;
+            size_t dot2 = ab->dynamic_amount_expr.find('.', dot1);
+            int high_val = std::stoi(ab->dynamic_amount_expr.substr(dot1, dot2 - dot1));
+            int low_val = std::stoi(ab->dynamic_amount_expr.substr(dot2 + 1));
+            bool revolt = revolt_this_turn(caster);
+            threshold = revolt ? high_val : low_val;
+        }
+        for (auto ce : entities) {
+            if (!is_battlefield_permanent(ce)) continue;
+            if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
+            // A token creature carries no CardData; a non-copy token has no mana
+            // cost and therefore mana value 0 (CR 111.7), which is always <= the
+            // threshold, so it is a valid conditional-destroy target. Mirror
+            // effect_destroy.cpp, which likewise treats a CardData-less target as
+            // mana value 0 and destroys it — without this, boards whose only small
+            // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
+            int cmc = global_coordinator.entity_has_component<CardData>(ce)
+                          ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
+                          : 0;
+            if (cmc <= threshold) return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+// The cast-legality gates every cast-offering path shares (CR 601.2c, 601.3): the spell's timing
+// (spell_timing_ok, unless `ignore_timing`), a legal target for every required target of some
+// reachable mode, an Aura's enchant target, no CantBeCast prohibition on a spell cast from
+// `from_zone`, and the payment-failure guard. `face` is the face being cast (a split / modal DFC
+// back face, or the card itself). Costs differ per path (normal, alternative, flashback, escape,
+// resource grants), so each caller checks its own.
+static bool can_cast_now(const CardData &face, Entity card_entity, Zone::Ownership caster,
+                         Zone::ZoneValue from_zone, bool sorcery_window, bool ignore_timing,
+                         std::shared_ptr<Orderer> orderer) {
+    if (!ignore_timing && !spell_timing_ok(face, caster, sorcery_window)) return false;
+    // Target legality (CR 601.2c), mode-aware: for a Gift spell the required target type switches
+    // on the gift promise (Into the Flood Maw: a creature without the gift, a nonland permanent
+    // with it) and a modal spell needs enough choosable modes, so the spell is castable iff a legal
+    // target exists for at least one reachable mode. Probed with the real cast source/controller
+    // (card_entity) so source-dependent target restrictions — protection from this spell's color,
+    // OppCtrl — match select_target and a protected-only target (Emrakul vs white, Scryb Ranger vs
+    // blue) is not offered. A ConditionPresent$ "if ..." clause is checked only at resolution
+    // (CR 608.2c), so it never gates the cast.
+    for (const auto &ab : face.abilities) {
+        if (ab->ability_type != AbilityDef::SPELL) continue;
+        if (!spell_has_castable_targets(cast_gate_probe(Ability(ab), card_entity, caster), orderer, caster,
+                                        face.has_gift))
+            return false;
+        break;
+    }
+    // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
+    if (!aura_enchant_target_available(face, caster, orderer)) return false;
+    if (machine_masks_conditional_destroy(face, caster, orderer->mEntities)) return false;
+    if (rules_mod::cast_prohibited(caster, face, from_zone)) return false;
+    return !payment_blocked(card_entity);
+}
+
+// A CAST_SPELL action for `card_entity`; `option_ordinal` tells the cast variants apart
+// (0 normal, 1 alternate / impending cost, 2 offspring, 3 modal-DFC back face, 4 flashback,
+// 5 escape, 6 cast-from-graveyard permission, 7 impulse / free cast from exile).
+static LegalAction cast_action(Entity card_entity, const std::string &desc, int option_ordinal) {
+    LegalAction la(CAST_SPELL, card_entity, desc);
+    la.category = ActionCategory::CAST_SPELL;
+    la.option_ordinal = option_ordinal;
+    return la;
+}
+
+// The activation-legality gates every non-mana activated-ability offer shares (CR 602.2, 602.5):
+// no CantBeActivated prohibition on the source, "activate only as a sorcery" timing, the source's
+// state (Activation$ condition, {T} readiness, activation limit), the mana cost after ReduceCost$,
+// the energy and life costs, the sacrifice and return-to-hand costs, a legal target for every
+// required target, and the payment-failure guard. `source` is the object the ability is activated
+// from: a battlefield permanent, or a card in hand (channel, ninjutsu) or graveyard (unearth).
+// Loyalty and ninjutsu windows stay with their callers.
+static bool can_activate_now(const Ability &ab, Entity source, Zone::Ownership activator,
+                             bool sorcery_window, std::shared_ptr<Orderer> orderer) {
+    if (rules_mod::activation_prohibited(source)) return false;
+    // SorcerySpeed$ True (Ba Sing Se's earthbend, unearth): activatable only any time its
+    // controller could cast a sorcery (CR 602.5d).
+    if (ab.def->sorcery_speed_only && !sorcery_window) return false;
+    if (!activation_source_ready(ab, source, activator, orderer->mEntities)) return false;
+    // Gate on the post-ReduceCost$ cost (Eiganjo's Channel is cheaper per legendary creature you
+    // control) so legality matches what payment will charge. A {T} in the ability's own cost
+    // spends the source's tap, so its mana ability is NOT also available to pay with — exclude
+    // it, or a Blast Zone whose only other land is an Ancient Tomb reads as able to pay {3} off 2
+    // mana plus its own {C}.
+    // The mana is paid before the PayLife cost, so a painful source may not spend the life that
+    // cost needs (life_reserve).
+    ManaValue cost = effective_activation_mana_cost(ab, activator, orderer);
+    if (!cost.empty() &&
+        !can_pay_mana(activator, cost, source, orderer, /*has_delve=*/false,
+                      /*has_improvise=*/false, /*exclude_entity=*/ab.def->tap_cost ? source : 0,
+                      /*life_reserve=*/ab.def->life_cost))
+        return false;
+    const Player &player = global_coordinator.GetComponent<Player>(get_player_entity(activator));
+    // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
+    if (ab.def->energy_cost > 0 && player_energy(player) < ab.def->energy_cost) return false;
+    // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A fetch land
+    // (Pay 1 life) at 1 life is still legal (you pay down to 0, then die); only an ability
+    // costing MORE life than you have is filtered out here.
+    if (!can_pay_life(player, ab.def->life_cost)) return false;
+    // sac_cost_spec: require controller has a permanent matching type (honouring a .Other
+    // self-exclusion against the ability's source — "another creature").
+    if (!ab.def->sac_cost_spec.empty() &&
+        controlled_permanents_matching(activator, ab.def->sac_cost_spec, orderer->mEntities, source).empty())
+        return false;
+    // Return cost: require controller has a land of given subtype
+    if (!ab.def->return_cost_type.empty() &&
+        controlled_permanents_matching(activator, ab.def->return_cost_type, orderer->mEntities).empty())
+        return false;
+    // Target existence (CR 602.2b / 601.2c), probed with the real source and activator so
+    // .OppCtrl / .YouCtrl are read from the activating seat (Boseiju's Channel is never offered
+    // against its own controller's nonbasic lands).
+    if (!has_legal_targets(cast_gate_probe(ab, source, activator), orderer)) return false;
+    return !payment_blocked(source);
+}
+
+// See declaration in state_manager.h.
+bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
+                          std::shared_ptr<Orderer> orderer) {
+    const Game::ImpulseCastPermission *grant = cur_game.resolved_effects.impulse_cast_permission.find(card);
+    if (grant == nullptr) return false;
+    const Game::ImpulseCastPermission &perm_grant = *grant;
+    const CardData &ecd = global_coordinator.GetComponent<CardData>(card);
+
+    // A cast made during a resolution (CR 608.2g) ignores the card's type-based timing.
+    // Aura enchant-target gate: the concrete crash it fixes here is Animate Dead reanimating
+    // the opponent's Amped Raptor (emptying the graveyard), the Raptor's impulse exiling a
+    // SECOND Animate Dead and granting this energy-cast permission — which must not be
+    // offered while no creature card is in any graveyard.
+    if (!can_cast_now(ecd, card, caster, Zone::EXILE, sorcery_window,
+                      /*ignore_timing=*/perm_grant.during_resolution, orderer))
+        return false;
+
+    // Affordability of the alternative resource cost.
+    Entity pe = get_player_entity(caster);
+    if (!global_coordinator.entity_has_component<Player>(pe)) return false;
+    auto &ppl = global_coordinator.GetComponent<Player>(pe);
+    bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
+    if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
+        // No cost to pay (Ugin -11 grant) — always affordable.
+    } else if (is_normal_play) {
+        // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
+        // the full (cost-increase-adjusted, hybrid- and Phyrexian-resolved) base cost can be
+        // paid.
+        if (!can_pay_spell_mana(caster, effective_base_cost(ecd, caster), ecd, card, orderer))
+            return false;
+    } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+        if (player_energy(ppl) < perm_grant.amount) return false;
+    } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
+              // legality bar in MTG, but a player won't be forced; require enough life so
+              // the optional cast is sensibly offered.
+        if (!can_pay_life(ppl, perm_grant.amount)) return false;
+    }
+
+    // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
+    // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
+    // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
+    // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
+    // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
+    // cost above, so this alt-cost floor doesn't apply to them.
+    // A LIFE grant's life is paid before this mana, so the mana may not spend it either.
+    if (!is_normal_play) {
+        int grant_life = perm_grant.resource == Game::ImpulseCastPermission::LIFE
+                             ? perm_grant.amount : 0;
+        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, caster);
+        if (!floor_mana.empty() &&
+            !can_pay_mana(caster, floor_mana, card, orderer, /*has_delve=*/false,
+                          /*has_improvise=*/false, /*exclude_entity=*/0,
+                          /*life_reserve=*/grant_life))
+            return false;
+    }
+    return true;
+}
+
+// See declaration in state_manager.h.
+bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer) {
+    if (!global_coordinator.entity_has_component<CardData>(card) ||
+        !global_coordinator.entity_has_component<Zone>(card))
+        return false;
+    const auto &z = global_coordinator.GetComponent<Zone>(card);
+    if (z.location != Zone::HAND || z.owner != owner) return false;
+    const CardData &cd = global_coordinator.GetComponent<CardData>(card);
+    if (!can_cast_now(cd, card, owner, Zone::HAND, /*sorcery_window=*/false,
+                      /*ignore_timing=*/true, orderer))
+        return false;
+    ManaValue alt_mana = floored_alt_mana_cost(cd, cd.alt_cost.mana_cost, owner);
+    return alt_mana.empty() || can_pay_mana(owner, alt_mana, card, orderer);
+}
+
+// An ACTIVATE_ABILITY action for `ab` of `source`. `ability_index` is the ability's stable
+// position in its source's ability list, emitted as the action's option_ordinal so the ML
+// observation can tell same-source activations apart (e.g. a planeswalker's loyalty abilities,
+// which are otherwise feature-identical).
+static LegalAction activate_action(Entity source, const Ability &ab, const std::string &desc,
+                                   int ability_index) {
+    LegalAction la(ACTIVATE_ABILITY, source, ab, desc);
+    la.category = ActionCategory::ACTIVATE_ABILITY;
+    la.option_ordinal = ability_index;
+    return la;
+}
 
 // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so EVERY
 // cast-offering path — hand, modal back face, flashback, escape, a cast-from-graveyard
@@ -58,13 +330,7 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 static bool aura_enchant_target_available(const CardData &card_data, Zone::Ownership caster,
                                           std::shared_ptr<Orderer> orderer) {
     if (card_data.enchant_filter.empty()) return true;  // not an Aura
-    Ability enchant_ab;
-    enchant_ab.controller = caster;
-    enchant_ab.valid_tgts = card_data.enchant_filter;
-    // "Enchant creature card in a graveyard" (Animate Dead): search graveyards, not the
-    // battlefield, for a legal enchant target (CR 303.4).
-    enchant_ab.target_in_graveyard = enchant_targets_graveyard(card_data.enchant_filter);
-    return has_legal_targets(enchant_ab, orderer);
+    return has_legal_targets(enchant_target_ability(0, card_data, caster), orderer);
 }
 
 // Chosen targets of every stack object that would destroy or exile a battlefield
@@ -74,14 +340,14 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
     std::vector<Entity> tgts;
     for (Entity e : orderer->get_stack()) {
         if (!global_coordinator.entity_has_component<Ability>(e)) continue;
-        auto &ab = global_coordinator.GetComponent<Ability>(e);
+        const Ability &ab = stack_object_ability(e);
         bool exiles_permanent =
-            ab.category == "ChangeZone" && ab.destination == Zone::EXILE &&
-            (ab.origin == Zone::BATTLEFIELD ||
-             std::find(ab.origins.begin(), ab.origins.end(), Zone::BATTLEFIELD) != ab.origins.end());
-        if (ab.category != "Destroy" && !exiles_permanent) continue;
-        if (ab.target != 0) tgts.push_back(ab.target);
-        tgts.insert(tgts.end(), ab.targets.begin(), ab.targets.end());
+            ab.def->kind == EffectKind::ChangeZone && ab.def->destination == Zone::EXILE &&
+            (ab.def->origin == Zone::BATTLEFIELD ||
+             std::find(ab.def->origins.begin(), ab.def->origins.end(), Zone::BATTLEFIELD) != ab.def->origins.end());
+        if (ab.def->kind != EffectKind::Destroy && !exiles_permanent) continue;
+        if (Entity t = ab.target.get()) tgts.push_back(t);
+        for (Entity t : live_entities(ab.targets)) tgts.push_back(t);
     }
     return tgts;
 }
@@ -91,11 +357,11 @@ static std::vector<Entity> stack_removal_targets(std::shared_ptr<Orderer> ordere
 // action menu so the player sees each ability's loyalty cost, not just its
 // effect category.
 static std::string loyalty_cost_label(const Ability &ab) {
-    if (!ab.is_loyalty_ability) return "";
-    if (ab.loyalty_cost_is_x) return ab.loyalty_cost < 0 ? " [-X]" : " [+X]";
-    if (ab.loyalty_cost == 0) return " [0]";
-    int magnitude = ab.loyalty_cost < 0 ? -ab.loyalty_cost : ab.loyalty_cost;
-    std::string sign = ab.loyalty_cost < 0 ? "-" : "+";
+    if (!ab.def->is_loyalty_ability) return "";
+    if (ab.def->loyalty_cost_is_x) return ab.def->loyalty_cost < 0 ? " [-X]" : " [+X]";
+    if (ab.def->loyalty_cost == 0) return " [0]";
+    int magnitude = ab.def->loyalty_cost < 0 ? -ab.def->loyalty_cost : ab.def->loyalty_cost;
+    std::string sign = ab.def->loyalty_cost < 0 ? "-" : "+";
     return " [" + sign + std::to_string(magnitude) + "]";
 }
 
@@ -113,40 +379,20 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // Spectacle (CR 702.107a): the spectacle cost may be paid only if an opponent of the
     // caster lost life this turn. Two-player game — the sole opponent is the other seat.
     if (alt_cost.is_spectacle) {
-        Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Zone::Ownership opp = opponent_of(priority_player);
         if (global_coordinator.GetComponent<Player>(get_player_entity(opp)).life_lost_this_turn <= 0)
             return false;
     }
 
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
-        const std::string &cond = alt_cost.condition_svar;
-        // Mindbreak Trap (Trap alt cost, CR 702.59): "If an opponent cast three or more
-        // spells this turn, you may pay {0}…". Scripted as
-        // PlayerCountOpponents$Condition<OP><N> SpellsCastThisTurn — the alt cost is
-        // enabled when at least one opponent's per-turn spell count satisfies the
-        // condition. condition_compare is unset; the comparison op/threshold are embedded
-        // in the SVar's "Condition<OP><N>" token.
-        if (cond.find("PlayerCountOpponents$") != std::string::npos &&
-            cond.find("SpellsCastThisTurn") != std::string::npos) {
-            std::string compare;  // e.g. "GE3"
-            size_t cpos = cond.find("Condition");
-            if (cpos != std::string::npos) compare = cond.substr(cpos + 9);  // strip "Condition"
-            // Truncate at the first space (the count metric follows the condition token).
-            size_t sp = compare.find(' ');
-            if (sp != std::string::npos) compare = compare.substr(0, sp);
-            Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-            int opp_spells =
-                static_cast<int>(global_coordinator.GetComponent<Player>(get_player_entity(opp)).spells_cast_this_turn);
-            if (!compare_svar(opp_spells, compare)) return false;
-        } else {
-            int svar_value = 0;
-            if (cond.find("Count$YouCastThisGame") != std::string::npos) {
-                Entity pp_entity = get_player_entity(priority_player);
-                svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
-            }
-            if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
-        }
+        // The condition's SVar (Once Upon a Time: Count$YouCastThisGame EQ0; Mindbreak Trap:
+        // PlayerCountOpponents$ConditionGE3 SpellsCastThisTurn — an opponent cast three or more
+        // spells this turn), compared as scripted, else at least 1 (Forge's default comparator).
+        const std::string compare =
+            alt_cost.condition_compare.empty() ? std::string("GE1") : alt_cost.condition_compare;
+        if (!compare_svar(evaluate_svar(alt_cost.condition_svar, priority_player), compare))
+            return false;
     }
 
     // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
@@ -177,23 +423,16 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         return alt_mana.empty() || can_pay_mana(priority_player, alt_mana, card_entity, orderer);
 
     if (alt_cost.return_to_hand_count > 0) {
-        int matching = 0;
-        const std::string& sub = alt_cost.return_to_hand_type;
-        for (auto e : orderer->mEntities) {
-            if (!is_battlefield_permanent(e, priority_player)) continue;
-            auto& perm = global_coordinator.GetComponent<Permanent>(e);
-            for (auto& t : perm.types) {
-                if (t.kind == SUBTYPE && t.name == sub) { matching++; break; }
-            }
-        }
+        size_t matching = controlled_permanents_matching(priority_player, alt_cost.return_to_hand_type,
+                                                         orderer->mEntities).size();
         // Fall through (don't return true here): a pitch-style cost (Daze) still has to
         // cover the floored mana portion checked below when a SetCost floor is active.
-        if (matching < alt_cost.return_to_hand_count) return false;
+        if (matching < static_cast<size_t>(alt_cost.return_to_hand_count)) return false;
     }
 
     if (alt_cost.life_cost > 0) {
         Entity pp_entity = get_player_entity(priority_player);
-        if (global_coordinator.GetComponent<Player>(pp_entity).life_total < alt_cost.life_cost)
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(pp_entity), alt_cost.life_cost))
             return false;
     }
 
@@ -208,7 +447,8 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
 
     // Condition: not your turn (Force of Negation, Force of Vigor)
     if (alt_cost.condition_not_your_turn) {
-        bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.player_a_turn : !cur_game.player_a_turn;
+        bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.turn_state.player_a_turn
+                                                              : !cur_game.turn_state.player_a_turn;
         if (is_my_turn) return false;
     }
 
@@ -217,88 +457,62 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
         bool has_match = false;
         for (auto e : orderer->get_hand(priority_player)) {
             if (e == card_entity) continue;
-            if (required_color != NO_COLOR && global_coordinator.entity_has_component<ColorIdentity>(e) &&
-                global_coordinator.GetComponent<ColorIdentity>(e).colors.count(required_color)) {
+            if (required_color != NO_COLOR && effective_colors(e).count(required_color)) {
                 has_match = true; break;
             }
         }
         if (!has_match) return false;
     }
 
-    // Floored mana portion of the alt cost (computed above)
+    // Floored mana portion of the alt cost (computed above). The alternative life cost (Force of
+    // Will's 1 life) is paid after the mana, so a painful source may not spend it.
     if (!alt_mana.empty()) {
-        if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer)) return false;
+        if (!can_pay_mana(priority_player, alt_mana, card_entity, orderer, /*has_delve=*/false,
+                          /*has_improvise=*/false, /*exclude_entity=*/0,
+                          /*life_reserve=*/alt_cost.life_cost))
+            return false;
     }
 
     return true;
 }
 
-// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if, spell
-// castability, and ConditionDefined$ Remembered subability gates all share this).
+// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if and the
+// CR 608.2c resolution-time "if" gate, including ConditionDefined$ Remembered, share this).
 // Counts battlefield permanents matching the filter (or remembered cards when
 // condition_on_remembered) and compares against the threshold (default ">= 1").
 // Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
-// Evaluate a Count$<...> intervening-if expression (CR 603.4 dynamic condition) to an integer.
-// Returns true and sets `out` when the token is recognized; returns false for an unrecognized
-// Count$ token so the caller fails loudly instead of mis-reading the raw string as a board
-// filter. This is the single place the intervening-if Count$ tokens are listed — a new
-// "count X this turn / this game" condition is added here, once, rather than as another literal
-// branch in evaluate_present_condition. Each token mirrors a count the engine tracks on Player.
-static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out) {
-    Entity pe = get_player_entity(caster);
-    const Player *pl = global_coordinator.entity_has_component<Player>(pe)
-                           ? &global_coordinator.GetComponent<Player>(pe)
-                           : nullptr;
-    // Ocelot Pride: "if you gained life this turn".
-    if (expr.find("LifeYouGainedThisTurn") != std::string::npos) {
-        out = pl ? pl->life_gained_this_turn : 0;
-        return true;
-    }
-    // Arclight Phoenix: "if you've cast three or more instant and sorcery spells this turn"
-    // (the engine tracks the combined instant+sorcery count on the player).
-    if (expr.find("ThisTurnCast") != std::string::npos &&
-        (expr.find("Instant") != std::string::npos || expr.find("Sorcery") != std::string::npos)) {
-        out = pl ? static_cast<int>(pl->instant_sorcery_spells_cast_this_turn) : 0;
-        return true;
-    }
-    return false;
-}
-
 static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
-    if (ab.condition_present.empty()) return true;
+    if (ab.def->condition_present.empty()) return true;
     // Empty compare means the bare "if you control a <thing>" form → at least one.
-    std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
+    std::string compare = ab.def->condition_compare.empty() ? "GE1" : ab.def->condition_compare;
 
     // ConditionDefined$ ExiledWith (The Creation of Avacyn II & III): the condition is a property
     // check on the card the source Saga exiled face down — is it a Creature card? Match the card's
     // PRINTED characteristics against condition_present (card_matches_filter is battlefield-agnostic;
     // the exiled card sits in exile). Absent card ⇒ 0 matches (condition unmet).
-    if (ab.condition_on_exiled_with) {
-        Entity ew = exiled_with_card(ab.source);
+    if (ab.def->condition_on_exiled_with) {
+        Entity ew = exiled_with_card(ab.source.get());
         int matches = 0;
         if (ew != 0 && global_coordinator.entity_has_component<CardData>(ew)) {
             MatchCtx ctx;
             ctx.controller = caster;
-            ctx.source = ab.source;
-            if (card_matches_filter(ew, ab.condition_present, ctx)) matches = 1;
+            ctx.source = ab.source.lki_entity();
+            if (card_matches_filter(ew, ab.def->condition_present, ctx)) matches = 1;
         }
         return compare_svar(matches, compare);
     }
 
     // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
-    if (ab.condition_on_remembered) {
+    if (ab.def->condition_on_remembered) {
         // ConditionPresent$ Card.ExiledWithSource (Skyclave Apparition's TrigToken): only the
         // remembered cards that are STILL exiled (currently in the exile zone) count. CR 707/the
         // card's reminder text: when Skyclave leaves, the token is made only if the exiled card
         // is still exiled — if it has already returned to another zone, no token (and a card that
         // can't be found / is gone yields none either).
-        if (ab.condition_present == "Card.ExiledWithSource") {
+        if (ab.def->condition_present == "Card.ExiledWithSource") {
             size_t still_exiled = 0;
-            for (auto e : cur_game.remembered_entities) {
-                if (global_coordinator.entity_has_component<Zone>(e) &&
-                    global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
-                    still_exiled++;
-            }
+            for (Entity e : live_entities(cur_game.resolution.memory.remembered))
+                if (global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE) still_exiled++;
             return compare_svar(static_cast<int>(still_exiled), compare);
         }
         // A specific filter (other than the bare "Card") counts only the remembered cards that
@@ -307,13 +521,13 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
         // Card.YouCtrl+ThisTurnEntered — count the returned card iff it is now a permanent the
         // ability's controller controls that entered this turn (CR 122 / the card text). Phelia's
         // counter gate checks the card the delayed trigger just put back onto the battlefield.
-        if (!ab.condition_present.empty() && ab.condition_present != "Card") {
+        if (!ab.def->condition_present.empty() && ab.def->condition_present != "Card") {
             MatchCtx ctx;
             ctx.controller = caster;
-            ctx.source = ab.source;
+            ctx.source = ab.source.lki_entity();
             size_t matching = 0;
-            for (auto e : cur_game.remembered_entities) {
-                if (permanent_matches_filter(e, ab.condition_present, ctx)) {
+            for (Entity e : lki_entities(cur_game.resolution.memory.remembered)) {
+                if (permanent_matches_filter(e, ab.def->condition_present, ctx)) {
                     matching++;
                     continue;
                 }
@@ -331,13 +545,13 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     // PRINTED characteristics — permanent_matches_filter is battlefield-only, so
                     // fall back to card_matches_filter for the type/color portion of the filter
                     // (a YouCtrl/OppCtrl qualifier is a no-op off the battlefield there).
-                    if (!card_matches_filter(e, ab.condition_present, ctx)) continue;
+                    if (!card_matches_filter(e, ab.def->condition_present, ctx)) continue;
                     // A controller qualifier on a card that LEFT the battlefield (Boomerang
                     // Basics: "If you controlled that permanent" against the bounced permanent) is
                     // resolved from last-known information — the controller it had as it left
                     // (CR 608.2g) — captured in cur_game.last_known_info when it left play.
-                    bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
-                    bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                    bool youctrl = ab.def->condition_present.find("YouCtrl") != std::string::npos;
+                    bool oppctrl = ab.def->condition_present.find("OppCtrl") != std::string::npos;
                     if (youctrl || oppctrl) {
                         const LastKnownInfo *lki = lki_for(e);
                         Zone::Ownership lc = lki ? lki->controller : Zone::UNKNOWN;
@@ -349,8 +563,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
                     continue;
                 }
                 if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above
-                bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
-                bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                bool youctrl = ab.def->condition_present.find("YouCtrl") != std::string::npos;
+                bool oppctrl = ab.def->condition_present.find("OppCtrl") != std::string::npos;
                 bool ctrl_ok = youctrl ? (z.controller == caster)
                              : oppctrl ? (z.controller != caster)
                                        : true;
@@ -358,7 +572,7 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
             }
             return compare_svar(static_cast<int>(matching), compare);
         }
-        size_t count = cur_game.remembered_entities.size();
+        size_t count = cur_game.resolution.memory.remembered.size();
         return compare_svar(static_cast<int>(count), compare);
     }
 
@@ -370,17 +584,18 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // killed in response to its own ETB trigger), the Permanent is gone; fall back to the
     // last-known-information snapshot captured as it left play (CR 603.10 / 608.2h) so the
     // exile-cast clause is not silently lost.
-    if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
-        if (global_coordinator.entity_has_component<Permanent>(ab.source))
-            return global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
-        const LastKnownInfo *lki = departed_lki_for(ab.source);
+    if (ab.def->condition_present == "Card.wasCastFromYourHandByYou") {
+        const Entity self = ab.source.get();
+        if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+            return global_coordinator.GetComponent<Permanent>(self).cast_from_hand_by_controller;
+        const LastKnownInfo *lki = departed_lki_for(ab.source.lki_entity());
         return lki && lki->cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
     // "Whenever another artifact you control enters" only functions while Kappa is in play).
-    if (ab.condition_present == "Card.Self") {
-        return is_battlefield_permanent(ab.source);
+    if (ab.def->condition_present == "Card.Self") {
+        return ability_source_on_battlefield(ab);
     }
 
     // IsPresent$ Card.StrictlySelf (Animate Dead's ETB: "When CARDNAME enters, if it's on the
@@ -390,8 +605,8 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // enters" idiom, so the source's own entry satisfies it (no trigger_self_excluded in
     // parse.cpp). Must not fall through to the generic presence scan below, which would read
     // the type token "Card" as any-permanent and pass vacuously whenever anything is in play.
-    if (ab.condition_present == "Card.StrictlySelf") {
-        return is_battlefield_permanent(ab.source);
+    if (ab.def->condition_present == "Card.StrictlySelf") {
+        return ability_source_on_battlefield(ab);
     }
 
     // Card.Self+escaped: the source permanent entered because its spell was cast from the
@@ -399,9 +614,10 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // Uro's TrigSac uses ConditionNotPresent$ Card.Self+escaped ("sacrifice it unless it
     // escaped"), so condition_negate inverts this in the wrapper below. General — any escape
     // card with an "if it escaped" clause reuses it.
-    if (ab.condition_present == "Card.Self+escaped") {
-        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
-               global_coordinator.GetComponent<Permanent>(ab.source).cast_with_escape;
+    if (ab.def->condition_present == "Card.Self+escaped") {
+        const Entity self = ab.source.get();
+        return self != 0 && global_coordinator.entity_has_component<Permanent>(self) &&
+               global_coordinator.GetComponent<Permanent>(self).cast_with_escape;
     }
 
     // IsPresent$ Card.Self+counters_<OP><N>_<TYPE>: the source must be on the battlefield AND its
@@ -410,79 +626,42 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // counters_GE1_M1M1; Dark Depths: "when this has no ice counters on it" → counters_EQ0_ICE.
     // CR 122.1/603.4/603.8 — the counter count is re-checked whenever the condition is evaluated
     // (trigger placement, resolution, and each state-based check for a Mode$ Always state trigger).
-    if (ab.condition_present.rfind("Card.Self+counters_", 0) == 0) {
-        if (!is_battlefield_permanent(ab.source)) return false;
-        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_").size());
+    if (ab.def->condition_present.rfind("Card.Self+counters_", 0) == 0) {
+        if (!ability_source_on_battlefield(ab)) return false;
+        std::string rest = ab.def->condition_present.substr(std::string("Card.Self+counters_").size());
         // rest is "<OP><N>_<TYPE>", e.g. "EQ0_ICE" / "GE1_M1M1".
         std::string op = rest.substr(0, 2);          // two-letter comparator
         std::string after = rest.substr(2);          // "<N>_<TYPE>"
         size_t us = after.find('_');
         std::string num = (us != std::string::npos) ? after.substr(0, us) : after;
         std::string ctype = (us != std::string::npos) ? after.substr(us + 1) : "M1M1";
-        return compare_svar(get_counters(ab.source, ctype), op + num);
+        return compare_svar(get_counters(ab.source.get(), ctype), op + num);
     }
 
     // Count$<...> dynamic intervening-if (Ocelot Pride's life gained this turn, Arclight
     // Phoenix's instant/sorcery spells cast this turn, ...). These are counts over game history
     // / player state, NOT board presence, so route every Count$ condition through the shared
-    // count helper and compare. A Count$ token the helper does not recognize fails loudly here
-    // rather than falling through to the permanent-presence scan below — where the raw
-    // "Count$..." string would be read as a permanent type name, match nothing, and yield a
-    // confident-but-wrong count (silently suppressing or firing the trigger).
-    if (ab.condition_present.rfind("Count$", 0) == 0) {
-        int value = 0;
-        if (!count_intervening_condition(ab.condition_present, caster, value)) {
-            game_log("WARNING: unrecognized Count$ intervening-if condition '%s' — treated as unmet.\n",
-                     ab.condition_present.c_str());
-            return false;
-        }
-        return compare_svar(value, compare);
-    }
+    // SVar evaluator and compare, rather than falling through to the permanent-presence scan
+    // below — where the raw "Count$..." string would be read as a permanent type name.
+    if (ab.def->condition_present.rfind("Count$", 0) == 0)
+        return compare_svar(evaluate_svar(ab.def->condition_present, caster, ab.source.lki_entity()),
+                            compare);
 
-    // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
-    std::string filter = ab.condition_present;
-    std::string type_filter;
-    bool you_ctrl = false;
-    bool opp_ctrl = false;
-    size_t dot = filter.find('.');
-    if (dot != std::string::npos) {
-        type_filter = filter.substr(0, dot);
-        std::string qualifier = filter.substr(dot + 1);
-        if (qualifier == "YouCtrl") you_ctrl = true;
-        else if (qualifier == "OppCtrl") opp_ctrl = true;
-    } else {
-        type_filter = filter;
-    }
-    if (type_filter == "Card") type_filter.clear();  // "Card" = any permanent
-
-    Zone::Ownership required_ctrl = you_ctrl ? caster :
-        opp_ctrl ? (caster == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A) :
-        Zone::UNKNOWN;
-
-    size_t count = 0;
-    for (auto e : orderer->mEntities) {
-        if (!is_battlefield_permanent(e, required_ctrl)) continue;
-        if (!type_filter.empty() && global_coordinator.entity_has_component<CardData>(e)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            bool match = false;
-            for (const auto &t : cd.types) {
-                if (t.name == type_filter) { match = true; break; }
-            }
-            if (!match) continue;
-        }
-        count++;
-    }
-
-    return compare_svar(static_cast<int>(count), compare);
+    // A board-presence condition (Birthing Ritual's Creature.YouCtrl, Edge of Autumn's
+    // Land.YouCtrl, Permanent.Red+YouCtrl+Other): count the battlefield permanents matching the
+    // whole filter by their current characteristics (a Clue token is not a creature; an animated
+    // manland is), relative to this ability's controller and source.
+    int count = count_battlefield_matching(ab.def->condition_present, caster, ab.source.lki_entity());
+    return compare_svar(count, compare);
 }
 
 // Public entry point: evaluate the present condition, applying ConditionNotPresent$ negation.
 // An empty condition_present is "no condition" → always satisfied (the negate flag is never set
-// in that case, since ConditionNotPresent always carries a filter). CR 603.4-style gate used for
-// spell castability and intervening-if trigger checks alike.
+// in that case, since ConditionNotPresent always carries a filter). Used by the intervening-if
+// trigger checks (CR 603.4) and the resolution-time condition gate (CR 608.2c) alike.
 bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     bool raw = present_condition_raw(ab, caster, orderer);
-    return ab.condition_negate ? !raw : raw;
+    return ab.def->condition_negate ? !raw : raw;
 }
 
 
@@ -492,9 +671,9 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 // main hand loop, and the LAND-back case is offered there as a PLAY_LAND; only the nonland-back
 // CAST is added here. Kept in its own hand pass so a prohibition/`continue` on the front face
 // doesn't suppress the back-face option (the two faces are cast independently).
-static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions,
                                         Zone::Ownership priority_player,
-                                        std::shared_ptr<Orderer> orderer, bool stack_empty) {
+                                        std::shared_ptr<Orderer> orderer, bool sorcery_window) {
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &front = global_coordinator.GetComponent<CardData>(card_entity);
@@ -504,44 +683,17 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
         const CardData &back = *front.backside;
         if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
 
-        // Timing: an instant (or Flash) back may be cast anytime the player has priority; any
-        // other back face is sorcery-speed (your main phase, empty stack).
-        bool is_instant = card_has_type(back, "Instant");
-        if (!is_instant)
-            for (const auto &kw : back.keywords)
-                if (kw == "Flash") { is_instant = true; break; }
-        bool can_cast_now = is_instant ||
-            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
-
-        // Spell-target legality + ConditionPresent castability gate (mirrors the front-face checks).
-        bool tgt_ok = true, condition_ok = true;
-        for (const auto &ab : back.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer);
-            if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
-            break;
-        }
-        if (!tgt_ok || !condition_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(back, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, back)) continue;
-
-        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
-        if (pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2) continue;
-
-        ManaValue cost = effective_base_cost(back, priority_player);
-        if (!can_pay_mana(priority_player, cost, card_entity, orderer,
-                          back.has_delve, back.has_improvise))
+        // Timing, targets and prohibitions are the back face's own (Gone is an instant).
+        if (!can_cast_now(back, card_entity, priority_player, Zone::HAND, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
             continue;
 
-        LegalAction la(CAST_SPELL, card_entity, "Cast " + back.name);
-        la.category = ActionCategory::CAST_SPELL;
+        if (!can_pay_spell_mana(priority_player, effective_base_cost(back, priority_player), back,
+                                card_entity, orderer))
+            continue;
+
+        LegalAction la = cast_action(card_entity, "Cast " + back.name, 3);
         la.cast_back_face = true;
-        la.option_ordinal = 3;  // cast variant: 3 = modal-DFC back face
         actions.push_back(la);
     }
 }
@@ -551,8 +703,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     std::vector<LegalAction> actions;          // return value
 
     // Determine whose turn/priority it is
-    Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership priority_player = priority_seat();
     Entity priority_player_entity = get_player_entity(priority_player);
+    bool stack_empty = stack_manager->is_empty();
+    bool sorcery_window = sorcery_timing_ok(game, priority_player, stack_empty);
 
     // Graveyard / exile cards the priority player has some play route for (the shared
     // card_play_permission predicate, which ignores timing and cost), in ascending entity
@@ -570,9 +724,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     actions.push_back(la);
 
     // LAND FROM HAND — requires empty stack (sorcery-speed)
-    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
-        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
+    if (sorcery_window && global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         // Effective land play allowance (base 1 + AdjustLandPlays statics) minus the
         // lands already played, through the shared rules_mod expression the ML
         // observation's mana-development block reports.
@@ -612,9 +764,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // and the deckbuilding-restriction gate were resolved at game start (setup_companions); here we
     // only offer the special action while the companion is still in the sideboard, it hasn't been
     // used yet, and {3} is affordable. Mirrors the play-land special action's timing gate.
-    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
-        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
+    if (sorcery_window && global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
         Entity comp = player.chosen_companion;
         if (comp != 0 && !player.companion_brought_to_hand &&
@@ -636,133 +786,25 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
     // checking for spells to cast from hand
     // TODO spells cast from elsewhere
-    bool stack_empty = stack_manager->is_empty();
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        bool is_instant = false;
-        bool is_land = false;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE) {
-                if (type.name == "Instant") {
-                    is_instant = true;
-                } else if (type.name == "Land") {
-                    is_land = true;  // can't cast land
-                    break;
-                }
-            }
-        }
-        if (is_land) continue;
-        // Flash keyword grants instant-speed casting
-        if (!is_instant) {
-            for (const auto &kw : card_data.keywords) {
-                if (kw == "Flash") { is_instant = true; break; }
-            }
-        }
-        // Timing restrictions. The sorcery-speed window is the caster's own main phase with an
-        // empty stack (CR 307.1 / 601.3a). A card is castable at instant speed if it is inherently
-        // an instant/flash OR a cast-with-flash permission (Teferi, Time Raveler's +1) covers it —
-        // BUT an opponent sorcery-speed lock (Teferi's static "each opponent can cast spells only
-        // any time they could cast a sorcery") overrides both, forcing the sorcery-speed window for
-        // every spell this caster casts. Order matters: apply the flash permission first, then let
-        // the lock veto it (a player under the lock can't use their own flash-granting either).
-        bool sorcery_window = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                              (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        bool effective_instant = is_instant;
-        if (!effective_instant && rules_mod::cast_with_flash_active(priority_player, card_data))
-            effective_instant = true;
-        if (rules_mod::opponent_sorcery_speed_locked(priority_player))
-            effective_instant = false;
-        bool can_cast_now = effective_instant || sorcery_window;
-        // Check that at least one legal target exists for any targeting requirement
-        // and that any ConditionPresent$ castability condition is met
-        bool tgt_ok = true;
-        bool condition_ok = true;
-        for (const auto &ab : card_data.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            // Mode-aware target legality (CR 601.2c): for a Gift spell the required target type
-            // switches on the gift promise (Into the Flood Maw: a creature without the gift, a
-            // nonland permanent with it), so the spell is castable iff a legal target exists for
-            // at least one reachable mode. Reduces to has_legal_targets for ordinary spells.
-            // Probe with the real cast source/controller (card_entity) so source-dependent target
-            // restrictions — protection from this spell's color, OppCtrl — match select_target and
-            // a protected-only target (Emrakul vs white, Scryb Ranger vs blue) is not offered.
-            Ability probe = cast_gate_probe(ab, card_entity, priority_player);
-            tgt_ok = spell_has_castable_targets(probe, orderer, priority_player, card_data.has_gift);
-            // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
-            // may target anything legal; the condition is checked on the target at
-            // resolution, so it must not gate cast-time legality.
-            if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
-            break;
-        }
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (tgt_ok)
-            tgt_ok = aura_enchant_target_available(card_data, priority_player, orderer);
-        // Machine mode only: action-masking optimization — don't offer a conditional-destroy
-        // spell to the RL agent when no target on the board would currently pass the
-        // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
-        // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
-        // the spell can still legally target any creature in CLI/interactive play.
-        if (InputLogger::instance().is_machine_schedule() && tgt_ok && condition_ok) {
-            for (const auto &ab : card_data.abilities) {
-                if (ab.ability_type != Ability::SPELL) continue;
-                if (ab.condition_present.find("cmcLEX") != std::string::npos &&
-                    !ab.dynamic_amount_expr.empty()) {
-                    // Evaluate Revolt threshold inline
-                    int threshold = 2;
-                    if (ab.dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
-                        size_t dot1 = ab.dynamic_amount_expr.find("Revolt.") + 7;
-                        size_t dot2 = ab.dynamic_amount_expr.find('.', dot1);
-                        int high_val = std::stoi(ab.dynamic_amount_expr.substr(dot1, dot2 - dot1));
-                        int low_val = std::stoi(ab.dynamic_amount_expr.substr(dot2 + 1));
-                        bool revolt = (priority_player == Zone::PLAYER_A)
-                            ? cur_game.revolt_player_a : cur_game.revolt_player_b;
-                        threshold = revolt ? high_val : low_val;
-                    }
-                    bool any_valid = false;
-                    for (auto ce : mEntities) {
-                        if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
-                        if (!global_coordinator.entity_has_component<Zone>(ce)) continue;
-                        auto &cz = global_coordinator.GetComponent<Zone>(ce);
-                        if (cz.location != Zone::BATTLEFIELD) continue;
-                        // A token creature carries no CardData; a non-copy token has no mana
-                        // cost and therefore mana value 0 (CR 111.7), which is always <= the
-                        // threshold, so it is a valid conditional-destroy target. Mirror
-                        // effect_destroy.cpp, which likewise treats a CardData-less target as
-                        // mana value 0 and destroys it — without this, boards whose only small
-                        // creatures are tokens (e.g. Monk/Orc Army) hid the legal Fatal Push.
-                        int cmc = global_coordinator.entity_has_component<CardData>(ce)
-                                      ? card_mana_value(global_coordinator.GetComponent<CardData>(ce))
-                                      : 0;
-                        if (cmc <= threshold) { any_valid = true; break; }
-                    }
-                    if (!any_valid) tgt_ok = false;
-                }
-                break;
-            }
-        }
-
-        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
-        bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
-        if (can_cast_now && tgt_ok && condition_ok && !payment_blocked) {
-            std::string desc = "Cast " + card_data.name;
-            LegalAction la(CAST_SPELL, card_entity, desc);
-            la.category = ActionCategory::CAST_SPELL;
-            la.option_ordinal = 0;  // cast variant: 0 = normal
-
-            // Check CantBeCast statics from cached active_statics
-            if (rules_mod::cast_prohibited(priority_player, card_data)) continue;
+        if (card_has_type(card_data, "Land")) continue;  // can't cast land
+        // Timing alone also gates the suspend special action below.
+        bool timing_ok = spell_timing_ok(card_data, priority_player, sorcery_window);
+        if (timing_ok && can_cast_now(card_data, card_entity, priority_player, Zone::HAND,
+                                      sorcery_window, /*ignore_timing=*/true, orderer)) {
+            LegalAction la = cast_action(card_entity, "Cast " + card_data.name, 0);
 
             ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor. Hybrid pips ({W/U}, {2/W})
-            // are folded in via resolve_hybrid_cost (castable iff SOME hybrid assignment is
-            // payable); with no hybrids this is exactly can_pay_mana.
-            bool can_regular = resolve_hybrid_cost(priority_player, effective_cost,
-                                                   card_data.hybrid_mana, card_entity, orderer,
-                                                   card_data.has_delve, card_data.has_improvise);
+            // and Phyrexian pips ({B/P}: its mana or 2 life) are folded in via
+            // can_pay_spell_mana (castable iff SOME assignment is payable); with neither this is
+            // exactly can_pay_mana.
+            bool can_regular = can_pay_spell_mana(priority_player, effective_cost, card_data,
+                                                  card_entity, orderer);
 
             // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
             // "As an additional cost to cast this spell, sacrifice a green creature").
@@ -795,9 +837,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
-                if (resolve_hybrid_cost(priority_player, offspring_total, card_data.hybrid_mana,
-                                        card_entity, orderer, card_data.has_delve,
-                                        card_data.has_improvise)) {
+                if (can_pay_spell_mana(priority_player, offspring_total, card_data, card_entity,
+                                       orderer)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.option_ordinal = 2;  // cast variant: 2 = offspring
@@ -807,13 +848,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
         // SUSPEND (CR 702.62a, first ability): from the hand, at the timing you could begin to cast
-        // the card (`can_cast_now` — sorcery speed for a sorcery), its owner may instead pay the
+        // the card (`timing_ok` — sorcery speed for a sorcery), its owner may instead pay the
         // suspend cost and exile it with N time counters. This is a special action (doesn't use the
         // stack). Its targets are chosen only later, when the last counter is removed and it is cast
         // for free, so no legal target is required now (702.62 casts it then, not here); the card
         // just must not be under a cast prohibition (702.62c) and the suspend mana cost must be
         // affordable. General over any Suspend card. Offered independently of the normal-cast block.
-        if (card_data.has_suspend && can_cast_now &&
+        if (card_data.has_suspend && timing_ok &&
             !rules_mod::cast_prohibited(priority_player, card_data) &&
             can_pay_mana(priority_player, card_data.suspend_cost, card_entity, orderer)) {
             LegalAction sus_la(SPECIAL_ACTION, card_entity, "Suspend " + card_data.name);
@@ -824,48 +865,27 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
     // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
     // cast and the land-back PLAY_LAND were handled in the hand loop above).
-    offer_modal_back_face_casts(actions, game, priority_player, orderer, stack_empty);
+    offer_modal_back_face_casts(actions, priority_player, orderer, sorcery_window);
     // checking graveyard for flashback spells (the FLASHBACK route)
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::FLASHBACK)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-
-        bool is_instant = false;
-        for (auto &type : gcd.types) {
-            if (type.kind == TYPE && type.name == "Instant") { is_instant = true; break; }
-        }
-        // Teferi, Time Raveler's opponent sorcery-speed lock forces even a flashback instant to
-        // sorcery-speed timing (CR 601.3a).
-        if (is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) is_instant = false;
-        bool can_cast_now = false;
-        if (is_instant) {
-            can_cast_now = true;
-        } else {
-            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
-        if (!can_cast_now) continue;
-
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
+        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
+            continue;
 
         // Check affordability: flashback mana cost (floored — flashback is an alternative
-        // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
-        bool can_afford_fb = can_pay_mana(
-            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player), gy_entity, orderer);
-        if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
-            Entity pp_entity = get_player_entity(priority_player);
-            if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
-                can_afford_fb = false;
-        }
-        if (!can_afford_fb) continue;
+        // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost (Deep
+        // Analysis: 3 life), paid after the mana, so a painful source may not spend that life.
+        int fb_life = gcd.flashback_alt_cost.life_cost;
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), fb_life))
+            continue;
+        if (!can_pay_mana(priority_player,
+                          floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player),
+                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
+                          /*exclude_entity=*/0, /*life_reserve=*/fb_life))
+            continue;
 
         // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
         // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
@@ -874,13 +894,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                                            orderer->mEntities, gy_entity).empty())
             continue;
 
-        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
-
-        LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
-        fb_la.category = ActionCategory::CAST_SPELL;
+        LegalAction fb_la = cast_action(gy_entity, "Cast " + gcd.name + " (flashback)", 4);
         fb_la.use_flashback = true;
-        fb_la.option_ordinal = 4;  // cast variant: 4 = flashback
         actions.push_back(fb_la);
     }
     // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
@@ -892,29 +907,21 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::ESCAPE)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
+            continue;
 
-        bool esc_is_instant = card_has_type(gcd, "Instant");
-        // Teferi opponent sorcery-speed lock: even an escape instant is sorcery-timed (CR 601.3a).
-        if (esc_is_instant && rules_mod::opponent_sorcery_speed_locked(priority_player)) esc_is_instant = false;
-        bool can_cast_now = esc_is_instant ||
-                            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
-
-        // Spell-target legality (Nethergoyf has none, but keep general for future escape cards).
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
+        // An escape life cost must be payable (CR 119.4), and it is paid after the mana, so a
+        // painful source may not spend it.
+        int esc_life = gcd.escape_alt_cost.life_cost;
+        if (!can_pay_life(global_coordinator.GetComponent<Player>(priority_player_entity), esc_life))
+            continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
-                          gy_entity, orderer))
+        if (!can_pay_mana(priority_player,
+                          floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
+                          gy_entity, orderer, /*has_delve=*/false, /*has_improvise=*/false,
+                          /*exclude_entity=*/0, /*life_reserve=*/esc_life))
             continue;
 
         // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
@@ -931,12 +938,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 gcd.escape_alt_cost.exile_grave_count)
             continue;
 
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
-
-        LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
-        esc_la.category = ActionCategory::CAST_SPELL;
+        LegalAction esc_la = cast_action(gy_entity, "Cast " + gcd.name + " (escape)", 5);
         esc_la.use_escape = true;
-        esc_la.option_ordinal = 5;  // cast variant: 5 = escape
         actions.push_back(esc_la);
     }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
@@ -946,64 +949,34 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (const auto &[gy_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::GRAVEYARD_CAST)) continue;
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
-
-        // Flash / instant cards may be cast anytime; everything else is sorcery-speed.
-        bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
-        for (const auto &kw : gcd.keywords)
-            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
-        // Teferi opponent sorcery-speed lock: a granted graveyard cast is sorcery-timed (CR 601.3a).
-        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
-            can_cast_at_instant_speed = false;
-        bool can_cast_now = can_cast_at_instant_speed ||
-            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
-        if (!can_cast_now) continue;
-
-        // Any targeting requirement must have at least one legal target.
-        bool tgt_ok = true;
-        for (const auto &ab : gcd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        if (!aura_enchant_target_available(gcd, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD))
+        if (!can_cast_now(gcd, gy_entity, priority_player, Zone::GRAVEYARD, sorcery_window,
+                          /*ignore_timing=*/false, orderer))
             continue;
 
-        ManaValue gy_cost = effective_base_cost(gcd, priority_player);
-        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve, gcd.has_improvise))
+        if (!can_pay_spell_mana(priority_player, effective_base_cost(gcd, priority_player), gcd,
+                                gy_entity, orderer))
             continue;
 
-        LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
-        gy_la.category = ActionCategory::CAST_SPELL;
-        gy_la.option_ordinal = 6;  // cast variant: 6 = cast-from-graveyard permission (Emry)
-        actions.push_back(gy_la);
+        actions.push_back(cast_action(gy_entity, "Cast " + gcd.name + " (from graveyard)", 6));
     }
-    // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
-    // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
-    // mana value) instead of its mana cost (CR 707 / 118.9). Cast from EXILE at the timing its
-    // type allows; only the granted player may cast it, and only if they can pay the resource.
-    // The EXILE_GRANT route covers a card still in exile whose grant names this player (and
-    // a land only under a NORMAL grant that allows lands).
+    // PLAY-FROM-EXILE PERMISSIONS (Light Up the Stage, Ugin -11, Dauthi Voidwalker, warp): an
+    // exiled card its grant lets this player play, for its normal cost, without paying its mana
+    // cost, or for an alternative resource cost (CR 118.9). Cast from EXILE at the timing its type
+    // allows; only the granted player may cast it, and only if they can pay the cost. The
+    // EXILE_GRANT route covers a card still in exile whose grant names this player (and a land
+    // only under a "play" grant that allows lands).
     for (const auto &[ex_entity, routes] : zone_play_routes) {
         if (!(routes & CardPlayPermission::EXILE_GRANT)) continue;
-        const auto &perm_grant = cur_game.impulse_cast_permission.at(ex_entity);
+        const auto &perm_grant = *cur_game.resolved_effects.impulse_cast_permission.find(ex_entity);
         auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
 
-        bool main_phase_window =
-            (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-
-        // A LAND among the exiled cards: only a NORMAL "play" permission (Light Up the Stage's
-        // "you may PLAY those cards") may play it — a land play, sorcery-timing, own main phase,
-        // empty stack, and a land drop remaining (CR 305.2 / 601.3e). A free/energy/life "cast"
-        // grant (Ugin -11 / Amped Raptor) can't play a land (601.1), and card_play_permission
+        // A LAND among the exiled cards: only a "play" permission (Light Up the Stage's "you may
+        // PLAY those cards", Dauthi Voidwalker's "you may play it") may play it — a land play,
+        // sorcery-timing, own main phase, empty stack, and a land drop remaining (CR 305.1 /
+        // 305.2). A "cast" grant (Ugin -11) can't play a land (601.1), and card_play_permission
         // reports no route for a land under one.
         if (is_land_card(ecd)) {
-            if (!main_phase_window) continue;
+            if (!sorcery_window) continue;
             // Same shared land-drop expression the hand loop above uses.
             if (rules_mod::land_drops_remaining(priority_player) <= 0) continue;
             LegalAction land_la(SPECIAL_ACTION, ex_entity, "Play " + ecd.name + " (from exile)");
@@ -1012,81 +985,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
         }
 
-        // Timing: instants / Flash cards anytime; everything else sorcery-speed.
-        bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
-        for (const auto &kw : ecd.keywords)
-            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
-        // Teferi opponent sorcery-speed lock: an impulse cast is sorcery-timed (CR 601.3a).
-        if (can_cast_at_instant_speed && rules_mod::opponent_sorcery_speed_locked(priority_player))
-            can_cast_at_instant_speed = false;
-        bool can_cast_now = can_cast_at_instant_speed || main_phase_window;
-        // A suspend free cast (CR 702.62a) is made as an effect of resolving the last-time-counter
-        // triggered ability during the caster's own upkeep, so it ignores the card's normal
-        // sorcery/instant timing — offer it at any priority window this caster holds (until the
-        // permission lapses at cleanup, i.e. "if you don't, it remains exiled").
-        if (perm_grant.from_suspend) can_cast_now = true;
-        if (!can_cast_now) continue;
-
-        // Affordability of the alternative resource cost.
-        Entity pe = get_player_entity(priority_player);
-        if (!global_coordinator.entity_has_component<Player>(pe)) continue;
-        auto &ppl = global_coordinator.GetComponent<Player>(pe);
-        bool is_normal_play = (perm_grant.resource == Game::ImpulseCastPermission::NORMAL);
-        if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
-            // No cost to pay (Ugin -11 grant) — always affordable.
-        } else if (is_normal_play) {
-            // Play a nonland card for its NORMAL mana cost (Light Up the Stage): affordable iff
-            // the full (cost-increase-adjusted, hybrid-resolved) base cost can be paid.
-            ManaValue base = effective_base_cost(ecd, priority_player);
-            if (!resolve_hybrid_cost(priority_player, base, ecd.hybrid_mana, ex_entity, orderer,
-                                     ecd.has_delve, ecd.has_improvise))
-                continue;
-        } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
-            if (player_energy(ppl) < perm_grant.amount) continue;
-        } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
-                  // legality bar in MTG, but a player won't be forced; require enough life so
-                  // the optional cast is sensibly offered.
-            if (ppl.life_total < perm_grant.amount) continue;
-        }
-
-        // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
-        // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
-        // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
-        // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
-        // means no extra mana and this gate is a no-op. NORMAL plays already pay the full base
-        // cost above, so this alt-cost floor doesn't apply to them.
-        if (!is_normal_play) {
-            ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
-            if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
-                continue;
-        }
-
-        // Any targeting requirement must have at least one legal target.
-        bool tgt_ok = true;
-        for (const auto &ab : ecd.abilities) {
-            if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(cast_gate_probe(ab, ex_entity, priority_player), orderer);
-            break;
-        }
-        if (!tgt_ok) continue;
-        // Aura enchant-target gate (CR 303.4 / 601.2c) — see aura_enchant_target_available.
-        // The concrete crash this fixes: Animate Dead reanimates the opponent's Amped Raptor
-        // (emptying the graveyard), the Raptor's impulse exiles a SECOND Animate Dead and
-        // grants this energy-cast permission — which must not be offered while no creature
-        // card is in any graveyard.
-        if (!aura_enchant_target_available(ecd, priority_player, orderer)) continue;
-
-        if (rules_mod::cast_prohibited(priority_player, ecd, Zone::EXILE))
-            continue;
+        if (!exile_grant_castable(ex_entity, priority_player, sorcery_window, orderer)) continue;
 
         const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
                                      ? " (from exile, no cost)"
-                                 : is_normal_play ? " (from exile)"
-                                                  : " (impulse, alt cost)";
-        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + imp_suffix);
-        imp_la.category = ActionCategory::CAST_SPELL;
+                                     : " (from exile)";
+        LegalAction imp_la = cast_action(ex_entity, "Cast " + ecd.name + imp_suffix, 7);
         imp_la.impulse_cast = true;
-        imp_la.option_ordinal = 7;  // cast variant: 7 = impulse/free cast from exile
         actions.push_back(imp_la);
     }
     // checking permanents for activated abilities
@@ -1098,65 +1003,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!is_battlefield_permanent(entity, priority_player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
 
-        // Sorcery-speed window: controller's main phase with an empty stack. Gates both the
-        // Equip ability and planeswalker loyalty abilities (606.3), so it is computed once.
-        bool sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                             (game.player_a_turn == game.player_a_has_priority) &&
-                             stack_manager->is_empty();
-
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
         if (rules_mod::activation_prohibited(entity)) continue;
-
-        // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
-        // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
-        // so synthesise the action here when there is a creature to equip and the cost is payable.
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (cd.is_equipment && sorcery_speed) {
-                bool has_creature = false;
-                for (auto e2 : orderer->mEntities) {
-                    if (e2 == entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    if (!global_coordinator.entity_has_component<Creature>(e2)) continue;
-                    if (global_coordinator.GetComponent<Zone>(e2).location != Zone::BATTLEFIELD) continue;
-                    if (global_coordinator.GetComponent<Permanent>(e2).controller != priority_player) continue;
-                    has_creature = true;
-                    break;
-                }
-                if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
-                    Ability equip_ab;
-                    equip_ab.ability_type = Ability::ACTIVATED;
-                    equip_ab.category = "Equip";
-                    equip_ab.source = entity;
-                    equip_ab.activation_mana_cost = cd.equip_cost;
-                    std::string desc = (cd.is_reconfigure ? "Reconfigure " : "Equip ") + entity_name(entity);
-                    LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
-                    equip_la.category = ActionCategory::ACTIVATE_ABILITY;
-                    // Synthesised activation (no stored Ability): fixed ordinal above
-                    // any plausible ability-list index so it can't collide with the
-                    // per-ability ordinals below (normalizer OPTION_ORDINAL_MAX = 63).
-                    equip_la.option_ordinal = 32;
-                    actions.push_back(equip_la);
-                }
-                // Reconfigure (CR 702.151): while attached, pay the cost to unattach. Sorcery-speed,
-                // same cost as the attach. The unattach makes the permanent a creature again.
-                if (cd.is_reconfigure && permanent.equipped_to != 0 &&
-                    can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
-                    Ability unattach_ab;
-                    unattach_ab.ability_type = Ability::ACTIVATED;
-                    unattach_ab.category = "Unattach";
-                    unattach_ab.source = entity;
-                    unattach_ab.activation_mana_cost = cd.equip_cost;
-                    std::string desc = "Unattach " + entity_name(entity);
-                    LegalAction unattach_la(ACTIVATE_ABILITY, entity, unattach_ab, desc);
-                    unattach_la.category = ActionCategory::ACTIVATE_ABILITY;
-                    unattach_la.option_ordinal = 33;  // synthesised: see equip above
-                    actions.push_back(unattach_la);
-                }
-            }
-        }
 
         // ability_index: the ability's stable position in this permanent's ability
         // list, emitted as the action's option_ordinal so the ML observation can
@@ -1167,86 +1017,30 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int ability_index = -1;
         for (const auto &ab : permanent.abilities) {
             ++ability_index;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
-            if (ab.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
+            if (ab.def->ability_type != AbilityDef::ACTIVATED) continue;
+            if (ab.def->activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
             // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
             // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
             // is legal — may go to exactly 0 and die to the SBA).
-            if (ab.is_loyalty_ability) {
-                if (!sorcery_speed) continue;
+            if (ab.def->is_loyalty_ability) {
+                if (!sorcery_window) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
                 // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
-                if (!ab.loyalty_cost_is_x && ab.loyalty_cost < 0 &&
-                    get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
+                if (!ab.def->loyalty_cost_is_x && ab.def->loyalty_cost < 0 &&
+                    get_counters(entity, "LOYALTY") < -ab.def->loyalty_cost) continue;
             }
-            // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
-            // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
-            if (ab.sorcery_speed_only && !sorcery_speed) continue;
-            // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
-            // illegal unless the controller meets the named condition. (Mana abilities take the
-            // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
-            if (!activation_condition_met(ab, priority_player, orderer->mEntities, entity)) continue;
-            // todo handle this elswewhere, tapping check
-            if (ab.tap_cost && permanent.is_tapped) continue;
-            if (ab.tap_cost && permanent.has_summoning_sickness &&
-                global_coordinator.entity_has_component<Creature>(entity)) {
-                auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                bool has_haste = false;
-                for (const auto &kw : cr.keywords) {
-                    if (kw == "Haste") { has_haste = true; break; }
-                }
-                if (!has_haste) continue;
-            }
-            // Activation limit check
-            if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-            // sac_cost_spec: require controller has a permanent matching type (honouring a
-            // .Other self-exclusion against the ability's source — "another creature").
-            if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, ab.source).empty())
-                continue;
-            // Return cost: require controller has a land of given subtype
-            if (!ab.return_cost_type.empty() &&
-                controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
-                continue;
-            if (ability_is_mana(ab)) {
-                // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$
-                // ManaReflected (Mox Amber) — are collected via collect_mana_legal_actions above
-                // and resolve off-stack. None go on the stack.
-                continue;
-            } else {
-                // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
-                // Gate on the post-ReduceCost$ cost so legality matches what payment will charge.
-                // A {T} in the ability's own cost spends the source's tap, so its mana ability is
-                // NOT also available to pay with — exclude it, or a Blast Zone whose only other
-                // land is an Ancient Tomb reads as able to pay {3} off 2 mana plus its own {C}.
-                ManaValue ab_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-                if (!ab_cost.empty() &&
-                    !can_pay_mana(priority_player, ab_cost, ab.source, orderer,
-                                  /*has_delve=*/false, /*has_improvise=*/false,
-                                  /*exclude_entity=*/ab.tap_cost ? entity : 0))
-                    continue;
-                // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-                if (ab.energy_cost > 0 &&
-                    player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
-                    continue;
-                // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A
-                // fetch land (Pay 1 life) at 1 life is still legal (you pay down to 0, then die);
-                // only an ability costing MORE life than you have is filtered out here.
-                if (ab.life_cost > 0 &&
-                    global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
-                    continue;
-                if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
-                { auto it = cur_game.payment_fail_counts.find(ab.source);
-                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-                std::string src_name = entity_name(ab.source);
-                std::string desc = "Activate " + src_name + loyalty_cost_label(ab)
-                                   + " (" + ab.category + ")";
-                LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
-                non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
-                non_mana_la.option_ordinal = ability_index;
-                actions.push_back(non_mana_la);
-            }
+            // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$ ManaReflected
+            // (Mox Amber) — are collected via collect_mana_legal_actions above and resolve
+            // off-stack. None go on the stack.
+            if (ability_is_mana(ab)) continue;
+            // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
+            if (!can_activate_now(ab, entity, priority_player, sorcery_window, orderer)) continue;
+            std::string desc = !ab.def->keyword_label.empty()
+                                   ? ab.def->keyword_label + " " + entity_name(entity)
+                                   : "Activate " + entity_name(entity) + loyalty_cost_label(ab) +
+                                         " (" + ab.def->category + ")";
+            actions.push_back(activate_action(entity, ab, desc, ability_index));
         }
     }
     // Check hand for cards with ActivationZone$ Hand abilities (e.g. Talon Gates of Madara)
@@ -1255,80 +1049,34 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int hand_ability_index = -1;  // ordinal: see the battlefield loop above
         for (const auto &ab : card_data.abilities) {
             ++hand_ability_index;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
-            if (ab.activation_zone != Zone::HAND) continue;
-            // Ninjutsu (CR 702.49e): activatable only during the declare-blockers step, after
-            // blockers are declared, while the activator controls an unblocked attacker.
-            if (ab.is_ninjutsu) {
-                if (game.cur_step != DECLARE_BLOCKERS) continue;
-                if (unblocked_attackers(orderer->mEntities, priority_player).empty()) continue;
-            }
-            // Check mana affordability against the post-ReduceCost$ cost (Eiganjo's Channel is
-            // cheaper per legendary creature you control), so legality matches payment.
-            ManaValue from_hand_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-            if (!from_hand_cost.empty() && !can_pay_mana(priority_player, from_hand_cost, card_entity, orderer)) continue;
-            // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
-            if (ab.energy_cost > 0 &&
-                player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
+            if (ab->ability_type != AbilityDef::ACTIVATED) continue;
+            if (ab->activation_zone != Zone::HAND) continue;
+            const Ability hand_ab(ab);
+            if (!can_activate_now(hand_ab, card_entity, priority_player, sorcery_window, orderer))
                 continue;
-            // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have.
-            if (ab.life_cost > 0 &&
-                global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
-                continue;
-            // Check target legality. The bare CardData ability carries no source/controller, and
-            // ability_perspective_player would fall back to the default-initialized controller
-            // (player A) — evaluating .OppCtrl from the wrong seat when B activates (Boseiju's
-            // Channel was offered targeting B's own nonbasic land). Stamp the real activator via
-            // cast_gate_probe so the existence check matches what target selection will offer.
-            if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
-                !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
-            // sac_cost_spec: require controller has a permanent matching type (honouring a
-            // .Other self-exclusion against the activating card).
-            if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, card_entity).empty())
-                continue;
-            { auto it = cur_game.payment_fail_counts.find(card_entity);
-              if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-            std::string desc = ab.is_ninjutsu
+            std::string desc = ab->is_ninjutsu
                 ? ("Ninjutsu " + card_data.name)
-                : ("Activate " + card_data.name + " from hand (" + ab.category + ")");
-            LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
-            la.category = ActionCategory::ACTIVATE_ABILITY;
-            la.option_ordinal = hand_ability_index;
-            actions.push_back(la);
+                : ("Activate " + card_data.name + " from hand (" + ab->category + ")");
+            actions.push_back(activate_action(card_entity, hand_ab, desc, hand_ability_index));
         }
     }
 
     // Check the graveyard for cards with ActivationZone$ Graveyard abilities (Unearth, CR 702.84).
     // Such abilities are activated from the graveyard at sorcery speed (controller's main phase,
     // empty stack, holding priority) and return the card to the battlefield.
-    {
-        bool gy_sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                                (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        for (auto card_entity : orderer->get_graveyard(priority_player)) {
-            if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
-            auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-            int gy_ability_index = -1;  // ordinal: see the battlefield loop above
-            for (const auto &ab : card_data.abilities) {
-                ++gy_ability_index;
-                if (ab.ability_type != Ability::ACTIVATED) continue;
-                if (ab.activation_zone != Zone::GRAVEYARD) continue;
-                if (ab.sorcery_speed_only && !gy_sorcery_speed) continue;
-                ManaValue gy_cost = effective_activation_mana_cost(ab, priority_player, orderer);
-                if (!gy_cost.empty() && !can_pay_mana(priority_player, gy_cost, card_entity, orderer)) continue;
-                // Target-existence gate (CR 601.2c), stamped like the hand loop above — today's
-                // graveyard activations (Unearth) don't target, but a targeted one must not be
-                // offered with zero legal targets.
-                if (ab.valid_tgts != "N_A" && ab.target_min > 0 &&
-                    !has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer)) continue;
-                { auto it = cur_game.payment_fail_counts.find(card_entity);
-                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-                std::string desc = "Unearth " + card_data.name;
-                LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
-                la.category = ActionCategory::ACTIVATE_ABILITY;
-                la.option_ordinal = gy_ability_index;
-                actions.push_back(la);
-            }
+    for (auto card_entity : orderer->get_graveyard(priority_player)) {
+        if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
+        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        int gy_ability_index = -1;  // ordinal: see the battlefield loop above
+        for (const auto &ab : card_data.abilities) {
+            ++gy_ability_index;
+            if (ab->ability_type != AbilityDef::ACTIVATED) continue;
+            if (ab->activation_zone != Zone::GRAVEYARD) continue;
+            const Ability gy_ab(ab);
+            if (!can_activate_now(gy_ab, card_entity, priority_player, sorcery_window, orderer))
+                continue;
+            actions.push_back(activate_action(card_entity, gy_ab, "Unearth " + card_data.name,
+                                              gy_ability_index));
         }
     }
 
@@ -1343,7 +1091,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // instant-speed sources (e.g. LED, only activatable here), and any source that is
         // a chosen target of a Destroy/exile effect on the stack (float in response to
         // removal, e.g. Wasteland, before the source leaves the battlefield).
-        if (machine && !ma.ability.instant_speed &&
+        if (machine && !ma.ability.def->instant_speed &&
             std::find(removal_tgts.begin(), removal_tgts.end(), ma.source_entity) ==
                 removal_tgts.end())
             continue;

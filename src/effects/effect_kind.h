@@ -3,86 +3,17 @@
 
 #include <string>
 
-// Identifies which effect-resolution handler an Ability dispatches to. Mirrors
-// the 32 effect-category strings that Ability::resolve() historically branched
-// on. `None` covers Ability categories that have no resolve-time handler (e.g.
-// "Equip", which is handled at activation time and never reaches resolve), plus
-// any unrecognized string — both fall through to a no-op + subability chaining,
-// matching the legacy if/else chain's behavior for unmatched categories.
+// Which effect-resolution handler an ability dispatches to, from its category (the list is
+// effect_kinds.def). `None` is an ability with no category (an engine-built targeting probe, a
+// cost-only ability) or an unknown one; it resolves as a no-op that chains its sub-abilities.
 enum class EffectKind {
     None,
-    AddMana,
-    GainLife,
-    LoseLife,
-    Discard,
-    Draw,
-    ChangeZone,
-    ChangeZoneAll,
-    RearrangeTopOfLibrary,
-    DealDamage,
-    PutCounter,
-    RemoveCounter,
-    ProwessBonus,
-    ExaltedBonus,
-    Token,
-    Investigate,
-    Attach,
-    Mill,
-    Pump,
-    PumpAll,
-    MultiplyCounter,
-    ChooseCard,
-    Cleanup,
-    DelayedTrigger,
-    Untap,
-    UntapAll,
-    Destroy,
-    DestroyAll,
-    DamageAll,
-    Counter,
-    Surveil,
-    Scry,
-    PeekAndReveal,
-    Reveal,
-    Phases,
-    Dig,
-    SylvanLibrary,
-    WinsGame,
-    Charm,
-    Amass,
-    Sacrifice,
-    PutCounterAll,
-    SacrificeAll,
-    ImmediateTrigger,
-    CopyPermanent,
-    Clone,
-    Mobilize,
-    SacrificeTokens,
-    ExileTokens,
-    RepeatEach,
-    GrantCast,
-    NameCard,
-    Animate,
-    AnimateAll,
-    ChooseNumber,
-    DigUntil,
-    Play,
-    Earthbend,
-    Tap,
-    RevealHand,
-    BecomeMonarch,
-    Vote,
-    Storm,
-    AddTurn,
-    StoreSVar,
-    CopySpellAbility,
-    SuspendTick,
-    SetState,
-    WarpExile,
-    MiracleCast,
+#define EFFECT_KIND(kind, category, handler) kind,
+#define EFFECT_KIND_ELSEWHERE(kind, category) kind,
+#include "effect_kinds.def"
 };
 
-// Maps a normalized category string to its EffectKind. Unknown strings → None.
-EffectKind effect_kind_from_string(const std::string &category);
+// The EffectKind of a category string; false (with `out` = None) for an unknown category.
+bool effect_kind_from_category(const std::string &category, EffectKind &out);
 
 #endif /* EFFECT_KIND_H */

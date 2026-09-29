@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -171,6 +168,7 @@
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
   Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
   Opp BF:   Fiery Islet (T)
+  Stack: Mishra's Bauble (ability, self)
   Pending: Mishra's Bauble (self)
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
@@ -228,154 +226,86 @@
    2: Mystic Sanctuary
    3: Thundering Falls
    4: Volcanic Island
-   5: Volcanic Island
-   6: Volcanic Island
-  >> B/B: 1 (Island)
+  >> B/B: 3 (Thundering Falls)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Island to the battlefield
-  Resolving ability (category: PeekAndReveal)
-  Player B looks at top of Player A's library: Chain Lightning
-  Resolving ability (category: DelayedTrigger)
-  Delayed trigger registered: Draw at next Upkeep.
+  Player B puts Thundering Falls to the battlefield
+  Thundering Falls enters tapped.
+  Thundering Falls triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Unholy Heat
 
 --- Decision 11 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (NEW)
+  Self BF:  Thundering Falls (T,NEW,res 1)
   Opp BF:   Fiery Islet (T)
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
+  Stack: Thundering Falls (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
+  Pending: Thundering Falls (self)
   Self GY: Polluted Delta, Mishra's Bauble
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Ponder  [#0]
-  >> B/B: 1 (Cast Ponder)
---- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Ponder
-  Resolving ability (category: RearrangeTopOfLibrary)
-  Player B looks at the top 3 card(s) of their library.
-  Choose which card goes 3 from top:
-
---- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW)
-  Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Unholy Heat  [#2]
-   1: Lightning Bolt  [#2]
-   2: Daze  [#2]
-  >> B/B: 0 (Unholy Heat)
+   0: Put Unholy Heat on top of library  [#0]
+   1: Put Unholy Heat into graveyard
+  >> B/B: 0 (Put Unholy Heat on top of library)
 --- Narrative ---
-  Choose which card goes 2 from top:
-
---- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW)
-  Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt [1 ctr]
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Lightning Bolt  [#1]
-   1: Daze  [#1]
-  >> B/B: 0 (Lightning Bolt)
-
---- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW)
-  Opp BF:   Fiery Islet (T)
-  Stack: Ponder (spell, self)
-  Delayed: Mishra's Bauble (self, upkeep, waiting)
-  Pending: Ponder (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp exile:  Rift Bolt [1 ctr]
-  Known top: Daze, Lightning Bolt, Unholy Heat, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Don't shuffle
-   1: Shuffle
-  >> B/B: 0 (Don't shuffle)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Daze
+  Resolving ability (category: PeekAndReveal)
+  Player B looks at top of Player A's library: Chain Lightning
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Delayed trigger fires.
   Resolving ability (category: Draw, amount: 1)
-  Player B draws Lightning Bolt
+  Player B draws Unholy Heat
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 --- Turn 3 (Player A) ---
   PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Scalding Tarn, Volcanic Island
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
 
---- Decision 15 ---
+--- Decision 12 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   19 life | mana: empty | hand count: 7 | lib 49
+  Opp:   19 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
-  Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt [play:self/eot]
-  Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  Opp BF:   Thundering Falls (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Self exile: Rift Bolt
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
   This turn: opp drawn=1
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 16 ---
+--- Decision 13 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
   Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   19 life | mana: empty | hand count: 7 | lib 49
+  Opp:   19 life | mana: empty | hand count: 7 | lib 50
   Self BF:  Fiery Islet
-  Opp BF:   Island (T)
+  Opp BF:   Thundering Falls (T)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt
-  Opp revealed: Polluted Delta, Ponder, Island, Mishra's Bauble
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
   This turn: opp drawn=1
   Extras: not_priority_window
   Actions:
@@ -385,127 +315,89 @@
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
-
---- Decision 17 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
-  Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
-  Self GY: Ponder, Polluted Delta, Mishra's Bauble
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Daze (alternate cost)  [#1]
-  >> B/B: 1 (Cast Daze (alternate cost))
---- Narrative ---
-  Choose target for Daze:
-
---- Decision 18 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
-  Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
-  Pending: Daze (self)
-  Self GY: Ponder, Polluted Delta, Mishra's Bauble
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
-  Extras: not_priority_window
-  Actions:
-   0: Rift Bolt
-  >> B/B: 0 (Rift Bolt)
---- Narrative ---
-  Targeting choice 0
-
---- Decision 19 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Daze, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T)
-  Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
-  Pending: Daze (self)
-  Self GY: Ponder, Polluted Delta, Mishra's Bauble
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=R
-  Extras: not_priority_window
-  Actions:
-   0: Return Island
-  >> B/B: 0 (Return Island)
---- Narrative ---
-  Player B returns Island to hand
-  Player B casts Daze targeting Rift Bolt
-  Resolving ability (category: Counter)
-  Rift Bolt's controller may pay {1} to save it:
-
---- Decision 20 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   19 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet
-  Stack: Daze (spell, opponent) -> Rift Bolt (self, slot 97) -> Rift Bolt (spell, self) -> opponent (player)
-  Pending: Daze (opp)
-  Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Known opp hand: Island
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt, not_priority_window
-  Actions:
-   0: Tap Fiery Islet for (U)
-   1: Tap Fiery Islet for (R)
-   2: Don't pay (Rift Bolt is countered)  [#0]
-  >> A/A: 0 (Tap Fiery Islet for (U))
---- Narrative ---
-  Player A pays 1 life
-  Player A tapped Fiery Islet for {U}
-
---- Decision 21 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  18 life | mana: 1U | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   19 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T)
-  Stack: Daze (spell, opponent) -> Rift Bolt (self, slot 97) -> Rift Bolt (spell, self) -> opponent (player)
-  Pending: Daze (opp)
-  Opp GY:  Ponder, Polluted Delta, Mishra's Bauble
-  Known opp hand: Island
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt, not_priority_window
-  Actions:
-   0: Pay {1} (Rift Bolt is not countered)  [#1]
-   1: Don't pay (Rift Bolt is countered)  [#0]
-  >> A/A: 0 (Pay {1} (Rift Bolt is not countered))
---- Narrative ---
-  Player A pays {1} — Rift Bolt is not countered
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 16 life)
+  Rift Bolt deals 3 damage to Player B (now at 16 life)
   Player A draws Chain Lightning
 
---- Decision 22 ---
+--- Decision 14 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   16 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T)
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   16 life | mana: empty | hand count: 7 | lib 50
+  Self BF:  Fiery Islet
+  Opp BF:   Thundering Falls (T)
   Self GY: Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Known opp hand: Island
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
-  Extras: opp_revolt
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp drawn=1 life_lost=3
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+   3: Play Mountain
+   4: Cast Chain Lightning  [#0]
+   5: Suspend Rift Bolt
+  >> A/A: 4 (Cast Chain Lightning)
+--- Narrative ---
+  Choose target for Chain Lightning:
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   16 life | mana: empty | hand count: 7 | lib 50
+  Self BF:  Fiery Islet
+  Opp BF:   Thundering Falls (T)
+  Stack: Chain Lightning (spell, self)
+  Pending: Chain Lightning (self)
+  Self GY: Rift Bolt
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp drawn=1 life_lost=3
+  Extras: not_priority_window
+  Actions:
+   0: Player B (16 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Chain Lightning deals 3 damage to Player B (now at 13 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
+
+--- Decision 16 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 3)
+  Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island | lib 50
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Thundering Falls (T)
+  Opp BF:   Fiery Islet (T)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1 life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
+  Extras: not_priority_window
+  Actions:
+   0: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   13 life | mana: empty | hand count: 7 | lib 50
+  Self BF:  Fiery Islet (T)
+  Opp BF:   Thundering Falls (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp drawn=1 life_lost=6
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -515,164 +407,17 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 23 ---
+--- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   16 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain (NEW)
-  Self GY: Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Known opp hand: Island
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
-  Extras: self_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Chain Lightning  [#0]
-   2: Suspend Rift Bolt
-  >> A/A: 1 (Cast Chain Lightning)
---- Narrative ---
-  Choose target for Chain Lightning:
-
---- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   16 life | mana: empty | hand count: 7 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain (NEW)
-  Pending: Chain Lightning (self)
-  Self GY: Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Known opp hand: Island
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
-  Actions:
-   0: Player B (16 life)
-   1: Player A (18 life)
-  >> A/A: 0 (Player B (16 life))
---- Narrative ---
-  Targeting choice 0
-  Player A activated Mountain for 1(R)
-  Player A casts Chain Lightning targeting Player B
-  Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 13 life)
-  Resolving ability (category: CopySpellAbility)
-  Player B may pay to copy Chain Lightning:
-
---- Decision 25 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 52
-  Opp BF:   Fiery Islet (T) | Mountain (T,NEW)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Rift Bolt
-  Known top: Unholy Heat, ?, ?, ?, ?
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=6 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
-  Extras: opp_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
---- Narrative ---
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 4 (Player B) --------
-  Player B draws Unholy Heat
---- Turn 4 (Player B) ---
-  PA: Chain Lightning, Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
-
---- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 52
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Play Island
-   2: Play Scalding Tarn
-   3: Play Volcanic Island
-  >> B/B: 1 (Play Island)
---- Narrative ---
-  Player B played Island
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 5 (Player A) --------
---- Turn 5 (Player A) ---
-  PA: Mountain, Mountain, Price of Progress, Rift Bolt
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Island, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
-
---- Decision 27 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
   Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   13 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Fiery Islet | Mountain
-  Opp BF:   Island
+  Opp:   13 life | mana: empty | hand count: 7 | lib 50
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
+  Opp BF:   Thundering Falls (T)
   Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  Actions:
-   0: Pass priority
-   1: Cast Price of Progress  [#0]
-   2: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Cast Price of Progress)
---- Narrative ---
-  Player A activated Mountain for 1(R)
-  Player A pays 1 life
-  Player A activated Fiery Islet for 1(U)
-  Player A casts Price of Progress
-  Resolving ability (category: RepeatEach)
-  Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
-  Resolving ability (category: DealDamage, amount: 0)
-  Dealt 0 damage to player (now at 13 life)
-  Player A draws Exquisite Firecraft
-
---- Decision 28 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(4): Exquisite Firecraft, Mountain, Mountain, Rift Bolt | lib 51
-  Opp:   13 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Island
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=R
-  Actions:
-   0: Pass priority
-   1: Play Mountain
-   2: Play Mountain
-  >> A/A: 1 (Play Mountain)
---- Narrative ---
-  Player A played Mountain
-
---- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Rift Bolt | lib 51
-  Opp:   13 life | mana: empty | hand count: 7 | lib 48
-  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (NEW)
-  Opp BF:   Island
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Ponder, Daze, Island, Mishra's Bauble
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=R
+  Opp GY:  Polluted Delta, Mishra's Bauble
+  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp drawn=1 life_lost=6
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -682,48 +427,89 @@
   Player A activated Mountain for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 6 (Player B) --------
-  Player B draws Scalding Tarn
---- Turn 6 (Player B) ---
-  PA: Exquisite Firecraft, Mountain, Rift Bolt
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Scalding Tarn, Unholy Heat, Volcanic Island
+  -------- TURN 4 (Player B) --------
+  Player B draws Lightning Bolt
+--- Turn 4 (Player B) ---
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island
 
---- Decision 30 ---
+--- Decision 19 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Scalding Tarn, Unholy Heat, Volcanic Island | lib 47
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Step: Draw (turn 4)
+  Self:  13 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Thundering Falls
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Actions:
    0: Pass priority
+   1: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target for Lightning Bolt:
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: Draw (turn 4)
+  Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Thundering Falls
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Lightning Bolt (spell, self)
+  Pending: Lightning Bolt (self)
+  Self GY: Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self drawn=1
+  Extras: not_priority_window
+  Actions:
+   0: Player A (18 life)
+   1: Player B (13 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Thundering Falls for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Lightning Bolt deals 3 damage to Player A (now at 15 life)
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Unholy Heat, Volcanic Island | lib 49
+  Opp:   15 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Thundering Falls (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Actions:
+   0: Pass priority
    1: Play Scalding Tarn
-   2: Play Scalding Tarn
-   3: Play Volcanic Island
+   2: Play Volcanic Island
   >> B/B: 1 (Play Scalding Tarn)
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 31 ---
+--- Decision 22 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 47
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island | Scalding Tarn (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Step: First Main (turn 4)
+  Self:  13 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island | lib 49
+  Opp:   15 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Scalding Tarn (NEW) | Thundering Falls (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -736,136 +522,357 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 32 ---
+--- Decision 23 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  12 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 47
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Island
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Step: First Main (turn 4)
+  Self:  12 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island | lib 49
+  Opp:   15 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Thundering Falls (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt
+  Self GY: Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
   Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=3
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
-   1: Mystic Sanctuary
-   2: Thundering Falls
+   1: Island
+   2: Mystic Sanctuary
    3: Volcanic Island
-   4: Volcanic Island
-   5: Volcanic Island
-  >> B/B: 1 (Mystic Sanctuary)
+  >> B/B: 3 (Volcanic Island)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Mystic Sanctuary to the battlefield
-  Mystic Sanctuary enters tapped.
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 7 (Player A) --------
-  Rift Bolt triggers: remove a time counter (suspend).
---- Turn 7 (Player A) ---
-  PA: Exquisite Firecraft, Mountain
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island
+  Player B puts Volcanic Island to the battlefield
 
---- Decision 33 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   12 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
-  Stack: Rift Bolt (ability, self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt [1 ctr]
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  12 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island | lib 48
+  Opp:   15 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Thundering Falls (T) | Volcanic Island (NEW)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=3
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
+   1: Cast Dragon's Rage Channeler  [#0]
+   2: Cast Ponder  [#0]
+  >> B/B: 1 (Cast Dragon's Rage Channeler)
 --- Narrative ---
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Dragon's Rage Channeler
+  Dragon's Rage Channeler enters the battlefield
+  No creatures eligible to attack.
+  -------- TURN 5 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+--- Turn 5 (Player A) ---
+  PA: Mountain, Mountain, Price of Progress
+  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  15 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Opp:   12 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
+  Stack: Rift Bolt (ability, self)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Self exile: Rift Bolt [1 ctr]
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 2)
+  Price of Progress deals 2 damage to Player A (now at 12 life)
+  Resolving ability (category: DealDamage, amount: 4)
+  Price of Progress deals 4 damage to Player B (now at 8 life)
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 
---- Decision 34 ---
+--- Decision 26 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   12 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Step: Upkeep (turn 5)
+  Self:  12 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   8 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt [play:self/eot]
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  Opp GY:  Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Self exile: Rift Bolt
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-   2: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 35 ---
+--- Decision 27 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   12 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Step: Upkeep (turn 5)
+  Self:  12 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   8 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
   Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Self exile: Rift Bolt
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
+  Opp GY:  Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
   Extras: not_priority_window
   Actions:
-   0: Player B (12 life)
-   1: Player A (15 life)
-  >> A/A: 0 (Player B (12 life))
+   0: Player B (8 life)
+   1: Player A (12 life)
+   2: Dragon's Rage Channeler
+  >> A/A: 0 (Player B (8 life))
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Rift Bolt deals 3 damage to Player B (now at 5 life)
+  Player A draws Exquisite Firecraft
 
---- Decision 36 ---
+--- Decision 28 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   12 life | mana: empty | hand count: 7 | lib 46
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
-  Stack: Rift Bolt (spell, self) -> opponent (player)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Step: First Main (turn 5)
+  Self:  12 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   5 life | mana: empty | hand count: 5 | lib 48
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=7
   Actions:
    0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
 --- Narrative ---
-  Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 9 life)
+  Player A played Mountain
+  No creatures eligible to attack.
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Exquisite Firecraft, Mountain, Mountain
+  PB: Cori-Steel Cutter, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  5 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Ponder, Unholy Heat, Volcanic Island | lib 48
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls | Volcanic Island
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Unholy Heat  [#0]
+  >> B/B: 1 (Cast Unholy Heat)
+--- Narrative ---
+  Choose target for Unholy Heat:
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  5 life | mana: empty | hand(4): Cori-Steel Cutter, Into the Flood Maw, Ponder, Volcanic Island | lib 48
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls | Volcanic Island
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Unholy Heat (spell, self)
+  Pending: Unholy Heat (self)
+  Self GY: Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Extras: not_priority_window
+  Actions:
+   0: Dragon's Rage Channeler
+  >> B/B: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Thundering Falls for 1(R)
+  Player B casts Unholy Heat targeting Dragon's Rage Channeler
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Island
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: Upkeep (turn 6)
+  Self:  5 life | mana: empty | hand(4): Cori-Steel Cutter, Into the Flood Maw, Ponder, Volcanic Island | lib 48
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Thundering Falls (T) | Volcanic Island
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (self, slot 0)
+  Pending: Dragon's Rage Channeler (self)
+  Self GY: Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
+  Extras: not_priority_window
+  Actions:
+   0: Put Island on top of library  [#0]
+   1: Put Island into graveyard
+  >> B/B: 0 (Put Island on top of library)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 2)
+  Unholy Heat deals 2 damage to Dragon's Rage Channeler
+  Dragon's Rage Channeler is destroyed (lethal damage)
+  Player B draws Island
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  5 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Island, Ponder, Volcanic Island | lib 47
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Thundering Falls (T) | Volcanic Island
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Volcanic Island
+   3: Cast Ponder  [#0]
+  >> B/B: 3 (Cast Ponder)
+--- Narrative ---
+  Player B activated Volcanic Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  5 life | mana: empty | hand(4): Cori-Steel Cutter, Into the Flood Maw, Island, Volcanic Island | lib 47
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Force of Will  [#2]
+   1: Cori-Steel Cutter  [#2]
+   2: Lightning Bolt  [#2]
+  >> B/B: 0 (Force of Will)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  5 life | mana: empty | hand(4): Cori-Steel Cutter, Into the Flood Maw, Island, Volcanic Island | lib 47
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Cori-Steel Cutter  [#1]
+   1: Lightning Bolt  [#1]
+  >> B/B: 1 (Lightning Bolt)
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  5 life | mana: empty | hand(4): Cori-Steel Cutter, Into the Flood Maw, Island, Volcanic Island | lib 47
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Cori-Steel Cutter, Lightning Bolt, Force of Will, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Cori-Steel Cutter
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  5 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Island, Volcanic Island | lib 46
+  Opp:   12 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Thundering Falls (T) | Volcanic Island (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Lightning Bolt, Force of Will, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UR
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Play Volcanic Island
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+  No creatures eligible to attack.
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Exquisite Firecraft, Mountain
+  PB: Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Island, Volcanic Island
 
 --- Decision 37 ---
   Priority: Player A (active)
   Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   9 life | mana: empty | hand count: 7 | lib 46
+  Self:  12 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R | opp life_lost=3
+  Opp GY:  Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -876,14 +883,14 @@
 --- Decision 38 ---
   Priority: Player A (active)
   Step: Draw (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 46
+  Self:  12 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Opp GY:  Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Unholy Heat
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -892,14 +899,14 @@
 --- Decision 39 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 46
+  Self:  12 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Opp GY:  Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Unholy Heat
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -913,20 +920,21 @@
 --- Decision 40 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   9 life | mana: empty | hand count: 7 | lib 46
+  Self:  12 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   5 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Thundering Falls (T) | Volcanic Island (T)
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
   Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
+  Opp GY:  Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Unholy Heat
+  This turn: self drawn=1
   Extras: not_priority_window
   Actions:
-   0: Player B (9 life)
-   1: Player A (15 life)
-  >> A/A: 0 (Player B (9 life))
+   0: Player B (5 life)
+   1: Player A (12 life)
+  >> A/A: 0 (Player B (5 life))
 --- Narrative ---
   Targeting choice 0
   Player A activated Mountain for 1(R)
@@ -935,19 +943,19 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 5 life)
+  Exquisite Firecraft deals 4 damage to Player B (now at 1 life)
 
 --- Decision 41 ---
   Priority: Player A (active)
   Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   5 life | mana: empty | hand count: 7 | lib 46
+  Self:  11 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   1 life | mana: empty | hand count: 4 | lib 46
   Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Island | Mystic Sanctuary (T)
+  Opp BF:   Island | Thundering Falls (T) | Volcanic Island (T)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Mishra's Bauble, Mystic Sanctuary
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=7
+  Opp GY:  Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Unholy Heat
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -956,148 +964,115 @@
 --- Narrative ---
   Player A played Mountain
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 8 (Player B) --------
-  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Lightning Bolt
 --- Turn 8 (Player B) ---
   PA: Mountain, Mountain
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Tamiyo, Inquisitive Student, Unholy Heat, Volcanic Island
+  PB: Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Lightning Bolt, Volcanic Island
 
 --- Decision 42 ---
   Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Tamiyo, Inquisitive Student, Unholy Heat, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Mystic Sanctuary
+  Step: Draw (turn 8)
+  Self:  1 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Lightning Bolt, Volcanic Island | lib 45
+  Opp:   11 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Thundering Falls | Volcanic Island
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Actions:
    0: Pass priority
-   1: Play Scalding Tarn
-   2: Play Volcanic Island
-   3: Cast Tamiyo, Inquisitive Student  [#0]
-  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
+   1: Cast Lightning Bolt  [#0]
+  >> B/B: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Tamiyo, Inquisitive Student
-  Tamiyo, Inquisitive Student enters the battlefield
+  Choose target for Lightning Bolt:
 
 --- Decision 43 ---
   Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Unholy Heat, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
+  Step: Draw (turn 8)
+  Self:  1 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Volcanic Island | lib 45
+  Opp:   11 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Thundering Falls | Volcanic Island
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Stack: Lightning Bolt (spell, self)
+  Pending: Lightning Bolt (self)
+  Self GY: Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=U
+  This turn: self drawn=1
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Play Scalding Tarn
-   2: Play Volcanic Island
-  >> B/B: 1 (Play Scalding Tarn)
+   0: Player A (11 life)
+   1: Player B (1 life)
+  >> B/B: 0 (Player A (11 life))
 --- Narrative ---
-  Player B played Scalding Tarn
+  Targeting choice 0
+  Player B activated Thundering Falls for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Lightning Bolt deals 3 damage to Player A (now at 8 life)
 
 --- Decision 44 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Scalding Tarn (NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
+  Self:  1 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Into the Flood Maw, Volcanic Island | lib 45
+  Opp:   8 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Island | Thundering Falls (T) | Volcanic Island
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Self GY: Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
-   1: Activate Scalding Tarn (ChangeZone)  [#0]
-  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+   1: Play Volcanic Island
+   2: Cast Cori-Steel Cutter  [#0]
+   3: Cast Cori-Steel Cutter  [#0]
+  >> B/B: 2 (Cast Cori-Steel Cutter)
 --- Narrative ---
-  Player B pays 1 life
-  Player B sacrifices Scalding Tarn
-  Player B's Scalding Tarn ability is on the stack
-  Resolving ability (category: ChangeZone)
-  Searching Player B's library:
+  Player B activated Volcanic Island for 1(R)
+  Player B activated Island for 1(U)
+  Player B casts Cori-Steel Cutter
+  Cori-Steel Cutter enters the battlefield
 
 --- Decision 45 ---
   Priority: Player B (active)
   Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW)
+  Self:  1 life | mana: empty | hand(3): Cori-Steel Cutter, Into the Flood Maw, Volcanic Island | lib 45
+  Opp:   8 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Cori-Steel Cutter (NEW) | Island (T) | Thundering Falls (T) | Volcanic Island (T)
   Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
-   0: Fail to find
-   1: Thundering Falls
-   2: Volcanic Island
-   3: Volcanic Island
-   4: Volcanic Island
-  >> B/B: 1 (Thundering Falls)
+   0: Pass priority
+   1: Play Volcanic Island
+  >> B/B: 1 (Play Volcanic Island)
 --- Narrative ---
-  Player B shuffles their library
-  Player B puts Thundering Falls to the battlefield
-  Thundering Falls enters tapped.
-  Thundering Falls triggered
-  Resolving ability (category: Surveil, amount: 1)
-  Player B surveils 1.
-  Surveil: looking at Ponder
-
---- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 44
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Thundering Falls (T,NEW,res 1)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Thundering Falls (ability, self) [amt=1]
-  Pending: Thundering Falls (self)
-  Self GY: Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Put Ponder on top of library  [#0]
-   1: Put Ponder into graveyard
-  >> B/B: 1 (Put Ponder into graveyard)
---- Narrative ---
-  Player B puts Ponder into their graveyard.
+  Player B played Volcanic Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 9 (Player A) --------
 --- Turn 9 (Player A) ---
   PA: Mountain
-  PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island
+  PB: Cori-Steel Cutter, Into the Flood Maw, Volcanic Island
 
---- Decision 47 ---
+--- Decision 46 ---
   Priority: Player A (active)
   Step: Upkeep (turn 9)
-  Self:  14 life | mana: empty | hand(1): Mountain | lib 50
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(1): Mountain | lib 50
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1105,32 +1080,32 @@
 --- Narrative ---
   Player A draws Eidolon of the Great Revel
 
---- Decision 48 ---
+--- Decision 47 ---
   Priority: Player A (active)
   Step: Draw (turn 9)
-  Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 49 ---
+--- Decision 48 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Fiery Islet | Mountain | Mountain | Mountain
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self drawn=1
   Actions:
    0: Pass priority
@@ -1143,17 +1118,17 @@
   Player A activated Mountain for 1(R)
   Player A casts Eidolon of the Great Revel
 
---- Decision 50 ---
+--- Decision 49 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(1): Mountain | lib 49
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(1): Mountain | lib 49
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Fiery Islet | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Stack: Eidolon of the Great Revel (spell, self)
   Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
@@ -1167,16 +1142,16 @@
   Player A draws Chain Lightning
   Eidolon of the Great Revel enters the battlefield
 
---- Decision 51 ---
+--- Decision 50 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 drawn=2 colors=R
   Extras: self_revolt
   Actions:
@@ -1186,16 +1161,16 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 52 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 drawn=2 colors=R
   Extras: self_lands_played=1, self_revolt
   Actions:
@@ -1205,41 +1180,42 @@
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 53 ---
+--- Decision 52 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
-  Opp:   4 life | mana: empty | hand count: 6 | lib 43
+  Self:  8 life | mana: empty | hand(0): (empty) | lib 48
+  Opp:   1 life | mana: empty | hand count: 2 | lib 45
   Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
-  Opp BF:   Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Opp BF:   Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
   Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Daze, Island, Thundering Falls, Mishra's Bauble, Mystic Sanctuary, Tamiyo, Inquisitive Student
+  Opp GY:  Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
+  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat
   This turn: self spells=1 drawn=2 colors=R
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Player B (4 life)
-   1: Player A (14 life)
-   2: Tamiyo, Inquisitive Student
-   3: Eidolon of the Great Revel
-  >> A/A: 0 (Player B (4 life))
+   0: Player B (1 life)
+   1: Player A (8 life)
+   2: Eidolon of the Great Revel
+  >> A/A: 0 (Player B (1 life))
 --- Narrative ---
   Targeting choice 0
   Player A activated Mountain for 1(R)
   Player A casts Chain Lightning targeting Player B
   Eidolon of the Great Revel triggered
 
---- Decision 54 ---
+--- Decision 53 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
-  Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Self:  1 life | mana: empty | hand(2): Cori-Steel Cutter, Into the Flood Maw | lib 45
+  Opp:   8 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
   Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
   Extras: opp_lands_played=1, opp_revolt, opp_passed
@@ -1248,17 +1224,18 @@
    1: Cast Into the Flood Maw  [#0]
   >> B/B: 1 (Cast Into the Flood Maw)
 
---- Decision 55 ---
+--- Decision 54 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
-  Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Self:  1 life | mana: empty | hand(1): Cori-Steel Cutter | lib 45
+  Opp:   8 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
+  Stack: Into the Flood Maw (spell, self) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
   Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
   Extras: opp_lands_played=1, opp_revolt, not_priority_window
@@ -1269,17 +1246,18 @@
 --- Narrative ---
   Choose target for Into the Flood Maw:
 
---- Decision 56 ---
+--- Decision 55 ---
   Priority: Player B (non-active)
   Step: First Main (turn 9)
-  Self:  4 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
-  Opp:   14 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Mystic Sanctuary | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
+  Self:  1 life | mana: empty | hand(1): Cori-Steel Cutter | lib 45
+  Opp:   8 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Cori-Steel Cutter | Island (T) | Thundering Falls (T) | Volcanic Island | Volcanic Island (T)
   Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
+  Stack: Into the Flood Maw (spell, self) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
   Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
+  Self GY: Lightning Bolt, Ponder, Dragon's Rage Channeler, Unholy Heat, Scalding Tarn, Lightning Bolt, Polluted Delta, Mishra's Bauble
   Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Known top: Force of Will, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 colors=R
   Extras: opp_lands_played=1, opp_revolt, not_priority_window
@@ -1288,40 +1266,12 @@
   >> B/B: 0 (Eidolon of the Great Revel)
 --- Narrative ---
   Targeting choice 0
-  Player B activated Mystic Sanctuary for 1(U)
+  Player B activated Volcanic Island for 1(U)
   Player B casts Into the Flood Maw targeting Eidolon of the Great Revel
   Eidolon of the Great Revel triggered
   Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 2 life)
-  Resolving ability (category: ChangeZone)
-  Eidolon of the Great Revel is moved to hand
-  Resolving ability (category: ChangeZone)
-  Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 12 life)
-  Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at -1 life)
-  Resolving ability (category: CopySpellAbility)
-  Player B may pay to copy Chain Lightning:
-
---- Decision 57 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  -1 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island | lib 43
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island (T) | Mystic Sanctuary (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Thundering Falls (T)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Into the Flood Maw, Ponder, Scalding Tarn, Scalding Tarn, Daze, Ponder, Polluted Delta, Mishra's Bauble
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Known opp hand: Eidolon of the Great Revel
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=5 colors=U | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
---- Narrative ---
+  Eidolon of the Great Revel deals 2 damage to Player B (now at -1 life)
   Player B has -1 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

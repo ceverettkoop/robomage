@@ -1,0 +1,13 @@
+{
+  "name": "cr601_2e_lavinia_bounds_announced_x",
+  "why": "CR 601.2b/e / 202.3e: under Lavinia an X spell's announced X may not raise its mana value above the caster's land count - 5cf53a4",
+  "hand_a": ["Forest", "Dark Ritual", "Green Suns Zenith"],
+  "library_a": ["Grizzly Bears", "Forest"],
+  "battlefield_a": ["Swamp", "Forest"],
+  "battlefield_b": ["Lavinia Azorius Renegade"],
+  "play": ["A:keep", "B:keep", "A:play:Forest", "A:cast:Dark Ritual", "A:cast:Green Sun"],
+  "max_decisions": 8,
+  "expect": ["Choose X value \\(0-2\\)"],
+  "expect_menu": ["^X = 2$"],
+  "expect_menu_not": ["^X = [34]$"]
+}

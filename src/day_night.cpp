@@ -8,7 +8,7 @@
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "ecs/coordinator.h"
-#include "game_queries.h"
+#include "queries/battlefield.h"
 #include "transform.h"
 
 extern Coordinator global_coordinator;
@@ -16,8 +16,8 @@ extern Game cur_game;
 
 static bool keyword_present(const std::vector<std::string> &kws, const char *target);
 static bool card_is_nightbound_dfc(const CardData &front);
-static void apply_day_night_transforms();
-static void set_day_night(Game::DayNight value);
+static void apply_day_night_transforms(const std::set<Entity> &entities);
+static void set_day_night(Game::DayNight value, const std::set<Entity> &entities);
 
 // True if `target` appears in the keyword list (exact match).
 static bool keyword_present(const std::vector<std::string> &kws, const char *target) {
@@ -38,9 +38,8 @@ static bool card_is_nightbound_dfc(const CardData &front) {
 
 // Perform the transforms the current day/night designation requires (CR 702.145c/f). Run
 // immediately whenever the designation changes (these are not state-based actions, CR 702.145c).
-static void apply_day_night_transforms() {
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!is_battlefield_permanent(e)) continue;
+static void apply_day_night_transforms(const std::set<Entity> &entities) {
+    for (auto e : battlefield_permanents(entities)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         const CardData &cd = global_coordinator.GetComponent<CardData>(e);
         const bool back_face_up = global_coordinator.GetComponent<Permanent>(e).transformed;
@@ -54,24 +53,26 @@ static void apply_day_night_transforms() {
     }
 }
 
-static void set_day_night(Game::DayNight value) {
+static void set_day_night(Game::DayNight value, const std::set<Entity> &entities) {
     if (cur_game.day_night == value) return;  // already that designation (CR 731.1)
     cur_game.day_night = value;
     game_log(value == Game::DN_DAY ? "It becomes day.\n" : "It becomes night.\n");
-    apply_day_night_transforms();
+    apply_day_night_transforms(entities);
 }
 
-void become_day() { set_day_night(Game::DN_DAY); }
-void become_night() { set_day_night(Game::DN_NIGHT); }
+void become_day(const std::set<Entity> &entities) { set_day_night(Game::DN_DAY, entities); }
+void become_night(const std::set<Entity> &entities) { set_day_night(Game::DN_NIGHT, entities); }
 
-void day_night_untap_transition() {
+void day_night_untap_transition(const std::set<Entity> &entities) {
     // CR 502.2 / 731.2: checked as the second part of the untap step, on the turn that just ended.
     // prev_turn_active_spell_count is the previous turn's active player's spell count during that
-    // turn (captured at that turn's cleanup, before the per-turn reset).
+    // turn (captured at that turn's cleanup, before the per-turn reset); on the first turn there
+    // is no previous turn (-1), so nothing changes.
+    if (cur_game.turn_state.prev_turn_active_spell_count < 0) return;
     if (cur_game.day_night == Game::DN_DAY) {
-        if (cur_game.prev_turn_active_spell_count == 0) become_night();      // 731.2a
+        if (cur_game.turn_state.prev_turn_active_spell_count == 0) become_night(entities);      // 731.2a
     } else if (cur_game.day_night == Game::DN_NIGHT) {
-        if (cur_game.prev_turn_active_spell_count >= 2) become_day();        // 731.2b
+        if (cur_game.turn_state.prev_turn_active_spell_count >= 2) become_day(entities);        // 731.2b
     }
     // DN_NEITHER: 731.2c — the check doesn't happen and it remains neither.
 }

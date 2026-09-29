@@ -74,7 +74,7 @@ static void game_loop() {
     } else {
         match_reset_revealed();  // accumulator works in single-game mode too
         auto sys = init_ecs();
-        play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed);
+        print_game_result(1, play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed));
     }
 }
 

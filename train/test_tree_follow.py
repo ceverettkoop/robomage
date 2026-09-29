@@ -4,8 +4,7 @@ _try_follow_tree gates (opponent-action categories, reveal ratchet, visit
 threshold, winning-action share threshold, menu/seat match).
 
 Pure Python on synthetic observation vectors and hand-built _Node trees — no
-engine binary, no torch. Run standalone (not wired into a ci_check tier,
-matching test_match_clock.py):
+engine binary, no torch. Part of ci_check's opt-in `analysis` tier; standalone:
     train/.venv/bin/python train/test_tree_follow.py
 """
 
@@ -20,7 +19,7 @@ from env import (OBS_SIZE, STATE_SIZE, _SELF_IS_A_IDX,
                  _GY_START, _EXILE_START, _GY_SLOT_SIZE, _EXILE_SLOT_SIZE,
                  MAX_GY_SLOTS,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
-                 _KNOWN_TOP_LIB_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _OPP_KNOWN_TOP_LIB_START,
                  _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
                  _OPP_KNOWN_HAND_SLOT_SIZE,
                  _STACK_START, _STACK_SLOT_SIZE, _STACK_SLOTS)
@@ -60,6 +59,7 @@ def blank_obs():
             obs[start + i * size] = _SENT
     for i in range(_KNOWN_TOP_LIB_SLOTS):
         obs[_KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE] = _SENT
+        obs[_OPP_KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE] = _SENT
     for i in range(_OPP_KNOWN_HAND_SLOTS):
         obs[_OPP_KNOWN_HAND_START + i * _OPP_KNOWN_HAND_SLOT_SIZE] = _SENT
     for s in range(_STACK_SLOTS):
@@ -142,6 +142,7 @@ class FakeEnv:
 def arm(ctrl, env, tree_roots, obs):
     ctrl.bind_env(env)
     ctrl._followed_trees = tree_roots
+    ctrl._followed_world_idx = list(range(len(tree_roots)))
     ctrl._followed_hist_len = len(env._action_history)
     ctrl._followed_fp = hidden_info_fingerprint(obs[:STATE_SIZE])
 

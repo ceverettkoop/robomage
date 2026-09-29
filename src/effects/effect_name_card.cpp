@@ -13,6 +13,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../name_card_choices.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -33,9 +34,13 @@ static std::string prompt_name_card(FrameCtx &ctx, Zone::Ownership chooser,
                                     const std::vector<std::string> &names,
                                     const std::vector<LegalAction> &name_choices,
                                     Entity decision_source, bool &suspended);
+// The player the named card is chosen against: the ability's own player target, else the
+// player target of a chained sub-ability (Cabal Therapy's DB$ Discard ValidTgts$ Player, whose
+// target was chosen as the spell was cast, CR 601.2c). 0 when neither targets a player.
+static Entity name_card_subject_player(const Ability &ab);
 
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller chooses a card name
-// (CR 201.4). The chosen name is recorded in cur_game.named_card so a chained
+// (CR 201.4). The chosen name is recorded in cur_game.resolution.memory.named_card so a chained
 // Card.NamedCard sub-ability — here a RevealDiscardAll discard that makes a player discard
 // every copy of the named card — can reference it.
 //
@@ -47,13 +52,18 @@ static std::string prompt_name_card(FrameCtx &ctx, Zone::Ownership chooser,
 // builds that menu; the ValidCards$ filter (Card.nonLand / Land / …) is passed through and
 // applied by the unified matcher inside the builder.
 HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
+    // Defined$ You names who CHOOSES; the deck the candidates come from depends on what the name
+    // is for. A name chosen for a player-targeting chain (Cabal Therapy: "Target player reveals
+    // their hand and discards all cards with that name") draws from that target player's deck,
+    // handled after this block.
+    Entity subject = name_card_subject_player(ab);
     // Defined$ You + ValidCards$ Land (Petrified Hamlet's ETB "choose a land card name"):
     // the SOURCE's controller names a land card. The choice persists for the source's
     // continuous Card.NamedCard static, so it is recorded on the source permanent's
     // chosen_name (the same per-source state match_named_card statics read) rather than the
-    // transient global cur_game.named_card (which is cleared after the ability resolves).
-    bool defines_self_owner = ab.defined_you;
-    bool only_lands = (ab.valid_cards_filter == "Land");
+    // transient global cur_game.resolution.memory.named_card (which is cleared after the ability resolves).
+    bool defines_self_owner = ab.def->defined_you && subject == 0;
+    bool only_lands = (ab.def->valid_cards_filter == "Land");
     if (defines_self_owner) {
         Zone::Ownership chooser = ab.controller;
         // Land-naming (Petrified Hamlet / Alpine Moon-style "name a land") offers lands present
@@ -64,17 +74,18 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         NameCardScope scope = only_lands ? NameCardScope::BOTH_PLAYERS : NameCardScope::CHOOSER_ONLY;
         std::vector<std::string> names;
         std::vector<LegalAction> name_choices =
-            build_name_card_choices(orderer->mEntities, chooser, ab.valid_cards_filter, names,
+            build_name_card_choices(orderer->mEntities, chooser, ab.def->valid_cards_filter, names,
                                     scope);
         bool suspended = false;
-        std::string chosen = prompt_name_card(ctx, chooser, names, name_choices, ab.source,
+        std::string chosen = prompt_name_card(ctx, chooser, names, name_choices, ab.source.lki_entity(),
                                               suspended);
         if (suspended) return HandlerResult::SUSPENDED;
         // Record on the source permanent so its continuous static can read it; also set the
         // global for any chained sub-ability resolving in the same call (cleared afterward).
-        if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source))
-            global_coordinator.GetComponent<Permanent>(ab.source).chosen_name = chosen;
-        cur_game.named_card = chosen;
+        const Entity self = ab.source.get();
+        if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+            global_coordinator.GetComponent<Permanent>(self).chosen_name = chosen;
+        cur_game.resolution.memory.named_card = chosen;
         if (chosen.empty())
             game_log("%s names no card (no eligible card to name).\n", player_name(chooser).c_str());
         else
@@ -85,32 +96,39 @@ HandlerResult name_card(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // The card name is being chosen for the benefit of the chained discard, which targets a
     // player. Offer names from that player's owned cards; fall back to the controller's
     // opponent if no target player is set.
-    Zone::Ownership name_owner;
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
-        name_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-    } else {
-        name_owner = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-    }
+    Zone::Ownership name_owner = subject != 0 ? seat_of_player(subject) : opponent_of(ab.controller);
 
     std::vector<std::string> names;
     std::vector<LegalAction> name_choices =
-        build_name_card_choices(orderer->mEntities, name_owner, ab.valid_cards_filter, names);
+        build_name_card_choices(orderer->mEntities, name_owner, ab.def->valid_cards_filter, names);
 
     if (name_choices.empty()) {
         // No nameable card; the chained Card.NamedCard discard will find no match.
-        cur_game.named_card = "";
+        cur_game.resolution.memory.named_card = "";
         game_log("%s names no card (no eligible card to name).\n",
                  player_name(ab.controller).c_str());
         return HandlerResult::DONE_RUN_SUBS;
     }
 
     bool suspended = false;
-    std::string chosen = prompt_name_card(ctx, ab.controller, names, name_choices, ab.source,
+    std::string chosen = prompt_name_card(ctx, ab.controller, names, name_choices, ab.source.lki_entity(),
                                           suspended);
     if (suspended) return HandlerResult::SUSPENDED;
-    cur_game.named_card = chosen;
-    game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.named_card.c_str());
+    cur_game.resolution.memory.named_card = chosen;
+    game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.resolution.memory.named_card.c_str());
     return HandlerResult::DONE_RUN_SUBS;
+}
+
+// See forward declaration at top of file.
+static Entity name_card_subject_player(const Ability &ab) {
+    const Entity t = ab.target.get();
+    if (t != 0 && global_coordinator.entity_has_component<Player>(t)) return t;
+    for (const Ability &sub : ab.subabilities) {
+        const Entity st = sub.target.get();
+        if (sub.def->valid_tgts != "N_A" && st != 0 && global_coordinator.entity_has_component<Player>(st))
+            return st;
+    }
+    return 0;
 }
 
 // See forward declaration at top of file.

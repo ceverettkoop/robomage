@@ -1,0 +1,10 @@
+{
+  "name": "cr400_mox_diamond_discard_from_hand",
+  "why": "Origin$ All is any zone, not a library search: Mox Diamond's 'discard a land card' replacement discards from hand and Mox enters - 2a9c571",
+  "hand_a": ["Mox Diamond", "Forest"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Mox Diamond"],
+  "max_decisions": 8,
+  "expect_order": ["Player A casts Mox Diamond", "Player A discards Forest", "Mox Diamond enters the battlefield"]
+}

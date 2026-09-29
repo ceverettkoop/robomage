@@ -1,0 +1,11 @@
+{
+  "name": "cr608_2c_modal_spell_modes_resolve_in_printed_order",
+  "why": "CR 601.2b / 608.2c: a modal spell still announces its modes and targets at cast, and its modes resolve in printed order whatever order they were chosen in (Witherbloom Command: lose-life picked first, mill resolves first) - 1be08626",
+  "hand_a": ["Witherbloom Command"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Swamp", "Forest"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Witherbloom Command", "A:desc:loses 2 life", "A:target:Player B", "A:desc:mills three", "A:target:Player B"],
+  "max_decisions": 8,
+  "expect_order": ["Player A chooses mode — Target opponent loses 2 life", "Player A chooses mode — Target player mills three cards", "Player A casts Witherbloom Command", "Player B mills ", "Player B loses 2 life", "Player A gains 2 life"]
+}

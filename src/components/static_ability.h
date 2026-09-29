@@ -11,8 +11,6 @@ struct StaticAbility {
     int add_toughness = 0;
     std::string add_power_svar = "";      // e.g. "Count$TypeInYourYard.Land" — evaluated at SBE time
     std::string add_toughness_svar = "";
-    int last_applied_power = 0;           // tracks dynamic delta last applied (reset when condition lost)
-    int last_applied_toughness = 0;
     std::string add_keyword = "";
     // AddAbility$ <SVar> (Petrified Hamlet): a continuous static that GRANTS a full
     // activated ability (the SVar's resolved AB$ body) to every permanent the Affected$
@@ -174,13 +172,8 @@ struct StaticAbility {
     // controller; read by the cleanup-step discard check (state_manager.cpp).
     int set_max_hand_size = 0;
 
-    // Untap prevention fields (category = "Continuous" with AddHiddenKeyword):
-    std::string hidden_keyword = "";        // "CARDNAME doesn't untap during your untap step."
-    std::string affected_subtype = "";      // Affected$ Island — land subtype affected
-
     // DisableTriggers fields (category = "DisableTriggers"):
     std::string disable_triggers_cause = "";  // ValidCause$ Creature,Artifact
-    std::string disable_triggers_mode = "";   // ValidMode$ ChangesZone
 
     // Characteristic-defining ability (Barrowgoyf): sets base P/T rather than additive
     bool characteristic_defining = false;

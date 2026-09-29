@@ -11,7 +11,9 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/characteristics.h"
+#include "../queries/filters.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -19,30 +21,30 @@ extern Game cur_game;
 
 namespace effects {
 
-// Builds the Token characteristics for a copy of permanent `src`. A token source carries
-// its own Token component (the cleanest copyable snapshot, 707.2); a nontoken permanent is
-// reconstructed from its CardData + Creature so the copy gets the printed (not pumped /
-// countered) P/T and its keywords/types.
+// Builds the Token characteristics for a copy of permanent `src` from its copiable values
+// (CR 707.2): a token source's own Token component; a nontoken permanent's printed card, on the
+// face it shows (CR 712.8e) — name, types, colors, mana value, P/T, keywords, and its triggered,
+// activated and static abilities and replacement effects. Counters, pumps and type- or ability-changing effects are not
+// copiable, so the live Permanent / Creature state is not read.
 static Token copyable_token_of(Entity src) {
     if (global_coordinator.entity_has_component<Token>(src))
         return global_coordinator.GetComponent<Token>(src);
     Token tok;
-    if (global_coordinator.entity_has_component<Permanent>(src)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(src);
-        tok.name = perm.name;
-        tok.types = perm.types;
-    }
-    if (global_coordinator.entity_has_component<CardData>(src)) {
-        auto &cd = global_coordinator.GetComponent<CardData>(src);
-        if (tok.name.empty()) tok.name = cd.name;
-        tok.keywords = cd.keywords;
-    }
-    if (global_coordinator.entity_has_component<Creature>(src)) {
-        auto &cr = global_coordinator.GetComponent<Creature>(src);
-        tok.power = static_cast<uint32_t>(cr.base_power < 0 ? 0 : cr.base_power);
-        tok.toughness = static_cast<uint32_t>(cr.base_toughness < 0 ? 0 : cr.base_toughness);
-        if (tok.keywords.empty()) tok.keywords = cr.keywords;
-    }
+    if (!global_coordinator.entity_has_component<CardData>(src)) return tok;
+    const CardData &card = global_coordinator.GetComponent<CardData>(src);
+    const CardData &face = active_face(src, card);
+    bool transformed = global_coordinator.entity_has_component<Permanent>(src) &&
+                       global_coordinator.GetComponent<Permanent>(src).transformed;
+    tok.name = face.name;
+    tok.types = face.types;
+    tok.explicit_colors = card_colors(face);
+    tok.mana_value = card_mana_value(mana_value_face(card, transformed));
+    tok.power = face.power;
+    tok.toughness = face.toughness;
+    tok.keywords = face.keywords;
+    tok.abilities = face.abilities;
+    tok.static_abilities = face.static_abilities;
+    tok.replacement_effects = face.replacement_effects;
     return tok;
 }
 
@@ -53,13 +55,14 @@ static Token copyable_token_of(Entity src) {
 // control. CopyPermanent's filter is carried in valid_cards_filter (parsed from Defined$ Valid).
 HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership ctrl = ab.controller;
-    if (global_coordinator.entity_has_component<Permanent>(ab.source))
-        ctrl = global_coordinator.GetComponent<Permanent>(ab.source).controller;
+    const Entity self = ab.source.get();
+    if (self != 0 && global_coordinator.entity_has_component<Permanent>(self))
+        ctrl = global_coordinator.GetComponent<Permanent>(self).controller;
 
-    // Offspring (CR 702.171c): "create a 1/1 token that's a copy of" the source creature.
+    // Offspring (CR 702.175a): "create a token that's a copy of it, except it's 1/1."
     // Copy the source permanent itself, then override the copy's P/T to 1/1.
-    if (ab.is_offspring_token) {
-        Token tok = copyable_token_of(ab.source);
+    if (ab.def->is_offspring_token) {
+        Token tok = copyable_token_of(ab.source.lki_entity());
         if (tok.name.empty()) return HandlerResult::DONE_RUN_SUBS;
         tok.power = 1;
         tok.toughness = 1;
@@ -75,7 +78,7 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
     for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ctrl, ab.source}))
+        if (permanent_matches_filter(e, ab.def->valid_cards_filter, MatchCtx{ctrl, ab.source.lki_entity()}))
             sources.push_back(e);
 
     for (auto src : sources) {
@@ -105,8 +108,8 @@ HandlerResult copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
 HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
     (void)ctx;
-    Entity src = ab.source;   // the permanent that becomes a copy
-    Entity tgt = ab.target;   // the land being copied
+    Entity src = ab.source.get();  // the permanent that becomes a copy
+    Entity tgt = ab.target.get();  // the land being copied
     if (!is_battlefield_permanent(src) || !global_coordinator.entity_has_component<CardData>(src)) {
         game_log("Clone: source is no longer on the battlefield\n");
         return HandlerResult::DONE_RUN_SUBS;
@@ -120,10 +123,10 @@ HandlerResult clone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
 
     // GainThisAbility$ True: preserve the source's own Clone ability(ies) — captured BEFORE the
     // overwrite — so the copy keeps "…except it has this ability." and can re-clone later.
-    std::vector<Ability> retained;
-    if (ab.gain_this_ability) {
+    std::vector<const AbilityDef *> retained;
+    if (ab.def->gain_this_ability) {
         for (const auto &a : global_coordinator.GetComponent<CardData>(src).abilities)
-            if (a.category == "Clone") retained.push_back(a);
+            if (a->kind == EffectKind::Clone) retained.push_back(a);
     }
 
     // Build the copy from the target's copiable characteristics (a value copy of its CardData),

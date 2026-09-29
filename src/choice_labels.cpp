@@ -1,6 +1,6 @@
 #include "choice_labels.h"
 
-#include "game_queries.h"
+#include "queries/characteristics.h"
 
 static const char *unless_effect_participle(UnlessEffect effect);
 static std::string zone_destination_phrase(Zone::ZoneValue dest, bool on_bottom);

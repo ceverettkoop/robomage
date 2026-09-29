@@ -1,0 +1,12 @@
+{
+  "name": "cr603_10a_barrowgoyf_dies_in_combat_keeps_trigger",
+  "why": "CR 603.2 / 603.10a: triggers are recorded before the SBA check, so a trampling Barrowgoyf that dies in combat keeps its combat-damage mill trigger - 077c3a4",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Barrowgoyf", "Shadowspear", "Swamp", "Swamp"],
+  "graveyard_a": ["Lightning Bolt", "Mountain"],
+  "battlefield_b": ["Barrowgoyf"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip", "A:target:Barrowgoyf", "A:attack:Barrowgoyf", "A:attack:done", "B:block:Barrowgoyf", "B:desc:Barrowgoyf", "B:block:done", "A:desc:Accept"],
+  "max_decisions": 16,
+  "expect_order": ["Barrowgoyf deals 2 damage to Player B", "Barrowgoyf is destroyed \\(lethal damage\\)", "Barrowgoyf is destroyed \\(lethal damage\\)", "Barrowgoyf triggered"]
+}

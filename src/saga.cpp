@@ -9,7 +9,8 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
-#include "game_queries.h"
+#include "queries/battlefield.h"
+#include "queries/counters.h"
 
 extern Coordinator global_coordinator;
 
@@ -47,15 +48,15 @@ void saga_add_lore_counters(Entity saga, int n) {
 }
 
 void decrement_saga_in_flight(const Ability &ab) {
-    if (!ab.is_saga_chapter || ab.source == 0) return;
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return;
-    auto &saga_perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    const Entity saga = ab.source.get();
+    if (!ab.def->is_saga_chapter || saga == 0) return;
+    if (!global_coordinator.entity_has_component<Permanent>(saga)) return;
+    auto &saga_perm = global_coordinator.GetComponent<Permanent>(saga);
     if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
 }
 
-void saga_put_precombat_lore_counters(Zone::Ownership active) {
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!is_battlefield_permanent(e, active)) continue;
+void saga_put_precombat_lore_counters(Zone::Ownership active, const std::set<Entity> &entities) {
+    for (auto e : battlefield_permanents(entities, active)) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         if (!card_is_saga(global_coordinator.GetComponent<CardData>(e))) continue;
         saga_add_lore_counters(e, 1);

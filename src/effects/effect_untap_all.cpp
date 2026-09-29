@@ -5,7 +5,8 @@
 #include "../cli_output.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/filters.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -20,10 +21,10 @@ namespace effects {
 // not special-cased to Paradox Engine. ab.valid_cards_filter is populated by parse_destroy_all
 // (the shared ValidCards$ hook).
 HandlerResult untap_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
-    MatchCtx ctx{ab.controller, ab.source};
+    MatchCtx ctx{ab.controller, ab.source.lki_entity()};
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e)) continue;
-        if (!permanent_matches_filter(e, ab.valid_cards_filter, ctx)) continue;
+        if (!permanent_matches_filter(e, ab.def->valid_cards_filter, ctx)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (!perm.is_tapped) continue;
         perm.is_tapped = false;

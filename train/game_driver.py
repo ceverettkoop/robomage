@@ -27,6 +27,10 @@ from env import (NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
                  CONCEDE_GAME, CONCEDE_MATCH)
 import decode
+from _enums import (CAT_BOTTOM_DECK_CARD, CAT_DIG_CHOICE, CAT_SEARCH_LIBRARY,
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_TOP_LIBRARY,
+                    CAT_PASS_PRIORITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS)
 
 # Abbreviations for the step phase strip (index aligns with the step one-hot).
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
@@ -66,11 +70,15 @@ _ZONE_REF_TO_ZONE = {1: "battlefield", 2: "battlefield", 3: "hand"}
 # put a card on top, not "Put Lightning Bolt on top". Keyed by action category
 # (see ActionCategory in CLAUDE.md). Choices with no chosen card (card_idx < 0,
 # e.g. "Fail to find", "Take nothing") fall through to their normal description.
+# A sideboard move names a card of the opponent's post-board deck, which is
+# hidden information between games too.
 _OPP_PRIVATE_DESC = {
-    12: "Put a card on the bottom of their library",  # BOTTOM_DECK_CARD
-    19: "Search their library for a card",            # SEARCH_LIBRARY
-    20: "Put a card on top of their library",          # TOP_LIBRARY
-    23: "Take a card",                                 # DIG_CHOICE
+    CAT_BOTTOM_DECK_CARD: "Put a card on the bottom of their library",
+    CAT_SEARCH_LIBRARY: "Search their library for a card",
+    CAT_TOP_LIBRARY: "Put a card on top of their library",
+    CAT_DIG_CHOICE: "Take a card",
+    CAT_SIDEBOARD_IN: "Bring in a card from their sideboard",
+    CAT_SIDEBOARD_OUT: "Take a card out of their deck",
 }
 
 # Trailing icons appended to a hand card's label so its kind is obvious at a
@@ -259,7 +267,7 @@ def prompt_text(obs, num, gs):
     if decode.is_search(cats):
         return "Search your library (pick a card, or 'fail to find')."
     cset = set(int(c) for c in cats)
-    if 8 in cset:
+    if CAT_SELECT_TARGET in cset:
         # Name the spell/ability asking for the target (its source may not be
         # on the stack yet — targets are announced first), so the prompt says
         # WHAT you're targeting for, not just "Choose a target."
@@ -267,9 +275,9 @@ def prompt_text(obs, num, gs):
         if pend and pend.get("name"):
             return f"Choose a target for {pend['name']}."
         return "Choose a target."
-    if cset & {2, 3}:
+    if cset & {CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS}:
         return "Declare attackers — pick creatures, then Confirm attackers."
-    if cset & {4, 5}:
+    if cset & {CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS}:
         return "Declare blockers — pick creatures, then Confirm blockers."
     active = "A" if gs["active_is_a"] else "B"
     return f"Player {active}'s turn — {gs['step']}: choose an action."
@@ -298,9 +306,9 @@ def decode_human_frame(u):
 # ── Autopass helpers ──────────────────────────────────────────────────────────
 
 def _pass_index(actions):
-    """Index of the 'pass priority' action (category 0) in a menu, else None."""
+    """Index of the 'pass priority' action (CAT_PASS_PRIORITY) in a menu, else None."""
     for a in actions:
-        if a["category"] == 0:
+        if a["category"] == CAT_PASS_PRIORITY:
             return a["index"]
     return None
 
@@ -582,7 +590,7 @@ class GameDriver:
                     finally:
                         if self._is_model:
                             self._sink.on_opp_thinking(False)
-                    if 0 <= action < len(actions) and actions[action]["category"] != 0:
+                    if 0 <= action < len(actions) and actions[action]["category"] != CAT_PASS_PRIORITY:
                         self._sink.on_log(
                             [_opp_event_text(actions[action], self._opp_label)])
                         opp_acted = True
@@ -932,7 +940,7 @@ class GameDriver:
             human_wins = (loser == "opponent")
             note = f" — {why}"
         elif self._reward == 0:
-            return "Game over — no winner detected (draw?)."
+            return "Game over — the game is a draw."
         # In bo3 the terminal reward is the DECIDING GAME's result (±1.0), whose
         # sign is also the match winner's; report it with the
         # final game score. The match ends the instant the deciding game does, so

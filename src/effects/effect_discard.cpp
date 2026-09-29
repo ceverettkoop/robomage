@@ -13,6 +13,8 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -24,31 +26,11 @@ namespace effects {
 // Forward declaration (see definition below).
 static bool discard_filter_matches(Entity e, const std::string &discard_valid);
 
-// True if the card entity `e` matches a DiscardValid$ filter spec — a "Card." head
-// followed by '+'-delimited constraints. Supported constraints: non<Type> (the card must
-// not have that card type) and NamedCard (the card's name must equal the name chosen by a
-// preceding NameCard effect, cur_game.named_card; CR 201.4). An empty filter matches all.
+// True if the card entity `e` matches a DiscardValid$ filter spec (Thoughtseize's
+// Card.nonLand, Cabal Therapy's Card.NamedCard, Mox Diamond's Land), matched by the shared filter
+// matcher against the card's characteristics. An empty filter matches every card.
 static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
-    if (discard_valid.empty()) return true;
-    auto &cd = global_coordinator.GetComponent<CardData>(e);
-    std::string filter = discard_valid;
-    if (filter.rfind("Card.", 0) == 0) filter = filter.substr(5);
-    size_t fp = 0;
-    while (fp < filter.size()) {
-        size_t plus = filter.find('+', fp);
-        if (plus == std::string::npos) plus = filter.size();
-        std::string constraint = filter.substr(fp, plus - fp);
-        if (constraint == "NamedCard") {
-            // No name has been chosen → nothing matches (the named-card discard does nothing).
-            if (cur_game.named_card.empty() || cd.name != cur_game.named_card) return false;
-        } else if (constraint.rfind("non", 0) == 0) {
-            std::string excluded_type = constraint.substr(3);
-            for (auto &t : cd.types)
-                if (t.name == excluded_type) return false;
-        }
-        fp = plus + 1;
-    }
-    return true;
+    return discard_valid.empty() || card_matches_filter(e, discard_valid);
 }
 
 HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -60,12 +42,12 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // hard-coded Player A (which was wrong for the non-A seat). A targeted discard (Thoughtseize,
     // Hymn, Cabal Therapy) overrides this with the actual target player below.
     Zone::Ownership tgt_owner = ab.controller;
-    if (global_coordinator.entity_has_component<Player>(ab.target)) {
-        tgt_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    if (global_coordinator.entity_has_component<Player>(ab.target.get())) {
+        tgt_owner = seat_of_player(ab.target.get());
     }
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
 
-    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
+    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.def->params);
     std::string discard_valid = dp ? dp->valid : std::string();
     std::string mode = dp ? dp->mode : std::string();
 
@@ -75,7 +57,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // are deterministic. This path runs before the hand is revealed because a random discard
     // does not reveal the hand.
     if (mode == "Random") {
-        size_t count = ab.amount;  // NumCards$ N (do not hardcode); 0 means none.
+        size_t count = ab.def->amount;  // NumCards$ N (do not hardcode); 0 means none.
         if (count > hand.size()) count = hand.size();
         if (count == 0) {
             game_log("No cards to discard at random.\n");
@@ -83,7 +65,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
         }
         // stable_shuffle, not std::shuffle: platform-stable given the seed
         // (see stable_rng.h).
-        stable_shuffle(hand, cur_game.gen);
+        stable_shuffle(hand, cur_game.rng.engine);
         for (size_t i = 0; i < count; ++i) {
             Entity chosen = hand[i];
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);
@@ -139,7 +121,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // runs out of matching cards, discard as many as possible. The DiscardValid$ pool is
     // rebuilt from the LIVE hand each pick (a picked card left the hand), and the pick count
     // persists in the level's DiscardRt so a machine-mode suspension resumes at the next pick.
-    size_t count = ab.amount > 0 ? ab.amount : 1;
+    size_t count = ab.def->amount > 0 ? ab.def->amount : 1;
     DiscardRt local_rt;
     DiscardRt &rt = ctx.can_suspend() ? ctx.rt<DiscardRt>() : local_rt;
     for (; rt.discards_done < count; ++rt.discards_done) {
@@ -160,7 +142,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
-        int choice = ctx.ask(std::move(discard_actions), chooser, ab.source);
+        int choice = ctx.ask(std::move(discard_actions), chooser, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         Entity chosen = valid[static_cast<size_t>(choice)];
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
@@ -170,7 +152,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_discard(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "DiscardValid") { effect_params<DiscardParams>(ab).valid = value; return true; }
     // Discard Mode$ — only the discard modes are claimed here (other effects, e.g.
     // SetState's Mode$ Transform, use the same key with a different meaning).

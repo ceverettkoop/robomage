@@ -14,5 +14,9 @@ extern std::string RESOURCE_DIR;
 //cards are loaded into db on demand
 Entity load_card(std::string card_name);
 
+//True when `card_name` names the back face of `cd` (a double-faced card loaded by
+//its back-face name) rather than its front face.
+bool names_back_face(const std::string& card_name, const CardData& cd);
+
 #endif /* CARD_H */
 

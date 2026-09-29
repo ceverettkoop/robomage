@@ -1,0 +1,14 @@
+{
+  "name": "cr115_hexproof_not_offered_as_sub_ability_target",
+  "why": "CR 603.3d / 702.11b: Cloak and Dagger's creature target is chosen at placement through the legality check, so an opponent's hexproof Geist of Saint Traft is not offered - 79afc2d",
+  "hand_a": ["Cloak and Dagger Entwined"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Plains", "Swamp", "Swamp"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Geist of Saint Traft", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Cloak and Dagger", "A:target:Player B", "A:target:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect": ["Cloak and Dagger, Entwined triggered"],
+  "expect_menu": ["^Grizzly Bears$"],
+  "expect_menu_not": ["^Geist of Saint Traft"]
+}

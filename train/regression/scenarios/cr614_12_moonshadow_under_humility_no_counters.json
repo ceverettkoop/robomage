@@ -1,0 +1,12 @@
+{
+  "name": "cr614_12_moonshadow_under_humility_no_counters",
+  "why": "CR 614.12 / 613.1f: Moonshadow cast under Humility enters without its six -1/-1 counters (a 1/1) - 570879e",
+  "hand_a": ["Moonshadow"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "battlefield_b": ["Humility"],
+  "play": ["A:keep", "B:keep", "A:cast:Moonshadow", "A:attack:Moonshadow", "A:attack:done"],
+  "max_decisions": 12,
+  "expect": ["Moonshadow attacking Player B"],
+  "expect_not": ["Moonshadow is (destroyed|put)", "Moonshadow dies"]
+}

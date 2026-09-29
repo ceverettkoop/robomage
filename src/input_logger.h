@@ -66,6 +66,10 @@ class InputLogger {
     const Deck& get_replay_deck_b() const;
     const std::vector<std::string>& get_replay_flags() const;
 
+    // One decision: presents `actions` — with each choice interchangeable with an earlier one
+    // left out (two identical cards in a graveyard or library, see interchangeable_cards) — to the
+    // deciding player or agent, and returns the chosen action's index in `actions` (or a
+    // concession / unwind sentinel).
     int get_input(const std::vector<LegalAction>& actions);
 
     // In-process decision hook (Phase D in-process actor). When set, the machine-mode
@@ -89,6 +93,8 @@ class InputLogger {
     // Persist a committed choice: echo it to the log file (if open). Shared by the
     // machine / auto-pass / CLI input paths.
     void commit_choice(const std::vector<LegalAction>& actions, int choice);
+    // get_input over a menu with its interchangeable choices already left out.
+    int choose(const std::vector<LegalAction>& actions);
     bool replay_mode = false;
     bool machine_mode = false;
     // Replayed log was recorded in machine mode (see is_machine_schedule)

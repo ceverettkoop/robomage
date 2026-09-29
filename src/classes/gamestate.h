@@ -60,7 +60,7 @@ typedef struct PlayerState_tag {
     int  life_lost_this_turn;
     bool spell_colors_cast_this_turn[5]; // W, U, B, R, G
     // ── Player effects (serialized as the state vector's PLAYER EFFECTS block; filled from
-    // player_effects() in game_queries.h, field meanings documented in machine_io.h) ──
+    // player_effects() in queries/player_effects.h, field meanings documented in machine_io.h) ──
     bool protection_from_everything;
     bool cant_gain_life;
     bool hexproof_from[5];               // W, U, B, R, G
@@ -96,7 +96,7 @@ typedef struct PermanentState_tag {
     // permanents, 48-95 opp permanents, 96-107 stack top-first; -1 = none). See the
     // entity->slot map in machine_io.cpp and norm_ref in machine_io.h.
     int  attached_to_ref;        // for equipment/auras: slot of the permanent this is attached to
-    int  attached_by_ref;        // for creatures: slot of the equipment/aura attached to this
+    int  attached_by_ref;        // for creatures: slot of the equipment/aura attached to this (lowest slot if several)
     int  attack_target_ref;      // attacked planeswalker's slot (-1 while attacking a player)
     int  blocking_target_ref;    // for blockers: slot of the attacker this creature blocks
     bool is_blocked;             // attacker was blocked at declare-blockers (CR 509.1h)
@@ -162,8 +162,8 @@ typedef struct DelayedTriggerEntry_tag {
     bool fires_this_turn;      // a waiting phase trigger scheduled later this turn
 } DelayedTriggerEntry;
 
-// One graveyard or exile card (card_play_permission and exiled_card_counters in
-// game_queries.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
+// One graveyard or exile card (card_play_permission in queries/zones.h, exiled_card_counters in
+// queries/counters.h). A hidden-identity slot (an opponent's face-down exiled card) keeps
 // card_idx -1 and every other field 0.
 typedef struct ZoneCardEntry_tag {
     int  card_idx;               // card_vocab_idx, -1 = empty / hidden
@@ -241,21 +241,23 @@ typedef struct GameState_tag {
     int  self_library_ct;
     int  opp_library_ct;
 
-    // Known top-of-library cards (viewer's library only). Index 0 = top.
-    // -1 = unknown.
+    // Known top-of-library cards: the viewer's own library, and the opponent's library as far
+    // as the viewer knows it (a card revealed there, the viewer's fateseal or Mishra's Bauble
+    // look). Index 0 = top. -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
+    int known_top_library_opp[KNOWN_TOP_LIBRARY_SIZE];
 
     // bo3 match state
-    int  match_game_number;  // -1 = single game, 0-2 = bo3 game index
+    int  match_game_number;  // -1 = single game, else the 0-based bo3 game index (< MAX_MATCH_GAMES)
     int  match_wins_self;
     int  match_wins_opp;
     bool is_sideboard_phase;
 
     // Pending decision context: the spell/ability currently making a mid-resolution
     // choice (target select, dig/scry/surveil pick, search, discard, modal, ...).
-    // The source may not be on the stack yet — targets are announced before the
-    // spell moves there (CR 601.2b/c) — so without this the observation cannot show
-    // WHAT is asking for the current choice. card_vocab_idx, -1 = no pending source.
+    // A mid-resolution choice's source need not be on the stack, so without this the
+    // observation cannot always show WHAT is asking for the current choice.
+    // card_vocab_idx, -1 = no pending source.
     int  pending_decision_card;
     bool pending_decision_ctrl_is_self;  // pending source's controller == viewer
 

@@ -863,8 +863,8 @@ def _play_match(env, evaluator, rng, *, sims, worlds,
 
     Game boundaries are detected from ``info['game_result']`` (the engine emitted a
     GAME_RESULT line on that step's read); the game's winner is the sign of that
-    step's reward delta (+ -> A won, - -> B won), matching env.py's bo3 reward
-    (±BO3_GAME_WIN_REWARD per game).
+    step's reward delta (+ -> A won, - -> B won, 0 -> a drawn game, z = 0),
+    matching env.py's per-game reward (±GAME_WIN_REWARD, DRAW_REWARD).
 
     Bo3 sideboard prompts BETWEEN games are now loop-safe search roots (Stage 1-3):
     when searchable they enter ``samples`` like any other decision. They are keyed
@@ -981,10 +981,9 @@ def _play_match(env, evaluator, rng, *, sims, worlds,
         if terminated or truncated:
             done = True
             if terminated and not boundary:
-                # bo1 mode emits no GAME_RESULT line — the single game ends with a
-                # plain "Player X wins" + terminated. Price the in-progress game
-                # from the terminal reward sign (bo3's final game already recorded
-                # via the boundary branch above, so guard on `not boundary`).
+                # The engine exited without a GAME_RESULT for the game in progress
+                # (every finished game, bo1 or bo3, is recorded via the boundary
+                # branch above): price it from the terminal reward sign.
                 game_winners.append(winner_from_reward(reward))
             if truncated:
                 # The match hit MAX_STEPS_BO3 mid-game: keep samples from the

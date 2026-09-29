@@ -1,0 +1,12 @@
+{
+  "name": "cr702_16_protection_prevented_damage_no_lifelink",
+  "why": "CR 702.16e / 702.15b: damage prevented by protection (Scryb Ranger) gains no lifelink life - 358d34b",
+  "hand_a": ["Island"],
+  "battlefield_a": ["Delver of Secrets", "Shadowspear", "Island", "Island", "Island"],
+  "hand_b": ["Island"],
+  "battlefield_b": ["Scryb Ranger"],
+  "play": ["A:keep", "B:keep", "A:desc:Don't reveal", "A:desc:Equip", "A:target:Delver", "A:attack:Delver", "A:attack:done", "B:block:Scryb", "B:desc:Delver", "B:block:done"],
+  "max_decisions": 20,
+  "expect_not": ["Player A gains 2 life"],
+  "expect_order": ["Scryb Ranger has protection from Delver of Secrets .* damage prevented", "Delver of Secrets deals 1 damage to Player B", "Player A gains 1 life \\(lifelink\\)"]
+}

@@ -38,7 +38,7 @@ import numpy as np
 import az_inspect
 import shard_replay
 from env import (MAX_ACTIONS, OBS_SIZE, _CUR_TURN_IDX, _IS_SIDEBOARD_IDX,
-                 _MATCH_CTX_START, _SELF_IS_A_IDX)
+                 _MATCH_CTX_START, _SELF_IS_A_IDX, MATCH_GAME_NORMALIZER)
 from shard_record import (DIAG_KEYS, DIAG_KIND_FOLLOWED, DIAG_KIND_NONE,
                           DIAG_KIND_PLAN, DIAG_KIND_SEARCH, ShardRecorder,
                           diag_path_for)
@@ -75,7 +75,7 @@ class _FakeResult:
 def _obs(mover_is_a, game_number, turn, sideboard=False):
     o = np.zeros(OBS_SIZE, dtype=np.float32)
     o[_SELF_IS_A_IDX] = 1.0 if mover_is_a else 0.0
-    o[_MATCH_CTX_START] = game_number / 3.0
+    o[_MATCH_CTX_START] = game_number / MATCH_GAME_NORMALIZER
     o[_CUR_TURN_IDX] = turn / 50.0
     o[_IS_SIDEBOARD_IDX] = 1.0 if sideboard else 0.0
     return o

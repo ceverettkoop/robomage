@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "../ecs/entity.h"
+#include "../object_ref.h"
 #include "../classes/colors.h"
 
 struct Creature {
@@ -17,9 +18,10 @@ struct Creature {
     uint32_t toughness = 0;
 
     bool is_attacking = false;
-    Entity attack_target = 0;  // Entity of player or planeswalker being attacked (0 = none)
+    ObjectRef attack_target;  // player or planeswalker being attacked (empty = none); a
+                              // planeswalker that left combat reads 0 (CR 506.4)
     bool is_blocking = false;
-    Entity blocking_target = 0;  // Entity of attacker being blocked (0 = none)
+    ObjectRef blocking_target;  // attacker being blocked (empty = none)
     bool is_blocked = false;     // attacker was blocked at declare-blockers; stays blocked even if all blockers leave (509.1h)
     std::vector<std::string> keywords;
     // Keywords granted "until end of turn" by a one-shot effect (e.g. Eldrazi Linebreaker's
@@ -27,6 +29,7 @@ struct Creature {
     // pass rebuilds `keywords` from the printed base each pass (611.3a); these are re-merged
     // onto `keywords` after that rebuild and cleared at the cleanup step (514.2 / 611.2b).
     std::vector<std::string> eot_keywords;
+    size_t eot_keywords_timestamp = 0;  // CR 613.7b timestamp of the latest eot_keywords grant
     bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
     bool cant_be_blocked_this_turn = false;  // set by a "can't be blocked this turn" effect (Kappa Cannoneer); cleared at cleanup (514.2)
 

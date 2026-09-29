@@ -22,14 +22,25 @@ class StackManager;
 
 // Cached snapshot of an active static ability on the battlefield.
 // Rebuilt each SBE pass by gather_active_statics() (the continuous-effects engine
-// preamble); queried by determine_legal_actions, check_triggered_abilities,
+// preamble); queried by determine_legal_actions, collect_triggered_abilities,
 // mana_system, game.cpp untap, etc.
+//
+// The static itself is held as a handle — its source (a battlefield permanent, or an emblem
+// index) plus its position in that source's static list — and resolved by sa() at every read,
+// never as a pointer into component storage: a Permanent removed or added between gathers
+// moves other permanents' components (the component array's swap-remove), and a new emblem can
+// reallocate Game::resolved_effects.emblems. A static whose source has left the battlefield (or phased out)
+// since the gather resolves to an inert, empty StaticAbility, so its effect stops at once
+// (CR 611.3b: a static ability's effect applies only while its source is on the battlefield).
 struct ActiveStatic {
-    Entity            entity = 0;
-    StaticAbility    *sa = nullptr;
+    Entity            entity = 0;              // source permanent (0 for an emblem)
+    int               emblem = -1;             // index into Game::resolved_effects.emblems when the source is an emblem
+    size_t            index = 0;               // position in the source's static list
     Zone::Ownership   controller = Zone::PLAYER_A;
     bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
     bool              suppressed = false;     // an ability-removal effect (Humility) removed this static's source's abilities; every layer applier skips it
+
+    StaticAbility *sa() const;
 };
 
 // Global cached list of active static abilities on battlefield permanents.
@@ -47,6 +58,12 @@ extern std::vector<ActiveStatic> g_active_statics;
 // future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
 std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
                                                    const std::set<Entity> &entities);
+
+// CR 614.12: would a card entering the battlefield lose its abilities there to a continuous
+// effect that already exists (Humility / Toxicrene, or a Magus of the Moon on a nonbasic land)?
+// Gates the entering card's own "as it enters" replacement effects (enters tapped / with
+// counters) and a Saga's first lore counter.
+bool entering_object_loses_abilities(Entity entity);
 
 // True while an active ManaConvert continuous static lets players spend mana as though it were
 // mana of any color (Mycosynth Lattice: ManaConversion$ AnyType->AnyColor, CR 609.4 / 106.6).
@@ -103,15 +120,27 @@ ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_
 ManaValue effective_base_cost(const CardData &card_data,
                               Zone::Ownership caster = Zone::UNKNOWN);
 
-// Drive the persisted APNAP trigger placement (Game::trigger_placement) to
+// Drive the persisted APNAP trigger placement (Game::pending.trigger_placement) to
 // completion: each ordering pick / trigger target selection is parked as a
 // loop-top pending decision (PendingQuery tag TRIGGER_PLACE) instead of
 // blocking on get_input, so a batch of simultaneous triggers spreads over
 // several main-loop iterations. Called synchronously by place_triggers_apnap
 // when a batch is collected, and by the main loop's TRIGGER_PLACE dispatch
-// with a latched answer. On completion restores the pre-placement priority
-// and clears Game::lk_battlefield_types (the 603.10 look-back snapshots).
+// with a latched answer. On completion restores the pre-placement priority.
 void resume_trigger_placement(Game& game, std::shared_ptr<Orderer> orderer);
+
+// Whether `caster` may cast the exiled `card` now under its cast permission
+// (Game::resolved_effects.impulse_cast_permission): the spell's timing — ignored for a permission granted for a
+// cast during resolution (CR 608.2g) — its targets and cast prohibitions (can_cast_now), and the
+// permission's alternative cost with any cost floor (CR 118.9d, 601.2f). Shared by the priority
+// offer of granted exile casts and cast_during_resolution's offer.
+bool exile_grant_castable(Entity card, Zone::Ownership caster, bool sorcery_window,
+                          std::shared_ptr<Orderer> orderer);
+
+// Whether `owner` may cast the revealed miracle `card` from their hand for its miracle cost as
+// its miracle trigger resolves (CR 702.94a, 608.2g): timing ignored, its targets and cast
+// prohibitions (can_cast_now), and the miracle mana cost with any cost floor (CR 118.9d, 601.2f).
+bool miracle_castable(Entity card, Zone::Ownership owner, std::shared_ptr<Orderer> orderer);
 
 class StateManager : public System {
 
@@ -134,7 +163,12 @@ private:
     void apply_land_abilities(Entity entity);
     void apply_keyword_abilities(Entity entity);
     void deal_combat_damage(Game& game, bool first_strike_only);
-    void check_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
+    // CR 603.2: drain the events since the last call and record the abilities they triggered in
+    // Game::waiting_triggers (sources still as they were when the events happened: this runs
+    // before a state-based-action check can move them).
+    void collect_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
+    // CR 603.3 / 603.3b: put every waiting triggered ability on the stack in APNAP order.
+    void place_waiting_triggers(Game& game, std::shared_ptr<Orderer> orderer);
 
     // Continuous-effects engine internals (rule 613): the per-layer appliers and
     // the gather preamble live in state_manager_statics.cpp where the keyword

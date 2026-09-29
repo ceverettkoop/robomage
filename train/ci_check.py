@@ -19,7 +19,9 @@ fails, so one invocation reports every finding):
           regenerated output). The script-derived codegen (card_costs.py,
           card_props.py, card_costs_gen.h) is untracked and regenerated every
           `make`, so it has no committed copy to go stale; its generators are
-          still run here as a crash smoke.
+          still run here as a crash smoke, and the generated C++ cost tables
+          (card_costs_gen.h) must equal card_costs.py's matrices float32-exactly
+          (train/test_cost_tables.py).
   vocab   Every card referenced by the top-level and league/ decks resolves to a
           card_vocab.h entry (result-level league-coverage gate). DFC deck names
           resolve through their script's front face, mirroring the engine.
@@ -56,6 +58,13 @@ fails, so one invocation reports every finding):
           node-for-node — P/N/W/rep/sel_mask/children exact, argmax-visit PV
           descent identical — and a bad format version is refused
           (train/test_tree_cache.py). Torch-free, engine-free, instant.
+  menus   The Python search's menu semantics on synthetic observations:
+          duplicate-edge merging (decode.menu_merge_reps partition, the mcts
+          _Node fold/select/walk; train/test_menu_merge.py) and the
+          interchangeable-menu collapse behind the SearchController trivial
+          fast path (decode.menu_is_interchangeable;
+          train/test_trivial_menu.py). The C++ merge twin is covered by the
+          opt-in `actor` tier. Torch-free, engine-free, instant.
   browser The Textual analysis browser (train/tui_analysis.py, `analysis.py
           browse --board tui`) driven headlessly over a synthetic saved
           session: the .rmtrace source loads through the shared engine
@@ -78,6 +87,12 @@ fails, so one invocation reports every finding):
           ends the match with MATCH_RESULT naming the opponent, and the
           sentinel is logged so --replay reproduces the concession
           (train/test_concede.py). Torch-free; needs bin/robomage; ~0.5s.
+  scenarios The rules-regression scenarios (train/regression/scenarios/*.json,
+          run by train/test_scenarios.py): sculpted bo1 test_harness games,
+          each pinning the rules outcome of one fixed engine bug (a narrative
+          line, an offered/withheld action, a game result). Run in parallel;
+          a failure names the missing / forbidden line. Needs bin/robomage;
+          ~2s.
   obsinv  Structural per-decision invariants on the raw machine-mode observation
           vector across a few seeded scripted games (train/test_obs_invariants.py):
           card-id / entity-ref floats decode in range, recency-packed zones have
@@ -153,7 +168,9 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
           chunk (train/test_analysis_session.py). Also the shard-replay
           reconstruction behind analysis.py browse --source DIR: recorded scripted
           matches round-trip through synthetic shard_*.npz files into
-          browsable match records (train/test_shard_replay.py).
+          browsable match records (train/test_shard_replay.py). And the
+          SearchController's tree-follow gates plus the hidden-info
+          fingerprint on synthetic trees (train/test_tree_follow.py).
           Torch-free; needs bin/robomage.
   treerebuild The exact rebuild of a recorded opponent search
           (train/tree_rebuild.py): a uniform-evaluator SearchController plays
@@ -176,8 +193,9 @@ Opt-in tiers (valid for --tier, NOT part of the default run):
 
 Draw classification (per repo policy — draws are not acceptable, but the two
 causes differ in severity):
-  * A game that ends with no winner because the engine hit its internal step cap
-    (a stall) is a WARNING — flagged for review, does not fail the gate.
+  * A game that ends with no winner — a drawn game (both players lost at once,
+    CR 104.4a: GAME_RESULT "draw") or one the engine stalled out of (its internal
+    step cap) — is a WARNING: flagged for review, does not fail the gate.
   * A game whose engine process crashed (nonzero exit / EOF mid-game — surfaced
     as an exception from run_games) is an ERROR — fails the gate.
   * A standalone non-fatal 'ERROR:' / 'FATAL:' / assert / etc. line in any
@@ -196,6 +214,8 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
+from concurrent.futures import ProcessPoolExecutor
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -218,7 +238,7 @@ LEAGUE = sorted(
 LEAGUE_SPECS = [f"league/{d}" for d in LEAGUE]
 
 ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", "treecache",
-             "browser", "modelspec", "concede", "obsinv",
+             "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
              "mirror", "xwsearch", "replay", "smoke", "fuzz"]
@@ -325,7 +345,10 @@ def tier_pygen(rep):
     diff, and stale local scripts can never commit stale matrices. Every generator
     is still RUN below (a crash is a real failure), but only the tracked outputs are
     diffed; they are restored afterward so a stale result is reported, not left
-    half-regenerated (the developer runs `make pygen` to actually update them)."""
+    half-regenerated (the developer runs `make pygen` to actually update them).
+    Finally the regenerated C++ cost tables must equal card_costs.py's
+    matrices float32-exactly (train/test_cost_tables.py) — the two generated
+    mirrors of one source may not drift."""
     tracked = ["train/_enums.py", "src/gen/archetypes_gen.h"]
     for gen in ("train/gen_enums.py", "train/gen_card_costs.py",
                 "train/gen_card_props.py", "train/gen_archetypes.py",
@@ -346,6 +369,8 @@ def tier_pygen(rep):
         rep.error("pygen",
                   "generated files are stale — run `make pygen` and commit "
                   f"{', '.join(tracked)}:\n{diff.stdout}")
+    _run_test_script(rep, "pygen", "train/test_cost_tables.py",
+                     "C++/Python cost-table")
 
 
 def tier_vocab(rep):
@@ -359,6 +384,14 @@ def tier_vocab(rep):
         if missing:
             rep.error("vocab", f"{label} decks reference {len(missing)} card(s) "
                                f"not in card_vocab.h: {', '.join(missing)}")
+
+
+def tier_scenarios(rep):
+    """Rules-regression scenarios (train/test_scenarios.py): every
+    train/regression/scenarios/*.json harness game must still show its
+    asserted rules outcome."""
+    _run_test_script(rep, "scenarios", "train/test_scenarios.py",
+                     "rules-regression scenario")
 
 
 def tier_obsinv(rep):
@@ -457,6 +490,15 @@ def tier_treecache(rep):
     per-world trees round-trip node-for-node (see train/test_tree_cache.py).
     Torch-free, engine-free."""
     _run_test_script(rep, "treecache", "train/test_tree_cache.py", "tree-cache")
+
+
+def tier_menus(rep):
+    """Python search menu semantics on synthetic observations: duplicate-edge
+    merging (train/test_menu_merge.py) and the interchangeable-menu collapse
+    behind the SearchController trivial fast path (train/test_trivial_menu.py).
+    Torch-free, engine-free."""
+    _run_test_script(rep, "menus", "train/test_menu_merge.py", "menu-merge")
+    _run_test_script(rep, "menus", "train/test_trivial_menu.py", "trivial-menu")
 
 
 def tier_browser(rep):
@@ -661,6 +703,10 @@ def tier_analysis(rep):
         rep.error("analysis", "browse-session violation "
                               f"(test_browse_session.py exit {r.returncode}):\n"
                               f"{r.stdout}{r.stderr}")
+    # SearchController tree reuse (_try_follow_tree gates) and the
+    # revealed-hidden-info fingerprint, on synthetic trees. Engine- and
+    # torch-free.
+    _run_test_script(rep, "analysis", "train/test_tree_follow.py", "tree-follow")
     # GUI session save/load (gui_session_io): .rmplay byte-identical replay
     # round-trip, .rmtrace round-trip incl. shard/whatif records, validation
     # gates, kind sniffing, trace_from_replay. Torch-free; needs bin/robomage.
@@ -811,43 +857,113 @@ def _run_capturing(out_path, run_fn):
                     fh.write(data)
 
 
+def _matchup_stem(tier, deck_a, deck_b):
+    """Transcript file stem of one smoke/fuzz matchup: <tier>_<a>__<b>."""
+    return f"{tier}_{_short(deck_a)}__{_short(deck_b)}"
+
+
+def _play_game(task):
+    """Play one game of a smoke/fuzz matchup (a process-pool task).
+
+    Games are independent — each gets its own engine process, its own seed and
+    fresh controllers — so one task per game plays exactly the games a
+    sequential run_games(n_games=N, seed=S) loop would (game i = seed S+i).
+    Runs in its own working directory so the draw_<stamp>.txt log run_games
+    writes there is attributed to this game, then moves it into out_dir.
+    Returns (wins, losses, draws), the crash message (None if the engine didn't
+    crash) and the path of the game's transcript (Python output plus engine
+    stderr), a hidden file in out_dir that _write_matchup_transcript consumes."""
+    tier, deck_a, deck_b, mode, game_idx, seed, out_dir = task
+    stem = _matchup_stem(tier, deck_a, deck_b)
+    game_path = os.path.join(out_dir, f".{stem}_g{game_idx + 1}.txt")
+    work_dir = tempfile.mkdtemp(prefix=f".{stem}_g{game_idx + 1}_", dir=out_dir)
+    os.chdir(work_dir)
+    result = {}
+
+    def run_fn():
+        result["wld"] = runner.run_games(
+            make_controller(mode), make_controller(mode),
+            label_a=f"A:{mode}", label_b=f"B:{mode}",
+            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed,
+            verbose=True)
+
+    crashed = None
+    try:
+        _run_capturing(game_path, run_fn)
+    except Exception as e:  # engine crash: nonzero exit / EOF mid-game
+        crashed = str(e) or type(e).__name__
+    finally:
+        os.chdir(_REPO_ROOT)
+        for dl in glob.glob(os.path.join(work_dir, "draw_*.txt")):
+            shutil.move(dl, os.path.join(
+                out_dir, f"{stem}_g{game_idx + 1}_{os.path.basename(dl)}"))
+        shutil.rmtree(work_dir, ignore_errors=True)
+    return result.get("wld", (0, 0, 0)), crashed, game_path
+
+
+def _write_matchup_transcript(out_path, games, base_seed, mode):
+    """Assemble one matchup's per-game transcripts, in game order, into out_path.
+
+    games is the list of _play_game results for games 0..N-1. Each section opens
+    with a game header naming its seed; a W/L/D summary line closes the file.
+    The per-game files are streamed in and deleted. Returns the summed
+    (wins, losses, draws) and the (game index, crash message) of every crashed
+    game."""
+    n = len(games)
+    wins = losses = draws = 0
+    crashes = []
+    with open(out_path, "w", encoding="utf-8") as fh:
+        for i, ((w, l, d), crashed, game_path) in enumerate(games):
+            fh.write(f"--- Game {i + 1}/{n} [{mode}] seed {base_seed + i} ---\n")
+            fh.flush()
+            try:
+                with open(game_path, encoding="utf-8", errors="replace") as gf:
+                    shutil.copyfileobj(gf, fh)
+                os.remove(game_path)
+            except OSError as e:
+                fh.write(f"(could not read game transcript: {e})")
+            fh.write("\n")
+            if crashed is not None:
+                crashes.append((i, crashed))
+                fh.write(f"=== game {i + 1}/{n}: ENGINE CRASH — {crashed} ===\n")
+            wins, losses, draws = wins + w, losses + l, draws + d
+        fh.write(f"\n{wins}W / {losses}L / {draws}D over {n} games\n")
+    return (wins, losses, draws), crashes
+
+
 def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
-    """Run each matchup as scripted games, classify draws, scan transcripts."""
-    for k, (deck_a, deck_b) in enumerate(pairs):
-        seed = base_seed + 1000 * k
-        out_path = os.path.join(out_dir, f"{tier}_{_short(deck_a)}__{_short(deck_b)}.txt")
-        result = {}
+    """Run each matchup as scripted games, classify draws, scan transcripts.
 
-        def run_fn():
-            result["wld"] = runner.run_games(
-                make_controller(mode), make_controller(mode),
-                label_a=f"A:{mode}", label_b=f"B:{mode}",
-                deck_a=deck_a, deck_b=deck_b, n_games=n_games, seed=seed,
-                verbose=True)
-
-        crashed = None
-        try:
-            _run_capturing(out_path, run_fn)
-        except Exception as e:  # engine crash: nonzero exit / EOF mid-game
-            crashed = e
-        wins, losses, draws = result.get("wld", (0, 0, 0))
-        # Relocate any draw_<n>.txt run_games wrote into cwd, so they're captured
-        # as artifacts and don't litter the tree.
-        for dl in glob.glob(os.path.join(os.getcwd(), "draw_*.txt")):
-            shutil.move(dl, os.path.join(out_dir, f"{tier}_{_short(deck_a)}__"
-                                                  f"{_short(deck_b)}_{os.path.basename(dl)}"))
-
+    Matchup k's game i uses seed base_seed + 1000*k + i. Every game is
+    independent (own engine process and seed), so all of them run in one
+    process pool; each matchup's transcript is reassembled in game order and
+    the report is made in matchup order."""
+    seeds = [base_seed + 1000 * k for k in range(len(pairs))]
+    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir)
+             for (deck_a, deck_b), seed in zip(pairs, seeds)
+             for i in range(n_games)]
+    workers = max(1, min(len(tasks), os.cpu_count() or 4))
+    with ProcessPoolExecutor(max_workers=workers) as ex:
+        outcomes = list(ex.map(_play_game, tasks))
+    for k, ((deck_a, deck_b), seed) in enumerate(zip(pairs, seeds)):
+        out_path = os.path.join(out_dir, f"{_matchup_stem(tier, deck_a, deck_b)}.txt")
+        (wins, losses, draws), crashes = _write_matchup_transcript(
+            out_path, outcomes[k * n_games:(k + 1) * n_games], seed, mode)
         label = f"{_short(deck_a)} vs {_short(deck_b)} [{mode}] seed {seed}"
-        if crashed is not None:
-            rep.error(tier, f"{label}: engine crashed — {crashed} (see {out_path})")
-            print(f"  {label}: CRASH -> {out_path}", flush=True)
+        if crashes:
+            for i, msg in crashes:
+                rep.error(tier, f"{label}: game {i + 1} (seed {seed + i}) engine "
+                               f"crashed — {msg} (see {out_path})")
+            print(f"  {label}: CRASH in {len(crashes)} game(s) -> {out_path}",
+                  flush=True)
             continue
         if wins + losses + draws < n_games:
             rep.error(tier, f"{label}: only {wins + losses + draws}/{n_games} games "
                            f"completed (see {out_path})")
         if draws > 0:
-            # A returned draw is a clean-exit stall (a crash would have raised).
-            rep.warn(tier, f"{label}: {draws} step-cap-stall draw(s) — review {out_path}")
+            # A returned draw is a drawn game or a clean-exit stall (a crash would
+            # have raised); the transcript's DRAW banner says which.
+            rep.warn(tier, f"{label}: {draws} draw(s) — review {out_path}")
         errs, warns = scan_transcript(out_path)
         if errs:
             first = errs[0]
@@ -926,6 +1042,7 @@ _CHAIN_PAIRS = [
     ("_LIBRARY_CTX_START",      "LIBRARY_CTX_START"),
     ("_CUR_TURN_IDX",           "CUR_TURN_IDX"),
     ("_KNOWN_TOP_LIB_START",    "KNOWN_TOP_LIB_START"),
+    ("_OPP_KNOWN_TOP_LIB_START", "OPP_KNOWN_TOP_LIB_START"),
     ("_OPP_KNOWN_HAND_START",   "OPP_KNOWN_HAND_START"),
     ("_PENDING_DECISION_START", "PENDING_DECISION_START"),
     ("_EXTRAS_START",           "EXTRAS_START"),
@@ -1050,15 +1167,51 @@ def tier_actor(rep):
              "train/test_actor_trains.py",   # M8: trainer-interchangeable shards
              "train/test_az_gate.py"]        # az_eval actor-backend gate driver
     for t in tests:
+        t0 = time.monotonic()
         r = subprocess.run([sys.executable, t], cwd=_REPO_ROOT,
                            capture_output=True, text=True)
+        dt = time.monotonic() - t0
         print(r.stdout, end="", flush=True)
         name = os.path.basename(t)
         if r.returncode != 0:
-            rep.error("actor", f"{name} failed (exit {r.returncode}):\n"
+            rep.error("actor", f"{name} failed (exit {r.returncode}, {dt:.0f}s):\n"
                                f"{r.stdout}{r.stderr}")
         else:
-            print(f"  {name}: PASS", flush=True)
+            print(f"  {name}: PASS ({dt:.0f}s)", flush=True)
+
+
+# Tier name -> runner(rep, args, out_dir). Only smoke/fuzz read args/out_dir.
+_TIER_FNS = {
+    "pygen": lambda rep, args, out_dir: tier_pygen(rep),
+    "vocab": lambda rep, args, out_dir: tier_vocab(rep),
+    "curriculum": lambda rep, args, out_dir: tier_curriculum(rep),
+    "clispec": lambda rep, args, out_dir: tier_clispec(rep),
+    "gatesprt": lambda rep, args, out_dir: tier_gatesprt(rep),
+    "shardrec": lambda rep, args, out_dir: tier_shardrec(rep),
+    "treecache": lambda rep, args, out_dir: tier_treecache(rep),
+    "menus": lambda rep, args, out_dir: tier_menus(rep),
+    "browser": lambda rep, args, out_dir: tier_browser(rep),
+    "modelspec": lambda rep, args, out_dir: tier_modelspec(rep),
+    "treerebuild": lambda rep, args, out_dir: tier_treerebuild(rep),
+    "concede": lambda rep, args, out_dir: tier_concede(rep),
+    "scenarios": lambda rep, args, out_dir: tier_scenarios(rep),
+    "obsinv": lambda rep, args, out_dir: tier_obsinv(rep),
+    "actorobs": lambda rep, args, out_dir: tier_actorobs(rep),
+    "snapshot": lambda rep, args, out_dir: tier_snapshot(rep),
+    "pergame": lambda rep, args, out_dir: tier_pergame(rep),
+    "sbselfplay": lambda rep, args, out_dir: tier_sbselfplay(rep),
+    "sbrules": lambda rep, args, out_dir: tier_sbrules(rep),
+    "plansearch": lambda rep, args, out_dir: tier_plansearch(rep),
+    "mirror": lambda rep, args, out_dir: tier_mirror(rep),
+    "xwsearch": lambda rep, args, out_dir: tier_xwsearch(rep),
+    "replay": lambda rep, args, out_dir: tier_replay(rep),
+    "smoke": tier_smoke,
+    "fuzz": tier_fuzz,
+    "actor": lambda rep, args, out_dir: tier_actor(rep),
+    "analysis": lambda rep, args, out_dir: tier_analysis(rep),
+    "azinspect": lambda rep, args, out_dir: tier_azinspect(rep),
+    "gui": lambda rep, args, out_dir: tier_gui(rep),
+}
 
 
 def main(argv=None):
@@ -1094,13 +1247,13 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "scenarios", "obsinv", "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "scenarios", "obsinv", "snapshot", "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):
@@ -1109,63 +1262,21 @@ def main(argv=None):
             return 2
 
     rep = Report()
+    tier_times = []
+    t_start = time.monotonic()
     for t in tiers:
         print(f"\n=== tier: {t} ===", flush=True)
-        if t == "pygen":
-            tier_pygen(rep)
-        elif t == "vocab":
-            tier_vocab(rep)
-        elif t == "curriculum":
-            tier_curriculum(rep)
-        elif t == "clispec":
-            tier_clispec(rep)
-        elif t == "gatesprt":
-            tier_gatesprt(rep)
-        elif t == "shardrec":
-            tier_shardrec(rep)
-        elif t == "treecache":
-            tier_treecache(rep)
-        elif t == "browser":
-            tier_browser(rep)
-        elif t == "modelspec":
-            tier_modelspec(rep)
-        elif t == "treerebuild":
-            tier_treerebuild(rep)
-        elif t == "concede":
-            tier_concede(rep)
-        elif t == "obsinv":
-            tier_obsinv(rep)
-        elif t == "actorobs":
-            tier_actorobs(rep)
-        elif t == "snapshot":
-            tier_snapshot(rep)
-        elif t == "pergame":
-            tier_pergame(rep)
-        elif t == "sbselfplay":
-            tier_sbselfplay(rep)
-        elif t == "sbrules":
-            tier_sbrules(rep)
-        elif t == "plansearch":
-            tier_plansearch(rep)
-        elif t == "mirror":
-            tier_mirror(rep)
-        elif t == "replay":
-            tier_replay(rep)
-        elif t == "smoke":
-            tier_smoke(rep, args, out_dir)
-        elif t == "fuzz":
-            tier_fuzz(rep, args, out_dir)
-        elif t == "xwsearch":
-            tier_xwsearch(rep)
-        elif t == "actor":
-            tier_actor(rep)
-        elif t == "analysis":
-            tier_analysis(rep)
-        elif t == "azinspect":
-            tier_azinspect(rep)
-        elif t == "gui":
-            tier_gui(rep)
+        t0 = time.monotonic()
+        _TIER_FNS[t](rep, args, out_dir)
+        tier_times.append((t, time.monotonic() - t0))
+        print(f"  ({t}: {tier_times[-1][1]:.1f}s)", flush=True)
+    total = time.monotonic() - t_start
 
+    print("\n" + "=" * 60, flush=True)
+    print("tier wall times:", flush=True)
+    for t, dt in tier_times:
+        print(f"  {t:<12} {dt:7.1f}s", flush=True)
+    print(f"  {'total':<12} {total:7.1f}s", flush=True)
     print("\n" + "=" * 60, flush=True)
     print(f"ci_check: {len(rep.errors)} error(s), {len(rep.warnings)} warning(s)",
           flush=True)

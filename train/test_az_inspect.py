@@ -744,7 +744,7 @@ def _sb_row(main, sideboard_phase=True, balanced=True, swaps=0.0):
     o[env._IS_SIDEBOARD_IDX] = 1.0 if sideboard_phase else 0.0
     o[env._SELF_IS_A_IDX] = 1.0
     o[env._EXTRAS_SB_SWAPS] = swaps
-    o[env._EXTRAS_SB_DELTA] = 0.5 if balanced else 0.9
+    o[env._EXTRAS_SB_DELTA] = 0.0 if balanced else 1.0
     for k, (idx, ct) in enumerate(sorted(main.items())):
         o[env._SELF_DECK_MAIN_START + 2 * k] = idx / azi.N_CARD_TYPES
         o[env._SELF_DECK_MAIN_START + 2 * k + 1] = ct / 4.0

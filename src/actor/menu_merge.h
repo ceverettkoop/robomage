@@ -16,7 +16,7 @@
 // slot map covers only battlefield + stack), so no state reads are needed.
 // Cast-from-exile / play-free edges are deliberately NOT whitelisted: two
 // same-name exile cards can carry different hidden ImpulseCastPermissions
-// (free vs pay-life vs energy, from_suspend timing) the obs cannot see.
+// (free vs pay-life vs energy) the obs cannot see.
 
 #include <cmath>
 #include <cstdint>

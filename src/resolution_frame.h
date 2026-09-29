@@ -64,12 +64,8 @@ struct DigRt {
     size_t take_count = 0;        // how many may be taken (resolved once)
     bool optional = false;        // "Take nothing" offered
 };
-struct ScryRt {
-    bool init = false;            // slice fetched + "scries N" log emitted
-    std::vector<Entity> lib;      // looked-at top slice, top-first; all pinned
-    size_t idx = 0;               // next per-card keep/bottom decision
-};
-struct SurveilRt {
+// Scry and surveil (effects::look_and_split).
+struct LookSplitRt {
     bool init = false;            // slice fetched + look logs emitted
     std::vector<Entity> remaining;  // looked-at cards not yet assigned; pinned
     std::vector<Entity> to_top;     // kept on top, in choice order, each placed; pinned
@@ -118,7 +114,7 @@ struct DiscardRt {
 // (the searchable pool IS the parked menu, so the menu pins cover it).
 struct ChangeZoneSearchRt {
     bool init = false;            // counts resolved + prev seat saved
-    bool prev_priority = false;   // player_a_has_priority to restore after the loop
+    bool prev_priority = false;   // priority.player_a_has_priority to restore after the loop
     size_t num_to_move = 0;       // resolved ChangeNum (may be a count-SVar)
     int cmc_bound = -1;           // resolved dynamic mana-value bound (Aether Vial)
     size_t iter = 0;              // next pick index
@@ -155,6 +151,21 @@ struct TargetSelectRT {
     int picked = 0;          // multi-target picks completed so far
 };
 
+// The persisted progress of announcing a stack object's modes and targets (run_announce,
+// announce.h; CR 601.2b/c, 602.2b, 603.3c/d): the stage, the completed mode picks, and the
+// in-flight target pick. Embedded BY VALUE in the cast, activation and trigger-placement state
+// (a member field, per the Batch 4 finding). The picked modes themselves persist in the
+// announced ability's charm_chosen.
+struct AnnounceRT {
+    enum Stage { MODES, MODE_TARGETS, PRIMARY, SUBS };
+    bool active = false;          // an announcement is under way (a choice may be parked)
+    Stage stage = MODES;
+    int mode_picks = 0;           // completed mode iterations (a mode counts once its targets are chosen)
+    size_t sub_idx = 0;           // next chained sub-ability to target (SUBS)
+    bool pick_in_flight = false;  // the current target choice passed its legality check and is being picked
+    TargetSelectRT tsel;          // the in-flight target pick
+};
+
 // ── Batch 8: container effects (nested resolves as persisted FrameLevels) ───
 // These rts persist a CONTAINER handler's own loop progress; the children they
 // drive resolve as persisted deeper FrameLevels via FrameCtx::resolve_child
@@ -162,16 +173,9 @@ struct TargetSelectRT {
 // TargetSelectRT machines are member fields per the Batch 4 finding (a variant
 // alternative of their own would dangle the host's rt reference).
 struct CharmRt {
-    // Announced path (modes + targets chosen at cast): next charm_chosen
-    // position to resolve.
+    // Next charm_chosen position to resolve (the modes were announced as the object was put
+    // on the stack).
     int announced_idx = 0;
-    // Resolution-time fallback (a charm that reached the stack unannounced):
-    bool init = false;            // "(modes were not announced...)" log printed; taken sized
-    std::vector<char> taken;      // CR 601.2b: a mode can be chosen only once
-    int pick = 0;                 // mode picks completed
-    int chosen_idx = -1;          // mode chosen for the CURRENT pick (-1 = ask pending)
-    bool targets_done = false;    // current pick's target selection completed
-    TargetSelectRT tsel;          // current mode's in-flight target selection
 };
 struct RepeatRt {
     bool init = false;            // saved_remembered captured
@@ -179,21 +183,19 @@ struct RepeatRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP); reused as the type index in the per-type path
     int sub_idx = 0;              // next RepeatSubAbility for the current player/type
     int trailing_idx = 0;         // per-type path: next trailing SubAbility$ resolved once after the loop
-    std::vector<Entity> saved_remembered;  // outer remembered set to restore at completion
+    std::vector<ObjectRef> saved_remembered;  // outer remembered set to restore at completion
 };
 struct ImmediateRt {
     bool init = false;            // fire condition + optional energy cost resolved
     bool fire = false;            // reflexive effect fires (condition met, cost paid)
-    int sub_idx = 0;              // next Execute/Cleanup sub-ability
-    bool tsel_done = false;       // current sub's target selection completed
-    TargetSelectRT tsel;          // current sub's in-flight target selection
+    int sub_idx = 0;              // next sub-ability of the parent chain (Cleanup)
 };
 // ── Batch 10: spell copies (CR 707.10 / 707.12) ─────────────────────────────
 // The resumable form of copy-a-spell-on-stack (effect_copy_spell.cpp), shared
 // by Replicate (cast FINISH — embedded in Game::PendingCast, driven with the
 // CAST-tag asker) and Storm (resolution — this struct IS the storm handler's
 // EffectRuntime, driven with the ResolutionTargetAsker). The current copy is
-// built incrementally: the entity (CardData/ColorIdentity/Spell, deliberately
+// built incrementally: the entity (CardData/Spell, deliberately
 // NO Zone until placement) persists in the ECS across a suspension, and its
 // in-flight ability lives here BY VALUE until it is complete enough to become
 // the copy's Ability component. The no-legal-target path DESTROYS the copy
@@ -211,6 +213,8 @@ struct CopySpellRT {
     size_t sub_idx = 0;       // next sub-ability to retarget (phase 1)
     size_t mode_pos = 0;      // next work.charm_chosen position to retarget (phase 2)
     TargetSelectRT tsel;      // the in-flight pick (member field per the Batch 4 finding)
+    std::vector<Entity> placed;   // copies already on the stack; their targeting hooks (Ward,
+                                  // becomes-target) fire once every copy is made (CR 603.3b)
 };
 // ── Batch 14: resolution-time draws (effects::draw) ─────────────────────────
 // The drawing player, the resolved draw count (a dynamic NumCards$ is
@@ -227,15 +231,28 @@ struct DrawRt {
 // change_zone's DefinedPlayer$ Player put-from-hand (Show and Tell: "Each player MAY put an
 // artifact, creature, enchantment, or land card from their hand onto the battlefield"). Each
 // player decides in APNAP order (CR 101.4 / 405.6, active player first); only the loop index
-// persists across a suspension — the per-player candidate menu is re-derived from that player's
-// live hand every pass (a live-menu loop; the parked menu pins cover the hand cards).
+// persists across a suspension, with the chosen card while its Aura enchant pick is parked — the
+// per-player candidate menu is re-derived from that player's live hand every pass (a live-menu
+// loop; the parked menu pins cover the hand cards, and the chosen card is pinned from here).
 struct EachPlayerPutRt {
     int player_idx = 0;           // 0 = active player, 1 = non-active (APNAP)
+    Entity chosen = 0;            // the current player's chosen card, parked on its Aura enchant pick (CR 303.4f)
 };
-using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, ScryRt,
-                                   SurveilRt, RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
+// A cast made during a resolution (CR 608.2g; cast_during_resolution, action_processor.h):
+// whether the "cast it?" offer is still to be answered, or the cast is in flight — its own
+// prompts park as CAST queries, and the resolution resumes once the spell is on the stack
+// (or the cast was cancelled). The runtime of the handlers that offer such a cast (DB$ Play,
+// suspend's last-counter trigger, a miracle trigger).
+struct ResolutionCastRt {
+    enum Stage { OFFER, CASTING, DONE };
+    Stage stage = OFFER;
+    bool prev_priority = false;   // priority.player_a_has_priority to restore once the cast completes
+};
+using EffectRuntime = std::variant<std::monostate, SacrificeRt, ChooseCardRt, DigRt, LookSplitRt,
+                                   RearrangeRt, SylvanRt, UnlessRt, ChangeZoneSearchRt,
                                    ChangeZoneRememberedRt, CharmRt, RepeatRt, ImmediateRt,
-                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt>;
+                                   CopySpellRT, DrawRt, DiscardRt, EachPlayerPutRt,
+                                   ResolutionCastRt>;
 
 // What one run_target_select call reports: the ability's targets are fully
 // chosen, or an ask parked a pending query (caller returns/suspends, mutating
@@ -245,7 +262,7 @@ enum class TargetStatus { DONE, SUSPENDED };
 // The one-decision primitive run_target_select asks through, so the SAME
 // machine serves every family: an implementation either reads the choice
 // inline (blocking — today's select_target behavior) or arms
-// cur_game.pending_query with its family's tag and reports suspension by
+// cur_game.pending.query with its family's tag and reports suspension by
 // returning a negative value. resuming() is true when re-entering with a
 // latched answer pending — the next ask consumes it, and arm-time side effects
 // (the "Choose target for ..." log) already ran, so they are guarded on it.
@@ -259,16 +276,24 @@ class TargetAsker {
         virtual bool resuming() const = 0;
 };
 
+// The blocking asker: exposes the asking source as the pending-decision context and reads one
+// choice inline. The caller seats priority at the choosing player; it never repoints the seat.
+// Used where no loop top can take a parked query (select_target; pre-game trigger placement).
+class BlockingTargetAsker final : public TargetAsker {
+    public:
+        int ask(const std::vector<LegalAction> &menu, Entity decision_source) override;
+        bool resuming() const override { return false; }
+};
+
 // ── Trigger placement (Batch 5) ─────────────────────────────────────────────
 // One collected trigger waiting to be put on the stack (the persisted form of
 // state_manager_triggers.cpp's PendingTrigger; Ability is a pure value type).
 struct PendingTriggerRT {
     Ability ab;                 // fully prepared (source / controller / event-derived fields set)
     Zone::Ownership controller; // whose trigger this is (drives APNAP partitioning)
-    Entity source = 0;          // source permanent (for logging)
+    Entity source = 0;          // source permanent (logging / menu grounding only; ab.source is the ref)
     std::string label;          // choice label when its controller orders simultaneous triggers
     std::string log_line;       // narrative line emitted when it is placed on the stack
-    bool needs_target = false;  // select a target at placement time if it still has legal targets
 };
 
 // The whole persisted APNAP placement (CR 603.3b): armed by place_triggers_apnap
@@ -281,15 +306,16 @@ struct PendingTriggerRT {
 struct TriggerPlacementRT {
     bool active = false;
     std::vector<PendingTriggerRT> queue;
-    bool saved_priority = false;   // player_a_has_priority to restore at completion
-    bool target_in_flight = false; // queue.front() is mid-target-selection (tsel live)
-    TargetSelectRT tsel;           // the front trigger's in-flight target selection
+    bool saved_priority = false;   // priority.player_a_has_priority to restore at completion
+    AnnounceRT announce;           // the front trigger's mode/target announcement (603.3c/d)
+    std::vector<Entity> placed;    // abilities already put on the stack by this placement; their
+                                   // targeting hooks (Ward, becomes-target) fire once it completes
 };
 
-// One level of the persisted resolve() continuation: the ROOT is the stack
-// object's own ability; nested levels hold the BY-VALUE in-flight copy of a
-// child (sub-abilities resolve as copies today, so the frame must own the copy
-// — resuming must NOT re-bind from mutated parent state). Levels are stored in
+// One level of the persisted resolve() continuation: the ROOT holds the working
+// copy of the stack object's ability (see frame_enter); nested levels hold the
+// BY-VALUE in-flight copy of a child (sub-abilities resolve as copies, so the
+// frame must own the copy — resuming must NOT re-bind from mutated parent state). Levels are stored in
 // a deque, NOT a vector: a parent resolve holds live references into its level
 // (phase/next_sub/rt — and for nested parents `this` IS levels[d].work) across
 // resolve_child's push of the child level, and deque push_back/pop_back never
@@ -299,12 +325,42 @@ struct FrameLevel {
     ChildKind kind = ROOT;
     int child_index = 0;   // index into the parent's child list (subabilities, charm modes, ...)
     int iter_index = 0;    // iteration counter for repeated children (repeat_each, gift loop)
-    Ability work;          // in-flight copy for nested levels (unused at ROOT — the
-                           // component itself is resolved there)
+    Ability work;          // the ability this level resolves (at ROOT, the stack object's)
     int phase = 0;         // resume point in the phase-tagged resolve() (Batch 3+)
     int next_sub = 0;      // next subability to chain after the handler
     EffectRuntime rt;      // handler-specific suspended state
     bool saved_priority = false;  // priority to restore when this level completes
+};
+
+// What one resolution remembers, chooses and names for its later instructions to refer to
+// (CR 608.2c: a spell or ability follows its instructions in order, and a later one may act on
+// what an earlier one did). Starts empty with each resolution and ends with it. A top-level
+// blocking resolve outside a stack resolution (an off-stack trigger, a mana ability) uses the
+// idle frame's memory, saved and restored around it.
+struct ResolutionMemory {
+    // Defined$ Remembered — the objects the resolution has remembered so far (RememberChanged$,
+    // RememberTargets$, RememberSacrificed$, ...: Doomsday's pile, an Attach's creature).
+    std::vector<ObjectRef> remembered;
+    // Cards "imprinted" (recorded) by a DB$ PeekAndReveal | ImprintRevealed$ True (Atraxa, Grand
+    // Unifier: the top-N revealed cards); read by a chained Card.IsImprinted filter
+    // (RepeatTypesFrom$ / ChooseCard / ChangeZoneAll) and cleared by Cleanup ClearImprinted$.
+    // Distinct from `remembered` (which holds the chosen cards taken to hand).
+    std::vector<ObjectRef> imprinted;
+    // Cards chosen by a ChooseCard effect (Ajani -4's kept permanents, read by SacrificeAll's
+    // nonChosenCard filter; Dauthi Voidwalker's exiled card, read by a RememberObjects$ ChosenCard
+    // Effect); cleared by Cleanup ClearChosenCard$.
+    ObjectSet chosen_cards;
+    // Card name chosen by an SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained
+    // Card.NamedCard discard.
+    std::string named_card;
+    // Integer chosen by a DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}");
+    // read downstream via Count$ChosenNumber (the cmc bound and PayEnergy unless-cost of the
+    // chained DestroyAll).
+    int chosen_number = 0;
+    // The current card type of a DB$ RepeatEach | RepeatTypesFrom$ loop (Atraxa: iterated per
+    // card type present among the imprinted cards); read by a ChooseCard Choices$
+    // Card.ChosenType filter, cleared when the loop ends.
+    std::string chosen_type;
 };
 
 // The whole persisted resolution: armed by resolve_top on first entry, cleared
@@ -313,9 +369,16 @@ struct FrameLevel {
 struct ResolutionFrame {
     bool active = false;
     Entity stack_entity = 0;         // the stack object being resolved (resume verifies it)
-    bool prev_priority = false;      // player_a_has_priority to restore on completion
+    bool prev_priority = false;      // priority.player_a_has_priority to restore on completion
     bool counted_resolution = false; // ability_resolution_counts++ already applied (first entry)
-    std::vector<Entity> saved_remembered;  // remembered set to restore on completion
+    // The resolving object's own X (CR 107.3a: the spell's Spell::x_paid, an ability's
+    // Ability::x_paid) and, for a spell, its Converge count (CR 702.90: distinct colors of mana
+    // spent to cast it); captured once as it starts resolving, read by Count$xPaid / cmcLEX /
+    // Count$Converge through current_x_paid() / current_converge().
+    int x_paid = 0;
+    int converge = 0;
+    ResolutionMemory memory;
+    std::vector<ObjectRef> saved_remembered;  // remembered set to restore on completion
                                            // (saved+cleared by frame_enter, restored by
                                            // frame_finish in stack_manager.cpp)
     std::deque<FrameLevel> levels;
@@ -384,8 +447,8 @@ class FrameCtx {
 };
 
 // TargetAsker with the RESOLUTION family tag (Batch 8): the suspendable form
-// of a resolution-time select_target (charm's fallback mode targeting,
-// immediate_trigger's per-sub selection). Delegates each pick straight to
+// of a resolution-time select_target (a storm or spell copy's new targets, an
+// Aura put onto the battlefield choosing what it enchants). Delegates each pick straight to
 // FrameCtx::ask — consume-or-park with tag RESOLUTION — asking on the AMBIENT
 // seat, so it never repoints priority itself (Batch 5 finding: the call site
 // seats the chooser, exactly as blocking select_target expects; during a root
@@ -410,7 +473,7 @@ class ResolutionTargetAsker final : public TargetAsker {
 // place (a DETERMINIZE at a suspended root must not shuffle a card the parked
 // menu / the resolving ability refers to). The union of: pending query menu
 // entities, each FrameLevel's in-flight work targets/source (plus the ROOT
-// ability component's), cur_game.remembered_entities, and each level's
+// ability component's), cur_game.resolution.memory.remembered, and each level's
 // EffectRuntime pool slices (dig/scry/surveil/rearrange lib slices, sylvan's
 // drawn/chosen set) via the per-handler visitor in resolution_frame.cpp.
 std::set<Entity> collect_pending_pins();

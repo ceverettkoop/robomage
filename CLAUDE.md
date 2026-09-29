@@ -10,8 +10,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Avoid inline logic for anything that will be repeated; write new functions that are reusable
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
+  Never scan entity ids. Free code with no system's set in reach (SVar evaluation, replacement
+  dispatch, the observation serializer) walks `zoned_entities()` (`src/queries/zones.h`), the
+  systems' shared `{Zone}` set; players are reached through `cur_game`'s player entities.
 - Try to consolidate iterations through entities within a function, rather than iterating through many times
-- To find battlefield permanents, use the shared accessors in `src/game_queries.h` — the
+- Shared entity queries live in `src/queries/`, one header per concern (list under Key files);
+  include the specific header you use.
+- To find battlefield permanents, use the shared accessors in `src/queries/battlefield.h` — the
   `is_battlefield_permanent(entity, ctrl)` predicate as a loop guard / single-entity check,
   or `battlefield_permanents(mEntities, ctrl)` for the whole list — instead of open-coding
   the `Permanent` + `Zone` + `BATTLEFIELD` (+ controller) scan inline. These bake in the rule
@@ -21,7 +26,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
   and the observation serializer in `machine_io.cpp` (which deliberately includes phased-out
   permanents, flagged).
-  Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
+  Add similar shared accessors (in the `src/queries/` header for their concern) when a new
+  entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`; only the libtorch actor TUs in `src/actor/` enable them)
 - Two interactive front ends, both Python, both sitting on the shared driver in
@@ -66,6 +72,8 @@ The official **MTG Comprehensive Rules** are checked in at
 implement or test a mechanic** — they define correct behavior independent of the engine's current
 state. `grep` the numbered rule rather than reading the 9k-line file (e.g.
 `grep -nE "^509\." docs/mtg_comprehensive_rules.txt`; 702 keywords, 704 SBAs, 613 layers).
+Known deviations and gaps are listed in [`docs/rules_deviations.md`](docs/rules_deviations.md);
+update it when you knowingly deviate or leave a rules gap.
 
 ## Build Commands
 
@@ -207,6 +215,14 @@ train/.venv/bin/python train/test_harness.py --format bo1 \
   --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp"
 ```
 
+**Rules-regression scenarios.** When you fix a rules bug, save the harness line that shows it as
+`train/regression/scenarios/<cr-rule>_<what>.json` (a `--scenario` file plus a `"why"` line citing
+the CR rule and the commit, and assertions on the rules outcome: `expect` / `expect_not` /
+`expect_order` regexes over the narrative, `expect_menu` / `expect_menu_not` over offered actions,
+`expect_result`; keys in `train/test_scenarios.py`'s docstring). Keep `max_decisions` just past the
+asserted event, check it passes (`train/test_scenarios.py <name>`) and fails without the fix; the
+`scenarios` tier of `make check` runs them all.
+
 `train.py observe --player-a "play:<specs>"` drives one seat by specs against any agent (each list
 drives only its seat, so leave specs unkeyed there).
 
@@ -232,13 +248,19 @@ components and systems are listed in `init_ecs()` (`src/game_driver.cpp`).
 Globals: `global_coordinator` and `cur_game` (the current `Game`; both declared in
 `src/game_driver.h`), `card_db` (uid → loaded card entity, `src/card_db.h`), and `RESOURCE_DIR`
 (`getcwd() + "/resources"`, so the engine runs with cwd `bin/`, as the Python drivers do).
+**Per-object state lives on components; `Game` holds only game-scoped state and cross-object
+registries keyed by `ObjectRef`** (`ObjectSet` / `ObjectMap`, e.g. a permission granted to a card).
 
-**Components:** `CardData` (printed card: name, types, cost, P/T, ability/static/replacement
-templates), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
+**Components:** `CardData` (printed card: name, types, cost, P/T, ability definitions, statics,
+replacements), `Zone` (location, owner, controller, `distance_from_top`), `Permanent` (on the
 battlefield: controller, tapped, summoning sickness, abilities, statics, typed `counters`),
-`Creature` (P/T, combat state), `Damage`, `Spell` (card entity on the stack), `Ability` (also a
-standalone stack entity for activated/triggered abilities, `Orderer::push_ability_onto_stack`),
-`Token`, `Player` (life, mana, per-turn counters), `ColorIdentity`. **Tokens have no `CardData`**
+`Creature` (P/T, combat state), `Damage`, `Spell` (card entity on the stack), `Ability` (an
+ability instance — see below; also a standalone stack entity for activated/triggered abilities,
+`Orderer::push_ability_onto_stack`),
+`Token`, `Player` (life, mana, per-turn counters), `EntryInfo` (what a cast or effect recorded
+about a card's next battlefield entry — tapped, transformed, attacking, how it was cast, an Aura's
+chosen object; consumed as its Permanent is built, dropped if it goes elsewhere); an object's color is read through
+`effective_colors` (`src/queries/characteristics.h`). **Tokens have no `CardData`**
 (Zone + Permanent + Creature + Damage + Token) — guard `CardData` reads on battlefield objects.
 `Effect` is never instantiated; only its nested `Effect::Replacement` (parsed from `R:` lines into
 `CardData::replacement_effects`) is live.
@@ -252,10 +274,14 @@ and rules-modifying prohibitions (`rules_mod::`, `rules_modifying.*`).
 
 ### Game flow
 
-`Game` (`src/classes/game.h`; the `Step` enum UNTAP … CLEANUP) holds turn/step, active player,
-timestamp, seed + `mt19937`, delayed triggers, and every suspended-decision state. `main.cpp` only
-parses flags; the loop is `play_single_game` in `src/game_driver.cpp` (shared with `az_actor`;
-bo3 sequencing is `play_bo3_match`). Each iteration: emit a parked `pending_query` → pregame stage
+`Game` (`src/classes/game.h`; the `Step` enum UNTAP … CLEANUP) groups its state by concern:
+`turn_state` (turn, step, active player, extra turns, cleanup progress), `priority` (holder, pass
+flags), `combat`, `pending` (every suspended-decision state), `resolved_effects` (effects that
+belong to no permanent, emblems), `rng`, `identity` (object stamps), plus the timestamp, delayed
+triggers and last-known information; `reset_turn_counters` is the one turn-end reset of "this
+turn" counts. `main.cpp` only parses flags; the loop is `play_single_game` in
+`src/game_driver.cpp` (shared with `az_actor`; bo3 sequencing is `play_bo3_match`). Each
+iteration: emit a parked `pending.query` → pregame stage
 → turn-based actions → mandatory choice (`proc_mandatory_choice`) → SBEs → `advance_step` (resolve
 top of stack / next step once both players pass) → SBEs → `determine_legal_actions` (a lone pass is
 auto-taken) → `InputLogger::get_input` → `process_action`.
@@ -268,21 +294,49 @@ re-enters with the answer. All state lives in `cur_game`/ECS, never in statics, 
 
 ### Ability resolution
 
-`Ability::resolve()` (`src/components/ability.cpp`) is a phased state machine that maps the
-category string to an `EffectKind` (`src/effects/effect_kind.{h,cpp}`), dispatches through
+**Definition vs instance** (`src/components/ability.h`). `AbilityDef` is what a script (or a
+keyword / engine rule) says about an ability — category, costs, targeting spec, trigger
+conditions, effect params (`params` variant, `ability_params.h`), `SubAbility$` / mode chains —
+built by the parser and never changed afterwards. It lives in a process-wide append-only store
+(`intern_ability_def` / `keyed_ability_def` / `derived_ability_def`), so a `const AbilityDef *`
+stays valid across snapshot restores and per-game ECS resets; `CardData`/`Token` hold such
+pointers, and card/token scripts and granted-ability bodies are parsed once per process. `Ability`
+is one instance — `def` plus source, controller, targets, X, trigger-fire bindings, and instance
+sub-ability/mode children mirroring `def`'s chains — so it is cheap to copy into a `LegalAction`,
+`DelayedTrigger`, `FrameLevel` or trigger record. Never write through `def`: an engine-built
+ability gets a keyed definition, a variant of an existing one a `derived_ability_def`, and
+anything fixed per instance (target bounds, a mana ability's chosen color) is an instance field.
+What a resolution remembers/chooses/names for its later instructions (remembered, imprinted,
+chosen cards, named card, chosen number/type) is `cur_game.resolution.memory`; X and Converge
+are read through `current_x_paid()` / `current_converge()` (`src/queries/spells.h`) — the cast or
+activation in flight, else the resolving object's own values — never a global.
+
+`resolve_ability()` (`src/resolution.cpp`) is a phased state machine that dispatches on the
+definition's `EffectKind` (bound from its category string when the definition is interned) through
 `effects::handler_for` (`effect_table.cpp`) to a per-effect handler in
-`src/effects/effect_<name>.cpp` (declared in `effects.h`), then chains `SubAbility$`. An unmapped
-category silently resolves as a no-op, so a new category needs all four: enum member, string
-mapping, handler, table case. Mana abilities (`AddMana`) resolve at activation, off the stack.
+`src/effects/effect_<name>.cpp`, then chains `SubAbility$`. Every category is one line in
+`src/effects/effect_kinds.def`, which generates the enum, the category map, the handler
+declarations and the dispatch table: a new category is that line plus its handler. The parser
+warns on a script category with no entry (it would resolve as a no-op). Mana abilities
+(`AddMana`) resolve at activation, off the stack.
 Targets are chosen before costs are paid and re-checked at resolution.
 
 **Last-known information (CR 400.7 / 608.2h).** An effect that reads a departed object's
 characteristics AFTER the resolution that moved it (its own leaves/dies triggers, an ability whose
-source it was resolving later) must use `departed_lki_for` (`src/game_queries.h`), not
+source it was resolving later) must use `departed_lki_for` (`src/queries/lki.h`), not
 `effective_power`/`effective_*`: those read `lki_for`, whose snapshot is superseded when that
 resolution ends and at the object's next zone change (tokens excepted, CR 111.7).
 
-**Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal Therapy,
+**Object identity (CR 400.7).** An entity id survives zone changes and is eventually reissued, so
+any reference kept across a zone change, a resolution boundary or a turn is an `ObjectRef`
+(`src/object_ref.h`: the entity plus its `Zone::obj_gen` stamp and the id's issue count, made with
+`ObjectRef::of`), never a bare `Entity`; keyed state uses `ObjectSet` / `ObjectMap`. Read it with
+`get()` and handle 0 (the object is gone or became a new object); `lki_entity()` is only for
+last-known-information lookups, logging and link bookkeeping (0 once the id is issued to another
+entity; last-known information is keyed the same way, `LastKnownInfo::issue`). Within one resolution the follow window keeps an object the
+effect moved findable (CR 400.7j). Plain `Entity` is for values that live within one step.
+
+**Name-a-card candidate set (deviation from CR 201.4; see `docs/rules_deviations.md`).** "Name a card" effects (Cabal Therapy,
 Disruptor Flute, Petrified Hamlet) do **not** offer every card. `build_name_card_choices()`
 (`src/name_card_choices.{h,cpp}`) returns a LIMITED set — the distinct vocab cards in the
 relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source: `CHOOSER_ONLY`
@@ -297,7 +351,7 @@ demand by `load_card` (`src/card_db.cpp`) into the `card_db` map and parsed by
 `Loyalty`, `K:` keywords, `A:` spell/activated abilities (`SP$`/`AB$ <category>`; `Mana` →
 `AddMana`), `T:` triggers, `S:` statics, `R:` replacements, `SVar:` bodies (`DB$` sub-abilities
 chained by `SubAbility$`). Per-ability `Key$ Value` params land in `apply_param_to_ability`
-(fields on `Ability` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
+(fields on `AbilityDef` plus typed structs in `src/components/ability_params.h`). `name_to_uid`
 lowercases, maps space/`-`/`/` to `_`, drops other characters, collapses `__`. Basic land types
 get their mana ability from `StateManager::apply_land_abilities`, not the script.
 Decks (`.dk`, `bin/resources/decks/`) are `<quantity> <card name>` lines, then an optional
@@ -348,12 +402,16 @@ functionality is inferable from the others (a cosmetic `StackDescription$`/`TgtP
 `train/` holds the Python side: gymnasium env, PPO (`MaskablePPO`, sb3-contrib) and AlphaZero
 training, analysis and front ends. Venv: `train/.venv/` (invoke `train/.venv/bin/python`).
 
-**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` after each game;
-`MATCH_RESULT: Player A|B wins X-Y` ends the match.
+**Engine result lines (machine mode):** `GAME_RESULT: N Player A|B wins` — or `GAME_RESULT: N draw`
+when both players lose at once (CR 104.4a) — after every game, bo1 and bo3 (`print_game_result`);
+`MATCH_RESULT: Player A|B wins X-Y` ends a bo3 match. A drawn bo3 game counts for neither player:
+the match plays on until someone has won two games (fatal past `MAX_MATCH_GAMES`), and the player
+who went first in the drawn game goes first again. Every game end goes through `Game::end_game`.
 
 **Reward (Player A's perspective, per game):** ±1.0 per game (`GAME_WIN_REWARD`/`GAME_LOSS_REWARD`,
-`train/env.py`); in bo3 it lands at every `GAME_RESULT`. The match reward (`MATCH_WIN_REWARD`/
-`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the episode. Per-game rewards match the
+`train/env.py`), 0.0 for a drawn game (`DRAW_REWARD`; AZ z = 0); it lands at every `GAME_RESULT`.
+The match reward (`MATCH_WIN_REWARD`/`MATCH_LOSS_REWARD`) is 0.0 — `MATCH_RESULT` only ends the
+episode. Per-game rewards match the
 AlphaZero outcome target, so a PPO checkpoint warm-starting an AZ net (`az_net.from_ppo`) hands
 over a calibrated critic; AZ trains value on `(1 - q_mix) * z + q_mix * td_q` (n-step TD target;
 `--td-n` / `--q-mix`, see `cli_spec.py`). Shaping is capped per game (`SHAPING_EPISODE_CAP`).
@@ -362,9 +420,11 @@ PopArt (`train/popart.py`) normalizes each archetype bucket's value targets, on 
 buffers and updates are output-preserving, so checkpoints resume under either setting.
 
 **Bo3 state-vector fields** (indices in the `src/machine_io.h` layout block): match context
-(`game_number`, match wins, `is_sideboard_phase`; all 0.0 in bo1), library counts, known top-5
-library cards, and a match-scoped `revealed` bit per opponent registered-decklist slot (the
-deterministic belief state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}`).
+(`game_number` / `MATCH_GAME_NORMALIZER`, match wins, `is_sideboard_phase`; all 0.0 in bo1),
+library counts, the known top-5 cards of each library as the viewer knows them (per-player
+knowledge in `Game::KnownLibraryTop`: own looks, the opponent's reveals, a fateseal), and a
+match-scoped `revealed` bit per opponent registered-decklist slot (the deterministic belief
+state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}`).
 
 ### Machine mode protocol
 
@@ -382,8 +442,11 @@ int32  [MAX_ACTIONS] zone   (ActionRefZone)
 int32  [MAX_ACTIONS] refs   (entity-reference slot, -1 = none)
 int32  [MAX_ACTIONS] ords   (mode/X/color/ability index, -1 = n/a)
 ```
-Arrays are padded to `MAX_ACTIONS`. The header's sizes are a layout handshake the Python driver
-asserts. Under `--narrative` the frame also carries per-action description strings and
+Arrays are padded to `MAX_ACTIONS`. Every menu goes through `InputLogger::get_input`, which leaves
+out a choice interchangeable with an earlier one (two identical cards in the same graveyard or
+library — `interchangeable_cards`), so a menu never needs more than `MAX_ACTIONS` slots; a debug
+build stops on a wider one (`populate_query`). The header's sizes are a layout handshake the
+Python driver asserts. Under `--narrative` the frame also carries per-action description strings and
 per-permanent counter / token-name strings (display only). `--broadcast-steps` emits the same
 payload as `BSTATE:` frames that take no reply.
 
@@ -460,8 +523,17 @@ sections above are not repeated here.
   `_combat`, `_layers` = CR 613 layer driver, `_statics`, `_triggers` = APNAP placement)
 - `src/systems/replacement_effects.{h,cpp}` — CR 614/616 dispatcher; `rules_modifying.{h,cpp}` —
   cast/activate/land-play prohibitions
-- `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `Ability::resolve()` to them
-- `src/game_queries.h` — shared entity queries (battlefield accessors, filters, `effective_*`, LKI)
+- `src/effects/` — one TU per resolution effect; `effect_table.cpp` dispatches `resolve_ability()` to them
+- `src/resolution.cpp` — the resolution state machine; `src/targeting.cpp` — target legality and
+  candidate lists; `src/zone_search.cpp` — library/graveyard/exile searches; `src/unless_payment.cpp`
+  — unless-cost payment; `src/svar_eval.cpp` — the one SVar (`Count$` …) evaluator and comparator
+- `src/queries/` — shared entity queries, a header (+ `.cpp`) per concern: `battlefield` (live-permanent
+  accessors, phasing rule), `characteristics` (face up, colors, mana value, `effective_*`, `entity_name`),
+  `types`, `keywords`, `counters`, `filters` (`MatchCtx`, the one filter matcher), `players` (seats,
+  controller, `Defined$` player), `affected` (the objects / player an effect acts on:
+  targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
+  `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
+  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a search root)
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
@@ -531,6 +603,7 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `ci_check.py` — `make check` driver; default `ALL_TIERS` vs `OPT_IN_TIERS` (`actor`, `analysis`,
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
+- `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),

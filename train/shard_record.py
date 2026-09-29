@@ -28,9 +28,9 @@ STASHES its row — :meth:`observe_step` (the ``GameDriver.step_observer`` hook,
 called once per stepped decision with the pre-step obs) is the single commit
 point. It attaches the stashed row to the decision being stepped, or builds
 the one-hot row; then it reads the game/match boundaries off ``(reward,
-info)`` exactly like az_selfplay's loop: ``info["game_result"]`` marks a bo3
-game boundary whose winner is the reward sign (Player-A perspective), a bare
-``terminated`` without one is the bo1 ending. z/td_q are backfilled per game
+info)`` exactly like az_selfplay's loop: ``info["game_result"]`` marks a game
+boundary whose winner is the reward sign (Player-A perspective; 0 is a drawn
+game), a bare ``terminated`` without one ends a game that got no result. z/td_q are backfilled per game
 from each row's own mover's perspective via ``az_selfplay._backfill_and_pack``.
 
 File protocol: ONE file per match — ``shard_{ts}_{pid}_{n}.npz`` with ``n``
@@ -453,9 +453,9 @@ class ShardRecorder:
                 self.rows_recorded += 1
                 self._dirty = True
 
-            # Boundaries, az_selfplay's rules: a GAME_RESULT step ends a bo3
-            # game (winner = reward sign, Player-A perspective); a terminated
-            # step without one is the bo1 ending.
+            # Boundaries, az_selfplay's rules: a GAME_RESULT step ends a game
+            # (winner = reward sign, Player-A perspective; 0 = a draw); a
+            # terminated step without one ends a game that got no result.
             boundary = bool(info.get("game_result"))
             if boundary or (done and not boundary and self._samples):
                 self._game_winners.append(winner_from_reward(reward))

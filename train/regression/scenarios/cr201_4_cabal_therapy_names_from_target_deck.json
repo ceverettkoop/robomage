@@ -1,0 +1,11 @@
+{
+  "name": "cr201_4_cabal_therapy_names_from_target_deck",
+  "why": "CR 201.4 / 601.2c: Cabal Therapy's name candidates come from its target's deck, not the caster's - 04967c9",
+  "hand_a": ["Cabal Therapy", "Swamp"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "play": ["A:keep", "B:keep", "A:cast:Cabal Therapy", "A:target:Player B"],
+  "max_decisions": 6,
+  "expect_menu": ["^Name card: Delver of Secrets$"],
+  "expect_menu_not": ["^Name card: (Cabal Therapy|Swamp)$"]
+}

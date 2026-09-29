@@ -1,0 +1,11 @@
+{
+  "name": "cr601_2f_exile_play_pays_full_cost",
+  "why": "CR 601.2b/f / 107.4f: a card played from Light Up the Stage's exile pays its full cost, Phyrexian pips included (Dismember) - 85638a6",
+  "hand_a": ["Light Up the Stage", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_a": ["Dismember", "Island", "Island"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Light Up the Stage", "A:desc:Cast Dismember", "A:desc:Pay 2 life", "A:desc:Pay 2 life", "A:target:Grizzly Bears"],
+  "max_decisions": 10,
+  "expect_order": ["Player A casts Light Up the Stage", "Player A may play Dismember from exile", "Player A pays 2 life", "Player A pays 2 life", "Player A casts Dismember targeting Grizzly Bears", "Grizzly Bears gets -5/-5"]
+}

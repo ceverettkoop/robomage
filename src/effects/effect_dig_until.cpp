@@ -5,12 +5,15 @@
 #include <vector>
 
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/entry_info.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/entry.h"
+#include "../queries/filters.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -23,7 +26,7 @@ namespace effects {
 // matches Valid$ (CR 701.16 reveal + 401 library ordering). The matching card goes to
 // FoundDestination$; the cards passed over go to RevealedDestination$.
 //   - Amped Raptor: found -> Exile, revealed -> Exile (impulse), RememberFound$ True records the
-//     matching card in cur_game.remembered_entities so a chained DB$ Play can cast it.
+//     matching card in cur_game.resolution.memory.remembered so a chained DB$ Play can cast it.
 //   - Raph & Mikey, Troublemakers: found -> Battlefield entering Tapped$ and Attacking$ (CR 508.4:
 //     put onto the battlefield attacking, not declared — no new "attacks" triggers), revealed ->
 //     the bottom of the library (RevealedLibraryPosition$ -1) in a random order (RevealRandomOrder$).
@@ -31,13 +34,13 @@ namespace effects {
 // over the destinations, the filter, and the entering flags.
 HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     Zone::Ownership owner = ab.controller;
-    Zone::ZoneValue found_dest = static_cast<Zone::ZoneValue>(ab.dig_until_found_dest);
-    Zone::ZoneValue revealed_dest = static_cast<Zone::ZoneValue>(ab.dig_until_revealed_dest);
+    Zone::ZoneValue found_dest = static_cast<Zone::ZoneValue>(ab.def->dig_until_found_dest);
+    Zone::ZoneValue revealed_dest = static_cast<Zone::ZoneValue>(ab.def->dig_until_revealed_dest);
 
     // RememberFound$ True replaces any previously remembered cards with the found one, so a
     // downstream Defined$ Remembered (DB$ Play) reads exactly this card. Clear up front so a
     // failed dig (library empties) leaves nothing remembered.
-    if (ab.dig_until_remember_found) cur_game.remembered_entities.clear();
+    if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.clear();
 
     // Reveal from the top (a stable top-first snapshot — nothing leaves the library until the
     // reveal has resolved) until a card matches. `revealed` holds the non-matching cards passed
@@ -49,7 +52,10 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         const std::string nm = global_coordinator.entity_has_component<CardData>(card)
             ? global_coordinator.GetComponent<CardData>(card).name : "a card";
         game_log("%s reveals %s.\n", player_name(owner).c_str(), nm.c_str());
-        bool matches = ab.change_valid.empty() || card_matches_filter(card, ab.change_valid);
+        // Every card this dig passes over is shown to all players (CR 701.20a), wherever it
+        // goes next.
+        mark_card_revealed(card, owner);
+        bool matches = ab.def->change_valid.empty() || card_matches_filter(card, ab.def->change_valid);
         if (matches) { found = card; break; }
         revealed.push_back(card);
     }
@@ -61,8 +67,8 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // seeded RNG (deterministic, platform-stable — see stable_rng.h); a Library destination honors
     // RevealedLibraryPosition$ (-1 / unset = bottom, 0 = top).
     if (!revealed.empty()) {
-        if (ab.rest_random_order) stable_shuffle(revealed, cur_game.gen);
-        bool on_bottom = (revealed_dest == Zone::LIBRARY && ab.dig_library_position != 0);
+        if (ab.def->rest_random_order) stable_shuffle(revealed, cur_game.rng.engine);
+        bool on_bottom = (revealed_dest == Zone::LIBRARY && ab.def->dig_library_position != 0);
         for (Entity card : revealed)
             orderer->add_to_zone(on_bottom, card, revealed_dest);
     }
@@ -74,30 +80,34 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
             // Tapped$ / Attacking$ (Raph & Mikey): the found creature enters tapped and attacking
             // the same defender the source is attacking (CR 508.4). Reuse the ninjutsu one-shots —
             // apply_permanent_components consumes them once the card's Creature component exists.
-            if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(found);
-            if (ab.dig_until_attacking) {
-                Entity attack_target = 0;
-                if (global_coordinator.entity_has_component<Creature>(ab.source))
-                    attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
-                if (attack_target != 0) cur_game.pending_enters_attacking[found] = attack_target;
+            if (ab.def->enters_tapped) entry_info(found).enters_tapped = true;
+            if (ab.def->dig_until_attacking) {
+                ObjectRef attack_target;
+                const Entity src = ab.source.get();
+                if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
+                    attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
+                if (attack_target.get() != 0) entry_info(found).enters_attacking = attack_target;
             }
-            orderer->add_to_zone(false, found, Zone::BATTLEFIELD);
-            // The card enters under the digging player's control (CR 608.2 — it comes from their
-            // own library).
-            if (global_coordinator.GetComponent<Zone>(found).location == Zone::BATTLEFIELD)
+            // The shared uncast entry (an Aura picks what it enchants, CR 303.4f/g). The card
+            // enters under the digging player's control (CR 608.2 — it comes from their own
+            // library).
+            if (put_onto_battlefield(orderer, FrameCtx::blocking(), found) == Zone::BATTLEFIELD) {
                 global_coordinator.GetComponent<Zone>(found).controller = owner;
-            game_log("%s puts %s onto the battlefield tapped and attacking.\n",
-                     player_name(owner).c_str(), nm.c_str());
+                game_log("%s puts %s onto the battlefield tapped and attacking.\n",
+                         player_name(owner).c_str(), nm.c_str());
+            } else {
+                drop_entry_info(found);
+            }
         } else {
             orderer->add_to_zone(false, found, found_dest);
             game_log("%s exiles %s.\n", player_name(owner).c_str(), nm.c_str());
         }
-        if (ab.dig_until_remember_found) cur_game.remembered_entities.push_back(found);
+        if (ab.def->dig_until_remember_found) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(found));
     }
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_dig_until(AbilityDef &ab, const std::string &key, const std::string &value) {
     auto zone_from = [](const std::string &v) -> int {
         if (v == "Library") return Zone::LIBRARY;
         if (v == "Hand") return Zone::HAND;

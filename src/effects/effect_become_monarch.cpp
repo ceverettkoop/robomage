@@ -3,6 +3,7 @@
 #include "../classes/game.h"
 #include "../components/zone.h"
 #include "../mana_system.h"
+#include "../queries/players.h"
 
 extern Game cur_game;
 

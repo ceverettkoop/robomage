@@ -16,6 +16,8 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "game_driver.h"
+#include "queries/players.h"
+#include "queries/zones.h"
 #include "machine_io.h"
 #include "search_server.h"
 
@@ -27,6 +29,8 @@ static int get_int_input();
 static Zone::Ownership deciding_player();
 static int apply_concede_input(int choice);
 static void check_machine_choice(const std::vector<LegalAction> &actions, int choice);
+static bool interchangeable_choices(const LegalAction &a, const LegalAction &b);
+static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction> &actions);
 static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
 static std::string read_header_field(std::ifstream &file, const std::string &key);
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
@@ -61,7 +65,7 @@ static Zone::Ownership deciding_player() {
     extern bool sideboard_phase;
     extern Zone::Ownership sideboard_phase_player;
     if (sideboard_phase && sideboard_phase_player != Zone::UNKNOWN) return sideboard_phase_player;
-    return cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    return priority_seat();
 }
 
 // Apply a CONCEDE_GAME / CONCEDE_MATCH sentinel read at the current decision
@@ -288,8 +292,8 @@ static void check_machine_choice(const std::vector<LegalAction> &actions, int ch
         menu += "\n  [" + std::to_string(i) + "] " + actions[i].description;
     fatal_error("machine input out of range: got index " + std::to_string(choice) +
                 " but menu has " + std::to_string(actions.size()) + " actions (turn=" +
-                std::to_string(cur_game.turn) + " step=" +
-                std::string(step_to_string(cur_game.cur_step)) + ")" + menu);
+                std::to_string(cur_game.turn_state.turn) + " step=" +
+                std::string(step_to_string(cur_game.turn_state.step)) + ")" + menu);
 }
 
 void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int choice) {
@@ -299,10 +303,54 @@ void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int cho
     }
 }
 
+// Two menu entries that make the same choice: the same kind of action on interchangeable objects
+// (two copies of a card in a graveyard or library — Surgical Extraction targeting one of several
+// copies, a search finding one) with the same label and cast / activation variant.
+static bool interchangeable_choices(const LegalAction &a, const LegalAction &b) {
+    return a.type == b.type && a.category == b.category && a.description == b.description &&
+           a.option_ordinal == b.option_ordinal && a.target_entity == b.target_entity &&
+           a.use_alt_cost == b.use_alt_cost && a.use_flashback == b.use_flashback &&
+           a.use_offspring == b.use_offspring && a.use_escape == b.use_escape &&
+           a.impulse_cast == b.impulse_cast && a.play_back_face == b.play_back_face &&
+           a.cast_back_face == b.cast_back_face && a.companion_to_hand == b.companion_to_hand &&
+           a.suspend_action == b.suspend_action && a.card_is_public == b.card_is_public &&
+           a.source_entity != b.source_entity &&
+           interchangeable_cards(a.source_entity, b.source_entity);
+}
+
+// Indices of the menu entries kept when every entry interchangeable with an earlier one is left
+// out, in menu order.
+static std::vector<size_t> distinct_choice_indices(const std::vector<LegalAction> &actions) {
+    std::vector<size_t> kept;
+    kept.reserve(actions.size());
+    for (size_t i = 0; i < actions.size(); i++) {
+        bool duplicate = false;
+        for (size_t k : kept)
+            if (interchangeable_choices(actions[k], actions[i])) {
+                duplicate = true;
+                break;
+            }
+        if (!duplicate) kept.push_back(i);
+    }
+    return kept;
+}
+
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
+    std::vector<size_t> kept = distinct_choice_indices(actions);
+    if (kept.size() == actions.size()) return choose(actions);
+    std::vector<LegalAction> menu;
+    menu.reserve(kept.size());
+    for (size_t i : kept) menu.push_back(actions[i]);
+    int choice = choose(menu);
+    return (choice >= 0 && choice < static_cast<int>(kept.size()))
+               ? static_cast<int>(kept[static_cast<size_t>(choice)])
+               : choice;
+}
+
+int InputLogger::choose(const std::vector<LegalAction> &actions) {
     extern bool has_human_player;
     extern bool human_player_is_a;
-    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.player_a_has_priority);
+    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.priority.player_a_has_priority);
 
     // Cooperative unwind after a concession (CR 104.3a): the game is already
     // decided, so hand back the first choice at every remaining decision --
@@ -321,8 +369,8 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         replay_decision_no++;
         // A logged concession replays as a concession, from the same seat.
         if (choice == CONCEDE_GAME || choice == CONCEDE_MATCH) {
-            game_log("(REPLAY) [T%zu | %s] Input: %d (concede)\n", cur_game.turn,
-                     step_to_string(cur_game.cur_step), choice);
+            game_log("(REPLAY) [T%zu | %s] Input: %d (concede)\n", cur_game.turn_state.turn,
+                     step_to_string(cur_game.turn_state.step), choice);
             return apply_concede_input(choice);
         }
         // Remap -1 (old confirm sentinel) to last slot for old replay file compatibility
@@ -337,9 +385,9 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                         ": logged index " + std::to_string(choice) + " but menu has " +
                         std::to_string(actions.size()) + " actions");
         }
-        Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-        game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
-            player_name(priority).c_str(), choice);
+        Zone::Ownership priority = priority_seat();
+        game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn_state.turn,
+            step_to_string(cur_game.turn_state.step), player_name(priority).c_str(), choice);
         return choice;
     }
 
@@ -404,8 +452,8 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                     menu += a.description;
                     menu += '|';
                 }
-                fprintf(stderr, "[emit] t=%zu s=%d n=%zu %s\n", cur_game.turn,
-                        static_cast<int>(cur_game.cur_step), actions.size(),
+                fprintf(stderr, "[emit] t=%zu s=%d n=%zu %s\n", cur_game.turn_state.turn,
+                        static_cast<int>(cur_game.turn_state.step), actions.size(),
                         menu.c_str());
             }
 #endif
@@ -455,8 +503,8 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                 menu += a.description;
                 menu += '|';
             }
-            fprintf(stderr, "[dec] t=%zu s=%d n=%zu c=%d %s\n", cur_game.turn,
-                    static_cast<int>(cur_game.cur_step), actions.size(), choice,
+            fprintf(stderr, "[dec] t=%zu s=%d n=%zu c=%d %s\n", cur_game.turn_state.turn,
+                    static_cast<int>(cur_game.turn_state.step), actions.size(), choice,
                     menu.c_str());
         }
 #endif
@@ -466,9 +514,9 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
 
     // Auto-pass mode: return 0 until we reach the target turn
     if (auto_pass_until_turn >= 0) {
-        if (cur_game.cur_step == DECLARE_ATTACKERS) {
+        if (cur_game.turn_state.step == DECLARE_ATTACKERS) {
             auto_pass_until_turn = -1;
-        } else if ((int)cur_game.turn < auto_pass_until_turn) {
+        } else if ((int)cur_game.turn_state.turn < auto_pass_until_turn) {
             commit_choice(actions, 0);
             return 0;
         }
@@ -484,13 +532,13 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     while (true) {
         populate_gamestate(&gs, viewer);
         populate_query(&q, actions);
-        print_query(&q, cur_game.player_a_has_priority);
+        print_query(&q, cur_game.priority.player_a_has_priority);
         int choice = get_int_input();
         // handling flagged choices
         switch (choice) {
             case PASS_TURN_CMD:
                 game_log("Auto-passing turn.\n");
-                auto_pass_until_turn = (int)cur_game.turn + 1;
+                auto_pass_until_turn = (int)cur_game.turn_state.turn + 1;
                 commit_choice(actions, 0);
                 return 0;
                 break;
@@ -518,9 +566,9 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
 
 bool request_optional_yesno(Zone::Ownership chooser, const std::string& prompt) {
     std::vector<LegalAction> yn = optional_yesno_menu(prompt);
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    bool prev_priority = cur_game.priority.player_a_has_priority;
+    cur_game.priority.player_a_has_priority = (chooser == Zone::PLAYER_A);
     int choice = InputLogger::instance().get_input(yn);
-    cur_game.player_a_has_priority = prev_priority;
+    cur_game.priority.player_a_has_priority = prev_priority;
     return choice == 1;
 }

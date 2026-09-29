@@ -12,6 +12,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 
@@ -31,8 +32,8 @@ static void place_rearranged_card(RearrangeRt &rt, size_t remaining_idx, std::sh
 namespace effects {
 
 HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
-    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
+    Zone::Ownership owner = ab.controller;  // "your library" = the ability's controller's (CR 109.5)
 
     // The looked-at slice is frozen once into the frame rt (pinned against
     // determinize). Slots are filled deepest first and each chosen card is put
@@ -46,9 +47,9 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
     RearrangeRt local_rt;
     RearrangeRt &rt = ctx.can_suspend() ? ctx.rt<RearrangeRt>() : local_rt;
     if (!rt.init) {
-        size_t num_cards = ab.amount;
-        if (!ab.dynamic_amount_expr.empty())
-            num_cards = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
+        size_t num_cards = ab.def->amount;
+        if (!ab.def->dynamic_amount_expr.empty())
+            num_cards = evaluate_amount(ab.def->dynamic_amount_expr, owner, 0, ab.target.get());
 
         // looking at top n only
         rt.lib = orderer->get_library_top(owner, num_cards);
@@ -82,7 +83,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         }
         // No priority repoint existed here — the resolving seat is ab.controller,
         // so seating the ask there is a no-op swap.
-        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source);
+        int choice = ctx.ask(std::move(pick_actions), ab.controller, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         // Record, drop from the candidates, and place in one step with no
         // suspension point between them: a resume re-enters at the next pick
@@ -97,14 +98,14 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
         rt.placed = true;
     }
 
-    if (ab.may_shuffle) {
+    if (ab.def->may_shuffle) {
         std::vector<LegalAction> shuffle_actions = {
             LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
             LegalAction(PASS_PRIORITY, std::string("Shuffle")),
         };
         shuffle_actions[0].category = ActionCategory::DONT_SHUFFLE;
         shuffle_actions[1].category = ActionCategory::SHUFFLE;
-        int shuffle_choice = ctx.ask(std::move(shuffle_actions), ab.controller, ab.source);
+        int shuffle_choice = ctx.ask(std::move(shuffle_actions), ab.controller, ab.source.lki_entity());
         if (shuffle_choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         if (shuffle_choice == 1) {
             orderer->shuffle_library(owner);

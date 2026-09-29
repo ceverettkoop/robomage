@@ -96,9 +96,6 @@
   Player A activated Fiery Islet for 1(R)
   Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -161,172 +158,99 @@
    0: Fail to find
    1: Swamp
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
-  >> B/B: 1 (Swamp)
+   3: Underground Sea
+  >> B/B: 2 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Swamp to the battlefield
+  Player B puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
 
 --- Decision 8 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp (NEW)
+  Self BF:  Undercity Sewers (T,NEW,res 1)
   Opp BF:   Fiery Islet (T)
-  Self GY: Marsh Flats
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Thoughtseize  [#0]
-  >> B/B: 1 (Cast Thoughtseize)
---- Narrative ---
-  Choose target for Thoughtseize:
-
---- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp (NEW)
-  Opp BF:   Fiery Islet (T)
-  Pending: Thoughtseize (self)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Marsh Flats
   Opp exile:  Rift Bolt [1 ctr]
   Opp revealed: Fiery Islet, Rift Bolt
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Player A (19 life)
-   1: Player B (19 life)
-  >> B/B: 0 (Player A (19 life))
+   0: Put Thoughtseize on top of library  [#0]
+   1: Put Thoughtseize into graveyard
+  >> B/B: 0 (Put Thoughtseize on top of library)
 --- Narrative ---
-  Targeting choice 0
-  Player B activated Swamp for 1(B)
-  Player B casts Thoughtseize targeting Player A
-
---- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp (T,NEW)
-  Opp BF:   Fiery Islet (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Self GY: Marsh Flats
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Mountain
-    Mountain
-    Mountain
-    Price of Progress
-    Rift Bolt
-  Player B chooses a card to discard:
-
---- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp (T,NEW)
-  Opp BF:   Fiery Islet (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Marsh Flats
-  Opp exile:  Rift Bolt [1 ctr]
-  Known opp hand: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Price of Progress
-   1: Rift Bolt
-  >> B/B: 1 (Rift Bolt)
---- Narrative ---
-  Player A discards Rift Bolt
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 17)
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 3 (Player A) --------
   Rift Bolt triggers: remove a time counter (suspend).
   Resolving ability (category: SuspendTick)
   Removed a time counter from Rift Bolt (0 remaining).
-  Player A may cast Rift Bolt without paying its mana cost (suspend).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
 --- Turn 3 (Player A) ---
-  PA: Mountain, Mountain, Mountain, Price of Progress
-  PB: Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn
+  PA: Mountain, Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize
 
---- Decision 12 ---
+--- Decision 9 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(4): Mountain, Mountain, Mountain, Price of Progress | lib 53
-  Opp:   17 life | mana: empty | hand count: 6 | lib 51
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
-  Opp BF:   Swamp (T)
-  Self GY: Rift Bolt
-  Opp GY:  Thoughtseize, Marsh Flats
-  Self exile: Rift Bolt [play:self/eot]
-  Opp revealed: Thoughtseize, Swamp, Marsh Flats
+  Opp BF:   Undercity Sewers (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
+  Opp GY:  Marsh Flats
+  Self exile: Rift Bolt
+  Opp revealed: Undercity Sewers, Marsh Flats
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Rift Bolt (from exile, no cost)  [#7]
-  >> A/A: 1 (Cast Rift Bolt (from exile, no cost))
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
 --- Narrative ---
   Player A casts Rift Bolt without paying its mana cost
   Choose target for Rift Bolt:
 
---- Decision 13 ---
+--- Decision 10 ---
   Priority: Player A (active)
   Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(4): Mountain, Mountain, Mountain, Price of Progress | lib 53
-  Opp:   17 life | mana: empty | hand count: 6 | lib 51
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
+  Opp:   19 life | mana: empty | hand count: 7 | lib 51
   Self BF:  Fiery Islet
-  Opp BF:   Swamp (T)
+  Opp BF:   Undercity Sewers (T)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
   Pending: Rift Bolt (self)
-  Self GY: Rift Bolt
-  Opp GY:  Thoughtseize, Marsh Flats
-  Self exile: Rift Bolt
-  Opp revealed: Thoughtseize, Swamp, Marsh Flats
+  Opp GY:  Marsh Flats
+  Opp revealed: Undercity Sewers, Marsh Flats
   Extras: not_priority_window
   Actions:
-   0: Player B (17 life)
+   0: Player B (19 life)
    1: Player A (19 life)
-  >> A/A: 0 (Player B (17 life))
+  >> A/A: 0 (Player B (19 life))
 --- Narrative ---
   Targeting choice 0
   Player A casts Rift Bolt targeting Player B
 
---- Decision 14 ---
+--- Decision 11 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   19 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Swamp (T)
+  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Fiery Islet
   Stack: Rift Bolt (spell, opponent) -> self (player)
-  Self GY: Thoughtseize, Marsh Flats
-  Opp GY:  Rift Bolt
-  Known opp hand: Mountain, Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Rift Bolt
+  Self GY: Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Fiery Islet, Rift Bolt
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: opp_passed
   Actions:
@@ -336,19 +260,18 @@
 --- Narrative ---
   Choose target for Force of Will:
 
---- Decision 15 ---
+--- Decision 12 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   19 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Swamp (T)
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
-  Self GY: Thoughtseize, Marsh Flats
-  Opp GY:  Rift Bolt
-  Known opp hand: Mountain, Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Rift Bolt
+  Self GY: Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Fiery Islet, Rift Bolt
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
   Actions:
@@ -357,19 +280,18 @@
 --- Narrative ---
   Targeting choice 0
 
---- Decision 16 ---
+--- Decision 13 ---
   Priority: Player B (non-active)
   Step: Upkeep (turn 3)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   19 life | mana: empty | hand count: 4 | lib 53
-  Self BF:  Swamp (T)
+  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Opp:   19 life | mana: empty | hand count: 5 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Fiery Islet
-  Stack: Rift Bolt (spell, opponent) -> self (player)
+  Stack: Force of Will (spell, self) -> Rift Bolt (opponent, slot 97) -> Rift Bolt (spell, opponent) -> self (player)
   Pending: Force of Will (self)
-  Self GY: Thoughtseize, Marsh Flats
-  Opp GY:  Rift Bolt
-  Known opp hand: Mountain, Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Rift Bolt
+  Self GY: Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Fiery Islet, Rift Bolt
   This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=R
   Extras: not_priority_window
   Actions:
@@ -385,17 +307,17 @@
   Rift Bolt is countered
   Player A draws Chain Lightning
 
---- Decision 17 ---
+--- Decision 14 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress | lib 52
-  Opp:   16 life | mana: empty | hand count: 4 | lib 51
+  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Fiery Islet
-  Opp BF:   Swamp (T)
-  Self GY: Rift Bolt, Rift Bolt
-  Opp GY:  Force of Will, Thoughtseize, Marsh Flats
+  Opp BF:   Undercity Sewers (T)
+  Self GY: Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Force of Will, Thoughtseize, Swamp, Marsh Flats, Atraxa, Grand Unifier
+  Opp revealed: Force of Will, Undercity Sewers, Marsh Flats, Atraxa, Grand Unifier
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
@@ -403,69 +325,71 @@
    2: Play Mountain
    3: Play Mountain
    4: Cast Chain Lightning  [#0]
+   5: Suspend Rift Bolt
   >> A/A: 4 (Cast Chain Lightning)
 --- Narrative ---
   Choose target for Chain Lightning:
 
---- Decision 18 ---
+--- Decision 15 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress | lib 52
-  Opp:   16 life | mana: empty | hand count: 4 | lib 51
+  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   18 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Fiery Islet
-  Opp BF:   Swamp (T)
+  Opp BF:   Undercity Sewers (T)
+  Stack: Chain Lightning (spell, self)
   Pending: Chain Lightning (self)
-  Self GY: Rift Bolt, Rift Bolt
-  Opp GY:  Force of Will, Thoughtseize, Marsh Flats
+  Self GY: Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Force of Will, Thoughtseize, Swamp, Marsh Flats, Atraxa, Grand Unifier
+  Opp revealed: Force of Will, Undercity Sewers, Marsh Flats, Atraxa, Grand Unifier
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Extras: not_priority_window
   Actions:
-   0: Player B (16 life)
+   0: Player B (18 life)
    1: Player A (19 life)
-  >> A/A: 0 (Player B (16 life))
+  >> A/A: 0 (Player B (18 life))
 --- Narrative ---
   Targeting choice 0
   Player A pays 1 life
   Player A activated Fiery Islet for 1(R)
   Player A casts Chain Lightning targeting Player B
   Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 13 life)
+  Chain Lightning deals 3 damage to Player B (now at 15 life)
   Resolving ability (category: CopySpellAbility)
   Player B may pay to copy Chain Lightning:
 
---- Decision 19 ---
+--- Decision 16 ---
   Priority: Player B (non-active)
   Step: First Main (turn 3)
-  Self:  13 life | mana: empty | hand(4): Careful Study, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   18 life | mana: empty | hand count: 4 | lib 52
-  Self BF:  Swamp (T)
+  Self:  15 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
+  Opp:   18 life | mana: empty | hand count: 5 | lib 52
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Fiery Islet (T)
   Stack: Chain Lightning (spell, opponent) -> self (player)
   Pending: Chain Lightning (opp)
-  Self GY: Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Rift Bolt, Rift Bolt
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
   Extras: not_priority_window
   Actions:
    0: Don't pay (Chain Lightning is not copied)  [#0]
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
---- Decision 20 ---
+--- Decision 17 ---
   Priority: Player A (active)
   Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Mountain, Price of Progress | lib 52
-  Opp:   13 life | mana: empty | hand count: 4 | lib 51
+  Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   15 life | mana: empty | hand count: 5 | lib 51
   Self BF:  Fiery Islet (T)
-  Opp BF:   Swamp (T)
-  Self GY: Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Force of Will, Thoughtseize, Marsh Flats
+  Opp BF:   Undercity Sewers (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Force of Will, Thoughtseize, Swamp, Marsh Flats, Atraxa, Grand Unifier
+  Opp revealed: Force of Will, Undercity Sewers, Marsh Flats, Atraxa, Grand Unifier
   This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U
   Actions:
    0: Pass priority
@@ -475,104 +399,470 @@
   >> A/A: 1 (Play Mountain)
 --- Narrative ---
   Player A played Mountain
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main (turn 3)
+  Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
+  Opp:   15 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Fiery Islet (T) | Mountain (NEW)
+  Opp BF:   Undercity Sewers (T)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Force of Will, Undercity Sewers, Marsh Flats, Atraxa, Grand Unifier
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U
+  Extras: self_lands_played=1
+  Actions:
+   0: Pass priority
+   1: Suspend Rift Bolt
+  >> A/A: 1 (Suspend Rift Bolt)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A suspends Rift Bolt (exiled with 1 time counter(s)).
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 4 (Player B) --------
   Player B draws Thoughtseize
 --- Turn 4 (Player B) ---
-  PA: Mountain, Mountain, Mountain, Price of Progress
-  PB: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize
+  PA: Mountain, Mountain, Price of Progress, Rift Bolt
+  PB: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize
 
---- Decision 21 ---
+--- Decision 19 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 50
+  Self:  15 life | mana: empty | hand(6): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize | lib 50
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Swamp
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Chain Lightning, Rift Bolt, Rift Bolt
+  Self BF:  Undercity Sewers
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
-   2: Cast Thoughtseize  [#0]
-  >> B/B: 2 (Cast Thoughtseize)
+   2: Cast Careful Study  [#0]
+   3: Cast Ponder  [#0]
+   4: Cast Thoughtseize  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Careful Study)
 --- Narrative ---
-  Choose target for Thoughtseize:
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Careful Study
+  Resolving ability (category: Draw, amount: 2)
+  Player B draws Lotus Petal
+  Player B draws Bloodstained Mire
+  Resolving ability (category: Discard)
+  Player B chooses a card to discard:
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(7): Bloodstained Mire, Lotus Petal, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Thoughtseize | lib 48
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
+  Actions:
+   0: Bloodstained Mire
+   1: Lotus Petal
+   2: Ponder
+   3: Reanimate
+   4: Scalding Tarn
+   5: Thoughtseize
+   6: Thoughtseize
+  >> B/B: 6 (Thoughtseize)
+--- Narrative ---
+  Player B discards Thoughtseize
+  Player B chooses a card to discard:
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(6): Bloodstained Mire, Lotus Petal, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 48
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window
+  Actions:
+   0: Bloodstained Mire
+   1: Lotus Petal
+   2: Ponder
+   3: Reanimate
+   4: Scalding Tarn
+   5: Thoughtseize
+  >> B/B: 5 (Thoughtseize)
+--- Narrative ---
+  Player B discards Thoughtseize
 
 --- Decision 22 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 50
+  Self:  15 life | mana: empty | hand(5): Bloodstained Mire, Lotus Petal, Ponder, Reanimate, Scalding Tarn | lib 48
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Swamp
-  Opp BF:   Fiery Islet (T) | Mountain
-  Pending: Thoughtseize (self)
-  Self GY: Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Chain Lightning, Rift Bolt, Rift Bolt
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Extras: not_priority_window
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Actions:
-   0: Player A (18 life)
-   1: Player B (13 life)
-  >> B/B: 0 (Player A (18 life))
+   0: Pass priority
+   1: Play Bloodstained Mire
+   2: Play Scalding Tarn
+   3: Cast Lotus Petal  [#0]
+  >> B/B: 3 (Cast Lotus Petal)
 --- Narrative ---
-  Targeting choice 0
-  Player B activated Swamp for 1(B)
-  Player B casts Thoughtseize targeting Player A
-  Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Mountain
-    Mountain
-    Price of Progress
-  Player B chooses a card to discard:
+  Player B casts Lotus Petal
+  Lotus Petal enters the battlefield
 
 --- Decision 23 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(4): Careful Study, Ponder, Reanimate, Scalding Tarn | lib 50
+  Self:  15 life | mana: empty | hand(4): Bloodstained Mire, Ponder, Reanimate, Scalding Tarn | lib 48
   Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Chain Lightning, Rift Bolt, Rift Bolt
+  Self BF:  Lotus Petal (NEW) | Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain, Price of Progress
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=3 colors=U
   Actions:
-   0: Price of Progress
-  >> B/B: 0 (Price of Progress)
+   0: Pass priority
+   1: Play Bloodstained Mire
+   2: Play Scalding Tarn
+   3: Cast Ponder  [#0]
+  >> B/B: 3 (Cast Ponder)
 --- Narrative ---
-  Player A discards Price of Progress
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 11)
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
 
 --- Decision 24 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  11 life | mana: empty | hand(4): Careful Study, Ponder, Reanimate, Scalding Tarn | lib 50
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Self:  15 life | mana: empty | hand(3): Bloodstained Mire, Reanimate, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Reanimate  [#2]
+   1: Polluted Delta  [#2]
+  >> B/B: 1 (Polluted Delta)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(3): Bloodstained Mire, Reanimate, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Polluted Delta, ?, ?, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Reanimate  [#1]
+   1: Polluted Delta  [#1]
+  >> B/B: 1 (Polluted Delta)
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(3): Bloodstained Mire, Reanimate, Scalding Tarn | lib 48
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Reanimate, Polluted Delta, Polluted Delta, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 colors=U
+  Extras: self_revolt, not_priority_window
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Reanimate
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(4): Bloodstained Mire, Reanimate, Reanimate, Scalding Tarn | lib 47
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Polluted Delta, Polluted Delta, ?, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_revolt
+  Actions:
+   0: Pass priority
+   1: Play Bloodstained Mire
+   2: Play Scalding Tarn
+  >> B/B: 1 (Play Bloodstained Mire)
+--- Narrative ---
+  Player B played Bloodstained Mire
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  15 life | mana: empty | hand(3): Reanimate, Reanimate, Scalding Tarn | lib 47
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Bloodstained Mire (NEW) | Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Self GY: Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Polluted Delta, Polluted Delta, ?, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=U
+  Extras: self_lands_played=1, self_revolt
+  Actions:
+   0: Pass priority
+   1: Activate Bloodstained Mire (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Bloodstained Mire (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Bloodstained Mire
+  Player B's Bloodstained Mire ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(3): Reanimate, Reanimate, Scalding Tarn | lib 47
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Bloodstained Mire (ability, self)
+  Pending: Bloodstained Mire (self)
+  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Known top: Polluted Delta, Polluted Delta, ?, ?, ?
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Undercity Sewers
+   3: Underground Sea
+  >> B/B: 2 (Undercity Sewers)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Reanimate
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  14 life | mana: empty | hand(3): Reanimate, Reanimate, Scalding Tarn | lib 46
+  Opp:   18 life | mana: empty | hand count: 3 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T,NEW,res 1)
+  Opp BF:   Fiery Islet (T) | Mountain (T)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Opp exile:  Rift Bolt [1 ctr]
+  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 life_lost=1 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window
+  Actions:
+   0: Put Reanimate on top of library  [#0]
+   1: Put Reanimate into graveyard
+  >> B/B: 0 (Put Reanimate on top of library)
+--- Narrative ---
+  No creatures eligible to attack.
+  -------- TURN 5 (Player A) --------
+  Rift Bolt triggers: remove a time counter (suspend).
+--- Turn 5 (Player A) ---
+  PA: Mountain, Mountain, Price of Progress
+  PB: Reanimate, Reanimate, Scalding Tarn
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
+  Opp:   14 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Fiery Islet | Mountain
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers (T)
+  Stack: Rift Bolt (ability, self)
+  Self GY: Chain Lightning, Rift Bolt
+  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Self exile: Rift Bolt [1 ctr]
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  Actions:
+   0: Pass priority
+   1: Cast Price of Progress  [#0]
+   2: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 1 (Cast Price of Progress)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A pays 1 life
+  Player A activated Fiery Islet for 1(U)
+  Player A casts Price of Progress
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: DealDamage, amount: 2)
+  Price of Progress deals 2 damage to Player A (now at 15 life)
+  Resolving ability (category: DealDamage, amount: 4)
+  Price of Progress deals 4 damage to Player B (now at 10 life)
+  Resolving ability (category: SuspendTick)
+  Removed a time counter from Rift Bolt (0 remaining).
+  Rift Bolt triggers: the last time counter was removed (suspend).
+  Resolving ability (category: SuspendCast)
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   10 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers (T)
+  Stack: Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Self exile: Rift Bolt
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
+  Extras: not_priority_window
+  Actions:
+   0: Do not cast Rift Bolt  [#0]
+   1: Cast Rift Bolt without paying its mana cost  [#1]
+  >> A/A: 1 (Cast Rift Bolt without paying its mana cost)
+--- Narrative ---
+  Player A casts Rift Bolt without paying its mana cost
+  Choose target for Rift Bolt:
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: Upkeep (turn 5)
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
+  Opp:   10 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers (T)
+  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
+  Pending: Rift Bolt (self)
+  Self GY: Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
+  Extras: not_priority_window
+  Actions:
+   0: Player B (10 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (10 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Rift Bolt targeting Player B
+  Resolving ability (category: DealDamage, amount: 3)
+  Rift Bolt deals 3 damage to Player B (now at 7 life)
+  Player A draws Exquisite Firecraft
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main (turn 5)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
+  Opp:   7 life | mana: empty | hand count: 3 | lib 46
+  Self BF:  Fiery Islet (T) | Mountain (T)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers (T)
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=7
+  Actions:
+   0: Pass priority
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
+--- Narrative ---
+  Player A played Mountain
+  No creatures eligible to attack.
+  -------- TURN 6 (Player B) --------
+  Player B draws Reanimate
+--- Turn 6 (Player B) ---
+  PA: Exquisite Firecraft, Mountain, Mountain
+  PB: Reanimate, Reanimate, Reanimate, Scalding Tarn
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  7 life | mana: empty | hand(4): Reanimate, Reanimate, Reanimate, Scalding Tarn | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Undercity Sewers | Undercity Sewers
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -580,19 +870,18 @@
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 25 ---
+--- Decision 36 ---
   Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  11 life | mana: empty | hand(3): Careful Study, Ponder, Reanimate | lib 50
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Scalding Tarn (NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Step: First Main (turn 6)
+  Self:  7 life | mana: empty | hand(3): Reanimate, Reanimate, Reanimate | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Scalding Tarn (NEW) | Undercity Sewers | Undercity Sewers
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
+  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=B
+  This turn: self drawn=1
   Extras: self_lands_played=1
   Actions:
    0: Pass priority
@@ -605,313 +894,111 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 26 ---
+--- Decision 37 ---
   Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(3): Careful Study, Ponder, Reanimate | lib 50
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
+  Step: First Main (turn 6)
+  Self:  6 life | mana: empty | hand(3): Reanimate, Reanimate, Reanimate | lib 45
+  Opp:   15 life | mana: empty | hand count: 2 | lib 51
+  Self BF:  Undercity Sewers | Undercity Sewers
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Self GY: Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
+  This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
-   2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
-  >> B/B: 1 (Island)
+   2: Underground Sea
+  >> B/B: 2 (Underground Sea)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Island to the battlefield
-
---- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(3): Careful Study, Ponder, Reanimate | lib 49
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=3 colors=B
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Careful Study  [#0]
-   2: Cast Ponder  [#0]
-  >> B/B: 1 (Cast Careful Study)
---- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Careful Study
-  Resolving ability (category: Draw, amount: 2)
-  Player B draws Lotus Petal
-  Player B draws Careful Study
-  Resolving ability (category: Discard)
-  Player B chooses a card to discard:
-
---- Decision 28 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(4): Careful Study, Lotus Petal, Ponder, Reanimate | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Careful Study
-   1: Lotus Petal
-   2: Ponder
-   3: Reanimate
-  >> B/B: 3 (Reanimate)
---- Narrative ---
-  Player B discards Reanimate
-  Player B chooses a card to discard:
-
---- Decision 29 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(3): Careful Study, Lotus Petal, Ponder | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Careful Study
-   1: Lotus Petal
-   2: Ponder
-  >> B/B: 2 (Ponder)
---- Narrative ---
-  Player B discards Ponder
-
---- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(2): Careful Study, Lotus Petal | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Lotus Petal  [#0]
-  >> B/B: 1 (Cast Lotus Petal)
---- Narrative ---
-  Player B casts Lotus Petal
-  Lotus Petal enters the battlefield
-
---- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(1): Careful Study | lib 47
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Lotus Petal (NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Self GY: Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Careful Study  [#0]
-  >> B/B: 1 (Cast Careful Study)
---- Narrative ---
-  Player B sacrifices Lotus Petal
-  Player B activated Lotus Petal for 1(U)
-  Player B casts Careful Study
-  Resolving ability (category: Draw, amount: 2)
-  Player B draws Lotus Petal
-  Player B draws Underground Sea
-  Resolving ability (category: Discard)
-  Player B chooses a card to discard:
-
---- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(2): Lotus Petal, Underground Sea | lib 45
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Lotus Petal
-   1: Underground Sea
-  >> B/B: 1 (Underground Sea)
---- Narrative ---
-  Player B discards Underground Sea
-  Player B chooses a card to discard:
-
---- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  10 life | mana: empty | hand(1): Lotus Petal | lib 45
-  Opp:   18 life | mana: empty | hand count: 2 | lib 52
-  Self BF:  Island (T,NEW) | Swamp (T)
-  Opp BF:   Fiery Islet (T) | Mountain
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain, Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=3 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Lotus Petal
-  >> B/B: 0 (Lotus Petal)
---- Narrative ---
-  Player B discards Lotus Petal
+  Player B puts Underground Sea to the battlefield
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 5 (Player A) --------
---- Turn 5 (Player A) ---
-  PA: Mountain, Mountain
-  PB: Lotus Petal
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Exquisite Firecraft, Mountain
+  PB: Reanimate, Reanimate, Reanimate
 
---- Decision 34 ---
+--- Decision 38 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  18 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   10 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Fiery Islet | Mountain
-  Opp BF:   Island (T) | Swamp (T)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: Upkeep (turn 7)
+  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 --- Narrative ---
-  Player A draws Exquisite Firecraft
+  Player A draws Mountain
 
---- Decision 35 ---
+--- Decision 39 ---
   Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  18 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
-  Opp:   10 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Fiery Islet | Mountain
-  Opp BF:   Island (T) | Swamp (T)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: Draw (turn 7)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 36 ---
+--- Decision 40 ---
   Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
-  Opp:   10 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Fiery Islet | Mountain
-  Opp BF:   Island (T) | Swamp (T)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
    2: Play Mountain
-   3: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Play Mountain)
---- Narrative ---
-  Player A played Mountain
-
---- Decision 37 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   10 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Fiery Islet | Mountain | Mountain (NEW)
-  Opp BF:   Island (T) | Swamp (T)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Exquisite Firecraft  [#0]
-   2: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Cast Exquisite Firecraft)
+   3: Cast Exquisite Firecraft  [#0]
+   4: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 3 (Cast Exquisite Firecraft)
 --- Narrative ---
   Choose target for Exquisite Firecraft:
 
---- Decision 38 ---
+--- Decision 41 ---
   Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  18 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   10 life | mana: empty | hand count: 0 | lib 45
-  Self BF:  Fiery Islet | Mountain | Mountain (NEW)
-  Opp BF:   Island (T) | Swamp (T)
+  Step: First Main (turn 7)
+  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   6 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Fiery Islet | Mountain | Mountain
+  Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
+  Stack: Exquisite Firecraft (spell, self)
   Pending: Exquisite Firecraft (self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
+  Extras: not_priority_window
   Actions:
-   0: Player B (10 life)
-   1: Player A (18 life)
-  >> A/A: 0 (Player B (10 life))
+   0: Player B (6 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (6 life))
 --- Narrative ---
   Targeting choice 0
   Player A activated Mountain for 1(R)
@@ -920,298 +1007,201 @@
   Player A activated Fiery Islet for 1(U)
   Player A casts Exquisite Firecraft targeting Player B
   Resolving ability (category: DealDamage, amount: 4)
-  Dealt 4 damage to player (now at 6 life)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 6 (Player B) --------
-  Player B draws Dark Ritual
---- Turn 6 (Player B) ---
-  PA: Exquisite Firecraft, Mountain
-  PB: Dark Ritual
-
---- Decision 39 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 41 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
+  Exquisite Firecraft deals 4 damage to Player B (now at 2 life)
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
+  Opp:   2 life | mana: empty | hand count: 3 | lib 44
+  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Undercity Sewers | Undercity Sewers | Underground Sea
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Play Mountain
+   2: Play Mountain
+  >> A/A: 1 (Play Mountain)
 --- Narrative ---
-  No attackers — skipping declare blockers.
+  Player A played Mountain
+  No creatures eligible to attack.
+  -------- TURN 8 (Player B) --------
+  Player B draws Ponder
+--- Turn 8 (Player B) ---
+  PA: Mountain, Mountain
+  PB: Ponder, Reanimate, Reanimate, Reanimate
 
 --- Decision 43 ---
   Priority: Player B (active)
-  Step: Declare Blk (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Step: First Main (turn 8)
+  Self:  2 life | mana: empty | hand(4): Ponder, Reanimate, Reanimate, Reanimate | lib 43
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Undercity Sewers | Undercity Sewers | Underground Sea
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Self GY: Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   This turn: self drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Cast Ponder  [#0]
+  >> B/B: 1 (Cast Ponder)
 --- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
 
 --- Decision 44 ---
   Priority: Player B (active)
-  Step: Combat Dmg (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Step: First Main (turn 8)
+  Self:  2 life | mana: empty | hand(3): Reanimate, Reanimate, Reanimate | lib 43
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Otherworldly Gaze  [#2]
+   1: Brainstorm  [#2]
+   2: Force of Will  [#2]
+  >> B/B: 0 (Otherworldly Gaze)
+--- Narrative ---
+  Choose which card goes 2 from top:
 
 --- Decision 45 ---
   Priority: Player B (active)
-  Step: End Combat (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Step: First Main (turn 8)
+  Self:  2 life | mana: empty | hand(3): Reanimate, Reanimate, Reanimate | lib 43
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
+  Known top: Otherworldly Gaze, ?, ?, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Brainstorm  [#1]
+   1: Force of Will  [#1]
+  >> B/B: 0 (Brainstorm)
 
 --- Decision 46 ---
   Priority: Player B (active)
-  Step: Second Main (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
+  Step: First Main (turn 8)
+  Self:  2 life | mana: empty | hand(3): Reanimate, Reanimate, Reanimate | lib 43
+  Opp:   14 life | mana: empty | hand count: 1 | lib 50
+  Self BF:  Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
   Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
+  Known top: Force of Will, Brainstorm, Otherworldly Gaze, ?, ?
   Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window
   Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Force of Will
+  No creatures eligible to attack.
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Mountain
+  PB: Reanimate, Reanimate, Reanimate
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: End Step (turn 6)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
+  Priority: Player A (active)
+  Step: Upkeep (turn 9)
+  Self:  14 life | mana: empty | hand(1): Mountain | lib 50
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Activate Fiery Islet (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
 --- Narrative ---
-  -------- TURN 7 (Player A) --------
---- Turn 7 (Player A) ---
-  PA: Mountain
-  PB: Dark Ritual
+  Player A draws Eidolon of the Great Revel
 
 --- Decision 48 ---
   Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  17 life | mana: empty | hand(1): Mountain | lib 51
-  Opp:   6 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Swamp
-  Self GY: Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: Draw (turn 9)
+  Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 49 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet | Mountain | Mountain
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player A draws Mountain
-
---- Decision 50 ---
   Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Swamp
-  Self GY: Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Fiery Islet | Mountain | Mountain | Mountain
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 0 (Pass priority)
-
---- Decision 51 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Island | Swamp
-  Opp BF:   Fiery Islet | Mountain | Mountain
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 52 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Island | Swamp
-  Self GY: Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
-   2: Play Mountain
+   2: Cast Eidolon of the Great Revel  [#0]
    3: Activate Fiery Islet (Draw)  [#1]
-  >> A/A: 1 (Play Mountain)
+  >> A/A: 2 (Cast Eidolon of the Great Revel)
 --- Narrative ---
-  Player A played Mountain
+  Player A activated Mountain for 1(R)
+  Player A activated Mountain for 1(R)
+  Player A casts Eidolon of the Great Revel
 
---- Decision 53 ---
+--- Decision 50 ---
   Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(1): Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Fiery Islet | Mountain | Mountain | Mountain (NEW)
-  Opp BF:   Island | Swamp
-  Self GY: Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(1): Mountain | lib 49
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Fiery Islet | Mountain (T) | Mountain (T) | Mountain
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Stack: Eidolon of the Great Revel (spell, self)
+  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -1220,795 +1210,23 @@
   Player A activated Mountain for 1(R)
   Player A sacrifices Fiery Islet
   Player A's Fiery Islet ability is on the stack
-
---- Decision 54 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Island | Swamp
-  Opp BF:   Mountain (T) | Mountain | Mountain (NEW)
-  Stack: Fiery Islet (ability, opponent) [amt=1]
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
   Resolving ability (category: Draw, amount: 1)
-  Player A draws Eidolon of the Great Revel
-
---- Decision 55 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   6 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Mountain (T) | Mountain | Mountain (NEW)
-  Opp BF:   Island | Swamp
-  Self GY: Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Underground Sea, Marsh Flats, Reanimate, Careful Study, Atraxa, Grand Unifier
-  This turn: self drawn=2
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Eidolon of the Great Revel  [#0]
-  >> A/A: 1 (Cast Eidolon of the Great Revel)
---- Narrative ---
-  Player A activated Mountain for 1(R)
-  Player A activated Mountain for 1(R)
-  Player A casts Eidolon of the Great Revel
-
---- Decision 56 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Stack: Eidolon of the Great Revel (spell, opponent)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
+  Player A draws Chain Lightning
   Eidolon of the Great Revel enters the battlefield
 
---- Decision 57 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 58 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
-
---- Decision 59 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
-
---- Decision 60 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 61 ---
-  Priority: Player B (non-active)
-  Step: Combat Dmg (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 62 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 63 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 64 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 7)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 drawn=2 colors=R
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  -------- TURN 8 (Player B) --------
---- Turn 8 (Player B) ---
-  PA: Eidolon of the Great Revel, Mountain
-  PB: Dark Ritual
-
---- Decision 65 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 44
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player B draws Polluted Delta
-
---- Decision 66 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  6 life | mana: empty | hand(2): Dark Ritual, Polluted Delta | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 67 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  6 life | mana: empty | hand(2): Dark Ritual, Polluted Delta | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Play Polluted Delta
-   2: Cast Dark Ritual  [#0]
-  >> B/B: 1 (Play Polluted Delta)
---- Narrative ---
-  Player B played Polluted Delta
-
---- Decision 68 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  6 life | mana: empty | hand(1): Dark Ritual | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Polluted Delta (NEW) | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Extras: self_lands_played=1
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-   2: Activate Polluted Delta (ChangeZone)  [#0]
-  >> B/B: 2 (Activate Polluted Delta (ChangeZone))
---- Narrative ---
-  Player B pays 1 life
-  Player B sacrifices Polluted Delta
-  Player B's Polluted Delta ability is on the stack
-
---- Decision 69 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Polluted Delta (ability, self)
-  Self GY: Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: ChangeZone)
-  Searching Player B's library:
-
---- Decision 70 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Fail to find
-   1: Undercity Sewers
-   2: Undercity Sewers
-   3: Underground Sea
-   4: Underground Sea
-   5: Underground Sea
-  >> B/B: 1 (Undercity Sewers)
---- Narrative ---
-  Player B shuffles their library
-  Player B puts Undercity Sewers to the battlefield
-  Undercity Sewers enters tapped.
-  Undercity Sewers triggered
-
---- Decision 71 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 42
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Self GY: Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Surveil, amount: 1)
-  Player B surveils 1.
-  Surveil: looking at Griselbrand
-
---- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 42
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
-  Actions:
-   0: Put Griselbrand on top of library  [#0]
-   1: Put Griselbrand into graveyard
-  >> B/B: 1 (Put Griselbrand into graveyard)
---- Narrative ---
-  Player B puts Griselbrand into their graveyard.
-
---- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 74 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No creatures eligible to attack.
-
---- Decision 75 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  No attackers — skipping declare blockers.
-
---- Decision 76 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  --- Combat Damage ---
-  --- End Combat Damage ---
-
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 78 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 79 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 80 ---
-  Priority: Player B (active)
-  Step: End Step (turn 8)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain (T)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  -------- TURN 9 (Player A) --------
---- Turn 9 (Player A) ---
-  PA: Eidolon of the Great Revel, Mountain
-  PB: Dark Ritual
-
---- Decision 81 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 9)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 49
-  Self BF:  Island | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Player A draws Chain Lightning
-
---- Decision 82 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 9)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 2 | lib 48
-  Self BF:  Island | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp drawn=1
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
-
---- Decision 83 ---
+--- Decision 51 ---
   Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
-  Opp:   5 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain
-  Opp BF:   Island | Swamp | Undercity Sewers (T)
-  Self GY: Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Self:  14 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Play Mountain
-   2: Cast Chain Lightning  [#0]
-  >> A/A: 2 (Cast Chain Lightning)
---- Narrative ---
-  Choose target for Chain Lightning:
-
---- Decision 84 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  17 life | mana: empty | hand(2): Chain Lightning, Mountain | lib 48
-  Opp:   5 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Eidolon of the Great Revel [2/2] | Mountain | Mountain | Mountain
-  Opp BF:   Island | Swamp | Undercity Sewers (T)
-  Pending: Chain Lightning (self)
-  Self GY: Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: not_priority_window
-  Actions:
-   0: Player B (5 life)
-   1: Player A (17 life)
-   2: Eidolon of the Great Revel
-  >> A/A: 0 (Player B (5 life))
---- Narrative ---
-  Targeting choice 0
-  Player A activated Mountain for 1(R)
-  Player A casts Chain Lightning targeting Player B
-  Eidolon of the Great Revel triggered
-
---- Decision 85 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] | Mountain (T) | Mountain | Mountain
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: DealDamage, amount: 2)
-  Dealt 2 damage to player (now at 15 life)
-
---- Decision 86 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  5 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   15 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R
-  Extras: opp_passed
-  Actions:
-   0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: DealDamage, amount: 3)
-  Dealt 3 damage to player (now at 2 life)
-  Resolving ability (category: CopySpellAbility)
-  Player B may pay to copy Chain Lightning:
-
---- Decision 87 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: empty | hand(1): Dark Ritual | lib 41
-  Opp:   15 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R
-  Extras: not_priority_window
-  Actions:
-   0: Tap Island for (U)
-   1: Tap Swamp for (B)
-   2: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Tap Island for (U))
---- Narrative ---
-  Player B tapped Island for {U}
-
---- Decision 88 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: 1U | hand(1): Dark Ritual | lib 41
-  Opp:   15 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island (T) | Swamp | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R
-  Extras: not_priority_window
-  Actions:
-   0: Tap Swamp for (B)
-   1: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Tap Swamp for (B))
---- Narrative ---
-  Player B tapped Swamp for {B}
-
---- Decision 89 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  2 life | mana: 1U, 1B | hand(1): Dark Ritual | lib 41
-  Opp:   15 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Known opp hand: Mountain
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R
-  Extras: not_priority_window
-  Actions:
-   0: Don't pay (Chain Lightning is not copied)  [#0]
-  >> B/B: 0 (Don't pay (Chain Lightning is not copied))
-
---- Decision 90 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  15 life | mana: empty | hand(1): Mountain | lib 48
-  Opp:   2 life | mana: 1U, 1B | hand count: 1 | lib 41
-  Self BF:  Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R | opp life_lost=3
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 drawn=2 colors=R
+  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -2016,71 +1234,83 @@
 --- Narrative ---
   Player A played Mountain
 
---- Decision 91 ---
-  Priority: Player B (non-active)
+--- Decision 52 ---
+  Priority: Player A (active)
   Step: First Main (turn 9)
-  Self:  2 life | mana: 1U, 1B | hand(1): Dark Ritual | lib 41
-  Opp:   15 life | mana: empty | hand count: 0 | lib 48
-  Self BF:  Island (T) | Swamp (T) | Undercity Sewers (T)
-  Opp BF:   Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
-  Self GY: Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp GY:  Chain Lightning, Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self life_lost=3 | opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R
-  Extras: opp_lands_played=1, opp_passed
+  Self:  14 life | mana: empty | hand(1): Chain Lightning | lib 48
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp exile:  Atraxa, Grand Unifier
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 drawn=2 colors=R
+  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
-   1: Cast Dark Ritual  [#0]
-  >> B/B: 0 (Pass priority)
+   1: Cast Chain Lightning  [#0]
+  >> A/A: 1 (Cast Chain Lightning)
 --- Narrative ---
-  --- Declare Attackers (Player A) ---
+  Choose target for Chain Lightning:
 
---- Decision 92 ---
+--- Decision 53 ---
   Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 48
-  Opp:   2 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Eidolon of the Great Revel [2/2] (res 1) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
+  Step: First Main (turn 9)
+  Self:  14 life | mana: empty | hand(0): (empty) | lib 48
+  Opp:   2 life | mana: empty | hand count: 4 | lib 42
+  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (NEW)
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Stack: Chain Lightning (spell, self)
+  Pending: Chain Lightning (self)
+  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Opp GY:  Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
   Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+  Opp revealed: Scalding Tarn, Ponder, Force of Will, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Marsh Flats, Careful Study, Atraxa, Grand Unifier
+  This turn: self spells=1 drawn=2 colors=R
+  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
-   0: Eidolon of the Great Revel [2/2]
-   1: Confirm attackers
-  >> A/A: 0 (Eidolon of the Great Revel [2/2])
+   0: Player B (2 life)
+   1: Player A (14 life)
+   2: Eidolon of the Great Revel
+  >> A/A: 0 (Player B (2 life))
 --- Narrative ---
-  Eidolon of the Great Revel attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Eidolon of the Great Revel [2/2] -> Player B
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A casts Chain Lightning targeting Player B
+  Eidolon of the Great Revel triggered
+  Resolving ability (category: DealDamage, amount: 2)
+  Eidolon of the Great Revel deals 2 damage to Player A (now at 12 life)
+  Resolving ability (category: DealDamage, amount: 3)
+  Chain Lightning deals 3 damage to Player B (now at -1 life)
+  Resolving ability (category: CopySpellAbility)
+  Player B may pay to copy Chain Lightning:
 
---- Decision 93 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  15 life | mana: empty | hand(0): (empty) | lib 48
-  Opp:   2 life | mana: empty | hand count: 1 | lib 41
-  Self BF:  Eidolon of the Great Revel [2/2] (ATK,res 1) | Mountain (T) | Mountain | Mountain | Mountain (NEW)
-  Opp BF:   Island (T) | Swamp (T) | Undercity Sewers (T)
-  Self GY: Chain Lightning, Fiery Islet, Exquisite Firecraft, Price of Progress, Chain Lightning, Rift Bolt, Rift Bolt
-  Opp GY:  Griselbrand, Polluted Delta, Careful Study, Lotus Petal, Underground Sea, Lotus Petal, Careful Study, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Force of Will, Thoughtseize, Marsh Flats
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Polluted Delta, Ponder, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=2 colors=R | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 54 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 9)
+  Self:  -1 life | mana: empty | hand(4): Force of Will, Reanimate, Reanimate, Reanimate | lib 42
+  Opp:   12 life | mana: empty | hand count: 0 | lib 48
+  Self BF:  Undercity Sewers (T) | Undercity Sewers | Underground Sea
+  Opp BF:   Eidolon of the Great Revel [2/2] (SICK,NEW,res 1) | Mountain (T) | Mountain (T) | Mountain (T) | Mountain (T,NEW)
+  Stack: Chain Lightning (spell, opponent) -> self (player)
+  Pending: Chain Lightning (opp)
+  Self GY: Ponder, Scalding Tarn, Bloodstained Mire, Ponder, Lotus Petal, Careful Study, Thoughtseize, Thoughtseize, Force of Will, Marsh Flats
+  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
+  Self exile: Atraxa, Grand Unifier
+  Known top: Brainstorm, Otherworldly Gaze, ?, ?, ?
+  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
+  This turn: self life_lost=3 | opp spells=2 noncreature=1 instant_sorcery=1 drawn=2 life_lost=2 colors=R
+  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
+   0: Tap Undercity Sewers for (U)
+   1: Tap Undercity Sewers for (B)
+   2: Tap Underground Sea for (U)
+   3: Tap Underground Sea for (B)
+   4: Don't pay (Chain Lightning is not copied)  [#0]
+  >> B/B: 4 (Don't pay (Chain Lightning is not copied))
 --- Narrative ---
-  Attackers declared:
-    Eidolon of the Great Revel -> Player B
-  No creatures eligible to block.
-  --- Combat Damage ---
-    Eidolon of the Great Revel deals 2 damage to Player B
-  --- End Combat Damage ---
-  Player B has 0 life - Player A wins!
+  Player B has -1 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
 
 === A/A wins ===

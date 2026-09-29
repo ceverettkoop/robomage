@@ -39,16 +39,10 @@ class Coordinator {
             mSystemManager = std::make_unique<SystemManager>();
         }
         // Entity methods
-        // Called with every id CreateEntity issues, so per-id state kept outside the ECS (the
-        // game's last-known-information store) can drop whatever it recorded for an earlier
-        // object that held the same id. Set by the engine; persists across Init().
-        using EntityIssuedHook = void (*)(Entity);
-        void SetEntityIssuedHook(EntityIssuedHook hook) { mEntityIssuedHook = hook; }
-        Entity CreateEntity() {
-            Entity id = mEntityManager->CreateEntity();
-            if (mEntityIssuedHook) mEntityIssuedHook(id);
-            return id;
-        }
+        Entity CreateEntity() { return mEntityManager->CreateEntity(); }
+        // How many times `entity` has been issued (EntityManager::GetIssueCount): tells the id's
+        // current holder apart from an earlier one.
+        uint32_t GetIssueCount(Entity entity) const { return mEntityManager->GetIssueCount(entity); }
         void DestroyEntity(Entity entity) {
             mEntityManager->DestroyEntity(entity);
             mComponentManager->EntityDestroyed(entity);
@@ -83,9 +77,6 @@ class Coordinator {
         ComponentType GetComponentType() {
             return mComponentManager->GetComponentType<T>();
         }
-        
-        // Upper bound for linear entity scans: iterate [0, GetMaxIssuedEntity()) instead of [0, MAX_ENTITIES).
-        Entity GetMaxIssuedEntity() const { return mEntityManager->GetMaxIssuedEntity(); }
 
         template <typename T>
         bool entity_has_component(Entity entity){
@@ -116,7 +107,7 @@ class Coordinator {
         // manager's own snapshot/restore. Restore writes back into the existing
         // managers (no re-registration), so component type ids stay valid.
         void snapshot_to(EcsSnapshot &out) const {
-            out.component_arrays = mComponentManager->SnapshotArrays();
+            mComponentManager->SnapshotArraysInto(out.component_arrays);
             out.entity_state = mEntityManager->snapshot_state();
             out.system_entities = mSystemManager->snapshot_systems();
             out.pending_events = mEventManager->snapshot_pending();
@@ -133,7 +124,6 @@ class Coordinator {
         std::unique_ptr<EntityManager> mEntityManager;
         std::unique_ptr<EventManager> mEventManager;
         std::unique_ptr<SystemManager> mSystemManager;
-        EntityIssuedHook mEntityIssuedHook = nullptr;
         static Coordinator *singleton;
 };
 

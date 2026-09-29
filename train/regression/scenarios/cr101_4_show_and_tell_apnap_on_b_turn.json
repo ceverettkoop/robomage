@@ -1,0 +1,12 @@
+{
+  "name": "cr101_4_show_and_tell_apnap_on_b_turn",
+  "why": "CR 101.4: Show and Tell cast on Player B's turn has B (the active player) choose first - aed1d2a",
+  "hand_a": ["Scryb Ranger"],
+  "library_a": ["Island"],
+  "hand_b": ["Show and Tell", "Grizzly Bears"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "B:cast:Show and Tell"],
+  "max_decisions": 12,
+  "expect_order": ["Player B casts Show and Tell", "Player B puts Grizzly Bears onto the battlefield", "Player A puts Scryb Ranger onto the battlefield"]
+}

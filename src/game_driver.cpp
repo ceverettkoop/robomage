@@ -18,10 +18,10 @@
 #include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
-#include "components/color_identity.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/effect.h"
+#include "components/entry_info.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
@@ -29,7 +29,8 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
-#include "game_queries.h"
+#include "queries/players.h"
+#include "queries/zones.h"
 #include "input_logger.h"
 #include "machine_io.h"
 #include "search_server.h"
@@ -37,6 +38,7 @@
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
+#include "resolution.h"
 
 // Per-game seed for a bo3 game. Salt 0 (the real line) reproduces today's exact
 // seed; a nonzero g_sim_seed_salt (set by a sideboard-root DETERMINIZE) folds in
@@ -63,6 +65,8 @@ static void pregame_fiat_setup(EcsSystems &sys, const Deck &deck_a, const Deck &
 static void pregame_opening_actions(EcsSystems &sys);
 static int pregame_ask(std::vector<LegalAction> &actions);
 static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
+static bool reenter_suspended_resolution(EcsSystems &sys);
+static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
@@ -87,6 +91,10 @@ std::string deck_b_name = "delver";
 bool seed_override = false;
 unsigned int seed_value = 0;
 bool no_shuffle = false;
+// --offer-cancel: every cast-time and activation-time prompt also offers "Cancel", which reverses
+// the proposal (CR 733.1). A testing aid for the rewind; off by default, so the machine action
+// space is unchanged.
+bool offer_cast_cancel = false;
 bool narrative_mode = false;
 bool bo3_mode = false;
 // Machine mode writes no decision log unless --log-decisions is passed (training
@@ -192,7 +200,6 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
         non_fatal_error("concede: no player owns the pending decision — ignored");
         return;
     }
-    Zone::Ownership opponent = (conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
     if (whole_match) {
         // Latched even with no live game (a concede during the between-games
         // sideboard phase still ends the match).
@@ -210,11 +217,7 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
         game_log("(no live game to concede)\n");
         return;
     }
-    // The same result line every other game-ending path prints, so a machine
-    // driver reading stdout sees the winner exactly as for a life/deck-out loss.
-    printf("\n%s concedes - %s wins!\n", player_name(conceder).c_str(),
-           player_name(opponent).c_str());
-    cur_game.player_loses(conceder);
+    cur_game.player_loses(conceder, player_name(conceder) + " concedes");
     g_concede_unwinding = true;
     g_concede_unwind_count = 0;
 }
@@ -245,10 +248,8 @@ EcsSystems init_ecs() {
     card_db.clear();
     ++g_card_db_generation;
     global_coordinator.Init();
-    global_coordinator.SetEntityIssuedHook(forget_last_known_info);
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
-    global_coordinator.RegisterComponent<ColorIdentity>();
     global_coordinator.RegisterComponent<Creature>();
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Permanent>();
@@ -256,6 +257,7 @@ EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Spell>();
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Token>();
+    global_coordinator.RegisterComponent<EntryInfo>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();
@@ -263,6 +265,7 @@ EcsSystems init_ecs() {
     Orderer::init();
     StateManager::init();
     StackManager::init();
+    bind_zoned_entities(orderer->mEntities);
 
     // A snapshot restore must re-derive the rule-613 derived state
     // (g_active_statics) before a restored parked decision resumes — the parked
@@ -274,7 +277,7 @@ EcsSystems init_ecs() {
     return {orderer, state_manager, stack_manager};
 }
 
-// Returns winner: Zone::PLAYER_A (1) or Zone::PLAYER_B (2)
+// Returns winner: Zone::PLAYER_A (1) or Zone::PLAYER_B (2), or Zone::UNKNOWN (0) for a draw
 int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                      bool player_a_goes_first, unsigned int seed) {
     // A snapshot from a previous game of the match must never be restorable
@@ -294,8 +297,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // guard, game 2+ would refresh it from the already-sideboarded structs and
     // hand each player their opponent's entire board plan.
     if (match_game_number <= 0) {
-        deck_state_set_registered(Zone::PLAYER_A, deck_a);
-        deck_state_set_registered(Zone::PLAYER_B, deck_b);
+        deck_state_set_registered(Zone::PLAYER_A, deck_with_presets(deck_a, Zone::PLAYER_A));
+        deck_state_set_registered(Zone::PLAYER_B, deck_with_presets(deck_b, Zone::PLAYER_B));
     }
     // The LIVE list is each player's own current configuration, so it DOES track
     // the post-sideboard structs and is refreshed every game.
@@ -337,7 +340,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // off an empty stacked library — can set `ended` mid-pregame): the old
     // synchronous pregame block always ran to completion regardless, so the
     // gate-driven one must too.
-    while (!cur_game.ended || cur_game.pending_query.active || cur_game.resolution.active ||
+    while (!cur_game.ended || cur_game.pending.query.active || cur_game.resolution.active ||
            cur_game.pregame.stage != Game::PregameState::DONE ||
            search_intercept_game_end()) {
         // A RESTORE that arrived mid-decision unwound to here; apply it before
@@ -368,22 +371,22 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // or combat sub-prompt must not let combat damage run underneath it).
         // The stored menu is re-emitted verbatim; loop-safe, so SNAPSHOT/
         // DETERMINIZE are legal here.
-        if (cur_game.pending_query.active) {
-            PendingQuery &pq = cur_game.pending_query;
+        if (cur_game.pending.query.active) {
+            PendingQuery &pq = cur_game.pending.query;
             if (!pq.answered) {
-                if (cur_game.player_a_has_priority != pq.chooser_is_a)
+                if (cur_game.priority.player_a_has_priority != pq.chooser_is_a)
                     fatal_error("pending query: priority is not at the chooser");
                 // Reset the pending-decision baseline to the arm-time value (0:
                 // every family arms from a loop-top-driven flow with no ambient
                 // pending decision). A SNAPSHOT at this decision is captured
-                // while the scope below holds pending_decision_source =
+                // while the scope below holds pending.decision_source =
                 // pq.decision_source, so a RESTORE re-enters with that value
                 // still set — without the reset the recreated scope would
                 // capture it as its prev and leak it past the answer, desyncing
                 // the restored line's next observation from the natural one
                 // (the same hazard run_sideboard_phase documents). No-op on the
                 // natural line.
-                cur_game.pending_decision_source = 0;
+                cur_game.pending.decision_source = 0;
                 PendingDecisionScope pending(pq.decision_source);
                 search_set_loop_safe(true);
                 int choice = InputLogger::instance().get_input(pq.menu);
@@ -409,7 +412,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // the assignment completes instead, fall through — turn-based
                     // actions find every attacker decided and deal combat damage,
                     // exactly as the single-call flow did.
-                    if (cur_game.pending_query.active) continue;
+                    if (cur_game.pending.query.active) continue;
                     break;
                 case PendingQuery::ACTIVATION:
                     resume_activation_flow(cur_game, sys.orderer);
@@ -422,7 +425,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // ability on the stack) or cancels (payment rewind), fall
                     // through to the normal flow — exactly the next loop
                     // iteration after today's blocking process_action returned.
-                    if (cur_game.pending_query.active) continue;
+                    if (cur_game.pending.query.active) continue;
                     break;
                 case PendingQuery::CAST:
                     resume_cast_flow(cur_game, sys.orderer);
@@ -434,7 +437,14 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // take_action) or cancels (payment rewind), fall through to
                     // the normal flow — exactly the next loop iteration after
                     // today's blocking process_action returned.
-                    if (cur_game.pending_query.active) continue;
+                    if (cur_game.pending.query.active) continue;
+                    // A cast made during a resolution (CR 608.2g,
+                    // cast_during_resolution) completed: that resolution
+                    // continues, exactly as a resumed RESOLUTION query does.
+                    if (cur_game.resolution.active) {
+                        if (reenter_suspended_resolution(sys)) continue;
+                        resolution_just_completed = true;
+                    }
                     break;
                 case PendingQuery::TRIGGER_PLACE:
                     resume_trigger_placement(cur_game, sys.orderer);
@@ -451,8 +461,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // drains only the placement's own push_ability_onto_stack
                     // zone-change events, which no trigger matches — the same
                     // (empty) yield today's next SBE call gets from them.
-                    if (cur_game.pending_query.active) {
-                        if (cur_game.pending_query.answered)
+                    if (cur_game.pending.query.active) {
+                        if (cur_game.pending.query.answered)
                             fatal_error("trigger placement resume did not consume its latched answer");
                         continue;
                     }
@@ -466,7 +476,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // advance_step deferred at suspension, then fall through
                     // to the normal flow — exactly the next loop iteration
                     // after today's blocking advance_step returned true.
-                    if (cur_game.pending_query.active) continue;
+                    if (cur_game.pending.query.active) continue;
                     cur_game.finish_suspended_turn_draw();
                     break;
                 case PendingQuery::SBE_LATCHED:
@@ -484,25 +494,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                     // without re-deriving the question at all.
                     break;
                 case PendingQuery::RESOLUTION: {
-                    // Re-enter the suspended resolution DIRECTLY via advance_step,
-                    // skipping turn-based actions / mandatory choices / SBE — SBAs
-                    // don't apply mid-resolution (CR 704.3 timing), and today the
-                    // whole resolution completed inside one advance_step call, so
-                    // nothing may run between its halves. The pass flags are still
-                    // true (left set at suspension), so advance_step re-enters
-                    // resolve_top, the phased resolve skips to the suspended point,
-                    // and the pending ask consumes the latched answer.
-                    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
-                    // Purity tripwire: a resumed resolution must consume the
-                    // latched answer at the very ask that armed it — a still-
-                    // answered query means the handler diverged on re-entry.
-                    if (cur_game.pending_query.active && cur_game.pending_query.answered)
-                        fatal_error("resolution resume did not consume its latched answer");
                     // Suspended again (a follow-up ask armed a new query): loop
                     // back so the pending branch emits it before anything runs.
-                    if (advanced) continue;
-                    // Completed (advance_step reset the pass flags and returned
-                    // false): fall through to the post-resolution half below.
+                    if (reenter_suspended_resolution(sys)) continue;
+                    // Completed: fall through to the post-resolution half below.
                     resolution_just_completed = true;
                     break;
                 }
@@ -540,9 +535,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             : Zone::UNKNOWN;
 
         if (!resolution_just_completed) {
-            if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
-                cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
-                prev_turn = cur_game.turn;
+            if ((!InputLogger::instance().is_machine_mode() || narrative_mode) &&
+                cur_game.turn_state.turn != prev_turn) {
+                cli_print_turn_header(cur_game.turn_state.turn, cur_game.turn_state.player_a_turn);
+                prev_turn = cur_game.turn_state.turn;
             }
 
             sys.state_manager->process_turn_based_actions(cur_game, sys.orderer);
@@ -608,16 +604,16 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         // flow path returned without either arming a pending query or clearing
         // its own state; catch it NOW (with the step/turn context) instead of at
         // the game-end invariant check.
-        if (!cur_game.pending_query.active &&
-            (cur_game.pending_cast.active || cur_game.pending_activation.active ||
-             cur_game.pending_draw.active)) {
+        if (!cur_game.pending.query.active &&
+            (cur_game.pending.cast.active || cur_game.pending.activation.active ||
+             cur_game.pending.draw.active)) {
             std::string which;
-            if (cur_game.pending_cast.active) which += " pending_cast";
-            if (cur_game.pending_activation.active) which += " pending_activation";
-            if (cur_game.pending_draw.active) which += " pending_draw";
+            if (cur_game.pending.cast.active) which += " pending.cast";
+            if (cur_game.pending.activation.active) which += " pending.activation";
+            if (cur_game.pending.draw.active) which += " pending.draw";
             fatal_error("stranded suspended-flow flag at quiescent loop point:" + which +
-                        " (turn=" + std::to_string(cur_game.turn) +
-                        " step=" + std::to_string(static_cast<int>(cur_game.cur_step)) + ")");
+                        " (turn=" + std::to_string(cur_game.turn_state.turn) +
+                        " step=" + std::to_string(static_cast<int>(cur_game.turn_state.step)) + ")");
         }
         auto legal_actions = sys.state_manager->determine_legal_actions(cur_game, sys.orderer, sys.stack_manager);
         if (legal_actions.size() == 1) {
@@ -659,24 +655,24 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // A real game end must never strand a suspended resolution (plan risk R7):
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
-    // Same for a half-finished cast or activation: pending_cast /
-    // pending_activation are active only while their query is parked or their
+    // Same for a half-finished cast or activation: pending.cast /
+    // pending.activation are active only while their query is parked or their
     // run_*_flow is on the stack, never at loop exit. A live pregame stage is
     // equally impossible here — the loop condition keeps running the gate (even
     // under an ended game) until the stage machine reaches DONE. Likewise a
-    // turn-draw batch: pending_draw is active only while its query is parked or
+    // turn-draw batch: pending.draw is active only while its query is parked or
     // resume_pending_draws is on the stack (an ended game mid-batch clears it).
-    if (cur_game.resolution.active || cur_game.pending_query.active ||
-        cur_game.pending_cast.active || cur_game.pending_activation.active ||
-        cur_game.pending_draw.active ||
+    if (cur_game.resolution.active || cur_game.pending.query.active ||
+        cur_game.pending.cast.active || cur_game.pending.activation.active ||
+        cur_game.pending.draw.active ||
         cur_game.pregame.stage != Game::PregameState::DONE) {
         std::string which;
         if (cur_game.resolution.active) which += " resolution";
-        if (cur_game.pending_query.active)
-            which += " pending_query(tag=" + std::to_string(static_cast<int>(cur_game.pending_query.tag)) + ")";
-        if (cur_game.pending_cast.active) which += " pending_cast";
-        if (cur_game.pending_activation.active) which += " pending_activation";
-        if (cur_game.pending_draw.active) which += " pending_draw";
+        if (cur_game.pending.query.active)
+            which += " pending.query(tag=" + std::to_string(static_cast<int>(cur_game.pending.query.tag)) + ")";
+        if (cur_game.pending.cast.active) which += " pending.cast";
+        if (cur_game.pending.activation.active) which += " pending.activation";
+        if (cur_game.pending.draw.active) which += " pending.draw";
         if (cur_game.pregame.stage != Game::PregameState::DONE) which += " pregame";
         fatal_error("game ended with a suspended resolution/pending query still parked:" + which);
     }
@@ -685,6 +681,22 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
     return cur_game.winner;
+}
+
+// Re-enter the suspended resolution DIRECTLY via advance_step, skipping turn-based actions /
+// mandatory choices / SBE — SBAs don't apply mid-resolution (CR 704.3 timing), and the whole
+// resolution completes inside advance_step calls, so nothing may run between its halves. The
+// pass flags are still true (left set at suspension), so advance_step re-enters resolve_top, the
+// phased resolve skips to the suspended point, and a pending ask consumes its latched answer.
+// Returns true when the resolution suspended again (a follow-up ask armed a new query), false
+// when it completed (advance_step reset the pass flags).
+static bool reenter_suspended_resolution(EcsSystems &sys) {
+    bool advanced = cur_game.advance_step(sys.stack_manager, sys.orderer);
+    // Purity tripwire: a resumed resolution must consume the latched answer at the very ask
+    // that armed it — a still-answered query means the handler diverged on re-entry.
+    if (cur_game.pending.query.active && cur_game.pending.query.answered)
+        fatal_error("resolution resume did not consume its latched answer");
+    return advanced;
 }
 
 // ── Pregame gate stages (Family F) ──────────────────────────────────────────
@@ -743,7 +755,7 @@ static void pregame_mull_decide(EcsSystems &sys) {
     int &mulligans = (seat == Zone::PLAYER_A) ? pg.mulls_a : pg.mulls_b;
     // Priority seat per the established decide_for convention: A decides with
     // priority true, B with false — regardless of who goes first.
-    cur_game.player_a_has_priority = (seat == Zone::PLAYER_A);
+    cur_game.priority.player_a_has_priority = (seat == Zone::PLAYER_A);
     {
         auto hand_display = sys.orderer->get_hand(seat);
         game_log_private(seat, "%s hand:\n", player_name(seat).c_str());
@@ -821,6 +833,22 @@ static void pregame_mull_bottom(EcsSystems &sys) {
     sys.orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     pg.bottom_remaining--;
     if (pg.bottom_remaining == 0) pg.stage = Game::PregameState::MULL_DECIDE;
+}
+
+// `deck` plus the cards a test-harness preset starts `owner` with outside the deck (battlefield,
+// graveyard and exile presets to the main deck, sideboard presets to the sideboard), so the
+// registered decklist the opponent's observation reveals against includes every card that player
+// actually has in the game.
+static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner) {
+    bool a = owner == Zone::PLAYER_A;
+    Deck out = deck;
+    for (const auto *zone : {a ? &battlefield_a_cards : &battlefield_b_cards,
+                             a ? &graveyard_a_cards : &graveyard_b_cards,
+                             a ? &exile_a_cards : &exile_b_cards})
+        for (const auto &name : *zone) out.main_deck.push_back({1, name});
+    for (const auto &name : a ? sideboard_a_cards : sideboard_b_cards)
+        out.sideboard.push_back({1, name});
+    return out;
 }
 
 // Promptless fiat setup: test-harness presets, companions, and the preplaced-
@@ -915,9 +943,9 @@ static void pregame_opening_actions(EcsSystems &sys) {
                 pg.oh_card_idx++;
                 continue;
             }
-            const Ability &first_ab = cd.opening_hand_abilities.front();
+            const AbilityDef &first_ab = *cd.opening_hand_abilities.front();
             std::string prompt =
-                (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
+                (first_ab.kind == EffectKind::ChangeZone && first_ab.destination == Zone::BATTLEFIELD)
                     ? "begin the game with " + cd.name + " on the battlefield"
                     : "use " + cd.name + "'s opening-hand ability";
             // The y/n is seated on `player` with the request_optional_yesno
@@ -928,26 +956,27 @@ static void pregame_opening_actions(EcsSystems &sys) {
             // (nothing is pending in the pregame): a SNAPSHOT here captures the scoped value,
             // and without the reset a RESTORE's recreated scope would capture it as its prev
             // and leak it past the answer.
-            bool prev_priority = cur_game.player_a_has_priority;
-            cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
+            bool prev_priority = cur_game.priority.player_a_has_priority;
+            cur_game.priority.player_a_has_priority = (player == Zone::PLAYER_A);
             int choice;
             {
-                cur_game.pending_decision_source = 0;
+                cur_game.pending.decision_source = 0;
                 PendingDecisionScope pending(card);
                 choice = pregame_ask(yn);
             }
             if (choice < 0) return;  // restore latched; state is about to be overwritten
-            cur_game.player_a_has_priority = prev_priority;
+            cur_game.priority.player_a_has_priority = prev_priority;
             pg.oh_card_idx++;
             if (choice == 1) {
-                // Same instantiation pattern as gift_abilities in Ability::resolve: copy the
+                // Same instantiation pattern as gift_abilities in resolve_ability: copy the
                 // parsed template, wire this card as the source and its holder as controller,
                 // and run it through the normal resolve pipeline so zone-change replacements/
                 // ETB machinery apply.
-                for (Ability ab : cd.opening_hand_abilities) {
-                    ab.source = card;
+                for (const AbilityDef *oh_def : cd.opening_hand_abilities) {
+                    Ability ab(oh_def);
+                    ab.source = ObjectRef::of(card);
                     ab.controller = player;
-                    ab.resolve(sys.orderer);
+                    resolve_ability(ab, sys.orderer);
                 }
                 pg.oh_any_ran = true;
             }
@@ -964,8 +993,8 @@ static void pregame_opening_actions(EcsSystems &sys) {
         sys.state_manager->state_based_effects(cur_game, sys.orderer);
         if (decision_suspended()) return;
     }
-    cur_game.player_a_turn = pg.a_goes_first;
-    cur_game.player_a_has_priority = pg.a_goes_first;
+    cur_game.turn_state.player_a_turn = pg.a_goes_first;
+    cur_game.priority.player_a_has_priority = pg.a_goes_first;
     pg.stage = Game::PregameState::DONE;
 }
 
@@ -1057,20 +1086,20 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     sideboard_phase_player = player;
     sideboard_phase_state = &st;
     // Repoint priority to the sideboarding player (the established engine pattern:
-    // every prompt is issued with player_a_has_priority pointing at the chooser).
+    // every prompt is issued with priority.player_a_has_priority pointing at the chooser).
     // populate_query's per-action controller_is_self flags read this flag, so
     // without the repoint they would carry whatever the just-ended game left behind. cur_game is discarded
     // (replaced by Game(seed)) when the next game starts, so nothing to restore.
-    cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
+    cur_game.priority.player_a_has_priority = (player == Zone::PLAYER_A);
     // Reset the pending-decision baseline to 0 for this phase. The OUT menu wraps
     // its query in a PendingDecisionScope(in_card_eid) whose RAII prev-restore
     // depends on the baseline: on the natural first pass it is 0. A resume after a
     // MATCH-scoped restore re-enters with the snapshot's in_card_eid still sitting
-    // in cur_game.pending_decision_source, so without this reset the recreated
+    // in cur_game.pending.decision_source, so without this reset the recreated
     // scope would capture in_card_eid as its prev and leak it into the post-swap IN
     // menu — desyncing the restored line's observation from the natural one. This
     // is a no-op in normal play (no decision is pending between games).
-    cur_game.pending_decision_source = 0;
+    cur_game.pending.decision_source = 0;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
     // One-shot direction locks (see SideboardPhaseState). Both reset between
     // phases, i.e. game 3's sideboarding starts fresh.
@@ -1187,12 +1216,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             break;
         }
 
+        // A player's post-board configuration is hidden from the opponent, so
+        // the lines naming cards go to the sideboarding player's view only; an
+        // opponent viewer gets one redacted summary when the phase ends.
         if (balanced)
-            game_log("\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
-                     player_name, deck.sideboard.size(), st.sb_swaps);
+            game_log_private(player, "\n%s sideboarding (%zu in sideboard, %d swap(s) made):\n",
+                             player_name, deck.sideboard.size(), st.sb_swaps);
         else
-            game_log("\n%s must balance %s (%+d): choose a card to cut.\n", player_name,
-                     st.unpaired_name.c_str(), st.delta);
+            game_log_private(player, "\n%s must balance %s (%+d): choose a card to cut.\n",
+                             player_name, st.unpaired_name.c_str(), st.delta);
 
         // With a move outstanding, expose the unpaired card as the pending-decision
         // source so the observation shows WHICH card the balancing move is for.
@@ -1249,14 +1281,15 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
             // the next decision offers only cuts.
             st.delta = 1;
             st.unpaired_name = moved;
-            game_log("Bringing in %s.\n", moved.c_str());
+            game_log_private(player, "Bringing in %s.\n", moved.c_str());
         } else {
             // Closing half: the pair is complete, so this counts as a swap. The
             // forced cut of a stranded +1 counts too, INCLUDING when it cuts the
             // very name just brought in — that leaves the deck exactly as it
             // started, which is a legal (if pointless) configuration, and the
             // phase force-ends on the next decision either way.
-            game_log("Swapped %s for %s.\n", moved.c_str(), st.unpaired_name.c_str());
+            game_log_private(player, "Swapped %s for %s.\n", moved.c_str(),
+                             st.unpaired_name.c_str());
             st.delta = 0;
             st.unpaired_name.clear();
             st.sb_swaps++;
@@ -1274,6 +1307,7 @@ void run_sideboard_phase(Deck &deck, SideboardPhaseState &st) {
     // the swap cap is only checked there, and an outstanding +1 always has a cut to
     // balance it (the forced one when every maindeck name is locked), so the loop
     // can never be left mid-swap.
+    game_log_redacted(player, "%s sideboards: %d swap(s).\n", player_name, st.sb_swaps);
     sideboard_phase = false;
     sideboard_phase_player = Zone::UNKNOWN;
     sideboard_phase_state = nullptr;
@@ -1308,7 +1342,7 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     deck_state_reset();
 
     bool match_done = false;
-    while (!match_done && ctx.game_num < 3) {
+    while (!match_done) {
         // A MATCH-scoped restore latched by a sideboard-rooted simulation (its
         // unwind bailed out of the inner game/sideboard loop) is applied here,
         // rolling the whole match — cur_game, ECS, ctx (stage/decks/sb), deck_state
@@ -1327,13 +1361,19 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
 
         switch (ctx.stage) {
         case MatchContext::PLAY_GAME: {
+            // A drawn game counts for neither player, so the match plays on until one player has
+            // won two games; repeated draws are practically impossible, so a match this long
+            // means the engine is stuck.
+            if (ctx.game_num >= MAX_MATCH_GAMES)
+                fatal_error("bo3 match reached " + std::to_string(MAX_MATCH_GAMES) +
+                            " games without a match winner");
             match_game_number = ctx.game_num;
             // A sideboard-rooted sim rolls forward into this game only to search;
             // its real-match side effects (the actor's begin_game/backfill hooks,
             // the banner) must not fire. Suppress them while a match snapshot lives.
             bool simulating = snapshot_any_match_scope_live();
             if (!simulating) {
-                game_log("\n----- MATCH GAME %d of 3 -----\n", ctx.game_num + 1);
+                game_log("\n----- MATCH GAME %d -----\n", ctx.game_num + 1);
                 if (before_game) before_game(ctx.game_num, ctx.a_goes_first);
             }
 
@@ -1347,22 +1387,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
             // back so the dispatcher top applies the restore.
             if (search_match_restore_pending()) continue;
 
-            // Every end-of-game path must have set a winner; the else-branch below
-            // would otherwise silently credit a winnerless game to B.
-            if (winner != Zone::PLAYER_A && winner != Zone::PLAYER_B)
-                fatal_error("bo3 game " + std::to_string(ctx.game_num + 1) +
-                            " ended with no winner (Game::winner unset)");
-
+            // A game that ended with no winner is a draw (CR 104.4a): it counts for neither player.
             if (winner == Zone::PLAYER_A) {
                 ctx.wins_a++;
                 match_wins_a = ctx.wins_a;
-                std::printf("GAME_RESULT: %d Player A wins\n", ctx.game_num + 1);
-            } else {
+            } else if (winner == Zone::PLAYER_B) {
                 ctx.wins_b++;
                 match_wins_b = ctx.wins_b;
-                std::printf("GAME_RESULT: %d Player B wins\n", ctx.game_num + 1);
             }
-            std::fflush(stdout);
+            print_game_result(ctx.game_num + 1, winner);
 
             if (after_game) after_game(ctx.game_num, winner);
 
@@ -1387,8 +1420,10 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
                 break;
             }
 
-            // loser goes first next game
-            ctx.a_goes_first = (winner != Zone::PLAYER_A);
+            // The loser goes first next game (CR 103.1); after a draw, the player who went first
+            // in the drawn game goes first again.
+            if (winner == Zone::PLAYER_A || winner == Zone::PLAYER_B)
+                ctx.a_goes_first = (winner != Zone::PLAYER_A);
 
             // sideboarding phase - ECS from the just-ended game is still valid
             // (player entities exist for populate_gamestate, card_db works for load_card)
@@ -1423,10 +1458,19 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
     // A conceded match is won by the conceder's opponent regardless of the game
     // tally (which can be level, or even in the conceder's favour).
     if (g_match_conceded) {
-        return (g_match_conceder == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        return opponent_of(g_match_conceder);
     }
     int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
     return result;
+}
+
+void print_game_result(int game_number, int winner) {
+    if (winner == Zone::PLAYER_A || winner == Zone::PLAYER_B)
+        std::printf("GAME_RESULT: %d Player %s wins\n", game_number,
+                    winner == Zone::PLAYER_A ? "A" : "B");
+    else
+        std::printf("GAME_RESULT: %d draw\n", game_number);
+    std::fflush(stdout);
 }
 
 static void print_match_concede_result(const MatchContext &ctx) {

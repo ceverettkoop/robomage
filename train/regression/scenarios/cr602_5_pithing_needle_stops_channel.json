@@ -1,0 +1,15 @@
+{
+  "name": "cr602_5_pithing_needle_stops_channel",
+  "why": "CR 602.5: Pithing Needle naming Boseiju stops its channel ability from hand - 36c3e72",
+  "hand_a": ["Pithing Needle"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "hand_b": ["Boseiju Who Endures", "Forest", "Forest"],
+  "library_b": ["Forest"],
+  "battlefield_b": ["Forest", "Forest"],
+  "play": ["A:keep", "B:keep", "A:cast:Pithing Needle", "A:choice:Boseiju"],
+  "max_decisions": 16,
+  "expect": ["Player A names card: Boseiju, Who Endures"],
+  "expect_menu": ["^Play Forest$"],
+  "expect_menu_not": ["Activate Boseiju, Who Endures from hand"]
+}

@@ -1,6 +1,6 @@
 #include "creature.h"
-#include "color_identity.h"
 #include "../ecs/coordinator.h"
+#include "../queries/characteristics.h"
 #include <algorithm>
 
 // Apply layer-7 P/T effects to a single creature in sublayer order (rule 613.4):
@@ -69,11 +69,10 @@ bool has_protection_from_colored_spells(const Creature &cr) {
 }
 
 bool has_protection_from(const Creature &cr, Entity source) {
-    Coordinator &coordinator = Coordinator::global();
-    if (!coordinator.entity_has_component<ColorIdentity>(source)) return false;
-    const auto &ci = coordinator.GetComponent<ColorIdentity>(source);
+    // The source's current colors (CR 702.16a): a red token, or a red transformed face, is a red
+    // source.
     std::set<Colors> prot = get_protection_colors(cr);
-    for (Colors c : ci.colors) {
+    for (Colors c : effective_colors(source)) {
         if (prot.count(c)) return true;
     }
     return false;

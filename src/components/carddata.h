@@ -53,9 +53,9 @@ struct AltCost {
     // this card AS THE FIRST CARD they've drawn this turn, they may reveal it and cast it for
     // `mana_cost` (the miracle cost) rather than its normal mana cost. Encoded on the shared
     // AltCost (mana portion = <cost>) with the is_miracle flag. Unlike other alt costs it is NOT
-    // offered by can_afford_alt as a priority-menu cast — miracle runs as two mandatory-choice
-    // decisions (private reveal, then an immediate cast/do-not-cast) driven from the qualifying
-    // draw; see Game::miracle_reveal_pending / miracle_cast_pending and effect_miracle.cpp.
+    // offered by can_afford_alt as a priority-menu cast — the qualifying draw offers a private
+    // reveal (Game::pending.miracle_reveal), and the revealed card is cast, if at all, as its
+    // miracle trigger resolves (effect_miracle.cpp).
     bool is_miracle = false;
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
     // Sac<N/Type> count of an ALTERNATIVE casting cost (CR 118.9, e.g. Fireblast: "sacrifice two
@@ -99,7 +99,7 @@ struct CardData{
     uint32_t power = 0;
     uint32_t toughness = 0;
     int starting_loyalty = 0;  // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
-    std::vector<Ability> abilities;
+    std::vector<const AbilityDef *> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;
     std::vector<StaticAbility> static_abilities;
@@ -125,6 +125,7 @@ struct CardData{
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     std::string enchant_filter;          // K:Enchant:<ValidTgts> — for Auras, the object this can enchant (CR 303.4); the aura's spell targets it at cast and attaches on resolution
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
+    int x_pip_count = 0;                 // how MANY {X} the ManaCost carries (Chalice of the Void's "X X" = 2); the one chosen X is owed once per pip (CR 107.3a)
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
@@ -135,12 +136,11 @@ struct CardData{
     bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)
     ManaValue escape_mana_cost;          // mana portion of the escape cost (e.g. {2}{B})
     AltCost escape_alt_cost;             // additional escape costs (e.g. ExileFromGrave group-type cost)
-    bool is_equipment = false;           // has K:Equip line
-    ManaValue equip_cost;                // parsed from K:Equip:cost
-    // Reconfigure (CR 702.151): an Equipment keyword on a creature card. It is parsed like
-    // Equip (is_equipment + equip_cost both set), but is_reconfigure additionally (a) lets the
-    // attach ability target only a creature you control, (b) offers an "unattach" ability while
-    // attached, and (c) makes the permanent stop being a creature while it is attached.
+    bool is_equipment = false;           // has a K:Equip (or K:Reconfigure) line
+    // Reconfigure (CR 702.151): an Equipment keyword on a creature card. Its attach and unattach
+    // abilities are parsed onto `abilities` like Equip's; is_reconfigure additionally lets it
+    // equip while it is a creature (CR 301.5c) and makes the permanent stop being a creature
+    // while it is attached (CR 702.151b).
     bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
@@ -148,9 +148,9 @@ struct CardData{
     // action usable from HAND, at the timing you could begin to cast the card (sorcery speed for a
     // sorcery). Instead of casting, its owner may pay `suspend_cost` and exile the card with
     // `suspend_count` time counters on it. At the beginning of its owner's upkeep a time counter is
-    // removed (a triggered ability, see state_manager_triggers); when the last is removed its owner
-    // may cast it without paying its mana cost (granted as a FREE from_suspend impulse-cast
-    // permission). General over any Suspend card.
+    // removed (a triggered ability, see state_manager_triggers); removing the last one triggers
+    // "you may cast it without paying its mana cost", made during that trigger's resolution
+    // (effects::suspend_tick / suspend_cast). General over any Suspend card.
     bool has_suspend = false;
     int suspend_count = 0;               // N time counters the card is exiled with
     ManaValue suspend_cost;              // mana paid to begin the suspend process
@@ -160,7 +160,7 @@ struct CardData{
     // effect (Into the Flood Maw: a DB$ Token making a tapped 1/1 Fish for the promised opponent),
     // from the card's GiftAbility SVar. gift_description is the printed name of the gift (display).
     bool has_gift = false;
-    std::vector<Ability> gift_abilities;
+    std::vector<const AbilityDef *> gift_abilities;
     std::string gift_description = "";
     // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
     // "Kicker [A] and/or [B]" is Forge-encoded as two colon-separated costs and means
@@ -193,7 +193,7 @@ struct CardData{
     // Multiple chapters may share the same ability (Summon: Bahamut I & II both destroy). Empty for
     // a non-Saga card. The Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in
     // src/saga.{h,cpp}.
-    std::vector<Ability> saga_chapters;
+    std::vector<const AbilityDef *> saga_chapters;
     // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening hand,
     // you may [effect]" (CR 103.6b; the Leylines' "begin the game with it on the battlefield").
     // The named SVar's body is parsed into opening_hand_abilities (Leyline of the Void:
@@ -203,7 +203,7 @@ struct CardData{
     // optional !PlayFirst field
     // (Gemstone Caverns) restricts the offer to a player who is NOT the starting player.
     // Empty for cards without the keyword.
-    std::vector<Ability> opening_hand_abilities;
+    std::vector<const AbilityDef *> opening_hand_abilities;
     bool opening_hand_not_first = false;
 };
 

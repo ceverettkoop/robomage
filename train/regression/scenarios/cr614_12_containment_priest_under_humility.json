@@ -1,0 +1,13 @@
+{
+  "name": "cr614_12_containment_priest_under_humility",
+  "why": "CR 613.1f / 614.12: Containment Priest under Humility has no replacement effect, so a reanimated creature enters - 570879e",
+  "hand_a": ["Reanimate"],
+  "library_a": ["Swamp"],
+  "battlefield_a": ["Swamp"],
+  "graveyard_a": ["Grizzly Bears"],
+  "battlefield_b": ["Containment Priest", "Humility"],
+  "play": ["A:keep", "B:keep", "A:cast:Reanimate", "A:target:Grizzly Bears"],
+  "max_decisions": 6,
+  "expect": ["Grizzly Bears is moved to the battlefield"],
+  "expect_not": ["xile"]
+}

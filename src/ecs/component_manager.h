@@ -68,12 +68,21 @@ class ComponentManager {
         // RestoreFrom (keeping array identity, never swapping pointers) so no code
         // that holds a raw array pointer is invalidated. Slot i lines up with the
         // stable component type id used everywhere else.
-        std::vector<std::shared_ptr<IComponentArray>> SnapshotArrays() const {
-            std::vector<std::shared_ptr<IComponentArray>> out;
-            out.reserve(mComponentArrays.size());
-            for (auto const &arr : mComponentArrays)
-                out.push_back(arr ? arr->SnapshotClone() : nullptr);
-            return out;
+        // A slot saved before keeps its arrays: the new contents are copied into them
+        // (RestoreFrom, reusing their element storage) instead of building fresh
+        // MAX_ENTITIES-element arrays on every save.
+        void SnapshotArraysInto(std::vector<std::shared_ptr<IComponentArray>> &out) const {
+            out.resize(mComponentArrays.size());
+            for (size_t i = 0; i < mComponentArrays.size(); ++i) {
+                const auto &arr = mComponentArrays[i];
+                if (!arr) {
+                    out[i] = nullptr;
+                } else if (out[i]) {
+                    out[i]->RestoreFrom(*arr);
+                } else {
+                    out[i] = arr->SnapshotClone();
+                }
+            }
         }
         void RestoreArrays(const std::vector<std::shared_ptr<IComponentArray>> &snap) {
             for (size_t i = 0; i < mComponentArrays.size() && i < snap.size(); ++i) {

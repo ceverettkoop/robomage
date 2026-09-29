@@ -1,0 +1,12 @@
+{
+  "name": "cr712_8e_echoing_truth_matches_current_name",
+  "why": "CR 712.8e / 201.2: Echoing Truth bounces permanents with the target's current name, so a flipped Insectile Aberration stays when a Delver of Secrets is bounced - 022e150",
+  "hand_a": ["Echoing Truth"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island"],
+  "battlefield_b": ["Delver of Secrets", "Insectile Aberration", "Delver of Secrets"],
+  "play": ["A:keep", "B:keep", "A:cast:Echoing Truth", "A:target:Delver of Secrets"],
+  "max_decisions": 5,
+  "expect_not": ["Insectile Aberration returns"],
+  "expect_order": ["Player A casts Echoing Truth targeting Delver of Secrets", "Delver of Secrets returns to Player B's hand", "Delver of Secrets returns to Player B's hand"]
+}

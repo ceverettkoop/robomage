@@ -123,9 +123,6 @@
 --- Narrative ---
   Player A played Tropical Island
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 2 (Player B) --------
   Player B draws Scalding Tarn
 --- Turn 2 (Player B) ---
@@ -186,134 +183,155 @@
    0: Fail to find
    1: Swamp
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-   7: Underground Sea
-  >> B/B: 1 (Swamp)
+   3: Underground Sea
+  >> B/B: 2 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Swamp to the battlefield
+  Player B puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Underground Sea
 
 --- Decision 9 ---
   Priority: Player B (active)
   Step: First Main (turn 2)
   Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
   Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (NEW)
+  Self BF:  Undercity Sewers (T,NEW,res 1)
   Opp BF:   Tropical Island
-  Self GY: Marsh Flats
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Thoughtseize  [#0]
-  >> B/B: 1 (Cast Thoughtseize)
---- Narrative ---
-  Choose target for Thoughtseize:
-
---- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (NEW)
-  Opp BF:   Tropical Island
-  Pending: Thoughtseize (self)
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
   This turn: self drawn=1 life_lost=1
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
-   0: Player A (20 life)
-   1: Player B (19 life)
-  >> B/B: 0 (Player A (20 life))
+   0: Put Underground Sea on top of library  [#0]
+   1: Put Underground Sea into graveyard
+  >> B/B: 0 (Put Underground Sea on top of library)
 --- Narrative ---
-  Targeting choice 0
-  Player B activated Swamp for 1(B)
-  Player B casts Thoughtseize targeting Player A
+  No creatures eligible to attack.
+  -------- TURN 3 (Player A) --------
+  Player A draws Orcish Bowmasters
+  No creatures eligible to attack.
+  -------- TURN 4 (Player B) --------
+  Player B draws Underground Sea
+--- Turn 4 (Player B) ---
+  PA: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island
+  PB: Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Underground Sea
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(8): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Underground Sea | lib 50
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers
+  Opp BF:   Tropical Island
+  Self GY: Marsh Flats
+  Opp revealed: Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+   2: Play Underground Sea
+   3: Cast Careful Study  [#0]
+   4: Cast Ponder  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 3 (Cast Careful Study)
+--- Narrative ---
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Careful Study
 
 --- Decision 11 ---
   Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (T,NEW)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Atraxa, Grand Unifier, Force of Will, Ponder, Reanimate, Scalding Tarn, Thoughtseize, Underground Sea | lib 50
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Tropical Island
-  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Stack: Careful Study (spell, self)
   Self GY: Marsh Flats
   Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
   >> B/B: 0 (Pass priority)
 --- Narrative ---
+  Resolving ability (category: Draw, amount: 2)
+  Player B draws Reanimate
+  Player B draws Brainstorm
   Resolving ability (category: Discard)
-  Player A reveals their hand:
-    Fatal Push
-    Fatal Push
-    Force of Will
-    Sheoldred's Edict
-    Thoughtseize
   Player B chooses a card to discard:
 
 --- Decision 12 ---
   Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Swamp (T,NEW)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(9): Atraxa, Grand Unifier, Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Scalding Tarn, Thoughtseize, Underground Sea | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Tropical Island
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
   Self GY: Marsh Flats
-  Known opp hand: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
   Actions:
-   0: Fatal Push
-   1: Fatal Push
+   0: Atraxa, Grand Unifier
+   1: Brainstorm
    2: Force of Will
-   3: Sheoldred's Edict
-   4: Thoughtseize
-  >> B/B: 2 (Force of Will)
+   3: Ponder
+   4: Reanimate
+   5: Reanimate
+   6: Scalding Tarn
+   7: Thoughtseize
+   8: Underground Sea
+  >> B/B: 0 (Atraxa, Grand Unifier)
 --- Narrative ---
-  Player A discards Force of Will
-  Resolving ability (category: LoseLife, amount: 2)
-  Player B loses 2 life (now at 17)
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 3 (Player A) --------
-  Player A draws Orcish Bowmasters
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 4 (Player B) --------
-  Player B draws Underground Sea
---- Turn 4 (Player B) ---
-  PA: Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island
-  PB: Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Underground Sea
+  Player B discards Atraxa, Grand Unifier
+  Player B chooses a card to discard:
 
 --- Decision 13 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(7): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Scalding Tarn, Underground Sea | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp
+  Self:  19 life | mana: empty | hand(8): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Scalding Tarn, Thoughtseize, Underground Sea | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Tropical Island
-  Self GY: Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self drawn=1
+  Stack: Careful Study (spell, self)
+  Pending: Careful Study (self)
+  Self GY: Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Brainstorm
+   1: Force of Will
+   2: Ponder
+   3: Reanimate
+   4: Reanimate
+   5: Scalding Tarn
+   6: Thoughtseize
+   7: Underground Sea
+  >> B/B: 6 (Thoughtseize)
+--- Narrative ---
+  Player B discards Thoughtseize
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main (turn 4)
+  Self:  19 life | mana: empty | hand(7): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Scalding Tarn, Underground Sea | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T)
+  Opp BF:   Tropical Island
+  Self GY: Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
@@ -323,18 +341,16 @@
 --- Narrative ---
   Player B played Scalding Tarn
 
---- Decision 14 ---
+--- Decision 15 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Underground Sea | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Scalding Tarn (NEW) | Swamp
+  Self:  19 life | mana: empty | hand(6): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Underground Sea | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Scalding Tarn (NEW) | Undercity Sewers (T)
   Opp BF:   Tropical Island
-  Self GY: Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self drawn=1
+  Self GY: Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
   Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
@@ -347,461 +363,68 @@
   Resolving ability (category: ChangeZone)
   Searching Player B's library:
 
---- Decision 15 ---
+--- Decision 16 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Underground Sea | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Swamp
+  Self:  18 life | mana: empty | hand(6): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Underground Sea | lib 48
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T)
   Opp BF:   Tropical Island
   Stack: Scalding Tarn (ability, self)
   Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self drawn=1 life_lost=1
+  Self GY: Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
    2: Undercity Sewers
-   3: Undercity Sewers
-   4: Underground Sea
-   5: Underground Sea
-   6: Underground Sea
-  >> B/B: 1 (Island)
+   3: Underground Sea
+  >> B/B: 2 (Undercity Sewers)
 --- Narrative ---
   Player B shuffles their library
-  Player B puts Island to the battlefield
-
---- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Ponder, Reanimate, Underground Sea | lib 49
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (NEW) | Swamp
-  Opp BF:   Tropical Island
-  Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Careful Study  [#0]
-   2: Cast Ponder  [#0]
-  >> B/B: 1 (Cast Careful Study)
---- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Careful Study
+  Player B puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
 
 --- Decision 17 ---
   Priority: Player B (active)
   Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Atraxa, Grand Unifier, Force of Will, Ponder, Reanimate, Underground Sea | lib 49
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW) | Swamp
+  Self:  18 life | mana: empty | hand(6): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Underground Sea | lib 47
+  Opp:   20 life | mana: empty | hand count: 6 | lib 53
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T,NEW,res 1)
   Opp BF:   Tropical Island
-  Stack: Careful Study (spell, self)
-  Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Force of Will (alternate cost)  [#1]
-  >> B/B: 0 (Pass priority)
---- Narrative ---
-  Resolving ability (category: Draw, amount: 2)
-  Player B draws Flow State
-  Player B draws Underground Sea
-  Resolving ability (category: Discard)
-  Player B chooses a card to discard:
-
---- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(7): Atraxa, Grand Unifier, Flow State, Force of Will, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW) | Swamp
-  Opp BF:   Tropical Island
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
+  Stack: Undercity Sewers (ability, self) [amt=1]
+  Pending: Undercity Sewers (self)
+  Self GY: Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Tropical Island
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
   Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
-   0: Atraxa, Grand Unifier
-   1: Flow State
-   2: Force of Will
-   3: Ponder
-   4: Reanimate
-   5: Underground Sea
-   6: Underground Sea
-  >> B/B: 0 (Atraxa, Grand Unifier)
+   0: Put Thoughtseize on top of library  [#0]
+   1: Put Thoughtseize into graveyard
+  >> B/B: 0 (Put Thoughtseize on top of library)
 --- Narrative ---
-  Player B discards Atraxa, Grand Unifier
-  Player B chooses a card to discard:
-
---- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(6): Flow State, Force of Will, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW) | Swamp
-  Opp BF:   Tropical Island
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Flow State
-   1: Force of Will
-   2: Ponder
-   3: Reanimate
-   4: Underground Sea
-   5: Underground Sea
-  >> B/B: 1 (Force of Will)
---- Narrative ---
-  Player B discards Force of Will
-
---- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Flow State, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW) | Swamp
-  Opp BF:   Tropical Island
-  Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Reanimate  [#0]
-  >> B/B: 1 (Cast Reanimate)
---- Narrative ---
-  Choose target for Reanimate:
-
---- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  16 life | mana: empty | hand(5): Flow State, Ponder, Reanimate, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Island (T,NEW) | Swamp
-  Opp BF:   Tropical Island
-  Pending: Reanimate (self)
-  Self GY: Careful Study, Force of Will, Atraxa, Grand Unifier, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Atraxa, Grand Unifier
-  >> B/B: 0 (Atraxa, Grand Unifier)
---- Narrative ---
-  Targeting choice 0
-  Player B activated Swamp for 1(B)
-  Player B casts Reanimate targeting Atraxa, Grand Unifier
-  Resolving ability (category: ChangeZone)
-  Atraxa, Grand Unifier is moved to the battlefield
-  Resolving ability (category: LoseLife, amount: 7)
-  Player B loses 7 life (now at 9)
-  Resolving ability (category: Cleanup)
-  Atraxa, Grand Unifier triggered
-  Resolving ability (category: PeekAndReveal)
-  Player B reveals Otherworldly Gaze from the top of their library
-  Player B reveals Careful Study from the top of their library
-  Player B reveals Reanimate from the top of their library
-  Player B reveals Flow State from the top of their library
-  Player B reveals Undercity Sewers from the top of their library
-  Player B reveals Lotus Petal from the top of their library
-  Player B reveals Otherworldly Gaze from the top of their library
-  Player B reveals Reanimate from the top of their library
-  Player B reveals Reanimate from the top of their library
-  Player B reveals Atraxa, Grand Unifier from the top of their library
-  Resolving ability (category: RepeatEach)
-  Resolving ability (category: ChooseCard)
-  Player B may put a Artifact card from among the revealed cards into their hand:
-
---- Decision 22 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Put Lotus Petal (Artifact) into hand
-   1: Put no Artifact card into hand
-  >> B/B: 0 (Put Lotus Petal (Artifact) into hand)
---- Narrative ---
-  Player B chooses Lotus Petal
-  Resolving ability (category: ChooseCard)
-  Player B may put a Creature card from among the revealed cards into their hand:
-
---- Decision 23 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Put Atraxa, Grand Unifier (Creature) into hand
-   1: Put no Creature card into hand
-  >> B/B: 0 (Put Atraxa, Grand Unifier (Creature) into hand)
---- Narrative ---
-  Player B chooses Atraxa, Grand Unifier
-  Resolving ability (category: ChooseCard)
-  Player B may put a Instant card from among the revealed cards into their hand:
-
---- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Put Otherworldly Gaze (Instant) into hand
-   1: Put Otherworldly Gaze (Instant) into hand
-   2: Put no Instant card into hand
-  >> B/B: 0 (Put Otherworldly Gaze (Instant) into hand)
---- Narrative ---
-  Player B chooses Otherworldly Gaze
-  Resolving ability (category: ChooseCard)
-  Player B may put a Land card from among the revealed cards into their hand:
-
---- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Put Undercity Sewers (Land) into hand
-   1: Put no Land card into hand
-  >> B/B: 0 (Put Undercity Sewers (Land) into hand)
---- Narrative ---
-  Player B chooses Undercity Sewers
-  Resolving ability (category: ChooseCard)
-  Player B may put a Sorcery card from among the revealed cards into their hand:
-
---- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Flow State, Ponder, Underground Sea, Underground Sea | lib 47
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Atraxa, Grand Unifier (ability, self)
-  Pending: Atraxa, Grand Unifier (self)
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Put Careful Study (Sorcery) into hand
-   1: Put Reanimate (Sorcery) into hand
-   2: Put Flow State (Sorcery) into hand
-   3: Put Reanimate (Sorcery) into hand
-   4: Put Reanimate (Sorcery) into hand
-   5: Put no Sorcery card into hand
-  >> B/B: 0 (Put Careful Study (Sorcery) into hand)
---- Narrative ---
-  Player B chooses Careful Study
-  Resolving ability (category: ChangeZone)
-  Lotus Petal is moved to hand
-  Atraxa, Grand Unifier is moved to hand
-  Otherworldly Gaze is moved to hand
-  Undercity Sewers is moved to hand
-  Careful Study is moved to hand
-  Resolving ability (category: ChangeZoneAll)
-  Player B moves Reanimate to the bottom of their library
-  Player B moves Reanimate to the bottom of their library
-  Player B moves Flow State to the bottom of their library
-  Player B moves Otherworldly Gaze to the bottom of their library
-  Player B moves Reanimate to the bottom of their library
-  Player B moves 5 card(s) to the bottom of their library
-  Resolving ability (category: Cleanup)
-
---- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(9): Atraxa, Grand Unifier, Careful Study, Flow State, Lotus Petal, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 42
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Lotus Petal  [#0]
-  >> B/B: 1 (Cast Lotus Petal)
---- Narrative ---
-  Player B casts Lotus Petal
-  Lotus Petal enters the battlefield
-
---- Decision 28 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(8): Atraxa, Grand Unifier, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 42
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Lotus Petal (NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Self GY: Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=3 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
-  Actions:
-   0: Pass priority
-   1: Cast Careful Study  [#0]
-   2: Cast Otherworldly Gaze  [#0]
-   3: Cast Ponder  [#0]
-  >> B/B: 1 (Cast Careful Study)
---- Narrative ---
-  Player B sacrifices Lotus Petal
-  Player B activated Lotus Petal for 1(U)
-  Player B casts Careful Study
-  Resolving ability (category: Draw, amount: 2)
-  Player B draws Animate Dead
-  Player B draws Careful Study
-  Resolving ability (category: Discard)
-  Player B chooses a card to discard:
-
---- Decision 29 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(9): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 40
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Animate Dead
-   1: Atraxa, Grand Unifier
-   2: Careful Study
-   3: Flow State
-   4: Otherworldly Gaze
-   5: Ponder
-   6: Undercity Sewers
-   7: Underground Sea
-   8: Underground Sea
-  >> B/B: 1 (Atraxa, Grand Unifier)
---- Narrative ---
-  Player B discards Atraxa, Grand Unifier
-  Player B chooses a card to discard:
-
---- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(8): Animate Dead, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea | lib 40
-  Opp:   20 life | mana: empty | hand count: 5 | lib 53
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Island (T,NEW) | Swamp (T)
-  Opp BF:   Tropical Island
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tropical Island
-  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 life_lost=8 colors=UB
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Animate Dead
-   1: Careful Study
-   2: Flow State
-   3: Otherworldly Gaze
-   4: Ponder
-   5: Undercity Sewers
-   6: Underground Sea
-   7: Underground Sea
-  >> B/B: 5 (Undercity Sewers)
---- Narrative ---
-  Player B discards Undercity Sewers
   No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
   -------- TURN 5 (Player A) --------
   Player A draws Tamiyo, Inquisitive Student
 --- Turn 5 (Player A) ---
-  PA: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize
-  PB: Animate Dead, Careful Study, Flow State, Otherworldly Gaze, Ponder, Undercity Sewers, Underground Sea, Underground Sea
+  PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize
+  PB: Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Underground Sea
 
---- Decision 31 ---
+--- Decision 18 ---
   Priority: Player A (active)
   Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   9 life | mana: empty | hand count: 7 | lib 40
+  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
+  Opp:   18 life | mana: empty | hand count: 6 | lib 47
   Self BF:  Tropical Island
-  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Island (T) | Swamp (T)
-  Self GY: Force of Will
-  Opp GY:  Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp revealed: Scalding Tarn, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Atraxa, Grand Unifier
+  Opp BF:   Undercity Sewers (T) | Undercity Sewers (T)
+  Opp GY:  Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp revealed: Scalding Tarn, Thoughtseize, Undercity Sewers, Marsh Flats, Careful Study, Atraxa, Grand Unifier
   This turn: self drawn=1
   Extras: self_mulligans=1
   Actions:
@@ -811,127 +434,888 @@
 --- Narrative ---
   Player A activated Tropical Island for 1(U)
   Player A casts Tamiyo, Inquisitive Student
-  Tamiyo, Inquisitive Student enters the battlefield
-  No creatures eligible to attack.
-  No attackers — skipping declare blockers.
-  --- Combat Damage ---
-  --- End Combat Damage ---
-  -------- TURN 6 (Player B) --------
---- Turn 6 (Player B) ---
-  PA: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize
-  PB: Animate Dead, Careful Study, Flow State, Otherworldly Gaze, Ponder, Underground Sea, Underground Sea
 
---- Decision 32 ---
+--- Decision 19 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(6): Brainstorm, Force of Will, Ponder, Reanimate, Reanimate, Underground Sea | lib 47
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Stack: Tamiyo, Inquisitive Student (spell, opponent)
+  Self GY: Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 20 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Brainstorm, Ponder, Reanimate, Reanimate, Underground Sea | lib 47
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Stack: Force of Will (spell, self) -> Tamiyo, Inquisitive Student (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 21 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 5)
+  Self:  18 life | mana: empty | hand(5): Brainstorm, Ponder, Reanimate, Reanimate, Underground Sea | lib 47
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Stack: Force of Will (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 97) -> Tamiyo, Inquisitive Student (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Known top: Thoughtseize, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Exile Brainstorm
+   1: Exile Ponder
+  >> B/B: 0 (Exile Brainstorm)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Brainstorm
+  Player B casts Force of Will targeting Tamiyo, Inquisitive Student
+  Resolving ability (category: Counter)
+  Tamiyo, Inquisitive Student is countered
+  No creatures eligible to attack.
+  -------- TURN 6 (Player B) --------
+  Player B draws Thoughtseize
+--- Turn 6 (Player B) ---
+  PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize
+  PB: Ponder, Reanimate, Reanimate, Thoughtseize, Underground Sea
+
+--- Decision 22 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(7): Animate Dead, Careful Study, Flow State, Otherworldly Gaze, Ponder, Underground Sea, Underground Sea | lib 40
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island | Swamp
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(5): Ponder, Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 46
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers | Undercity Sewers
+  Opp BF:   Tropical Island (T)
+  Self GY: Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
   Extras: opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Cast Otherworldly Gaze  [#0]
-  >> B/B: 1 (Cast Otherworldly Gaze)
+   1: Play Underground Sea
+   2: Cast Ponder  [#0]
+   3: Cast Reanimate  [#0]
+   4: Cast Reanimate  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Ponder)
 --- Narrative ---
-  Player B activated Island for 1(U)
-  Player B casts Otherworldly Gaze
-  Resolving ability (category: Surveil, amount: 3)
-  Player B surveils 3.
-  Surveil: looking at Thoughtseize
-  Surveil: looking at Polluted Delta
-  Surveil: looking at Raph & Mikey, Troublemakers
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 46
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Brainstorm  [#2]
+   1: Archon of Cruelty  [#2]
+   2: Underground Sea  [#2]
+  >> B/B: 1 (Archon of Cruelty)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 46
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Brainstorm  [#1]
+   1: Underground Sea  [#1]
+  >> B/B: 1 (Underground Sea)
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 46
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Tropical Island (T)
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Brainstorm, Underground Sea, Archon of Cruelty, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Brainstorm
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(5): Brainstorm, Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 45
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers
+  Opp BF:   Tropical Island (T)
+  Self GY: Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=2 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Brainstorm  [#0]
+   3: Cast Reanimate  [#0]
+   4: Cast Reanimate  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Underground Sea
+  Player B draws Archon of Cruelty
+  Player B draws Force of Will
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(7): Archon of Cruelty, Force of Will, Reanimate, Reanimate, Thoughtseize, Underground Sea, Underground Sea | lib 42
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Archon of Cruelty
+   1: Force of Will
+   2: Reanimate
+   3: Reanimate
+   4: Thoughtseize
+   5: Underground Sea
+   6: Underground Sea
+  >> B/B: 0 (Archon of Cruelty)
+--- Narrative ---
+  Player B puts Archon of Cruelty to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(6): Force of Will, Reanimate, Reanimate, Thoughtseize, Underground Sea, Underground Sea | lib 43
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Force of Will
+   1: Reanimate
+   2: Reanimate
+   3: Thoughtseize
+   4: Underground Sea
+   5: Underground Sea
+  >> B/B: 4 (Underground Sea)
+--- Narrative ---
+  Player B puts Underground Sea to top of library
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(5): Force of Will, Reanimate, Reanimate, Thoughtseize, Underground Sea | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T)
+  Opp BF:   Tropical Island (T)
+  Self GY: Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> B/B: 1 (Play Underground Sea)
+--- Narrative ---
+  Player B played Underground Sea
+
+--- Decision 30 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(4): Force of Will, Reanimate, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (NEW)
+  Opp BF:   Tropical Island (T)
+  Self GY: Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
+  Extras: self_lands_played=1, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+   2: Cast Reanimate  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Reanimate)
+--- Narrative ---
+  Choose target for Reanimate:
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  17 life | mana: empty | hand(3): Force of Will, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (NEW)
+  Opp BF:   Tropical Island (T)
+  Stack: Reanimate (spell, self)
+  Pending: Reanimate (self)
+  Self GY: Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Atraxa, Grand Unifier, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=5 colors=U
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Tamiyo, Inquisitive Student
+   1: Atraxa, Grand Unifier
+  >> B/B: 1 (Atraxa, Grand Unifier)
+--- Narrative ---
+  Targeting choice 1
+  Player B activated Underground Sea for 1(B)
+  Player B casts Reanimate targeting Atraxa, Grand Unifier
+  Resolving ability (category: ChangeZone)
+  Atraxa, Grand Unifier is moved to the battlefield
+  Resolving ability (category: LoseLife, amount: 7)
+  Player B loses 7 life (now at 10)
+  Resolving ability (category: Cleanup)
+  Atraxa, Grand Unifier triggered
+  Resolving ability (category: PeekAndReveal)
+  Player B reveals Underground Sea from the top of their library
+  Player B reveals Archon of Cruelty from the top of their library
+  Player B reveals Flooded Strand from the top of their library
+  Player B reveals Ponder from the top of their library
+  Player B reveals Thoughtseize from the top of their library
+  Player B reveals Reanimate from the top of their library
+  Player B reveals Atraxa, Grand Unifier from the top of their library
+  Player B reveals Polluted Delta from the top of their library
+  Player B reveals Animate Dead from the top of their library
+  Player B reveals Griselbrand from the top of their library
+  Resolving ability (category: RepeatEach)
+  Resolving ability (category: ChooseCard)
+  Player B may put a Creature card from among the revealed cards into their hand:
+
+--- Decision 32 ---
+  Priority: Player B (active)
+  Step: First Main (turn 6)
+  Self:  10 life | mana: empty | hand(3): Force of Will, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW)
+  Opp BF:   Tropical Island (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, Flooded Strand, Ponder, Thoughtseize
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Put Archon of Cruelty (Creature) into hand
+   1: Put Atraxa, Grand Unifier (Creature) into hand
+   2: Put Griselbrand (Creature) into hand
+   3: Put no Creature card into hand
+  >> B/B: 0 (Put Archon of Cruelty (Creature) into hand)
+--- Narrative ---
+  Player B chooses Archon of Cruelty
+  Resolving ability (category: ChooseCard)
+  Player B may put a Enchantment card from among the revealed cards into their hand:
 
 --- Decision 33 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Careful Study, Flow State, Ponder, Underground Sea, Underground Sea | lib 40
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window, opp_mulligans=1
+  Step: First Main (turn 6)
+  Self:  10 life | mana: empty | hand(3): Force of Will, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW)
+  Opp BF:   Tropical Island (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, Flooded Strand, Ponder, Thoughtseize
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
-   0: Put Thoughtseize on top of library  [#0]
-   1: Put Polluted Delta on top of library  [#0]
-   2: Put Raph & Mikey, Troublemakers on top of library  [#0]
-   3: Put Thoughtseize into graveyard
-   4: Put Polluted Delta into graveyard
-   5: Put Raph & Mikey, Troublemakers into graveyard
-  >> B/B: 3 (Put Thoughtseize into graveyard)
+   0: Put Animate Dead (Enchantment) into hand
+   1: Put no Enchantment card into hand
+  >> B/B: 0 (Put Animate Dead (Enchantment) into hand)
 --- Narrative ---
-  Player B puts Thoughtseize into their graveyard.
+  Player B chooses Animate Dead
+  Resolving ability (category: ChooseCard)
+  Player B may put a Land card from among the revealed cards into their hand:
 
 --- Decision 34 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Careful Study, Flow State, Ponder, Underground Sea, Underground Sea | lib 39
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window, opp_mulligans=1
+  Step: First Main (turn 6)
+  Self:  10 life | mana: empty | hand(3): Force of Will, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW)
+  Opp BF:   Tropical Island (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, Flooded Strand, Ponder, Thoughtseize
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
-   0: Put Polluted Delta on top of library  [#0]
-   1: Put Raph & Mikey, Troublemakers on top of library  [#0]
-   2: Put Polluted Delta into graveyard
-   3: Put Raph & Mikey, Troublemakers into graveyard
-  >> B/B: 2 (Put Polluted Delta into graveyard)
+   0: Put Underground Sea (Land) into hand
+   1: Put Flooded Strand (Land) into hand
+   2: Put Polluted Delta (Land) into hand
+   3: Put no Land card into hand
+  >> B/B: 0 (Put Underground Sea (Land) into hand)
 --- Narrative ---
-  Player B puts Polluted Delta into their graveyard.
+  Player B chooses Underground Sea
+  Resolving ability (category: ChooseCard)
+  Player B may put a Sorcery card from among the revealed cards into their hand:
 
 --- Decision 35 ---
   Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Careful Study, Flow State, Ponder, Underground Sea, Underground Sea | lib 38
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Otherworldly Gaze (spell, self)
-  Pending: Otherworldly Gaze (self)
-  Self GY: Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window, opp_mulligans=1
+  Step: First Main (turn 6)
+  Self:  10 life | mana: empty | hand(3): Force of Will, Reanimate, Thoughtseize | lib 44
+  Opp:   20 life | mana: empty | hand count: 6 | lib 52
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK,NEW,res 1) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW)
+  Opp BF:   Tropical Island (T)
+  Stack: Atraxa, Grand Unifier (ability, self)
+  Pending: Atraxa, Grand Unifier (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, Flooded Strand, Ponder, Thoughtseize
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=3 drawn=5 life_lost=7 colors=UB
+  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
-   0: Put Raph & Mikey, Troublemakers on top of library  [#0]
-   1: Put Raph & Mikey, Troublemakers into graveyard
-  >> B/B: 1 (Put Raph & Mikey, Troublemakers into graveyard)
+   0: Put Ponder (Sorcery) into hand
+   1: Put Thoughtseize (Sorcery) into hand
+   2: Put Reanimate (Sorcery) into hand
+   3: Put no Sorcery card into hand
+  >> B/B: 0 (Put Ponder (Sorcery) into hand)
 --- Narrative ---
-  Player B puts Raph & Mikey, Troublemakers into their graveyard.
-  Player B draws Atraxa, Grand Unifier
+  Player B chooses Ponder
+  Resolving ability (category: ChangeZone)
+  Archon of Cruelty is moved to hand
+  Animate Dead is moved to hand
+  Underground Sea is moved to hand
+  Ponder is moved to hand
+  Resolving ability (category: ChangeZoneAll)
+  Player B moves Reanimate to the bottom of their library
+  Player B moves Thoughtseize to the bottom of their library
+  Player B moves Griselbrand to the bottom of their library
+  Player B moves Polluted Delta to the bottom of their library
+  Player B moves Flooded Strand to the bottom of their library
+  Player B moves Atraxa, Grand Unifier to the bottom of their library
+  Player B moves 6 card(s) to the bottom of their library
+  Resolving ability (category: Cleanup)
+  No creatures eligible to attack.
+  -------- TURN 7 (Player A) --------
+  Player A draws Tropical Island
+--- Turn 7 (Player A) ---
+  PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island
+  PB: Force of Will, Reanimate, Thoughtseize
 
 --- Decision 36 ---
+  Priority: Player A (active)
+  Step: First Main (turn 7)
+  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 51
+  Opp:   10 life | mana: empty | hand count: 7 | lib 40
+  Self BF:  Tropical Island
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (SICK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Self GY: Tamiyo, Inquisitive Student
+  Opp GY:  Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp exile:  Brainstorm
+  Known opp hand: Animate Dead, Archon of Cruelty, Ponder, Underground Sea
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Brainstorm, Thoughtseize, Undercity Sewers, Underground Sea, Marsh Flats, Reanimate, Careful Study, Griselbrand, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
+  Extras: self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Tropical Island
+  >> A/A: 1 (Play Tropical Island)
+--- Narrative ---
+  Player A played Tropical Island
+  No creatures eligible to attack.
+  -------- TURN 8 (Player B) --------
+  Player B draws Flow State
+--- Turn 8 (Player B) ---
+  PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island
+  PB: Animate Dead, Archon of Cruelty, Flow State, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea
+
+--- Decision 37 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(7): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(8): Animate Dead, Archon of Cruelty, Flow State, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 39
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Animate Dead  [#0]
+   3: Cast Flow State  [#0]
+   4: Cast Ponder  [#0]
+   5: Cast Reanimate  [#0]
+   6: Cast Thoughtseize  [#0]
+  >> B/B: 3 (Cast Flow State)
+--- Narrative ---
+  Player B activated Undercity Sewers for 1(U)
+  Player B activated Undercity Sewers for 1(U)
+  Player B casts Flow State
+
+--- Decision 38 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Archon of Cruelty, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 39
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Flow State (spell, self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
   This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
   Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 39 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Archon of Cruelty, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 39
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Reanimate
+   1: Lotus Petal
+   2: Brainstorm
+  >> B/B: 1 (Lotus Petal)
+
+--- Decision 40 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Archon of Cruelty, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 39
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Flow State (spell, self)
+  Pending: Flow State (self)
+  Self GY: Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Reanimate
+   1: Brainstorm
+  >> B/B: 1 (Brainstorm)
+--- Narrative ---
+  Player B puts Lotus Petal into hand.
+  Player B puts Brainstorm into hand.
+  Player B puts 1 card(s) on the bottom of their library.
+
+--- Decision 41 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(9): Animate Dead, Archon of Cruelty, Brainstorm, Force of Will, Lotus Petal, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 37
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Brainstorm  [#0]
+   3: Cast Lotus Petal  [#0]
+   4: Cast Ponder  [#0]
+   5: Cast Reanimate  [#0]
+   6: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Underground Sea for 1(U)
+  Player B casts Brainstorm
+
+--- Decision 42 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(8): Animate Dead, Archon of Cruelty, Force of Will, Lotus Petal, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 37
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Brainstorm (spell, self)
+  Self GY: Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Ponder
+  Player B draws Animate Dead
+  Player B draws Atraxa, Grand Unifier
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(11): Animate Dead, Animate Dead, Archon of Cruelty, Atraxa, Grand Unifier, Force of Will, Lotus Petal, Ponder, Ponder, Reanimate, Thoughtseize | lib 34
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Animate Dead
+   1: Animate Dead
+   2: Archon of Cruelty
+   3: Atraxa, Grand Unifier
+   4: Force of Will
+   5: Lotus Petal
+   6: Ponder
+   7: Ponder
+   8: Reanimate
+   9: Thoughtseize
+  10: Underground Sea
+  >> B/B: 2 (Archon of Cruelty)
+--- Narrative ---
+  Player B puts Archon of Cruelty to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(10): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Lotus Petal, Ponder, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Brainstorm (spell, self)
+  Pending: Brainstorm (self)
+  Self GY: Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: not_priority_window, opp_mulligans=1
+  Actions:
+   0: Animate Dead
+   1: Animate Dead
+   2: Atraxa, Grand Unifier
+   3: Force of Will
+   4: Lotus Petal
+   5: Ponder
+   6: Ponder
+   7: Reanimate
+   8: Thoughtseize
+   9: Underground Sea
+  >> B/B: 2 (Atraxa, Grand Unifier)
+--- Narrative ---
+  Player B puts Atraxa, Grand Unifier to top of library
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(9): Animate Dead, Animate Dead, Force of Will, Lotus Petal, Ponder, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Lotus Petal  [#0]
+  >> B/B: 2 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(8): Animate Dead, Animate Dead, Force of Will, Ponder, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Lotus Petal (spell, self)
+  Self GY: Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(8): Animate Dead, Animate Dead, Force of Will, Ponder, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Lotus Petal (NEW) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=3 noncreature=3 instant_sorcery=2 drawn=4 colors=U
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Ponder  [#0]
+   3: Cast Ponder  [#0]
+   4: Cast Reanimate  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Ponder)
+--- Narrative ---
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(U)
+  Player B casts Ponder
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Self GY: Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=4 colors=U
+  Extras: self_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=4 colors=U
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Atraxa, Grand Unifier  [#2]
+   1: Archon of Cruelty  [#2]
+   2: Underground Sea  [#2]
+  >> B/B: 0 (Atraxa, Grand Unifier)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=4 colors=U
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Archon of Cruelty  [#1]
+   1: Underground Sea  [#1]
+  >> B/B: 0 (Archon of Cruelty)
+
+--- Decision 51 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 36
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Underground Sea, Archon of Cruelty, Atraxa, Grand Unifier, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=4 colors=U
+  Extras: self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Underground Sea
+
+--- Decision 52 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(8): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, Atraxa, Grand Unifier, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 colors=U
+  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -940,128 +1324,358 @@
 --- Narrative ---
   Player B played Underground Sea
 
---- Decision 37 ---
+--- Decision 53 ---
   Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, opp_mulligans=1
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Ponder, Reanimate, Thoughtseize, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, Atraxa, Grand Unifier, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=4 noncreature=4 instant_sorcery=3 drawn=5 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
-   1: Cast Animate Dead  [#0]
-   2: Cast Careful Study  [#0]
-   3: Cast Flow State  [#0]
-   4: Cast Ponder  [#0]
-   5: Cast Otherworldly Gaze (flashback)  [#4]
-  >> B/B: 1 (Cast Animate Dead)
+   1: Cast Ponder  [#0]
+   2: Cast Reanimate  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Ponder)
 --- Narrative ---
-  Choose target for Animate Dead:
-
---- Decision 38 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(6): Animate Dead, Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Swamp | Underground Sea (NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Pending: Animate Dead (self)
-  Self GY: Otherworldly Gaze [play:self], Raph & Mikey, Troublemakers, Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Atraxa, Grand Unifier
-   1: Raph & Mikey, Troublemakers
-  >> B/B: 1 (Raph & Mikey, Troublemakers)
---- Narrative ---
-  Targeting choice 1
-  Player B casts Animate Dead enchanting Raph & Mikey, Troublemakers
-  Player B activated Swamp for 1(B)
   Player B activated Underground Sea for 1(U)
-  Player B casts Animate Dead
-  Animate Dead enters the battlefield
-  Animate Dead triggered
-  Resolving ability (category: ChangeZone)
-  Raph & Mikey, Troublemakers is moved to the battlefield
-  Resolving ability (category: Animate)
-  Resolving ability (category: Attach)
-  Equipment will attach once the creature finishes entering.
-  Resolving ability (category: DelayedTrigger)
-  Delayed trigger registered: SacrificeAll when watched permanent leaves the battlefield.
-  Equipment attached.
-  Raph & Mikey, Troublemakers gains -1/0 (always)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(6): Animate Dead, Animate Dead, Force of Will, Reanimate, Thoughtseize, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, Atraxa, Grand Unifier, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=5 noncreature=5 instant_sorcery=4 drawn=5 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Archon of Cruelty  [#2]
+   1: Atraxa, Grand Unifier  [#2]
+   2: Lotus Petal  [#2]
+  >> B/B: 0 (Archon of Cruelty)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(6): Animate Dead, Animate Dead, Force of Will, Reanimate, Thoughtseize, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, Atraxa, Grand Unifier, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=5 noncreature=5 instant_sorcery=4 drawn=5 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Atraxa, Grand Unifier  [#1]
+   1: Lotus Petal  [#1]
+  >> B/B: 0 (Atraxa, Grand Unifier)
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(6): Animate Dead, Animate Dead, Force of Will, Reanimate, Thoughtseize, Underground Sea | lib 35
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Ponder (spell, self)
+  Pending: Ponder (self)
+  Self GY: Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Lotus Petal, Atraxa, Grand Unifier, Archon of Cruelty, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=5 noncreature=5 instant_sorcery=4 drawn=5 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Lotus Petal
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(7): Animate Dead, Animate Dead, Force of Will, Lotus Petal, Reanimate, Thoughtseize, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=5 noncreature=5 instant_sorcery=4 drawn=6 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Lotus Petal  [#0]
+  >> B/B: 1 (Cast Lotus Petal)
+--- Narrative ---
+  Player B casts Lotus Petal
+  Lotus Petal enters the battlefield
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(6): Animate Dead, Animate Dead, Force of Will, Reanimate, Thoughtseize, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Lotus Petal (NEW) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=6 noncreature=6 instant_sorcery=4 drawn=6 colors=U
+  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Reanimate  [#0]
+   2: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 59 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(5): Animate Dead, Animate Dead, Force of Will, Reanimate, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Lotus Petal (NEW) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Thoughtseize (spell, self)
+  Pending: Thoughtseize (self)
+  Self GY: Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=6 noncreature=6 instant_sorcery=4 drawn=6 colors=U
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Player A (20 life)
+   1: Player B (10 life)
+  >> B/B: 0 (Player A (20 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Lotus Petal
+  Player B activated Lotus Petal for 1(B)
+  Player B casts Thoughtseize targeting Player A
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Fatal Push
+    Fatal Push
+    Force of Will
+    Orcish Bowmasters
+    Sheoldred's Edict
+    Thoughtseize
+  Player B chooses a card to discard:
+
+--- Decision 60 ---
+  Priority: Player B (active)
+  Step: First Main (turn 8)
+  Self:  10 life | mana: empty | hand(5): Animate Dead, Animate Dead, Force of Will, Reanimate, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 6 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Pending: Thoughtseize (self)
+  Self GY: Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=7 noncreature=7 instant_sorcery=5 drawn=6 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Fatal Push
+   1: Fatal Push
+   2: Force of Will
+   3: Orcish Bowmasters
+   4: Sheoldred's Edict
+   5: Thoughtseize
+  >> B/B: 2 (Force of Will)
+--- Narrative ---
+  Player A discards Force of Will
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 8)
   --- Declare Attackers (Player B) ---
 
---- Decision 39 ---
+--- Decision 61 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
-  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Step: Declare Atk (turn 8)
+  Self:  8 life | mana: empty | hand(5): Animate Dead, Animate Dead, Force of Will, Reanimate, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=7 noncreature=7 instant_sorcery=5 drawn=6 life_lost=2 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Atraxa, Grand Unifier [7/7]
-   1: Raph & Mikey, Troublemakers [6/7]
-   2: Confirm attackers
+   1: Confirm attackers
   >> B/B: 0 (Atraxa, Grand Unifier [7/7])
 --- Narrative ---
   Atraxa, Grand Unifier attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Atraxa, Grand Unifier [7/7] -> Player A
 
---- Decision 40 ---
+--- Decision 62 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
-  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Step: Declare Atk (turn 8)
+  Self:  8 life | mana: empty | hand(5): Animate Dead, Animate Dead, Force of Will, Reanimate, Underground Sea | lib 34
+  Opp:   20 life | mana: empty | hand count: 5 | lib 51
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Undercity Sewers (T) | Undercity Sewers (T) | Underground Sea (T,NEW) | Underground Sea (T)
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self spells=7 noncreature=7 instant_sorcery=5 drawn=6 life_lost=2 colors=UB
+  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Atraxa, Grand Unifier -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Atraxa, Grand Unifier deals 7 damage to Player A (now at 13 life)
+    Player B gains 7 life (lifelink)
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+  Player A draws Baleful Strix
+  No creatures eligible to attack.
+  -------- TURN 10 (Player B) --------
+  Player B draws Atraxa, Grand Unifier
+--- Turn 10 (Player B) ---
+  PA: Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island
+  PB: Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate, Underground Sea
+
+--- Decision 63 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  15 life | mana: empty | hand(6): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate, Underground Sea | lib 33
+  Opp:   13 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Cast Animate Dead  [#0]
+   3: Cast Animate Dead  [#0]
+   4: Cast Reanimate  [#0]
+  >> B/B: 1 (Play Underground Sea)
+--- Narrative ---
+  Player B played Underground Sea
+
+--- Decision 64 ---
+  Priority: Player B (active)
+  Step: First Main (turn 10)
+  Self:  15 life | mana: empty | hand(5): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate | lib 33
+  Opp:   13 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea (NEW) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: self_lands_played=1, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Animate Dead  [#0]
+   2: Cast Animate Dead  [#0]
+   3: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 65 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 10)
+  Self:  15 life | mana: empty | hand(5): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate | lib 33
+  Opp:   13 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea (NEW) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
-   0: Raph & Mikey, Troublemakers [6/7]
+   0: Atraxa, Grand Unifier [7/7]
    1: Confirm attackers
-  >> B/B: 0 (Raph & Mikey, Troublemakers [6/7])
+  >> B/B: 0 (Atraxa, Grand Unifier [7/7])
 --- Narrative ---
-  Raph & Mikey, Troublemakers attacking Player A.
+  Atraxa, Grand Unifier attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Atraxa, Grand Unifier [7/7] -> Player A
-    [attacking] Raph & Mikey, Troublemakers [6/7] -> Player A
 
---- Decision 41 ---
+--- Decision 66 ---
   Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 36
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (ATK,SICK,NEW,DELAYED) | Swamp (T) | Underground Sea (T,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
-  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
+  Step: Declare Atk (turn 10)
+  Self:  15 life | mana: empty | hand(5): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate | lib 33
+  Opp:   13 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea (NEW) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
   Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
@@ -1069,103 +1683,220 @@
 --- Narrative ---
   Attackers declared:
     Atraxa, Grand Unifier -> Player A
-    Raph & Mikey, Troublemakers -> Player A
-  Raph & Mikey, Troublemakers triggered
-  Resolving ability (category: DigUntil)
-  Player B reveals Underground Sea.
-  Player B reveals Polluted Delta.
-  Player B reveals Flow State.
-  Player B reveals Thoughtseize.
-  Player B reveals Force of Will.
-  Player B reveals Archon of Cruelty.
-  Player B puts Archon of Cruelty onto the battlefield tapped and attacking.
-  Archon of Cruelty enters tapped.
-  Archon of Cruelty is attacking.
-  Choose target for Archon of Cruelty:
-
---- Decision 42 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  9 life | mana: empty | hand(5): Atraxa, Grand Unifier, Careful Study, Flow State, Ponder, Underground Sea | lib 35
-  Opp:   20 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Delayed: Animate Dead@0 -> Raph & Mikey, Troublemakers (watching Animate Dead@0) (self, leaves bf, waiting)
-  Pending: Archon of Cruelty (self)
-  Self GY: Otherworldly Gaze [play:self], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp GY:  Force of Will
-  Known opp hand: Fatal Push, Fatal Push, Sheoldred's Edict, Thoughtseize
-  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
-  Actions:
-   0: Player A (20 life)
-  >> B/B: 0 (Player A (20 life))
---- Narrative ---
-  Targeting choice 0
-  Archon of Cruelty triggered
-  Resolving ability (category: Sacrifice)
-
---- Decision 43 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 6)
-  Self:  20 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 52
-  Opp:   9 life | mana: empty | hand count: 5 | lib 35
-  Self BF:  Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Delayed: Animate Dead@48 -> Raph & Mikey, Troublemakers (watching Animate Dead@48) (opponent, leaves bf, waiting)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Force of Will
-  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
-  Extras: opp_lands_played=1, not_priority_window, self_mulligans=1
-  Actions:
-   0: Sacrifice Tamiyo, Inquisitive Student
-  >> A/A: 0 (Sacrifice Tamiyo, Inquisitive Student)
---- Narrative ---
-  Player A sacrifices Tamiyo, Inquisitive Student.
-  Resolving ability (category: Discard)
-  Player A chooses a card to discard:
-
---- Decision 44 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 6)
-  Self:  20 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 52
-  Opp:   9 life | mana: empty | hand count: 5 | lib 35
-  Self BF:  Tropical Island (T)
-  Opp BF:   Animate Dead (->Raph & Mikey, Troublemakers) (NEW,DELAYED,res 1) | Archon of Cruelty [6/6] [Flying] (T,ATK,SICK,NEW,res 1) | Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Island (T) | Raph & Mikey, Troublemakers [6/7] [Trample, Haste] (eq:Animate Dead) (T,ATK,SICK,NEW,DELAYED,res 1) | Swamp (T) | Underground Sea (T,NEW)
-  Stack: Archon of Cruelty (ability, opponent) -> self (player)
-  Delayed: Animate Dead@48 -> Raph & Mikey, Troublemakers (watching Animate Dead@48) (opponent, leaves bf, waiting)
-  Pending: Archon of Cruelty (opp)
-  Self GY: Tamiyo, Inquisitive Student, Force of Will
-  Opp GY:  Otherworldly Gaze [play:opponent], Polluted Delta, Thoughtseize, Careful Study, Undercity Sewers, Atraxa, Grand Unifier, Lotus Petal, Reanimate, Careful Study, Force of Will, Scalding Tarn, Thoughtseize, Marsh Flats
-  Opp revealed: Scalding Tarn, Polluted Delta, Force of Will, Island, Thoughtseize, Lotus Petal, Swamp, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Otherworldly Gaze, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead, Raph & Mikey, Troublemakers
-  This turn: opp spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=UB
-  Extras: opp_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
-  Actions:
-   0: Fatal Push
-   1: Fatal Push
-   2: Orcish Bowmasters
-   3: Sheoldred's Edict
-   4: Thoughtseize
-  >> A/A: 3 (Sheoldred's Edict)
---- Narrative ---
-  Player A discards Sheoldred's Edict
-  Resolving ability (category: LoseLife, amount: 3)
-  Player A loses 3 life (now at 17)
-  Resolving ability (category: Draw, amount: 1)
-  Player B draws Bloodstained Mire
-  Resolving ability (category: GainLife, amount: 3)
-  Player B gains 3 life (now at 12)
   No creatures eligible to block.
   --- Combat Damage ---
-    Archon of Cruelty deals 6 damage to Player A
-    Atraxa, Grand Unifier deals 7 damage to Player A
-    Raph & Mikey, Troublemakers deals 6 damage to Player A
+    Atraxa, Grand Unifier deals 7 damage to Player A (now at 6 life)
     Player B gains 7 life (lifelink)
   --- End Combat Damage ---
-  Player A has -2 life - Player B wins!
+
+--- Decision 67 ---
+  Priority: Player B (active)
+  Step: Second Main (turn 10)
+  Self:  22 life | mana: empty | hand(5): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate | lib 33
+  Opp:   6 life | mana: empty | hand count: 6 | lib 50
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea (NEW) | Underground Sea
+  Opp BF:   Tropical Island | Tropical Island
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1 life_gained=7 | opp life_lost=7
+  Extras: self_lands_played=1, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Animate Dead  [#0]
+   2: Cast Animate Dead  [#0]
+   3: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Swamp
+--- Turn 11 (Player A) ---
+  PA: Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize
+  PB: Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate
+
+--- Decision 68 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  6 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize | lib 49
+  Opp:   22 life | mana: empty | hand count: 5 | lib 33
+  Self BF:  Tropical Island | Tropical Island
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Self GY: Force of Will, Tamiyo, Inquisitive Student
+  Opp GY:  Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp exile:  Brainstorm
+  Known opp hand: Animate Dead
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Griselbrand, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
+  Extras: self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Play Swamp
+  >> A/A: 1 (Play Swamp)
+--- Narrative ---
+  Player A played Swamp
+
+--- Decision 69 ---
+  Priority: Player A (active)
+  Step: First Main (turn 11)
+  Self:  6 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
+  Opp:   22 life | mana: empty | hand count: 5 | lib 33
+  Self BF:  Swamp (NEW) | Tropical Island | Tropical Island
+  Opp BF:   Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Self GY: Force of Will, Tamiyo, Inquisitive Student
+  Opp GY:  Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp exile:  Brainstorm
+  Known opp hand: Animate Dead
+  Opp revealed: Scalding Tarn, Flooded Strand, Polluted Delta, Ponder, Force of Will, Brainstorm, Thoughtseize, Lotus Petal, Undercity Sewers, Underground Sea, Flow State, Marsh Flats, Reanimate, Careful Study, Griselbrand, Archon of Cruelty, Atraxa, Grand Unifier, Animate Dead
+  This turn: self drawn=1
+  Extras: self_lands_played=1, self_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Baleful Strix  [#0]
+   2: Cast Orcish Bowmasters  [#0]
+   3: Cast Sheoldred's Edict  [#0]
+   4: Cast Thoughtseize  [#0]
+  >> A/A: 1 (Cast Baleful Strix)
+--- Narrative ---
+  Player A activated Swamp for 1(B)
+  Player A activated Tropical Island for 1(U)
+  Player A casts Baleful Strix
+
+--- Decision 70 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  22 life | mana: empty | hand(5): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Force of Will, Reanimate | lib 33
+  Opp:   6 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Opp BF:   Swamp (T,NEW) | Tropical Island (T) | Tropical Island
+  Stack: Baleful Strix (spell, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=UB
+  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will  [#0]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will)
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 71 ---
+  Priority: Player B (non-active)
+  Step: First Main (turn 11)
+  Self:  22 life | mana: empty | hand(4): Animate Dead, Animate Dead, Atraxa, Grand Unifier, Reanimate | lib 33
+  Opp:   6 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Opp BF:   Swamp (T,NEW) | Tropical Island (T) | Tropical Island
+  Stack: Force of Will (spell, self) -> Baleful Strix (spell, opponent)
+  Pending: Force of Will (self)
+  Self GY: Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known top: Archon of Cruelty, ?, ?, ?, ?
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: opp spells=1 drawn=1 colors=UB
+  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
+  Actions:
+   0: Baleful Strix
+  >> B/B: 0 (Baleful Strix)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Undercity Sewers for 1(U)
+  Player B activated Undercity Sewers for 1(U)
+  Player B activated Underground Sea for 1(U)
+  Player B activated Underground Sea for 1(U)
+  Player B activated Underground Sea for 1(U)
+  Player B casts Force of Will targeting Baleful Strix
+  Resolving ability (category: Counter)
+  Baleful Strix is countered
+  No creatures eligible to attack.
+  -------- TURN 12 (Player B) --------
+  Player B draws Archon of Cruelty
+--- Turn 12 (Player B) ---
+  PA: Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  PB: Animate Dead, Animate Dead, Archon of Cruelty, Atraxa, Grand Unifier, Reanimate
+
+--- Decision 72 ---
+  Priority: Player B (active)
+  Step: First Main (turn 12)
+  Self:  22 life | mana: empty | hand(5): Animate Dead, Animate Dead, Archon of Cruelty, Atraxa, Grand Unifier, Reanimate | lib 32
+  Opp:   6 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
+  Self GY: Force of Will, Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Baleful Strix, Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: opp_mulligans=1
+  Actions:
+   0: Pass priority
+   1: Cast Animate Dead  [#0]
+   2: Cast Animate Dead  [#0]
+   3: Cast Reanimate  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  22 life | mana: empty | hand(5): Animate Dead, Animate Dead, Archon of Cruelty, Atraxa, Grand Unifier, Reanimate | lib 32
+  Opp:   6 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
+  Self GY: Force of Will, Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Baleful Strix, Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Atraxa, Grand Unifier [7/7]
+   1: Confirm attackers
+  >> B/B: 0 (Atraxa, Grand Unifier [7/7])
+--- Narrative ---
+  Atraxa, Grand Unifier attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Atraxa, Grand Unifier [7/7] -> Player A
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: Declare Atk (turn 12)
+  Self:  22 life | mana: empty | hand(5): Animate Dead, Animate Dead, Archon of Cruelty, Atraxa, Grand Unifier, Reanimate | lib 32
+  Opp:   6 life | mana: empty | hand count: 5 | lib 49
+  Self BF:  Atraxa, Grand Unifier [7/7] [Flying, Deathtouch, Lifelink, Vigilance] (ATK) | Undercity Sewers | Undercity Sewers | Underground Sea | Underground Sea | Underground Sea
+  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
+  Self GY: Force of Will, Thoughtseize, Lotus Petal, Ponder, Ponder, Lotus Petal, Brainstorm, Flow State, Reanimate, Brainstorm, Ponder, Force of Will, Scalding Tarn, Careful Study, Thoughtseize, Marsh Flats
+  Opp GY:  Baleful Strix, Force of Will, Tamiyo, Inquisitive Student
+  Self exile: Brainstorm
+  Known opp hand: Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize
+  Opp revealed: Force of Will, Thoughtseize, Swamp, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
+  This turn: self drawn=1
+  Extras: not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Atraxa, Grand Unifier -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Atraxa, Grand Unifier deals 7 damage to Player A (now at -1 life)
+    Player B gains 7 life (lifelink)
+  --- End Combat Damage ---
+  Player A has -1 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
 === B/B wins ===

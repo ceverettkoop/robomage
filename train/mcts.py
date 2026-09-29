@@ -33,9 +33,10 @@ import numpy as np
 from _enums import CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, N_CARD_TYPES
 from cli_spec import DEFAULT_AZ_C_PUCT
 from decode import menu_merge_reps
-from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX, _MATCH_CTX_START,
+from env import (_CUR_TURN_IDX, _IS_SIDEBOARD_IDX,
                  _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_END, _OPP_DECKLIST_SLOT_SIZE,
-                 _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id)
+                 _SELF_IS_A_IDX, _obs_action_category, _obs_action_card_id,
+                 obs_game_number)
 from sb_rules import SB_CARD_FACTS, SB_DEAD_RULES
 from search_env import SearchRoboMageEnv, SimQuery
 
@@ -990,7 +991,7 @@ def sb_root_key(obs: np.ndarray) -> Optional[tuple[bool, int]]:
     if obs[_IS_SIDEBOARD_IDX] <= 0.5:
         return None
     return (bool(obs[_SELF_IS_A_IDX] > 0.5),
-            int(round(float(obs[_MATCH_CTX_START]) * 3)))
+            obs_game_number(obs))
 
 
 def sb_pick_descriptor(obs: np.ndarray, action: int) -> Optional[tuple[int, int, int]]:
@@ -2137,14 +2138,15 @@ class IncrementalPlanSearch:
         covered = np.isfinite(best)
         q = np.where(covered, best, 0.0)
         visits = np.zeros(n, dtype=np.float64)
+        pi = visits
         if covered.any():
-            # softmax over the covered subset only (mid-coverage chunks);
-            # equals _plan_softmax once coverage completes.
-            z = (q[covered] - q[covered].max()) / SB_PI_TAU
-            e = np.exp(z)
+            # softmax over the covered subset only (mid-coverage chunks):
+            # uncovered picks enter as -inf, exactly as run_plan_search passes
+            # rule-dead picks, so the completed search reproduces its π and
+            # visits bit-for-bit (same _plan_softmax over the same array).
+            pi = _plan_softmax(best)
             n_evals = len(self.plans) * self._worlds
-            visits[covered] = (e / e.sum()) * float(n_evals)
-        pi = visits / visits.sum() if visits.sum() > 0 else visits
+            visits = pi * float(n_evals)
         world_visits = np.zeros((self._worlds, n), dtype=np.int64)
         world_values = np.zeros(self._worlds, dtype=np.float64)
         for w in range(self._worlds):

@@ -1,0 +1,13 @@
+{
+  "name": "cr702_114a_devoid_spell_is_colorless",
+  "why": "CR 702.114a / 105.2c: a Devoid spell (Eldrazi Linebreaker) is colorless, so Consign to Memory can counter it - 7ea68e9",
+  "hand_a": ["Consign to Memory"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island"],
+  "hand_b": ["Eldrazi Linebreaker"],
+  "library_b": ["Wastes"],
+  "battlefield_b": ["Wastes", "Wastes", "Mountain"],
+  "play": ["A:keep", "B:keep", "B:cast:Eldrazi Linebreaker", "A:cast:Consign to Memory", "A:target:Eldrazi Linebreaker"],
+  "max_decisions": 12,
+  "expect_order": ["Player B casts Eldrazi Linebreaker", "Player A casts Consign to Memory targeting Eldrazi Linebreaker", "Eldrazi Linebreaker is countered"]
+}

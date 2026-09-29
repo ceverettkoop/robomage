@@ -13,8 +13,11 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/characteristics.h"
+#include "../queries/keywords.h"
+#include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -44,13 +47,13 @@ void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const Pum
         game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
     // Grant "until end of turn" keyword(s) (e.g. Haste). Stored in the eot_keywords
     // bucket; the static pass re-merges them onto cr.keywords each pass and cleanup
-    // clears them (514.2). De-dup so repeated grants don't pile up.
+    // clears them (514.2). A repeated grant adds a second instance only of a keyword whose
+    // instances function separately (two Ward grants are two Ward triggers, CR 113.2c).
     if (pp) {
+        if (!pp->grant_keywords.empty()) cr.eot_keywords_timestamp = cur_game.timestamp++;  // CR 613.7b
         for (const auto &kw : pp->grant_keywords) {
-            if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
-                cr.eot_keywords.push_back(kw);
-            if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
-                cr.keywords.push_back(kw);
+            add_keyword_instance(cr.eot_keywords, kw);
+            add_keyword_instance(cr.keywords, kw);
             game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
         }
     }
@@ -65,21 +68,21 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
     out_att = pp ? pp->att : 0;
     out_def = pp ? pp->def : 0;
     if (pp && !pp->att_expr.empty())
-        out_att = pp->att_sign * static_cast<int>(evaluate_dynamic_amount(pp->att_expr, ctrl, orderer, target));
+        out_att = pp->att_sign * static_cast<int>(evaluate_amount(pp->att_expr, ctrl, 0, target));
     if (pp && !pp->def_expr.empty())
-        out_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, target));
+        out_def = pp->def_sign * static_cast<int>(evaluate_amount(pp->def_expr, ctrl, 0, target));
 }
 
 // Register a turn-long "hexproof from <color(s)>" grant for `ctrl` and the permanents they
 // control (Veil of Summer's "You and permanents you control gain hexproof from blue and from
 // black until end of turn"). Player-scoped so it protects the player object and every permanent
-// the player controls; lapses at cleanup (CR 514.2). Consulted in Ability::is_legal_target.
+// the player controls; lapses at cleanup (CR 514.2). Consulted in is_legal_target.
 static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colors> &colors) {
     if (colors.empty()) return;
     Game::HexproofFromColors h;
     h.player = ctrl;
     h.colors = colors;
-    cur_game.hexproof_from_colors_this_turn.push_back(h);
+    cur_game.resolved_effects.hexproof_from_colors_this_turn.push_back(h);
     game_log("%s and the permanents they control gain hexproof from the chosen color(s) until end of turn.\n",
              player_name(ctrl).c_str());
 }
@@ -92,26 +95,26 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
     Game::PlayerProtectionFromEverything p;
     p.player = ctrl;
     p.until_your_next_turn = until_next_turn;
-    cur_game.player_protection_from_everything.push_back(p);
+    cur_game.resolved_effects.player_protection_from_everything.push_back(p);
     game_log("%s gains protection from everything%s.\n", player_name(ctrl).c_str(),
              until_next_turn ? " until their next turn" : " until end of turn");
 }
 
 HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    (void)orderer;
+    (void)ctx;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
-    if (ab.target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def->target_in_graveyard) return HandlerResult::DONE_RUN_SUBS;
 
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
-    if (ab.defined_triggered_attacker_lki) {
-        const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    if (ab.def->defined_triggered_attacker_lki) {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
         int pump_att = 0, pump_def = 0;
-        resolve_pump_amounts(pp, ab.controller, orderer, ab.target, pump_att, pump_def);
-        apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+        resolve_pump_amounts(pp, ab.controller, orderer, ab.target.get(), pump_att, pump_def);
+        apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
         return HandlerResult::DONE_RUN_SUBS;
     }
 
@@ -120,7 +123,7 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
     // a player-scoped turn-long grant, NOT a single-target creature pump. Register it and skip
     // target selection.
     {
-        const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
+        const PumpParams *hp = std::get_if<PumpParams>(&ab.def->params);
         if (hp && !hp->grant_hexproof_from_colors.empty()) {
             grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
             return HandlerResult::DONE_RUN_SUBS;
@@ -128,83 +131,34 @@ HandlerResult pump(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
         // KW$ Protection from everything | Defined$ You (The One Ring): a player-scoped grant for
         // the controller, NOT a single-target creature pump. Register it and skip target selection.
         if (hp && hp->grant_protection_from_everything) {
-            grant_player_protection_from_everything(ab.controller, ab.duration_until_your_next_turn);
+            grant_player_protection_from_everything(ab.controller, ab.def->duration_until_your_next_turn);
             return HandlerResult::DONE_RUN_SUBS;
         }
     }
 
-    // A target chosen when the spell was cast (CR 601.2c) or the trigger was placed (603.3d)
-    // is honored as-is — its legality was already re-verified in Ability::resolve (608.2b;
-    // an illegal target fizzles there and never reaches this handler). That covers targeted
-    // pump spells (Giant Growth, Dismember — whose IsCurse$ AI hint needs no special-casing
-    // here), player-targeted curse pumps (Carpet of Flowers: ab.target stays the opponent so
-    // the chained DB$ Mana sub's Count$Valid Island.TargetedPlayerCtrl reads their Islands;
-    // apply_pump_to_creature no-ops on a player), and graveyard targets. Only a Pump that
-    // reaches resolution with NO pre-chosen target — an immediate-trigger sub-ability, which
-    // deliberately skips placement-time selection (see effect_immediate_trigger.cpp; Guide of
-    // Souls, Cloak and Dagger) — selects its target here.
+    // The target was chosen when the spell was cast (CR 601.2c), the ability activated (602.2b)
+    // or the trigger put on the stack (603.3d, 603.12 for a reflexive trigger), and its legality
+    // was re-verified in resolve_ability (608.2b; an illegal target fizzles there and never
+    // reaches this handler). That covers targeted pump spells (Giant Growth, Dismember — whose
+    // IsCurse$ AI hint needs no special-casing here), player-targeted curse pumps (Carpet of
+    // Flowers: ab.target stays the opponent so the chained DB$ Mana sub's Count$Valid
+    // Island.TargetedPlayerCtrl reads their Islands; apply_pump_to_creature no-ops on a player),
+    // graveyard targets, and "up to one" pumps left without a target (Cloak and Dagger,
+    // Entwined), which apply nothing.
     Zone::Ownership ctrl = ab.controller;
-    if (ab.target == 0) {
-        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-        // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
-        // must be controlled by the targeted opponent. In the two-player engine the parent's
-        // "target opponent" is always the source's single opponent, so filter to the opponent's
-        // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
-        bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
-        bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
-                            ab.valid_tgts.find("OppCtrl") != std::string::npos ||
-                            ab.valid_tgts.find("ControlledBy") != std::string::npos;
-        std::vector<Entity> pump_targets;
-        for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-            if (!is_battlefield_permanent(e)) continue;
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            auto &p = global_coordinator.GetComponent<Permanent>(e);
-            if (want_youctrl && p.controller != ctrl) continue;
-            if (want_oppctrl && p.controller != opp) continue;
-            pump_targets.push_back(e);
-        }
-        if (pump_targets.empty()) {
-            game_log("Pump: no valid targets.\n");
-            // still chain subabilities with no target
-        } else {
-            // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
-            // choose no creature. Offer an explicit decline option in that case.
-            bool optional = (ab.target_min == 0);
-            if (!ctx.resuming())
-                game_log("Choose a creature for Pump:\n");
-            std::vector<LegalAction> tgt_actions;
-            for (auto te : pump_targets) {
-                std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
-                auto &tcr = global_coordinator.GetComponent<Creature>(te);
-                LegalAction la(PASS_PRIORITY, te,
-                    ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
-                la.category = ActionCategory::SELECT_TARGET;
-                tgt_actions.push_back(la);
-            }
-            if (optional) {
-                LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
-                none.category = ActionCategory::SELECT_TARGET;
-                tgt_actions.push_back(none);
-            }
-            int choice = ctx.ask(std::move(tgt_actions), ctrl, ab.source);
-            if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-            if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
-                ab.target = pump_targets[static_cast<size_t>(choice)];
-        }
-    }
 
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
     // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
     // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
-    if (ab.remember_pumped && ab.target != 0)
-        cur_game.remembered_entities.push_back(ab.target);
+    if (ab.def->remember_pumped && ab.target.get() != 0)
+        cur_game.resolution.memory.remembered.push_back(ObjectRef::of(ab.target.get()));
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.
-    const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    const PumpParams *pp = std::get_if<PumpParams>(&ab.def->params);
     int pump_att = 0, pump_def = 0;
-    resolve_pump_amounts(pp, ctrl, orderer, ab.target, pump_att, pump_def);
-    apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+    resolve_pump_amounts(pp, ctrl, orderer, ab.target.get(), pump_att, pump_def);
+    apply_pump_to_creature(ab.target.get(), pump_att, pump_def, pp);
     return HandlerResult::DONE_RUN_SUBS;
 }
 
@@ -232,7 +186,7 @@ static void parse_pump_amount(const std::string &value, int &out_static, std::st
     }
 }
 
-bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_pump(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "IsCurse") {
         // IsCurse$ True is Forge's AI hint that the pump is detrimental (Dismember's -5/-5,
         // Carpet of Flowers' player-targeted curse). It changes nothing about resolution —
@@ -276,7 +230,7 @@ bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
                 } else if (token.rfind("Protection from everything", 0) == 0) {
                     // "Protection from everything" granted to a player (Defined$ You) — The One
                     // Ring's ETB. Not a per-creature keyword: the Pump handler makes a player-
-                    // scoped grant (cur_game.player_protection_from_everything) for the controller.
+                    // scoped grant (cur_game.resolved_effects.player_protection_from_everything) for the controller.
                     pp.grant_protection_from_everything = true;
                 } else {
                     pp.grant_keywords.push_back(token);

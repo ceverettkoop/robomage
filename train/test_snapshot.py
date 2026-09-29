@@ -41,6 +41,7 @@ import os
 import subprocess
 import sys
 import time
+from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 
@@ -61,7 +62,8 @@ from env import (
     N_CARD_TYPES, MAX_HAND_SLOTS,
     _HAND_START, _SELF_BLOCK_START, _OPP_BLOCK_START, _PB_LIFE, _PB_HAND_CT,
     _LIBRARY_CTX_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
-    _SELF_PERM_START, _STACK_START, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)
+    _SELF_PERM_START, _STACK_START, _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
+    _OPP_KNOWN_TOP_LIB_START, _SELF_IS_A_IDX)
 from cli_spec import BINARY, BIN_DIR
 
 # The binary payload framing after every BQUERY header, WITHOUT --narrative:
@@ -843,9 +845,9 @@ def _write_pool_decks():
     """Stacked decks for the frozen-pool (Batch 4) tests. With --no-shuffle A's
     opening hand is the first 7 deck cards (Preordain + 6 Islands); an Island
     battlefield preset pays the {U}, so a cast-first policy casts Preordain on
-    A's first turn and reaches its scry-2 loop — two consecutive per-card
-    keep/bottom picks over a FROZEN 2-card pool (Lightning Bolt then Grizzly
-    Bears, the 8th/9th deck cards). The rest of A's library is a VARIED run of
+    A's first turn and reaches its scry-2 loop — two consecutive top/bottom
+    picks over a FROZEN 2-card pool (Lightning Bolt then Grizzly Bears, the
+    8th/9th deck cards). The rest of A's library is a VARIED run of
     basics so a determinize resample of the unpinned cards becomes observable in
     later draws; B's all-Forest deck keeps B's resampled hand/library
     indistinguishable (any deal is 7 Forests), so sampled-world descents can
@@ -868,7 +870,7 @@ _POOL_EXTRA = ["--deck-a", "temp/pool_pq_a", "--deck-b", "temp/pool_pq_b",
 
 def _record_pool_line(seed, scry_choices, cap=4000):
     """Play one full game with a payload-aware policy: cast the first castable
-    spell seen (Preordain, exactly once), answer the scry keep/bottom picks with
+    spell seen (Preordain, exactly once), answer the scry top/bottom picks with
     `scry_choices` in order, auto-0 everything else. Returns (records, choices,
     outcome) where choices[i] is the integer played at decision i — the caller
     replays the line by index, so the policy never has to be re-run."""
@@ -899,20 +901,23 @@ def _record_pool_line(seed, scry_choices, cap=4000):
 
 def _scry_pick_indices(records):
     """Decision indices whose menu contains a BOTTOM_DECK_CARD action — in the
-    pool scenario, exactly the per-card scry keep/bottom picks."""
+    pool scenario, exactly the scry top/bottom picks."""
     return [i for i, (nc, pl, _s) in enumerate(records)
             if bool((_query_cats(pl)[:nc] == CAT_BOTTOM_DECK_CARD).any())]
 
 
-def _assert_scry_pick(records, i, ctx):
+def _assert_scry_pick(records, i, ctx, remaining):
+    """A scry pick with `remaining` undecided cards offers one TOP_LIBRARY option per
+    card, then one BOTTOM_DECK_CARD option per card (effects::look_and_split)."""
     nc, pl, safe = records[i]
-    if nc != 2:
+    if nc != 2 * remaining:
         raise ProtocolError(f"{ctx}: scry pick at {i} has {nc} options, expected "
-                            "the 2-option keep/bottom menu")
+                            f"{2 * remaining} (top/bottom for {remaining} cards)")
     cats = _query_cats(pl)[:nc]
-    if not (cats[0] == CAT_TOP_LIBRARY and cats[1] == CAT_BOTTOM_DECK_CARD):
+    if not ((cats[:remaining] == CAT_TOP_LIBRARY).all()
+            and (cats[remaining:] == CAT_BOTTOM_DECK_CARD).all()):
         raise ProtocolError(f"{ctx}: scry pick at {i} categories {cats} are not "
-                            "[TOP_LIBRARY, BOTTOM_DECK_CARD]")
+                            f"{remaining}x TOP_LIBRARY then {remaining}x BOTTOM_DECK_CARD")
     if not safe:
         raise ProtocolError(f"{ctx}: scry pick at {i} reports safe=0 — a frozen-"
                             "pool loop pick should be a loop-top pending decision")
@@ -939,8 +944,8 @@ def test_pool_loop_roundtrip():
         if p2 != p1 + 1:
             raise ProtocolError(f"scry picks at {p1}/{p2} are not consecutive — "
                                 "the loop should re-arm immediately")
-        _assert_scry_pick(control, p1, "pool control")
-        _assert_scry_pick(control, p2, "pool control")
+        _assert_scry_pick(control, p1, "pool control", remaining=2)
+        _assert_scry_pick(control, p2, "pool control", remaining=1)
         # The first pick's keep puts the kept card on the known-top cache at once.
         kept_id = _query_ids(control[p1][1])[0]
         kt2 = _known_top_ids(control[p2][1])
@@ -959,8 +964,9 @@ def test_pool_loop_roundtrip():
                 q = eng.snapshot(0)
                 _assert_same_query(q, snap_pl, snap_nc,
                                    f"pool post-SNAPSHOT re-emit at {idx}")
-                # Divergent excursion: bottom the card (choice 1) instead of the
-                # control's keep, then a scrambled continuation.
+                # Divergent excursion: choice 1 instead of the control's 0 (put
+                # Bears on top first at the first pick, bottom the last card at the
+                # second), then a scrambled continuation.
                 dq = q
                 for i in range(8):
                     dq = eng.play(1 if i == 0 else _diverge(i, dq.nc))
@@ -1000,7 +1006,7 @@ def test_pool_determinize_pin():
     """Batch 4 (determinize pinning for revealed pools): at a suspended MID-LOOP
     scry root (the SECOND Preordain pick — the already-kept Lightning Bolt is no
     longer in the parked menu, so keeping it in place relies purely on the
-    ScryRt.lib pin fed into collect_pending_pins), DETERMINIZE with several
+    LookSplitRt.to_top pin fed into collect_pending_pins), DETERMINIZE with several
     seeds must:
 
     - re-emit the root byte-identically (the parked menu and everything visible
@@ -1025,7 +1031,7 @@ def test_pool_determinize_pin():
             raise ProtocolError(f"expected exactly 2 scry picks in the control "
                                 f"line, found {len(picks)}")
         p2 = picks[1]
-        _assert_scry_pick(control, p2, "pin control")
+        _assert_scry_pick(control, p2, "pin control", remaining=1)
 
         eng = Engine(seed, extra=_POOL_EXTRA)
         cur = eng.read()
@@ -2040,15 +2046,16 @@ def test_subability_roundtrip():
     """Batch 8 (nested resolves): prompts INSIDE a chained sub-ability — a
     persisted SUB FrameLevel under the root resolve — are loop-top pending
     decisions. Cloak and Dagger, Entwined's ETB trigger chain (TrigRevealHand
-    -> DBPump -> DBChangeZone) reaches two consecutive new roots while the
-    trigger is mid-resolution: the DBPump sub's own target pick (2-option
-    SELECT_TARGET: the opponent's Grizzly Bears / no creature) and the
-    DBChangeZone sub's remembered-exile pick (the Batch 7 live-menu loop,
-    reachable only as a sub-ability — 4 options: two revealed hand cards, the
-    chosen creature, decline). At each root: SNAPSHOT re-emits exactly, a
-    divergent pick (the next menu option — no creature / a different exile)
-    then RESTORE returns byte-identically, and the resumed real line stays
-    byte-identical to a no-snapshot control run with the same outcome."""
+    -> DBPump -> DBChangeZone) reaches two consecutive new roots: the DBPump
+    sub's target pick, made as the trigger is put on the stack (CR 603.3d; a
+    2-option TRIGGER_PLACE SELECT_TARGET: no target / the opponent's Grizzly
+    Bears), and, mid-resolution, the DBChangeZone sub's remembered-exile pick
+    (the Batch 7 live-menu loop, reachable only as a sub-ability — the control
+    line's auto-0 chose no creature, so 3 options: two revealed hand cards,
+    decline). At each root: SNAPSHOT re-emits exactly, a divergent pick (the
+    next menu option — the creature / a different exile) then RESTORE returns
+    byte-identically, and the resumed real line stays byte-identical to a
+    no-snapshot control run with the same outcome."""
     seed = 5
     deck_paths = _write_decks([
         ("cloak_pq_a", "1 Cloak and Dagger Entwined\n29 Plains\n"),
@@ -2079,9 +2086,9 @@ def test_subability_roundtrip():
             raise ProtocolError(f"exile pick at {exile_idx} does not immediately "
                                 f"follow the pump pick at {pump_idx} — the sub "
                                 "chain should re-arm consecutively")
-        if control[exile_idx][0] != 4:
+        if control[exile_idx][0] != 3:
             raise ProtocolError(f"exile menu has {control[exile_idx][0]} options, "
-                                "expected 4 (2 hand cards + creature + decline)")
+                                "expected 3 (2 hand cards + decline)")
         for name, i in (("pump-target", pump_idx), ("remembered-exile", exile_idx)):
             if not control[i][2]:
                 raise ProtocolError(f"{name} decision reports safe=0 — it should "
@@ -2127,7 +2134,7 @@ def test_subability_roundtrip():
         if excursions != 2:
             raise ProtocolError(f"expected 2 subability excursions, ran {excursions}")
         return (f"pump-target @ {pump_idx} (nc=2) and remembered-exile @ "
-                f"{exile_idx} (nc=4) both safe=1, round-trips exact, "
+                f"{exile_idx} (nc=3) both safe=1, round-trips exact, "
                 f"outcome={outcome['winner']!r}")
     finally:
         for p in deck_paths:
@@ -2213,9 +2220,9 @@ def test_cast_x_roundtrip():
     """Batch 9 (cast flow state machine): the cast-time CHOOSE_X ladder is a
     loop-top pending decision (tag CAST, Game::PendingCast) — it reports
     safe=1 and is a valid SNAPSHOT/RESTORE root. With --no-shuffle A's opening
-    hand is Chalice of the Void + Mountains and a 2-Mountain battlefield
-    preset pays {X}{X}, so a cast-first policy casts Chalice on A's first turn
-    and reaches the 3-option ladder (X = 0/1/2). At the root: SNAPSHOT
+    hand is Chalice of the Void + Mountains and a 4-Mountain battlefield
+    preset pays {X}{X} up to X = 2, so a cast-first policy casts Chalice on A's
+    first turn and reaches the 3-option ladder (X = 0/1/2). At the root: SNAPSHOT
     re-emits exactly; a divergent X (1 instead of the control's 0) must change
     the very next query (different mana tapped, Chalice enters with different
     charge counters); RESTORE returns byte-identically; the resumed real line
@@ -2227,7 +2234,7 @@ def test_cast_x_roundtrip():
     ])
     extra = ["--deck-a", "temp/cast_x_a", "--deck-b", "temp/cast_x_b",
              "--no-shuffle",
-             "--battlefield-a", "Mountain,Mountain"]
+             "--battlefield-a", "Mountain,Mountain,Mountain,Mountain"]
     try:
         control, choices, outcome = _record_cast_first_line(seed, extra)
         root_idx = _find_sbe_root(control, CAT_CHOOSE_X, 3, "cast-x")
@@ -2610,13 +2617,13 @@ def test_activation_x_roundtrip():
     exactly-X target picks that read it — Candelabra of Tawnos's {X}, {T}:
     Untap X target lands (Cost$ X T, TargetMin/Max$ X) — are loop-top pending
     decisions (tag ACTIVATION, run_activation_flow's X_LADDER then TARGET
-    steps; the apply sets cur_game.x_paid BEFORE any later cost step runs). A
+    steps; the apply sets the activation's X BEFORE any later cost step runs). A
     presets Candelabra plus a Mountain and a Volcanic Island (two mana
     sources), so the ladder offers X=0/1/2 (nc=3) and the control picks X=1,
     reaching a 2-option exactly-one-land target menu (no Done — the minimum is
     X). Both are SNAPSHOT/RESTORE roots. The X excursion is exercised WITHOUT
     asserting the immediate next payload (a divergent X lives only in the
-    pending activation / cur_game.x_paid, not serialized, and X=1 and X=2
+    pending activation's stack_ab.x_paid, not serialized, and X=1 and X=2
     present an identical first target menu — the charm-mode caveat); the
     target excursion must diverge (a different land id reaches the stack).
     Each round-trip resumes byte-identically to the control with the same
@@ -2658,13 +2665,12 @@ def test_activation_x_roundtrip():
 
 
 def test_equip_target_roundtrip():
-    """Batch 12 (activated abilities): the equip creature menu — chosen AFTER
-    the equip cost is paid (machine mode auto-pays), from the candidate list
-    frozen BEFORE payment (run_activation_flow's EQUIP_PAY -> EQUIP_TARGET
-    steps) — is a loop-top pending decision (tag ACTIVATION). A presets
-    Cori-Steel Cutter (Equip {1}{R}) with two creatures and two Mountains, so
-    activating Equip auto-taps the Mountains and reaches a 2-option
-    SELECT_TARGET menu (Grizzly Bears [2/2], Soul Warden [1/1]). At the root:
+    """Batch 12 (activated abilities): the equip ability's target creature —
+    chosen on activation, before the equip cost is paid (CR 601.2c via
+    602.2b; run_activation_flow's TARGET step) — is a loop-top pending
+    decision (tag ACTIVATION). A presets Cori-Steel Cutter (Equip {1}{R})
+    with two creatures and two Mountains, so activating Equip reaches a
+    2-option SELECT_TARGET menu (Grizzly Bears, Soul Warden). At the root:
     safe=1; SNAPSHOT re-emits exactly; the divergent pick (equipping the other
     creature — a different permanent gains the +1/+1) must change the very
     next query; RESTORE returns byte-identically; the resumed real line stays
@@ -3082,6 +3088,72 @@ def test_determinize_invariants():
     _assert_same_query(rq, snap_pl, snap_nc, "invariants post-RESTORE re-emit")
     eng.kill()
     return "hand/step/battlefield/life/counts invariant under DETERMINIZE; RESTORE exact"
+
+
+def test_determinize_pins_public_known_top():
+    """A library position the searcher knows is pinned by DETERMINIZE even in
+    the OPPONENT's library: A's Delver of Secrets reveals the Brainstorm on top
+    of A's library (CR 701.20a), so at B's next decision B knows it (the
+    opp-known-top block) and every sampled world from B's seat must keep
+    Brainstorm there. Unpinned, it would be dealt among A's 7 unknown hand cards
+    and 22 other library cards, and the known-top entry rewritten to whatever
+    card landed on top. RESTORE returns byte-identically."""
+    seed = 1
+    brainstorm = _VOCAB_NAMES.index("Brainstorm")
+    deck_paths = _write_decks([
+        ("kt_det_a", "7 Island\n1 Brainstorm\n22 Island\n"),
+        ("kt_det_b", "30 Mountain\n"),
+    ])
+    extra = ["--deck-a", "temp/kt_det_a", "--deck-b", "temp/kt_det_b", "--no-shuffle",
+             "--battlefield-a", "Delver of Secrets,Island",
+             "--battlefield-b", "Mishras Bauble"]
+
+    def opp_top(payload):
+        return int(round(float(_state(payload)[_OPP_KNOWN_TOP_LIB_START]) * N_CARD_TYPES))
+
+    eng = Engine(seed, extra=extra)
+    try:
+        cur = eng.read()
+        revealed = False
+        for _ in range(60):
+            if cur.kind != "q":
+                raise ProtocolError("game ended before the known-top root")
+            is_a = _state(cur.payload)[_SELF_IS_A_IDX] > 0.5
+            ids = np.round(_query_ids(cur.payload)[:cur.nc] * N_CARD_TYPES).astype(int)
+            if (is_a and not revealed and cur.nc == 2 and
+                    bool((_query_cats(cur.payload)[:2] == CAT_OTHER_CHOICE).all()) and
+                    bool((ids == brainstorm).all())):
+                cur = eng.play(1)   # [1] Reveal
+                revealed = True
+                continue
+            if revealed and not is_a and cur.safe:
+                break
+            cur = eng.play(0)
+        else:
+            raise ProtocolError("no safe B decision after the Delver reveal")
+        if opp_top(cur.payload) != brainstorm:
+            raise ProtocolError(f"B's opp-known-top slot 0 is {opp_top(cur.payload)} after "
+                                f"the reveal, expected Brainstorm ({brainstorm})")
+        snap_pl, snap_nc = cur.payload, cur.nc
+        eng.snapshot(0)
+        for ds in (2, 3, 4, 5, 6, 7):
+            rq = eng.restore(0)
+            _assert_same_query(rq, snap_pl, snap_nc, f"known-top RESTORE (seed {ds})")
+            dq = eng.determinize(ds)
+            if opp_top(dq.payload) != brainstorm:
+                raise ProtocolError(f"world {ds}: the revealed top of A's library was "
+                                    f"resampled (opp-known-top slot 0 = "
+                                    f"{opp_top(dq.payload)})")
+        rq = eng.restore(0)
+        _assert_same_query(rq, snap_pl, snap_nc, "known-top final RESTORE")
+    finally:
+        eng.kill()
+        for p in deck_paths:
+            try:
+                os.remove(p)
+            except OSError:
+                pass
+    return "revealed opponent library top pinned in 6 worlds; RESTORE exact"
 
 
 def _write_sb_decks():
@@ -3625,21 +3697,20 @@ PROMPT_SITE_WHITELIST = {
     #     were merged into a single per-move prompt; both halves of a swap now
     #     come through that one loop-safe site.
     #   action_processor.cpp: declare-attackers select, declare-blockers
-    #     select, cleanup discard, and the miracle ask (4 of its 7) — the
-    #     miracle reveal and the miracle cast/do-not-cast decision (CR 702.94)
-    #     share one ask_miracle_choice site and both ride the mandatory-choice
-    #     channel via proc_mandatory_choice, wrapped in search_set_loop_safe
-    #     like cleanup discard, so they are loop-top snapshot-safe emitters
+    #     select, cleanup discard, and the miracle reveal ask (4 of its 6) —
+    #     the miracle reveal (CR 702.94) rides the mandatory-choice channel via
+    #     proc_mandatory_choice, wrapped in search_set_loop_safe like cleanup
+    #     discard, so it is a loop-top snapshot-safe emitter (the miracle cast
+    #     itself is offered through FrameCtx::ask as its trigger resolves)
     # (b) interactive-only (machine mode auto-resolves; never a search root):
-    #   action_processor.cpp: hybrid-pip interactive branch (1 of 7)
+    #   action_processor.cpp: hybrid-pip interactive branch (1 of 6)
     #   mana_system.cpp: interactive mana payment (1)
     # (c) blocking fallbacks / blocking-shim residuals:
     #   resolution_frame.cpp: FrameCtx::ask blocking path — serves every
     #     non-suspendable resolve (opening-hand abilities, mana-ability
-    #     SubAbility riders, pregame SBE, effect_choose_card mini-cast) (1)
-    #   action_processor.cpp: BlockingTargetAsker + blocking
-    #     announce_charm_modes — reachable only via effect_choose_card's
-    #     cast-from-exile mini-cast (2 of 7)
+    #     SubAbility riders, pregame SBE) (1)
+    #   action_processor.cpp: BlockingTargetAsker — reachable only via
+    #     select_target's non-suspendable trigger-placement fallback (1 of 6)
     #   state_manager.cpp / state_manager_statics.cpp /
     #     state_manager_triggers.cpp: outside-main-loop fallbacks (legend keep,
     #     ETB choose-type, ETB name-card, trigger ordering) — defensive,
@@ -3660,7 +3731,7 @@ PROMPT_SITE_WHITELIST = {
     "input_logger.cpp": 2,
     "game_driver.cpp": 4,
     "resolution_frame.cpp": 1,
-    "action_processor.cpp": 7,
+    "action_processor.cpp": 6,
     "mana_system.cpp": 1,
     os.path.join("systems", "replacement_effects.cpp"): 3,
     os.path.join("systems", "state_manager.cpp"): 1,
@@ -3772,6 +3843,7 @@ TESTS = [
     ("determinize_efficacy", test_determinize_efficacy),
     ("terminal_intercept", test_terminal_intercept),
     ("determinize_invariants", test_determinize_invariants),
+    ("determinize_pins_public_known_top", test_determinize_pins_public_known_top),
     ("sideboard_determinize", test_sideboard_determinize),
     ("sideboard_search_roundtrip", test_sideboard_search_roundtrip),
     ("sideboard_sim_result", test_sideboard_sim_result),
@@ -3781,18 +3853,52 @@ TESTS = [
 ]
 
 
+# Tests that write the same temp deck files (each deletes its decks when done)
+# run in one sequence; every other test is independent and runs concurrently.
+_SHARED_DECK_GROUPS = [
+    ("pool_loop_roundtrip", "pool_determinize_pin"),
+    ("sideboard_determinize", "sideboard_search_roundtrip", "sideboard_sim_result"),
+]
+# Timed alone, after the others, so its measurement isn't taken under load.
+_RUN_LAST = ("perf",)
+
+
+def _run_tests(names):
+    """[(name, passed, detail)] for the named TESTS, run in order (a
+    process-pool task)."""
+    fns = dict(TESTS)
+    out = []
+    for name in names:
+        try:
+            out.append((name, True, fns[name]()))
+        except (ProtocolError, EOFError, AssertionError) as e:
+            out.append((name, False, str(e)))
+    return out
+
+
+def _test_batches():
+    """TESTS split into the units that may run concurrently."""
+    grouped = {n for g in _SHARED_DECK_GROUPS for n in g}
+    return list(_SHARED_DECK_GROUPS) + [
+        (name,) for name, _fn in TESTS if name not in grouped and name not in _RUN_LAST]
+
+
 def main():
     if not os.path.exists(BINARY):
         print(f"binary not found at {BINARY} — run `make` first", file=sys.stderr)
         return 2
+    with ProcessPoolExecutor(max_workers=min(16, os.cpu_count() or 4)) as ex:
+        results = [r for batch in ex.map(_run_tests, _test_batches()) for r in batch]
+    results += _run_tests(_RUN_LAST)
+    by_name = {name: (passed, detail) for name, passed, detail in results}
     failures = 0
-    for name, fn in TESTS:
-        try:
-            detail = fn()
+    for name, _fn in TESTS:
+        passed, detail = by_name[name]
+        if passed:
             print(f"ok    {name}: {detail}", flush=True)
-        except (ProtocolError, EOFError, AssertionError) as e:
+        else:
             failures += 1
-            print(f"FAIL  {name}: {e}", flush=True)
+            print(f"FAIL  {name}: {detail}", flush=True)
     print(f"\nsnapshot search-server: {len(TESTS) - failures}/{len(TESTS)} tests "
           f"passed", flush=True)
     return 1 if failures else 0

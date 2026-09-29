@@ -1,0 +1,12 @@
+{
+  "name": "cr702_21a_two_granted_ward_instances",
+  "why": "CR 702.21a / 113.2c: two Lavaspur Boots grant two Ward {1} instances, each triggering - 98950c6",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Grizzly Bears", "Lavaspur Boots", "Lavaspur Boots", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "B:#5", "B:target:Grizzly Bears", "B:#6", "B:target:Grizzly Bears", "A:pass", "A:cast:Lightning Bolt", "A:target:Grizzly Bears"],
+  "max_decisions": 24,
+  "expect_order": ["Player A casts Lightning Bolt targeting Grizzly Bears", "Ward \\{1\\}: Grizzly Bears", "Ward \\{1\\}: Grizzly Bears", "Lightning Bolt is countered"]
+}

@@ -1900,8 +1900,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
         Arg("--quiet", "flag",
-            help="Print no transcript, only a one-line W/L/D summary (a draw "
-                 "is still announced and its log saved to draw_<stamp>.txt)"),
+            help="Print no transcript to stdout, only a one-line W/L/D summary "
+                 "(a draw is still announced and its log saved to "
+                 "draw_<stamp>.txt); with --out the transcript still goes to FILE"),
         Arg("--out", "str", default=None, metavar="FILE",
             help="Write the transcript (per-game results and W/L/D summary "
                  "included) to FILE and print a one-line W/L/D summary to "
@@ -2983,6 +2984,10 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
             help="Don't shuffle libraries — deck-file order = draw order (first "
                  "7 cards = opening hand). Implied by --hand-a/--hand-b; without "
                  "it libraries shuffle with the seeded RNG"),
+        Arg("--offer-cancel", "flag",
+            help="Offer \"Cancel\" at every cast and activation prompt; taking "
+                 "it reverses the spell or ability being proposed (CR 733.1). "
+                 "Scripts it with --play desc:Cancel"),
         Arg("--coverage-json", "str", metavar="PATH",
             help="Accumulate per-action-category and per-card offered/taken "
                  "counters and write them as JSON to PATH at exit (with a "

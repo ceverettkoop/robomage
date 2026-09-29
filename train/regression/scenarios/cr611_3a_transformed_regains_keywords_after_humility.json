@@ -1,0 +1,13 @@
+{
+  "name": "cr611_3a_transformed_regains_keywords_after_humility",
+  "why": "CR 611.3a / 613.1f: Humility's ability removal on a transformed Insectile Aberration ends when Humility leaves (flying returns) - 5893381",
+  "hand_a": ["Echoing Truth", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Brainstorm", "Island"],
+  "battlefield_a": ["Delver of Secrets", "Island", "Island"],
+  "hand_b": ["Humility", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Plains", "Plains", "Plains", "Plains", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:pass", "A:#1", "B:cast:Humility", "A:pass", "A:cast:Echoing Truth", "A:target:Humility", "A:attack:Insectile", "A:attack:done"],
+  "max_decisions": 36,
+  "expect_order": ["Humility returns to Player B's hand", "Insectile Aberration attacking Player B", "No creatures eligible to block", "Insectile Aberration deals 3 damage to Player B"]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "cr603_4_one_ring_needs_cast",
+  "why": "CR 603.4: The One Ring's 'if you cast it' protection trigger doesn't fire when it's put onto the battlefield by Show and Tell - 78f9cc0",
+  "hand_a": ["Show and Tell", "The One Ring"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island", "Island", "Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Show and Tell"],
+  "max_decisions": 10,
+  "expect": ["Player A puts The One Ring onto the battlefield"],
+  "expect_not": ["The One Ring triggered"]
+}

@@ -96,31 +96,56 @@ import re
 
 import decode
 from env import CONCEDE_GAME, CONCEDE_MATCH   # (decode already imports env)
+from _enums import (CAT_PASS_PRIORITY, CAT_CAST_SPELL, CAT_PLAY_LAND,
+                    CAT_ACTIVATE_ABILITY, CAT_SELECT_TARGET, CAT_SELECT_ATTACKER,
+                    CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
+                    CAT_MANA_W, CAT_MANA_U, CAT_MANA_B, CAT_MANA_R, CAT_MANA_G,
+                    CAT_MANA_C, CAT_SEARCH_LIBRARY, CAT_CHOOSE_CARD, CAT_TOP_LIBRARY,
+                    CAT_BOTTOM_DECK_CARD, CAT_DIG_CHOICE, CAT_MULLIGAN, CAT_KEEP_HAND,
+                    CAT_PAYING_COSTS, CAT_SHUFFLE, CAT_DONT_SHUFFLE,
+                    CAT_SIDEBOARD_IN, CAT_SIDEBOARD_OUT, CAT_SIDEBOARD_DONE,
+                    CAT_COMPANION, CAT_OTHER_CHOICE, CAT_SACRIFICE_PERMANENT,
+                    CAT_RETURN_PERMANENT, CAT_CHOOSE_X, CAT_DISCARD, CAT_CHOOSE_MODE,
+                    CAT_CHOOSE_MANA_COLOR, CAT_PAY_UNLESS, CAT_NAME_CARD,
+                    CAT_CHOOSE_TYPE, CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS,
+                    CAT_CHOOSE_REPLACEMENT, CAT_ATTACK_TARGET, CAT_BLOCK_TARGET,
+                    CAT_OPTIONAL_YESNO, CAT_SYLVAN_CHOICE, CAT_EXILE_FROM_YARD)
 
 # ── Verb -> the ActionCategory ints it may resolve to ─────────────────────────
-# (ints mirror src/classes/action.h, surfaced in train/_enums.py::_CAT_NAMES.)
-# The former OTHER_CHOICE (10) catch-all was split into the dedicated categories
-# 27-44. `choice` stays broad — it resolves against any of them (plus the 10
-# fallback) so legacy `choice:` specs keep working — while the new verbs below
-# pin a specific kind of decision.
-_OTHER_CATS = {10, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-               36, 37, 38, 39, 40, 41, 42, 43, 44, 47, 48, 49}
+# (the generated CAT_* names from train/_enums.py, mirroring src/classes/action.h.)
+# `choice` stays broad — it resolves against every dedicated choice category
+# (plus the OTHER_CHOICE fallback) — while the verbs below pin a specific kind of
+# decision.
+_OTHER_CATS = {CAT_OTHER_CHOICE, CAT_SACRIFICE_PERMANENT, CAT_RETURN_PERMANENT,
+               CAT_CHOOSE_X, CAT_DISCARD, CAT_CHOOSE_MODE, CAT_CHOOSE_MANA_COLOR,
+               CAT_PAY_UNLESS, CAT_NAME_CARD, CAT_CHOOSE_TYPE, CAT_KEEP_LEGEND,
+               CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT, CAT_ATTACK_TARGET,
+               CAT_BLOCK_TARGET, CAT_OPTIONAL_YESNO, CAT_SYLVAN_CHOICE,
+               CAT_CHOOSE_CARD, CAT_DONT_SHUFFLE, CAT_KEEP_HAND,
+               CAT_EXILE_FROM_YARD}
+_MANA_COLOR_CATS = {CAT_MANA_W, CAT_MANA_U, CAT_MANA_B, CAT_MANA_R, CAT_MANA_G,
+                    CAT_MANA_C}
 _VERB_CATS = {
-    "pass": {0},
-    "cast": {7},
-    "play": {9}, "land": {9},
-    "activate": {6},
-    "target": {8},
-    "attack": {2, 3}, "block": {4, 5},
-    "mana": {13, 14, 15, 16, 17, 18}, "tap": {13, 14, 15, 16, 17, 18},
-    "search": {19, 44}, "top": {20}, "bottom": {12}, "dig": {23},
-    "mulligan": {11}, "keep": {48},
-    "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21}, "noshuffle": {47},
-    "sb-in": {24}, "sb-out": {25}, "sb-done": {26}, "companion": {46},
-    # Convenience verbs that pin a specific former-OTHER decision kind.
-    "sacrifice": {27}, "return": {28}, "x": {29}, "discard": {30},
-    "mode": {31}, "color": {32}, "name": {34}, "free": {42},
-    "exile": {49},   # exile a card from the graveyard to pay an Escape cost
+    "pass": {CAT_PASS_PRIORITY},
+    "cast": {CAT_CAST_SPELL},
+    "play": {CAT_PLAY_LAND}, "land": {CAT_PLAY_LAND},
+    "activate": {CAT_ACTIVATE_ABILITY},
+    "target": {CAT_SELECT_TARGET},
+    "attack": {CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS},
+    "block": {CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS},
+    "mana": set(_MANA_COLOR_CATS), "tap": set(_MANA_COLOR_CATS),
+    "search": {CAT_SEARCH_LIBRARY, CAT_CHOOSE_CARD}, "top": {CAT_TOP_LIBRARY},
+    "bottom": {CAT_BOTTOM_DECK_CARD}, "dig": {CAT_DIG_CHOICE},
+    "mulligan": {CAT_MULLIGAN}, "keep": {CAT_KEEP_HAND},
+    "pay": {CAT_PAYING_COSTS}, "choice": set(_OTHER_CATS), "shuffle": {CAT_SHUFFLE},
+    "noshuffle": {CAT_DONT_SHUFFLE},
+    "sb-in": {CAT_SIDEBOARD_IN}, "sb-out": {CAT_SIDEBOARD_OUT},
+    "sb-done": {CAT_SIDEBOARD_DONE}, "companion": {CAT_COMPANION},
+    # Convenience verbs that pin a specific choice kind.
+    "sacrifice": {CAT_SACRIFICE_PERMANENT}, "return": {CAT_RETURN_PERMANENT},
+    "x": {CAT_CHOOSE_X}, "discard": {CAT_DISCARD},
+    "mode": {CAT_CHOOSE_MODE}, "color": {CAT_CHOOSE_MANA_COLOR}, "name": {CAT_NAME_CARD},
+    "exile": {CAT_EXILE_FROM_YARD},   # exile a card from the graveyard to pay an Escape cost
     "desc": set(),   # any category — pure description-substring match
     # Not a menu action at all: resolves to a negative concession sentinel that
     # the caller steps directly (see the module docstring's contract note).
@@ -134,7 +159,8 @@ _CONCEDE_SENTINEL = {
     "match": CONCEDE_MATCH, "m": CONCEDE_MATCH,
 }
 
-_COLOR_CAT = {"w": 13, "u": 14, "b": 15, "r": 16, "g": 17, "c": 18}
+_COLOR_CAT = {"w": CAT_MANA_W, "u": CAT_MANA_U, "b": CAT_MANA_B, "r": CAT_MANA_R,
+              "g": CAT_MANA_G, "c": CAT_MANA_C}
 
 # @side aliases -> the decode controller word ("own"/"opp").
 _SIDE_ALIASES = {
@@ -302,7 +328,7 @@ def _matches(intent, action, exact):
         return False
 
     if intent.keyword == "done":
-        return cat in (3, 5)
+        return cat in (CAT_CONFIRM_ATTACKERS, CAT_CONFIRM_BLOCKERS)
     if intent.keyword == "fail":
         return action.get("card") is None
     if intent.keyword in ("keep", "mulligan"):

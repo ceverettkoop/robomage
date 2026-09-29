@@ -1,0 +1,12 @@
+{
+  "name": "cr608_3a_dauthi_creature_enters_under_caster",
+  "why": "CR 608.3a / 110.2a: a creature card cast from the opponent's exile through Dauthi Voidwalker enters under its caster's control - 79405a1 e6cc4ef",
+  "hand_a": ["Lightning Bolt", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "library_a": ["Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Dauthi Voidwalker", "Mountain", "Swamp"],
+  "library_b": ["Mountain", "Mountain", "Mountain"],
+  "battlefield_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Grizzly Bears", "A:pass", "A:activate:Dauthi", "A:desc:Grizzly Bears", "A:cast:Grizzly Bears", "A:attack:Grizzly Bears", "A:attack:done"],
+  "max_decisions": 40,
+  "expect_order": ["Lightning Bolt deals 3 damage to Grizzly Bears", "Player A sacrifices Dauthi Voidwalker", "Player A casts Grizzly Bears", "TURN 3 ", "Grizzly Bears attacking Player B"]
+}

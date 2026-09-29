@@ -1,0 +1,10 @@
+{
+  "name": "cr107_3a_every_x_pip_charged",
+  "why": "CR 107.3a: Chalice of the Void ({X}{X}) with X=1 costs {2}, so two lands offer only X=0 and X=1 - 52f7c31",
+  "hand_a": ["Chalice of the Void"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Chalice"],
+  "max_decisions": 6,
+  "expect": ["Choose X value \\(0-1\\)"]
+}

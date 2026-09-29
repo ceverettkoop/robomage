@@ -30,6 +30,14 @@ inline std::vector<std::string> split(const std::string &s, char delim, bool ski
     return out;
 }
 
+// Returns `s` without its leading and trailing whitespace.
+inline std::string trim(const std::string &s) {
+    size_t start = 0, end = s.size();
+    while (start < end && std::isspace(static_cast<unsigned char>(s[start]))) start++;
+    while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1]))) end--;
+    return s.substr(start, end - start);
+}
+
 // Returns `s` lowercased byte-wise (ASCII only). For case-insensitive matching of
 // script tokens whose casing varies across Forge card scripts (e.g. Cityscape
 // Leveler's "nonland" vs Abrupt Decay's "nonLand").

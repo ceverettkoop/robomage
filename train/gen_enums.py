@@ -5,12 +5,12 @@ or MandatoryChoice enums, or the OBS_KEYWORDS array:
     python train/gen_enums.py
 Writes train/_enums.py with _CAT_NAMES (action-category int -> short display
 name), CAT_<NAME> (name-keyed ActionCategory ints), _STEP_NAMES (ordered step
-display names), ACTION_CATEGORY_MAX, _REF_NAMES / REF_ZONE_MAX (per-action
-zone_ref block), _MC_NAMES / N_MANDATORY_CHOICES (the MandatoryChoice one-hot in
-the global-extras block), _OBS_KEYWORDS / N_OBS_KEYWORDS (the per-permanent
-keyword multi-hot order), and the observation layout / size constants
-(MAX_ACTIONS, STATE_SIZE, N_CARD_TYPES, PERM_SLOT_SIZE, ...) parsed straight from
-the C++ headers so train/env.py never hand-copies them.
+display names), ACTION_CATEGORY_MAX, _REF_NAMES / REF_ZONE_MAX / REF_<NAME>
+(per-action zone_ref block), _MC_NAMES / N_MANDATORY_CHOICES (the
+MandatoryChoice one-hot in the global-extras block), _OBS_KEYWORDS /
+N_OBS_KEYWORDS (the per-permanent keyword multi-hot order), and the observation
+layout / size constants (MAX_ACTIONS, STATE_SIZE, N_CARD_TYPES, PERM_SLOT_SIZE,
+...) parsed straight from the C++ headers so train/env.py never hand-copies them.
 
 The C++ enums in src/classes/action.h (ActionCategory), src/classes/game.h
 (Step, MandatoryChoice), and src/classes/gamestate.h (ActionRefZone), plus the
@@ -36,7 +36,7 @@ OUT_FILE  = os.path.join(REPO_ROOT, "train/_enums.py")
 # C++ ActionCategory enum name -> short display abbreviation (the only place
 # these cosmetic strings are defined). Keys must exactly match the C++ enum.
 _CAT_DISPLAY = {
-    "PASS_PRIORITY": "PASS", "MANA_ABILITY": "MANA",
+    "PASS_PRIORITY": "PASS",
     "SELECT_ATTACKER": "SEL_ATK", "CONFIRM_ATTACKERS": "CONF_ATK",
     "SELECT_BLOCKER": "SEL_BLK", "CONFIRM_BLOCKERS": "CONF_BLK",
     "ACTIVATE_ABILITY": "ACTIVATE", "CAST_SPELL": "CAST",
@@ -48,7 +48,7 @@ _CAT_DISPLAY = {
     "PAYING_COSTS": "PAYING", "DIG_CHOICE": "DIG",
     "SIDEBOARD_IN": "SB_IN", "SIDEBOARD_OUT": "SB_OUT",
     "SIDEBOARD_DONE": "SB_DONE",
-    # Categories split out of the former OTHER_CHOICE catch-all.
+    # Dedicated choice categories (OTHER_CHOICE is the fallback).
     "SACRIFICE_PERMANENT": "SACRIFICE", "RETURN_PERMANENT": "RETURN",
     "CHOOSE_X": "CHOOSE_X", "DISCARD": "DISCARD", "CHOOSE_MODE": "MODE",
     "CHOOSE_MANA_COLOR": "MANA_COLOR", "PAY_UNLESS": "PAY_UNLESS",
@@ -56,7 +56,7 @@ _CAT_DISPLAY = {
     "KEEP_LEGEND": "KEEP_LEGEND", "ORDER_TRIGGERS": "ORDER_TRIG",
     "CHOOSE_REPLACEMENT": "REPLACE", "ATTACK_TARGET": "ATK_TGT",
     "BLOCK_TARGET": "BLK_TGT", "OPTIONAL_YESNO": "YES_NO",
-    "PLAY_FREE": "PLAY_FREE", "SYLVAN_CHOICE": "SYLVAN",
+    "SYLVAN_CHOICE": "SYLVAN",
     "CHOOSE_CARD": "CHOOSE_CARD", "ASSIGN_DAMAGE": "ASSIGN_DMG",
     "COMPANION": "COMPANION", "DONT_SHUFFLE": "DONT_SHUFFLE",
     "KEEP_HAND": "KEEP_HAND", "EXILE_FROM_YARD": "EXILE_FROM_YARD",
@@ -122,7 +122,7 @@ _MACHINE_INTS = ["STATE_SIZE", "N_CARD_TYPES", "PERM_SLOT_SIZE", "OPTION_ORDINAL
                  "ZONE_EXPIRES_OFF", "EXILE_COUNTERS_OFF", "ZONE_COUNTER_NORMALIZER",
                  "STACK_HEAD_FIELDS", "STACK_XAMT_FIELDS",
                  "STACK_QUAL_FIELDS", "STACK_TGT_FIELDS",
-                 "MATCH_CTX_SIZE", "LIBRARY_CTX_SIZE", "CUR_TURN_SIZE",
+                 "MATCH_CTX_SIZE", "MATCH_GAME_NORMALIZER", "LIBRARY_CTX_SIZE", "CUR_TURN_SIZE",
                  "PENDING_DECISION_SIZE", "EXTRAS_SCALARS", "EXTRAS_PRIORITY_SIZE",
                  "EXTRAS_MULLIGAN_SIZE", "MULLIGAN_NORMALIZER", "EXTRAS_SB_CTX_SIZE",
                  "DECKLIST_SLOT_SIZE", "OPP_DECKLIST_SLOT_SIZE",
@@ -431,7 +431,15 @@ def main():
     ]
     for val, name in enumerate(refs):
         lines.append(f'    {val}: "{_REF_DISPLAY[name]}",  # {name}')
-    lines += ["}", ""]
+    lines += [
+        "}",
+        "",
+        "# Name-keyed ActionRefZone constants: <ENUM_NAME> = value, for every",
+        "# entry in the C++ ActionRefZone enum (src/classes/gamestate.h).",
+    ]
+    for val, name in enumerate(refs):
+        lines.append(f"{name} = {val}")
+    lines += [""]
 
     write_if_changed(OUT_FILE, "\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}: {len(cats)} categories, {len(steps)} steps, "

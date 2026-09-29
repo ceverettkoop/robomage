@@ -11,8 +11,10 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../parse.h"
+#include "../queries/battlefield.h"
+#include "../queries/counters.h"
+#include "../queries/types.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -25,11 +27,11 @@ namespace effects {
 // If you control no Army, first create a 0/0 black Army creature token of the
 // amassed type, then put the counters on it.
 HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    int n = static_cast<int>(ab.amount);
-    const AmassParams *ap = std::get_if<AmassParams>(&ab.params);
+    int n = static_cast<int>(ab.def->amount);
+    const AmassParams *ap = std::get_if<AmassParams>(&ab.def->params);
     std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
 
-    Zone::Ownership ctrl = source_controller(ab.source);
+    Zone::Ownership ctrl = ab.controller;  // "you amass" = the ability's controller (CR 109.5)
 
     // Find an Army the controller already controls.
     Entity army = 0;
@@ -56,10 +58,16 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
         orderer->add_to_zone(false, army, Zone::BATTLEFIELD);
         bootstrap_token_components(army, tok, ctrl, cur_game.timestamp);
     } else {
-        // Existing Army gains the amassed creature type in addition to its types.
+        // Existing Army becomes the amassed creature type in addition to its other types
+        // (CR 701.47a) for the rest of the game — recorded like a rest-of-game Animate so the
+        // layer-4 rebuild re-adds it each pass (CR 613.1d, timestamp 613.7b).
         auto &perm = global_coordinator.GetComponent<Permanent>(army);
-        if (!permanent_has_type(perm, subtype))
-            perm.types.insert(Type{SUBTYPE, subtype});
+        if (!permanent_has_type(perm, subtype)) {
+            Type t{SUBTYPE, subtype};
+            perm.types.insert(t);
+            perm.animate_added_types.push_back(t);
+            perm.animate_timestamp = cur_game.timestamp++;
+        }
     }
 
     if (n > 0 && global_coordinator.entity_has_component<Creature>(army)) {
@@ -71,7 +79,7 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_amass(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (ab.category != "Amass") return false;
     if (key == "Type") { effect_params<AmassParams>(ab).subtype = value; return true; }
     if (key == "Num")  { ab.amount = static_cast<size_t>(std::stoi(value)); return true; }

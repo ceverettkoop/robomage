@@ -1,0 +1,13 @@
+{
+  "name": "cr117_3a_active_player_priority_after_blocks",
+  "why": "CR 117.3a / 509.1: after blockers are declared the active player receives priority first - 68b545e",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Grizzly Bears"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:attack:Grizzly Bears", "A:attack:done", "B:block:Grizzly Bears", "B:desc:Grizzly Bears", "B:block:done", "cast:Lightning Bolt", "target:Player B"],
+  "max_decisions": 24,
+  "expect_order": ["Grizzly Bears blocking Grizzly Bears", "Player A casts Lightning Bolt targeting Player B"]
+}

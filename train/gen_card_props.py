@@ -22,13 +22,13 @@ import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen_card_costs import (REPO_ROOT, VOCAB_H, CARDS_DIR, N_TYPES, TOKENS_DIR,
-                            DFC_SEPARATOR, parse_vocab, parse_token_vocab_base,
-                            parse_mana_cost, find_card_file,
-                            parse_vocab_with_stems, find_back_face_file,
-                            split_faces, face_lines_for, get_ability_cost)
+from gen_card_costs import (VOCAB_H, N_TYPES, TOKENS_DIR,
+                            parse_vocab, parse_token_vocab_base,
+                            parse_mana_cost, parse_vocab_with_stems,
+                            get_ability_cost)
 from _enums import _OBS_KEYWORDS
-from gen_util import write_if_changed
+from gen_util import (write_if_changed, REPO_ROOT, resolve_card_face,
+                      card_row_lines, mana_value_lines, script_field, split_faces)
 
 OUT_FILE = os.path.join(REPO_ROOT, "train/card_props.py")
 
@@ -77,10 +77,9 @@ PROP_NAMES = (
 N_PROPS = len(PROP_NAMES)
 COL = {n: i for i, n in enumerate(PROP_NAMES)}
 
-# DFC_SEPARATOR, the vocab/DFC/token-script resolvers (parse_vocab_with_stems,
-# find_back_face_file, split_faces, face_lines_for) and TOKENS_DIR live in
-# gen_card_costs.py — the shared card-script reading layer both generators
-# import — so the two matrices always resolve the same file for a vocab entry.
+# A vocab name resolves to its script face through gen_util.resolve_card_face,
+# the resolver gen_card_costs.py uses too, so the two matrices always read the
+# same face for a vocab entry.
 
 # Ignored-but-seen script attributes, reported once at the end (not per-card:
 # the scripts legitimately carry far more keywords/categories/subtypes than the
@@ -90,19 +89,10 @@ _ignored_cats = set()
 _ignored_subtypes = set()
 
 
-def field(lines, key):
-    """First 'Key:value' line's value, or None."""
-    prefix = key + ":"
-    for line in lines:
-        if line.startswith(prefix):
-            return line[len(prefix):].strip()
-    return None
-
-
 def parse_face(lines, row):
     """Fill a property row from one face's script lines."""
     # Cost, CMC, X, colors-from-pips
-    cost_str = field(lines, "ManaCost") or "no cost"
+    cost_str = script_field(lines, "ManaCost") or "no cost"
     pips = parse_mana_cost(cost_str)
     for i in range(7):
         row[i] = pips[i] / 10.0
@@ -113,14 +103,14 @@ def parse_face(lines, row):
         if pips[ci] > 0:
             row[COL["color_w"] + ci] = 1.0
     # Colors: line (tokens and DFC back faces have "no cost" ManaCost)
-    colors = field(lines, "Colors")
+    colors = script_field(lines, "Colors")
     if colors:
         for word in colors.replace(",", " ").split():
             ci = COLOR_WORDS.get(word.lower())
             if ci is not None:
                 row[COL["color_w"] + ci] = 1.0
     # Types line: supertypes, card types, subtypes
-    types_line = field(lines, "Types")
+    types_line = script_field(lines, "Types")
     if types_line:
         tokens = types_line.split()
         for t in CARD_TYPES:
@@ -141,7 +131,7 @@ def parse_face(lines, row):
             elif t not in known:
                 _ignored_subtypes.add(t)
     # P/T ('*' and friends parse as 0 but still set has_pt)
-    pt = field(lines, "PT")
+    pt = script_field(lines, "PT")
     if pt and "/" in pt:
         p_str, t_str = pt.split("/", 1)
         try:
@@ -198,19 +188,18 @@ def build_matrix(vocab):
             lines, _ = split_faces(open(path).read())
             parse_face(lines, matrix[idx])
         else:
-            lines, front_lines, is_back = face_lines_for(name)
-            if lines is None:
+            face = resolve_card_face(name)
+            if face is None:
                 print(f"  WARNING: no card file found for '{name}', "
                       f"zero property row")
                 continue
-            parse_face(lines, matrix[idx])
-            # CR 712.8e: a NONMODAL (transform) back face has no mana cost of
-            # its own but its mana value is the FRONT face's. A modal back face
-            # (AlternateMode:Modal, CR 712.8d) keeps entirely its own
-            # characteristics, so its own (usually absent) cost stands.
-            if is_back and field(front_lines, "AlternateMode") == "DoubleFaced":
-                pips = parse_mana_cost(field(front_lines, "ManaCost") or
-                                       "no cost")
+            parse_face(card_row_lines(face), matrix[idx])
+            # A transforming back face's mana value is calculated from the
+            # FRONT face's mana cost (CR 712.8e; see mana_value_lines).
+            mv_lines = mana_value_lines(face)
+            if mv_lines is not face.lines:
+                pips = parse_mana_cost(script_field(mv_lines, "ManaCost")
+                                       or "no cost")
                 matrix[idx][COL["cmc"]] = (sum(pips[:6]) + pips[6]) / 10.0
     return matrix
 

@@ -13,8 +13,8 @@ producers draw from independent RNG streams, so their datasets are
      TorchScript module (same net the M5/M6/M7 parity tests use). Both producers
      consume the same weights — the C++ actor loads the .ts.pt, the Python path
      loads the .pt via load_az.
-  2. Dataset A: run ``bin/az_actor --selfplay`` (2 games, sims 16, worlds 2) into
-     tmp dir A.
+  2. Dataset A: run ``bin/az_actor --selfplay`` (2 games, sims 16, worlds 2,
+     fast sims 4) into tmp dir A.
   3. Dataset B: run the Python self-play loop in-process, single-worker (reusing
      az_selfplay's own _play_match / _backfill_and_pack / _write_shard helpers,
      unmodified), same net/deck/sims/worlds/seed, into tmp dir B.
@@ -53,6 +53,9 @@ DECK = "league/ur_delver"
 SEED = 1
 GAMES = 2
 SIMS = 16
+# The playout cap's fast-root budget (most in-game roots draw it). Left at the
+# shipped default (128) it made both self-play datasets ~8x the cost of SIMS.
+FAST_SIMS = 4
 WORLDS = 2
 TRAIN_BATCHES = 120
 TRAIN_BS = 64
@@ -75,6 +78,7 @@ _TALLY = re.compile(r"^SELFPLAY: game (\d+) samples=(\d+) winner=(A|B|DRAW)$")
 def _cpp_selfplay(ts_path, out_dir):
     cmd = [ACTOR_BIN, "--selfplay", "--deck", DECK, "--seed", str(SEED),
            "--games", str(GAMES), "--sims", str(SIMS), "--worlds", str(WORLDS),
+           "--fast-sims", str(FAST_SIMS),
            "--model", ts_path, "--out-dir", out_dir]
     proc = subprocess.run(cmd, cwd=BIN_DIR, stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE)
@@ -113,7 +117,8 @@ def _python_selfplay(ckpt, out_dir):
              _dropped, _sb_stats) = az_selfplay._play_match(
                 env, evaluator, rng, sims=SIMS, worlds=WORLDS,
                 root_noise_eps=az_selfplay.DEFAULT_ROOT_NOISE_EPS,
-                root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed)
+                root_noise_alpha=az_selfplay.DEFAULT_ROOT_NOISE_ALPHA, seed=seed,
+                fast_sims=FAST_SIMS)
             buf.append(az_selfplay._backfill_and_pack(samples, game_winners))
             tallies.append((g + 1, len(samples),
                             az_selfplay._match_winner(game_winners)))
@@ -290,7 +295,8 @@ def main():
     print(f"    Python-shards : {fmt(traj_b)}")
     print(f"\nPASS: actor & Python shards are trainer-interchangeable — identical "
           f"schema, both trajectories finite & decreasing "
-          f"[deck={DECK} seed={SEED} sims={SIMS} worlds={WORLDS}]")
+          f"[deck={DECK} seed={SEED} sims={SIMS} fast_sims={FAST_SIMS} "
+          f"worlds={WORLDS}]")
     return 0
 
 

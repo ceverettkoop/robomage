@@ -18,7 +18,7 @@
 #include "actor/sb_rules.h"   // sb_dead_mask (dead-sideboard-card pruning)
 #include "az_evaluator.h"
 #include "classes/action.h"   // LegalAction::description (divergence diagnostic)
-#include "classes/game.h"     // cur_game.turn (rollout horizon check)
+#include "classes/game.h"     // cur_game.turn_state.turn (rollout horizon check)
 #include "cli_output.h"       // step_to_string (divergence diagnostic)
 #include "components/zone.h"  // Zone::PLAYER_A / PLAYER_B
 #include "error.h"
@@ -883,11 +883,11 @@ struct AZMcts::Impl {
     // True when the CURRENT engine state has reached the rollout horizon
     // (mirrors mcts.py::_rollout_stop, which reads the same fields from the
     // obs: is_sideboard_phase serializes `sideboard_phase`, turn serializes
-    // `cur_game.turn`). The sideboard gate exempts a sideboard-root sim's
+    // `cur_game.turn_state.turn`). The sideboard gate exempts a sideboard-root sim's
     // sideboard/mulligan prefix, where the turn still belongs to the ENDED game.
     bool rollout_stop_here() const {
         return !sideboard_phase &&
-               static_cast<int>(cur_game.turn) >= cur_rollout_anchor + cur_rollout_turns;
+               static_cast<int>(cur_game.turn_state.turn) >= cur_rollout_anchor + cur_rollout_turns;
     }
 
     // One ROLLOUT-phase provider call (mirrors one mcts.py::_rollout loop
@@ -1464,7 +1464,7 @@ struct AZMcts::Impl {
         cur_worlds = cfg.worlds;
         cur_max_depth = cfg.max_depth;
         cur_rollout_turns = cfg.rollout_turns;
-        cur_rollout_anchor = static_cast<int>(cur_game.turn);
+        cur_rollout_anchor = static_cast<int>(cur_game.turn_state.turn);
         cur_rollout_cap = kRolloutStepsPerTurn * cur_rollout_turns;
         visit_totals.assign(static_cast<size_t>(nc), 0);
         w_totals.assign(static_cast<size_t>(nc), 0.0);
@@ -1788,7 +1788,7 @@ struct AZMcts::Impl {
             "world=%d/%d sim=%d/%d sims_run=%d sb_active=%d sideboard_phase=%d\n"
             "  live menu (%zu action(s)):%s\n"
             "  search-root menu (%zu action(s)):%s\n",
-            r, actions.size(), cur_game.turn, step_to_string(cur_game.cur_step),
+            r, actions.size(), cur_game.turn_state.turn, step_to_string(cur_game.turn_state.step),
             phname, this_root, root_n, cap_root_counter, cur_world, cur_worlds, cur_sim,
             cur_sims, sims_run, sb_active ? 1 : 0, sideboard_phase ? 1 : 0,
             actions.size(), live.c_str(), root_menu_desc.size(), root.c_str());

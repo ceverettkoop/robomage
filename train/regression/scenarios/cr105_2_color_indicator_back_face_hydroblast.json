@@ -1,0 +1,12 @@
+{
+  "name": "cr105_2_color_indicator_back_face_hydroblast",
+  "why": "CR 204.2 / 105.2 / 712.8e: a transformed Ajani, Nacatl Avenger is red and white by its comma-separated color indicator, so Hydroblast destroys it - 9e71813 47410fd 1133581",
+  "hand_a": ["Hydroblast"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Island"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Ajani Nacatl Avenger"],
+  "play": ["A:keep", "B:keep", "A:cast:Hydroblast", "A:desc:Destroy", "A:target:Ajani"],
+  "max_decisions": 6,
+  "expect": ["Ajani, Nacatl Avenger is destroyed"]
+}

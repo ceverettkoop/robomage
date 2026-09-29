@@ -10,7 +10,10 @@
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
+#include "../queries/counters.h"
+#include "../queries/types.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 
@@ -85,7 +88,7 @@ void apply_animate_creature_bootstrap(Entity e) {
 HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Defined$ Self (The Fantasticar: "have CARDNAME become an artifact creature") animates the
     // ability's own source; otherwise animate the chosen/inherited target (Guide of Souls).
-    Entity tgt = ab.defined_self ? ab.source : ab.target;
+    Entity tgt = ab.def->defined_self ? ab.source.get() : ab.target.get();
     if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
 
@@ -96,8 +99,8 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     //                                    animate_* fields for persistence PLUS the until-turn marker
     //                                    so the untap revert knows what/when to lapse.
     //   * (default, until end of turn) — the *_eot fields, cleared by the CLEANUP step this turn.
-    const bool permanent_dur = ab.animate_duration_permanent;
-    const bool until_turn = ab.animate_duration_until_your_next_turn;
+    const bool permanent_dur = ab.def->animate_duration_permanent;
+    const bool until_turn = ab.def->animate_duration_until_your_next_turn;
     const bool eot = !permanent_dur && !until_turn;
     const bool reverts = !permanent_dur;  // eot and until-turn both lapse later
 
@@ -109,7 +112,9 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     auto &types_bucket = eot       ? perm.animate_added_types_eot
                          : until_turn ? perm.animate_added_types_until_turn
                                       : perm.animate_added_types;
-    for (const auto &t : ab.animate_types) {
+    // The effect's timestamp (CR 613.7b), ordering it against static abilities' effects.
+    (eot ? perm.animate_timestamp_eot : perm.animate_timestamp) = cur_game.timestamp++;
+    for (const auto &t : ab.def->animate_types) {
         bool already_recorded = false;
         for (const auto &existing : types_bucket)
             if (existing.kind == t.kind && existing.name == t.name) { already_recorded = true; break; }
@@ -134,13 +139,13 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // practice and matches how the existing animate effect stores base P/T as plain ints. Only
     // applied for persistent/until-turn durations (the rest-of-game animate_* fields persist; no
     // EOT-duration card needs a set P/T, and animate_set_pt is not cleared at cleanup).
-    if (ab.animate_has_pt && !eot) {
-        int base_p = ab.animate_base_power;
-        int base_t = ab.animate_base_toughness;
-        if (!ab.animate_power_expr.empty())
-            base_p = static_cast<int>(evaluate_dynamic_amount(ab.animate_power_expr, ab.controller, orderer, tgt));
-        if (!ab.animate_toughness_expr.empty())
-            base_t = static_cast<int>(evaluate_dynamic_amount(ab.animate_toughness_expr, ab.controller, orderer, tgt));
+    if (ab.def->animate_has_pt && !eot) {
+        int base_p = ab.def->animate_base_power;
+        int base_t = ab.def->animate_base_toughness;
+        if (!ab.def->animate_power_expr.empty())
+            base_p = static_cast<int>(evaluate_amount(ab.def->animate_power_expr, ab.controller, 0, tgt));
+        if (!ab.def->animate_toughness_expr.empty())
+            base_t = static_cast<int>(evaluate_amount(ab.def->animate_toughness_expr, ab.controller, 0, tgt));
         perm.animate_set_pt = true;
         perm.animate_power = base_p;
         perm.animate_toughness = base_t;
@@ -151,7 +156,7 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // bootstrapped. Flag it on the permanent (permanent/until-turn use the rest-of-game flag so
     // the grant survives this cleanup; EOT uses its own flag so cleanup can revert it).
     bool adds_creature_type = false;
-    for (const auto &t : ab.animate_types)
+    for (const auto &t : ab.def->animate_types)
         if (t.kind == TYPE && t.name == "Creature") { adds_creature_type = true; break; }
     if (adds_creature_type) {
         if (eot) perm.animate_make_creature_eot = true;
@@ -186,16 +191,17 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // re-merges into perm.abilities each SBE pass — so it survives the layer-6 ability-removal
     // strip and comes back once the remover leaves) and also pushed onto perm.abilities now so a
     // same-pass reader sees it immediately. Deduped so re-resolving is idempotent.
-    if (!ab.animate_granted_abilities.empty() && permanent_dur) {
-        for (Ability granted : ab.animate_granted_abilities) {
-            granted.source = tgt;
+    if (!ab.def->animate_granted_abilities.empty() && permanent_dur) {
+        for (const AbilityDef &granted_def : ab.def->animate_granted_abilities) {
+            Ability granted(&granted_def);
+            granted.source = ObjectRef::of(tgt);
             bool recorded = false;
             for (auto &existing : perm.animate_granted_abilities)
-                if (existing.identical_activated_ability(granted)) { recorded = true; break; }
+                if (existing.identical_activated_ability(&granted_def)) { recorded = true; break; }
             if (!recorded) perm.animate_granted_abilities.push_back(granted);
             bool dup = false;
             for (auto &existing : perm.abilities)
-                if (existing.identical_activated_ability(granted)) { dup = true; break; }
+                if (existing.identical_activated_ability(&granted_def)) { dup = true; break; }
             if (dup) continue;
             perm.abilities.push_back(granted);
             game_log("%s gains an activated ability.\n", perm.name.c_str());
@@ -204,37 +210,34 @@ HandlerResult animate(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-// Lapse every "until your next turn" Animate (Karn, the Great Creator +1) created by
-// `active_player`, called from that player's untap step (CR 514/613 — the grant ends as their
-// next turn begins). Erases exactly the granted types, drops the snapshotted base P/T, and strips
-// the bootstrapped Creature/Damage components unless the permanent is a creature by a permanent
-// means (its printed face). General over any UntilYourNextTurn Animate, not just Karn.
-void revert_until_turn_animates(Zone::Ownership active_player) {
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (!perm.animate_until_my_turn || perm.animate_until_turn_controller != active_player) continue;
+// Lapse the "until your next turn" Animate (Karn, the Great Creator +1) on permanent `e` if
+// `active_player` created it, called from that player's untap step (CR 514/613 — the grant ends as
+// their next turn begins). Erases exactly the granted types, drops the snapshotted base P/T, and
+// strips the bootstrapped Creature/Damage components unless the permanent is a creature by a
+// permanent means (its printed face). General over any UntilYourNextTurn Animate, not just Karn.
+void revert_until_turn_animate(Entity e, Zone::Ownership active_player) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (!perm.animate_until_my_turn || perm.animate_until_turn_controller != active_player) return;
 
-        for (const auto &t : perm.animate_added_types_until_turn) perm.types.erase(t);
-        perm.animate_added_types_until_turn.clear();
-        perm.animate_until_my_turn = false;
-        perm.animate_until_turn_controller = Zone::UNKNOWN;
-        perm.animate_make_creature = false;
-        perm.animate_set_pt = false;
-        perm.animate_power = 0;
-        perm.animate_toughness = 0;
+    for (const auto &t : perm.animate_added_types_until_turn) perm.types.erase(t);
+    perm.animate_added_types_until_turn.clear();
+    perm.animate_until_my_turn = false;
+    perm.animate_until_turn_controller = Zone::UNKNOWN;
+    perm.animate_make_creature = false;
+    perm.animate_set_pt = false;
+    perm.animate_power = 0;
+    perm.animate_toughness = 0;
 
-        bool still_creature = false;
-        if (global_coordinator.entity_has_component<CardData>(e))
-            still_creature = is_creature_card(global_coordinator.GetComponent<CardData>(e));
-        if (!still_creature) {
-            if (global_coordinator.entity_has_component<Creature>(e))
-                global_coordinator.RemoveComponent<Creature>(e);
-            if (global_coordinator.entity_has_component<Damage>(e))
-                global_coordinator.RemoveComponent<Damage>(e);
-        }
-        game_log("%s is no longer a creature.\n", perm.name.c_str());
+    bool still_creature = false;
+    if (global_coordinator.entity_has_component<CardData>(e))
+        still_creature = is_creature_card(global_coordinator.GetComponent<CardData>(e));
+    if (!still_creature) {
+        if (global_coordinator.entity_has_component<Creature>(e))
+            global_coordinator.RemoveComponent<Creature>(e);
+        if (global_coordinator.entity_has_component<Damage>(e))
+            global_coordinator.RemoveComponent<Damage>(e);
     }
+    game_log("%s is no longer a creature.\n", perm.name.c_str());
 }
 
 }  // namespace effects

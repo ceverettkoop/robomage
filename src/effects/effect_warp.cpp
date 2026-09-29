@@ -7,7 +7,7 @@
 #include "../components/carddata.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/battlefield.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -27,7 +27,7 @@ namespace effects {
 // (the object it would grant a recast of is gone). General over any warp card.
 HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)ctx;
-    Entity card = ab.source;
+    Entity card = ab.source.get();
     // Only exile it if it is still the same object on the battlefield (CR 400.7): a re-entered
     // object is new and is not the warp-cast one.
     if (!is_battlefield_permanent(card)) return HandlerResult::DONE_RUN_SUBS;
@@ -47,7 +47,7 @@ HandlerResult warp_exile(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx
     perm.amount = 0;
     perm.caster = owner;
     perm.warp = true;
-    cur_game.impulse_cast_permission[card] = perm;
+    cur_game.resolved_effects.impulse_cast_permission[card] = perm;
 
     game_log("%s is exiled with warp; %s may cast it from exile for its normal cost.\n",
              nm.c_str(), player_name(owner).c_str());

@@ -20,6 +20,7 @@ it); also runnable standalone::
 
     train/.venv/bin/python train/test_obs_invariants.py
 """
+import atexit
 import math
 import os
 import random
@@ -44,12 +45,13 @@ from env import (
     _GY_START, _GY_SLOT_SIZE, _EXILE_START, _EXILE_SLOT_SIZE,
     _HAND_START, _HAND_SLOT_SIZE, MAX_GY_SLOTS, MAX_HAND_SLOTS,
     _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END,
+    _OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END,
     _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END,
     _PENDING_DECISION_START, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
     _EXTRAS_MC_ONEHOT_START, _EXTRAS_PLAYS_FIRST, _EXTRAS_SB_SWAPS, _EXTRAS_SB_DELTA,
     _EXTRAS_SELF_PASSED, _EXTRAS_OPP_PASSED, _EXTRAS_IS_PRIORITY_WINDOW,
     _EXTRAS_SELF_MULLIGANS, _EXTRAS_OPP_MULLIGANS, _EXTRAS_SELF_BOTTOM_REMAINING,
-    _MATCH_CTX_START,
+    _MATCH_CTX_START, obs_game_number,
     _SELF_BLOCK_START, _OPP_BLOCK_START, _OFF_IS_LAND, _OFF_IS_PHASED_OUT,
     _MANA_DEV_START, _MANA_DEV_OPP_START,
     _MD_POTENTIAL_TOTAL, _MD_LANDS_IN_PLAY, _MD_SELF_LANDS_IN_HAND,
@@ -78,6 +80,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     CAT_PASS_PRIORITY, CAT_DISCARD, CAT_SELECT_ATTACKER,
                     CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER, CAT_CONFIRM_BLOCKERS,
                     CAT_KEEP_LEGEND, CAT_ORDER_TRIGGERS, CAT_CHOOSE_REPLACEMENT,
+                    CAT_OTHER_CHOICE,
                     _MC_NAMES,
                     SIDEBOARD_SWAP_CAP, MANA_DEV_COLORS, MANA_DEV_SELF_SIZE,
                     MANA_DEV_OPP_SIZE, MANA_COUNT_NORMALIZER,
@@ -89,7 +92,7 @@ from _enums import (N_MANDATORY_CHOICES, DECKLIST_MAIN_SLOTS,
                     ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF,
                     ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
                     ZONE_COUNTER_NORMALIZER, CAT_CAST_SPELL, CAT_PLAY_LAND, CAT_SELECT_TARGET,
-                    _REF_NAMES)
+                    CAT_SEARCH_LIBRARY, _REF_NAMES)
 from opponents import make_controller
 from scripted_agent import scripted_action
 
@@ -108,6 +111,9 @@ _OPP_GY_START = _GY_START + MAX_GY_SLOTS * _GY_SLOT_SIZE
 _OPP_EXILE_START = _EXILE_START + MAX_GY_SLOTS * _EXILE_SLOT_SIZE
 
 _DECKS_DIR = os.path.join(BIN_DIR, "resources", "decks")
+
+# Every temp deck this process wrote (absolute paths); removed at exit, pass or fail.
+_TEMP_DECK_PATHS = set()
 
 
 class InvariantError(AssertionError):
@@ -160,6 +166,8 @@ def _card_id_slots():
         yield "self_hand", i, _HAND_START + i * _HAND_SLOT_SIZE
     for i, off in enumerate(range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END)):
         yield "known_top", i, off
+    for i, off in enumerate(range(_OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END)):
+        yield "opp_known_top", i, off
     for i, off in enumerate(range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END)):
         yield "opp_known_hand", i, off
     yield "pending_decision", 0, _PENDING_DECISION_START
@@ -670,6 +678,22 @@ def _check_player_effects(decision_idx, seat, state):
             PLAYER_EFFECTS_SEEN["active"] += 1
 
 
+def _check_match_context(decision_idx, state, seat):
+    """Match context: every float stays in [0, 1] (the game index is normalized by
+    the last possible game index, so a match lengthened by drawn games never pushes
+    it past 1.0), and the wins de-normalize to a legal bo3 score."""
+    for i, field in enumerate(("game_number", "self_wins", "opp_wins", "is_sideboard")):
+        v = float(state[_MATCH_CTX_START + i])
+        if not (np.isfinite(v) and 0.0 <= v <= 1.0):
+            _fail(decision_idx, seat, "match_ctx", field, v,
+                  f"match-context {field} float outside [0, 1]")
+    for i, field in ((1, "self_wins"), (2, "opp_wins")):
+        wins = float(state[_MATCH_CTX_START + i]) * 2
+        if abs(wins - round(wins)) > 1e-4 or round(wins) > 2:
+            _fail(decision_idx, seat, "match_ctx", field, wins,
+                  f"{field} de-normalizes to {wins} (expected 0, 1 or 2)")
+
+
 def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_pregame,
                    deck_block_by_seat, num_choices=None):
     """Assert every observation invariant for one decision. Raises on violation.
@@ -763,6 +787,9 @@ def check_decision(decision_idx, obs, priority_is_a, companion_by_seat, is_prega
         if not np.isfinite(lib) or lib < -0.5:
             _fail(decision_idx, seat, f"{label}_player.library", "-", lib,
                   f"library count de-normalizes to {lib} (expected finite & >= 0)")
+
+    # (7b) Match context ranges.
+    _check_match_context(decision_idx, state, seat)
 
     # (8) Companion: a declared companion is revealed to the opponent for the
     # whole game proper. When the seat WITHOUT priority (the viewer's opponent)
@@ -1111,18 +1138,37 @@ def run_matchup(deck_a, deck_b, seed, companion_by_seat=None, max_decisions=None
     return checked[0]
 
 
+def _write_temp_deck(stem, lines):
+    """Write decks/temp/<stem>_<pid>.dk (one line per entry) and return its deck
+    spec (relative to decks/). The name carries the process id so concurrent runs
+    never share a file; the path is registered for _remove_temp_decks."""
+    spec = f"temp/{stem}_{os.getpid()}"
+    path = os.path.join(_DECKS_DIR, spec + ".dk")
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    _TEMP_DECK_PATHS.add(path)
+    return spec
+
+
+def _remove_temp_decks():
+    """Delete every temp deck _write_temp_deck wrote (registered with atexit, so
+    it also runs when a check fails or raises)."""
+    for path in sorted(_TEMP_DECK_PATHS):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
+    _TEMP_DECK_PATHS.clear()
+
+
 def _write_yorion80_deck():
     """Write an 80-card temp deck with Yorion in the sideboard so the engine
     declares it as a companion (DeckSizePlus20 => >= 80 main cards; that is the
     only gate the engine enforces — see src/companion.cpp). Basics keep it fully
     in-vocab and the game short. Returns the deck spec (relative to decks/)."""
-    stem = "temp/obsinv_yorion80"
-    path = os.path.join(_DECKS_DIR, "temp", "obsinv_yorion80.dk")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    lines = ["80 Plains", "", "SIDEBOARD:", "1 Yorion, Sky Nomad", ""]
-    with open(path, "w") as f:
-        f.write("\n".join(lines))
-    return stem
+    return _write_temp_deck("obsinv_yorion80",
+                            ["80 Plains", "", "SIDEBOARD:", "1 Yorion, Sky Nomad"])
 
 
 # The matchups: cheap, deterministic, fixed seeds. delver vs mav is the vanilla
@@ -1252,6 +1298,244 @@ def check_graveyard_play_permissions():
         env.close()
 
 
+def _write_face_down_decks():
+    """Stacked temp decks for check_face_down_exile_hidden: A opens with The
+    Creation of Avacyn and six Swamps, with one Lightning Bolt deep in the library
+    (so it is still there to search for); B holds only Islands. Returns the two
+    deck specs (relative to decks/)."""
+    specs = []
+    for stem, lines in (("obsinv_facedown_a",
+                         ["1 The Creation of Avacyn", "6 Swamp", "10 Swamp",
+                          "1 Lightning Bolt", "12 Swamp"]),
+                        ("obsinv_facedown_b", ["30 Island"])):
+        specs.append(_write_temp_deck(stem, lines))
+    return specs
+
+
+def _zone_block_ids(state, start, slot_size):
+    """The decoded card ids of a graveyard / exile block's slots."""
+    return [_decode_card_id(state[o]) for o in _zone_block_offsets(start, slot_size)]
+
+
+def _write_known_top_decks():
+    """Stacked temp decks for check_public_known_top: A opens with seven Islands
+    and has Brainstorm on top of its library; B holds only Mountains. Returns the
+    two deck specs (relative to decks/)."""
+    specs = []
+    for stem, lines in (("obsinv_knowntop_a", ["7 Island", "1 Brainstorm", "22 Island"]),
+                        ("obsinv_knowntop_b", ["30 Mountain"])):
+        specs.append(_write_temp_deck(stem, lines))
+    return specs
+
+
+def _run_known_top_line(reveal):
+    """One game of check_public_known_top: A's Delver of Secrets looks at the
+    Brainstorm on top of A's library at A's first upkeep and reveals it (reveal
+    =True) or not; in the not-revealed line B then cracks Mishra's Bauble on A's
+    library. Returns (B decisions that saw Brainstorm atop A's library, B
+    decisions before that knowledge was earned that did not). Fails if B sees it
+    before it is revealed / looked at, if the knowledge leaks to A's view of B's
+    library, or if it outlives the card leaving the top of A's library."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    brainstorm = names["Brainstorm"]
+    bauble = names["Mishra's Bauble"]
+    deck_a, deck_b = _write_known_top_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, no_shuffle=True,
+                      battlefield_a="Delver of Secrets,Island",
+                      battlefield_b="Mishras Bauble", bo3=False)
+    looked = False       # A's Delver trigger has shown A the top card
+    earned = False       # B has legitimately learned it (reveal / Bauble look)
+    bauble_used = False
+    seen = unseen = 0
+    try:
+        env.reset(options={"engine_seed": 1})
+        deck_blocks = {}
+        for i in range(200):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            ids = [_decode_card_id(v) for v in decode.action_card_ids(obs)[:num]]
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            opp_top = _decode_card_id(state[_OPP_KNOWN_TOP_LIB_START])
+            choice = 0
+            if priority_is_a:
+                if _decode_card_id(state[_OPP_KNOWN_TOP_LIB_START]) != _CARD_ID_SENTINEL:
+                    _fail(i, "A", "opp_known_top", 0, opp_top,
+                          "A learned the top of B's library without looking at it")
+                if (num == 2 and all(c == CAT_OTHER_CHOICE for c in cats)
+                        and all(cid == brainstorm for cid in ids)):
+                    looked = True
+                    choice = 1 if reveal else 0      # [0] Don't reveal, [1] Reveal
+                    earned = earned or reveal
+                if looked and brainstorm in [_decode_card_id(state[o]) for o in
+                                             range(_HAND_START, _HAND_START + MAX_HAND_SLOTS)]:
+                    break                            # A drew it: the window is over
+            else:
+                if opp_top == brainstorm:
+                    if not earned:
+                        _fail(i, "B", "opp_known_top", 0, opp_top,
+                              "B sees the top of A's library before it was revealed "
+                              "or looked at")
+                    seen += 1
+                elif looked:
+                    if earned and seen:
+                        _fail(i, "B", "opp_known_top", 0, opp_top,
+                              "B forgot the known top of A's library while it is "
+                              "still there")
+                    unseen += 1
+                if looked and not reveal and not bauble_used:
+                    for a in range(num):
+                        if int(cats[a]) == CAT_ACTIVATE_ABILITY and ids[a] == bauble:
+                            choice, bauble_used = a, True
+                            break
+                elif bauble_used and not earned:
+                    zones = decode.action_zone_refs(obs, num)
+                    for a in range(num):
+                        if (int(cats[a]) == CAT_SELECT_TARGET
+                                and int(zones[a]) == _REF_BY_NAME["opp"]):
+                            choice, earned = a, True
+                            break
+            env.step(choice)
+        if not looked or not seen:
+            raise InvariantError(
+                f"known-top window not observed (reveal={reveal}, looked={looked}, "
+                f"bauble={bauble_used}, B decisions that saw it={seen})")
+        # After A draws it, the card must leave B's view of A's library top.
+        return seen, unseen
+    finally:
+        env.close()
+
+
+def check_public_known_top():
+    """Knowledge of a library's top is per player (Game::KnownLibraryTop): when
+    A's Delver of Secrets reveals the Brainstorm on top of A's library (CR
+    701.20a), B's opp_known_top block names it; when A declines to reveal, B does
+    not see it until B looks with Mishra's Bauble. A's own view of B's library
+    stays unknown throughout. Returns (B decisions that saw it after the reveal,
+    after the Bauble look, and B decisions in the declined line before the
+    look)."""
+    seen_reveal, _ = _run_known_top_line(reveal=True)
+    seen_bauble, unseen = _run_known_top_line(reveal=False)
+    if unseen == 0:
+        raise InvariantError("the declined-reveal line never gave B a decision before "
+                             "the Bauble look — the hidden window went unchecked")
+    return seen_reveal, seen_bauble, unseen
+
+
+def check_graveyard_target_collapse():
+    """A target menu offers one of several identical graveyard cards: Surgical
+    Extraction ("target card in a graveyard other than a basic land card") with
+    75 nonbasic cards in the two graveyards — four distinct cards, 15-20 copies
+    each — gets a four-entry SELECT_TARGET menu, one per (owner, card), within
+    MAX_ACTIONS (the uncollapsed 75 would be cut to 64, silently dropping legal
+    choices). Returns the menu size."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    surgical = names["Surgical Extraction"]
+    deck_a = _write_temp_deck("obsinv_gycollapse_a", ["1 Surgical Extraction", "29 Swamp"])
+    gy_a = ",".join(["Lightning Bolt"] * 20 + ["Brainstorm"] * 20)
+    gy_b = ",".join(["Ponder"] * 20 + ["Counterspell"] * 15)
+    env = RoboMageEnv(deck_a=deck_a, deck_b="league/ur_delver", no_shuffle=True,
+                      battlefield_a="Swamp", graveyard_a=gy_a, graveyard_b=gy_b, bo3=False)
+    cast = False
+    try:
+        env.reset(options={"engine_seed": 1})
+        for i in range(60):
+            num = env._num_choices
+            obs = env._obs
+            cats = decode.action_categories(obs, num)
+            ids = [_decode_card_id(v) for v in decode.action_card_ids(obs)[:num]]
+            priority_is_a = obs[_SELF_IS_A_IDX] > 0.5
+            if cast and all(int(c) == CAT_SELECT_TARGET for c in cats):
+                picks = {(int(z), cid) for z, cid in
+                         zip(decode.action_zone_refs(obs, num), ids)}
+                if num != 4 or len(picks) != num:
+                    raise InvariantError(
+                        f"Surgical Extraction target menu has {num} entries "
+                        f"({len(picks)} distinct (zone, card) picks), expected one per "
+                        f"distinct graveyard card (4)")
+                return num
+            choice = 0
+            if priority_is_a and not cast:
+                for a in range(num):
+                    if int(cats[a]) == CAT_CAST_SPELL and ids[a] == surgical:
+                        choice, cast = a, True
+                        break
+            env.step(choice)
+        raise InvariantError(f"no Surgical Extraction target menu (cast={cast})")
+    finally:
+        env.close()
+
+
+def check_face_down_exile_hidden():
+    """A face-down exiled card is hidden from the opponent (CR 406.3): seat A
+    casts The Creation of Avacyn and its chapter I exiles the searched Lightning
+    Bolt face down. While it is face down, B's opp_exile block never names it
+    and B's revealed bit for it stays clear, though A's own self_exile block
+    names it. Chapter II turns it face up, after which B sees it (proving the
+    probe can see the id at all). Every decision also runs the full
+    check_decision battery. Returns (hidden B decisions, visible B decisions)."""
+    names = {n: i for i, n in enumerate(decode._CARD_NAMES) if n}
+    avacyn = names["The Creation of Avacyn"]
+    bolt = names["Lightning Bolt"]
+    deck_a, deck_b = _write_face_down_decks()
+    env = RoboMageEnv(deck_a=deck_a, deck_b=deck_b, no_shuffle=True,
+                      battlefield_a="Swamp,Swamp,Swamp", bo3=False)
+    n_hidden = n_visible = 0
+    in_a_exile = False   # A's latest view holds the Bolt in its own exile
+    cast = searched = False
+    try:
+        env.reset(options={"engine_seed": 3})
+        deck_blocks = {}
+        for i in range(400):
+            num = env._num_choices
+            obs = env._obs
+            state = obs[:STATE_SIZE]
+            priority_is_a = state[_SELF_IS_A_IDX] > 0.5
+            cats = decode.action_categories(obs, num)
+            check_decision(i, obs, priority_is_a, {}, decode.is_mulligan(cats)
+                           or decode.is_bottom(cats), deck_blocks, num_choices=num)
+            choice = 0
+            if priority_is_a:
+                in_a_exile = bolt in _zone_block_ids(state, _EXILE_START, _EXILE_SLOT_SIZE)
+                ids = decode.action_card_ids(obs)
+                for a in range(num):
+                    cat, cid = int(cats[a]), _decode_card_id(ids[a])
+                    if not cast and cat == CAT_CAST_SPELL and cid == avacyn:
+                        choice, cast = a, True
+                        break
+                    if cat == CAT_SEARCH_LIBRARY and cid == bolt:
+                        choice, searched = a, True
+                        break
+            elif in_a_exile:
+                seen = bolt in _zone_block_ids(state, _OPP_EXILE_START, _EXILE_SLOT_SIZE)
+                revealed = _opp_revealed_bits(state).get(bolt, 0.0) > 0.5
+                if seen:
+                    if not revealed:
+                        _fail(i, "B", "opp_deck.revealed", bolt, 0.0,
+                              "a face-up exiled card is not marked revealed")
+                    n_visible += 1
+                elif revealed:
+                    if n_visible == 0:
+                        _fail(i, "B", "opp_deck.revealed", bolt, 1.0,
+                              "the face-down exiled card is marked revealed")
+                else:
+                    if n_visible:
+                        _fail(i, "B", "opp_exile", bolt, None,
+                              "the exiled card turned face down again")
+                    n_hidden += 1
+            if n_hidden and n_visible:
+                return n_hidden, n_visible
+            env.step(choice)
+        raise InvariantError(
+            f"face-down window not observed within 400 decisions (cast={cast}, "
+            f"searched={searched}, hidden B decisions={n_hidden}, visible={n_visible})")
+    finally:
+        env.close()
+
+
 def check_delayed_trigger_lifecycle():
     """Guaranteed coverage for invariant (17): stage two Mishra's Baubles for
     seat A, activate one, and follow its "draw at the beginning of the next
@@ -1333,12 +1617,7 @@ def _seat_effect_halves(state, priority_is_a):
 def _write_veil_deck():
     """A stacked temp deck for check_veil_player_effects: two Veil of Summer on top
     (so both start in hand under no_shuffle), then Forests. Returns the deck spec."""
-    stem = "temp/obsinv_veil"
-    path = os.path.join(_DECKS_DIR, "temp", "obsinv_veil.dk")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w") as f:
-        f.write("2 Veil of Summer\n58 Forest\n")
-    return stem
+    return _write_temp_deck("obsinv_veil", ["2 Veil of Summer", "58 Forest"])
 
 
 def check_veil_player_effects():
@@ -1533,7 +1812,8 @@ def check_squelcher_player_effects():
 # perspective-relative battlefield slot refs (stack targets, delayed-trigger and
 # pending-decision refs).
 _MIRROR_EXEMPT_KEYS = {"priority_player", "priority_is_a", "self_hand",
-                       "known_top_library", "opp_known_hand", "opp_revealed",
+                       "known_top_library", "opp_known_top_library",
+                       "opp_known_hand", "opp_revealed",
                        "stack", "delayed_triggers", "pending_decision"}
 # Engine seeds of the scripted games check_mirrored_view drives.
 _MIRROR_SEEDS = (1, 2, 3, 4, 5, 6, 7, 8)
@@ -1700,6 +1980,7 @@ def _drive_bo3_sideboarding(env, seed=_SB_SEED, swaps_per_seat=_SB_SWAPS_PER_PHA
         num = env._num_choices
         seat = "A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"
         cats = decode.action_categories(obs, num)
+        _check_match_context(-1, obs, seat)
         yield obs, num, cats, seat
 
         picked = _sideboard_action(cats, swaps_left[seat])
@@ -1757,7 +2038,7 @@ def check_opponent_decklist_frozen():
             n_rev = sum(1 for v in revealed.values() if v > 0.5)
             if obs[_IS_SIDEBOARD_IDX] > 0.5:
                 rev_in_sb = max(rev_in_sb, n_rev)
-            elif int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0:
+            elif obs_game_number(obs) > 0:
                 rev_post_board = max(rev_post_board, n_rev)
             if seat not in first:
                 first[seat] = blocks
@@ -1778,7 +2059,7 @@ def check_opponent_decklist_frozen():
             # A post-board decision: game 2+ of the bo3 (game_number is 0-based),
             # outside the sideboard phase itself.
             if (obs[_IS_SIDEBOARD_IDX] <= 0.5
-                    and int(round(float(obs[_MATCH_CTX_START]) * 3)) > 0):
+                    and obs_game_number(obs) > 0):
                 post_board += 1
                 if post_board >= _SB_POST_BOARD_MIN:
                     break
@@ -1865,8 +2146,8 @@ def check_sideboard_copy_ordinals():
 
 
 def _decode_sb_delta(obs):
-    """Maindeck drift from its phase-start size, from the serialized (d + 1) / 2."""
-    return int(round(float(obs[_EXTRAS_SB_DELTA]) * 2)) - 1
+    """Maindeck drift from its phase-start size (serialized as the drift itself)."""
+    return int(round(float(obs[_EXTRAS_SB_DELTA])))
 
 
 def _decode_sb_swaps(obs):
@@ -1992,11 +2273,7 @@ def _write_strand_decks():
     specs = []
     for stem, lines in (("obsinv_strand_a", ["36 Grizzly Bears", "24 Forest"]),
                         ("obsinv_strand_b", ["60 Swamp", "SIDEBOARD:", "1 Swamp"])):
-        path = os.path.join(_DECKS_DIR, "temp", stem + ".dk")
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, "w") as f:
-            f.write("\n".join(lines) + "\n")
-        specs.append("temp/" + stem)
+        specs.append(_write_temp_deck(stem, lines))
     return specs
 
 
@@ -2267,6 +2544,15 @@ def check_sideboard_self_context():
 
 
 def main():
+    atexit.register(_remove_temp_decks)
+    try:
+        return _run_all_checks()
+    finally:
+        _remove_temp_decks()
+
+
+def _run_all_checks():
+    """Every matchup and staged check in order; 1 at the first failure, else 0."""
     yorion_deck = _write_yorion80_deck()
     matchups = list(_MATCHUPS) + [
         # Seat A declares Yorion (vocab 289); the game is short (A only plays
@@ -2301,6 +2587,31 @@ def main():
         return 1
     print(f"ok    graveyard play permissions: flashback card flagged at {n_da} "
           f"decisions, Emry's grant at {n_granted} then lapsed", flush=True)
+
+    try:
+        n_gy_menu = check_graveyard_target_collapse()
+    except InvariantError as e:
+        print(f"FAIL  graveyard target collapse\n  {e}", flush=True)
+        return 1
+    print(f"ok    graveyard target collapse: 75 graveyard cards -> a {n_gy_menu}-entry "
+          f"target menu (one per distinct card)", flush=True)
+
+    try:
+        kt_reveal, kt_bauble, kt_hidden = check_public_known_top()
+    except InvariantError as e:
+        print(f"FAIL  public known top of library\n  {e}", flush=True)
+        return 1
+    print(f"ok    public known top of library: B saw A's revealed top at {kt_reveal} "
+          f"decisions, its Bauble look at {kt_bauble}, and nothing at {kt_hidden} "
+          f"decisions before the look", flush=True)
+
+    try:
+        n_fd_hidden, n_fd_visible = check_face_down_exile_hidden()
+    except InvariantError as e:
+        print(f"FAIL  face-down exile hidden\n  {e}", flush=True)
+        return 1
+    print(f"ok    face-down exile hidden: the opponent saw no identity at {n_fd_hidden} "
+          f"decisions, then the face-up card at {n_fd_visible}", flush=True)
 
     try:
         n_wait, n_stack = check_delayed_trigger_lifecycle()

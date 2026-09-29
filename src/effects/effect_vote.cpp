@@ -10,8 +10,9 @@
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../game_queries.h"
 #include "../input_logger.h"
+#include "../queries/battlefield.h"
+#include "../queries/filters.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -34,23 +35,23 @@ namespace effects {
 // restrictions only). We therefore enumerate candidates with permanent_matches_filter and never
 // run is_legal_target on them.
 //
-// The chosen permanent is placed in cur_game.remembered_entities so the VoteSubAbility$ DBExile
+// The chosen permanent is placed in cur_game.resolution.memory.remembered so the VoteSubAbility$ DBExile
 // (DB$ ChangeZone | Defined$ Remembered | Origin$ Battlefield | Destination$ Exile), parsed into
 // this ability's subabilities, exiles it via the standard change_zone resolution. Returning true
 // chains that subability. If no permanent matches the filter (the opponent controls no nonland
 // permanents), the spell still resolves and does nothing.
 HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx) {
     // Translate Forge's "YouDontCtrl" (a permanent you don't control) into the evaluator's
-    // OppCtrl, exactly as Ability::is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
+    // OppCtrl, exactly as is_legal_target does, so "Permanent.nonLand+YouDontCtrl"
     // matches the opponent's nonland permanents. The controller is the "you" reference.
-    std::string spec = ab.vote_card_filter.empty() ? std::string("Permanent.nonLand") : ab.vote_card_filter;
+    std::string spec = ab.def->vote_card_filter.empty() ? std::string("Permanent.nonLand") : ab.def->vote_card_filter;
     for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
          pos = spec.find("YouDontCtrl", pos))
         spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
 
     MatchCtx ctx;
     ctx.controller = ab.controller;
-    ctx.source = ab.source;
+    ctx.source = ab.source.lki_entity();
 
     std::vector<Entity> candidates;
     for (auto e : orderer->mEntities) {
@@ -60,7 +61,7 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     // Clear any remembered entities so only the voted-for permanent is fed to the
     // Defined$ Remembered DBExile sub-ability.
-    cur_game.remembered_entities.clear();
+    cur_game.resolution.memory.remembered.clear();
 
     if (candidates.empty()) {
         game_log("Will of the Council: no eligible permanent to vote for; nothing is exiled.\n");
@@ -82,11 +83,11 @@ HandlerResult vote(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &fctx
 
     if (!fctx.resuming())
         game_log("%s votes for a permanent to exile:\n", player_name(ab.controller).c_str());
-    int choice = fctx.ask(std::move(picks), ab.controller, ab.source);
+    int choice = fctx.ask(std::move(picks), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     Entity chosen = candidates[static_cast<size_t>(choice)];
-    cur_game.remembered_entities.push_back(chosen);
+    cur_game.resolution.memory.remembered.push_back(ObjectRef::of(chosen));
     game_log("%s votes for %s.\n", player_name(ab.controller).c_str(),
              global_coordinator.GetComponent<Permanent>(chosen).name.c_str());
     return HandlerResult::DONE_RUN_SUBS;  // chain the VoteSubAbility$ DBExile (Defined$ Remembered → Exile)

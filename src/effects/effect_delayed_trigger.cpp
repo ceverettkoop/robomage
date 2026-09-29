@@ -9,8 +9,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/players.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -28,10 +29,12 @@ static uint32_t phase_string_to_event(const std::string &phase) {
 
 HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    Zone::Ownership owner = source_controller(ab.source);
+    // A delayed triggered ability is controlled by the player who controlled the ability that
+    // created it (CR 603.7d/e), captured on the resolving ability.
+    Zone::Ownership owner = ab.controller;
     Entity owner_entity = get_player_entity(owner);
 
-    const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.params);
+    const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.def->params);
     bool has_execute = dp && !dp->execute_svar.empty();
     std::string phase = dp ? dp->phase : std::string();
     bool next_turn = dp && dp->next_turn;
@@ -44,7 +47,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     bool found_execute = false;
     if (has_execute) {
         for (size_t i = 0; i < ab.subabilities.size(); i++) {
-            if (!ab.subabilities[i].from_delayed_execute) continue;
+            if (!ab.subabilities[i].def->from_delayed_execute) continue;
             fire_ab = ab.subabilities[i];
             for (size_t j = 0; j < ab.subabilities.size(); j++)
                 if (j != i) fire_ab.subabilities.push_back(ab.subabilities[j]);
@@ -52,16 +55,12 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
             break;
         }
     }
-    if (!found_execute) {
-        fire_ab.ability_type = Ability::TRIGGERED;
-        fire_ab.category = "Draw";
-        fire_ab.amount = 1;
-    }
+    if (!found_execute) fire_ab = Ability(draw_one_trigger_def());
     fire_ab.source = ab.source;
 
     // Mode$ ChangesZone (Searing Blood): a "when THAT object changes zone, do Y" delayed trigger
     // (CR 603.7b). The watched object is the parent spell's target — RememberObjects$ Targeted
-    // put it in cur_game.remembered_entities before this handler ran. Register a
+    // put it in cur_game.resolution.memory.remembered before this handler ran. Register a
     // fire_on_leave_battlefield watch (reusing the earthbend infrastructure) filtered to the
     // Destination$ zone(s) so only the matching move fires it; ThisTurn$ bounds it to this turn.
     if (dp && dp->mode_changes_zone) {
@@ -69,33 +68,36 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // leaves-the-battlefield sacrifice) watches the trigger's own SOURCE; otherwise the
         // watched object is the remembered target (Searing Blood's IsTriggerRemembered).
         bool watch_self = dp->valid_card.find("Self") != std::string::npos;
-        Entity watched = watch_self ? ab.source
-                         : (cur_game.remembered_entities.empty() ? 0
-                                                                 : cur_game.remembered_entities[0]);
+        Entity watched = watch_self ? ab.source.get()
+                         : (cur_game.resolution.memory.remembered.empty()
+                                ? 0
+                                : cur_game.resolution.memory.remembered[0].get());
         if (watched == 0) return HandlerResult::DONE_NO_SUBS;
         // RememberObjects$ RememberedLKI (Animate Dead): the fire ability acts on the objects the
         // preceding RememberChanged$ ChangeZone moved (the reanimated creature) — carry them so
         // Defined$ DelayTriggerRememberedLKI restores exactly those when the trigger fires later.
-        if (dp->remember_objects_lki && !cur_game.remembered_entities.empty())
-            fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
+        // The objects are handed on as they now are (CR 400.7j).
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.resolution.memory.remembered);
+        if (dp->remember_objects_lki && !objects.empty())
+            fire_ab.restore_remembered_exiled_with = objects;
         DelayedTrigger dt;
         dt.ability = fire_ab;
         dt.fire_on = Events::CARD_CHANGED_ZONE;
         dt.owner_entity = owner_entity;
-        dt.fire_on_turn = cur_game.turn;
-        dt.watch_entity = watched;
-        if (dp->remember_objects_lki) dt.remembered_objects = cur_game.remembered_entities;
+        dt.fire_on_turn = cur_game.turn_state.turn;
+        dt.watched = ObjectRef::of(watched);
+        if (dp->remember_objects_lki) dt.remembered_objects = objects;
         dt.fire_on_leave_battlefield = true;
         // Origin$ Battlefield / Destination$ Graveyard parsed onto this ability by parse_change_zone.
         // The origin is implicit (leave-battlefield watch); the destination becomes the zone filter
         // so a bounce/exile of the watched object does not fire a "when it dies" trigger.
-        if (ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE ||
-            ab.destination == Zone::HAND || ab.destination == Zone::LIBRARY)
-            dt.fire_dest_zones = {ab.destination};
+        if (ab.def->destination == Zone::GRAVEYARD || ab.def->destination == Zone::EXILE ||
+            ab.def->destination == Zone::HAND || ab.def->destination == Zone::LIBRARY)
+            dt.fire_dest_zones = {ab.def->destination};
         dt.expires_end_of_turn = dp->this_turn;
         register_delayed_trigger(dt, ab.source);
         game_log("Delayed trigger registered: %s when watched permanent leaves the battlefield.\n",
-                 fire_ab.category.c_str());
+                 fire_ab.def->category.c_str());
         return HandlerResult::DONE_NO_SUBS;
     }
 
@@ -103,7 +105,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
 
     DelayedTrigger dt;
     // RememberObjects$ RememberedLKI: capture the objects the preceding RememberChanged$
-    // ChangeZone just moved (CR 603.7a). They are restored into cur_game.remembered_entities
+    // ChangeZone just moved (CR 603.7a). They are restored into cur_game.resolution.memory.remembered
     // when the trigger fires so the Execute ability's Defined$ DelayTriggerRememberedLKI acts on
     // exactly those objects (Flickerwisp / Phelia return the card they exiled).
     if (dp && dp->remember_objects_lki) {
@@ -112,9 +114,12 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         // nothing, so do NOT register the delayed return at all. Registering it anyway
         // made the return fire on whatever the global remembered set held at end of turn
         // (a phantom "<unknown>" entering the battlefield, falsely firing ETB watchers).
-        if (cur_game.remembered_entities.empty()) return HandlerResult::DONE_NO_SUBS;
-        dt.remembered_objects = cur_game.remembered_entities;
-        fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
+        // The objects are handed on as they now are (CR 400.7j); one that has ceased to exist
+        // (an exiled token, CR 111.7) is nothing to return.
+        const std::vector<ObjectRef> objects = restamp_live(cur_game.resolution.memory.remembered);
+        if (objects.empty()) return HandlerResult::DONE_NO_SUBS;
+        dt.remembered_objects = objects;
+        fire_ab.restore_remembered_exiled_with = objects;
     }
     dt.ability = fire_ab;
     dt.fire_on = event_id;
@@ -127,12 +132,11 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (dp->valid_player == "You")
             dt.restrict_player = owner_entity;
         else if (dp->valid_player == "Opponent")
-            dt.restrict_player =
-                get_player_entity(owner == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
+            dt.restrict_player = get_player_entity(opponent_of(owner));
     }
-    dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
+    dt.fire_on_turn = next_turn ? cur_game.turn_state.turn + 1 : cur_game.turn_state.turn;
     register_delayed_trigger(dt, ab.source);
-    game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
+    game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.def->category.c_str(),
         phase.empty() ? "upkeep" : phase.c_str());
     // Return false so resolve() does NOT chain this DB$ DelayedTrigger's subabilities inline:
     // the Execute$ ability (and any trailing cleanup) is deferred onto the delayed trigger to
@@ -141,7 +145,7 @@ HandlerResult delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     return HandlerResult::DONE_NO_SUBS;
 }
 
-bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_delayed_trigger(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (ab.category != "DelayedTrigger") return false;
     // Mode$ on a DB$ DelayedTrigger: Phase (the default) fires at a future step; ChangesZone
     // (Searing Blood) instead watches a specific object leaving one zone for another. Consume

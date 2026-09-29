@@ -1,0 +1,11 @@
+{
+  "name": "cr702_15b_lifelink_noncombat_bowmasters",
+  "why": "CR 702.15b / 120.3: lifelink applies to noncombat damage to a creature (Shadowspear-equipped Orcish Bowmasters' ping) - 358d34b",
+  "hand_a": ["Swamp"],
+  "battlefield_a": ["Orcish Bowmasters", "Shadowspear", "Swamp", "Swamp"],
+  "hand_b": ["Brainstorm"],
+  "battlefield_b": ["Island", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip", "A:target:Bowmasters", "B:pass", "B:cast:Brainstorm", "A:#0", "A:target:Grizzly Bears"],
+  "max_decisions": 20,
+  "expect_order": ["Orcish Bowmasters deals 1 damage to Grizzly Bears", "Player A gains 1 life \\(lifelink\\)"]
+}

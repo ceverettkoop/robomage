@@ -1,0 +1,14 @@
+{
+  "name": "cr709_3_split_half_mana_value_on_stack",
+  "why": "CR 709.3 / 709.4b: a split card's cast half has its own mana value on the stack, so Chalice of the Void on 1 counters Dead but not Gone - f65ceb8",
+  "hand_a": ["Dead Gone", "Dead Gone"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Chalice of the Void"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Mountain", "Mountain", "Grizzly Bears", "Grizzly Bears"],
+  "play": ["A:keep", "B:keep", "B:cast:Chalice", "B:desc:X = 1", "A:pass", "A:desc:Cast Gone", "A:target:Grizzly Bears", "A:pass", "A:desc:Cast Dead", "A:target:Grizzly Bears"],
+  "max_decisions": 30,
+  "expect_not": ["Dead deals"],
+  "expect_order": ["Chalice of the Void enters with 1 CHARGE counter", "Player A casts Gone", "Grizzly Bears is moved to hand", "Player A casts Dead", "Chalice of the Void triggered", "category: Counter"]
+}

@@ -18,6 +18,9 @@ struct Spell {
     bool cast_with_impending = false;  // cast for its Impending alternate cost (CR 702.175) — the resulting permanent enters with time counters and isn't a creature until they're gone
     bool cast_with_warp = false;       // cast for its Warp alternate cost — the resulting object is exiled at the next end step (a delayed trigger) and may then be cast from exile later for its normal cost
     bool cant_be_countered = false;
+    // Cast as its modal DFC back face or as a split card's second half: on the stack the spell
+    // has only that face's characteristics (CR 712.8f, 709.3; read through active_face).
+    bool cast_back_face = false;
     int x_paid = 0;  // value chosen for {X} at cast time (Chalice of the Void enters with X charge counters)
     // Kicker (CR 702.33): one flag per CardData::kicker_costs entry — kicked[i] is true iff the
     // (i+1)th kicker's additional cost was paid as this spell was cast. The spell "has been
@@ -31,7 +34,7 @@ struct Spell {
     int replicate_count = 0;
     // Gift (CR 702.176): true iff the spell's controller PROMISED the gift to the opponent as
     // this spell was cast (an optional choice, not a cost — CR 702.176b). Read at resolution to
-    // give the opponent the gift, and (via cur_game.pending_gift_promised at cast time) to switch
+    // give the opponent the gift, and (via current_gift_promised() at cast time) to switch
     // a Count$PromisedGift-driven effect (e.g. Into the Flood Maw widening its bounce target).
     bool gift_promised = false;
     // A COPY of a spell on the stack (CR 707.10): a copy is not a card. When it resolves (or is
@@ -46,7 +49,7 @@ struct Spell {
     int mana_spent = 0;
     // Converge (CR 702.90): the distinct COLORS of mana actually spent to cast this spell (WHITE..
     // GREEN; colorless mana is not a color, CR 105.1). Set at cast time from the payment's spent
-    // colors; its size is the Converge count, restored into cur_game.converge at resolution and read
+    // colors; its size is the Converge count, taken by the resolution frame as it resolves and read
     // by a Count$Converge amount/condition bound (Prismatic Ending). Empty for a free / no-mana cast.
     std::set<Colors> colors_spent;
 };

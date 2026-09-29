@@ -85,6 +85,33 @@ void deck_state_set_live(Zone::Ownership owner, const Deck &deck) {
         set_blocks(deck, g_live_main_b, g_live_side_b);
 }
 
+void deck_state_resplit_live(Zone::Ownership owner, const std::vector<int> &side_vocab) {
+    if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
+    std::vector<DecklistEntry> &main_out = (owner == Zone::PLAYER_A) ? g_live_main_a : g_live_main_b;
+    std::vector<DecklistEntry> &side_out = (owner == Zone::PLAYER_A) ? g_live_side_a : g_live_side_b;
+    std::map<int, int> total;  // ordered ascending by vocab id, like build_block
+    for (const auto &entry : main_out) total[entry.vocab_idx] += entry.count;
+    for (const auto &entry : side_out) total[entry.vocab_idx] += entry.count;
+    std::map<int, int> side;
+    for (int idx : side_vocab) side[idx]++;
+    main_out.clear();
+    side_out.clear();
+    for (const auto &kv : total) {
+        auto it = side.find(kv.first);
+        const int n_side = it != side.end() ? it->second : 0;
+        if (n_side > kv.second)
+            fatal_error("deck_state_resplit_live: sideboard holds " + std::to_string(n_side) +
+                        " copies of vocab id " + std::to_string(kv.first) + ", the live 75 only " +
+                        std::to_string(kv.second));
+        if (kv.second > n_side) main_out.push_back({kv.first, kv.second - n_side});
+        if (n_side > 0) side_out.push_back({kv.first, n_side});
+        if (it != side.end()) side.erase(it);
+    }
+    if (!side.empty())
+        fatal_error("deck_state_resplit_live: sideboard card vocab id " +
+                    std::to_string(side.begin()->first) + " is not in the live 75");
+}
+
 void deck_state_reset() {
     for (std::vector<DecklistEntry> *v :
          {&g_reg_main_a, &g_reg_side_a, &g_reg_main_b, &g_reg_side_b,

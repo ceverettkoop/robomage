@@ -1,0 +1,12 @@
+{
+  "name": "cr301_5_every_attachment_unattached_on_leave",
+  "why": "CR 301.5 / 704.5n / 400.7: every Equipment on a creature that dies becomes unattached and none follows the card back - 83314fb a891ecf",
+  "hand_a": ["Lightning Bolt", "Reanimate"],
+  "library_a": ["Mountain", "Mountain", "Mountain"],
+  "battlefield_a": ["Shadowspear", "Lavaspur Boots", "Grizzly Bears", "Mountain", "Mountain", "Mountain", "Mountain", "Swamp"],
+  "play": ["A:keep", "B:keep", "A:desc:Equip Shadowspear", "A:target:Grizzly Bears", "A:desc:Equip Lavaspur Boots", "A:target:Grizzly Bears", "A:pass", "A:cast:Lightning Bolt", "A:target:Grizzly Bears", "A:cast:Reanimate", "A:target:Grizzly Bears"],
+  "max_decisions": 20,
+  "expect": ["Shadowspear becomes unattached", "Lavaspur Boots becomes unattached"],
+  "expect_not": ["Equipment attached.*Reanimate"],
+  "expect_order": ["Grizzly Bears gains 1/1 Trample & Lifelink", "Grizzly Bears gains 1/0 Haste & Ward:1", "Grizzly Bears is destroyed \\(lethal damage\\)", "Grizzly Bears is moved to the battlefield"]
+}

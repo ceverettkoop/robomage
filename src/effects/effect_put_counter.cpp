@@ -10,7 +10,10 @@
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
+#include "../queries/players.h"
+#include "../svar_eval.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -23,62 +26,60 @@ namespace effects {
 // — the activation gate normally prevents this), the whole ability does nothing. Returns true when
 // the counter placement should proceed, false when it must be skipped (already monstrous).
 static bool apply_monstrosity(Ability &ab) {
-    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return false;
-    auto &perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    const Entity self = ab.source.get();
+    if (self == 0 || !global_coordinator.entity_has_component<Permanent>(self)) return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(self);
     if (perm.is_monstrous) return false;  // 701.37a: monstrosity does nothing if already monstrous
     perm.is_monstrous = true;
     game_log("%s becomes monstrous.\n", perm.name.c_str());
-    Entity ctrl_entity =
-        (perm.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity ctrl_entity = get_player_entity(perm.controller);
     Event ev(Events::BECAME_MONSTROUS);
-    ev.SetParam(Params::ENTITY, ab.source);
+    ev.SetParam(Params::ENTITY, self);
     ev.SetParam(Params::PLAYER, ctrl_entity);
     global_coordinator.SendEvent(ev);
     return true;
+}
+
+int resolve_counter_num(const Ability &ab, const CounterParams &cp, std::shared_ptr<Orderer> orderer) {
+    if (cp.count_expr.empty()) return cp.count;
+    return static_cast<int>(evaluate_amount(cp.count_expr, ab.controller, 0, ab.target.get()));
 }
 
 HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     // Monstrosity$ (CR 701.37): set the monstrous designation + fire the event first, then fall
     // through to place the N +1/+1 counters on the source via the normal counter path below. If
     // already monstrous, the ability does nothing at all.
-    if (ab.is_monstrosity && !apply_monstrosity(ab)) return HandlerResult::DONE_RUN_SUBS;
+    if (ab.def->is_monstrosity && !apply_monstrosity(ab)) return HandlerResult::DONE_RUN_SUBS;
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
-    if (ab.defined_you) {
-        const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    if (ab.def->defined_you) {
+        const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
         if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
         // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the
-        // player gets X {E}) is evaluated at resolution; otherwise use the static count.
-        int n = cp->count;
-        if (!cp->count_expr.empty())
-            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        // player gets X {E}) is evaluated at resolution.
+        int n = resolve_counter_num(ab, *cp, orderer);
         if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
-        Entity ctrl_entity =
-            (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity ctrl_entity = get_player_entity(ab.controller);
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
         int total = pl.add_counters(cp->type, n);
         game_log("%s gets %d %s counter(s) (now %d).\n", player_name(ab.controller).c_str(),
                  n, cp->type.c_str(), total);
         return HandlerResult::DONE_RUN_SUBS;
     }
-    (void)orderer;
-    // Use target if set (e.g. from a Pump parent), otherwise put counters on source
-    // (Defined$ Self — e.g. Aether Vial's upkeep "put a charge counter on it"). Counters
-    // can go on any permanent, not just creatures (CR 122.1), so gate on Permanent: a
-    // creature gets +1/+1-style P/T resync via add_counters, a non-creature (Aether Vial,
-    // an artifact) just accrues the typed counter in its counter map.
-    Entity counter_tgt =
-        (ab.target != 0 && global_coordinator.entity_has_component<Permanent>(ab.target)) ? ab.target : ab.source;
-    if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return HandlerResult::DONE_RUN_SUBS;
-    const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
-    if (cp && !cp->type.empty()) {
+    // The counters go on the affected objects: the target(s) (Defined$ Targeted — Kaito's stun
+    // counters on the creature it tapped), or the source (Defined$ Self, or no Defined$ — Aether
+    // Vial's upkeep "put a charge counter on it"). Counters can go on any permanent, not just
+    // creatures (CR 122.1), so gate on Permanent: a creature gets +1/+1-style P/T resync via
+    // add_counters, a non-creature (Aether Vial, an artifact) just accrues the typed counter in
+    // its counter map. A target whose object is gone (CR 400.7) gets nothing.
+    const CounterParams *cp = std::get_if<CounterParams>(&ab.def->params);
+    if (!cp || cp->type.empty()) return HandlerResult::DONE_RUN_SUBS;
+    for (Entity counter_tgt : affected_objects(ab)) {
+        if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) continue;
         // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
-        // resolution; otherwise the static count is used. Mirrors the Defined$ You / PutCounterAll
-        // paths so a targeted counter with a runtime count no longer places zero.
-        int n = cp->count;
-        if (!cp->count_expr.empty())
-            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        // resolution, as in the Defined$ You and PutCounterAll paths.
+        int n = resolve_counter_num(ab, *cp, orderer);
         if (n > 0) {
             int total = add_counters(counter_tgt, cp->type, n);
             if (global_coordinator.entity_has_component<Creature>(counter_tgt)) {
@@ -106,7 +107,7 @@ HandlerResult put_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     return HandlerResult::DONE_RUN_SUBS;
 }
 
-bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_put_counter(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "CounterType") {
         auto &cp = effect_params<CounterParams>(ab);
         cp.type = value;
@@ -117,7 +118,7 @@ bool parse_put_counter(Ability &ab, const std::string &key, const std::string &v
     }
     if (key == "CounterNum")  {
         // A numeric CounterNum$ is used directly. A non-numeric value is an SVar key (Wrath
-        // of the Skies: CounterNum$ X, X = Count$xPaid) — stash the raw token; parse_abilities
+        // of the Skies: CounterNum$ X, X = Count$xPaid) — stash the raw token; the parser
         // resolves it through the SVar map into a runtime Count$ expression on count_expr.
         auto &cp = effect_params<CounterParams>(ab);
         if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))

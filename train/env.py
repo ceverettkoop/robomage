@@ -110,7 +110,7 @@ try:
         ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
         ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, MATCH_GAME_NORMALIZER, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
@@ -123,7 +123,7 @@ try:
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
-        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_PASS_PRIORITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
         CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
         CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
@@ -146,7 +146,7 @@ except ImportError:
         ZONE_PLAYABLE_OPP_OFF, ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF,
         ZONE_COUNTER_NORMALIZER,
         STACK_HEAD_FIELDS, STACK_XAMT_FIELDS, STACK_QUAL_FIELDS,
-        STACK_TGT_FIELDS, MATCH_CTX_SIZE, LIBRARY_CTX_SIZE,
+        STACK_TGT_FIELDS, MATCH_CTX_SIZE, MATCH_GAME_NORMALIZER, LIBRARY_CTX_SIZE,
         CUR_TURN_SIZE, PENDING_DECISION_SIZE, EXTRAS_SCALARS,
         EXTRAS_PRIORITY_SIZE, EXTRAS_MULLIGAN_SIZE, MULLIGAN_NORMALIZER,
         EXTRAS_SB_CTX_SIZE, DECKLIST_SLOT_SIZE, OPP_DECKLIST_SLOT_SIZE,
@@ -159,7 +159,7 @@ except ImportError:
         MAX_DELAYED_TRIGGER_SLOTS, N_DELAYED_FIRE_KINDS, DELAYED_SLOT_SIZE,
         MAX_EMBLEM_SLOTS, PLAYER_EFFECTS_FLAGS, PLAYER_EFFECTS_PLAYER_SIZE,
         N_CARD_TYPES as _ENUM_N_CARD_TYPES,
-        CAT_PASS_PRIORITY, CAT_MANA_ABILITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
+        CAT_PASS_PRIORITY, CAT_MANA_W, CAT_MANA_C, CAT_MANA_U,
         CAT_SELECT_ATTACKER, CAT_CONFIRM_ATTACKERS, CAT_SELECT_BLOCKER,
         CAT_CONFIRM_BLOCKERS, CAT_ACTIVATE_ABILITY, CAT_CAST_SPELL,
         CAT_SELECT_TARGET, CAT_PLAY_LAND, CAT_MULLIGAN, CAT_SEARCH_LIBRARY,
@@ -275,9 +275,9 @@ SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on t
 
 # ── Game / match rewards (the ONE home; edit here, nowhere else) ─────────────
 # PER-GAME reward structure: the win/loss of EACH GAME is the primary signal at
-# ±1.0. In bo1 that is the single terminal reward; in bo3 it lands at every
-# GAME_RESULT boundary, so an episode's return is the (discounted) sum of the
-# match's game results.
+# ±1.0 (0.0 for a drawn game). In bo1 that is the single terminal reward; in bo3
+# it lands at every GAME_RESULT boundary, so an episode's return is the
+# (discounted) sum of the match's game results.
 # Why per-game: it matches the AlphaZero value target exactly, which is the
 # per-game z = ±1 (az_selfplay prices every sample by the winner of the GAME it
 # was played in). A PPO checkpoint then hands the AZ warm start
@@ -291,6 +291,8 @@ SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on t
 # reintroduces the scale mismatch with AZ's per-game target.
 GAME_WIN_REWARD   =  1.0   # reward for winning a game (bo1 terminal, bo3 per game)
 GAME_LOSS_REWARD  = -1.0   # penalty for losing a game
+DRAW_REWARD       =  0.0   # a drawn game (both players lost at once, CR 104.4a); in bo3
+                           # it counts for neither player and the match plays on
 MATCH_WIN_REWARD  =  0.0   # extra terminal reward for winning a bo3 match
 MATCH_LOSS_REWARD =  0.0   # extra terminal penalty for losing a bo3 match
 # Back-compat aliases (these bo3-prefixed names predate the per-game rework and
@@ -495,17 +497,21 @@ _MATCH_CTX_START     = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE
 # The sideboard flag is the single source of truth for "this decision is a bo3
 # sideboard root" (used by az_selfplay + opponents.SearchController budget selection).
 _IS_SIDEBOARD_IDX    = _MATCH_CTX_START + 3
+
 _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
-_OPP_KNOWN_HAND_START = _KNOWN_TOP_LIB_END
+# The opponent's library top as far as the viewer knows it (same slot layout).
+_OPP_KNOWN_TOP_LIB_START = _KNOWN_TOP_LIB_END
+_OPP_KNOWN_TOP_LIB_END = _OPP_KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE
+_OPP_KNOWN_HAND_START = _OPP_KNOWN_TOP_LIB_END
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
-# sentinel = none) + its controller-is-viewer flag. The source may not be on the
-# stack yet (targets are announced before the spell moves there), so this is the
-# only place the observation shows WHAT is asking for the current choice.
+# sentinel = none) + its controller-is-viewer flag. A mid-resolution choice's
+# source need not be on the stack, so this is the one place the observation
+# always shows WHAT is asking for the current choice.
 _PENDING_DECISION_START = _OPP_KNOWN_HAND_END
 _PENDING_DECISION_SIZE  = PENDING_DECISION_SIZE  # source card id + ctrl_is_self
 _PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE
@@ -551,9 +557,8 @@ _EXTRAS_MC_ONEHOT_START = _EXTRAS_MULLIGAN_START + EXTRAS_MULLIGAN_SIZE
 # phase (whose starting player is already fixed before either sideboard stage runs).
 _EXTRAS_PLAYS_FIRST  = _EXTRAS_MC_ONEHOT_START + N_MANDATORY_CHOICES
 # Sideboard-phase progress: swaps completed / SIDEBOARD_SWAP_CAP, and the maindeck
-# drift as (d + 1) / 2 so balanced sits at 0.5. The menu is IN-FIRST, so the drift
-# is only ever 0 or +1 and this float only ever reads 0.5 or 1.0 (the 0.0 pole of
-# the encoding is unreachable). Both inert outside the phase.
+# drift from its phase-start size — the menu is IN-FIRST, so it is only ever 0
+# (balanced) or 1 (one card over). Both 0.0 outside the phase.
 _EXTRAS_SB_SWAPS     = _EXTRAS_PLAYS_FIRST + 1
 _EXTRAS_SB_DELTA     = _EXTRAS_SB_SWAPS + 1
 _EXTRAS_END          = _EXTRAS_SB_DELTA + 1
@@ -777,6 +782,8 @@ def _build_sideboard_mask():
         card_id_idx.append(i)
     for i in range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END):          # known top-5 library
         card_id_idx.append(i)
+    for i in range(_OPP_KNOWN_TOP_LIB_START, _OPP_KNOWN_TOP_LIB_END):  # known opp top-5 library
+        card_id_idx.append(i)
     for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
         card_id_idx.append(i)
     for s in range(_DELAYED_SLOTS):                                    # delayed-trigger ids
@@ -804,6 +811,11 @@ def _build_sideboard_mask():
 
 
 _SB_MASK_KEEP, _SB_MASK_FILL = _build_sideboard_mask()
+
+
+def obs_game_number(obs):
+    """The 0-based bo3 game index the match-context block encodes (0 in bo1)."""
+    return int(round(float(obs[_MATCH_CTX_START]) * MATCH_GAME_NORMALIZER))
 
 
 def _slot_card_idx(obs, i):
@@ -902,7 +914,7 @@ class RoboMageEnv(gym.Env):
                  sideboard_a: str | None = None, sideboard_b: str | None = None,
                  life_a: int | None = None, life_b: int | None = None,
                  log_viewer: str | None = None, log_decisions: bool = False,
-                 broadcast_steps: bool = False):
+                 broadcast_steps: bool = False, offer_cancel: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -940,6 +952,9 @@ class RoboMageEnv(gym.Env):
         # episodes); log_decisions=True passes --log-decisions so a harness/observe
         # run can produce a self-contained RMLOG v2 replay log on request.
         self._log_decisions = log_decisions
+        # --offer-cancel: every cast/activation prompt also offers "Cancel", which
+        # reverses the spell or ability being proposed (a testing aid for the rewind).
+        self._offer_cancel = offer_cancel
         # broadcast_steps=True passes --broadcast-steps: the engine emits a passive
         # BSTATE frame (BQUERY payload, no response read) at every forced auto-pass
         # window. The frames accumulate in _passive_frames as
@@ -1006,6 +1021,8 @@ class RoboMageEnv(gym.Env):
             cmd += ["--deck-b", self._deck_b]
         if self._no_shuffle:
             cmd += ["--no-shuffle"]
+        if self._offer_cancel:
+            cmd += ["--offer-cancel"]
         if self._battlefield_a:
             cmd += ["--battlefield-a", self._battlefield_a]
         if self._battlefield_b:
@@ -1148,30 +1165,27 @@ class RoboMageEnv(gym.Env):
 
             line = line.rstrip(b"\n")
 
-            # Detect win/loss
-            if self._bo3:
-                # In bo3 mode every GAME is worth the full ±GAME_WIN_REWARD; the
-                # match line only ENDS the episode (MATCH_*_REWARD is 0.0 by
-                # default — see the reward block above).
-                if line.startswith(b"GAME_RESULT:"):
-                    game_result = True
-                    if b"Player A wins" in line:
-                        reward += GAME_WIN_REWARD
-                    elif b"Player B wins" in line:
-                        reward += GAME_LOSS_REWARD
-                elif line.startswith(b"MATCH_RESULT:"):
-                    if b"Player A wins" in line:
-                        reward += MATCH_WIN_REWARD
-                    elif b"Player B wins" in line:
-                        reward += MATCH_LOSS_REWARD
-                    done = True
-            else:
+            # Detect win/loss/draw. Every GAME is worth the full ±GAME_WIN_REWARD,
+            # and a drawn game ("GAME_RESULT: <n> draw", CR 104.4a) is worth
+            # DRAW_REWARD (0.0). The GAME_RESULT line ends a bo1 episode; in bo3 the
+            # match line ENDS the episode (MATCH_*_REWARD is 0.0 by default — see
+            # the reward block above).
+            if line.startswith(b"GAME_RESULT:"):
+                game_result = True
                 if b"Player A wins" in line:
-                    reward = GAME_WIN_REWARD
-                    done = True
+                    reward += GAME_WIN_REWARD
                 elif b"Player B wins" in line:
-                    reward = GAME_LOSS_REWARD
+                    reward += GAME_LOSS_REWARD
+                else:
+                    reward += DRAW_REWARD
+                if not self._bo3:
                     done = True
+            elif self._bo3 and line.startswith(b"MATCH_RESULT:"):
+                if b"Player A wins" in line:
+                    reward += MATCH_WIN_REWARD
+                elif b"Player B wins" in line:
+                    reward += MATCH_LOSS_REWARD
+                done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
             if line.startswith(b"MANA_WASTED: "):
@@ -1418,8 +1432,6 @@ class NarrativeEnv(RoboMageEnv):
 # (and the mandatory/mana category sets) are the names the rest of the Python
 # side — env, scripted_agent (imports these _CAT_* from env), decode — uses.
 _CAT_PASS       = CAT_PASS_PRIORITY
-_CAT_MANA       = CAT_MANA_ABILITY  # legacy, no longer emitted by the game (mana
-                      # activations arrive as the per-color MANA_W..MANA_C cats — see _MANA_CATS)
 _MANA_CATS      = frozenset(range(CAT_MANA_W, CAT_MANA_C + 1))  # MANA_W..MANA_C — mana-source
                       # activations (machine mode: only instant-speed cracks, e.g. LED, at priority)
 _CAT_MANA_U     = CAT_MANA_U  # tap for blue mana — the color the scripted Doomsday

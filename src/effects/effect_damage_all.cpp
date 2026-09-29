@@ -3,36 +3,42 @@
 #include <string>
 #include <vector>
 
-#include "../cli_output.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/filters.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 
 namespace effects {
 
-// DamageAll (Whipflare, Pyroclasm, ...): deal NumDmg$ damage to every battlefield
-// permanent matching the ValidCards$ filter (e.g. "Creature.nonArtifact"). The damage
-// is dealt simultaneously to all matching creatures (CR 701.x / 119), so we mark damage
-// on each first; the lethal-damage state-based action then destroys any creature with
-// lethal damage marked (respecting Indestructible). Mirrors destroy_all/sacrifice_all in
-// structure, but marks damage rather than moving the permanent itself.
+// DamageAll (Whipflare, Pyroclasm, ...): deal NumDmg$ damage (a number, or a dynamic amount
+// evaluated at resolution like DealDamage's) to every battlefield permanent matching the
+// ValidCards$ filter (e.g. "Creature.nonArtifact") and every player matching ValidPlayers$
+// (e.g. "Player", "Player.Opponent"). The damage is dealt simultaneously (CR 120.4) through the
+// shared damage path, so creatures, planeswalkers and players each get their own result (CR
+// 120.3); the lethal-damage and loyalty state-based actions then act on the permanents.
 HandlerResult damage_all(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    size_t dmg = ab.amount;
-    std::vector<Entity> targets;
-    for (auto e : orderer->mEntities)
-        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
-            targets.push_back(e);
-
-    for (auto e : targets) {
-        if (::deal_damage(ab.source, e, dmg)) {
-            game_log("Dealt %zu damage to %s\n", dmg,
-                     global_coordinator.GetComponent<Permanent>(e).name.c_str());
+    size_t dmg = ab.def->amount;
+    if (!ab.def->dynamic_amount_expr.empty())
+        dmg = evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, ab.source.lki_entity(), ab.target.get());
+    std::vector<Entity> recipients;
+    if (!ab.def->valid_cards_filter.empty())
+        for (auto e : orderer->mEntities)
+            if (permanent_matches_filter(e, ab.def->valid_cards_filter, MatchCtx{ab.controller, ab.source.lki_entity()}))
+                recipients.push_back(e);
+    const DamageParams *dp = std::get_if<DamageParams>(&ab.def->params);
+    if (dp && !dp->valid_players.empty())
+        for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+            Entity pe = get_player_entity(seat);
+            if (player_matches_target_spec(dp->valid_players, pe, ab.controller))
+                recipients.push_back(pe);
         }
-    }
+
+    for (auto e : recipients) ::deal_damage(ab.source.lki_entity(), e, dmg, false);
     return HandlerResult::DONE_RUN_SUBS;
 }
 

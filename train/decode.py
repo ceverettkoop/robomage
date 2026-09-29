@@ -33,7 +33,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  ZONE_CARD_ID_OFF, ZONE_PLAYABLE_SELF_OFF, ZONE_PLAYABLE_OPP_OFF,
                  ZONE_EXPIRES_OFF, EXILE_COUNTERS_OFF, ZONE_COUNTER_NORMALIZER,
                  _KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
-                 _KNOWN_TOP_LIB_SLOT_SIZE,
+                 _KNOWN_TOP_LIB_SLOT_SIZE, _OPP_KNOWN_TOP_LIB_START,
                  _OPP_DECK_MAIN_START, _OPP_DECK_SIDE_START,
                  _OPP_DECKLIST_SLOT_SIZE, _OPP_DECKLIST_REVEALED_OFF,
                  DECKLIST_MAIN_SLOTS, DECKLIST_SIDE_SLOTS,
@@ -41,7 +41,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _OPP_KNOWN_HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  MAX_GY_SLOTS, MANDATORY_CATS,
-                 _PENDING_DECISION_START, _MATCH_CTX_START,
+                 _PENDING_DECISION_START, _MATCH_CTX_START, obs_game_number,
                  _SELF_BLOCK_START, _OPP_BLOCK_START,
                  _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
@@ -93,7 +93,7 @@ _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
-_IDX_GAME_NUMBER = _MATCH_CTX_START                # game_number / 3
+_IDX_GAME_NUMBER = _MATCH_CTX_START                # game_number / MATCH_GAME_NORMALIZER
 _IDX_SELF_WINS   = _MATCH_CTX_START + 1            # self_match_wins / 2
 _IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
 _IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
@@ -227,12 +227,9 @@ def sb_card_class(name):
 
 # ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
 
-import os  # noqa: E402
 import re  # noqa: E402
 
-_CARDS_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "bin", "resources", "cardsfolder")
+from gen_util import resolve_card_face, script_field  # noqa: E402
 
 
 def _name_to_uid(name):
@@ -242,74 +239,51 @@ def _name_to_uid(name):
                   name.lower().replace(" ", "_").replace("-", "_").replace("/", "_"))
 
 
-def _resolve_script_path(uid):
-    """Script file the engine would load for `uid` (mirrors src/card_db.cpp):
-    the exact `<uid>.txt`, else a double-faced card's combined `<uid>_*.txt`."""
-    if not uid:
-        return None
-    direct = os.path.join(_CARDS_DIR, uid[0], f"{uid}.txt")
-    if os.path.exists(direct):
-        return direct
-    letter_dir = os.path.join(_CARDS_DIR, uid[0])
-    if os.path.isdir(letter_dir):
-        prefix = uid + "_"
-        for fn in sorted(os.listdir(letter_dir)):
-            if fn.startswith(prefix) and fn.endswith(".txt"):
-                return os.path.join(letter_dir, fn)
-    return None
+_SCRIPT_LINES_CACHE = {}
 
 
-_ORACLE_CACHE = {}
+def _card_script_lines(card_idx):
+    """Script lines of the face a vocab card id names, or None when unavailable.
+
+    Resolved through gen_util.resolve_card_face (the codegen's resolver), so a DFC
+    back face or split-card half reads its own face of the combined script; cached
+    per id. A token (the shared TOKEN_SENTINEL id) has no named script."""
+    if card_idx in _SCRIPT_LINES_CACHE:
+        return _SCRIPT_LINES_CACHE[card_idx]
+    lines = None
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        try:
+            face = resolve_card_face(_CARD_NAMES[card_idx])
+        except OSError:
+            face = None
+        if face is not None:
+            lines = face.lines
+    _SCRIPT_LINES_CACHE[card_idx] = lines
+    return lines
 
 
 def card_oracle_text(card_idx):
     r"""Oracle text for a vocab card id, or '' when unavailable.
 
-    Reads the card's Forge script `Oracle:` line (with `\n` expanded), resolving
-    DFC combined filenames the way the engine does; result cached per id. A token
-    (the shared TOKEN_SENTINEL id) has no named script, so returns ''."""
-    if card_idx in _ORACLE_CACHE:
-        return _ORACLE_CACHE[card_idx]
-    text = ""
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        if raw.startswith("Oracle:"):
-                            text = raw[len("Oracle:"):].strip().replace("\\n", "\n")
-                            break
-            except OSError:
-                pass
-    _ORACLE_CACHE[card_idx] = text
-    return text
+    Reads the `Oracle:` line (with `\n` expanded) of the card's own script face
+    (_card_script_lines). A token (the shared TOKEN_SENTINEL id) has no named
+    script, so returns ''."""
+    return _card_script_field(card_idx, "Oracle").replace("\\n", "\n")
 
 
 _SCRIPT_FIELD_CACHE = {}
 
 
 def _card_script_field(card_idx, field):
-    """First `<field>:` line from a vocab card's Forge script, stripped, or ''.
+    """First `<field>:` line of a vocab card's own script face, stripped, or ''.
 
-    Shares the DFC-aware script resolution and vocab bounds/token guards with
-    card_oracle_text; result cached per (id, field)."""
+    Resolved by _card_script_lines (vocab bounds/token guards included); result
+    cached per (id, field)."""
     key = (card_idx, field)
     if key in _SCRIPT_FIELD_CACHE:
         return _SCRIPT_FIELD_CACHE[key]
-    val = ""
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            prefix = field + ":"
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        if raw.startswith(prefix):
-                            val = raw[len(prefix):].strip()
-                            break
-            except OSError:
-                pass
+    lines = _card_script_lines(card_idx)
+    val = (script_field(lines, field) if lines is not None else None) or ""
     _SCRIPT_FIELD_CACHE[key] = val
     return val
 
@@ -445,9 +419,10 @@ def hidden_info_fingerprint(state):
     Returns ``(self_counts, opp_counts)``, int arrays of length N_CARD_TYPES.
     Self counts cover hand, permanents, graveyard, exile, own stack objects
     and the known-top-of-library ids; opp counts cover their permanents,
-    graveyard, exile, stack objects and the known-opponent-hand ids. A card
-    moving BETWEEN visible zones conserves its count (cast from hand, die to
-    graveyard, draw a known top card), so a count exceeding an earlier
+    graveyard, exile, stack objects, the known-opponent-hand ids and the known
+    top of their library. A card moving BETWEEN visible zones conserves its
+    count (cast from hand, die to graveyard, draw a known top card), so a
+    count exceeding an earlier
     fingerprint's means an identity became newly visible since — a draw, a
     play from a hidden hand, a mill, a tutor/scry reveal. Token permanents
     are excluded: the shared TOKEN sentinel id carries no hidden identity and
@@ -474,6 +449,8 @@ def hidden_info_fingerprint(state):
     _add(opp_counts, _OPP_EXILE_START + ZONE_CARD_ID_OFF, MAX_GY_SLOTS, EXILE_SLOT_SIZE)
     _add(opp_counts, _OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_SLOTS,
          _OPP_KNOWN_HAND_SLOT_SIZE)
+    _add(opp_counts, _OPP_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_SLOTS,
+         _KNOWN_TOP_LIB_SLOT_SIZE)
     for i in range(_STACK_SLOTS):
         base = _STACK_START + i * STACK_SLOT_SIZE
         idx = _slot_card_idx(state, base + 1)  # card id; sentinel = empty slot
@@ -543,33 +520,25 @@ def _land_color_letters(card_idx):
     if card_idx in _LAND_COLOR_CACHE:
         return _LAND_COLOR_CACHE[card_idx]
     found = set()
-    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
-        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
-        if path:
-            try:
-                with open(path) as f:
-                    for raw in f:
-                        line = raw.rstrip("\n")
-                        if line.startswith("Types:"):
-                            for tok in line[len("Types:"):].split():
-                                if tok in _LAND_SUBTYPE_COLOR:
-                                    found.add(_LAND_SUBTYPE_COLOR[tok])
-                        m = re.search(r"Produced\$\s*([^|]+)", line)
-                        if m:
-                            found |= _mana_spec_to_colors(m.group(1))
-                        # Only a genuine fetchland ability fixes colors: it puts
-                        # the land onto its controller's battlefield. Skip a
-                        # ChangeType that fetches for someone else (a
-                        # DefinedPlayer, e.g. Ghost Quarter destroying a land and
-                        # letting its controller search a basic) or that doesn't
-                        # reach the battlefield.
-                        if ("Destination$ Battlefield" in line
-                                and "DefinedPlayer$" not in line):
-                            m = re.search(r"ChangeType\$\s*([^|]+)", line)
-                            if m:
-                                found |= _fetch_spec_to_colors(m.group(1))
-            except OSError:
-                pass
+    for line in _card_script_lines(card_idx) or ():
+        if line.startswith("Types:"):
+            for tok in line[len("Types:"):].split():
+                if tok in _LAND_SUBTYPE_COLOR:
+                    found.add(_LAND_SUBTYPE_COLOR[tok])
+        m = re.search(r"Produced\$\s*([^|]+)", line)
+        if m:
+            found |= _mana_spec_to_colors(m.group(1))
+        # Only a genuine fetchland ability fixes colors: it puts
+        # the land onto its controller's battlefield. Skip a
+        # ChangeType that fetches for someone else (a
+        # DefinedPlayer, e.g. Ghost Quarter destroying a land and
+        # letting its controller search a basic) or that doesn't
+        # reach the battlefield.
+        if ("Destination$ Battlefield" in line
+                and "DefinedPlayer$" not in line):
+            m = re.search(r"ChangeType\$\s*([^|]+)", line)
+            if m:
+                found |= _fetch_spec_to_colors(m.group(1))
     letters = [c for c in "WUBRG" if c in found]
     _LAND_COLOR_CACHE[card_idx] = letters
     return letters
@@ -632,7 +601,7 @@ def _decode_player(state, offset):
 def decode_turn(state):
     """Decode the current turn as the sequential 1-based display number.
 
-    The state vector carries the engine's internal ``Game::turn`` (0-based,
+    The state vector carries the engine's internal ``Game::turn_state.turn`` (0-based,
     incremented once per player-turn) as ``turn / 50``; the engine's narrative
     ``-------- TURN N --------`` headers display it 1-based (A=1, B=2, A=3, ...),
     so add 1 here to keep every Python-side turn display in agreement.
@@ -819,17 +788,20 @@ def fmt_zone_cards(names, marks):
     return ", ".join(f"{n} [{m}]" if m else n for n, m in zip(names, marks))
 
 
-def _decode_known_top_library(state):
-    """Decode the viewer's known top-of-library block (belief state).
+def _decode_known_top_library(state, start=_KNOWN_TOP_LIB_START):
+    """Decode a known top-of-library block (belief state): the viewer's own
+    library (default) or, with ``start=_OPP_KNOWN_TOP_LIB_START``, the
+    opponent's library as far as the viewer knows it.
 
     Returns a list of one entry per known-window slot (index 0 = top), each a
     card name or "?" for an unknown (sentinel) slot, but ONLY when at least one
     slot is known; otherwise returns [] so callers can hide the block. Set by
-    Ponder/Brainstorm/Rearrange/Sylvan, cleared to unknown on shuffle."""
+    Ponder/Brainstorm/Rearrange/Sylvan, a look or a reveal, cleared to unknown
+    on shuffle."""
     names = []
     any_known = False
     for i in range(_KNOWN_TOP_LIB_SLOTS):
-        idx = onehot_to_index(state, _KNOWN_TOP_LIB_START + i * _KNOWN_TOP_LIB_SLOT_SIZE)
+        idx = onehot_to_index(state, start + i * _KNOWN_TOP_LIB_SLOT_SIZE)
         if idx >= 0:
             any_known = True
             names.append(card_index_to_name(idx))
@@ -938,7 +910,8 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
 # these, so a new per-player key gets its entry here alongside its decoder. The
 # "extras" keys appear only when non-default, so a pair may be half-present.
 # Viewer-only keys with no counterpart (self_hand, known_top_library,
-# opp_known_hand, opp_revealed, extras' bottom_remaining) are not pairs: the
+# opp_known_top_library, opp_known_hand, opp_revealed, extras' bottom_remaining)
+# are not pairs: the
 # priority player's private knowledge, which a mirrored front end hides instead.
 SELF_OPP_PAIRS = {
     None: (("self", "opponent"),
@@ -1036,6 +1009,7 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
                                             labels),
         },
         "known_top_library": _decode_known_top_library(state),
+        "opp_known_top_library": _decode_known_top_library(state, _OPP_KNOWN_TOP_LIB_START),
         "opp_known_hand": _decode_opp_known_hand(state),
         "opp_revealed": _decode_opp_revealed(state),
         "pending_decision": _decode_pending_decision(state),
@@ -1221,7 +1195,7 @@ def _decode_match_context(state):
     game_number (the obs carries no separate flag). self_wins/opp_wins
     are viewer-relative (like the rest of the state vector) — a mirrored decode
     must swap them."""
-    game_number = int(round(float(state[_IDX_GAME_NUMBER]) * 3))
+    game_number = obs_game_number(state)
     return {
         "game_number": game_number,
         "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),
@@ -1235,9 +1209,9 @@ def _decode_pending_decision(state):
     """The spell/ability currently making a mid-resolution choice, or None.
 
     Returns {"name", "card_idx", "is_self"} for the source of the pending
-    target/dig/search/discard/modal choice. The source may not be on the stack
-    yet (targets are announced before the spell moves there), so this is the
-    only place the observation shows WHAT is asking for the current choice.
+    target/dig/search/discard/modal choice. A mid-resolution choice's source
+    need not be on the stack, so this is the one place the observation always
+    shows WHAT is asking for the current choice.
     """
     idx = _slot_card_idx(state, _PENDING_DECISION_START)
     if idx < 0:
@@ -1490,11 +1464,11 @@ def is_mulligan(cats):
 
 
 def is_bottom(cats):
-    return len(cats) > 0 and all(c == 12 for c in cats)
+    return len(cats) > 0 and all(c == CAT_BOTTOM_DECK_CARD for c in cats)
 
 
 def is_search(cats):
-    return len(cats) > 0 and all(c == 19 for c in cats)
+    return len(cats) > 0 and all(c == CAT_SEARCH_LIBRARY for c in cats)
 
 
 def menu_is_interchangeable(obs, num_choices):
@@ -1561,7 +1535,7 @@ def menu_is_interchangeable(obs, num_choices):
 # per-action metadata blocks.
 #
 # Deliberately EXCLUDED:
-#   - CAST_SPELL / PLAY_FREE @ exile: two same-name exile cards can carry
+#   - CAST_SPELL @ exile: two same-name exile cards can carry
 #     different hidden ImpulseCastPermissions (free vs pay-life vs energy,
 #     from_suspend timing) that the obs cannot distinguish.
 #   - CAT_OTHER_CHOICE and null card ids: text-only prompts whose options only
@@ -1754,8 +1728,8 @@ def format_state_lines(gs):
     if gs.get("delayed_triggers"):
         lines.append("Delayed: " + " | ".join(fmt_delayed_trigger(d)
                                               for d in gs["delayed_triggers"]))
-    # Source of the current mid-resolution choice (may not be on the stack yet,
-    # since targets are announced before the spell moves there).
+    # Source of the current choice: a spell/ability being cast or activated (already
+    # on the stack, CR 601.2a / 602.2a) or a resolving effect's source.
     pend = gs.get("pending_decision")
     if pend:
         lines.append(f"Pending: {pend['name']}"
@@ -1768,6 +1742,8 @@ def format_state_lines(gs):
     # Belief-state blocks (shown only when the viewer actually knows something).
     if gs.get("known_top_library"):
         lines.append(f"Known top: {', '.join(gs['known_top_library'])}")
+    if gs.get("opp_known_top_library"):
+        lines.append(f"Known opp top: {', '.join(gs['opp_known_top_library'])}")
     if gs.get("opp_known_hand"):
         lines.append(f"Known opp hand: {', '.join(gs['opp_known_hand'])}")
     if gs.get("opp_revealed"):

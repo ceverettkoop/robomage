@@ -2,6 +2,7 @@
 #define ACTION_PROCESSOR_H
 
 #include <memory>
+#include <string>
 #include <vector>
 #include "classes/action.h"
 #include "classes/game.h"
@@ -18,35 +19,60 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
+// Cast during resolution (CR 608.2g): a resolving effect lets `caster` make the cast `cast`
+// describes as part of its resolution. When `castable` (the caller's check that the cast is
+// possible now, timing ignored), offers "cast it / don't" labelled `accept_label`, then runs the
+// ordinary cast flow: the spell becomes the topmost object on the stack, above the still-resolving
+// ability, and no player receives priority after it is cast. Suspendable: the offer is asked
+// through `ctx`, and a cast prompt parks as a CAST query that the main loop resumes before
+// re-entering the resolution — the calling handler returns SUSPENDED on SUSPENDED and calls this
+// again with the same `rt` when re-entered (`castable` is read only before the offer is answered).
+// CAST when the spell was cast, DECLINED when it wasn't (declined, not castable, or the cast was
+// cancelled). Used by suspend's last time counter (CR 702.62a), a miracle trigger (CR 702.94a)
+// and DB$ Play (Amped Raptor).
+enum class ResolutionCastStatus { CAST, DECLINED, SUSPENDED };
+ResolutionCastStatus cast_during_resolution(const LegalAction& cast, Zone::Ownership caster,
+                                            bool castable, const std::string& accept_label,
+                                            ResolutionCastRt& rt, FrameCtx& ctx,
+                                            std::shared_ptr<Orderer> orderer);
+// The exile form: `caster` may cast the exiled `card` for the cost `grant` puts in place of its
+// mana cost (FREE = "without paying its mana cost"), checked by exile_grant_castable. The grant
+// is a Game::resolved_effects.impulse_cast_permission that lasts only while the offer and the cast are open.
+ResolutionCastStatus cast_during_resolution(Entity card, Zone::Ownership caster,
+                                            Game::ImpulseCastPermission grant,
+                                            ResolutionCastRt& rt, FrameCtx& ctx,
+                                            std::shared_ptr<Orderer> orderer);
+
 // Loop-top dispatcher entry for a parked combat target sub-prompt (PendingQuery
 // tags ATTACK_TARGET / BLOCK_TARGET): commits the latched answer onto the
-// creature persisted in Game::pending_attacker / pending_blocker and clears the
+// creature persisted in Game::pending.attacker / pending.blocker and clears the
 // pending query. Called from the main loop's pending-query branch.
 void resume_combat_target_choice(Game& game);
 
 // Loop-top dispatcher entry for a parked cast-time prompt (PendingQuery tag
 // CAST): consumes the latched answer and re-enters run_cast_flow — the
-// persisted CAST_SPELL state machine in Game::pending_cast. The resume may arm
+// persisted CAST_SPELL state machine in Game::pending.cast. The resume may arm
 // the NEXT cast prompt (the caller must loop back to the pending-query branch
-// while pending_query.active), cancel the cast (payment rewind), or complete it
-// (spell on the stack + game.take_action(), exactly the blocking branch's end).
+// while pending.query.active), reverse the cast (a failed payment, or the
+// --offer-cancel "Cancel" answer; CR 733.1), or complete it (the spell becomes
+// cast + game.take_action()).
 void resume_cast_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked activated-ability prompt (PendingQuery
 // tag ACTIVATION): consumes the latched answer and re-enters
 // run_activation_flow — the persisted ACTIVATE_ABILITY state machine in
-// Game::pending_activation. The resume may arm the NEXT activation prompt (the
-// caller must loop back to the pending-query branch while pending_query.active),
-// cancel the activation (payment rewind), or complete it (mana produced
-// off-stack, or the ability on the stack + game.take_action(), exactly the
-// blocking branch's end).
+// Game::pending.activation. The resume may arm the NEXT activation prompt (the
+// caller must loop back to the pending-query branch while pending.query.active),
+// reverse the activation (a failed payment, or the --offer-cancel "Cancel"
+// answer; CR 733.1), or complete it (mana produced off-stack, or the ability
+// becomes activated + game.take_action()).
 void resume_activation_flow(Game& game, std::shared_ptr<Orderer> orderer);
 
 // Loop-top dispatcher entry for a parked combat damage-assignment pick
 // (PendingQuery tag DAMAGE_ASSIGN): applies the latched answer to the in-flight
-// attacker persisted in Game::pending_damage, then either arms the next pick's
+// attacker persisted in Game::pending.damage, then either arms the next pick's
 // query (same or next attacker — the caller must loop back to the pending-query
-// branch when pending_query.active is still set) or completes the assignment,
+// branch when pending.query.active is still set) or completes the assignment,
 // after which process_turn_based_actions proceeds to deal_combat_damage.
 void resume_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer);
 
@@ -56,8 +82,18 @@ void resume_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer);
 bool any_attacker_needs_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer,
                                           bool first_strike_only);
 
-// Returns true if the ability has no targeting requirement or at least one legal target exists.
-bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
+// The transient targeting ability an Aura's enchant ability defines (CR 303.4a): its legal
+// objects are those its Enchant filter names (CardData::enchant_filter), judged from `chooser`'s
+// perspective (the filter is controller-relative: Sheltered by Ghosts' Creature.YouCtrl), and a
+// graveyard-card filter (Animate Dead) searches graveyards. One builder for every enchant pick —
+// the cast-offer gate, the cast-time target, the choice as an uncast Aura enters, and the
+// resolution re-check — so they never disagree about what the Aura may enchant.
+Ability enchant_target_ability(Entity aura, const CardData &cd, Zone::Ownership chooser);
+
+// True if `aura`'s recorded EntryInfo::aura_target is still a legal object for it to enchant
+// (CR 608.2b / 608.3b): still the same object (CR 400.7) and still matching its enchant ability
+// for `controller`. False with no recorded target.
+bool pending_aura_target_legal(Entity aura, Zone::Ownership controller);
 
 // CR 601.2c cast-legality target check across a spell's reachable modes. Returns true if every
 // required target (of the primary spell ability and any targeting sub-ability) can be legally
@@ -93,14 +129,6 @@ void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Own
 TargetStatus run_target_select(Ability& ability, TargetSelectRT& rt, TargetAsker& asker,
                                std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
-// CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
-// stamped) primary spell ability — modal mode(s) (recorded in Ability::charm_chosen, each
-// chosen mode's targets stored on its charm_choices entry), then the primary target, then each
-// targeting chained sub-ability's target. Shared by every path that puts a CAST spell on the
-// stack (the CAST_SPELL action; effect_choose_card's cast-from-exile).
-void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
-                            Zone::Ownership caster);
-
 // General "copy a spell on the stack" machine (CR 707.10 / 707.12), resumable (Batch 10).
 // Creates `count` independent copies of the spell entity `original` on top of the stack,
 // controlled by `controller`. Each copy is a copy of the spell's characteristics
@@ -116,10 +144,20 @@ void announce_spell_targets(Ability& ability, std::shared_ptr<Orderer> orderer,
 void copy_spell_begin(CopySpellRT& rt, Entity original, int count, Zone::Ownership controller);
 TargetStatus run_copy_spell(CopySpellRT& rt, TargetAsker& asker, std::shared_ptr<Orderer> orderer);
 
+// The single "targets were chosen" hook (CR 601.2c / 602.2b / 603.3d / 707.10): call it once
+// the stack object `targeting_entity` (a spell, a copy of a spell, or an activated or triggered
+// ability, controlled by `controller`) is on the stack with all of its targets chosen. Every
+// object it targets — through its own "target", any chosen mode, any chained sub-ability, or an
+// Aura spell's enchant ability (CR 115.1b) — becomes its target once: each Ward triggers
+// (CR 702.21a), queued to go on the stack with the next trigger placement (CR 603.3b), and a
+// BECAME_TARGET event fires for each targeted permanent (Mode$ BecomesTarget, CR 603.2c). No-op
+// for an object with no targets.
+void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller);
+
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,
 // unless ability.condition_on_remembered is set, in which case it counts the remembered
-// entities (cur_game.remembered_entities). An empty condition_present returns true; an empty
+// entities (cur_game.resolution.memory.remembered). An empty condition_present returns true; an empty
 // condition_compare defaults to ">= 1". Shared by spell castability, trigger intervening-ifs
 // (603.4), and ConditionDefined$ Remembered subability gates.
 bool evaluate_present_condition(const Ability& ability, Zone::Ownership controller,

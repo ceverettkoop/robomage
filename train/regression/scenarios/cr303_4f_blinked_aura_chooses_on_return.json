@@ -1,0 +1,10 @@
+{
+  "name": "cr303_4f_blinked_aura_chooses_on_return",
+  "why": "CR 303.4f / 610.3: Yorion's blinked Sheltered by Ghosts returns with an enchant choice made through the suspendable prompt - 3a3abfb",
+  "hand_a": ["Sheltered by Ghosts", "Yorion Sky Nomad"],
+  "battlefield_a": ["Plains", "Plains", "Plains", "Plains", "Plains", "Island", "Island", "Island", "Island", "Grizzly Bears"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Sheltered", "A:target:Grizzly", "A:cast:Yorion", "A:desc:Exile Grizzly", "A:desc:Exile Sheltered", "A:target:Yorion"],
+  "max_decisions": 14,
+  "expect_order": ["Player A exiles Grizzly Bears", "Player A exiles Sheltered by Ghosts", "Delayed trigger fires", "Grizzly Bears is moved to the battlefield", "Sheltered by Ghosts is moved to the battlefield", "Sheltered by Ghosts is attached to Yorion, Sky Nomad"]
+}

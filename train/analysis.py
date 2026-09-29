@@ -49,7 +49,7 @@ from cli_spec import (ANALYSIS_TOOL, SEARCH_KNOB_KEYS, search_knob_pairs,
                       BOARD_GUI, is_search_spec,
                       browse_inapplicable_dests, browse_source_kind,
                       explicit_dests, resolve_board, is_bo3)
-from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL,
+from env import (ACTION_CATEGORY_MAX, RoboMageEnv, _ACTION_CTRL_NULL, obs_game_number,
                  ACT_CATS_START, ACT_IDS_START, ACT_CTRL_START,
                  STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
@@ -301,7 +301,7 @@ def _extract_interpretable(obs):
     # Library counts (mirror env.py _LIBRARY_CTX_START); post-board = game 2+ of a bo3
     f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
     f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
-    f[i] = 1.0 if int(round(obs[_MATCH_CTX_START] * 3.0)) > 0 else 0.0; i += 1  # is_post_board
+    f[i] = 1.0 if obs_game_number(obs) > 0 else 0.0; i += 1  # is_post_board
     f[i] = 1.0 if obs[_MATCH_CTX_START + 3] > 0.5 else 0.0; i += 1  # is_sideboard
 
     # Current game turn (obs stores turn / 50, mirror machine_io.h TURN_NORMALIZER)
@@ -1200,7 +1200,7 @@ def _replay_sim_game(game, game_idx, verbose=False):
         print_opp_actions(i)
         step = _step_name_from_feat(feat)
         mana_total = feat[_FEAT["self_total_mana"]]
-        # Game::turn counts from 0; display 1-based like the engine's turn header
+        # Game::turn_state.turn counts from 0; display 1-based like the engine's turn header
         turn_no = 1 + (int(round(feat[_FEAT["turn"]])) if len(feat) > _FEAT["turn"] else 0)
         whose = "self" if feat[_FEAT["is_active_player"]] > 0.5 else "opp"
         print(f"  [{i:3d}] T{turn_no:<2d} {whose:<4} {step:<14}  "
@@ -1277,7 +1277,7 @@ def _match_meta(obs):
     from a stored observation. game_number is 0-based; all fields are zero in
     single-game (bo1) mode. During the sideboard phase game_number still holds
     the finished game's number (the convention the `sideboard` report uses)."""
-    return (int(round(obs[_MATCH_CTX_START] * 3.0)),
+    return (obs_game_number(obs),
             int(round(obs[_MATCH_CTX_START + 1] * 2.0)),
             int(round(obs[_MATCH_CTX_START + 2] * 2.0)),
             bool(obs[_MATCH_CTX_START + 3] > 0.5))
@@ -1573,7 +1573,7 @@ def _decode_board_state(obs, value=None):
     stack_size   = int(round(obs[_STACK_SIZE_IDX] * 10.0))
 
     # Match context (_MATCH_CTX_START .. +4) and library counts (_LIBRARY_CTX_START .. +2)
-    game_number      = int(round(obs[_MATCH_CTX_START]     * 3.0))
+    game_number      = obs_game_number(obs)
     self_match_wins  = int(round(obs[_MATCH_CTX_START + 1] * 2.0))
     opp_match_wins   = int(round(obs[_MATCH_CTX_START + 2] * 2.0))
     is_sideboard     = obs[_MATCH_CTX_START + 3] > 0.5
@@ -1590,7 +1590,7 @@ def _decode_board_state(obs, value=None):
         return " ".join(parts) if parts else "—"
 
     # "self" = the priority player in this decode, so the active-player flag says whose turn it is.
-    # Game::turn counts from 0; display 1-based like the engine's turn header.
+    # Game::turn_state.turn counts from 0; display 1-based like the engine's turn header.
     turn_no = int(round(obs[_CUR_TURN_IDX] * 50.0)) + 1
     whose = self_label if priority_is_active else opp_label
     print(f"Turn {turn_no} ({whose}'s turn) — Step: {step_name}  (priority: {self_label}){val_str}")
@@ -1605,7 +1605,7 @@ def _decode_board_state(obs, value=None):
             print(f"    {ln}")
 
     # The spell/ability asking for the current mid-resolution choice (target
-    # select, dig/search pick, discard, modal, ...). May not be on the stack yet.
+    # select, dig/search pick, discard, modal, ...).
     pending = decode._decode_pending_decision(obs)
     if pending:
         who = self_label if pending["is_self"] else opp_label
@@ -1876,7 +1876,7 @@ def _sim_sideboard_report(games):
             # resumes (a non-sideboard action) or, defensively, when the
             # upcoming game number changes with no gameplay in between.
             if current_after_game is not None:
-                this_after = (int(round(obs[_MATCH_CTX_START] * 3.0))
+                this_after = (obs_game_number(obs)
                               if is_sb_action else None)
                 if not is_sb_action or this_after != current_after_game:
                     phases.append((gi, current_after_game,
@@ -1886,7 +1886,7 @@ def _sim_sideboard_report(games):
                     current_after_game = None
 
             if is_sb_action and current_after_game is None:
-                current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
+                current_after_game = obs_game_number(obs)
 
             if cat == _CAT_SB_IN:
                 card_raw = obs[ACT_IDS_START + action]
@@ -2107,20 +2107,25 @@ def _analyze_sbvalue(games, verbose=True):
             phases_no_swaps += (phase_swaps == 0)
 
         # Per-game outcomes: a game was won iff self_wins ticked up by the next
-        # game's start; the final game goes to the match winner. Then bucket
+        # game's start and lost iff opp_wins did (neither: a drawn game, which
+        # has no outcome); the final game goes to the match winner. Then bucket
         # each POST-BOARD game by every offered class's cumulative net copies
         # in the deck for that game (swaps after game k apply to games > k).
         gns = sorted(game_starts)
         outcomes = {}
         for idx, gn in enumerate(gns):
             if idx + 1 < len(gns):
-                outcomes[gn] = 1 if game_starts[gns[idx + 1]][0] > game_starts[gn][0] else 0
+                nxt, cur = game_starts[gns[idx + 1]], game_starts[gn]
+                if nxt[0] > cur[0]:
+                    outcomes[gn] = 1
+                elif nxt[1] > cur[1]:
+                    outcomes[gn] = 0
             elif g["result"] != 0:
                 outcomes[gn] = 1 if g["result"] > 0 else 0
         match_classes = {cls for cls, ms in offered_cls.items() if gi in ms}
         for gn in gns:
             if gn == 0 or gn not in outcomes:
-                continue  # game 1 is pre-board; an unfinished draw has no outcome
+                continue  # game 1 is pre-board; a drawn or unfinished game has no outcome
             for cls in match_classes:
                 net = sum(d for agn, c, d in swap_events if c == cls and agn < gn)
                 bucket = "in" if net > 0 else ("out" if net < 0 else "zero")

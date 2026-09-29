@@ -608,8 +608,12 @@ def _server_legs(td, ts_path, actor1):
     return 0
 
 
-def _gate_legs(td, ts_path, actor1):
+def _gate_legs(td, ts_path, actor1, actor_bo3=None):
     """Two-model gate legs (az_actor --model-b, the az_eval gate's backend).
+
+    ``actor1`` / ``actor_bo3`` are the single-model batch=1 bo1 / bo3 visit
+    records already played by the caller (the identity gates' references);
+    ``actor_bo3`` None plays the bo3 reference here.
 
     (a) gate-identity EXACT gates (bo1 + bo3-sb-persist): ``--model A
     --model-b A`` must be bit-identical to the single-model ``--model A`` run
@@ -643,7 +647,7 @@ def _gate_legs(td, ts_path, actor1):
 
     # (a) identity: same net on both seats == single-model, bit-exact.
     for tag, kw, ref in (("gate-id-bo1", {}, actor1),
-                         ("gate-id-bo3-sb", sb_kw, None)):
+                         ("gate-id-bo3-sb", sb_kw, actor_bo3)):
         if ref is None:
             d_ref = os.path.join(td, f"visits_{tag}_single.bin")
             ref = _run_actor(ts_path, d_ref, batch=1, **kw)
@@ -681,13 +685,15 @@ def _gate_legs(td, ts_path, actor1):
     print(f"PASS [gate-wiring]: --model-b (distinct net) changed the game "
           f"({len(actor_ab)} vs {len(actor1)} searched roots)")
 
-    for tag, akw in (
-            ("gate-parity-bo1", {}),
-            ("gate-parity-bo3-sb", sb_kw)):
-        d = os.path.join(td, f"visits_{tag}.bin")
-        actor_two = _run_actor(ts_path, d, batch=1, model_b=ts_b, **akw)
+    # The bo1 two-model game is the wiring check's actor_ab run itself.
+    for tag, akw, actor_two in (
+            ("gate-parity-bo1", {}, actor_ab),
+            ("gate-parity-bo3-sb", sb_kw, None)):
         if actor_two is None:
-            return 1
+            d = os.path.join(td, f"visits_{tag}.bin")
+            actor_two = _run_actor(ts_path, d, batch=1, model_b=ts_b, **akw)
+            if actor_two is None:
+                return 1
         py_two = _python_reference_gate(ts_path, ts_b, bo3=bool(akw.get("bo3")))
         rc, total_sims = _compare_visits(tag, actor_two, py_two)
         if rc:
@@ -770,6 +776,7 @@ def _run_legs():
         # searched root must match: tree roots by bit-exact visit vectors, plan
         # roots by bit-exact Q (pi to 1e-12; see _payloads_match).
         actor1 = None            # bo1 batch=1 visits, reused by the K=16 report below
+        actor_bo3 = None         # bo3 batch=1 visits, reused by the gate identity leg
         sb_plan_summary = None   # bo3 sideboard plan-root summary
         merged_roots = 0         # searched roots whose menu had duplicate groups
         for bo3 in (False, True):
@@ -806,6 +813,7 @@ def _run_legs():
                      if bo3 else "") + "]")
             if bo3:
                 sb_plan_summary = _sb_root_summary(visits, is_sb)
+                actor_bo3 = visits
             else:
                 actor1 = visits
         if merged_roots == 0:
@@ -918,7 +926,7 @@ def _run_legs():
             return rc
 
         # 8) Two-model gate legs (az_actor --model-b — the az_eval gate backend).
-        rc = _gate_legs(td, ts_path, actor1)
+        rc = _gate_legs(td, ts_path, actor1, actor_bo3)
         if rc:
             return rc
 
@@ -933,6 +941,7 @@ def _run_legs():
         import az_selfplay
         oracle_proc, oracle_sock, oracle_dir = az_selfplay._spawn_oracle()
         try:
+            a_ss = None          # the uniform sequential run, reused by the xw leg
             for tag, uni in (("scripted-uniform", True), ("scripted-net", False)):
                 d_scr = os.path.join(td, f"visits_{tag}.bin")
                 a_scr = _run_actor(None if uni else ts_path, d_scr, batch=1,
@@ -940,6 +949,8 @@ def _run_legs():
                                    scripted_sock=oracle_sock)
                 if a_scr is None:
                     return 1
+                if uni:
+                    a_ss = a_scr
                 py_scr = _python_reference_scripted(ts_path, SCRIPTED_DECK_B,
                                                     uniform=uni)
                 rc, total_sims = _compare_visits(tag, a_scr, py_scr)
@@ -954,11 +965,6 @@ def _run_legs():
                               deck_b=SCRIPTED_DECK_B, scripted_sock=oracle_sock,
                               cross_world=True)
             if a_sx is None:
-                return 1
-            d_ss = os.path.join(td, "visits_scripted_seq.bin")
-            a_ss = _run_actor(None, d_ss, batch=1, uniform=True,
-                              deck_b=SCRIPTED_DECK_B, scripted_sock=oracle_sock)
-            if a_ss is None:
                 return 1
             rc, total_sims = _compare_visits("scripted-xw-uniform", a_ss, a_sx)
             if rc:

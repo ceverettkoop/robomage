@@ -2,6 +2,7 @@
 #define MANA_SYSTEM_H
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <utility>
@@ -11,15 +12,14 @@
 #include "classes/colors.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
+#include "object_ref.h"
 
 class Orderer;
 struct Permanent;
 struct Ability;
 struct HybridPip;
+struct CardData;
 struct Player;
-
-// Get player entity from ownership
-Entity get_player_entity(Zone::Ownership player);
 
 // True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
 // without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
@@ -59,16 +59,18 @@ void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership
 // Activate one mana source: pay its activation mana cost from the working `pool`,
 // tap/sacrifice it, pay its life cost, then produce via produce_mana_from_ability.
 // Pool changes (activation cost paid, mana produced) always apply to the working
-// `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
+// `pool`, and the life cost to `player` (a throwaway copy in simulate mode); the write-only
+// ECS side effects are skipped when !commit (simulate mode).
 // Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
-// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be
-// paid from the working pool. The cost is paid FIRST, before any other effect, so a
-// refusal cancels cleanly. Shared by the auto-payer (commit per simulate/real), the
-// interactive payer, and the pay-unless loop (both always commit, with pool == the
-// player's real mana pool).
+// untouched) — when `player` can't pay the life cost (CR 119.4), when its life loss would leave
+// less than `life_reserve` (see can_pay_mana) or the in-flight payment's own life cost, or when
+// the ability's activation mana cost (Talon Gates' {1}{T}) cannot be paid from the working pool.
+// The cost is paid FIRST, before any other effect, so a refusal cancels cleanly. Shared by the
+// auto-payer (commit per simulate/real), the interactive payer, and the pay-unless loop (both
+// always commit, with pool == the player's real mana pool).
 bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership controller,
                           std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
-                          bool commit, ManaLogStyle log_style);
+                          bool commit, ManaLogStyle log_style, int life_reserve = 0);
 
 // ── Mana development summary (ML observation) ───────────────────────────────
 // What a player COULD produce right now, as opposed to what is floating in their
@@ -120,7 +122,7 @@ bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>
 // takes it (the {T} is already spent, so the source cannot also be tapped for mana).
 // NOTE: a coarse upper bound — ignores color feasibility of the base cost's pips and counts
 // one ability per source entity. An overestimated X fails at payment and is absorbed by the
-// payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
+// priority.payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
 size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
                           std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
@@ -137,12 +139,16 @@ ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
 
-// Snapshot of mana-related state for rewind on payment failure
+// Snapshot of mana-related state for rewind on payment failure: reversing the mana abilities
+// the payment activated (CR 733.1) restores the pool, the sources' tapped state and activation
+// counts, and the life a painful source took (Ancient Tomb's damage, a horizon land's PayLife).
 struct ManaPaymentSnapshot {
     std::multiset<Colors> player_mana;
+    int32_t life_total = 0;
+    int32_t life_lost_this_turn = 0;
     std::vector<std::pair<Entity, bool>> tapped_state;  // entity, was_tapped
     std::vector<std::tuple<Entity, size_t, int>> activation_counts;  // entity, ability_idx, old count
-    std::vector<Entity> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
+    std::vector<ObjectRef> delve_exiled;  // snapshot of cur_game.delve_exiled for delve rewind
 };
 
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);
@@ -182,9 +188,15 @@ std::vector<LegalAction> collect_mana_legal_actions(
 // whose payment must then fail. The real payment never had this problem — by the time it
 // runs, the tap cost is already applied and the source reads as tapped — which is exactly
 // why only the LEGALITY side needs to be told.
+//
+// `life_reserve` is life the rest of the cost still has to pay after the mana (a flashback or
+// escape life cost, an activation's PayLife, an announced X-life cost): a painful source (Ancient
+// Tomb's damage, a horizon land's PayLife) is only used while it leaves at least that much life,
+// exactly as the payer does for the payment in flight, so a gate never offers a cost whose mana
+// can only be paid by spending the life the rest of it needs (CR 601.2h, 602.2b).
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                  bool has_improvise = false, Entity exclude_entity = 0);
+                  bool has_improvise = false, Entity exclude_entity = 0, int life_reserve = 0);
 
 // Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
 // pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
@@ -198,7 +210,16 @@ bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
 bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
                          const std::vector<HybridPip>& hybrids, Entity paid_for,
                          std::shared_ptr<Orderer> orderer, bool has_delve = false,
-                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr);
+                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr,
+                         int life_reserve = 0);
+
+// Can `caster` pay `base_flat_cost` plus the hybrid pips (CR 107.4e, via resolve_hybrid_cost) and
+// the Phyrexian pips (CR 107.4f) of `cd`, the face being cast? Each Phyrexian pip is paid with its
+// colored mana or with 2 life (CR 119.4: only life the player has), and the life so committed is
+// reserved from painful mana sources. The cast-legality gate for every path that pays the card's
+// own mana cost, so a Phyrexian spell is never offered when neither half of a pip can be paid.
+bool can_pay_spell_mana(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
+                        const CardData& cd, Entity paid_for, std::shared_ptr<Orderer> orderer);
 
 // A permanent about to LEAVE the battlefield to pay a NON-mana cost (a spell's additional
 // sacrifice, an alternate cost's return-to-hand) takes its mana ability with it. CR 601.2g

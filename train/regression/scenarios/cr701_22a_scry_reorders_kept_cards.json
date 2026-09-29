@@ -1,0 +1,10 @@
+{
+  "name": "cr701_22a_scry_reorders_kept_cards",
+  "why": "CR 701.22a: scry may put the kept cards back in any order (Preordain keeps both, second card on top, and draws it) - cc1f48a",
+  "hand_a": ["Preordain", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Mountain", "Forest", "Swamp"],
+  "battlefield_a": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Preordain", "A:desc:Put Forest on top", "A:desc:Put Mountain on top"],
+  "max_decisions": 8,
+  "expect_order": ["Player A casts Preordain", "Player A scries 2", "^Player A draws Forest"]
+}

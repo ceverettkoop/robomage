@@ -10,6 +10,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "mana_system.h"
+#include "queries/players.h"
 #include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -56,9 +57,7 @@ static void setup_companion_for(Zone::Ownership owner, const Deck &deck,
     //    preset, or a bo3 sideboard). The entity is the one the special action will move to hand.
     Entity comp = 0;
     std::string restriction;
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; ++e) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+    for (auto e : orderer->mEntities) {
         const auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location != Zone::SIDEBOARD || z.owner != owner) continue;
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;

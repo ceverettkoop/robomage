@@ -10,8 +10,11 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
+#include "../queries/characteristics.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 
@@ -21,19 +24,15 @@ HandlerResult gain_life(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     (void)orderer;
     // Swords to Plowshares: gain life goes to the exiled creature's controller, read via
     // last-known info since the creature was exiled earlier this resolution (CR 608.2g/h).
-    // Otherwise (and if that can't be resolved) the source's controller gains the life.
-    Zone::Ownership gain_controller = Zone::UNKNOWN;
-    if (ab.defined_targeted_controller && ab.target != 0)
-        gain_controller = last_known_controller(ab.target);
-    if (gain_controller == Zone::UNKNOWN)
-        gain_controller = source_controller(ab.source);
+    // Otherwise (and if that can't be resolved) the ability's controller gains the life.
+    Zone::Ownership gain_controller = affected_player(ab);
     // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). effective_power gives the
     // creature's EFFECTIVE power (counters / continuous buffs included) read live while it is
     // still in play, or its last-known value once it has left — Swords to Plowshares exiles
     // the creature in its main effect before this sub-ability runs (CR 608.2h).
-    size_t gain_amount = ab.amount;
-    if (!ab.dynamic_amount_expr.empty() && ab.dynamic_amount_expr.find("Targeted$CardPower") != std::string::npos) {
-        int p = effective_power(ab.target);
+    size_t gain_amount = ab.def->amount;
+    if (!ab.def->dynamic_amount_expr.empty() && ab.def->dynamic_amount_expr.find("Targeted$CardPower") != std::string::npos) {
+        int p = effective_power(ab.target.lki_entity());
         gain_amount = static_cast<size_t>(p < 0 ? 0 : p);
     }
     Entity ctrl_entity = get_player_entity(gain_controller);

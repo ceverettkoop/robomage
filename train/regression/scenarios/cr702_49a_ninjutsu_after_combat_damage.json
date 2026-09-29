@@ -1,0 +1,10 @@
+{
+  "name": "cr702_49a_ninjutsu_after_combat_damage",
+  "why": "CR 702.49a / 509.1h: ninjutsu is activatable in any step with an unblocked attacker, including after combat damage - a1ed31d",
+  "hand_a": ["Kaito Bane of Nightmares", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Grizzly Bears", "Island", "Swamp", "Island"],
+  "play": ["A:keep", "B:keep", "A:attack:Grizzly Bears", "A:attack:done", "A:pass", "A:desc:Ninjutsu"],
+  "max_decisions": 10,
+  "expect_order": ["Grizzly Bears deals 2 damage to Player B", "Player A returns Grizzly Bears to hand", "onto the battlefield tapped and attacking \\(ninjutsu\\)"]
+}

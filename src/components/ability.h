@@ -3,26 +3,22 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "../effects/effect_kind.h"
+#include "../object_ref.h"
 #include "ability_params.h"
 #include "static_ability.h"
 #include "types.h"
 #include "zone.h"
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
-class Orderer;
-// Suspension framework (resolution_frame.h; included by resolve() callers, not
-// here — resolution_frame.h needs the complete Ability, so this header only
-// forward-declares). A scoped enum and a class are both fine as incomplete
-// types in the declarations below.
-enum class ResolveStatus;
-class FrameCtx;
 
 // Identity of a delayed triggered ability (CR 603.7), stamped once by
-// register_delayed_trigger (game_queries.h) onto the DelayedTrigger's fire ability. It rides
+// register_delayed_trigger (queries/delayed_triggers.h) onto the DelayedTrigger's fire ability. It rides
 // the fire ability unchanged when the trigger fires onto the stack, so the observation's
 // delayed-trigger block can follow one trigger from registration until its stack object
 // resolves, is countered, or fizzles. seq == 0 marks an ability that is not a delayed trigger.
@@ -36,17 +32,23 @@ struct DelayedTriggerLink {
         FIRE_LEAVES_BATTLEFIELD = 3,
     };
     uint32_t seq = 0;          // registration order (Game::next_delayed_seq); 0 = not delayed
-    Entity creator = 0;        // the card whose ability set the trigger up
+    ObjectRef creator;         // the object whose ability set the trigger up
     int creator_vocab_idx = -1;  // creator's vocab idx captured at registration (tokens: token band)
     // The objects the trigger acts on or watches (a blinked/exiled card, the tokens it will
     // sacrifice or exile, the watched land). subject_vocab_idx is subjects[0]'s vocab idx,
     // captured at registration so a token that has since ceased to exist keeps its identity.
-    std::vector<Entity> subjects;
+    std::vector<ObjectRef> subjects;
     int subject_vocab_idx = -1;
     FireKind fire_kind = FIRE_OTHER;
 };
 
-struct Ability{
+// The parsed definition of a spell, activated or triggered ability (CR 113.3): what its card
+// script (or the keyword / engine rule that synthesizes it) says — category, costs, targeting
+// spec, trigger conditions, effect params and the sub-ability chain. Built by the parser and
+// never changed by play; every per-instance fact (source, controller, targets, X, ...) lives on
+// the runtime Ability that refers to it.
+struct AbilityDef {
+
 
     enum AbilityType{
         TRIGGERED,
@@ -56,6 +58,8 @@ struct Ability{
 
     AbilityType ability_type = SPELL;
     std::string category = "";
+    // The effect `category` names, bound once as the definition is interned (effect_kinds.def).
+    EffectKind kind = EffectKind::None;
     // GainThisAbility$ True on an AB$ Clone (Thespian's Stage: "becomes a copy of target land,
     // except it has this ability."). CR 706.2 in-place copy that RETAINS this very ability on the
     // copy — the clone handler appends the source's own Clone ability(ies) onto the copied
@@ -67,8 +71,6 @@ struct Ability{
     bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
     bool target_min_from_xpaid = false;  // TargetMin$ X (X = Count$xPaid): lower bound = X paid — with the
                                          // matching max gives EXACTLY-X targeting (Candelabra, Hide on the Ceiling)
-    std::string target_min_svar = "";    // raw TargetMin$ token when non-numeric (an SVar key); resolved post-parse
-    std::string target_max_svar = "";    // raw TargetMax$ token when non-numeric (an SVar key); resolved post-parse
     // TargetMin$/TargetMax$ given as a count-SVar that resolves to a runtime Count$ expression
     // OTHER than Count$xPaid (e.g. Into the Flood Maw: TargetMin$ X = TargetMax$ X, X =
     // Count$PromisedGift.0.1). Evaluated by select_target at cast time (when the count's inputs —
@@ -76,17 +78,6 @@ struct Ability{
     // resolved count of 0 makes the ability target nothing and do nothing (CR: zero targets).
     std::string target_min_count_expr = "";
     std::string target_max_count_expr = "";
-    Entity source = 0;
-    Entity target = 0;
-    std::vector<Entity> targets;    // used when target_max > 1
-    // CR 400.7 / 608.2b object-identity snapshot, parallel to target/targets: the
-    // Zone::obj_gen of each chosen target AT SELECTION time. Re-checked at resolution so a
-    // target that changed zones (and is thus a new object) is treated as illegal, even when the
-    // same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed). 0 means
-    // "not snapshotted" (auto-targeted / copied-target paths keep their prior behavior).
-    uint64_t target_gen = 0;
-    std::vector<uint64_t> target_gens;
-    Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
@@ -106,11 +97,11 @@ struct Ability{
     // cleared and regenerated each SBE pass when type-changing effects are active.
     bool subtype_derived = false;
 
-    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
-    // attached this activated ability to the permanent. Holds the granting static's SOURCE
-    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
-    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
-    Entity granted_by_static = 0;
+    // The keyword (Prowess, Exalted, Mobilize:N) this triggered ability was derived from by
+    // apply_keyword_abilities; re-derived from the permanent's current keywords each SBE pass, so
+    // it goes away with the keyword. Empty for any other ability.
+    std::string derived_from_keyword = "";
+
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
@@ -131,7 +122,7 @@ struct Ability{
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
     std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
     size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
-    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to remembered_entities
+    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to the remembered set
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
@@ -151,14 +142,14 @@ struct Ability{
     // At resolution put_counter() places the counters, sets Permanent::is_monstrous, and fires the
     // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
     bool is_monstrosity = false;
-    bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
-    // K:Ninjutsu:<cost> (CR 702.49): a hand-activated ability usable only during the declare-
-    // blockers step (after blockers are declared) while its controller has an unblocked attacker.
-    // Activating it returns one unblocked attacker to hand and pays the ninjutsu mana cost
-    // (activation_mana_cost), then puts THIS card from hand onto the battlefield tapped and
-    // attacking the defender the returned attacker was attacking. Handled by process_ninjutsu;
-    // the offer is gated to DECLARE_BLOCKERS in determine_legal_actions.
+    // K:Ninjutsu:<cost> (CR 702.49a): a hand-activated ability whose cost is the ninjutsu mana
+    // plus returning an unblocked attacker you control to its owner's hand (return_cost_type), so
+    // it is activatable whenever such an attacker exists. On the stack it puts THIS card onto the
+    // battlefield tapped and attacking (effects::ninjutsu).
     bool is_ninjutsu = false;
+    // The keyword an ability derived from a keyword line stands for, shown as its action label
+    // ("Equip", "Reconfigure", "Unattach"); empty for an ability from an A: line.
+    std::string keyword_label = "";
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
@@ -168,17 +159,16 @@ struct Ability{
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
     // X loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate). The
     // magnitude is chosen at activation (X, bounded by current loyalty for a minus ability) and
-    // recorded as cur_game.x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
+    // recorded as the activation's x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
     // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
     bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
-    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
     // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
     // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —
     // cost reductions reduce only generic mana, colored pips are never reduced). Either a
     // literal integer (stored verbatim, e.g. "1") or a runtime Count$/SVar expression
-    // resolved via evaluate_dynamic_amount with the activating controller as "you". Empty
+    // resolved via evaluate_amount with the activating controller as "you". Empty
     // = no reduction. effective_activation_mana_cost() applies it for BOTH the affordability
     // check and the actual payment so the two never diverge.
     std::string reduce_cost_expr = "";
@@ -187,13 +177,13 @@ struct Ability{
     // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
     // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
     // resolution and applied as a per-card mana-value gate in the zone search. Empty = no
-    // dynamic cmc filter (the legacy cmcLEX path keys off cur_game.x_paid instead).
+    // dynamic cmc filter (the legacy cmcLEX path keys off current_x_paid() instead).
     std::string change_type_cmc_expr = "";
     std::string change_type_cmc_op = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
-    // into cur_game.remembered_entities so chained ChangeType$ Remembered.sameName
+    // into cur_game.resolution.memory.remembered so chained ChangeType$ Remembered.sameName
     // subabilities can reference the card whose name to match (Surgical Extraction).
     bool remember_targeted = false;
     // TgtZone$ Graveyard — this spell/ability targets a card in a graveyard even though
@@ -276,14 +266,8 @@ struct Ability{
     // is paid" (paying {R}{R} ENABLES the copy). (DestroyAll's switched energy cost rides on
     // DestroyAllParams::energy_unless_switched instead — see parse.cpp.)
     bool unless_switched = false;
-    // MayChooseTarget$ True (Chain Lightning): the copy's controller may choose new targets for the
-    // copy. The shared copy machine (effect_copy_spell.cpp) already re-runs target selection for
-    // every copy (CR 707.12), so this flag is informational — recorded for parse fidelity.
-    bool unless_may_choose_target = false;
-    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
-    // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     // Raw Defined$/DefinedPlayer$ token verbatim from the script (e.g. "Targeted", "ParentTarget",
@@ -292,13 +276,6 @@ struct Ability{
     // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
     // N_A sentinel; the specific bools remain authoritative for their effects.
     std::string defined = "";
-    // The nearest PLAYER target up the resolving sub-ability chain, bound by bind_sub_target as
-    // chains push (CR 608.2c). A sub whose own inherited target is a CARD can still resolve
-    // DefinedPlayer$ Targeted to the player an outer ability targeted — Cloak and Dagger,
-    // Entwined: TrigRevealHand targets the opponent, DBPump retargets their creature, yet
-    // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
-    // way). 0 = no player target anywhere up the chain.
-    Entity targeted_player = 0;
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
     // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the
@@ -344,9 +321,6 @@ struct Ability{
     // who cast the noncreature spell loses 2 life), but general to any effect reading a
     // Defined player.
     bool defined_triggered_activator = false;
-    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
-    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
-    Zone::Ownership triggered_activator = Zone::UNKNOWN;
     // Defined$ TriggeredDefendingPlayer — the effect's player is the defending player of the
     // attack that fired this trigger (Goblin Guide: the DEFENDER reveals/draws). In a two-player
     // game the defender is the opponent of the attacker's controller (the non-active player).
@@ -358,9 +332,6 @@ struct Ability{
     // triggering event's PLAYER param (e.g. the upkeep's active player), captured into
     // `triggered_player`. General to any effect reading a Defined player off the event's player.
     bool defined_triggered_player = false;
-    // The player whose event fired this triggered ability. Populated at trigger-fire time when
-    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
-    Zone::Ownership triggered_player = Zone::UNKNOWN;
     // Defined$ TriggeredCardController — the effect's player is the controller of the card that
     // changed zones to fire this trigger (Searing Blood: the dead creature's controller takes 3
     // damage). Fired by a Mode$ ChangesZone delayed trigger; the controller is read from the
@@ -380,7 +351,7 @@ struct Ability{
     // (e.g. "{T}: Add {C}." or "{2}, {T}: Create a Construct token"). The Animate handler pushes
     // them onto the permanent's activated-ability list for a Duration$ Permanent grant. Empty when
     // the Animate grants no abilities (Guide of Souls' type-only animate).
-    std::vector<Ability> animate_granted_abilities;
+    std::vector<AbilityDef> animate_granted_abilities;
     bool animate_duration_permanent = false;
     // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
     // of the animating player's NEXT turn — longer than the Forge default (until end of turn)
@@ -403,8 +374,6 @@ struct Ability{
     bool animate_has_pt = false;
     int animate_base_power = 0;
     int animate_base_toughness = 0;
-    std::string animate_power_token;       // raw Power$ token, pre-SVar-resolution
-    std::string animate_toughness_token;   // raw Toughness$ token, pre-SVar-resolution
     std::string animate_power_expr;        // resolved runtime expr (empty when numeric)
     std::string animate_toughness_expr;
 
@@ -433,45 +402,31 @@ struct Ability{
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
                  DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
 
-    // Counter abilities (PutCounter category) now live in CounterParams (params variant).
-
-    // Peek variant (Mishra's Bauble) now lives in PeekParams (params variant).
-
-    // Delayed trigger params (Mishra's Bauble) now live in DelayedTriggerParams (params variant).
-
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
     int trigger_zone_destination = -1;  // Zone::ZoneValue destination filter; -1 = any
-    bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
-    bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
-    bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
-    bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
-    // ValidCard$ ...+untapped — the changing card must be an UNTAPPED battlefield permanent
-    // at trigger time (Mystic Sanctuary: "When this land enters untapped"). The enters-tapped
-    // replacement (T2.2) has already set Permanent::is_tapped by the time triggers are scanned.
+    // The raw ValidCard$ / ValidCards$ filter. A zone-change trigger matches the moving object
+    // against it with zone_change_object_matches (types, subtypes, control, ownership, token-ness,
+    // colors and tap state as the object exists after the event, or as it last existed on the
+    // battlefield for a departure — CR 603.6a / 603.10a).
+    std::string trigger_valid_card = "";
+    bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature (TapsForMana)
+    // ValidCard$ ...+untapped (Mystic Sanctuary: "When this land enters untapped"). Matched by
+    // trigger_valid_card on the live permanent; the self look-back scan (a permanent that already
+    // left again) has no tapped state to read and does not fire it.
     bool trigger_valid_card_untapped = false;
     // ValidCard$ Card.nonCreature combined with an ActivatorThisTurnCast$ count (The Fantasticar's
     // "your fourth noncreature spell each turn"): the cast spell must be NONCREATURE. Bound to the
     // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated
     // NONCREATURE_SPELL_CAST event (fired before), so a count gate sees the current cast counted.
     bool trigger_valid_card_non_creature = false;
-    // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
-    // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
-    bool trigger_valid_card_non_token = false;
-    // ValidCard$ Permanent — the changing card must be a permanent card (CR 110.4a: artifact,
-    // battle, creature, enchantment, land, planeswalker), excluding instants/sorceries.
-    bool trigger_valid_card_is_permanent = false;
     // Mode$ ChangesZoneAll ("whenever one or more cards ...") — a single BATCH trigger (CR
     // 603.2c): it fires exactly ONCE per group of simultaneous matching zone changes, not once
     // per card. The trigger scan dedupes it to one firing per event batch (Moonshadow).
     bool trigger_batch_zone_all = false;
-    // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
-    // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
-    // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).
+    // ValidCard$ ...+Colorless on a SpellCast trigger — the cast spell must be colorless
+    // (CR 105.2c / 202.2; Glaring Fleshraker's Card.Colorless).
     bool trigger_valid_card_colorless = false;
-    // ValidCard(s)$ <Subtype> — the changing card must have this subtype (e.g. Ajani's
-    // "Cat.Other+YouCtrl"). Empty = no subtype filter. Matched against CardData/Token types.
-    std::string trigger_valid_card_subtype = "";
     // OptionalDecider$ You — a "you may ..." triggered ability; its controller is prompted
     // to accept or decline as it resolves (Mode$ ChangesZoneAll on Ajani).
     bool trigger_optional = false;
@@ -485,8 +440,6 @@ struct Ability{
     // PLAYER_DREW_CARD event (Params::AMOUNT, 1-based). 0 = no Nth-draw gate (every draw fires).
     size_t trigger_draw_number_eq = 0;
 
-    // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
-    size_t trigger_damage_amount = 0;
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
@@ -537,11 +490,6 @@ struct Ability{
     // this trigger's controller. Matched at fire time (the trigger is hosted on a command-zone
     // Effect with no source permanent to self-reference).
     bool trigger_attacker_opp_ctrl = false;
-    // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's controller or a
-    // planeswalker they control. In the two-player engine the only defender an opponent's attacker
-    // can have IS this controller (or their planeswalker), so this is satisfied whenever an
-    // opponent's creature attacks; the flag records the script's stated intent (CR 508.1).
-    bool trigger_attacked_defender_you = false;
 
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
@@ -556,7 +504,7 @@ struct Ability{
     // (Permanent::state_triggers_armed) enforces that. Dark Depths' "When CARDNAME has no ice
     // counters on it, sacrifice it. If you do, create Marit Lage." is a Mode$ Always trigger
     // gated on IsPresent$ Card.Self+counters_EQ0_ICE. There is no trigger_on event; the state
-    // scan in check_triggered_abilities collects these separately from the event-driven scan.
+    // scan in collect_triggered_abilities collects these separately from the event-driven scan.
     bool trigger_state_condition = false;
 
     // Mode$ TapsForMana | Static$ True (Badgermole Cub): "whenever you tap a creature for mana,
@@ -566,10 +514,8 @@ struct Ability{
     // (the produced color/amount); ValidCard$ Creature gates which tapped source it watches.
     bool trigger_taps_for_mana_static = false;
 
-    // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
-
     // Attach / Equip sub-ability
-    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.resolution.memory.remembered[0]
     // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
     // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
     bool from_delayed_execute = false;
@@ -582,14 +528,14 @@ struct Ability{
     bool defined_triggered_source_sa = false;
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
-    // loop once per player, setting cur_game.remembered_entities to that player's entity
+    // loop once per player, setting cur_game.resolution.memory.remembered to that player's entity
     // before resolving the RepeatSubAbility (parsed into subabilities). Empty = not a
     // per-player repeat.
     std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
 
     // RepeatEach over CARD TYPES (Atraxa, Grand Unifier): RepeatTypesFrom$ ValidLibrary
     // Card.IsImprinted makes the effect loop once per distinct card type present among the
-    // imprinted cards (cur_game.imprinted_entities), setting cur_game.chosen_type before
+    // imprinted cards (cur_game.resolution.memory.imprinted), setting cur_game.resolution.memory.chosen_type before
     // resolving the RepeatSubAbility body each iteration. Empty = not a per-type repeat.
     std::string repeat_types_from = "";
     // Number of leading `subabilities` that are the RepeatSubAbility$ body (repeated each
@@ -599,35 +545,33 @@ struct Ability{
     size_t repeat_sub_count = 0;
 
     // ChooseCard | Choices$ Card.ChosenType+YouOwn+IsImprinted (Atraxa): choose one imprinted
-    // card of the current cur_game.chosen_type owned by the controller. A "you may" choice
+    // card of the current cur_game.resolution.memory.chosen_type owned by the controller. A "you may" choice
     // (declinable). RememberChosen$ True appends the chosen card to the remembered set so a
     // trailing Defined$ Remembered ChangeZone moves it to hand.
     bool choose_imprinted = false;
-    bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to remembered_entities
+    bool remember_chosen = false;    // RememberChosen$ True — append the chosen card to the remembered set
+    // ChooseCard | Choices$ <filter> | ChoiceZone$ <zone> (Dauthi Voidwalker: "Choose an exiled
+    // card an opponent owns with a void counter on it"): the controller chooses one card in that
+    // zone matching the filter. The choice becomes the resolution's chosen card
+    // (cur_game.resolution.memory.chosen_cards), which a later RememberObjects$ ChosenCard Effect reads. Mandatory$
+    // True means no "choose nothing" option. Unset zone = the battlefield.
+    std::string choose_card_filter = "";
+    Zone::ZoneValue choose_card_zone = Zone::BATTLEFIELD;
 
-    // Mill: remember milled cards in cur_game.remembered_entities
+    // Mill: remember milled cards in cur_game.resolution.memory.remembered
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
-    // Leaves-the-battlefield ability that operates on the cards its source had exiled
-    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
-    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
-    // and resolve() restores it into cur_game.remembered_entities so the body's
-    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
-    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
-    std::vector<Entity> restore_remembered_exiled_with;
 
-    // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
-    DelayedTriggerLink delayed_link;
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
-    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.chosen_cards
-    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.imprinted_entities (Atraxa)
+    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.resolution.memory.chosen_cards
+    bool clear_imprinted = false;    // ClearImprinted$ True — clears cur_game.resolution.memory.imprinted (Atraxa)
 
     // ChooseCard ChooseEach$ "Type & Type & ..." (Ajani -4): each affected player chooses
     // one permanent of each listed type from among their matching permanents to keep
-    // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
+    // (recorded in cur_game.resolution.memory.chosen_cards). Empty = the legacy single-pick ChooseCard.
     std::string choose_each = "";
 
     // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
@@ -642,18 +586,18 @@ struct Ability{
     // RememberLKI$ — remember the moved object's last-known information (Boomerang Basics:
     // remember the bounced permanent so a paired ConditionDefined$ RememberedLKI gate can
     // read the controller it had as it left the battlefield, CR 608.2g). Like remember_changed
-    // it stashes the moved entity in cur_game.remembered_entities; the condition reads its LKI.
+    // it stashes the moved entity in cur_game.resolution.memory.remembered; the condition reads its LKI.
     bool remember_lki = false;
 
     // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
-    // stash every revealed card into cur_game.remembered_entities so a later Defined$ Remembered
+    // stash every revealed card into cur_game.resolution.memory.remembered so a later Defined$ Remembered
     // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first
     // link of the chain that records the candidates a subsequent exile picks from.
     bool remember_revealed = false;
 
     // RememberPumped$ True (Cloak and Dagger's DBPump): a Pump used purely as an (optional)
     // target-selector — it applies no stat change, it just APPENDS its chosen creature to
-    // cur_game.remembered_entities so it joins the candidate pool of a later exile.
+    // cur_game.resolution.memory.remembered so it joins the candidate pool of a later exile.
     bool remember_pumped = false;
 
     // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e linked
@@ -675,50 +619,43 @@ struct Ability{
     // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
     // its controller an emblem carrying the named continuous static ("Ninjas you control get
     // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
-    // GrantCast handler creates a player-owned Emblem (cur_game.emblems) carrying them — an
+    // GrantCast handler creates a player-owned Emblem (cur_game.resolved_effects.emblems) carrying them — an
     // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
     std::vector<StaticAbility> effect_emblem_statics;
 
-    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants MayPlay$ True +
-    // MayPlayWithoutManaCost$ True with AffectedZone$ Exile (Ugin, Eye of the Storms' -11:
-    // "Until end of turn, you may cast those cards without paying their mana costs"). The
-    // StaticAbilities$ SVar is resolved at parse time; when it carries that grant this flag is
-    // set, and the GrantCast handler records a free (no-mana-cost) cast-from-exile permission
-    // for each currently-remembered exiled card (cur_game.remembered_entities), good until end
-    // of turn. CR 113.3 / 601.3e / 118.9 (cast without paying mana cost).
-    bool effect_grant_free_cast_from_exile = false;
-
-    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants plain MayPlay$ True with
-    // AffectedZone$ Exile but NOT MayPlayWithoutManaCost (Light Up the Stage: "Until the end of
-    // your next turn, you may PLAY those cards"). Unlike the free-cast grant above, the cards are
-    // played for their NORMAL cost, and — since the permission is "play", not "cast" — LANDS among
-    // the exiled cards may be played too (CR 305 / 601.3e). The GrantCast handler records a
-    // normal-cost play-from-exile permission for each currently-remembered exiled card. The
-    // duration (this-turn vs until-end-of-your-next-turn) is carried on
-    // duration_until_end_of_your_next_turn.
-    bool effect_grant_play_from_exile = false;
+    // DB$ Effect | StaticAbilities$ <SVar> where the named static is a MayPlay$ True continuous
+    // effect with AffectedZone$ Exile: "you may play/cast those cards" (Light Up the Stage: "Until
+    // the end of your next turn, you may play those cards"; Ugin, Eye of the Storms' -11: "Until
+    // end of turn, you may cast those cards without paying their mana costs"; Dauthi Voidwalker:
+    // "You may play it this turn without paying its mana cost"). The StaticAbilities$ SVar is
+    // resolved at parse time. The GrantCast handler records a play-from-exile permission
+    // (cur_game.resolved_effects.impulse_cast_permission) for each affected card still in exile, used at priority
+    // through the normal cast / land-play actions (CR 601.2, 305.1). The duration (this turn vs
+    // until the end of your next turn) is carried on duration_until_end_of_your_next_turn.
+    bool effect_may_play_from_exile = false;
+    // MayPlayWithoutManaCost$ True: the cards are cast without paying their mana costs (CR 118.9);
+    // otherwise they are played for their normal costs.
+    bool effect_may_play_free = false;
+    // The static's Affected$ filter admits land cards (it has no nonLand qualifier), so a land
+    // among the affected cards may be played ("play", not only "cast"; CR 305.1).
+    bool effect_may_play_lands = false;
+    // RememberObjects$ ChosenCard: the Effect's affected cards are the resolution's chosen card(s)
+    // (cur_game.resolution.memory.chosen_cards, set by a preceding ChooseCard) instead of the remembered set.
+    bool effect_remember_chosen_card = false;
 
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
     // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
     // a full TRIGGERED Ability and held here; the GrantCast handler registers a copy in
-    // cur_game.floating_triggers (controller bound) so the trigger scan fires it through the
+    // cur_game.resolved_effects.floating_triggers (controller bound) so the trigger scan fires it through the
     // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
-    std::vector<Ability> effect_floating_triggers;
-    // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
-    // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
-    // GrantCast handler on the copy it pushes into cur_game.floating_triggers, with its vocab idx
-    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
-    // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
-    // a floating trigger (the trigger itself has no source object).
-    Entity floating_creator = 0;
-    int floating_creator_vocab_idx = -1;
+    std::vector<AbilityDef> effect_floating_triggers;
 
     // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
     // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
     // "Spells you control can't be countered this turn"). Set at parse time; the GrantCast
-    // handler records the effect's controller in cur_game.cant_counter_spells_of for the rest
+    // handler records the effect's controller in cur_game.resolved_effects.cant_counter_spells_of for the rest
     // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
     // Squelcher's battlefield static).
     bool effect_spells_uncounterable_this_turn = false;
@@ -727,7 +664,7 @@ struct Ability{
     // Card.IsRemembered" (prevent all combat damage dealt BY the remembered creature) and/or
     // "... | ValidTarget$ Card.IsRemembered" (prevent all combat damage dealt TO it) — Maze of
     // Ith. Set at parse time from the SVar bodies; the GrantCast handler registers a turn-scoped
-    // shield on the remembered creature in cur_game.combat_damage_prevention_shields (CR 615).
+    // shield on the remembered creature in cur_game.resolved_effects.combat_damage_prevention_shields (CR 615).
     // General over any such DamageDone/Prevent Effect keyed on a remembered object.
     bool effect_prevent_combat_damage_by_remembered = false;  // ValidSource$ Card.IsRemembered
     bool effect_prevent_combat_damage_to_remembered = false;  // ValidTarget$ Card.IsRemembered
@@ -735,7 +672,7 @@ struct Ability{
     // life-gain prohibition (CR 119.x, Roiling Vortex's {R} ability). The scope names whose life
     // gain is prohibited relative to the effect's controller. NONE = not a CantGainLife effect.
     // Set at parse time; the GrantCast handler registers the affected player(s) into
-    // cur_game.cant_gain_life_this_turn at resolution. General over any CantGainLife effect.
+    // cur_game.resolved_effects.cant_gain_life_this_turn at resolution. General over any CantGainLife effect.
     enum class CantGainLifeScope { NONE, OPPONENTS, YOU, ALL };
     CantGainLifeScope effect_cant_gain_life = CantGainLifeScope::NONE;
 
@@ -744,7 +681,7 @@ struct Ability{
     // had flash."). A cast-timing PERMISSION: while active, the effect's controller may cast a
     // matching spell (effect_cast_with_flash_filter, e.g. "Sorcery") as though it had flash — i.e.
     // ignore the sorcery-speed timing restriction (CR 702.8 "as though" / 601.3a). Set at parse
-    // time; the GrantCast handler records a cur_game.cast_with_flash_permissions entry bound to the
+    // time; the GrantCast handler records a cur_game.resolved_effects.cast_with_flash_permissions entry bound to the
     // controller for the effect's Duration (until their next turn), consulted by the cast-speed
     // gate (rules_mod::cast_with_flash_active). General over any CastWithFlash-granting Effect.
     bool effect_cast_with_flash = false;
@@ -759,6 +696,8 @@ struct Ability{
 
     // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
     std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value
+    // Origin$ All / Any — the mover acts on its object in whatever zone it is (origins is empty).
+    bool origin_any = false;
 
     // Dig ability (Once Upon a Time, Thassa's Oracle)
     size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library
@@ -780,20 +719,19 @@ struct Ability{
     // change_valid (Valid$). dig_until_found_dest is where the matching card goes,
     // dig_until_revealed_dest where the non-matching cards passed over go (both Exile for
     // Amped Raptor). dig_until_remember_found stores the matching card in
-    // cur_game.remembered_entities (RememberFound$) for a chained DB$ Play.
+    // cur_game.resolution.memory.remembered (RememberFound$) for a chained DB$ Play.
     int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
     int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
     bool dig_until_remember_found = false;       // RememberFound$ True
     bool dig_until_attacking = false;            // Attacking$ True — the found card (FoundDestination$ Battlefield)
                                                  // enters tapped (enters_tapped) and attacking (Raph & Mikey; CR 508.4)
 
-    // DB$ Play (Amped Raptor): cast a Defined$ card from its current zone, paying an
-    // alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource is
-    // the resource paid (energy or life); play_cost_expr is the amount — either a literal int
+    // DB$ Play (Amped Raptor): cast a Defined$ exiled card during the resolution (CR 608.2g),
+    // paying an alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource
+    // is the resource paid (energy or life); play_cost_expr is the amount — either a literal int
     // (as a string) or "ConvertedManaCost" (the cast card's mana value). play_valid_sa
     // restricts to nonland spells (ValidSA$ Spell). The optionality is carried by
-    // optional_choice (Optional$ True). General over the resource so a future Bolas's Citadel
-    // ("pay life equal to mana value") reuses this path with play_cost_resource = LIFE.
+    // optional_choice (Optional$ True).
     enum PlayCostResource { PLAY_COST_ENERGY, PLAY_COST_LIFE };
     PlayCostResource play_cost_resource = PLAY_COST_ENERGY;
     std::string play_cost_expr = "";  // amount: "ConvertedManaCost" or a literal int string
@@ -810,14 +748,15 @@ struct Ability{
     std::string cond_amount_compare = "";        // e.g. "GE2"
     size_t cond_amount_if_true = 0;              // count when the compare passes
 
-    // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
-
     // Conditional subability execution (Scythecat Cub, Thassa's Oracle)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
     std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1", or "LEX" with SVar RHS
     std::string condition_compare_svar_expr = "";  // when compare RHS is an SVar (e.g. LEX → "Count$Devotion.Blue")
 
-    // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
+    // ConditionPresent$ resolution condition (Edge of Autumn: "If you control four or fewer lands,
+    // search..."): count permanents matching the filter and compare to the threshold as the
+    // ability resolves (CR 608.2c); on failure resolve_ability skips the body and still chains
+    // the subabilities. It never restricts casting or activating.
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
     // ConditionNotPresent$ — the condition is INVERTED: the gated body runs only when the
@@ -832,22 +771,22 @@ struct Ability{
     // enforced when they resolve, so cast-time legality must NOT gate on the condition.
     bool condition_on_target = false;
     // ConditionDefined$ Remembered — condition_present/condition_compare are evaluated over
-    // cur_game.remembered_entities (count of remembered cards) rather than battlefield
+    // cur_game.resolution.memory.remembered (count of remembered cards) rather than battlefield
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
-    // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
+    // at resolution in resolve_ability(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
     // ConditionDefined$ TriggeredCard — condition_present is a property check on the ability's
     // SOURCE object (the card that triggered this ability), not a board-presence count. Used by
     // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor: the dig only happens if the
     // creature that entered was cast from its controller's own hand). Gated at resolution in
-    // Ability::resolve(): on failure the body is skipped, subabilities still chain.
+    // resolve_ability(): on failure the body is skipped, subabilities still chain.
     bool condition_on_triggered_card = false;
 
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
-    // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND
+    // are checked BOTH when the trigger would go on the stack (collect_triggered_abilities) AND
     // again as it resolves; if false at resolution the ability does nothing (no subabilities).
-    // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from condition_present used
-    // for spell castability, which is checked only at cast time.
+    // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from a plain
+    // condition_present, which is checked only at resolution.
     bool intervening_if = false;
 
     // IsCurse$ True (Carpet of Flowers' DB$ Pump): a Pump used purely as a targeting vehicle to
@@ -863,7 +802,158 @@ struct Ability{
     std::string stored_svar_set_name = "";
     int stored_svar_set_value = 0;
 
-    // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
+
+
+    std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
+    int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+
+    // SubAbility$ chain: the DB$ abilities resolved, in order, after this one (CR 608.2c).
+    std::vector<AbilityDef> subabilities;
+    // Charm/modal spell modes (CR 700.2) — each entry is a fully-parsed ability.
+    std::vector<AbilityDef> charm_choices;
+};
+
+// ── The definition store ────────────────────────────────────────────────────
+// Every AbilityDef an Ability refers to lives in one process-wide, append-only store: once added
+// a definition is never changed or freed, so a `const AbilityDef *` stays valid across snapshot
+// restores and the per-game ECS reset, and copying an Ability never copies its definition. The
+// store holds script content only, never game state. Parsed cards and tokens are cached per
+// script (parse.cpp), and engine-built definitions are keyed, so the store stops growing once
+// every card, token and keyword a process meets has been seen.
+const AbilityDef *intern_ability_def(AbilityDef def);
+// The definition `build` makes the first time `key` is asked for; the same one afterwards.
+const AbilityDef *keyed_ability_def(const std::string &key,
+                                    const std::function<AbilityDef()> &build);
+// A copy of `base` changed by `edit`, built once per (base, variant, value).
+const AbilityDef *derived_ability_def(const AbilityDef *base, const std::string &variant, int value,
+                                      const std::function<void(AbilityDef &)> &edit);
+// The definition of a default-constructed Ability (no category, no effect).
+const AbilityDef *blank_ability_def();
+// An engine-built TRIGGERED definition with just `category` set (a suspend or warp trigger, a
+// delayed "sacrifice / exile those tokens"), one per category.
+const AbilityDef *triggered_effect_def(const std::string &category);
+// The engine-built "draw a card" TRIGGERED definition (a delayed trigger with no Execute$, the
+// monarch's end-step draw, CR 725.2).
+const AbilityDef *draw_one_trigger_def();
+// Interns each definition of `defs`, in order.
+std::vector<const AbilityDef *> intern_ability_defs(std::vector<AbilityDef> defs);
+
+// Returns the effect-param block of type P held in `ab.params`, default-
+// constructing (and switching the variant to P) if it isn't already active.
+// Use from parse hooks before writing effect-exclusive params. Resolution-time
+// readers should use std::get_if<P>(&def->params) and treat nullptr as "defaults",
+// which is exception-free under -fno-exceptions.
+template <typename P>
+P& effect_params(AbilityDef& ab) {
+    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
+    return std::get<P>(ab.params);
+}
+
+// One instance of an ability: a stack object (CR 113.7 / 405.1), an ability a permanent has, a
+// pending activation or trigger, or a sub-ability being resolved. Carries its definition plus
+// the per-instance state the rules attach as it is activated, triggered, put on the stack and
+// resolved.
+struct Ability {
+    using AbilityType = AbilityDef::AbilityType;
+
+    // What this is an instance of (never null; see the definition store above).
+    const AbilityDef *def = blank_ability_def();
+
+    Ability() = default;
+    // An instance of `d` with fresh per-instance state; its sub-ability and mode instances
+    // mirror d's chains.
+    explicit Ability(const AbilityDef *d);
+
+    // The target-count bounds (CR 601.2c), starting as def's TargetMin$/TargetMax$ and fixed
+    // once as the targets are chosen when a count depends on X or another announced value
+    // (Count$xPaid, Count$PromisedGift), so resolution rechecks the same bounds.
+    int target_min = 1;
+    int target_max = 1;
+    // The color this mana ability instance makes (def's Produced$ color, or the one color picked
+    // from a Produced$ Combo / reflected choice when it is offered as a mana source).
+    Colors color = NO_COLOR;
+
+    // The object this ability comes from (CR 113.7), as it was when the ability was created: a
+    // spell's card once it is on the stack, an activated ability's source after its costs were
+    // paid (CR 400.7j), a trigger's source when it triggered (CR 400.7e). get() is that object
+    // while it remains it; sub-abilities inherit it. The card's printed identity and last-known
+    // information read lki_entity().
+    ObjectRef source;
+
+    // The chosen targets (CR 601.2c / 603.3d), each the object it was when chosen: at resolution
+    // a target that changed zones since is a new object and illegal (CR 400.7 / 608.2b), even
+    // when the same entity id reoccupies its old zone (Tamiyo/Ajani exile-and-return-transformed).
+    ObjectRef target;
+
+    std::vector<ObjectRef> targets;    // used when target_max > 1
+
+    // CR 701.27f: Permanent::times_transformed of `source` when this ability was put on the stack
+    // (a delayed trigger: when it was created); -1 = not stamped. Sub-abilities inherit it.
+    int64_t source_transforms = -1;
+
+    Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
+
+    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
+    // attached this activated ability to the permanent. Holds the granting static's SOURCE
+    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
+    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
+    Entity granted_by_static = 0;
+
+    // The X announced for this activation (CR 107.3a), stamped on the stack ability when it is
+    // put on the stack (0 for an activation with no X); the resolution frame takes it as the
+    // resolving object's X, so its Count$xPaid / cmcLEX reads this ability's X rather than the X
+    // of whatever spell or ability was cast or resolved in between. A triggered ability gets its
+    // X when it is put on the stack (CR 107.3m/n; 0 when nothing defines it). -1 = no X recorded
+    // with this stack object: it resolves with X = 0.
+    int x_paid = -1;
+
+    // Ninjutsu (CR 702.49c): the player or planeswalker the creature returned as this ability's
+    // cost was attacking, captured when that cost is paid; the ninja enters attacking it.
+    ObjectRef ninjutsu_attack_target;
+
+    int activations_this_turn = 0;      // runtime counter, reset for every permanent at each UNTAP step
+
+    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
+
+    // The nearest PLAYER target up the resolving sub-ability chain, bound by bind_sub_target as
+    // chains push (CR 608.2c). A sub whose own inherited target is a CARD can still resolve
+    // DefinedPlayer$ Targeted to the player an outer ability targeted — Cloak and Dagger,
+    // Entwined: TrigRevealHand targets the opponent, DBPump retargets their creature, yet
+    // DBChangeZone's searched player is still that opponent (Forge walks ancestors the same
+    // way). 0 = no player target anywhere up the chain.
+    Entity targeted_player = 0;
+
+    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
+    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
+    Zone::Ownership triggered_activator = Zone::UNKNOWN;
+
+    // The player whose event fired this triggered ability. Populated at trigger-fire time when
+    // defined_triggered_player is set (from the event's PLAYER param); UNKNOWN until then.
+    Zone::Ownership triggered_player = Zone::UNKNOWN;
+
+    // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
+    size_t trigger_damage_amount = 0;
+
+    // Leaves-the-battlefield ability that operates on the cards its source had exiled
+    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
+    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
+    // and resolve() restores it into cur_game.resolution.memory.remembered so the body's
+    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
+    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
+    std::vector<ObjectRef> restore_remembered_exiled_with;
+
+    // Set on a delayed trigger's fire ability (see DelayedTriggerLink); default = not delayed.
+    DelayedTriggerLink delayed_link;
+
+    // The card whose resolving Effect registered this ability as a floating trigger (Tamiyo,
+    // Seasoned Scholar for her +2, Forth Eorlingas! for its monarch trigger), stamped by the
+    // GrantCast handler on the copy it pushes into cur_game.resolved_effects.floating_triggers, with its vocab idx
+    // captured at that moment. 0 / -1 on every other ability. Read by the observation's
+    // player-effects block and as the pending-decision source of a 603.3b ordering prompt led by
+    // a floating trigger (the trigger itself has no source object). Display-only, so a plain Entity.
+    Entity floating_creator = 0;
+
+    int floating_creator_vocab_idx = -1;
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
@@ -877,52 +967,19 @@ struct Ability{
 
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;
-    std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
-    int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
-    // Mode indices (into charm_choices) chosen when the spell was CAST (CR 601.2b), in pick
-    // order. Each chosen mode's targets were selected at the same time (CR 601.2c) and live on
-    // the charm_choices entry itself. effects::charm resolves exactly these modes; empty means
-    // the spell reached the stack through a path that didn't announce (legacy fallback: choose
-    // at resolution).
+
+    // Mode indices (into charm_choices) announced as the modal object was put on the stack
+    // (CR 601.2b, 602.2b, 603.3c; run_announce), in printed order once the announcement is
+    // complete. Each chosen mode's targets were selected at the same time (CR 601.2c) and live
+    // on the charm_choices entry itself. effects::charm resolves exactly these modes.
     std::vector<int> charm_chosen;
 
-    // Resolution entry point. Only StackManager::resolve_top passes
-    // FrameCtx::root() (the suspendable path); every other caller uses the
-    // transitional blocking shim below, which resolves inline exactly as before.
-    ResolveStatus resolve(std::shared_ptr<Orderer> orderer, FrameCtx ctx);
-    void resolve(std::shared_ptr<Orderer> orderer);  // blocking shim (discards the status)
-    bool identical_activated_ability(const Ability& other);
-    // Single source of truth for target legality. Returns true if `cand` is a legal
-    // target for this ability when controlled by `caster`. Used both to enumerate
-    // legal targets (build_valid_targets) and to re-verify chosen targets at
-    // resolution (is_target_valid).
-    bool is_legal_target(Entity cand, Zone::Ownership caster) const;
-    // CR 400.7 object-identity re-verification: true if `cand` is still the same object that was
-    // targeted, i.e. its current Zone::obj_gen matches `recorded_gen` snapshotted at selection.
-    // A recorded 0 (never snapshotted — auto-targeted/copied path) or a target with no Zone
-    // (a player) passes. Paired with is_legal_target at every resolution-time target check.
-    bool target_gen_current(Entity cand, uint64_t recorded_gen) const;
-private:
-    // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
-    // effects::handler_for(). resolve() keeps only target validity + condition
-    // gating + subability chaining.
-    bool is_target_valid() const;
-    void fizzle(std::shared_ptr<Orderer> orderer);
+    // The PLAYER target a chained sub-ability of this ability inherits as its targeted_player:
+    // this ability's own target when it is a player, else the one it inherited.
+    Entity player_target_for_subs() const;
 
+    bool identical_activated_ability(const AbilityDef *other) const;
 };
 
-// Returns the effect-param block of type P held in `ab.params`, default-
-// constructing (and switching the variant to P) if it isn't already active.
-// Use from parse hooks before writing effect-exclusive params. Resolution-time
-// readers should use std::get_if<P>(&ab.params) and treat nullptr as "defaults",
-// which is exception-free under -fno-exceptions.
-template <typename P>
-P& effect_params(Ability& ab) {
-    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
-    return std::get<P>(ab.params);
-}
-
-// (search_zone / search_multi_zone are declared in effects/effects.h — they
-// thread a FrameCtx, which this header cannot include without a cycle.)
 
 #endif /* ABILITY_H */

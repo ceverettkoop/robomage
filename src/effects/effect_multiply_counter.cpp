@@ -3,7 +3,8 @@
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../ecs/coordinator.h"
-#include "../game_queries.h"
+#include "../queries/counters.h"
+#include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
 
@@ -11,9 +12,9 @@ namespace effects {
 
 HandlerResult multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    // Double all P1P1 counters on target creature
-    Entity tgt = (ab.target != 0) ? ab.target : ab.source;
-    if (global_coordinator.entity_has_component<Creature>(tgt)) {
+    // Double all P1P1 counters on the affected creature (Scythecat Cub: Defined$ Targeted)
+    for (Entity tgt : affected_objects(ab)) {
+        if (!global_coordinator.entity_has_component<Creature>(tgt)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(tgt);
         int p1p1 = get_counters(tgt, "P1P1");
         if (p1p1 > 0) {

@@ -7,7 +7,7 @@
 #include "components/carddata.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
-#include "game_queries.h"
+#include "queries/filters.h"
 
 extern Coordinator global_coordinator;
 

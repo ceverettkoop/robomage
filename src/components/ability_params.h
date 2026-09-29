@@ -37,13 +37,13 @@ struct PumpParams {
     std::vector<std::string> grant_keywords;
     // KW$ Hexproof:Card.<Color>:<desc> — "hexproof from <color>" (Veil of Summer). Parsed out of
     // the keyword list into this color set; the Pump handler turns it into a turn-long player-
-    // scoped grant (cur_game.hexproof_from_colors_this_turn) covering the controller and the
+    // scoped grant (cur_game.resolved_effects.hexproof_from_colors_this_turn) covering the controller and the
     // permanents they control, rather than a per-creature keyword (which couldn't protect the
     // player or non-creature permanents). Empty = no hexproof-from-color grant.
     std::set<Colors> grant_hexproof_from_colors;
     // KW$ Protection from everything with Defined$ You (The One Ring's ETB Pump) — "you gain
     // protection from everything". Parsed out of the keyword list into this flag; the Pump handler
-    // turns it into a player-scoped grant (cur_game.player_protection_from_everything) for the
+    // turns it into a player-scoped grant (cur_game.resolved_effects.player_protection_from_everything) for the
     // controller rather than a per-creature keyword. False = no player-protection grant.
     bool grant_protection_from_everything = false;
 };
@@ -53,13 +53,15 @@ struct PumpParams {
 struct DamageParams {
     bool is_delirium_scale = false;  // use delirium_amount when delirium is active
     size_t delirium_amount = 0;      // damage dealt when the caster has delirium
+    std::string valid_players = "";  // DamageAll's ValidPlayers$: the players also dealt the
+                                     // damage (player_matches_target_spec form; empty = none)
 };
 
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
 struct DestroyAllParams {
     std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
     // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
-    // cast (the legacy cmcLEX path keys off cur_game.x_paid). Wrath of the Skies'
+    // cast (the legacy cmcLEX path keys off current_x_paid()). Wrath of the Skies'
     // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
     // expression and cmc_op the comparator ("LE"). Empty = no dynamic bound.
     std::string cmc_expr = "";
@@ -135,9 +137,12 @@ struct DiscardParams {
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
+    // RevealOptional$ True (Delver of Secrets): "You may reveal that card" — the controller
+    // chooses whether to reveal the peeked card; without it the card is revealed.
+    bool reveal_optional = false;
     // ImprintRevealed$ True (Atraxa, Grand Unifier): reveal the top PeekAmount cards of the
     // controller's library to all players AND record them as the "imprinted" set
-    // (cur_game.imprinted_entities) so a chained Card.IsImprinted filter can act on exactly the
+    // (cur_game.resolution.memory.imprinted) so a chained Card.IsImprinted filter can act on exactly the
     // revealed cards. The cards stay in the library; a later ChangeZone/ChangeZoneAll moves them.
     bool imprint_revealed = false;
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
@@ -162,7 +167,7 @@ struct DelayedTriggerParams {
     std::string execute_svar = "";  // Execute$ — SVar name of the ability to fire
     std::string valid_player = "";  // ValidPlayer$ — "Player"/"You"/"Opponent"
     // RememberObjects$ RememberedLKI — at registration, snapshot the objects the immediately
-    // preceding RememberChanged$ ChangeZone moved (cur_game.remembered_entities) and carry them
+    // preceding RememberChanged$ ChangeZone moved (cur_game.resolution.memory.remembered) and carry them
     // with the delayed trigger, so its Execute$ ability can act on those same objects when it
     // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
     // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
@@ -170,7 +175,7 @@ struct DelayedTriggerParams {
     // Mode$ ChangesZone (Searing Blood's "When that creature dies this turn"): instead of firing
     // at a future phase, this delayed trigger watches a specific object leaving one zone for
     // another (CR 603.7b). The watched object is the parent spell's target (RememberObjects$
-    // Targeted, in cur_game.remembered_entities at registration); Origin$/Destination$ on the
+    // Targeted, in cur_game.resolution.memory.remembered at registration); Origin$/Destination$ on the
     // same DB$ line become the leave/arrive zone filter (Battlefield -> Graveyard = a death).
     bool mode_changes_zone = false;
     // ThisTurn$ True: the ChangesZone watch is bounded to the turn it was registered (CR 603.7b —

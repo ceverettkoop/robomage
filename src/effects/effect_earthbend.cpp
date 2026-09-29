@@ -9,8 +9,11 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
+#include "../queries/battlefield.h"
+#include "../queries/counters.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -35,7 +38,7 @@ namespace effects {
 // into the library does NOT fire it — the trigger expires unfired (the object is gone).
 HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    Entity tgt = ab.target;
+    Entity tgt = ab.target.get();
     // Target must still be a land on the battlefield at resolution (CR 608.2b re-check).
     if (tgt == 0 || !is_battlefield_permanent(tgt)) return HandlerResult::DONE_RUN_SUBS;
     auto &perm = global_coordinator.GetComponent<Permanent>(tgt);
@@ -44,12 +47,13 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
     if (!is_land) return HandlerResult::DONE_RUN_SUBS;
 
-    int n = static_cast<int>(ab.amount);
+    int n = static_cast<int>(ab.def->amount);
     if (n <= 0) n = 1;
 
     // "becomes a 0/0 creature with haste that's still a land" — bake the land-animation onto the
     // permanent so the layer system reapplies it for the rest of the game (Duration Permanent).
     perm.animate_make_creature = true;
+    perm.animate_timestamp = cur_game.timestamp++;  // CR 613.7b
     perm.animate_set_pt = true;
     perm.animate_power = 0;
     perm.animate_toughness = 0;
@@ -73,21 +77,24 @@ HandlerResult earthbend(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     // control" trigger (CR 603.6e). The fire ability is a generic ChangeZone of the watched card
     // itself (Defined$ Self) from wherever it went back onto the battlefield, entering tapped.
     // The destination filter restricts firing to graveyard/exile departures per the oracle text.
-    Ability fire_ab;
-    fire_ab.ability_type = Ability::TRIGGERED;
-    fire_ab.category = "ChangeZone";
-    fire_ab.defined_self = true;
-    fire_ab.source = tgt;                 // the card to return (its Zone.owner names its owner)
-    fire_ab.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
-    fire_ab.destination = Zone::BATTLEFIELD;
-    fire_ab.enters_tapped = true;
+    Ability fire_ab(keyed_ability_def("earthbend_return", [] {
+        AbilityDef d;
+        d.ability_type = AbilityDef::TRIGGERED;
+        d.category = "ChangeZone";
+        d.defined_self = true;
+        d.origin = Zone::GRAVEYARD;     // unused for a Defined$ Self move; informational
+        d.destination = Zone::BATTLEFIELD;
+        d.enters_tapped = true;
+        return d;
+    }));
+    fire_ab.source = ObjectRef::of(tgt);  // the card to return (its Zone.owner names its owner)
 
     DelayedTrigger dt;
     dt.ability = fire_ab;
     dt.fire_on = Events::CARD_CHANGED_ZONE;
     dt.owner_entity = get_player_entity(perm.controller);
-    dt.fire_on_turn = cur_game.turn;
-    dt.watch_entity = tgt;
+    dt.fire_on_turn = cur_game.turn_state.turn;
+    dt.watched = ObjectRef::of(tgt);
     dt.fire_on_leave_battlefield = true;
     dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
     register_delayed_trigger(dt, ab.source);

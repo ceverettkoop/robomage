@@ -1,0 +1,11 @@
+{
+  "name": "cr608_2c_kaito_draws_per_opponent_who_lost_life",
+  "why": "CR 608.2c / 107.2: Kaito's [0] draws one card per opponent who lost life this turn (none here), not a default of one - 29aa9e4",
+  "hand_a": ["Island"],
+  "library_a": ["Island", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Kaito Bane of Nightmares", "Island"],
+  "play": ["A:keep", "B:keep", "A:desc:[0] (Surveil)"],
+  "max_decisions": 8,
+  "expect_not": ["^Player A draws"],
+  "expect_order": ["Kaito, Bane of Nightmares activates a loyalty ability \\(\\+0", "category: Surveil", "category: Draw, amount: 0\\)"]
+}

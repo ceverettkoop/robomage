@@ -16,7 +16,7 @@
 //
 // RESUMABLE (Batch 10): the whole loop is driven by a persisted CopySpellRT so a copy's
 // target pick can suspend as a loop-top pending decision. The current copy's entity
-// (CardData/ColorIdentity/Spell, deliberately no Zone until placement) persists in the ECS
+// (CardData/Spell, deliberately no Zone until placement) persists in the ECS
 // across the suspension — snapshot-covered — and its in-flight ability accumulates in
 // rt.work. The no-legal-target path DESTROYS the copy entity mid-loop; that happens strictly
 // before any ask for that copy, and rt.cur_copy is dropped in the same stride, so a parked
@@ -28,17 +28,20 @@
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
-#include "../components/color_identity.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../game_queries.h"
+#include "../queries/characteristics.h"
+#include "../queries/players.h"
 #include "../resolution_frame.h"
 #include "../systems/orderer.h"
 #include "effects.h"
+#include "../unless_payment.h"
+#include "../targeting.h"
+#include "../queries/spells.h"
 
 extern Coordinator global_coordinator;
 
@@ -58,17 +61,14 @@ void copy_spell_begin(CopySpellRT &rt, Entity original, int count, Zone::Ownersh
 TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr<Orderer> orderer) {
     if (!rt.active) return TargetStatus::DONE;
 
-    // Copiable characteristics: the card's printed values and color identity (CR 707.2),
+    // Copiable characteristics: the card's printed values (CR 707.2), colors included,
     // re-derived from the original on every (re-)entry — pure reads, and nothing runs between
     // suspend and resume, so a resume re-derives them identically. These survive on the card
-    // entity even after the spell has left the stack (a countered spell keeps its CardData/
-    // ColorIdentity in the graveyard; only its Spell/Ability components are stripped).
+    // entity even after the spell has left the stack (a countered spell keeps its CardData in
+    // the graveyard; only its Spell/Ability components are stripped).
     const auto &orig_card = global_coordinator.GetComponent<CardData>(rt.original);
-    const ColorIdentity *orig_color =
-        global_coordinator.entity_has_component<ColorIdentity>(rt.original)
-            ? &global_coordinator.GetComponent<ColorIdentity>(rt.original)
-            : nullptr;
     const Ability *orig_ability = nullptr;
+    Ability template_instance;  // the SPELL ability template's instance when the original is gone
     bool cant_be_countered = false;
     int x_paid = 0;
     if (global_coordinator.entity_has_component<Spell>(rt.original)) {
@@ -78,7 +78,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         cant_be_countered = orig_spell.cant_be_countered;
         x_paid = orig_spell.x_paid;  // copies copy the X chosen for the original (CR 707.10b)
         if (global_coordinator.entity_has_component<Ability>(rt.original))
-            orig_ability = &global_coordinator.GetComponent<Ability>(rt.original);
+            orig_ability = &stack_object_ability(rt.original);
     } else {
         // The original has already left the stack (e.g. a Storm spell countered before its Storm
         // triggered ability resolved — CR 702.40a / 113.7a: the Storm ability is a separate object,
@@ -87,7 +87,11 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // card's SPELL ability template reproduces the resolving ability, and the copies choose
         // their own new targets anyway, so the template's (absent) targets don't matter.
         for (const auto &tmpl : orig_card.abilities)
-            if (tmpl.ability_type == Ability::SPELL) { orig_ability = &tmpl; break; }
+            if (tmpl->ability_type == AbilityDef::SPELL) {
+                template_instance = Ability(tmpl);
+                orig_ability = &template_instance;
+                break;
+            }
     }
     Zone::Ownership controller = rt.controller_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
 
@@ -100,7 +104,6 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
             // perspective falls back to the ability's controller.
             Entity copy = global_coordinator.CreateEntity();
             global_coordinator.AddComponent(copy, orig_card);
-            if (orig_color) global_coordinator.AddComponent(copy, *orig_color);
 
             Spell copy_spell;
             copy_spell.caster = controller;
@@ -120,14 +123,14 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                 // Copy the resolving spell ability; the controller chooses new targets below
                 // (CR 707.12), so the original's primary/sub targets are cleared up front.
                 rt.work = *orig_ability;
-                rt.work.source = copy;
+                rt.work.source = ObjectRef::of(copy);
                 rt.work.controller = controller;
-                rt.work.target = 0;
+                rt.work.target = ObjectRef{};
                 rt.work.targets.clear();
                 for (auto &sub : rt.work.subabilities) {
-                    sub.source = copy;
+                    sub.source = rt.work.source;
                     sub.controller = controller;
-                    sub.target = 0;
+                    sub.target = ObjectRef{};
                     sub.targets.clear();
                 }
             }
@@ -135,7 +138,7 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
 
         if (rt.have_ability) {
             if (rt.phase == 0) {
-                if (rt.work.valid_tgts != "N_A") {
+                if (rt.work.def->valid_tgts != "N_A") {
                     // If no legal target remains for this copy, it can't be put on the stack
                     // (CR 707.10c-ish: a copy that requires a target with none available is not
                     // created). Skip it cleanly rather than placing an untargeted copy. Checked
@@ -163,7 +166,8 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                     // legal target simply leaves it untargeted (it does nothing at
                     // resolution) rather than crashing.
                     Ability &sub = rt.work.subabilities[rt.sub_idx];
-                    if (sub.valid_tgts != "N_A" &&
+                    sub.targeted_player = rt.work.player_target_for_subs();  // ParentTarget
+                    if (sub.def->valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(sub, orderer))) {
                         if (run_target_select(sub, rt.tsel, asker, orderer, controller) !=
                             TargetStatus::DONE)
@@ -182,12 +186,12 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
                 int idx = rt.work.charm_chosen[rt.mode_pos];
                 if (idx >= 0 && static_cast<size_t>(idx) < rt.work.charm_choices.size()) {
                     Ability &mode = rt.work.charm_choices[static_cast<size_t>(idx)];
-                    mode.source = rt.cur_copy;
+                    mode.source = ObjectRef::of(rt.cur_copy);
                     mode.controller = controller;
-                    if (mode.valid_tgts != "N_A" &&
+                    if (mode.def->valid_tgts != "N_A" &&
                         (rt.tsel.active || has_legal_targets(mode, orderer))) {
                         if (!rt.tsel.active) {
-                            mode.target = 0;
+                            mode.target = ObjectRef{};
                             mode.targets.clear();
                         }
                         if (run_target_select(mode, rt.tsel, asker, orderer, controller) !=
@@ -204,9 +208,13 @@ TargetStatus run_copy_spell(CopySpellRT &rt, TargetAsker &asker, std::shared_ptr
         // first) without firing a zone-change event/replacement it never earned.
         orderer->place_created_on_stack(rt.cur_copy, controller);
         game_log("%s copies %s\n", player_name(controller).c_str(), orig_card.name.c_str());
+        rt.placed.push_back(rt.cur_copy);
         rt.cur_copy = 0;
         rt.remaining--;
     }
+    // Each copy's targets became its targets as it was put on the stack (CR 707.10); the Ward
+    // and becomes-target abilities that triggered meanwhile go on the stack above the copies.
+    for (Entity copy : rt.placed) fire_targeting_hooks(copy, controller);
     rt = CopySpellRT{};
     return TargetStatus::DONE;
 }
@@ -231,10 +239,10 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
         // when the parent targeted a permanent — that permanent's controller. The target is the
         // parent effect's target, inherited onto this sub-ability (Defined$ Parent) by bind_sub_target.
         Zone::Ownership payer = ab.controller;
-        if (ab.unless_payer_is_targeted_or_controller) {
-            Entity tgt = ab.target;
+        if (ab.def->unless_payer_is_targeted_or_controller) {
+            Entity tgt = ab.target.get();
             if (tgt != 0 && global_coordinator.entity_has_component<Player>(tgt)) {
-                payer = (tgt == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                payer = seat_of_player(tgt);
             } else if (tgt != 0 && global_coordinator.entity_has_component<Permanent>(tgt)) {
                 payer = global_coordinator.GetComponent<Permanent>(tgt).controller;
             }
@@ -244,25 +252,25 @@ HandlerResult effects::copy_spell_ability(Ability &ab, std::shared_ptr<Orderer> 
 
         // Offer the optional unless-cost. UnlessSwitched inverts the meaning of "paid".
         bool do_copy;
-        if (ab.unless_generic_cost > 0) {
+        if (ab.def->unless_generic_cost > 0) {
             if (!ctx.resuming())
                 game_log("%s may pay to copy %s:\n", player_name(payer).c_str(),
-                         entity_name(ab.source).c_str());
+                         entity_name(ab.source.lki_entity()).c_str());
             bool suspended = false;
-            bool prevented = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, ab.source, ctx,
+            bool prevented = run_unless_loop(ab.def->unless_generic_cost, payer, orderer, ab.source.lki_entity(), ab.source.lki_entity(), ctx,
                                              suspended,
-                                             UnlessSubject{UnlessEffect::COPY, ab.source, ab.unless_switched},
-                                             UnlessPayKind::MANA, &ab.unless_cost_pips);
+                                             UnlessSubject{UnlessEffect::COPY, ab.source.lki_entity(), ab.def->unless_switched},
+                                             UnlessPayKind::MANA, &ab.def->unless_cost_pips);
             if (suspended) return HandlerResult::SUSPENDED;
             bool paid = !prevented;
             // UnlessSwitched$ True: copy only if paid. Otherwise copy unless paid.
-            do_copy = ab.unless_switched ? paid : prevented;
+            do_copy = ab.def->unless_switched ? paid : prevented;
         } else {
             do_copy = true;  // no cost — always copy
         }
         if (!do_copy) return HandlerResult::DONE_RUN_SUBS;
 
-        copy_spell_begin(rt, ab.source, 1, payer);
+        copy_spell_begin(rt, ab.source.lki_entity(), 1, payer);
         if (!rt.active) return HandlerResult::DONE_RUN_SUBS;  // nothing to copy (original gone)
     }
 

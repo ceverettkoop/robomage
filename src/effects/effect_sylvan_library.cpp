@@ -12,6 +12,8 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/player_resources.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -20,10 +22,10 @@ extern Game cur_game;
 namespace effects {
 
 HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
     Zone::Ownership ctrl = ab.controller;
-    Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity ctrl_entity = get_player_entity(ctrl);
     auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
 
     // The draw-2 and the drawn-this-turn scan run once; the candidate set, the
@@ -36,13 +38,12 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         // Draw 2 cards — each offering the dredge draw-replacement through ctx
         // (suspendable; rt.draws_done persists the batch progress), with
         // ab.source as the dredge ask's pending-decision source.
-        if (!draw_n_with_replacements(ctx, orderer, ctrl, rt.draws_done, 2, ab.source))
+        if (!draw_n_with_replacements(ctx, orderer, ctrl, rt.draws_done, 2, ab.source.lki_entity()))
             return HandlerResult::SUSPENDED;
         game_log("%s draws 2 cards (Sylvan Library)\n", player_name(ctrl).c_str());
 
         // Get cards drawn this turn that are still in hand
-        for (auto e : pl.cards_drawn_this_turn) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        for (Entity e : live_entities(pl.cards_drawn_this_turn)) {
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location == Zone::HAND && z.owner == ctrl) {
                 rt.drawn_in_hand.push_back(e);
@@ -77,7 +78,7 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         if (choose_actions.empty()) break;
         // No priority repoint existed here — the resolving seat is ab.controller,
         // so seating the ask there is a no-op swap.
-        int choice = ctx.ask(choose_actions, ctrl, ab.source);
+        int choice = ctx.ask(choose_actions, ctrl, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
         rt.chosen.push_back(choose_actions[static_cast<size_t>(choice)].source_entity);
     }
@@ -88,19 +89,22 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
         auto &cd = global_coordinator.GetComponent<CardData>(card);
         if (!ctx.resuming())
             game_log("For %s: pay 4 life or put on top of library?\n", cd.name.c_str());
-        std::vector<LegalAction> pay_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Pay 4 life")),
-            LegalAction(PASS_PRIORITY, std::string("Put on top of library")),
-        };
-        pay_actions[0].category = ActionCategory::SYLVAN_CHOICE;
-        pay_actions[0].option_ordinal = 1;  // 1 = pay 4 life
-        pay_actions[1].category = ActionCategory::SYLVAN_CHOICE;
-        pay_actions[1].option_ordinal = 0;  // 0 = put on top of library
-        int choice = ctx.ask(std::move(pay_actions), ctrl, ab.source);
+        // "Pay 4 life" is offered only when the player can pay it (CR 119.4).
+        std::vector<LegalAction> pay_actions;
+        if (can_pay_life(pl, 4)) {
+            LegalAction pay(PASS_PRIORITY, std::string("Pay 4 life"));
+            pay.category = ActionCategory::SYLVAN_CHOICE;
+            pay.option_ordinal = 1;  // 1 = pay 4 life
+            pay_actions.push_back(pay);
+        }
+        LegalAction top(PASS_PRIORITY, std::string("Put on top of library"));
+        top.category = ActionCategory::SYLVAN_CHOICE;
+        top.option_ordinal = 0;  // 0 = put on top of library
+        pay_actions.push_back(top);
+        int choice = ctx.ask(pay_actions, ctrl, ab.source.lki_entity());
         if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        if (choice == 0) {
-            pl.life_total -= 4;
-            pl.life_lost_this_turn += 4;  // CR 119.4: paying life is losing life
+        if (pay_actions[static_cast<size_t>(choice)].option_ordinal == 1) {
+            pay_life(pl, 4);
             game_log("%s pays 4 life (now at %d)\n", player_name(ctrl).c_str(), pl.life_total);
         } else {
             orderer->add_to_zone(false, card, Zone::LIBRARY);

@@ -24,15 +24,22 @@ struct Permanent {
     std::vector<StaticAbility> static_abilities;
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
-    size_t entered_on_turn = 0;  // cur_game.turn when this entered the battlefield (Ocelot Pride "entered this turn")
+    size_t entered_on_turn = 0;  // cur_game.turn_state.turn when this entered the battlefield (Ocelot Pride "entered this turn")
     bool transformed = false;  // true when DFC is showing its back face
-    Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
-    Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
+    uint32_t times_transformed = 0;  // transforms since it entered (CR 701.27f stamp)
+    // For an Equipment or Aura: the permanent it is attached to (0 = unattached). This is the
+    // one record of an attachment; what is attached to a permanent is derived from it (several
+    // Equipment and Auras may share one host, CR 301.5 / 303.4).
+    ObjectRef equipped_to;  // the object this Aura/Equipment is attached to; one that became a new
+                            // object reads 0 (unattached, CR 400.7)
     bool is_phased_out = false;
+    // CR 702.26g: this Aura/Equipment phased out "indirectly", along with the permanent it is
+    // attached to (equipped_to). It doesn't phase in by itself; it phases in with that permanent.
+    bool phased_out_indirectly = false;
     // 122.1: typed counters on this permanent, keyed by counter type ("P1P1", "M1M1",
     // "LOYALTY", keyword counters). Single store for every counter kind (T2.4) — planeswalker
     // loyalty is just a LOYALTY counter (306.5c). Mutate via the get/add_counters helpers in
-    // game_queries.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
+    // queries/counters.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
     // contribution (layer 7c, 613.4c). An entry is absent (not 0) when it has no counters.
     CounterMap counters;
     // Per-permanent named integer SVars written by a DB$ StoreSVar effect (Forge's
@@ -53,7 +60,7 @@ struct Permanent {
     // stays until the permanent leaves the battlefield (so it resets naturally when a new
     // Permanent is created on re-entry). Internal state only — NOT exposed in the obs/state
     // vector. Set by the Monstrosity$ resolution in effect_put_counter.cpp; read by the
-    // "NotMonstrous" activation gate (game_queries.h). Mutated nowhere else.
+    // "NotMonstrous" activation gate (queries/activation.h). Mutated nowhere else.
     bool is_monstrous = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     // This permanent entered because its spell was cast from the graveyard for its Escape cost
@@ -67,7 +74,7 @@ struct Permanent {
     // set: it gained haste on entry, a delayed triggered ability exiles it at the beginning of the
     // next end step (CR 603.7b), and a leaves-the-battlefield replacement exiles it instead of
     // letting it go anywhere else (the redirect in Orderer::add_to_zone). Set when the Permanent is
-    // created from a card whose unearth ChangeZone resolved (game.pending_unearthed); a fresh
+    // created from a card whose unearth ChangeZone resolved (EntryInfo::unearthed); a fresh
     // re-entry by any other means leaves it false.
     bool unearthed = false;
     // This permanent entered the battlefield as a spell its controller cast from their own
@@ -80,12 +87,17 @@ struct Permanent {
     // 614.12. Read by the Card.wasCastByYou cast-condition on an "enters, if you cast it" ETB
     // trigger (The One Ring's protection grant). True only for a permanent that resolved onto the
     // battlefield from the stack as a cast spell; false for tokens, reanimation, ChangeZone-to-
-    // battlefield, and any other non-cast entry. Set one-shot from cur_game.cast_to_battlefield
+    // battlefield, and any other non-cast entry. Set one-shot from EntryInfo::cast
     // when the Permanent is created.
     bool entered_by_cast = false;
+    // CR 107.3m: the X chosen for the spell that became this permanent as it resolved (0 for any
+    // other entry). Its enters-the-battlefield triggered abilities use this X, though the
+    // permanent's own X is 0. Set one-shot from EntryInfo::x_paid.
+    int entered_x = 0;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
-    std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)
+    std::vector<ObjectRef> exiled_with;  // the cards this permanent exiled (Keen-Eyed Curator,
+                                         // linked "until it leaves" returns)
 
     // DB$ Animate | Duration$ Permanent (CR 613, the "becomes ..." continuous effects a
     // resolved ability bakes onto a permanent for the rest of the game). Stored on the
@@ -102,6 +114,11 @@ struct Permanent {
     int animate_power = 0;         // (extension) base power Animate sets
     int animate_toughness = 0;     // (extension) base toughness Animate sets
     bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
+    // Timestamp (CR 613.7b) of the latest resolved Animate recorded in the rest-of-game and
+    // until-your-next-turn fields (animate_added_types, animate_added_types_until_turn,
+    // animate_make_creature, animate_set_pt, animate_added_keywords); orders those effects
+    // against static abilities' effects in layers 4, 6 and 7b.
+    size_t animate_timestamp = 0;
     // Activated abilities granted for the rest of the game by a resolved DB$ Animate |
     // Abilities$ ... | Duration$ Permanent (Urza's Saga chapters I & II: gains "{T}: Add {C}" /
     // the Construct-token ability). Stored here — not only on Permanent::abilities — so the
@@ -128,6 +145,7 @@ struct Permanent {
     // A card opts in by giving its Animate ability no Duration$ (or Duration$ other than Permanent).
     std::vector<Type> animate_added_types_eot;
     bool animate_make_creature_eot = false;
+    size_t animate_timestamp_eot = 0;  // CR 613.7b timestamp of the latest EOT Animate above
 
     // DB$/AB$ Animate with Duration$ UntilYourNextTurn (Karn, the Great Creator +1: "Until your
     // next turn, ... becomes an artifact creature with power and toughness each equal to its mana
@@ -148,7 +166,7 @@ struct Permanent {
     // AB$ AnimateAll | RemoveKeywords$ ... (Shadowspear: "Permanents your opponents control lose
     // hexproof and indestructible until end of turn"). Keyword(s) this permanent currently has
     // SUPPRESSED until end of turn by a mass continuous effect (CR 613, layer 6 keyword removal).
-    // The effective-keyword accessors (permanent_has_keyword / is_indestructible in game_queries.h)
+    // The effective-keyword accessors (permanent_has_keyword / is_indestructible in queries/keywords.h)
     // treat a keyword in this set as absent, so the loss has a real gameplay consequence — a
     // hexproof creature becomes targetable by opponents again, an indestructible one can be
     // destroyed / die to lethal damage — for the rest of the turn. Cleared at the cleanup step
@@ -167,9 +185,8 @@ struct Permanent {
     // skips a flagged permanent's innate TRIGGERED abilities, and the Saga chapter machinery
     // (saga.cpp / the 714.4 sacrifice SBA) treats a flagged Saga as not-a-Saga. Abilities still
     // present in `abilities` (granted by the remover itself, or the regenerated subtype-derived
-    // mana ability) are NOT suppressed by this flag. Simplification vs CR 613.5: any grant from
-    // a non-remover source is erased regardless of timestamp (matches the existing layer-6
-    // removal model documented in state_manager_statics.cpp).
+    // mana ability, a grant with a later timestamp than the removal) are NOT suppressed by this
+    // flag (see the layer-6 removal model documented in state_manager_statics.cpp).
     bool abilities_removed = false;
 
     // CR 714.4 Saga sacrifice gate: the number of this Saga's chapter abilities that have
@@ -183,19 +200,10 @@ struct Permanent {
     // CR 702.175: this permanent entered the battlefield for its Impending alternate cost, so its
     // TIME counters are *impending* time counters — it is a noncreature until they all shed, and it
     // sheds one at the controller's end step. Set when the impending TIME counters are applied (the
-    // same place pending_impending is consumed). Required (in addition to TIME > 0) by both the
+    // same place EntryInfo::impending is consumed). Required (in addition to TIME > 0) by both the
     // impending creature-suppression strip and the end-step shed, so a future Vanishing/Suspend card
     // that also uses generic TIME counters does NOT get treated as an impending permanent.
     bool entered_via_impending = false;
-
-    // Card types added to this permanent by a GLOBAL additive type-changing static this SBA pass
-    // (Mycosynth Lattice's "All permanents are artifacts in addition to their other types.",
-    // CR 613.1d layer 4). Distinct from animate_added_types (baked on by a resolved DB$ Animate):
-    // these come from a battlefield static and are stripped-then-rebuilt every pass by
-    // apply_global_addtype_statics, so the grant lapses the instant the source leaves the
-    // battlefield. Only genuinely-new types are recorded (a type the permanent already had is not
-    // tracked here and so is never erased), and only TYPE/SUBTYPE/SUPERTYPE not already present.
-    std::set<Type> static_added_types;
 
     // CR 603.8 state-triggered abilities (Mode$ Always, e.g. Dark Depths' "When CARDNAME has no
     // ice counters on it, sacrifice it."). A state trigger fires the instant its condition becomes

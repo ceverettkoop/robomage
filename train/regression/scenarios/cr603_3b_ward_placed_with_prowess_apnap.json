@@ -1,0 +1,12 @@
+{
+  "name": "cr603_3b_ward_placed_with_prowess_apnap",
+  "why": "CR 702.21a / 603.3b: Ward is placed with the other triggers in APNAP order, so the defender's Ward resolves before the caster's prowess - 8ee88c7",
+  "hand_a": ["Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain", "Monastery Swiftspear"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Kappa Cannoneer"],
+  "play": ["A:keep", "B:keep", "A:cast:Lightning Bolt", "A:target:Kappa Cannoneer"],
+  "max_decisions": 8,
+  "expect_order": ["Player A casts Lightning Bolt targeting Kappa Cannoneer", "Resolving ability \\(category: Counter\\)", "Lightning Bolt is countered", "Resolving ability \\(category: ProwessBonus"]
+}

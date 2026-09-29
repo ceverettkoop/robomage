@@ -1,0 +1,13 @@
+{
+  "name": "cr118_9_dauthi_card_cast_by_its_new_player",
+  "why": "CR 601.2 / 118.9 / 110.2: Dauthi Voidwalker's chosen void card (the opponent's Lightning Bolt) is cast later that turn through the normal cast action by Dauthi's controller - 94457c0 79405a1",
+  "hand_a": ["Swamp"],
+  "library_a": ["Swamp", "Swamp", "Swamp"],
+  "battlefield_a": ["Dauthi Voidwalker", "Swamp"],
+  "hand_b": ["Lightning Bolt", "Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain"],
+  "battlefield_b": ["Mountain"],
+  "play": ["A:keep", "B:keep", "B:cast:Lightning Bolt", "B:target:Player A", "A:pass", "A:activate:Dauthi", "A:desc:Lightning Bolt", "A:cast:Lightning Bolt", "A:target:Player B"],
+  "max_decisions": 24,
+  "expect_order": ["Player B casts Lightning Bolt targeting Player A", "Lightning Bolt deals 3 damage to Player A", "Player A sacrifices Dauthi Voidwalker", "Player A casts Lightning Bolt targeting Player B", "Lightning Bolt deals 3 damage to Player B"]
+}

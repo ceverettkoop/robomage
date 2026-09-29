@@ -1,0 +1,13 @@
+{
+  "name": "cr107_4f_phyrexian_cast_gated_by_payable_life",
+  "why": "CR 107.4f / 119.4 / 601.2h: Surgical Extraction is not offered at 1 life with no black source (neither {B} nor 2 life payable) - 4fb137c",
+  "life_a": 1,
+  "hand_a": ["Surgical Extraction", "Lightning Bolt"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Mountain"],
+  "graveyard_b": ["Grizzly Bears"],
+  "play": ["A:keep", "B:keep"],
+  "max_decisions": 4,
+  "expect_menu": ["Cast Lightning Bolt"],
+  "expect_menu_not": ["Cast Surgical Extraction"]
+}

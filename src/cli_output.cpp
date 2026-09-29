@@ -234,6 +234,9 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --seed <n>          RNG seed (default: current time)\n");
     printf("  --no-shuffle        Skip the initial library shuffle; cards are drawn in\n");
     printf("                      deck-file order\n");
+    printf("  --offer-cancel      Offer \"Cancel\" at every cast and activation prompt; it\n");
+    printf("                      reverses the spell or ability being proposed (CR 733.1).\n");
+    printf("                      A testing aid (default: off)\n");
     printf("\nInput and output:\n");
     printf("  --player <A|B>      Designate a human seat (any value other than A/a means\n");
     printf("                      B); hidden information is shown from that seat's view.\n");
@@ -291,7 +294,7 @@ void cli_print_pregame_header() {
 
 void cli_print_turn_header(size_t turn, bool player_a_turn) {
     const char* name = player_a_turn ? "Player A" : "Player B";
-    // Game::turn counts from 0; display 1-based so the first header reads "TURN 1"
+    // Game::turn_state.turn counts from 0; display 1-based so the first header reads "TURN 1"
     // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
     game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
 }

@@ -1,0 +1,13 @@
+{
+  "name": "cr702_21a_ward_modal_trigger_mode_target",
+  "why": "CR 702.21a / 603.3c: a modal triggered ability's mode target (Knight of Autumn destroying Kappa Cannoneer), chosen as it goes on the stack, triggers Ward - 1be08626",
+  "hand_a": ["Knight of Autumn"],
+  "library_a": ["Forest"],
+  "battlefield_a": ["Forest", "Plains", "Forest"],
+  "library_b": ["Island"],
+  "battlefield_b": ["Kappa Cannoneer"],
+  "play": ["A:keep", "B:keep", "A:cast:Knight of Autumn", "A:desc:Destroy target artifact", "A:target:Kappa Cannoneer"],
+  "max_decisions": 8,
+  "expect_not": ["Kappa Cannoneer is destroyed"],
+  "expect_order": ["Player A chooses mode — Destroy target artifact or enchantment", "Knight of Autumn triggered", "Ward \\{4\\}: Kappa Cannoneer", "Knight of Autumn's ability is countered"]
+}

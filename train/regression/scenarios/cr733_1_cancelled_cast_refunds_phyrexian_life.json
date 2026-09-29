@@ -1,0 +1,14 @@
+{
+  "name": "cr733_1_cancelled_cast_refunds_phyrexian_life",
+  "why": "CR 601.5 / 733.1: cancelling a cast after paying a Phyrexian pip with life gives the life back - e6cc4ef 3f3b436",
+  "offer_cancel": true,
+  "hand_a": ["Dismember", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "library_a": ["Island"],
+  "battlefield_a": ["Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Lightning Bolt"],
+  "library_b": ["Mountain"],
+  "battlefield_b": ["Grizzly Bears", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:desc:Cast Dismember", "A:desc:Pay 2 life", "A:desc:Cancel", "A:desc:Cast Dismember", "A:desc:Pay 2 life", "A:desc:Pay 2 life", "A:target:Grizzly Bears", "B:cast:Lightning Bolt", "B:target:Player A"],
+  "max_decisions": 16,
+  "expect_order": ["Player A pays 2 life", "Casting cancelled", "Player A pays 2 life", "Player A pays 2 life", "Player A casts Dismember", "Lightning Bolt deals 3 damage to Player A \\(now at 13 life\\)"]
+}

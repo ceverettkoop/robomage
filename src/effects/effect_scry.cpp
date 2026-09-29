@@ -13,88 +13,54 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
+#include "../svar_eval.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
 namespace effects {
 
-// Scry N (CR 701.22a): the chosen player looks at the top N cards of their library, then
-// may put any number of them on the bottom of their library and the rest back on top in
-// any order. Modeled as a per-card top-or-bottom choice from the top down; cards left on
-// top keep their relative order (the optional reorder-among-kept is omitted as a
-// simplification). Each kept card goes on its owner's known-top cache at its depth as it
-// is kept, so the kept cards are visible for the remaining choices and afterwards. The
-// player is ValidTgts$ Player (ab.target); absent a target the source's controller
-// scries. The scrying player sees the cards and makes every keep/bottom choice, so a
-// targeted opponent decides for their own library. After scrying, any SubAbility$ chains with the same target
-// (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
+// Scry N (CR 701.22a): the chosen player looks at the top N cards of their library, then puts
+// any number of them on the bottom of their library in any order and the rest back on top in any
+// order — look_and_split with the library bottom as the other pile. The player is ValidTgts$
+// Player (ab.target); absent a target the ability's controller scries. The scrying player sees
+// the cards and makes every choice, so a targeted opponent decides for their own library. After
+// scrying, any SubAbility$ chains with the same target (Kozilek's Command: "scries X, then draws
+// a card" — DBDraw with Defined$ ParentTarget).
 HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    PendingDecisionScope pending_scope(ab.source);
+    PendingDecisionScope pending_scope(ab.source.lki_entity());
     Zone::Ownership owner;
-    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
-        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-    else if (global_coordinator.entity_has_component<Permanent>(ab.source))
-        owner = global_coordinator.GetComponent<Permanent>(ab.source).controller;
+    if (ab.target.get() != 0 && global_coordinator.entity_has_component<Player>(ab.target.get()))
+        owner = seat_of_player(ab.target.get());
     else
-        owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+        owner = ab.controller;  // "you" = the ability's controller (CR 109.5)
 
-    // The looked-at slice is frozen once into the frame rt (pinned against
-    // determinize by pinned_entities()); the per-card loop index persists so a
-    // resume re-enters the suspended keep/bottom decision. Bottom moves happen
-    // per answer, exactly as before.
-    ScryRt local_rt;
-    ScryRt &rt = ctx.can_suspend() ? ctx.rt<ScryRt>() : local_rt;
+    // The looked-at slice is frozen once into the frame rt (pinned against determinize by
+    // pinned_entities()), with the cards already placed, so a resume re-enters the suspended pick.
+    LookSplitRt local_rt;
+    LookSplitRt &rt = ctx.can_suspend() ? ctx.rt<LookSplitRt>() : local_rt;
     if (!rt.init) {
-        size_t num = ab.amount;
-        if (!ab.dynamic_amount_expr.empty())
-            num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
+        size_t num = ab.def->amount;
+        if (!ab.def->dynamic_amount_expr.empty())
+            num = evaluate_amount(ab.def->dynamic_amount_expr, owner, 0, ab.target.get());
         if (num == 0) return HandlerResult::DONE_RUN_SUBS;
 
-        rt.lib = orderer->get_library_top(owner, num);
-        if (rt.lib.empty()) {
+        std::vector<Entity> looked = orderer->get_library_top(owner, num);
+        if (looked.empty()) {
             game_log("%s's library is empty — nothing to scry.\n", player_name(owner).c_str());
             return HandlerResult::DONE_RUN_SUBS;
         }
-        game_log("%s scries %zu.\n", player_name(owner).c_str(), rt.lib.size());
+        game_log("%s scries %zu.\n", player_name(owner).c_str(), looked.size());
+        for (Entity card : looked) {
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            game_log_private(owner, "Scry: looking at %s\n", cd.name.c_str());
+        }
+        rt.remaining = looked;
         rt.init = true;
     }
-
-    // Decide top-to-bottom per card. Bottomed cards move to the library bottom; cards left
-    // on top stay in place (their distance_from_top compacts as bottomed cards leave), so a
-    // kept card already sits at its final depth when it is recorded as known. The record
-    // follows the answer with no suspension point between them, and a resume re-enters at
-    // the next card (rt.idx advances in the loop increment).
-    for (; rt.idx < rt.lib.size(); ++rt.idx) {
-        Entity card = rt.lib[rt.idx];
-        auto &cd = global_coordinator.GetComponent<CardData>(card);
-        // Arm-only per-card look line: a resume consumes the parked answer for
-        // this card without re-logging.
-        if (!ctx.resuming())
-            game_log_private(owner, "Scry: top card is %s\n", cd.name.c_str());
-        std::vector<LegalAction> scry_actions = {
-            LegalAction(PASS_PRIORITY, card, std::string("Keep on top")),
-            LegalAction(PASS_PRIORITY, card, std::string("Put on bottom")),
-        };
-        // Both options reference the same card, so they must differ by category to be
-        // distinguishable to the semantic action resolver (a `top:`/`bottom:` --play spec
-        // keys on category + card): keep = TOP_LIBRARY, bottom = BOTTOM_DECK_CARD.
-        scry_actions[0].category = ActionCategory::TOP_LIBRARY;
-        scry_actions[1].category = ActionCategory::BOTTOM_DECK_CARD;
-        // Asked of the scrying player (CR 701.22a), who need not be the resolving seat
-        // (Kozilek's Command targeting an opponent); the ask repoints priority at them
-        // for the decision only.
-        int choice = ctx.ask(std::move(scry_actions), owner, ab.source);
-        if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
-        if (choice == 1) {
-            orderer->add_to_zone(true, card, Zone::LIBRARY);
-            game_log("%s puts a card on the bottom of their library.\n", player_name(owner).c_str());
-        } else {
-            orderer->note_library_card_known(card);
-        }
-    }
-    return HandlerResult::DONE_RUN_SUBS;
+    return look_and_split(rt, owner, LookSplitRest::LIBRARY_BOTTOM, orderer, ctx, ab.source.lki_entity());
 }
 
 }  // namespace effects

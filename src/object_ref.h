@@ -1,0 +1,183 @@
+#ifndef OBJECT_REF_H
+#define OBJECT_REF_H
+
+#include <cstdint>
+#include <map>
+#include <vector>
+
+#include "ecs/entity.h"
+
+// A reference to one game OBJECT across time (CR 400.7). An entity id survives zone changes and
+// is eventually reissued to an unrelated object, so an Entity alone cannot say whether it still
+// names the object it was taken from. ObjectRef pairs the id with the object's identity stamp —
+// Zone::obj_gen, fresh on every zone entry (Orderer::add_to_zone) and never reused — and with
+// which holder of the id it was (the coordinator's issue count), both taken when the reference
+// is made:
+//   - get() is the entity while it is still that object, else 0: it changed zones (a new object),
+//     ceased to exist, or its id now belongs to something else.
+//   - lki_entity() is the id while it still belongs to the entity the reference was taken of (in
+//     any zone, or ceased to exist), else 0: for last-known-information lookups (lki_for /
+//     departed_lki_for, effective_* on a departed object), logging, and matching a reference
+//     against the entity it was taken of (bookkeeping that clears links to an object) — never to
+//     act on the object.
+// Every reference kept across a zone change, a resolution boundary or a turn is an ObjectRef;
+// plain Entity is for values that live inside one uninterrupted step.
+//
+// Players (and other entities with no Zone) never become new objects: of() gives them gen 0 and
+// get() returns them as long as they still have no Zone.
+//
+// CR 400.7j: within one resolution, an object the resolving effect moved can still be found by
+// the rest of that effect. get() therefore also resolves a reference to an earlier incarnation
+// of an object moved while a follow window is open (FollowWindowScope, the stack resolution
+// frame) — see note_object_moved.
+//
+// Trivially copyable, so component and whole-Game snapshots copy it by value.
+struct ObjectRef {
+    Entity e = 0;
+    uint32_t issue = 0;  // which holder of id `e` (Coordinator::GetIssueCount) was referenced
+    uint64_t gen = 0;
+
+    static ObjectRef of(Entity e);  // stamps `e`'s identity now; of(0) is the empty ref
+    // `e` as the earlier object stamped `gen` (the object a zone-change event moved).
+    static ObjectRef of_object(Entity e, uint64_t gen);
+    Entity get() const;         // e if still the same object, else 0
+    Entity lki_entity() const;  // e while its id is not reissued: LKI lookups, logging, links
+    bool empty() const { return e == 0; }  // no object was ever referenced
+    explicit operator bool() const { return get() != 0; }
+    bool operator==(const ObjectRef &o) const {
+        return e == o.e && issue == o.issue && gen == o.gen;
+    }
+    bool operator!=(const ObjectRef &o) const { return !(*this == o); }
+};
+
+// Refs to each of `entities`, stamped now.
+std::vector<ObjectRef> refs_of(const std::vector<Entity> &entities);
+// The entities `refs` still name (get() != 0), in order.
+std::vector<Entity> live_entities(const std::vector<ObjectRef> &refs);
+// The ids of `refs` (lki_entity), in order, skipping any since issued to another entity: for
+// last-known-information reads (counts and characteristics of the objects as they last existed,
+// a ceased token included).
+std::vector<Entity> lki_entities(const std::vector<ObjectRef> &refs);
+// Refs to the objects `refs` still name, stamped as those objects are now. Used when references
+// are handed on past the current effect (a delayed trigger's remembered objects): an object the
+// effect moved is handed on as the new object it became (CR 400.7j).
+std::vector<ObjectRef> restamp_live(const std::vector<ObjectRef> &refs);
+// True if some ref in `refs` names `e` as the object it is now.
+bool refs_contain(const std::vector<ObjectRef> &refs, Entity e);
+
+// An ordered set of objects keyed by entity id (the std::set<Entity> iteration order), each
+// member remembered with its identity stamp: a member that became a new object, or whose id was
+// reissued, is no longer contained.
+class ObjectSet {
+    public:
+        void insert(Entity e) { members[e] = ObjectRef::of(e); }
+        void erase(Entity e) { members.erase(e); }
+        void clear() { members.clear(); }
+        size_t count(Entity e) const;
+        bool empty() const { return live().empty(); }
+        std::vector<Entity> live() const;  // members that are still the same object
+
+    private:
+        std::map<Entity, ObjectRef> members;
+};
+
+// A map from objects to T keyed by entity id, each key remembered with its identity stamp. An
+// entry whose object is gone (it changed zones, or its id was reissued) is invisible to find()
+// and live_keys(); operator[] replaces such an entry with a fresh default one.
+template <class T>
+class ObjectMap {
+    public:
+        T *find(Entity e) {
+            auto it = entries.find(e);
+            return it != entries.end() && it->second.ref.get() == e ? &it->second.value : nullptr;
+        }
+        const T *find(Entity e) const {
+            auto it = entries.find(e);
+            return it != entries.end() && it->second.ref.get() == e ? &it->second.value : nullptr;
+        }
+        size_t count(Entity e) const { return find(e) ? 1 : 0; }
+        T &operator[](Entity e) {
+            auto it = entries.find(e);
+            if (it == entries.end() || it->second.ref.get() != e)
+                it = entries.insert_or_assign(e, Entry{ObjectRef::of(e), T{}}).first;
+            return it->second.value;
+        }
+        // The entry of the object `ref` names (as it was when the ref was taken), created fresh
+        // when `ref`'s entity holds none or holds another object's.
+        T &operator[](const ObjectRef &ref) {
+            auto it = entries.find(ref.e);
+            if (it == entries.end() || it->second.ref != ref)
+                it = entries.insert_or_assign(ref.e, Entry{ref, T{}}).first;
+            return it->second.value;
+        }
+        void erase(Entity e) { entries.erase(e); }
+        void clear() { entries.clear(); }
+        // Drop every entry whose object is gone.
+        void purge_stale() {
+            erase_if_entry([](Entity e, const Entry &en) { return en.ref.get() != e; });
+        }
+        // CR 400.7g: the entry of `e` follows it into its new zone — when it was recorded for the
+        // object stamped `from_gen`, it now belongs to the object `e` is (a card cast under a
+        // permission it grants keeps the permission while the cast is proposed).
+        void follow(Entity e, uint64_t from_gen) {
+            auto it = entries.find(e);
+            if (it != entries.end() && it->second.ref.gen == from_gen)
+                it->second.ref = ObjectRef::of(e);
+        }
+        // Keys still naming the object they were recorded for, in entity-id order.
+        std::vector<Entity> live_keys() const {
+            std::vector<Entity> out;
+            for (const auto &kv : entries)
+                if (kv.second.ref.get() == kv.first) out.push_back(kv.first);
+            return out;
+        }
+        // Erase every entry (live or not) for which pred(entity, value) is true.
+        template <class Pred>
+        void erase_if(Pred pred) {
+            erase_if_entry([&pred](Entity e, Entry &en) { return pred(e, en.value); });
+        }
+
+    private:
+        struct Entry {
+            ObjectRef ref;
+            T value;
+        };
+        template <class Pred>
+        void erase_if_entry(Pred pred) {
+            for (auto it = entries.begin(); it != entries.end();) {
+                if (pred(it->first, it->second))
+                    it = entries.erase(it);
+                else
+                    ++it;
+            }
+        }
+        std::map<Entity, Entry> entries;
+};
+
+// CR 400.7j follow window. While open, Orderer records each object it moves (its identity stamp
+// before the first move in the window), and ObjectRef::get() still resolves a reference to any
+// incarnation of that object from the window. Opened for one resolution: the stack resolution
+// frame (StackManager) and every resolution driven outside it (FollowWindowScope).
+void open_follow_window();
+void close_follow_window();
+bool follow_window_open();
+// Called by Orderer as `e` enters a new zone, with the stamp it had before the move.
+void note_object_moved(Entity e, uint64_t old_gen);
+
+// Opens a follow window for its lifetime unless one is already open.
+class FollowWindowScope {
+    public:
+        FollowWindowScope() : opened(!follow_window_open()) {
+            if (opened) open_follow_window();
+        }
+        ~FollowWindowScope() {
+            if (opened) close_follow_window();
+        }
+        FollowWindowScope(const FollowWindowScope &) = delete;
+        FollowWindowScope &operator=(const FollowWindowScope &) = delete;
+
+    private:
+        bool opened;
+};
+
+#endif /* OBJECT_REF_H */

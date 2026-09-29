@@ -10,9 +10,11 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../game_queries.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../queries/battlefield.h"
+#include "../queries/delayed_triggers.h"
+#include "../queries/players.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -27,15 +29,16 @@ namespace effects {
 // new attack is declared and no further "attacks" triggers fire). At the next end step the
 // controller sacrifices exactly the tokens this instance created, via a delayed trigger.
 HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    int n = static_cast<int>(ab.amount);
+    int n = static_cast<int>(ab.def->amount);
     if (n <= 0) return HandlerResult::DONE_RUN_SUBS;
 
-    Zone::Ownership ctrl = source_controller(ab.source);
+    Zone::Ownership ctrl = ab.controller;  // the tokens are created by the ability's controller (CR 111.2)
 
     // The defender the Mobilize creature is attacking; the tokens attack the same target.
-    Entity attack_target = 0;
-    if (global_coordinator.entity_has_component<Creature>(ab.source))
-        attack_target = global_coordinator.GetComponent<Creature>(ab.source).attack_target;
+    ObjectRef attack_target;
+    const Entity src = ab.source.get();
+    if (src != 0 && global_coordinator.entity_has_component<Creature>(src))
+        attack_target = global_coordinator.GetComponent<Creature>(src).attack_target;
 
     std::vector<Entity> created;
     for (int i = 0; i < n; i++) {
@@ -67,17 +70,15 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
     // Register the "sacrifice them at the beginning of the next end step" delayed trigger
     // (same turn — the attack happened during this turn's combat, so the next end step is
     // this turn's). The sacrifice ability carries exactly the tokens created here.
-    Ability sac_ab;
-    sac_ab.ability_type = Ability::TRIGGERED;
-    sac_ab.category = "SacrificeTokens";
+    Ability sac_ab(triggered_effect_def("SacrificeTokens"));
     sac_ab.source = ab.source;
-    sac_ab.targets = created;
+    sac_ab.targets = refs_of(created);
 
     DelayedTrigger dt;
     dt.ability = sac_ab;
     dt.fire_on = Events::END_STEP_BEGAN;
     dt.owner_entity = get_player_entity(ctrl);
-    dt.fire_on_turn = cur_game.turn;
+    dt.fire_on_turn = cur_game.turn_state.turn;
     register_delayed_trigger(dt, ab.source);
     return HandlerResult::DONE_RUN_SUBS;
 }
@@ -86,13 +87,9 @@ HandlerResult mobilize(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &
 // still on the battlefield (some may already have died/left). Tokens cease to exist when they
 // hit the graveyard, matching "sacrifice them."
 HandlerResult sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
-    for (Entity tok : ab.targets) {
-        if (!global_coordinator.entity_has_component<Zone>(tok)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(tok);
-        if (z.location != Zone::BATTLEFIELD) continue;
-        std::string name = global_coordinator.entity_has_component<Permanent>(tok)
-                               ? global_coordinator.GetComponent<Permanent>(tok).name
-                               : "token";
+    for (Entity tok : live_entities(ab.targets)) {
+        if (!is_battlefield_permanent(tok)) continue;
+        std::string name = global_coordinator.GetComponent<Permanent>(tok).name;
         orderer->add_to_zone(false, tok, Zone::GRAVEYARD);
         game_log("Mobilize: %s is sacrificed.\n", name.c_str());
     }

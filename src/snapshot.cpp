@@ -84,7 +84,10 @@ bool snapshot_save(int slot) {
     s.scope = sideboard_phase ? SnapScope::MATCH : SnapScope::GAME;
     s.game = cur_game;
     global_coordinator.snapshot_to(s.ecs);
-    s.card_db_copy = card_db;
+    // card_db is add-only within a generation (see snapshot_restore), so a slot that already
+    // holds this generation's map at the same size holds an identical copy.
+    if (s.card_db_generation != g_card_db_generation || s.card_db_copy.size() != card_db.size())
+        s.card_db_copy = card_db;
     s.card_db_generation = g_card_db_generation;
     for (int i = 0; i < REVEALED_SIZE; ++i) {
         s.revealed_a[i] = g_revealed_by_a[i];
@@ -104,14 +107,14 @@ bool snapshot_save(int slot) {
 #ifndef NDEBUG
     // Counterpart of the [restore] trace: every save, so an overwritten search
     // slot (a save between a root's sims) is visible in the log.
-    fprintf(stderr, "[save] slot=%d scope=%s step=%d lifeA=%d lifeB=%d mir=%u/%u\n",
+    fprintf(stderr, "[save] slot=%d scope=%s step=%d lifeA=%d lifeB=%d mir=%u\n",
             slot, s.scope == SnapScope::MATCH ? "MATCH" : "GAME",
-            static_cast<int>(cur_game.cur_step),
+            static_cast<int>(cur_game.turn_state.step),
             global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
             global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
-            cur_game.miracle_reveal_pending, cur_game.miracle_cast_pending);
+            cur_game.pending.miracle_reveal);
 #endif
     return true;
 }
@@ -154,20 +157,20 @@ bool snapshot_restore(int slot) {
     // changed between two restores of the same search (an overwritten slot).
     fprintf(stderr,
             "[restore] slot=%d pq(tag=%d act=%d ans=%d) pc=%d pa=%d pd=%d res=%d "
-            "step=%d lifeA=%d lifeB=%d mir=%u/%u\n",
-            slot, static_cast<int>(cur_game.pending_query.tag),
-            cur_game.pending_query.active ? 1 : 0,
-            cur_game.pending_query.answered ? 1 : 0,
-            cur_game.pending_cast.active ? 1 : 0,
-            cur_game.pending_activation.active ? 1 : 0,
-            cur_game.pending_draw.active ? 1 : 0,
+            "step=%d lifeA=%d lifeB=%d mir=%u\n",
+            slot, static_cast<int>(cur_game.pending.query.tag),
+            cur_game.pending.query.active ? 1 : 0,
+            cur_game.pending.query.answered ? 1 : 0,
+            cur_game.pending.cast.active ? 1 : 0,
+            cur_game.pending.activation.active ? 1 : 0,
+            cur_game.pending.draw.active ? 1 : 0,
             cur_game.resolution.active ? 1 : 0,
-            static_cast<int>(cur_game.cur_step),
+            static_cast<int>(cur_game.turn_state.step),
             global_coordinator.entity_has_component<Player>(cur_game.player_a_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total : -99,
             global_coordinator.entity_has_component<Player>(cur_game.player_b_entity)
                 ? global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total : -99,
-            cur_game.miracle_reveal_pending, cur_game.miracle_cast_pending);
+            cur_game.pending.miracle_reveal);
 #endif
     return true;
 }

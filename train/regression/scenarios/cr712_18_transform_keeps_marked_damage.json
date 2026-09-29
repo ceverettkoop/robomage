@@ -1,0 +1,12 @@
+{
+  "name": "cr712_18_transform_keeps_marked_damage",
+  "why": "CR 712.18: a permanent that transforms keeps its marked damage (pinged Delver flips, two more pings kill the 4/3 Aberration) - 1d7a35a",
+  "hand_a": ["Lorehold Charm", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Brainstorm", "Island"],
+  "battlefield_a": ["Delver of Secrets", "Goblin Bombardment", "Grizzly Bears", "Grizzly Bears", "Grizzly Bears", "Mountain", "Plains"],
+  "hand_b": ["Island"],
+  "library_b": ["Island"],
+  "play": ["A:keep", "B:keep", "A:cast:Lorehold Charm", "A:desc:get +1/+1", "A:pass", "A:activate:Goblin Bombardment", "A:target:Delver", "A:desc:Sacrifice Grizzly", "A:pass", "A:pass", "A:#1", "A:activate:Goblin Bombardment", "A:target:Insectile", "A:desc:Sacrifice Grizzly", "A:pass", "A:activate:Goblin Bombardment", "A:target:Insectile", "A:desc:Sacrifice Grizzly", "A:pass"],
+  "max_decisions": 24,
+  "expect_order": ["Goblin Bombardment deals 1 damage to Delver of Secrets", "Delver of Secrets transforms into Insectile Aberration", "Goblin Bombardment deals 1 damage to Insectile Aberration", "Goblin Bombardment deals 1 damage to Insectile Aberration", "Insectile Aberration is destroyed \\(lethal damage\\)"]
+}

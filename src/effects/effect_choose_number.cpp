@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../input_logger.h"
+#include "../svar_eval.h"
 
 extern Game cur_game;
 
@@ -15,7 +16,7 @@ namespace effects {
 // DB$ ChooseNumber: the resolving controller chooses an integer in [0, Max]. Max comes from
 // ab.dynamic_amount_expr — the runtime Count$ expression named by Max$ (Wrath of the Skies:
 // Count$YourCountersEnergy = the controller's current energy, capping how much {E} they may
-// choose to pay). The pick is stored in cur_game.chosen_number so a chained sub-ability can
+// choose to pay). The pick is stored in cur_game.resolution.memory.chosen_number so a chained sub-ability can
 // read it via Count$ChosenNumber (here the DestroyAll's mana-value bound Y and its
 // PayEnergy<Y> unless-cost). General over any "choose a number up to N" effect.
 HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
@@ -23,9 +24,9 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
     // ask seats the query on the choosing player and carries ab.source as the
     // pending-decision context, replicating the old scope + priority swap.
     int max = 0;
-    if (!ab.dynamic_amount_expr.empty())
+    if (!ab.def->dynamic_amount_expr.empty())
         max = static_cast<int>(
-            evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer, ab.target));
+            evaluate_amount(ab.def->dynamic_amount_expr, ab.controller, 0, ab.target.get()));
     if (max < 0) max = 0;
 
     std::vector<LegalAction> choices;
@@ -35,19 +36,19 @@ HandlerResult choose_number(Ability &ab, std::shared_ptr<Orderer> orderer, Frame
         la.option_ordinal = n;  // the chosen number
         choices.push_back(la);
     }
-    int choice = ctx.ask(std::move(choices), ab.controller, ab.source);
+    int choice = ctx.ask(std::move(choices), ab.controller, ab.source.lki_entity());
     if (choice < 0 && decision_suspended()) return HandlerResult::SUSPENDED;
 
     if (choice < 0) choice = 0;
     if (choice > max) choice = max;
-    cur_game.chosen_number = choice;
+    cur_game.resolution.memory.chosen_number = choice;
     game_log("%s chooses %d.\n", player_name(ab.controller).c_str(), choice);
     return HandlerResult::DONE_RUN_SUBS;
 }
 
 // Max$ — the SVar (resolved at parse time to a runtime Count$ expression) bounding the choice;
 // stored in dynamic_amount_expr and evaluated at resolution. ListTitle$ is cosmetic prompt prose.
-bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value) {
+bool parse_choose_number(AbilityDef &ab, const std::string &key, const std::string &value) {
     if (key == "Max") { ab.dynamic_amount_expr = value; return true; }
     if (key == "ListTitle") return true;  // cosmetic prompt text
     return false;

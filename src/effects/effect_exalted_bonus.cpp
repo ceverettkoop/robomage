@@ -14,22 +14,24 @@ namespace effects {
 
 HandlerResult exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     (void)orderer;
-    if (ab.target != 0 && global_coordinator.entity_has_component<Creature>(ab.target)) {
-        auto &cr = global_coordinator.GetComponent<Creature>(ab.target);
-        cr.prowess_bonus += static_cast<int>(ab.amount);
+    const Entity tgt = ab.target.get();
+    const Entity src = ab.source.lki_entity();
+    if (tgt != 0 && global_coordinator.entity_has_component<Creature>(tgt)) {
+        auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+        cr.prowess_bonus += static_cast<int>(ab.def->amount);
         recompute_pt(cr);
-        std::string tgt_name = global_coordinator.entity_has_component<CardData>(ab.target)
-                                   ? global_coordinator.GetComponent<CardData>(ab.target).name
-                                   : (global_coordinator.entity_has_component<Permanent>(ab.target)
-                                             ? global_coordinator.GetComponent<Permanent>(ab.target).name
+        std::string tgt_name = global_coordinator.entity_has_component<CardData>(tgt)
+                                   ? global_coordinator.GetComponent<CardData>(tgt).name
+                                   : (global_coordinator.entity_has_component<Permanent>(tgt)
+                                             ? global_coordinator.GetComponent<Permanent>(tgt).name
                                              : "creature");
-        std::string src_name = global_coordinator.entity_has_component<CardData>(ab.source)
-                                   ? global_coordinator.GetComponent<CardData>(ab.source).name
-                                   : (global_coordinator.entity_has_component<Permanent>(ab.source)
-                                             ? global_coordinator.GetComponent<Permanent>(ab.source).name
+        std::string src_name = global_coordinator.entity_has_component<CardData>(src)
+                                   ? global_coordinator.GetComponent<CardData>(src).name
+                                   : (global_coordinator.entity_has_component<Permanent>(src)
+                                             ? global_coordinator.GetComponent<Permanent>(src).name
                                              : "permanent");
         game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n", src_name.c_str(), tgt_name.c_str(),
-            ab.amount, ab.amount);
+            ab.def->amount, ab.def->amount);
     }
     return HandlerResult::DONE_RUN_SUBS;
 }

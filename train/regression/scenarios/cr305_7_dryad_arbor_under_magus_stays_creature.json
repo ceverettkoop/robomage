@@ -1,0 +1,11 @@
+{
+  "name": "cr305_7_dryad_arbor_under_magus_stays_creature",
+  "why": "CR 305.7 / 613.1d: Magus of the Moon replaces only Dryad Arbor's land types, so it stays a creature and can attack - f652978",
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain"],
+  "battlefield_a": ["Dryad Arbor"],
+  "battlefield_b": ["Magus of the Moon"],
+  "play": ["A:keep", "B:keep", "A:attack:Dryad Arbor", "A:attack:done"],
+  "max_decisions": 8,
+  "expect": ["Dryad Arbor attacking Player B"]
+}
