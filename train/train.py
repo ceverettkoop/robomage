@@ -808,7 +808,7 @@ class LRDecayCallback(BaseCallback):
 def _tb_log_name(deck: str) -> str:
     """Base rollout log name for a training session: '{deck}_{YYYY-MM-DD}'.
 
-    A trailing '_{run_number}' is appended by _configure_run_logger so repeated
+    A trailing '_{run_number}' is appended by _run_logger so repeated
     sessions on the same day land in distinct 'delver_2026-07-03_1',
     '..._2', ... folders instead of overwriting one another.
     """
@@ -836,7 +836,8 @@ def _next_run_id(base: str) -> int:
     return max_id + 1
 
 
-def _configure_run_logger(model, deck: str) -> str:
+@contextlib.contextmanager
+def _run_logger(model, deck: str):
     """Give this session its own tensorboard run folder, incrementing the trailing
     number so a resumed session (reset_num_timesteps=False) does NOT overwrite the
     previous run's curve.
@@ -847,14 +848,20 @@ def _configure_run_logger(model, deck: str) -> str:
     We need num_timesteps to keep counting (reset stays False) while the log dir
     stays fresh, so we compute the next '{deck}_{date}_{n}' ourselves and install
     the logger directly; set_logger marks it custom, so _setup_learn skips SB3's
-    reset-coupled auto-config and honours this folder verbatim. Returns the run
-    name for logging."""
+    reset-coupled auto-config and honours this folder verbatim. Yields the run
+    name for logging; on exit the logger is closed, releasing its tensorboard
+    event-file writer (one per session, so a league run would otherwise hold one
+    per rotation)."""
     base = _tb_log_name(deck)
     run_name = f"{base}_{_next_run_id(base)}"
     save_path = os.path.join(LOG_DIR, run_name)
     fmt = ["stdout", "tensorboard"] if model.verbose >= 1 else ["tensorboard"]
-    model.set_logger(sb3_configure_logger(save_path, fmt))
-    return run_name
+    logger = sb3_configure_logger(save_path, fmt)
+    model.set_logger(logger)
+    try:
+        yield run_name
+    finally:
+        logger.close()
 
 # League resume: the driver's loop position (which deck is up, how many global steps
 # are done) lives outside any single model checkpoint, so we persist it to a small
@@ -968,6 +975,21 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 # League decks (cli_spec.LEAGUE_DECKS_DIR, listed by cli_spec.league_decks) are
 # referenced as 'league/<stem>', which also namespaces their checkpoints under a
 # matching 'league/' subdir.
+
+
+def _close_vec_env(vec_env) -> None:
+    """Close a SubprocVecEnv and release its parent-side file descriptors now.
+
+    SB3's ``close()`` stops the workers but leaves each worker's pipe end and
+    process sentinel open until the env object is garbage-collected; the model and
+    callbacks hold it in reference cycles, so that waits for a full GC pass. A
+    league run builds a fresh vec env every rotation, so those ~3 fds per env
+    would otherwise pile up past the common 1024 soft ``RLIMIT_NOFILE``."""
+    vec_env.close()
+    for remote in getattr(vec_env, "remotes", ()):
+        remote.close()
+    for process in getattr(vec_env, "processes", ()):
+        process.close()
 
 
 def _limit_worker_threads():
@@ -1183,16 +1205,16 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
 
-        run_name = _configure_run_logger(model, model_deck)
-        print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs... "
-              f"(logs/{run_name})")
-        model.learn(total_timesteps=total_timesteps, callback=callbacks,
-                    reset_num_timesteps=load_path is None)
+        with _run_logger(model, model_deck) as run_name:
+            print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs... "
+                  f"(logs/{run_name})")
+            model.learn(total_timesteps=total_timesteps, callback=callbacks,
+                        reset_num_timesteps=load_path is None)
         model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
         print(f"Saved the generalist as {GEN_STEM}__final "
               f"(this session piloted {model_deck}).")
     finally:
-        vec_env.close()
+        _close_vec_env(vec_env)
 
 
 def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
@@ -1301,9 +1323,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
 
-        _configure_run_logger(model, learner_deck)
-        model.learn(total_timesteps=chunk_steps, callback=callbacks,
-                    reset_num_timesteps=not resuming)
+        with _run_logger(model, learner_deck):
+            model.learn(total_timesteps=chunk_steps, callback=callbacks,
+                        reset_num_timesteps=not resuming)
         model.save(os.path.join(checkpoint_dir, f"{stem}__final"))
         print(f"[{stem}] saved {stem}__final (rotation piloted {learner_deck})")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
@@ -1321,7 +1343,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         return (model.num_timesteps - start_steps, wr, model.num_timesteps,
                 pfsp_cb.winrate_by_self())
     finally:
-        vec_env.close()
+        _close_vec_env(vec_env)
 
 
 def league(binary_path: str, decks: str | None = None,
@@ -1917,16 +1939,16 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
 
-        run_name = _configure_run_logger(model, model_deck)
-        print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs... "
-              f"(logs/{run_name})")
-        model.learn(total_timesteps=total_timesteps, callback=callbacks,
-                    reset_num_timesteps=False)
+        with _run_logger(model, model_deck) as run_name:
+            print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs... "
+                  f"(logs/{run_name})")
+            model.learn(total_timesteps=total_timesteps, callback=callbacks,
+                        reset_num_timesteps=False)
         model.save(os.path.join(checkpoint_dir, f"{GEN_STEM}__final"))
         print(f"Saved the generalist as {GEN_STEM}__final "
               f"(this session piloted {model_deck}).")
     finally:
-        vec_env.close()
+        _close_vec_env(vec_env)
 
 
 def train_alternate(binary_path: str, deck_a: str, deck_b: str,
