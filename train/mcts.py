@@ -315,16 +315,19 @@ def _init_worlds(worlds: int, world_seeds: Optional[Sequence[int]],
     moved verbatim; every caller's rng consumption sequence must stay exactly
     what it was. Per world w = 0..worlds-1, in this order: exactly ONE
     ``rng.integers(1, 2**31 - 1)`` draw unless ``world_seeds`` is given (then
-    NO draw at all), followed by exactly ONE ``rng.dirichlet`` draw iff
-    ``root_noise_eps > 0.0``. Do not reorder, hoist, or vectorize these draws —
+    NO draw at all); world 0's seed draw is followed by exactly ONE
+    ``rng.dirichlet`` draw iff ``root_noise_eps > 0.0``, and that one noise
+    vector is mixed into every world's root priors (one shared draw per search,
+    so the summed visit target is not flattened by a different random boost in
+    each world). Do not reorder, hoist, or vectorize these draws —
     the fixed-budget search path is pinned bit-for-bit against the C++ actor
     (train/test_mcts_parity.py) and against IncrementalSearch (the chunked and
     drawn-seed parity tests in train/test_analysis_session.py).
 
     A reused root (boundary persistence) is adopted in place of a fresh _Node:
-    its P is overwritten with the fresh CLEAN root priors (copied — the
-    fresh-root path shares one priors array across worlds) and noise is
-    re-mixed in the same per-world rng position a fresh root would use; its
+    its P is overwritten with the fresh root priors (copied — the fresh-root
+    path shares one priors array across worlds), with the search's shared
+    noise mixed in exactly as a fresh root would get it; its
     N/W/children are kept, and its budget is topped up to ``sims_per_world``
     total visits.
 
@@ -334,11 +337,11 @@ def _init_worlds(worlds: int, world_seeds: Optional[Sequence[int]],
     roots: list[_Node] = []
     budgets: list[int] = []
     reused_visits = 0
+    priors = root_priors
     for w in range(worlds):
         world_seed = (int(world_seeds[w]) if world_seeds is not None
                       else int(rng.integers(1, 2**31 - 1)))
-        priors = root_priors
-        if root_noise_eps > 0.0:
+        if w == 0 and root_noise_eps > 0.0:
             noise = rng.dirichlet([root_noise_alpha] * root_n)
             priors = (1.0 - root_noise_eps) * root_priors + root_noise_eps * noise
         seeds.append(world_seed)

@@ -193,6 +193,15 @@ DEFAULT_AZ_EPOCH_FRAC = 1.0      # auto-batches (batches=0) = this fraction of o
 # bounds how often any one label is seen; the pool size (~games x cap) sets
 # the batch count, so --epoch-frac is inert unless this is 0.
 DEFAULT_AZ_ROWS_PER_GAME = 32
+# Fraction of each az / az-league cycle's NEW self-play shards held out of that
+# cycle's training window and scored before/after training (value MSE vs z,
+# policy KL vs the search posterior) — the generalization measure the in-window
+# tripwire cannot give. Held-out shards rejoin the pool for later cycles.
+DEFAULT_AZ_HOLDOUT_FRAC = 0.05
+# Per-game cap on rows that carry a VALUE target (0 = every row): a game's rows
+# share one outcome, so past a few rows they repeat the label; the value term is
+# scaled by the batch's value-row share, shrinking the value gradient budget.
+DEFAULT_AZ_VALUE_ROWS_PER_GAME = 0
                                  # over the window; safe at a full epoch now that
                                  # playout-cap randomization supplies ~3x distinct games
                                  # per slot — the pre-vs-post-train window MSE tripwire
@@ -1217,8 +1226,9 @@ def _c_puct():
     """--c-puct (az-selfplay / az / az-league / az-eval): the PUCT constant."""
     return Arg("--c-puct", "float", default=DEFAULT_AZ_C_PUCT,
                help=f"PUCT exploration constant (default {DEFAULT_AZ_C_PUCT}): "
-                    "higher weights search Q over the net prior, so the value "
-                    "signal — not the prior — steers the visit distribution. "
+                    "higher weights the net prior's exploration bonus over "
+                    "search Q, so visits (and the policy target) follow the "
+                    "prior more; lower lets the value signal steer them. "
                     "Passed to both the Python search and the C++ actor")
 
 
@@ -1245,6 +1255,31 @@ def _rows_per_game():
                     f"{DEFAULT_AZ_ROWS_PER_GAME}); the pool size sets the "
                     "AUTO batch count. 0 = the old row-uniform draw governed "
                     "by --epoch-frac")
+
+
+def _value_rows_per_game():
+    """--value-rows-per-game (az-train / az / az-league): value-target cap."""
+    return Arg("--value-rows-per-game", "int",
+               default=DEFAULT_AZ_VALUE_ROWS_PER_GAME,
+               help="At most this many rows per game carry a VALUE target "
+                    "(uniform within the game, from the rows the sampler "
+                    "draws; sideboard rows always do), and the value loss is "
+                    "scaled by each batch's value-row share — a game's "
+                    "positions share one outcome label, so more rows repeat it "
+                    "and feed value memorization. Policy rows are unaffected "
+                    f"(default {DEFAULT_AZ_VALUE_ROWS_PER_GAME} = every row)")
+
+
+def _holdout_frac():
+    """--holdout-frac (az / az-league): per-cycle fresh-shard holdout."""
+    return Arg("--holdout-frac", "float", default=DEFAULT_AZ_HOLDOUT_FRAC,
+               help="Fraction of each cycle's new self-play shards (random, "
+                    "seeded) held out of that cycle's training window and "
+                    "scored before and after training: value MSE vs z and "
+                    "policy KL vs the search posterior on games the net never "
+                    "trained on (default "
+                    f"{DEFAULT_AZ_HOLDOUT_FRAC}; 0 disables). The held-out "
+                    "shards rejoin the pool for later cycles")
 
 
 def _full_search_frac():
@@ -2062,6 +2097,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Number of most-recent shards to train on"),
         _epoch_frac(),
         _rows_per_game(),
+        _value_rows_per_game(),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
@@ -2079,7 +2115,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--candidate", "str", required=True, suggest="az_checkpoint",
             help="Candidate AZ .pt ('gen' or a path)"),
         Arg("--incumbent", "str", default=None, suggest="az_checkpoint",
-            help="Incumbent AZ .pt (default: gen__azfinal.pt; scripted if none yet)"),
+            help="Incumbent AZ .pt (default: gen__azfinal.pt, else the warm-start "
+                 "seed gen__azv0.pt; scripted if neither)"),
         Arg("--games", "int", default=DEFAULT_AZ_EVAL_GAMES,
             help="Gate matches per ROUND, split over the roster-wide panel (a "
                  "mirror per roster deck + direction-balanced cross pairs). The "
@@ -2180,6 +2217,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "cannot drift as the window's data volume changes"),
         _epoch_frac(),
         _rows_per_game(),
+        _value_rows_per_game(),
+        _holdout_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),
@@ -2303,6 +2342,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "interrupted; still resumable via --resume)"),
         Arg("--cycles-per-deck", "int", default=1,
             help="az cycles to run per deck per rotation"),
+        Arg("--from-ppo", "str", default=None, suggest="checkpoint",
+            help="Seed a NEW AZ line from this PPO checkpoint (e.g. "
+                 "gen__v9750016.zip) instead of gen__final: the warm-started "
+                 "net is saved as candidate snapshot gen__azv0.pt before the "
+                 "first slot, so self-play, training and az:gen all start from "
+                 "it (the first gate still plays scripted until a promotion). "
+                 "Refused when train/checkpoints/az already holds a different "
+                 "AZ line"),
         Arg("--games", "int", default=DEFAULT_AZ_GAMES,
             help="Self-play matches per cycle — single games under --format "
                  f"bo1 (default {DEFAULT_AZ_GAMES})"),
@@ -2328,6 +2375,8 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "cannot drift as the window's data volume changes"),
         _epoch_frac(),
         _rows_per_game(),
+        _value_rows_per_game(),
+        _holdout_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
         Arg("--q-mix", "float", default=DEFAULT_AZ_Q_MIX, help=_Q_MIX_HELP),

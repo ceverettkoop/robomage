@@ -351,7 +351,9 @@ def resolve_opponent_pool(source: dict,
     """The opponent-pool checkpoints for ``opp_pool_frac`` matches: up to ``k``
     AZ checkpoint paths DISTINCT from the generator (``source``) — the
     incumbent ``gen__azfinal`` first, then the newest candidate snapshots
-    (``gen__azv*``, descending steps) distinct from both. Distinctness is by
+    (``gen__azv*``, descending steps) distinct from both. The line's seed
+    ``gen__azv0`` (the untrained PPO warm start) is never pooled: games against
+    it are the easiest value rows to memorize. Distinctness is by
     the checkpoint's ``steps`` metadata (``gen__azfinal`` is a byte-copy of
     the snapshot it was promoted from, so a path compare would let the
     "incumbent" secretly be the generator itself; realpath is the fallback
@@ -393,7 +395,7 @@ def resolve_opponent_pool(source: dict,
             return int(os.path.basename(p).split("__azv")[1].split(".pt")[0])
         except (IndexError, ValueError):
             return -1
-    for p in sorted((p for p in snaps if _steps(p) >= 0),
+    for p in sorted((p for p in snaps if _steps(p) > 0),
                     key=_steps, reverse=True):
         if len(pool) >= k:
             break
@@ -2035,6 +2037,37 @@ def _spawn_oracle():
     return proc, sock, tmpdir
 
 
+def _pass_progress_path(out_dir: str, seed: int) -> str:
+    """The actor pass's resume sidecar: one per (out_dir, seed), so an
+    az-league slot (its seed is ``seed + slot``) resumes its own pass. Not a
+    ``shard_*.npz`` name, so the trainer's glob never sees it."""
+    return os.path.join(out_dir, f".selfplay_pass_{int(seed)}.json")
+
+
+def _group_resume_key(da, db, st, op) -> str:
+    """A matchup group's identity for resume: decks, scripted seat and
+    opponent-pool learner seat — NOT the pool checkpoint, which moves when the
+    generator does (e.g. a resumed slot whose generator changed with a gate
+    verdict), while the schedule and the pool draws, seeded by the pass seed,
+    stay put."""
+    return f"{da}|{db}|{st or '-'}|{op[0] if op else '-'}"
+
+
+def _load_pass_progress(path: str, fingerprint: dict) -> dict:
+    """The recorded groups of an interrupted pass with the same fingerprint,
+    else a fresh record (a mismatched sidecar is reported and ignored)."""
+    from progress_io import read_progress_state
+    fresh = {"fingerprint": fingerprint, "groups": []}
+    state = read_progress_state(path, "az-selfplay")
+    if state is None:
+        return fresh
+    if state.get("fingerprint") != fingerprint:
+        print(f"[az-selfplay] ignoring {path}: recorded for "
+              f"{state.get('fingerprint')}, this pass is {fingerprint}")
+        return fresh
+    return state
+
+
 def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
                     explore_full_turns, explore_decay_turns, explore_floor,
                     root_noise_eps, root_noise_alpha, out_dir, seed,
@@ -2067,7 +2100,14 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
     is AUTO: try to start a cuda server and fall back to local-CPU actors
     with a printed notice when the box has no usable GPU. ``cross_world``
     (default True) turns on cross-world leaf batching — visits are
-    arithmetically identical to the sequential search, so it is pure speed."""
+    arithmetically identical to the sequential search, so it is pure speed.
+
+    Resumable: each finished matchup group (its shards are all on disk once
+    the actor exits — a group's 1-2 matches never reach the mid-run flush
+    threshold) is recorded in :func:`_pass_progress_path`. A pass re-run with
+    the same seed and fingerprint skips the recorded groups and returns their
+    shards/samples/results alongside the new ones; the sidecar is deleted when
+    the pass completes."""
     import glob
     import shlex
     import shutil
@@ -2119,6 +2159,34 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
                                     kv[0][2] or ("", "")))
     total_groups = len(groups)
 
+    # Resume: consume recorded groups against this pass's groups by key, in
+    # order (distinct pool checkpoints can share a key), and run the rest.
+    from progress_io import write_progress_state
+    progress_path = _pass_progress_path(out_dir, seed)
+    progress = _load_pass_progress(progress_path, {
+        "bo3": bool(bo3), "sims": sims, "worlds": worlds,
+        "full_search_frac": full_search_frac, "fast_sims": fast_sims,
+        "matches": games})
+    recorded = Counter()
+    for g in progress["groups"]:
+        recorded[g["key"]] += g["n"]
+    todo = []
+    for gi, (((da, db), st, op), n) in enumerate(groups):
+        key = _group_resume_key(da, db, st, op)
+        if recorded[key] >= n:
+            recorded[key] -= n
+        else:
+            todo.append(gi)
+    recovered_shards = [p for g in progress["groups"] for p in g["shards"]
+                        if os.path.exists(p)]
+    recovered_matches = sum(g["n"] for g in progress["groups"])
+    if progress["groups"]:
+        print(f"[az-selfplay] resuming pass from {progress_path}: "
+              f"{total_groups - len(todo)}/{total_groups} group(s) done "
+              f"({recovered_matches} {unit}, "
+              f"{sum(g['samples'] for g in progress['groups'])} samples, "
+              f"{len(recovered_shards)} shards kept)", flush=True)
+
     # One shared oracle process for every vs-scripted group of this pass.
     oracle_proc = None
     oracle_sock = None
@@ -2127,8 +2195,12 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
         oracle_proc, oracle_sock, oracle_dir = _spawn_oracle()
 
     pre = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
-    total_samples = 0
-    agg = {"searched": 0, "fallback": 0, "wins_a": 0, "wins_b": 0, "draws": 0}
+    # Recorded groups of a resumed pass count toward its totals.
+    total_samples = sum(g["samples"] for g in progress["groups"])
+    agg = {"searched": 0, "fallback": 0,
+           "wins_a": sum(g["wins_a"] for g in progress["groups"]),
+           "wins_b": sum(g["wins_b"] for g in progress["groups"]),
+           "draws": sum(g["draws"] for g in progress["groups"])}
 
     # One central inference server owns the GPU for the whole fleet;
     # each actor connects with --eval-server instead of loading the net. The
@@ -2157,7 +2229,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
     # the full stdout/stderr for the final parse.
     t_start = time.time()
     prog_lock = threading.Lock()
-    prog = {"done": 0}
+    prog = {"done": recovered_matches}
 
     # Progress unit == the scheduling unit: count per-MATCH MATCH_RESULT lines in
     # bo3 (each match may span up to 3 games) and per-GAME SELFPLAY lines in bo1, so
@@ -2174,7 +2246,7 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
                     prog["done"] += 1
                     done = prog["done"]
                     elapsed = time.time() - t_start
-                    eta = elapsed / done * (games - done)
+                    eta = elapsed / (done - recovered_matches) * (games - done)
                 print(f"[az-selfplay] g{gi} {line.strip()} | total {done}/{games} "
                       f"{unit}, elapsed {_fmt_secs(elapsed)}, eta {_fmt_secs(eta)}",
                       flush=True)
@@ -2231,6 +2303,13 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
                            rec["cmd"], "".join(rec["err"])))
             return
         s, wa, wb, dr = _parse_actor_output("".join(rec["out"]), bo3=bo3)
+        progress["groups"].append({
+            "key": _group_resume_key(rec["da"], rec["db"], rec["st"], rec["op"]),
+            "n": rec["n"], "samples": s, "wins_a": wa, "wins_b": wb,
+            "draws": dr,
+            "shards": sorted(glob.glob(os.path.join(
+                out_dir, f"shard_*_{rec['p'].pid}_*.npz")))})
+        write_progress_state(progress_path, progress, "az-selfplay")
         total_samples += s
         agg["wins_a"] += wa
         agg["wins_b"] += wb
@@ -2251,11 +2330,11 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
         # idle the whole pool on each batch's slowest match. Per-group seeds are
         # assigned by group index at launch, so scheduling order never affects
         # results.
-        next_gi = 0
-        while next_gi < total_groups or active:
-            while next_gi < total_groups and len(active) < cap:
-                active.append(_launch(next_gi))
-                next_gi += 1
+        next_ti = 0
+        while next_ti < len(todo) or active:
+            while next_ti < len(todo) and len(active) < cap:
+                active.append(_launch(todo[next_ti]))
+                next_ti += 1
             done = [rec for rec in active if rec["p"].poll() is not None]
             if not done:
                 time.sleep(0.2)
@@ -2297,7 +2376,9 @@ def _generate_actor(deck, *, source, schedule, sims, worlds, workers,
         stop_eval_server(server_proc, server_dir)
 
     post = set(glob.glob(os.path.join(out_dir, "shard_*.npz")))
-    all_shards = sorted(post - pre)
+    all_shards = sorted((post - pre) | set(recovered_shards))
+    if os.path.exists(progress_path):
+        os.remove(progress_path)
     print(f"[az-selfplay] done: {total_samples} samples, {len(all_shards)} shards (ACTOR)")
     # The actor does search internally but does not emit searched/fallback tallies,
     # so those stay 0 for the actor backend (informational only; the trainer reads
