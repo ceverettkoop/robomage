@@ -68,7 +68,7 @@ from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_AZ_OPP_POOL_FRAC,
                       EXPERT_DECKS_ROSTER, EXPERT_DECKS_NONE)
 from cli_spec import (DEFAULT_AZ_ROWS_PER_GAME, DEFAULT_AZ_HOLDOUT_FRAC,
-                      DEFAULT_AZ_VALUE_ROWS_PER_GAME,
+                      DEFAULT_AZ_VALUE_ROWS_PER_GAME, DEFAULT_AZ_POLICY_SURPRISE,
                       LEAGUE_DECKS_DIR, is_bo3,
                       league_decks)
 from env import _MATCH_CTX_START as _GAME_NUMBER_IDX
@@ -463,7 +463,9 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
              window_data: Optional[dict] = None,
              holdout: Optional[dict] = None,
              window_exclude=None, ema_betas=(),
-             value_rows_per_game: int = DEFAULT_AZ_VALUE_ROWS_PER_GAME) -> dict:
+             value_rows_per_game: int = DEFAULT_AZ_VALUE_ROWS_PER_GAME,
+             fresh_paths=None,
+             policy_surprise: float = DEFAULT_AZ_POLICY_SURPRISE) -> dict:
     """Optimize the gen AZNet on the newest ``window`` shards.
 
     ``window_data`` (a :func:`load_window` result) replaces loading the window,
@@ -480,6 +482,21 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     information. The value term is then scaled by the batch's value-row share,
     so the value head's gradient budget shrinks with the cap; ``v_mix`` / ``v_z``
     are still logged as means over the value rows. 0 = every row (default).
+
+    ``policy_surprise`` > 0 (with ``rows_per_game`` > 0) is policy surprise
+    weighting: each game still contributes at most ``rows_per_game`` policy
+    rows, but they are drawn without replacement with probability
+    ``(1 - policy_surprise) / n_game + policy_surprise * s_i / sum(s)``, where
+    ``s_i`` is the row's grouped policy KL under the incoming net (search
+    target vs net prior) — so positions where the search disagrees with the
+    net are more likely to be trained. Value rows are drawn separately and
+    uniformly (``value_rows_per_game`` per game, or ``rows_per_game`` when that
+    is 0), and the batch count stays the one the uniform sampler would use.
+
+    ``fresh_paths`` (shard paths no update has seen yet — an az cycle's new
+    self-play shards) are scored with the initial net before any update: value
+    MSE vs z and policy CE/entropy/KL over a per-shard row sample, the
+    generalization measure of the incoming candidate on a whole slot's games.
 
     ``ema_betas`` (diagnostic) tracks averaged copies of the weights alongside
     training — one exponential moving average per beta, started at the
@@ -629,6 +646,11 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
                         size=min(8192, int(pol_rows.sum())), replace=False)
     pre_pol = _policy_metrics(net, obs[tp_idx], mask[tp_idx], pi[tp_idx])
     pre_hold = _holdout_metrics(net, holdout) if holdout is not None else None
+    fresh = _fresh_metrics(net, fresh_paths) if fresh_paths else None
+    if fresh is not None:
+        print(f"[az-train] FRESH (pre-train, {fresh['n_shards']} new shards, "
+              f"{fresh['value_rows']} value / {fresh['policy_rows']} policy rows): "
+              f"v_z={fresh['v_z']:.3f} {_format_policy_metrics(fresh['pol'])}")
     net.train()
     # Weight decay applies to everything EXCEPT the per-sample-selected
     # parameters (the critic's archetype-bucket columns, the embedding tables).
@@ -645,14 +667,24 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
 
     obs_t = torch.as_tensor(obs)
     pi_t = torch.as_tensor(pi)
+    reps_t = torch.as_tensor(merge_rep_matrix(obs, mask))
     z_t = torch.as_tensor(z)
     vt_t = torch.as_tensor(v_target)
     mask_t = torch.as_tensor(mask)
     # Value trains on EVERY row now (sb rows included — their target is z; see
     # the sb_rows comment above). The weight mechanism is kept for the loss
     # denominators and easy reverts.
-    vw_t = torch.as_tensor(_value_row_mask(
-        game_id, pool, sb_rows, int(value_rows_per_game), rng))
+    surprise_sel = None
+    if float(policy_surprise) > 0.0 and pool is not None:
+        surprise_sel = _surprise_selection(
+            net, obs, mask, pi, game_id, pol_rows, sb_rows,
+            int(rows_per_game), int(value_rows_per_game),
+            float(policy_surprise), rng)
+        pool = surprise_sel["pool"]
+        vw_t = torch.as_tensor(surprise_sel["value_w"])
+    else:
+        vw_t = torch.as_tensor(_value_row_mask(
+            game_id, pool, sb_rows, int(value_rows_per_game), rng))
     if int(value_rows_per_game) > 0:
         print(f"[az-train] value-row cap: {int(value_rows_per_game)}/game -> "
               f"{int(vw_t.sum())}/{n} rows carry a value target (value term "
@@ -660,8 +692,10 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
     # 1.0 on rows carrying a CE policy target, 0.0 on the playout cap's
     # fast-search rows (all-zero pi — value/TD only) AND on sb one-hot
     # behavior rows, which train through the REINFORCE term instead.
-    pw_t = torch.as_tensor(
-        ((pi.sum(axis=1) > 0) & ~sb_onehot).astype(np.float32))
+    pw_np = ((pi.sum(axis=1) > 0) & ~sb_onehot).astype(np.float32)
+    if surprise_sel is not None:
+        pw_np *= surprise_sel["policy_sel"]
+    pw_t = torch.as_tensor(pw_np)
     # sb one-hot machinery: row weight, chosen action (the one-hot argmax),
     # and the oversampling pool (--sb-batch-frac of each batch).
     sbw_t = torch.as_tensor(sb_onehot.astype(np.float32))
@@ -717,12 +751,13 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             # Weighted mean over the batch's policy-target rows only: a
             # fast-search (zero-pi) row contributes 0 to the numerator but
             # must not inflate the denominator either (the clamp guards an
-            # all-fast batch, which then contributes 0).
+            # all-fast batch, which then contributes 0). The cross-entropy is
+            # over duplicate-option groups (see grouped_policy_ce).
             pw = pw_t[bi]
             pden = pw.sum().clamp(min=1.0)
-            loss_pi = (-(tp * logp).sum(dim=1) * pw).sum() / pden
+            ce_rows, ent = grouped_policy_ce(logits, mk, tp, reps_t[bi])
+            loss_pi = (ce_rows * pw).sum() / pden
             with torch.no_grad():
-                ent = -(tp * torch.log(tp.clamp(min=1e-12))).sum(dim=1)
                 loss_kl = loss_pi - (ent * pw).sum() / pden
             # Optimized against the MIXED target; the pure-outcome MSE is
             # computed alongside (no grad) purely as a comparable diagnostic.
@@ -812,7 +847,68 @@ def train_az(deck: str, *, batches: int = DEFAULT_AZ_TRAIN_BATCHES,
             "window_v_z": {"pre": pre_mse, "post": wmse},
             "holdout": ({"pre": pre_hold, "post": post_hold}
                         if holdout is not None else None),
-            "averages": avg_report}
+            "averages": avg_report, "fresh": fresh}
+
+
+def _row_policy_kl(net, obs, mask, pi, idx, batch: int = 1024) -> np.ndarray:
+    """Grouped policy KL (search target vs net prior) for the rows ``idx``,
+    batched, no grad, clipped at 0."""
+    import torch
+    out = np.empty(len(idx), dtype=np.float64)
+    net.eval()
+    with torch.no_grad():
+        for st in range(0, len(idx), batch):
+            sl = idx[st:st + batch]
+            ob = torch.as_tensor(np.ascontiguousarray(obs[sl]))
+            mk = torch.as_tensor(np.ascontiguousarray(mask[sl]))
+            logits, _ = net(ob, mk)
+            c, e = grouped_policy_ce(
+                logits, mk, torch.as_tensor(np.ascontiguousarray(pi[sl])),
+                torch.as_tensor(merge_rep_matrix(obs[sl], mask[sl])))
+            out[st:st + len(sl)] = (c - e).numpy()
+    net.train()
+    return np.clip(out, 0.0, None)
+
+
+def _surprise_selection(net, obs, mask, pi, game_id, pol_rows, sb_rows,
+                        rows_per_game: int, value_rows_per_game: int,
+                        share: float, rng) -> dict:
+    """train_az's policy surprise weighting (see its docstring): per game,
+    at most ``rows_per_game`` policy rows drawn by surprise-weighted
+    probability and value rows drawn uniformly; returns the batch pool (their
+    union, shuffled) and the per-row policy-selection / value weights."""
+    n = len(game_id)
+    pol_idx = np.nonzero(pol_rows)[0]
+    surprise = np.zeros(n, dtype=np.float64)
+    surprise[pol_idx] = _row_policy_kl(net, obs, mask, pi, pol_idx)
+    v_cap = value_rows_per_game if value_rows_per_game > 0 else rows_per_game
+    policy_sel = np.zeros(n, dtype=np.float32)
+    value_w = sb_rows.astype(np.float32)
+    order = np.argsort(game_id, kind="stable")
+    bounds = np.flatnonzero(np.diff(game_id[order])) + 1
+    for rows in np.split(order, bounds):
+        prow = rows[pol_rows[rows]]
+        if len(prow) > rows_per_game:
+            s = surprise[prow]
+            p = (1.0 - share) / len(prow) + (share * s / s.sum() if s.sum() > 0
+                                               else share / len(prow))
+            prow = rng.choice(prow, size=rows_per_game, replace=False,
+                              p=p / p.sum())
+        policy_sel[prow] = 1.0
+        vrow = rows[~sb_rows[rows]]
+        if len(vrow) > v_cap:
+            vrow = rng.choice(vrow, size=v_cap, replace=False)
+        value_w[vrow] = 1.0
+    pool = np.nonzero((policy_sel > 0) | ((value_w > 0) & ~sb_rows))[0]
+    rng.shuffle(pool)
+    sel = policy_sel > 0
+    print(f"[az-train] policy surprise weighting (share {share:g}): "
+          f"{int(sel.sum())} policy rows (<= {rows_per_game}/game), mean surprise "
+          f"selected {surprise[sel].mean():.4f} vs all policy rows "
+          f"{surprise[pol_idx].mean():.4f}; {int((value_w > 0).sum())} value rows "
+          f"(<= {v_cap}/game, uniform); pool {len(pool)} rows")
+    return {"pool": pool, "policy_sel": policy_sel, "value_w": value_w,
+            "surprise": surprise}
 
 
 def _value_row_mask(game_id: np.ndarray, pool, sb_rows: np.ndarray, cap: int,
@@ -896,27 +992,65 @@ def _mean_entropy(pi: np.ndarray) -> float:
         if len(p) else float("nan")
 
 
-def _policy_metrics(net, obs, mask, pi, batch: int = 256) -> dict:
-    """Policy cross-entropy, posterior entropy and their gap (KL) of the net
-    vs the search posterior over policy-target rows, batched, no grad."""
+def merge_rep_matrix(obs: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    """(N, MAX_ACTIONS) int64 duplicate-group index per action slot: the
+    search's merge partition (decode.menu_merge_reps — the lowest menu index
+    with the same merge key) over each row's legal menu, identity on the
+    padded slots."""
+    from decode import menu_merge_reps
+    out = np.tile(np.arange(mask.shape[1], dtype=np.int64), (len(obs), 1))
+    n_legal = mask.sum(axis=1)
+    for i in range(len(obs)):
+        n = int(n_legal[i])
+        if n > 1:
+            out[i, :n] = menu_merge_reps(obs[i], n)
+    return out
+
+
+def grouped_policy_ce(logits, mask, target, reps):
+    """Per-row policy cross-entropy and target entropy over duplicate-option
+    groups. Identical options (two copies of a card in hand) get identical
+    logits, while the search folds their priors onto the first copy and puts
+    every visit there — so a per-option CE would charge the net for a split it
+    cannot see. Summing both the target and the net's probability within each
+    group (``reps``, from :func:`merge_rep_matrix`) compares what the search
+    actually distinguishes. Returns (ce[B], entropy[B])."""
     import torch
     import torch.nn.functional as F
+    logp = F.log_softmax(logits, dim=-1)
+    logp = torch.where(mask, logp, torch.full_like(logp, -1e30))
+    top = logp.max(dim=1, keepdim=True).values
+    gsum = torch.zeros_like(logp).scatter_add(1, reps, torch.exp(logp - top))
+    glogp = torch.log(gsum.clamp(min=1e-38)) + top
+    gt = torch.zeros_like(target).scatter_add(1, reps, target)
+    ce = -(gt * glogp).sum(dim=1)
+    ent = -(gt * torch.log(gt.clamp(min=1e-12))).sum(dim=1)
+    return ce, ent
+
+
+def _policy_metrics(net, obs, mask, pi, batch: int = 256) -> dict:
+    """Policy cross-entropy, posterior entropy and their gap (KL) of the net
+    vs the search posterior over policy-target rows, batched, no grad, over
+    duplicate-option groups (see grouped_policy_ce)."""
+    import torch
+    reps = merge_rep_matrix(obs, mask)
     net.eval()
     ce = 0.0
+    h = 0.0
     with torch.no_grad():
         for st in range(0, obs.shape[0], batch):
             en = min(st + batch, obs.shape[0])
             ob = torch.as_tensor(np.ascontiguousarray(obs[st:en]))
             mk = torch.as_tensor(np.ascontiguousarray(mask[st:en]))
             logits, _ = net(ob, mk)
-            logp = F.log_softmax(logits, dim=-1)
-            logp = torch.where(mk, logp, torch.zeros_like(logp))
             tp = torch.as_tensor(np.ascontiguousarray(pi[st:en]))
-            ce += float(-(tp * logp).sum().item())
+            c, e = grouped_policy_ce(logits, mk, tp,
+                                     torch.as_tensor(reps[st:en]))
+            ce += float(c.sum().item())
+            h += float(e.sum().item())
     net.train()
-    ce /= max(1, obs.shape[0])
-    h = _mean_entropy(pi)
-    return {"ce": ce, "h": h, "kl": ce - h}
+    n = max(1, obs.shape[0])
+    return {"ce": ce / n, "h": h / n, "kl": (ce - h) / n}
 
 
 def _format_policy_metrics(m: dict) -> str:
@@ -949,6 +1083,46 @@ def _select_holdout(shards: list, frac: float, seed: int) -> list:
     rng = np.random.default_rng(seed)
     pick = rng.choice(len(shards), size=k, replace=False)
     return [shards[i] for i in sorted(pick)]
+
+
+FRESH_ROWS_PER_SHARD = 64   # per-shard row sample for train_az's fresh_paths score
+
+
+def _fresh_metrics(net, paths: list, rows_per_shard: int = FRESH_ROWS_PER_SHARD,
+                   seed: int = 0) -> dict:
+    """Value MSE vs z (non-sideboard rows) and policy metrics (policy-target
+    rows) of ``net`` on a seeded sample of at most ``rows_per_shard`` rows of
+    each kind from every shard in ``paths``, loaded one shard at a time so the
+    sample covers every match without holding the shards in memory."""
+    rng = np.random.default_rng(seed)
+    parts = {k: [] for k in ("v_obs", "v_mask", "v_z", "p_obs", "p_mask", "p_pi")}
+    for path in paths:
+        d = np.load(path)
+        obs, pi, z, mask = d["obs"], d["pi"], d["z"], d["mask"]
+        sb = obs[:, _IS_SIDEBOARD_IDX] > 0.5
+        pol = (pi.sum(axis=1) > 0) & ~(sb & (pi.max(axis=1) >= 1.0 - 1e-6))
+        vi = np.nonzero(~sb)[0]
+        pidx = np.nonzero(pol)[0]
+        if len(vi) > rows_per_shard:
+            vi = rng.choice(vi, rows_per_shard, replace=False)
+        if len(pidx) > rows_per_shard:
+            pidx = rng.choice(pidx, rows_per_shard, replace=False)
+        parts["v_obs"].append(obs[vi]); parts["v_mask"].append(mask[vi])
+        parts["v_z"].append(z[vi])
+        parts["p_obs"].append(obs[pidx]); parts["p_mask"].append(mask[pidx])
+        parts["p_pi"].append(pi[pidx])
+    cat = {k: np.concatenate(v) for k, v in parts.items()}
+    return {"v_z": _value_mse(net, cat["v_obs"], cat["v_mask"], cat["v_z"]),
+            "pol": _policy_metrics(net, cat["p_obs"], cat["p_mask"], cat["p_pi"]),
+            "value_rows": len(cat["v_z"]), "policy_rows": len(cat["p_pi"]),
+            "n_shards": len(paths)}
+
+
+def _format_fresh(fr: Optional[dict]) -> str:
+    """``fresh v_z 0.552 kl 0.112  `` from train_az's ``fresh`` result, or ''."""
+    if not fr:
+        return ""
+    return f"fresh v_z {fr['v_z']:.3f} kl {fr['pol']['kl']:.3f}  "
 
 
 def _format_holdout(ho: Optional[dict]) -> str:
@@ -2046,6 +2220,7 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
              rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
              holdout_frac: float = DEFAULT_AZ_HOLDOUT_FRAC,
              value_rows_per_game: int = DEFAULT_AZ_VALUE_ROWS_PER_GAME,
+             policy_surprise: float = DEFAULT_AZ_POLICY_SURPRISE,
              gate_shards: bool = True,
              sb_branches: int = DEFAULT_SB_BRANCHES,
              sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -2249,7 +2424,9 @@ def az_cycle(deck=None, *, games: int = DEFAULT_AZ_GAMES,
                   rows_per_game=rows_per_game, seed=seed,
                   sb_batch_frac=sb_batch_frac, sb_loss_coef=sb_loss_coef,
                   holdout=holdout, window_exclude=holdout_paths,
-                  value_rows_per_game=value_rows_per_game)
+                  fresh_paths=gen["shards"],
+                  value_rows_per_game=value_rows_per_game,
+                  policy_surprise=policy_surprise)
     if not gate:
         print("=== az cycle: eval/gate skipped (gated every K slots) ===")
         return {"generate": gen, "train": tr, "eval": None}
@@ -2324,6 +2501,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
               rows_per_game: int = DEFAULT_AZ_ROWS_PER_GAME,
               holdout_frac: float = DEFAULT_AZ_HOLDOUT_FRAC,
               value_rows_per_game: int = DEFAULT_AZ_VALUE_ROWS_PER_GAME,
+              policy_surprise: float = DEFAULT_AZ_POLICY_SURPRISE,
               gate_shards: bool = True,
               sb_branches: int = DEFAULT_SB_BRANCHES,
               sb_worlds: int = DEFAULT_SB_WORLDS,
@@ -2458,6 +2636,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         holdout_frac = float(p.get("holdout_frac", holdout_frac))
         value_rows_per_game = int(p.get("value_rows_per_game",
                                         value_rows_per_game))
+        policy_surprise = float(p.get("policy_surprise", policy_surprise))
         gate_shards = bool(p.get("gate_shards", gate_shards))
         # p.get defaults keep older sidecars resumable (a pre-plan-search
         # sidecar carries no sb_branches key; stale keys for the removed PUCT
@@ -2574,6 +2753,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
             "c_puct": c_puct, "epoch_frac": epoch_frac,
             "rows_per_game": rows_per_game, "holdout_frac": holdout_frac,
             "value_rows_per_game": value_rows_per_game,
+            "policy_surprise": policy_surprise,
             "gate_shards": gate_shards,
             "sb_branches": sb_branches, "sb_worlds": sb_worlds,
             "sb_rollout_turns": sb_rollout_turns,
@@ -2633,6 +2813,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
           f"epoch_frac={epoch_frac} rows_per_game={rows_per_game} "
           f"holdout_frac={holdout_frac} "
           f"value_rows_per_game={value_rows_per_game} "
+          f"policy_surprise={policy_surprise} "
           f"gate_shards={int(gate_shards)} "
           f"mirror_frac={mirror_frac}  "
           f"sb_branches={sb_branches} sb_worlds={sb_worlds} "
@@ -2724,6 +2905,7 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
                        c_puct=c_puct, epoch_frac=epoch_frac,
                        rows_per_game=rows_per_game, holdout_frac=holdout_frac,
                        value_rows_per_game=value_rows_per_game,
+                       policy_surprise=policy_surprise,
                        gate_shards=gate_shards,
                        sb_branches=sb_branches, sb_worlds=sb_worlds,
                        sb_rollout_turns=sb_rollout_turns,
@@ -2796,10 +2978,11 @@ def az_league(*, decks=None, rotations: int = 1, cycles_per_deck: int = 1,
         print(f"[az-league] slot {slot_txt} deck={deck_label}: "
               f"samples={gen['samples']} shards={len(gen['shards'])}  "
               f"train {_format_loss_terms(tr['first_terms'], tr['last_terms'])}  "
+              f"{_format_fresh(tr.get('fresh'))}"
               f"{_format_holdout(tr.get('holdout'))}{gate_txt}")
         results.append({"slot": si, "deck": deck_label, "rotation": r, "cycle": c,
                         "samples": gen["samples"], "shards": len(gen["shards"]),
-                        "holdout": tr.get("holdout"),
+                        "holdout": tr.get("holdout"), "fresh": tr.get("fresh"),
                         "gate_win_rate": ev["win_rate"] if ev else None,
                         "promoted": ev["promoted"] if ev else None,
                         "gate_per_deck": ev.get("per_deck") if ev else None,
@@ -2855,6 +3038,8 @@ def run_train(args) -> None:
                                        DEFAULT_AZ_ROWS_PER_GAME)),
              value_rows_per_game=int(getattr(args, "value_rows_per_game",
                                              DEFAULT_AZ_VALUE_ROWS_PER_GAME)),
+             policy_surprise=float(getattr(args, "policy_surprise",
+                                           DEFAULT_AZ_POLICY_SURPRISE)),
              from_ppo=args.from_ppo, fresh=args.fresh,
              snapshot_every=args.snapshot_every,
              sb_batch_frac=getattr(args, "sb_batch_frac", DEFAULT_SB_BATCH_FRAC),
@@ -2922,6 +3107,8 @@ def run_cycle(args) -> None:
                                         DEFAULT_AZ_HOLDOUT_FRAC)),
              value_rows_per_game=int(getattr(args, "value_rows_per_game",
                                              DEFAULT_AZ_VALUE_ROWS_PER_GAME)),
+             policy_surprise=float(getattr(args, "policy_surprise",
+                                           DEFAULT_AZ_POLICY_SURPRISE)),
              gate_shards=not getattr(args, "no_gate_shards", False),
              sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
              sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),
@@ -2988,6 +3175,8 @@ def run_league(args) -> None:
                                          DEFAULT_AZ_HOLDOUT_FRAC)),
               value_rows_per_game=int(getattr(args, "value_rows_per_game",
                                               DEFAULT_AZ_VALUE_ROWS_PER_GAME)),
+              policy_surprise=float(getattr(args, "policy_surprise",
+                                            DEFAULT_AZ_POLICY_SURPRISE)),
               gate_shards=not getattr(args, "no_gate_shards", False),
               sb_branches=getattr(args, "sb_branches", DEFAULT_SB_BRANCHES),
               sb_worlds=getattr(args, "sb_worlds", DEFAULT_SB_WORLDS),

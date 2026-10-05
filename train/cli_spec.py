@@ -202,6 +202,10 @@ DEFAULT_AZ_HOLDOUT_FRAC = 0.05
 # share one outcome, so past a few rows they repeat the label; the value term is
 # scaled by the batch's value-row share, shrinking the value gradient budget.
 DEFAULT_AZ_VALUE_ROWS_PER_GAME = 0
+# Policy surprise weighting share (0 = off): with the game-uniform sampler, this
+# share of each game's policy-row selection is drawn in proportion to the row's
+# policy KL (search target vs the incoming net's prior), KataGo-style.
+DEFAULT_AZ_POLICY_SURPRISE = 0.0
                                  # over the window; safe at a full epoch now that
                                  # playout-cap randomization supplies ~3x distinct games
                                  # per slot — the pre-vs-post-train window MSE tripwire
@@ -1270,6 +1274,19 @@ def _value_rows_per_game():
                     f"(default {DEFAULT_AZ_VALUE_ROWS_PER_GAME} = every row)")
 
 
+def _policy_surprise():
+    """--policy-surprise (az-train / az / az-league): surprise weighting."""
+    return Arg("--policy-surprise", "float", default=DEFAULT_AZ_POLICY_SURPRISE,
+               help="Policy surprise weighting share in [0, 1]: each game "
+                    "still contributes at most --rows-per-game policy rows, "
+                    "drawn with probability (1-share)/n + share*s/sum(s), s = "
+                    "the row's policy KL between the search target and the "
+                    "incoming net's prior, so positions where search and net "
+                    "disagree are trained more often. Value rows are then drawn "
+                    "uniformly and separately. 0 = off, the plain game-uniform "
+                    f"sampler (default {DEFAULT_AZ_POLICY_SURPRISE})")
+
+
 def _holdout_frac():
     """--holdout-frac (az / az-league): per-cycle fresh-shard holdout."""
     return Arg("--holdout-frac", "float", default=DEFAULT_AZ_HOLDOUT_FRAC,
@@ -2098,6 +2115,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _epoch_frac(),
         _rows_per_game(),
         _value_rows_per_game(),
+        _policy_surprise(),
         Arg("--from-ppo", "str", default=None, suggest="checkpoint",
             help="Warm-start from a PPO checkpoint instead of resuming AZ"),
         Arg("--fresh", "flag", help="Start from random init"),
@@ -2218,6 +2236,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _epoch_frac(),
         _rows_per_game(),
         _value_rows_per_game(),
+        _policy_surprise(),
         _holdout_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
@@ -2376,6 +2395,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         _epoch_frac(),
         _rows_per_game(),
         _value_rows_per_game(),
+        _policy_surprise(),
         _holdout_frac(),
         Arg("--batch-size", "int", default=DEFAULT_AZ_BATCH_SIZE),
         Arg("--lr", "float", default=DEFAULT_AZ_LR),
