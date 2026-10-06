@@ -96,7 +96,7 @@ def load_replay(path):
     with open(path) as f:
         doc = json.load(f)
     if doc.get("format") != PLAY_FORMAT:
-        raise ValueError(f"{path} is not a RoboMage play-session file")
+        raise ValueError(f"{path} is not a robomage play-session file")
     if doc.get("engine_seed") is None:
         raise ValueError(f"{path} carries no engine seed — it cannot be replayed")
     build = doc.get("engine_build") or {}
@@ -225,9 +225,9 @@ def load_traces(path, interp_fn=None):
         try:
             meta = json.loads(str(d["meta"]))
         except KeyError:
-            raise ValueError(f"{path} is not a RoboMage analysis-session file")
+            raise ValueError(f"{path} is not a robomage analysis-session file")
         if meta.get("format") != TRACE_FORMAT:
-            raise ValueError(f"{path} is not a RoboMage analysis-session file")
+            raise ValueError(f"{path} is not a robomage analysis-session file")
         if (d["obs"].shape[1] != OBS_SIZE
                 or meta.get("max_actions") != MAX_ACTIONS):
             raise ValueError(

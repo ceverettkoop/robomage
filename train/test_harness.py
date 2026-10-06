@@ -238,7 +238,7 @@ def build_parser():
     """The harness CLI, built from cli_spec's HARNESS_TOOL (the single source
     the TUI form is built from too)."""
     parser = argparse.ArgumentParser(
-        description="RoboMage LLM test harness",
+        description="robomage LLM test harness",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

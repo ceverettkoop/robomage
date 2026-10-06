@@ -1043,7 +1043,7 @@ class PlayPane(QWidget):
         opp_seat = "A" if self._opp_is_a else "B"
         fmt = "Best of 3" if self._bo3 else "Single game"
         self._title = (
-            f"RoboMage · {fmt}  —  You ({seat_label(seat)}, "
+            f"robomage · {fmt}  —  You ({seat_label(seat)}, "
             f"{self._human_deck}) vs {self._opp_label} "
             f"({seat_label(opp_seat)}, {self._opp_deck})")
 
@@ -2171,7 +2171,7 @@ class NewPlaySessionDialog(LauncherDialog):
 
     def __init__(self, binary_path, parent=None):
         super().__init__(binary_path, parent)
-        self.setWindowTitle("RoboMage — New Play Session")
+        self.setWindowTitle("robomage — New Play Session")
         decks = scan_decks()
 
         form = QFormLayout()
@@ -2207,7 +2207,7 @@ class NewPlaySessionDialog(LauncherDialog):
         buttons.rejected.connect(self.reject)
 
         layout = QVBoxLayout(self)
-        title = QLabel("RoboMage")
+        title = QLabel("robomage")
         title.setObjectName("launcherTitle")
         subtitle = QLabel("Choose your matchup, then Start game.")
         subtitle.setObjectName("launcherSubtitle")

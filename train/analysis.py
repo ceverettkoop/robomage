@@ -3582,7 +3582,7 @@ def cmd_report(args):
              "pre{background:#f5f5f5;padding:1rem;overflow-x:auto;font-size:12px;line-height:1.3}"
              "img{max-width:100%;border:1px solid #ddd;margin:0.5rem 0}h1{font-size:1.4rem}"
              "h2{font-size:1.1rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}</style>",
-             f"<h1>RoboMage analysis — {_html.escape(deck_a)} vs {_html.escape(deck_b)}</h1>",
+             f"<h1>robomage analysis — {_html.escape(deck_a)} vs {_html.escape(deck_b)}</h1>",
              f"<p>{len(games)} simulated games · model "
              f"<code>{_html.escape(os.path.basename(args.player_a))}</code></p>"]
     for name in imgs:
@@ -3730,7 +3730,7 @@ def cmd_browse(parser, args, explicit):
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else list(argv)
     parser = argparse.ArgumentParser(
-        description="Analyze a trained RoboMage model by simulating games")
+        description="Analyze a trained robomage model by simulating games")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
