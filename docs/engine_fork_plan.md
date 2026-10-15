@@ -154,8 +154,11 @@ is unchanged.
   same games. From events alone, the tracker must reproduce the engine's current
   `known_top_library_*`, `opp_known_hand` and revealed decklist bits exactly, at every
   decision of the corpus and the smoke games. Every mismatch is either a missing or wrong
-  event, or a quirk of today's tracking, and is resolved before going on.
-- **Pass 1, strict parity.** An adapter on the Python decoder plus the tracker answers every
+  event, or a quirk of today's tracking, and is resolved before going on. The agent itself
+  reads only the viewer's own known top and `opp_known_hand`
+  ([`state_format_agent_map.md`](state_format_agent_map.md) §1d). The other outputs are the
+  broader event-completeness check.
+- **Pass 1, strict parity.** An adapter (its emulation list is the read map's §5) on the Python decoder plus the tracker answers every
   old read with the value the old vector gave. That includes rounding through the old
   normalisers and mimicking the old caps (48 permanent slots, 64 graveyard slots, 16 delayed
   triggers, 10 hand slots) so overflow cases decide the same way. Card knowledge

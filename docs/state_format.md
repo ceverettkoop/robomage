@@ -104,7 +104,8 @@ Sent once per match (not per snapshot):
 - `CARDS`: the card table for every implemented card and token in either registered list, plus
   tokens they can make. Each entry has the vocab id, name, uid, printed characteristics, an
   ability list (category, costs, timing, script line text) and, optionally, the raw script.
-- `DECKLISTS`: both registered lists (only the viewer's own under `--closed-decklist`).
+- `DECKLISTS`: both registered lists with their deck names (only the viewer's own under
+  `--closed-decklist`).
 
 Not in the snapshot:
 
@@ -284,3 +285,6 @@ engine bookkeeping.
 | 20 | Frames at the viewer's decisions only; push streams deferred | decided |
 | 21 | Menu collapse redefined on currently explicit information (section 8), in step 5a | decided |
 | 22 | Future search agents install a hidden world sampled from the actor's beliefs (a later engine command); the engine no longer determinizes from its own knowledge | deferred |
+| 23 | `DECKLISTS` carries each registered list's deck name (the opponent's withheld under `--closed-decklist`); from the agent read map | decided |
+| 24 | `object.is_token`, and token entries in `CARDS` with their real types; from the agent read map | decided |
+| 25 | Ability references carry a keyword key for keyword-built abilities (`Ninjutsu`, `Equip`, `Reconfigure:attach`, …); from the agent read map | decided |
