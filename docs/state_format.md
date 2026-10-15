@@ -1,8 +1,7 @@
 # RMSTATE: the engine's state format (draft spec)
 
-Status: **draft for step 1 of [`engine_fork_plan.md`](engine_fork_plan.md).** Nothing here is
-implemented yet. The decision register at the end records what is decided and what is only
-proposed.
+Status: **step-1 spec, decisions closed** (register in section 11; the agent read map is in
+[`state_format_agent_map.md`](state_format_agent_map.md)). Nothing here is implemented yet.
 
 RMSTATE replaces the float state vector (BQUERY). The engine sends it to whoever makes a
 decision: an in-process agent, the C++ CLI, or an external machine agent over `--machine`.
@@ -65,7 +64,7 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 | Hand | full | count, plus identities of cards in a current reveal window | CR 402.3 |
 | Library | count, plus cards in a current look/reveal window | count, plus cards in a current reveal window | CR 401.2, 401.3 |
 | Sideboard (bo3) | own contents | count only | registered list is open (below); post-board configuration is hidden |
-| Decklists | both registered lists (main + side) | same | open decklists, match header |
+| Decklists | own registered list; the opponent's too unless `--closed-decklist` | same | open by default (decision 11), match header |
 
 **Reveal windows.**
 - A reveal shows a card to all players for as long as the revealing effect needs it (CR
@@ -105,7 +104,7 @@ Sent once per match (not per snapshot):
 - `CARDS`: the card table for every implemented card and token in either registered list, plus
   tokens they can make. Each entry has the vocab id, name, uid, printed characteristics, an
   ability list (category, costs, timing, script line text) and, optionally, the raw script.
-- `DECKLISTS`: both registered lists.
+- `DECKLISTS`: both registered lists (only the viewer's own under `--closed-decklist`).
 
 Not in the snapshot:
 
@@ -224,7 +223,7 @@ engine bookkeeping.
   be redefined on currently explicit information (a card in a live reveal window is
   distinguishable; memory is not). It changes the decision schedule, so it belongs with step 5a.
 
-## 9. Encoding and protocol (proposed)
+## 9. Encoding and protocol
 
 - **Relational tables.** A frame is a sequence of tables; each table is fixed-width
   little-endian rows. Variable-length data goes in child tables keyed by handle. C++ reads rows
@@ -262,26 +261,26 @@ engine bookkeeping.
 
 | # | Decision | Status |
 |---|---|---|
-| 1 | Post-layer results are authoritative, plus coarse per-object provenance. No dump of a continuous-effect registry: only layer 7 has a `ContinuousEffect` record today (`src/systems/continuous_effects.h`); the other layers are applied directly in `state_manager_statics.cpp` | proposed |
-| 2 | Abilities by reference: card id + script ability index (keyed definitions by their key string), a short header (category, costs, timing, limit state), script line text. Definition pointers and intern order are not stable across processes | proposed |
-| 3 | Relational fixed-width tables (section 9) | proposed |
-| 4 | Schema frame with enum string tables; no copied constants, no codegen | proposed |
+| 1 | Post-layer results are authoritative, plus coarse per-object provenance. No dump of a continuous-effect registry: only layer 7 has a `ContinuousEffect` record today (`src/systems/continuous_effects.h`); the other layers are applied directly in `state_manager_statics.cpp` | decided |
+| 2 | Abilities by reference: card id + script ability index (keyed definitions by their key string), a short header (category, costs, timing, limit state), script line text. Definition pointers and intern order are not stable across processes | decided |
+| 3 | Relational fixed-width tables (section 9) | decided |
+| 4 | Schema frame with enum string tables; no copied constants, no codegen | decided |
 | 5 | Full snapshot per decision **plus the observation event stream** (section 5) | decided |
-| 6 | Viewers A / B / omniscient (flag only) | proposed |
+| 6 | Viewers A / B / omniscient (flag only) | decided |
 | 7 | Handles exist only while the viewer can individually identify the object (section 6) | decided |
 | 8 | The engine models **no** knowledge or memory; recall and inference are actor-side (section 7) | decided |
 | 9 | Own library: count only; contents and order are actor-side | decided |
 | 10 | Opponent hand: count plus live reveal windows | decided |
-| 11 | Open decklists are explicit, sent in `DECKLISTS` | decided |
-| 11a | Name-a-card candidate set: every vocab card passing `ValidCards$`, or the opponent's (open) registered list. With decklists open, the current restriction no longer leaks; it remains a CR 201.4 deviation | open |
-| 12 | Descriptions included and covered by the leak tests; the full-information narrative never goes to a seat | proposed |
-| 13 | `CARDS` table once per match, replacing `card_props` / `card_costs` / script reading for the agent; card id stays the vocab index | proposed |
-| 14 | Full keyword lists with parameters; counters as kind → count | proposed |
-| 15 | Rules-derived convenience fields only where the engine already computes them (can attack now, effective sickness, land drops left, mana potential) | proposed |
-| 16 | Pending context = `PendingQuery::Tag`, deciding seat, source, menu category | proposed |
-| 17 | One integer per decision; keep the interchangeable-duplicate collapse until step 5a | proposed |
-| 18 | Rules-state tables (delayed triggers, emblems, player effects, play permissions, LKI, shields); the rest through provenance | proposed |
-| 19 | `RMSTATE <nbytes>\n` framing; narrative off stdout; version + hash in every frame | proposed |
-| 20 | Frames at the viewer's decisions only; push streams deferred | proposed |
-| 21 | Menu collapse redefined on currently explicit information (section 8), in step 5a | proposed |
+| 11 | Decklists are open by default: both registered lists (main + side) are explicit, sent in `DECKLISTS`. `--closed-decklist` turns this off: the viewer then gets only their own list, and the leak tests treat the opponent's list as hidden. The setting is recorded in the RMLOG header | decided |
+| 11a | Name-a-card candidate set follows decision 11. With open decklists (default) it stays as today: the distinct vocab cards of the relevant registered list, filtered by `ValidCards$`. The list is explicit information, so this no longer leaks, but it remains the documented CR 201.4 deviation. Under `--closed-decklist`: every vocab card passing `ValidCards$` | decided |
+| 12 | Descriptions included and covered by the leak tests; the full-information narrative never goes to a seat | decided |
+| 13 | `CARDS` table once per match, replacing `card_props` / `card_costs` / script reading for the agent; card id stays the vocab index | decided |
+| 14 | Full keyword lists with parameters; counters as kind → count | decided |
+| 15 | Rules-derived convenience fields only where the engine already computes them (can attack now, effective sickness, land drops left, mana potential) | decided |
+| 16 | Pending context = `PendingQuery::Tag`, deciding seat, source, menu category | decided |
+| 17 | One integer per decision; keep the interchangeable-duplicate collapse until step 5a | decided |
+| 18 | Rules-state tables (delayed triggers, emblems, player effects, play permissions, LKI, shields); the rest through provenance | decided |
+| 19 | `RMSTATE <nbytes>\n` framing; narrative off stdout; version + hash in every frame | decided |
+| 20 | Frames at the viewer's decisions only; push streams deferred | decided |
+| 21 | Menu collapse redefined on currently explicit information (section 8), in step 5a | decided |
 | 22 | Future search agents install a hidden world sampled from the actor's beliefs (a later engine command); the engine no longer determinizes from its own knowledge | deferred |

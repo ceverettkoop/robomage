@@ -51,7 +51,8 @@ What the scripted agent depends on (`train/scripted_agent.py`, ~3.8k lines):
    - raw Forge script lines (`_card_script_lines`);
    - ~260 references to card-specific vocab-id constants.
 4. **The opponent's registered decklist** (`decode_opp_decklist`, used by `_name_card_pick`,
-   `scripted_agent.py:2344`), which assumes open decklists.
+   `scripted_agent.py:2344`). Decklists are open by default in the new format, so this needs no
+   special option.
 5. **Mana auto-pay:** the agent never chooses which sources pay a cost.
 6. **Engine-side memory:** the known top of each library (`Game::KnownLibraryTop`), known
    opponent hand cards (`Zone::identity_known`) and the match revealed bits. Under the new
@@ -105,7 +106,7 @@ that instant; recall and inference are actor-side.**
   - relational fixed-width tables;
   - a schema frame with enum string tables (no copied constants);
   - `RMSTATE <nbytes>\n` framing, reply sentinels `-1` / `-2` / `-3`;
-  - open decklists explicit in the match header.
+  - open decklists by default, explicit in the match header (`--closed-decklist` turns this off).
 - **Agent read map.** Every agent dependency 1–6 mapped to the snapshot field, card-table
   entry, or tracker output that will serve it. This is the completeness checklist for the
   agent; the exhaustive inventory is the superset.
