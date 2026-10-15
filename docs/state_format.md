@@ -1,7 +1,9 @@
 # RMSTATE: the engine's state format (draft spec)
 
-Status: **step-1 spec, decisions closed** (register in section 11; the agent read map is in
-[`state_format_agent_map.md`](state_format_agent_map.md)). Nothing here is implemented yet.
+Status: **step-1a spec, decisions closed** (register in section 11). Companions:
+[`state_format_agent_map.md`](state_format_agent_map.md) (agent read map) and
+[`knowledge_store.md`](knowledge_store.md) (recall/inference sidecar). Nothing here is
+implemented yet.
 
 RMSTATE replaces the float state vector (BQUERY). The engine sends it to whoever makes a
 decision: an in-process agent, the C++ CLI, or an external machine agent over `--machine`.
@@ -21,7 +23,7 @@ Force of Will in their hand last turn", "the card you put back is second from th
 card was revealed once this match".
 
 Perfect recall and inference belong to the **actor**, the agent playing the seat. They are
-built from what the engine reports, through a reference `KnowledgeTracker` that sits beside the
+built from what the engine reports, through the C++ knowledge sidecar that sits beside the
 agent (section 7). How much an agent infers is agent policy and can grow without touching the
 engine.
 
@@ -172,38 +174,22 @@ the same visibility rules as the snapshot.
   must be distinguishable); only their identity is withheld.
 - The handle table is per game, lives in `Game` (snapshot-covered), and resets at game start.
 
-## 7. Actor side: `KnowledgeTracker`
+## 7. Actor side: the knowledge sidecar
 
-A reference module shipped with the scripted agent (Python first; a C++ twin when a C++ agent
-needs it). It applies the event stream in order, and checks itself against each snapshot (its
-counts must match).
+Recall and inference are done by a C++ **knowledge sidecar**, designed in
+[`knowledge_store.md`](knowledge_store.md):
 
-**Recall layer (exact, no probability):**
-
-- **opponent hand:** a multiset of known cards (from reveal windows), decremented when a card is
-  played from hand;
-- **library model per player:** a sequence of slots, each *known card*, *unknown*, or *one of a
-  set*. For example, after an opponent's Brainstorm the top two slots are "the 2 cards put back
-  from a hand that contained {…}". A `shuffle` resets the model to all-unknown. Draws, mills
-  and placements update it positionally;
-- **own library:** contents = own registered list minus every own card seen elsewhere, with
-  order from your own looks;
-- **match memory:** every card seen per opponent across games.
-
-**Inference layer (agent policy):** set reasoning ("their registered list minus everything
-seen = possible hand ∪ library"), what a put-back reveals, probabilities. It can grow
-arbitrarily without engine changes.
-
-**Parity target (step 3).** From events alone, the tracker must reproduce exactly what the
-engine computes today for the scripted agent:
-
-- `known_top_library_self/opp` (`Game::KnownLibraryTop`);
-- `opp_known_hand` (`src/machine_io.cpp:954`, from `Zone::identity_known`);
-- the opponent's revealed decklist bits (`src/classes/match_state.cpp`).
-
-It must do so over the whole replay corpus and the smoke games. A mismatch is either a missing
-or wrong event, or a quirk in today's tracking; each is resolved before step 4 deletes the
-engine bookkeeping.
+- **Input:** only the viewer's own frame stream.
+- **Output:** `k_*` knowledge tables attached to that viewer's frames, the same for every kind
+  of agent.
+- **Levels:** `off` (tables empty) and `expert` (perfect recall plus every sound logical
+  deduction), selected by `--knowledge-a/-b off|expert`, default `expert`.
+- **Checks:**
+  - soundness against the omniscient truth;
+  - exactness against brute-force enumeration;
+  - isolation via the standalone `rmknow` tool;
+  - a shadow comparison with the engine's current memory, in which every mismatch is
+    classified as a bug or an old-vector leak.
 
 ## 8. Engine changes this requires
 
@@ -215,14 +201,15 @@ engine bookkeeping.
   viewer and the visibility rules' answer, never a raw entity.
 - **Reveal windows:** generalise `Game::revealed_in_library` into the per-viewer window set, and
   the snapshot's `reveal` table reads it.
-- **Delete after step-3 parity** the persistent knowledge bookkeeping that existed only for the
-  observation: `Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, and the
+- **Delete in the plan's step 3b**, after the sidecar's shadow comparison is fully classified,
+  the persistent knowledge bookkeeping that existed only for the observation:
+  `Game::KnownLibraryTop`, `Zone::identity_known`, the match revealed bits, and the
   `opp_known_hand` pass. The search server's determinizer also reads `identity_known`; it is
-  deleted in step 4 anyway.
+  deleted in the same step.
 - **Menu collapse.** `interchangeable_cards` (`src/queries/zones.cpp:123-128`) refuses to merge
   two identical library cards when one is at a position the other player knows. That rule must
   be redefined on currently explicit information (a card in a live reveal window is
-  distinguishable; memory is not). It changes the decision schedule, so it belongs with step 5a.
+  distinguishable; memory is not). It changes the decision schedule, so it belongs with step 4a.
 
 ## 9. Encoding and protocol
 
@@ -254,9 +241,10 @@ engine bookkeeping.
   hidden information permuted (same rule); they must be identical. The typed constructors make
   this a structural guarantee; the hook checks it.
 - **complete:** every public object appears, counts match zone sizes, every handle reference
-  resolves, every menu handle exists, and the tracker's counts match the snapshot.
+  resolves, every menu handle exists, and the knowledge sidecar's pool sizes match the snapshot.
 - **snapshot:** save → K actions → restore; both viewers' frames match the pre-save bytes.
-- **knowledge parity:** section 7's parity target.
+- **knowledge:** the sidecar's soundness, exactness, isolation and shadow checks
+  (`knowledge_store.md` §7).
 
 ## 11. Decision register
 
@@ -279,12 +267,15 @@ engine bookkeeping.
 | 14 | Full keyword lists with parameters; counters as kind → count | decided |
 | 15 | Rules-derived convenience fields only where the engine already computes them (can attack now, effective sickness, land drops left, mana potential) | decided |
 | 16 | Pending context = `PendingQuery::Tag`, deciding seat, source, menu category | decided |
-| 17 | One integer per decision; keep the interchangeable-duplicate collapse until step 5a | decided |
+| 17 | One integer per decision; keep the interchangeable-duplicate collapse until step 4a | decided |
 | 18 | Rules-state tables (delayed triggers, emblems, player effects, play permissions, LKI, shields); the rest through provenance | decided |
 | 19 | `RMSTATE <nbytes>\n` framing; narrative off stdout; version + hash in every frame | decided |
 | 20 | Frames at the viewer's decisions only; push streams deferred | decided |
-| 21 | Menu collapse redefined on currently explicit information (section 8), in step 5a | decided |
+| 21 | Menu collapse redefined on currently explicit information (section 8), in step 4a | decided |
 | 22 | Future search agents install a hidden world sampled from the actor's beliefs (a later engine command); the engine no longer determinizes from its own knowledge | deferred |
 | 23 | `DECKLISTS` carries each registered list's deck name (the opponent's withheld under `--closed-decklist`); from the agent read map | decided |
 | 24 | `object.is_token`, and token entries in `CARDS` with their real types; from the agent read map | decided |
 | 25 | Ability references carry a keyword key for keyword-built abilities (`Ninjutsu`, `Equip`, `Reconfigure:attach`, …); from the agent read map | decided |
+| 26 | Recall and inference live in a C++ sidecar fed only by the viewer's frame stream (`knowledge_store.md`), not in the engine and not in Python | decided |
+| 27 | Knowledge levels `off` and `expert` only; default `expert`; per seat (`--knowledge-a/-b`); no `engine-compat` level (the agent port reads `expert`) | decided |
+| 28 | Knowledge tables (`k_*`) travel inside the viewer's RMSTATE frame, with a schema fixed across levels | decided |

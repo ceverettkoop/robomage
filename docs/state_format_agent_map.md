@@ -2,7 +2,7 @@
 
 Step-1 companion to [`state_format.md`](state_format.md). It maps every value the scripted agent
 (`train/scripted_agent.py`) reads today onto what will serve it in RMSTATE. It is the
-completeness checklist for the step-3 port and the specification of the pass-1 parity adapter.
+completeness checklist for the step-2 port and the specification of the pass-1 parity adapter.
 
 **Legend for "served by":**
 
@@ -12,7 +12,7 @@ completeness checklist for the step-3 port and the specification of the pass-1 p
 | `M.<column>` | the menu table |
 | `C.` | the once-per-match `CARDS` table |
 | `D.` | the once-per-match `DECKLISTS` table |
-| `T.` | the actor-side `KnowledgeTracker` (state_format §7) |
+| `K.` | the knowledge sidecar's `k_*` tables at level `expert` ([`knowledge_store.md`](knowledge_store.md)) |
 | `—` | not needed (dead code or unused) |
 
 Line numbers are `scripted_agent.py` unless a file is named. The agent reaches the state four
@@ -29,9 +29,9 @@ ways: raw `obs[...]` reads, `decode.decode_game_state` (`g`, built once per deci
    - `opp_known_hand` (`_name_card_pick` :2361).
 
    It never reads the opponent's known library top, and it binds but ignores the decklist
-   "revealed" bit (`_rev`, :2355). Tracker parity for the agent therefore needs only those
-   two outputs. Reproducing all of today's engine knowledge (state_format §7) remains the
-   broader event-completeness check.
+   "revealed" bit (`_rev`, :2355). The agent therefore needs only those two outputs from the
+   knowledge sidecar. The full shadow comparison with today's engine memory
+   (`knowledge_store.md` §7) remains the broader event-completeness check.
 3. **Player identity is never needed beyond "self/opp".** The seat flag is read only to pick
    which deck *name* belongs to the agent (`_seat_deck` :2895).
 4. **Out-of-band inputs exist today:**
@@ -41,8 +41,8 @@ ways: raw `obs[...]` reads, `decode.decode_game_state` (`g`, built once per deci
 
    All of them move into `D.`/`C.`, so the agent needs no filesystem access.
 5. **Menu order is part of the contract.** About a dozen decisions are positional: index 0 /
-   last index / "index = X" (table 2b). The engine's menus are unchanged until step 5a, so
-   parity holds. Step 5a must keep these orders or update the agent with them.
+   last index / "index = X" (table 2b). The engine's menus are unchanged until step 4a, so
+   parity holds. Step 4a must keep these orders or update the agent with them.
 6. **Dead code:** `evaluate(g)` (:2071) is never called; its reads are dropped.
 
 ## 1. Snapshot reads
@@ -98,13 +98,13 @@ and the menu's `ref` (§2).
 | opp exile card id + counters | opp exile slots, offsets 0 and 4 (`_best_void_card` :2698-2702) | `S.object` + `S.object_counter` (exile) | — |
 | pending decision source card | `obs[5797]` (≈15 call sites: :1304, 1480, 1509, 1547, 2364, 2401, 2537, 3034…, 3627) | `S.pending.source` → card | the second float (controller) is unused |
 
-### 1d. Memory (tracker outputs)
+### 1d. Memory (knowledge sidecar outputs)
 
 | Quantity | Read today | Served by | Parity note |
 |---|---|---|---|
-| own library top card is X | `obs[5777]` (`_led_crack_choice` :732) | `T.own_library` slot 0 | engine source: `Game::KnownLibraryTop` (by owner); tracker must match exactly |
-| own known top 3 | `_known_top_ids(obs, 3)` (:2323 → `_shuffle_pick` :2332) | `T.own_library` slots 0-2 | same |
-| opponent known hand cards | `g["opp_known_hand"]` (:2361) | `T.opp_hand` known multiset | engine source: `Zone::identity_known` via `machine_io.cpp:954`; must match exactly |
+| own library top card is X | `obs[5777]` (`_led_crack_choice` :732) | `K.k_position` (own, top, exact) | engine source today: `Game::KnownLibraryTop` (by owner); covered by the shadow comparison |
+| own known top 3 | `_known_top_ids(obs, 3)` (:2323 → `_shuffle_pick` :2332) | `K.k_position` (own, top 3, exact) | same |
+| opponent known hand cards | `g["opp_known_hand"]` (:2361) | `K.k_known_hand` | engine source today: `Zone::identity_known` via `machine_io.cpp:954`. Known divergence: after an opponent's put-back the old vector leaks which cards went back; `expert` does not (`knowledge_store.md` §7) |
 | opponent decklist (cid, count) | `decode_opp_decklist` (:2355) | `D.` opponent registered list | the `revealed` bit is unused |
 
 ## 2. Menu reads
@@ -124,7 +124,7 @@ and the menu's `ref` (§2).
 
 ### 2b. Positional (menu-order) assumptions to preserve
 
-These are valid while engine menus are unchanged (through step 4). Step 5a must keep them or
+These are valid while engine menus are unchanged (through step 3). Step 4a must keep them or
 change the agent alongside:
 
 - sideboard Done = index 0 (:1630);
