@@ -393,7 +393,7 @@ class GameApp(App):
         human_seat = "B" if self._opp_is_a else "A"
         opp_seat = "A" if self._opp_is_a else "B"
         fmt = "Best of 3" if self._bo3 else "Single game"
-        self.title = f"RoboMage · {fmt}"
+        self.title = f"robomage · {fmt}"
         self.sub_title = (f"You ({seat_label(human_seat)}, {self._human_deck})"
                           f"  vs  {self._opp_label} ({seat_label(opp_seat)}, "
                           f"{self._opp_deck})")

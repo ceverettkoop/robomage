@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "default",
-  "description": "The standard end-to-end run: PPO league -> baseline -> full-search AZ self-play with doomsday expert demonstrations -> baseline. Phase 1 trains the ONE generalist (gen__final.zip) over the whole decks/league/ roster for 18M steps with the scripted anchor raised to 0.2, so the PPO warm-start the AZ net needs is broad rather than snapshot-inbred. Phase 2 measures that PPO generalist (gen, raw policy, Python backend) vs scripted:hard over the full league grid, 10 matches per matchup, appended to baseline_report.log. Phase 3 runs 12 az-league rotations entirely on the C++ actor (build it with `make actor`) at the full search budget: full_search_frac 1.0, so every searched root gets the full sim budget and records a policy target. Each slot's self-play is the exact unordered deck-pair matrix over the full roster (doomsday included) played 7 times (55 pairs x 7 = 385 bo3 matches on the 10-deck roster, mirrors included) plus a rotating 24-cell slice of the ordered vs-scripted:hard pair list, trained with the game-uniform sampler (at most 50 rows per game per cycle) over the auto window and gated every 2 slots. Each slot also writes wubg_doomsday expert demonstration shards: 30 scripted:hard-piloted matches vs scripted:random AND 30 vs scripted:hard, recording the doomsday seat only, so the combo line enters the window priced by games it actually wins, including wins under real pressure. Phase 4 measures the finished AZ incumbent under search (az:gen, C++ actor) vs scripted:hard over the same grid and match count, so the two baseline reports compare like with like. Run the FIRST phase-1 pass with an explicit --fresh on the league command if you really mean to start the generalist over -- it is deliberately NOT baked into the plan, so a rerun/resume never wipes the generalist.",
+  "description": "The standard end-to-end run: PPO league -> baseline -> full-search AZ self-play with doomsday expert demonstrations -> baseline. Phase 1 trains the ONE generalist (gen__final.zip) over the whole decks/league/ roster for 18M steps with the scripted anchor raised to 0.2, so the PPO warm-start the AZ net needs is broad rather than snapshot-inbred. Phase 2 measures that PPO generalist (gen, raw policy, Python backend) vs scripted:hard over the full league grid, 10 matches per matchup, appended to baseline_report.log. Phase 3 seeds a NEW AZ line from the PPO snapshot gen__v9750016.zip (--from-ppo; the middle of the 2026-09-28 league run's vs-scripted plateau, ahead of the later gen__final) and runs 12 az-league rotations entirely on the C++ actor (build it with `make actor`) at the full search budget: full_search_frac 1.0, so every searched root gets the full sim budget and records a policy target. Each slot's self-play is the exact unordered deck-pair matrix over the full roster (doomsday included) played 7 times (55 pairs x 7 = 385 bo3 matches on the 10-deck roster, mirrors included) plus a rotating 24-cell slice of the ordered vs-scripted:hard pair list, trained with the game-uniform sampler (at most 50 rows per game per cycle) over the auto window and gated every 2 slots. Each slot also writes wubg_doomsday expert demonstration shards: 30 scripted:hard-piloted matches vs scripted:random AND 30 vs scripted:hard, recording the doomsday seat only, so the combo line enters the window priced by games it actually wins, including wins under real pressure. Phase 4 measures the finished AZ incumbent under search (az:gen, C++ actor) vs scripted:hard over the same grid and match count, so the two baseline reports compare like with like. Run the FIRST phase-1 pass with an explicit --fresh on the league command if you really mean to start the generalist over -- it is deliberately NOT baked into the plan, so a rerun/resume never wipes the generalist.",
   "phases": [
     {
       "kind": "league",
@@ -11,8 +11,7 @@
         "exploiter_floor": 0.0,
         "promote_margin": 0.0,
         "n_envs": 64,
-        "popart": true,
-        "format": "bo3"
+        "popart": true
       }
     },
     {
@@ -25,6 +24,7 @@
       "rotations": 12,
       "games": 100,
       "overrides": {
+        "from_ppo": "gen__v9750016.zip",
         "full_search_frac": 1.0,
         "workers": 72,
         "window": 0,

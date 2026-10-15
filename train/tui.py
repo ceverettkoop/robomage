@@ -293,7 +293,8 @@ class ArgFormMixin:
             if default in vals:
                 kwargs["value"] = default
             w = Select([(v, v) for v in vals], **kwargs)
-            self._fields.append({"kind": "pick", "arg": a, "widget": w})
+            self._fields.append({"kind": "pick", "arg": a, "widget": w,
+                                 "options": vals})
         else:
             itype = "integer" if a.kind == "int" else "text"
             w = Input(value="" if default is None else str(default),
@@ -372,11 +373,26 @@ class ArgFormMixin:
                         w.select(p)
                 f["order"] = picks
                 self._refresh_roster_readout(f)
-            elif f["kind"] in ("choice", "pick"):
+            elif f["kind"] == "pick":
+                self._set_pick(f, val)
+            elif f["kind"] == "choice":
                 with contextlib.suppress(Exception):
                     w.value = val
             else:
                 w.value = "" if val is None else str(val)
+
+    def _set_pick(self, f, val):
+        """Select ``val`` in a suggest dropdown, first adding it as an option
+        when the scanner did not offer it (a hand-written spec such as 'gen' or
+        a checkpoint stem), so a prefill never falls back to the default."""
+        if val is None or val == "":
+            f["widget"].clear()
+            return
+        val = str(val)
+        if val not in f["options"]:
+            f["options"] = f["options"] + [val]
+            f["widget"].set_options([(v, v) for v in f["options"]])
+        f["widget"].value = val
 
     # ── roster ordering (== training rotation order) ─────────────────────
     def _roster_field(self):
@@ -846,6 +862,11 @@ class CurriculumScreen(ArgFormMixin, Screen):
         self._apply_values(curriculum.phase_values(phase))
         self.query_one("#fieldhelp", Static).update(
             f"phase {idx + 1}: train.py {kind}")
+        if curriculum.changed_phases({"phases": [phase]},
+                                     {"phases": [self._form_phase(kind)]}):
+            self.notify(f"phase {idx + 1} has values this form cannot show; "
+                        "saving from this screen would change them",
+                        severity="warning", timeout=15)
 
     def _form_phase(self, kind):
         """The phase dict the mounted form currently describes.
@@ -1034,10 +1055,32 @@ class CurriculumScreen(ArgFormMixin, Screen):
         self._launch(resume=False)
 
     def _launch(self, resume: bool):
-        """Save the plan, then run it through the launcher's terminal path."""
-        path = self.action_save()
-        if path is None:
-            return
+        """Run the saved plan through the launcher's terminal path.
+
+        Run never writes the plan file: a plan that exists on disk runs as
+        saved, and if the screen's copy differs from it the launch is refused
+        until the user saves (or reloads). A plan not yet on disk is saved
+        first, with the usual notice."""
+        self._sync_phase()
+        path = self._plan_path()
+        if os.path.exists(path):
+            try:
+                on_disk = curriculum.load_plan(path)
+            except curriculum.PlanError as exc:
+                self.notify(str(exc), severity="error", timeout=10)
+                return
+            changed = curriculum.changed_phases(on_disk, self._plan)
+            if changed:
+                self.notify(
+                    f"not launched: phase(s) {', '.join(map(str, changed))} differ "
+                    f"from {os.path.relpath(path, REPO_ROOT)}. Save to apply the "
+                    "edits, or Load the plan to discard them.",
+                    severity="warning", timeout=15)
+                return
+        else:
+            path = self.action_save()
+            if path is None:
+                return
         argv = [VENV_PY, os.path.join(REPO_ROOT, "train", "train.py"),
                 "curriculum", "--plan", path]
         if resume:

@@ -254,7 +254,7 @@ class InspectApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.title = "RoboMage · AZ inspect"
+        self.title = "robomage · AZ inspect"
         self.sub_title = self._args.model + ("" if self._with_shards
                                              else "  (weights only)")
         for pane, views in (("emb", _EMB_VIEWS), ("critic", _CRITIC_VIEWS),

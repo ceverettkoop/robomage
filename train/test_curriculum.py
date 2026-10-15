@@ -332,10 +332,28 @@ def test_form_schema():
     cur.validate_plan({"version": 1, "phases": [phase]})
 
 
+def test_changed_phases():
+    print("changed_phases")
+    base = {"phases": [{"kind": "baseline", "model": "gen__v10250048", "games": 10},
+                       {"kind": "baseline", "model": "gen", "games": 10}]}
+    same = {"phases": [{"kind": "baseline", "model": "gen__v10250048", "games": 10.0},
+                       {"kind": "baseline", "model": "gen", "games": 10,
+                        "overrides": {"seed": 1}}]}
+    check(cur.changed_phases(base, same) == [],
+          "an int-as-float or a default spelled out is not a change")
+    # The TUI prefill bug: an unlisted model spec fell back to the az:gen default.
+    lost = {"phases": [{"kind": "baseline", "model": "az:gen", "games": 10},
+                       base["phases"][1]]}
+    check(cur.changed_phases(base, lost) == [1], "a changed model is phase 1")
+    check(cur.changed_phases(base, {"phases": base["phases"][:1]}) == [2],
+          "a removed phase counts as changed")
+
+
 def main():
     tmp = tempfile.mkdtemp(prefix="curriculum_test_")
     try:
         test_compose_league()
+        test_changed_phases()
         test_compose_exploiter()
         test_compose_az()
         test_compose_az_league()

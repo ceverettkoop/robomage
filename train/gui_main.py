@@ -113,7 +113,7 @@ class WelcomePane(QWidget):
         super().__init__()
         lay = QVBoxLayout(self)
         lay.addStretch(2)
-        title = QLabel("RoboMage")
+        title = QLabel("robomage")
         title.setObjectName("welcomeTitle")
         title.setAlignment(Qt.AlignCenter)
         hint = QLabel("File ▸ New Session to begin")
@@ -143,7 +143,7 @@ class NewAnalysisSessionDialog(LauncherDialog):
 
     def __init__(self, binary_path, parent=None):
         super().__init__(binary_path, parent)
-        self.setWindowTitle("RoboMage — New Analysis Session")
+        self.setWindowTitle("robomage — New Analysis Session")
         decks = scan_decks()
 
         # -- simulate group --------------------------------------------------
@@ -275,7 +275,7 @@ class NewAnalysisSessionDialog(LauncherDialog):
     def _browse_trace(self):
         path, _ = QFileDialog.getOpenFileName(
             self, "Saved analysis session", self._source_path.text() or "",
-            f"RoboMage analysis session (*{TRACE_EXT})")
+            f"robomage analysis session (*{TRACE_EXT})")
         if path:
             self._source_path.setText(path)
 
@@ -556,7 +556,7 @@ class SessionManager(QObject):
         kind = ("play session" if self.mode == "play" else "analysis session")
         path, _ = QFileDialog.getSaveFileName(
             self._window, "Save Session", "",
-            f"RoboMage {kind} (*{ext})")
+            f"robomage {kind} (*{ext})")
         if not path:
             return None
         if not os.path.splitext(path)[1]:
@@ -596,7 +596,7 @@ class SessionManager(QObject):
         if kind == "trace":
             return self._open_trace(path)
         _critical(self._window, "Could not open file",
-                  f"{path} is not a RoboMage session file.")
+                  f"{path} is not a robomage session file.")
         return False
 
     def _ask_open_play_choice(self, doc):
@@ -720,7 +720,7 @@ class ShardBrowserWindow(QMainWindow):
     def __init__(self, opts, parent=None):
         super().__init__(parent)          # QMainWindow stays top-level
         from gui_browser import BrowserPane
-        self.setWindowTitle(f"RoboMage — Recording · {opts.get('source', '')}")
+        self.setWindowTitle(f"robomage — Recording · {opts.get('source', '')}")
         self.resize(1180, 860)
         self._pane = BrowserPane(opts, parent=self)
         self.setCentralWidget(self._pane)
@@ -745,7 +745,7 @@ class MainWindow(QMainWindow):
     def __init__(self, binary_path):
         super().__init__()
         self._binary = binary_path
-        self.setWindowTitle("RoboMage")
+        self.setWindowTitle("robomage")
         self.resize(1280, 940)
 
         self._stack = QStackedWidget()
@@ -873,7 +873,7 @@ class MainWindow(QMainWindow):
         for act in (self._act_widen, self._act_narrow):
             act.setEnabled(mode == "play")
 
-        title = "RoboMage"
+        title = "robomage"
         if pane is not None:
             try:
                 title = pane.title() or title
@@ -899,7 +899,7 @@ class MainWindow(QMainWindow):
     def _open_dialog(self):
         path, _ = QFileDialog.getOpenFileName(
             self, "Open Session", "",
-            f"RoboMage sessions (*{gui_session_io.PLAY_EXT} "
+            f"robomage sessions (*{gui_session_io.PLAY_EXT} "
             f"*{gui_session_io.TRACE_EXT});;All files (*)")
         if path:
             self.manager.open_path(path)

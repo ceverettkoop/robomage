@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "name": "az_10_4",
+  "description": "2026-10-04 UNGATED continuation of the az_10_2 candidate line (its slot-7 snapshot gen__azv674048, the newest gen__azv*; az_10_2 was interrupted in slot 8 and its league progress is archived in checkpoints/az/archive_az_10_2_run/). gate_every 0: no slot is gated, self-play always uses the newest candidate (no pinning, no line pruning), and the last candidate is promoted to gen__azfinal unconditionally at run completion so the closing az:gen baseline measures it. Training stays at one automatic pass per slot (~230 batches over the 50-rows-per-game pool): the 10-04 A/B/C/D test (az_pi_levers/abcd/) found 3 passes or 150 rows per game left next-slot policy KL unchanged-to-worse and next-slot value MSE worse (0.619 -> 0.630-0.644) than one pass at 50. The 16-rows-per-game value cap stays, and the per-slot FRESH / HOLDOUT lines track generalization. Policy surprise weighting share 0.5: each game's <=50 policy rows are drawn half uniformly, half in proportion to the row's grouped policy KL under the incoming net (KataGo-style), with value rows drawn uniformly and separately; policy loss and KL metrics compare duplicate-option groups. The interrupted slot-8 pass's 49 shards and slot 7's shards are the newest in az_data/gen, so the first slot's auto window (2x its new shards, newest by mtime) trains on them. Search and data settings match az_10_2: c_puct 1.5, 4 worlds with shared root noise, full_search_frac 0.5, 12 exhaustive repeats per pair + 24 rotating vs-scripted:hard cells, rows_per_game 50, lr 5e-5, expert shards off. Track progress with the anchor ladder rather than gates.",
+  "phases": [
+    {
+      "kind": "az-league",
+      "rotations": 12,
+      "games": 100,
+      "overrides": {
+        "full_search_frac": 0.5,
+        "worlds": 4,
+        "c_puct": 1.5,
+        "workers": 72,
+        "window": 0,
+        "exhaustive_selfplay": true,
+        "exhaustive_repeats": 12,
+        "scripted_cells": 24,
+        "expert_decks": [
+          "none"
+        ],
+        "expert_games": 0,
+        "rows_per_game": 50,
+        "lr": 5e-05,
+        "value_rows_per_game": 16,
+        "gate_every": 0,
+        "policy_surprise": 0.5
+      }
+    },
+    {
+      "kind": "baseline",
+      "model": "az:gen",
+      "games": 10
+    }
+  ]
+}

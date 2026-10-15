@@ -193,6 +193,36 @@ def phase_values(phase: dict) -> dict:
     return values
 
 
+def changed_phases(old: dict, new: dict) -> list:
+    """1-based indices of the phases whose effective arguments differ between
+    two plans (a phase added or removed counts as changed).
+
+    Compares what each phase would RUN — kind plus every argument with the
+    subcommand's default filled in — so a value spelled out equal to its
+    default, or an int written as a float, is not a change."""
+    a, b = old["phases"], new["phases"]
+    return [i + 1 for i in range(max(len(a), len(b)))
+            if i >= len(a) or i >= len(b)
+            or _effective_values(a[i]) != _effective_values(b[i])]
+
+
+def _effective_values(phase: dict) -> tuple:
+    kind = phase["kind"]
+    values = phase_values(phase)
+    return kind, {dest: _normalized(values.get(dest, arg.default))
+                  for dest, arg in phase_args(kind).items()}
+
+
+def _normalized(value):
+    if isinstance(value, bool) or value is None:
+        return value
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, (list, tuple)):
+        return [_normalized(v) for v in value]
+    return str(value)
+
+
 def coerce_value(arg, value):
     """Best-effort cast of a form/text value to the arg's JSON type.
 

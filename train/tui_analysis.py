@@ -771,7 +771,7 @@ class AnalysisApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
-        self.title = "RoboMage · analysis"
+        self.title = "robomage · analysis"
         self.sub_title = (f"{self._args.player_a}  vs  {self._args.player_b}"
                           + ("  (bo3)" if is_bo3(self._args) else ""))
         menu = self.query_one("#analyses", OptionList)

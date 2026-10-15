@@ -275,7 +275,7 @@ def test_validation(tmp):
                    ValueError, "build", "wrong engine_build")
     bad_fmt = dict(doc, format="something-else")
     _expect_raises(lambda: gio.load_replay(_dump(bad_fmt, "bf.rmplay")),
-                   ValueError, "not a RoboMage play-session",
+                   ValueError, "not a robomage play-session",
                    "wrong format")
     seedless = dict(doc, engine_seed=None)
     _expect_raises(lambda: gio.load_replay(_dump(seedless, "ns.rmplay")),
@@ -295,7 +295,7 @@ def test_validation(tmp):
     with open(stray, "wb") as f:
         np.savez_compressed(f, foo=np.zeros(3))
     _expect_raises(lambda: gio.load_traces(stray), ValueError,
-                   "not a RoboMage analysis-session", "meta-less npz")
+                   "not a robomage analysis-session", "meta-less npz")
 
     # Tampered meta max_actions: re-pack a valid trace file with a bumped
     # value and expect the layout gate to fire.

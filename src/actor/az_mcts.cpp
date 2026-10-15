@@ -232,6 +232,10 @@ struct AZMcts::Impl {
 
     // Per-search state (valid IDLE→...→finalize).
     int this_root = 0;
+    // The current search's noise-mixed root priors (shared by all its worlds)
+    // and the this_root they were drawn for; -1 = none drawn yet.
+    std::vector<double> noise_priors;
+    int noise_root = -1;
     int root_n = 0;
     bool root_is_a = false;
     bool root_is_sb = false;  // this root is a bo3 sideboard prompt (sample tag)
@@ -615,7 +619,9 @@ struct AZMcts::Impl {
             cfg.world_seed_base +
             100003u * static_cast<uint32_t>(this_root) +
             static_cast<uint32_t>(w);
-        // Root Dirichlet noise, redrawn per world over the shared base priors —
+        // Root Dirichlet noise, drawn ONCE per search (on the root's first
+        // begin_world) and mixed into every world's root priors, so the summed
+        // visit target is not flattened by a different random boost per world —
         // mcts.py: priors = (1-eps)*root_priors + eps*dirichlet(alpha*[1]*nc).
         // eps=0 (parity default) reuses the base priors verbatim. A standard
         // Dirichlet is gamma(alpha) per component normalized by the sum, drawn
@@ -624,23 +630,26 @@ struct AZMcts::Impl {
         // policy target), mirroring the Python fast branch's eps=0. An
         // opponent-pool root mixes none either (_opp_net_action's eps=0).
         if (cfg.noise_eps > 0.0 && cur_full && learner_root()) {
-            std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
-            std::vector<double> noise(static_cast<size_t>(root_n));
-            double sum = 0.0;
-            for (int i = 0; i < root_n; i++) {
-                double g = gamma(rng);
-                noise[static_cast<size_t>(i)] = g;
-                sum += g;
+            if (noise_root != this_root) {
+                std::gamma_distribution<double> gamma(cfg.noise_alpha, 1.0);
+                std::vector<double> noise(static_cast<size_t>(root_n));
+                double sum = 0.0;
+                for (int i = 0; i < root_n; i++) {
+                    double g = gamma(rng);
+                    noise[static_cast<size_t>(i)] = g;
+                    sum += g;
+                }
+                noise_priors.assign(static_cast<size_t>(root_n), 0.0);
+                for (int i = 0; i < root_n; i++) {
+                    double d = sum > 0.0 ? noise[static_cast<size_t>(i)] / sum
+                                         : 1.0 / static_cast<double>(root_n);
+                    noise_priors[static_cast<size_t>(i)] =
+                        (1.0 - cfg.noise_eps) * root_priors[static_cast<size_t>(i)] +
+                        cfg.noise_eps * d;
+                }
+                noise_root = this_root;
             }
-            std::vector<double> priors(static_cast<size_t>(root_n));
-            for (int i = 0; i < root_n; i++) {
-                double d = sum > 0.0 ? noise[static_cast<size_t>(i)] / sum
-                                     : 1.0 / static_cast<double>(root_n);
-                priors[static_cast<size_t>(i)] =
-                    (1.0 - cfg.noise_eps) * root_priors[static_cast<size_t>(i)] +
-                    cfg.noise_eps * d;
-            }
-            cur_root = make_node(root_n, priors, root_is_a);
+            cur_root = make_node(root_n, noise_priors, root_is_a);
         } else {
             cur_root = make_node(root_n, root_priors, root_is_a);
         }

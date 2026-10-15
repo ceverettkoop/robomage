@@ -2424,7 +2424,7 @@ def _run_sweep(args, parser):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="RoboMage RL training and evaluation.",
+        description="robomage RL training and evaluation.",
         epilog="Run a subcommand with -h for its options (e.g. 'train.py train -h'). "
                "If no subcommand is given, 'train' is assumed, so legacy one-liners "
                "like 'train.py --deck-b mav' work.")

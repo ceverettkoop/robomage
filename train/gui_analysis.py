@@ -485,7 +485,7 @@ class AnalysisWindow(QMainWindow):
 
     def __init__(self, primary_env, cfg, opp_is_a, parent=None):
         super().__init__(parent, Qt.Window)
-        self.setWindowTitle("RoboMage — Analysis")
+        self.setWindowTitle("robomage — Analysis")
         self.setAttribute(Qt.WA_ShowWithoutActivating, True)
         self._cfg = cfg
         self._opp_is_a = opp_is_a
