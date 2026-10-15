@@ -53,6 +53,9 @@ What the scripted agent depends on (`train/scripted_agent.py`, ~3.8k lines):
 4. **The opponent's registered decklist** (`decode_opp_decklist`, used by `_name_card_pick`,
    `scripted_agent.py:2344`), which assumes open decklists.
 5. **Mana auto-pay:** the agent never chooses which sources pay a cost.
+6. **Engine-side memory:** the known top of each library (`Game::KnownLibraryTop`), known
+   opponent hand cards (`Zone::identity_known`) and the match revealed bits. Under the new
+   format these move to an actor-side `KnowledgeTracker` (`docs/state_format.md` §7).
 
 ## Ground rules
 
@@ -71,44 +74,56 @@ What the scripted agent depends on (`train/scripted_agent.py`, ~3.8k lines):
 
 ## Step 1 — Design the format (spec only; no code)
 
-Outputs: `docs/state_format.md` (the spec) and an **agent read map** (below).
+Outputs: [`docs/state_format.md`](state_format.md) (the spec, drafted, with a decision
+register) and an **agent read map**.
 
-- **Visibility model.** One set of rules for what each viewer knows, based on CR 400.2
-  (public/hidden zones), 701.20 (reveal), 708 / 406.3 (face down) and the "look at" effects.
-  It replaces the ad-hoc sources:
+The spec's governing principle: **the engine conveys only what each viewer explicitly knows at
+that instant; recall and inference are actor-side.**
+
+- **Two channels per viewer:**
+  - a memoryless snapshot at each decision;
+  - an ordered observation-event stream, drained into the viewer's next frame, carrying
+    information that was explicit only momentarily (reveals, looks, moves into hidden zones,
+    shuffles).
+- **Visibility model.** What is explicit now, based on CR 400.2, 401.2–3, 402.3, 406.3, 701.20
+  (reveal; 701.20e look) and 708.5–6. It is carried by per-viewer reveal windows that
+  generalise `Game::revealed_in_library`. It replaces the ad-hoc sources:
   - `Zone::identity_known` (`src/components/zone.h:38`);
   - `face_down_hidden_from` (`src/machine_io.cpp:404`);
   - `KnownLibraryTop` (`src/classes/game.h:843`);
   - the `opp_known_hand` pass (`src/machine_io.cpp:954`);
   - match revealed bits (`src/classes/match_state.cpp`);
   - narrative redaction (`src/cli_output.cpp:89-110`).
-- **Object handles.** Per-viewer opaque handles, never raw entity ids. Entity ids are allocated
-  in deck-list order (`src/systems/orderer.cpp:611-615`) and a shuffle only rewrites
-  `distance_from_top`, so a raw id of a library or hand card reveals its identity. Define when
-  a handle stays stable and when it is reissued (the viewer-side analogue of CR 400.7).
-- **Records.** Header, card table, turn/priority/combat, players, objects in every zone,
-  stack, rules state (continuous effects, replacement/prevention shields, prohibitions, delayed
-  triggers, last-known info), pending decision, match, and a structured menu with no length cap.
-- **Encoding and protocol.** Byte layout, versioning, how the schema reaches consumers, the
-  `--machine` frame, reply sentinels (`-1` confirm, `-2`/`-3` concede).
-- **Hidden-information options:**
-  - `--open-decklists`, which the agent needs (dependency 4);
-  - name-a-card menus, which today list only cards from the opponent's deck
-    (`build_name_card_choices`) and so leak that list;
-  - the narrative channel;
-  - description strings;
-  - hand order.
-- **Agent read map.** Every agent dependency 1–5 mapped to the field that will serve it. This
-  is the completeness checklist for the agent; the exhaustive inventory is the superset.
+- **Object handles.** Per-viewer opaque handles that exist only while the viewer can
+  individually identify the object, never raw entity ids. Entity ids are allocated in deck-list
+  order (`src/systems/orderer.cpp:611-615`) and survive shuffles. The event that makes an
+  object unidentifiable carries its handle and destination; hidden-to-hidden moves never carry
+  identity.
+- **Actor-side `KnowledgeTracker`** (spec §7): exact recall (opponent hand multiset, library
+  slot models, own library contents, match memory), with inference left to agent policy.
+- **Records, encoding, protocol:**
+  - relational fixed-width tables;
+  - a schema frame with enum string tables (no copied constants);
+  - `RMSTATE <nbytes>\n` framing, reply sentinels `-1` / `-2` / `-3`;
+  - open decklists explicit in the match header.
+- **Agent read map.** Every agent dependency 1–6 mapped to the snapshot field, card-table
+  entry, or tracker output that will serve it. This is the completeness checklist for the
+  agent; the exhaustive inventory is the superset.
 
-**Exit:** the spec and read map are reviewed, and every open decision is closed or explicitly
-deferred.
+**Exit:** the spec and read map are reviewed, and every register entry is decided or
+explicitly deferred.
 
 ## Step 2 — Implement the encoder alongside BQUERY (additive)
 
-- `src/queries/visibility.{h,cpp}` from the step-1 model; the old ad-hoc sources rewired
-  through it. This must not change today's vector, which is checked by the corpus and `obsinv`
-  tiers.
+- `src/queries/visibility.{h,cpp}` from the step-1 model, with per-viewer reveal windows. The
+  old knowledge bookkeeping stays in place, still feeding BQUERY, so today's vector must not
+  change; the corpus and `obsinv` tiers check that.
+- **Observation events:**
+  - typed, viewer-projected event constructors;
+  - emission at the choke points: `Orderer::add_to_zone`, `shuffle_library`, draw, library
+    placement, the reveal/look/dig/scry/surveil effects, face-down transitions, cast/play from
+    hidden zones;
+  - a per-viewer queue on `Game`, drained into each frame.
 - Handle table on `Game`, so snapshots cover it.
 - Encoder `src/state_format/encode.*`, emitted with `--machine-format rmstate`, plus a C++
   decoder (`src/state_format/decode.*`) and `--state-dump json`, rendered from the decoded
@@ -117,8 +132,11 @@ deferred.
   copied constants.
 - **Engine self-checks** that run while any driver plays (`--selfcheck-state`):
   - **roundtrip:** encode → decode → re-encode is byte-identical at every decision;
-  - **leak:** permute every hidden zone from the viewer's perspective, keeping known
-    positions; the viewer's encoding must be byte-identical across permutations;
+  - **snapshot leak:** permute everything hidden from the viewer at that instant, i.e. both
+    hidden zones' contents and both libraries' order, keeping only live reveal windows fixed.
+    The viewer's snapshot must be byte-identical. The memoryless snapshot is what makes the
+    full permutation legal;
+  - **event leak:** each event's bytes, rebuilt in a permuted world, are identical;
   - **complete:** structural invariants (every permanent present, counts match zone sizes,
     every handle reference resolves, every menu record's handles exist);
   - **snapshot:** save → K actions → restore; both viewers' encodings match the pre-save
@@ -131,13 +149,20 @@ is unchanged.
 
 ## Step 3 — Port the scripted agent to the new format (additive)
 
-- **Pass 1, strict parity.** An adapter on the Python decoder answers every old read with the
-  value the old vector gave. That includes rounding through the old normalisers and mimicking
-  the old caps (48 permanent slots, 64 graveyard slots, 16 delayed triggers, 10 hand slots) so
-  overflow cases decide the same way. Card knowledge (`card_props`, `card_costs`, script lines)
-  comes from the format's card table; vocab constants become name lookups.
+- **`KnowledgeTracker` first** (Python, beside the agent; spec §7). Run both protocols in the
+  same games. From events alone, the tracker must reproduce the engine's current
+  `known_top_library_*`, `opp_known_hand` and revealed decklist bits exactly, at every
+  decision of the corpus and the smoke games. Every mismatch is either a missing or wrong
+  event, or a quirk of today's tracking, and is resolved before going on.
+- **Pass 1, strict parity.** An adapter on the Python decoder plus the tracker answers every
+  old read with the value the old vector gave. That includes rounding through the old
+  normalisers and mimicking the old caps (48 permanent slots, 64 graveyard slots, 16 delayed
+  triggers, 10 hand slots) so overflow cases decide the same way. Card knowledge
+  (`card_props`, `card_costs`, script lines) comes from the format's card table; vocab
+  constants become name lookups.
   **Exit:** the replay corpus and the scripted-hard smoke games are byte-identical with the
-  agent on `rmstate` versus BQUERY. This is the proof that the format serves the agent.
+  agent on `rmstate` versus BQUERY. This is the proof that the format, events included, serves
+  the agent.
 - **Pass 2, simplify.** Replace offset arithmetic with decoded objects, drop the caps, and drop
   numpy if possible. The corpus may change here; re-record it with the live agent, saying why.
 - The `explore` tiers in the same file move to the new format with the rest; step 4 decides
@@ -199,6 +224,14 @@ The corpus must stay byte-identical across 4b.
   `populate_gamestate` / `GameState` only as the CLI printer's source until step 5b.
 - Delete the RL shaping signals `MANA_WASTED` (`src/mana_system.cpp:138`) and
   `MULLIGAN_PENALTY` (`src/game_driver.cpp:796`).
+- Delete the engine-side knowledge bookkeeping, now served by the actor's tracker (step-3
+  parity): `Game::KnownLibraryTop` and its `known_top_library_*` methods, `Zone::identity_known`,
+  the match revealed bits in `src/classes/match_state.cpp`, and the `opp_known_hand` pass. The
+  one schedule-affecting reader, the menu collapse in `src/queries/zones.cpp:123-128`, keeps
+  its current behaviour until 5a redefines it.
+
+  This is the one 4b item that touches the decision schedule. If that reader can't be kept
+  exact without the bookkeeping, move this deletion into 5a.
 - Delete `tui.sh`, `gui.sh` and `train/gen_corpus.sh`.
 - Infrastructure:
   - CI (`ci.yml`, `nightly-fuzz.yml`, `.github/actions/setup-robomage`): drop the
@@ -220,6 +253,7 @@ The corpus must stay byte-identical across 4b.
 | `game_driver.cpp:1212` | caps sideboard swaps per player | keep as an always-on safety limit |
 | `game_driver.cpp:538`, `cli_output.cpp` guards | output only | fold into the output mode |
 | `name_card_choices.cpp:54` | truncates name-a-card menus to `MAX_ACTIONS` | lift (menus are unbounded) |
+| `queries/zones.cpp:123-128` (`interchangeable_cards`) | keeps two identical library cards apart when one sits at a position the other player knows (engine memory) | redefine on currently explicit information: a card in a live reveal window is distinguishable, a remembered one is not |
 
 - `auto-mana` is recorded in the RMLOG header (`record_header_flags`, `src/cli_args.h`); the
   scripted agent plays with it on.
@@ -255,7 +289,8 @@ The corpus must stay byte-identical across 4b.
 | `tools/meta_scraper/scrape_meta.py` | MTGTop8 → `.dk` scraper | stdlib only; **keep or drop** (recommend keep) |
 | scripted agent (today `train/scripted_agent.py`) | the realistic opponent; `explore` tiers unless ported to C++ | on the Python RMSTATE decoder; numpy dropped if possible |
 | agent driver (new, replaces `env.py` / `runner.py` / `opponents.py` for agent games) | engine subprocess, frame I/O, match loop | small |
-| RMSTATE decoder (new, replaces `decode.py` for the agent) | bytes → objects | no copied constants (schema delivery per step 1) |
+| RMSTATE decoder (new, replaces `decode.py` for the agent) | bytes → objects | no copied constants (schema frame) |
+| `KnowledgeTracker` (new) | actor-side recall from the event stream | reference implementation of `docs/state_format.md` §7; a C++ twin only when a C++ agent needs one |
 
 The engine builds, runs and passes every gate tier except `smoke` (and Python `fuzz`, if
 explore stays Python) without Python. Recording the corpus needs the agent.
@@ -284,6 +319,8 @@ explore stays Python) without Python. Recording the corpus needs the agent.
 
 ## Open decisions (outside the step-1 format design)
 
+The format's own decisions are in the register in `docs/state_format.md` §11.
+
 1. **`auto-mana` defaults** (5a): proposed off for `--machine`, on for the scripted agent and
    the CLI.
 2. **`snapshot.cpp`**: proposed kept, tested by the `snapshot` self-check.
@@ -298,7 +335,7 @@ explore stays Python) without Python. Recording the corpus needs the agent.
 | Step | Work (approx. lines) | Risk |
 |---|---|---|
 | 1 | spec + read map (docs) | medium: the decisions shape everything after |
-| 2 | visibility 500–800; handles 300; encoder 2,000–3,000; C++ decoder 800–1,200; Python decoder 400–700; self-checks 800–1,200 | **high**: the leak audit |
-| 3 | adapter 600–1,000; agent pass 2 touches 1,000–2,000 | medium: strict parity is slow but mechanical |
+| 2 | visibility + reveal windows 500–800; events 800–1,200; handles 300; encoder 2,000–3,000; C++ decoder 800–1,200; Python decoder 400–700; self-checks 800–1,200 | **high**: the leak audit, and finding every event choke point |
+| 3 | tracker 500–800; adapter 600–1,000; agent pass 2 touches 1,000–2,000 | medium: strict parity is slow but mechanical; tracker parity exposes missing events |
 | 4 | agents + resolver 1,000–1,500; `robomage_check` 1,500–2,000; then mostly deletion | low–medium |
 | 5 | 5a ~300 changed; CLI 1,000–1,500 | low–medium |
