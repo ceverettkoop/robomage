@@ -120,7 +120,9 @@ tell subagents not to spawn further agents.
   - `Orderer::note_library_card_known` (`orderer.cpp:516`).
 - **Done when:** the old bookkeeping is untouched (corpus and `obsinv` green), and unit checks
   show windows opening and closing at the right moments in a few sculpted harness lines
-  (Thoughtseize, Brainstorm, Ponder, a tutor that reveals, a face-down exile).
+  (Thoughtseize, Brainstorm, Ponder, a tutor that reveals, a face-down exile). Face-down
+  exile follows CR 406.3 (register 35): whoever looked at the card before it was exiled face
+  down, or may look at it, keeps a look window until it leaves exile.
 
 ### T2. Handles
 

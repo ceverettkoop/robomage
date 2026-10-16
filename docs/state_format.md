@@ -61,7 +61,7 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 |---|---|---|---|
 | Battlefield, stack, graveyard | full | full | CR 400.2 |
 | Exile, face up | full | full | CR 406.3 |
-| Exile, face down | identity only while an instruction lets them look | same | CR 406.3 |
+| Exile, face down | identity visible to each player in that card's **look window**: a player who looked at the card before it was exiled face down, or whom an instruction allows to look, may keep looking until it leaves exile. In practice this is usually the owner | same rule, so usually hidden | CR 406.3 |
 | Face-down permanent or spell | full (controller may look) | face-down characteristics only; the object is still distinguishable | CR 708.5, 708.6 |
 | Hand | full | count, plus identities of cards in a current reveal window | CR 402.3 |
 | Library | count, plus cards in a current look/reveal window | count, plus cards in a current reveal window | CR 401.2, 401.3 |
@@ -319,6 +319,8 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 | 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
 | 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off (per seat with `-a`/`-b` if needed); recorded in the RMLOG header. Lands with the other schedule changes in plan step 4a; until then the existing machine/interactive split stands | decided |
 | 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |
+| 34 | Counter kinds travel as `text` (no engine enum; they are script strings) | decided |
+| 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |
 
 ## Appendix A: column definitions
 
