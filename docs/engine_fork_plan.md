@@ -1,4 +1,4 @@
-# Engine-only fork: staged plan (steps 1–4)
+# Engine-only fork: staged plan (steps 1–5)
 
 Goal: fork robomage into a project that is **only the C++ rules engine**. Players and agents
 drive it through in-process agents, a C++ CLI, or a machine protocol that emits an **exhaustive
@@ -15,11 +15,15 @@ explicitly knows right now. A C++ knowledge sidecar (`docs/knowledge_store.md`) 
 viewer's frame stream into perfect recall and sound logical inference. It is attached to the
 same frames for every kind of agent, with levels `off` / `expert`.
 
-Scope: steps 1–4. The TUI and GUI (later steps) are deferred entirely; steps 1–4 only keep
-the state decoder and the knowledge tables reusable for them. The eventual machine agent is unspecified; the format just
-has to give it a complete, leak-free state and a structured menu.
+**A C++ path to learned models.** Step 5 adds a schema-driven C++ featurizer and an in-process
+C++ actor that runs a TorchScript policy on it. Card text reaches the model as oracle-text
+embeddings computed in C++. This replaces the discarded RL stack's actor with one built on the
+new format; a learner (training loop) is not in scope.
 
-## Starting point
+Scope: steps 1–5. The TUI and GUI (later steps) are deferred entirely; steps 1–5 only keep the
+state decoder, knowledge tables and featurizer reusable for them. The eventual machine agent
+is unspecified; the format just has to give it a complete, leak-free state and a structured
+menu. ## Starting point
 
 What makes this feasible:
 
@@ -89,6 +93,9 @@ Step 1 delivers the complete data path from engine to agent:
 - everything is verified.
 
 Later steps only consume this. It is all emitted next to BQUERY, so nothing existing changes.
+
+**Handoff brief:** [`step1_handoff.md`](step1_handoff.md) has the ordered task list (T0–T12),
+file layout, code locations, checks and exit criteria for a session executing step 1.
 
 ### 1a. Design (docs)
 
@@ -225,7 +232,12 @@ the fields of the event it consumes, which is the completeness check on the even
 
 The corpus must stay byte-identical across 3b.
 
-- Delete `src/actor/`, `make actor` and the libtorch flags.
+- Delete `src/actor/`'s old-observation code (`obs_builder`, `az_mcts`, `menu_merge`,
+  `sb_rules`, `td_targets`, `root_diag`, `npz_writer`, `oracle_client`, `az_actor_main`).
+  **Keep the libtorch plumbing step 5 reuses:** the Makefile's `ACTOR_*` rules
+  (exceptions-enabled TUs, libtorch detection and linking) and `az_evaluator.cpp`'s TorchScript
+  loading, which becomes the base of the step-5 evaluator. `az_mcts.cpp` stays in git history
+  as a reference for a future search agent.
 - Delete everything in `train/` except the kept agent, driver and decoder (list below). Move
   `train/regression/{scenarios,corpus}` to `tests/`.
 - Delete the `pygen` target and every `gen_*.py`; `src/gen/`; `bin/resources/decks/archetypes.json`;
@@ -297,6 +309,86 @@ The corpus must stay byte-identical across 3b.
 **Exit:** the C++ engine, RMSTATE with knowledge tables, the C++ CLI, the C++ gate, and the
 kept Python below.
 
+## Step 5 — C++ featurizer and in-process actor
+
+Target consumer: a **C++ in-process actor**. In one process it runs engine → frame →
+knowledge → featurizer → TorchScript policy → action, with no Python per step.
+
+### 5a. Design (`docs/featurizer.md`)
+
+- **`FEATURE_SPEC` frame.** Announces every tensor's shape and field index, like `SCHEMA` does
+  for tables.
+- **Tensors per decision:**
+  - entity tokens: objects, players, globals and knowledge groups / unseen cards; numeric
+    features scaled by their schema tag, plus categorical embedding ids;
+  - entity mask;
+  - relations `(src, dst, type)` from handle columns;
+  - action tokens with gather indices to their source/target entities, for a pointer head;
+  - action mask.
+- **Per-match card table** `[cards × (printed features + text embedding)]`, held by the model
+  as a frozen buffer.
+- **Network contract:** the TorchScript `forward` signature (policy logits over menu rows,
+  value).
+- **Padding:** runtime options, not format caps.
+- **Recommended model family**, for whoever builds a learner: entity transformer with relation
+  biases, pointer action head, `expert` knowledge as tokens.
+
+### 5b. C++ featurizer (`src/featurize/`)
+
+- A pure function of one viewer's decoded frame, knowledge tables and card table, driven by
+  the schema's semantic tags. It includes only the state-format decoder and the standard
+  library (gate-checked).
+- **Tests:**
+  - deterministic;
+  - shapes and indices agree with `FEATURE_SPEC`;
+  - invariant to row order where the format says order is meaningless;
+  - every relation and gather index resolves.
+
+### 5c. Oracle-text embeddings computed in C++ (option 2)
+
+- **Text per card:** type line + oracle text (`CARDS`); both faces for double-faced cards;
+  tokens use their own oracle text; the card's own name is replaced by a placeholder.
+- **Model:** a small pretrained sentence-embedding encoder (BERT-family, ~22–33M parameters,
+  384-d), e.g. bge-small-en-v1.5 or all-MiniLM-L6-v2. Final pick and licence check in 5a.
+  - It runs through libtorch as a TorchScript export, so no new runtime dependency; prefer a
+    pre-converted artifact.
+  - The weights (~25–130 MB) are provisioned like card scripts: fetched and pinned, not
+    committed.
+- **Tokenizer:** C++ WordPiece reading the model's vocabulary, checked against a golden file of
+  reference token ids.
+- **Pipeline:** tokenize → encode → mean-pool → L2-normalise, giving one 384-float vector per
+  card. Cached as a `[cards × 384]` table keyed by model id plus a per-card text hash; a stale
+  row is recomputed; the cache makes runs bit-exact.
+- **Sanity report:** nearest neighbours per card (Bolt ↔ Chain Lightning, Brainstorm ↔
+  Ponder) to eyeball quality.
+
+### 5d. In-process actor (`src/actor/`, exceptions-enabled TUs)
+
+- **Evaluator:** loads a TorchScript policy (from the kept `az_evaluator.cpp` base) and checks
+  that its card-set hash matches the match's `CARDS`.
+- **Agent:** `nn:<model.pt>` on the step-3 Agent interface: featurize, evaluate, choose
+  (argmax or sample) over menu rows.
+- **Batched-evaluation hook** for a later search agent.
+- **End-to-end test** with a randomly initialised model of the contract's shape.
+- **Exit:**
+  - `--agent-a nn:<model.pt>` plays full bo3 matches without errors;
+  - the featurizer, tokenizer and embedding tests pass;
+  - throughput is measured in the `bench` tier.
+
+### Possible later addition: learned text encoder (option 3)
+
+A learner could make the text encoder part of the policy network, initialised from the same
+pretrained encoder and fine-tuned by the RL loss. Gradients from the policy and value losses
+flow into its weights. The mitigations for having only ~400 distinct texts are:
+
+- a low learning rate and staged unfreezing;
+- text plus id embedding with id dropout;
+- auxiliary losses predicting `CARDS` features;
+- held-out-card checks.
+
+The actor side is unchanged: the learner exports the recomputed `[cards × D]` table with the
+weights, and actors still only look it up. This needs a learner, which is outside this plan.
+
 ---
 
 ## Python inventory: what remains
@@ -311,7 +403,8 @@ kept Python below.
 | agent driver (new, replaces `env.py` / `runner.py` / `opponents.py` for agent games) | engine subprocess, frame I/O, match loop | small |
 | RMSTATE decoder (new, replaces `decode.py` for the agent) | bytes → objects, knowledge tables included | no copied constants (schema frame) |
 
-There is no Python knowledge tracker: memory and inference live in the C++ sidecar. The engine
+There is no Python knowledge tracker (memory and inference live in the C++ sidecar) and no
+Python in the embedding path (step 5 computes it in C++). The engine
 builds, runs and passes every gate tier except `smoke` (and Python `fuzz`, if explore stays
 Python) without Python. Recording the corpus needs the agent.
 
@@ -350,6 +443,10 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
    runs through the Python driver.
 5. **`robomage_check` with exceptions on** (3a): needs a CLAUDE.md exemption.
 6. **Human vs Python agent in the CLI** (4b): whether to add the second channel now.
+7. **Embedding model** (5a/5c): bge-small-en-v1.5 vs all-MiniLM-L6-v2 (or another small
+   384-d encoder), and how its weights are provisioned and pinned.
+8. **Learner** (after step 5): language (PyTorch vs libtorch) and algorithm. A learner is
+   what would enable option 3.
 
 ## Rough size
 
@@ -361,3 +458,4 @@ The format's decisions are in `docs/state_format.md` §11; the knowledge store's
 | 2 | adapter 600–1,000; agent pass 2 touches 1,000–2,000 | medium: strict parity is slow but mechanical |
 | 3 | agents + resolver 1,000–1,500; `robomage_check` 1,500–2,000; then mostly deletion | low–medium |
 | 4 | 4a ~300 changed; CLI 1,000–1,500 | low–medium |
+| 5 | featurizer 1,500–2,500; tokenizer + embedding 600–900; actor 800–1,200; tests 800–1,200 | medium: tokenizer parity and the network contract |

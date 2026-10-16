@@ -170,10 +170,14 @@ Positions refer to the snapshot's library positions; public objects use the snap
 - **Soundness (zero tolerance):** at every decision of the corpus, smoke and fuzz games,
   compare against the omniscient viewer's truth. The true world must satisfy every reported
   fact: exact identities, candidate sets, min/max counts.
-- **Exactness:** in small sculpted games (≤ 15-card decks via the existing zone presets),
-  enumerate every world consistent with the viewer's frame stream by brute force, independent
-  of the solver. With `k_meta.exact` set, the reported min/max and candidate sets must equal
-  the enumeration.
+- **Exactness (the solver):** on small synthetic and sculpted cases (≤ 15-card decks), a
+  naive enumerator over the same pool/flow model, written independently of the solver,
+  lists every consistent world. With `k_meta.exact` set, the reported min/max and candidate
+  sets must equal the enumeration.
+- **Sharpness (the model):** hand-written regression scenarios with the deduction a strong
+  player would make, asserted on the knowledge dump. Example: after a Brainstorm put-back
+  from a hand known to hold {Force of Will, Daze, X}, and X then cast, the top two cards are
+  exactly {Force of Will, Daze}.
 - **Isolation:** `rmknow` on the recorded frame stream gives byte-identical knowledge tables
   to the in-process run.
 - **Shadow comparison with today's engine memory:** while the old vector is still emitted, at
