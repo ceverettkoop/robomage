@@ -89,7 +89,7 @@ columns are fixed in the schema (section 9).
 | `header` | 1 | format version, schema hash, viewer, game number, decision number |
 | `turn` | 1 | turn, step, active player, priority holder, pass flags, extra turns queued, land drops remaining |
 | `player` | 2 | life, poison, energy, mana pool, designations (monarch, city's blessing), day/night, per-turn counters, hand count, library count, mulligans taken |
-| `object` | one per identifiable object | handle, zone, owner, controller, card id (or "face-down"), face/transformed state, tapped/sick/phased, damage, base and post-layer characteristics, attached-to, chosen name/colour/type, linked exiled cards |
+| `object` | one per identifiable object | handle, zone, owner and controller (each both as absolute seat and relative to the viewer: self/opponent), card id (or "face-down"), face/transformed state, tapped/sick/phased, damage, base and post-layer characteristics, attached-to, chosen name/colour/type, linked exiled cards |
 | `object_keyword`, `object_counter`, `object_ability`, `object_provenance` | children of `object` | every keyword with its parameters; counters by kind; abilities by reference (decision 2); which sources currently affect the object, what kind of effect, and when it expires (decision 1) |
 | `combat` | one per attacker/blocker pairing | attack target, blockers, damage-assignment order |
 | `stack` | one per stack object | kind (spell / activated / triggered / copy), source handle, controller, ability reference, modes, X, kicked/alternative costs, plus child table `stack_target` |
@@ -104,8 +104,10 @@ columns are fixed in the schema (section 9).
 Sent once per match (not per snapshot):
 
 - `CARDS`: the card table for every implemented card and token in either registered list, plus
-  tokens they can make. Each entry has the vocab id, name, uid, printed characteristics, an
-  ability list (category, costs, timing, script line text) and, optionally, the raw script.
+  tokens they can make. Each entry has the vocab id, name, uid, printed characteristics, the
+  **oracle text** (always: `CardData::oracle_text`, parsed from the script's `Oracle:` line;
+  token scripts carry one too), an ability list (category, costs, timing, script line text)
+  and, optionally, the raw script.
 - `DECKLISTS`: both registered lists with their deck names (only the viewer's own under
   `--closed-decklist`).
 
@@ -217,10 +219,17 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
   little-endian rows. Variable-length data goes in child tables keyed by handle. C++ reads rows
   directly; Python reads them with `struct.iter_unpack`; arrays can later be built from them
   directly.
-- **Schema frame.** Sent once at startup, and available via `--print-schema`. It lists tables,
-  columns (name, type, width), and string tables for every enum: action categories, keywords,
-  counter kinds, steps, zones, card types, event kinds. Decoders build themselves from it and
-  copy no constants. There is no codegen.
+- **Schema frame.** Sent once at startup, and available via `--print-schema`. It lists:
+  - tables;
+  - columns: name, storage type, width, and a **semantic tag**: `enum:<table>`, `count`,
+    `bool`, `signed`, `handle`, `card`, `player-rel`, `text`, plus a value range where one is
+    defined;
+  - string tables for every enum: action categories, keywords, counter kinds, steps, zones,
+    card types, event kinds.
+
+  Decoders and feature builders build themselves from it, so a generic featurizer knows what
+  to embed, what to scale and what is a relation, with no per-column code. They copy no
+  constants, and there is no codegen.
 - **Framing on `--machine`.** `RMSTATE <nbytes>\n` followed by the payload on stdout. The reply
   is one line: an action index, `-1` (confirm), `-2` (concede game) or `-3` (concede match).
   Narrative goes to stderr or its own file descriptor, never interleaved with frames.
@@ -279,3 +288,6 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 | 26 | Recall and inference live in a C++ sidecar fed only by the viewer's frame stream (`knowledge_store.md`), not in the engine and not in Python | decided |
 | 27 | Knowledge levels `off` and `expert` only; default `expert`; per seat (`--knowledge-a/-b`); no `engine-compat` level (the agent port reads `expert`) | decided |
 | 28 | Knowledge tables (`k_*`) travel inside the viewer's RMSTATE frame, with a schema fixed across levels | decided |
+| 29 | `CARDS` always carries oracle text, for cards and tokens; text embeddings for learned models are built from it | decided |
+| 30 | Every schema column carries a semantic tag and, where defined, a value range (section 9) | decided |
+| 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
