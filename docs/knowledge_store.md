@@ -125,27 +125,32 @@ consistent form for every kind of agent.
 ## 5. Update rules per event kind
 
 Every rule must be computable from the event's fields alone. This table is the step-1 check
-that the event schema is complete.
+that the event schema is complete. Library positions are (anchor, pos, span) as in
+state_format §5: the model tracks each library's size, so it moves position facts as cards
+enter or leave above them and converts between top and bottom.
 
 | Event (state_format §5) | Update |
 |---|---|
-| `game_start` | new networks: deck node from the root (section 3.2); own hand visible; opponent hand = anonymous pool of its size, split from the deck node |
-| `draw` (own) | known cards leave own library; the positions shift; known-position facts move up |
-| `draw` (opponent) | k anonymous units move from the top of their library into the hand pool. A known top card becomes a known card in hand |
-| `zone_move` to a public zone | pin the identity on the source pool (e.g. a card cast from hand proves the hand held it), then remove the unit |
+| `game_start` | new networks: deck node from the root (section 3.2); library pool = the stated library count of units from it; the rest of the main deck is a set-aside pool (test-harness presets, which arrive as `zone_move` from `none`); sideboard pool = the stated sideboard count (games 2–3: the registered 75 split, unknown to the opponent). Hands start empty |
+| `draw` (own) | known cards leave the top of own library one at a time; positions shift; known-position facts move up |
+| `draw` (opponent) | k anonymous units move from the top of their library into the hand pool. A known top card becomes a known card in hand; a card in the viewer's live window arrives with its identity |
+| `zone_move` to a public zone | pin the identity on the source pool (at the stated library position or range; e.g. a card cast from hand proves the hand held it), then remove the unit |
 | `zone_move` public → hidden with handle | a unit with known identity enters the destination at the stated position (a bounce to hand: known card in hand) |
-| `zone_move` hidden → hidden, no identity | anonymous units split from the source pool into the destination; position recorded if a library (a Brainstorm put-back: the top k of their library are units from the hand pool) |
-| `library_place` | known units at stated positions; if their order is hidden from the viewer, the positions form one unordered pool |
+| `zone_move` hidden → hidden, no identity | one anonymous unit leaves the source pool and enters the destination at the stated position (a Brainstorm put-back: the top k of their library are units from the hand pool). From a library range of span > 1, those positions first merge into one unordered pool (the opponent's scry: which looked-at card went where is unknown) |
+| `zone_move` in a batch | as above, but the destination position waits for the batch's `library_place` |
+| `zone_move` of a token or copy | no unit; nothing changes |
+| `zone_move` from `none` of a card | a set-aside unit (harness preset) is pinned and placed |
+| `library_place` | the batch's units occupy the stated range; since their order is hidden, the range becomes one unordered pool holding them (known identities pinned as pool contents) |
 | `reveal_start` | pin the identities at the stated zone and positions |
 | `reveal_end` | nothing to forget: recall keeps the pinned facts; visibility ends but knowledge stays |
 | `look` (by the viewer) | pin identities at positions |
 | `look` (by the opponent) | no identity; marks that the opponent knows those positions (for agents; no constraint) |
-| `reorder` | the reordered range becomes one unordered pool, unless the viewer saw the result |
+| `reorder` | the reordered range becomes one unordered pool, unless the viewer saw the result (then each position is pinned) |
 | `shuffle` | all positions of that library merge into one unordered remainder pool; position facts are dropped; contents facts are kept |
-| `search` | k units leave the library pool: pinned if revealed or going to a public zone, otherwise anonymous into the destination; usually followed by a `shuffle` |
+| `search` | nothing by itself (a look at the whole zone, when there is one, comes as `look`); the cards leave as `zone_move`s, usually followed by a `shuffle` |
 | `cast_from_hidden` / `play_from_hidden` | as `zone_move` to a public zone |
-| `face_down` / `face_up` | a face-down card is an anonymous singleton pool (with its source constraint); face-up pins it |
-| mulligan (draw, put back k, shuffle) | composed of the rules above |
+| `face_down` / `face_up` | a face-down card is an anonymous singleton pool (with its source constraint), keyed by its handle; face-up pins it. Exiling face down is a `zone_move` with the face-down flag, with the same pool |
+| mulligan (hand to library, shuffle, draw 7, London bottoming) | composed of the rules above |
 | `game_end` / `match_end` | match memory updated; networks reset at the next `game_start` |
 
 Each frame's snapshot is also a check: the model's pool sizes must equal the snapshot's zone
@@ -158,12 +163,13 @@ missing event or a bug, reported loudly.
 |---|---|---|
 | `k_meta` | 1 | level, exact flag, solver steps used |
 | `k_seen` | per (player, card) | copies seen this game, copies seen this match |
-| `k_pool` | per hidden pool | owner, kind (hand / library range / sideboard / face-down), size, position range if a library range |
+| `k_pool` | per hidden pool | owner, kind (hand / library range / sideboard / face-down / set-aside), size, position range if a library range, handle if face-down |
 | `k_pool_card` | per (pool, card) with max > 0 | min copies, max copies |
 | `k_position` | per library position with a known identity or a narrowed candidate set | owner, position (from top or bottom), card if exact, pool id otherwise |
 | `k_known_hand` | per known card in the opponent's hand | card, copies known |
 
 Positions refer to the snapshot's library positions; public objects use the snapshot's handles.
+Columns: state_format Appendix A.6.
 
 ## 7. Verification
 

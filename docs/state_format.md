@@ -82,7 +82,8 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 ## 4. Snapshot
 
 A snapshot is a full description at one decision (no deltas). Tables are listed here; their
-columns are fixed in the schema (section 9).
+columns are fixed in the schema (section 9) and listed in Appendix A, which also adds a few
+child tables.
 
 | Table | Rows | Notes |
 |---|---|---|
@@ -130,23 +131,44 @@ All of these are actor-side (section 7).
 - Game start, game end and match end are events too, so actors keep memory across bo3 games.
 - Events still queued when a game ends are delivered in that viewer's next frame, after a
   game-boundary event.
+- Every event carries `seq`: per viewer, 1 at match start, +1 per event, never reset within
+  the match. A gap means a lost event; decoders refuse it.
 
 Each event carries **only what was explicit to that viewer at that instant**, projected through
 the same visibility rules as the snapshot.
 
+**Library positions.** A position in a library is (anchor, pos, span):
+- anchor: top or bottom; pos counts from that end, 0 = the end card;
+- span: how many consecutive positions from pos the card may be in: 1 = exact, n = one of n,
+  0 = unknown (anywhere);
+- a source position is read before the move, a destination position after it;
+- cards move one at a time, so each event shifts the positions after it. The actor tracks
+  library sizes from `game_start` and the moves, so it can convert between anchors;
+- a pick from cards the viewer cannot tell apart is a range. Example: the opponent scries 2
+  and bottoms one: "a card from top positions 0–1 → bottom 0". The range depends only on
+  public counts.
+
+**Order-hidden batches.** One instruction may put several cards into a library in an order
+this viewer did not see: "in any order" chosen by the other player, or "in a random order"
+(hidden from everyone). If the viewer can identify any of those cards, each card's
+`zone_move` carries the same `batch` and no destination position, and a `library_place`
+closes the batch with the range.
+
 | Event | Fields (viewer's projection) |
 |---|---|
-| `zone_move` | from zone/owner, to zone/owner, handle before/after if identifiable, card id if identifiable, position if into a library (top / bottom / k from top) |
-| `draw` | player, count; card ids for the drawer only |
-| `library_place` | library owner, positions, identities only for cards visible at that moment, whether the order among them is known to this viewer |
-| `reveal_start` / `reveal_end` | cards (handles, zone, positions), revealed to whom, source effect |
-| `look` | looker, zone, positions or count; identities only for the looker |
-| `shuffle` | library (or face-down pile) owner |
-| `reorder` | library owner, the range of positions reordered, whether this viewer saw the result |
-| `search` | searcher, library owner; cards leaving with identities only if revealed or going to a public zone |
-| `cast_from_hidden` / `play_from_hidden` | origin zone; the card becomes identifiable here (it enters a public zone) |
-| `face_down` / `face_up` | handle; identity at face-up |
-| `game_start` / `game_end` / `match_end` | game number, result |
+| every event | `seq`; source object of the effect (handle, else card id) where there is one |
+| `zone_move` | one card. From zone/owner, plus its position if from a library; to zone/owner, plus its position (or `batch`) if into a library; handle before/after if identifiable (a face-down public object keeps a handle); card id if identifiable; face-down flag (exiled face down); token/copy flag. Zone `none` = created (token, spell copy, harness preset) or ceased to exist |
+| `draw` | player, count; per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window |
+| `library_place` | closes an order-hidden batch: batch, library owner, range (anchor, pos, count), order known (false) |
+| `reveal_start` / `reveal_end` | cards (handles, zone, owner, library positions, card ids), revealed to whom, source effect. `reveal_end` also closes a look window. A window that ends because its card moved has no `reveal_end`; the move ends it |
+| `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it |
+| `shuffle` | library owner |
+| `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
+| `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle` |
+| `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity |
+| `face_down` / `face_up` | handle; identity at face-up. Exiling face down is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is |
+| `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
+| `game_end` / `match_end` | game number, winner (or draw); match wins per player |
 
 **Identity references in events.**
 - An event uses a handle when the viewer can identify the object at that instant.
@@ -217,16 +239,19 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 ## 9. Encoding and protocol
 
 - **Relational tables.** A frame is a sequence of tables; each table is fixed-width
-  little-endian rows. Variable-length data goes in child tables keyed by handle. C++ reads rows
-  directly; Python reads them with `struct.iter_unpack`; arrays can later be built from them
-  directly.
+  little-endian rows. Variable-length data goes in child tables keyed by handle, or by the
+  parent's row index where the parent has no handle (events). Text is an offset into a
+  per-frame string pool. C++ reads rows directly; Python reads them with
+  `struct.iter_unpack`; arrays can later be built from them directly. Layout and columns:
+  Appendix A.
 - **Schema frame.** Sent once at startup, and available via `--print-schema`. It lists:
   - tables;
   - columns: name, storage type, width, and a **semantic tag**: `enum:<table>`, `count`,
-    `bool`, `signed`, `handle`, `card`, `player-rel`, `text`, plus a value range where one is
-    defined;
-  - string tables for every enum: action categories, keywords, counter kinds, steps, zones,
-    card types, event kinds.
+    `bool`, `signed`, `handle`, `card`, `player-rel`, `text`, `index`, `row:<table>`,
+    `mask:<enum>` (Appendix A.1), plus a value range where one is defined;
+  - string tables for every enum: action categories, keywords, steps, zones, card types,
+    event kinds. Counter kinds have no engine enum (they are script strings), so they travel
+    as `text`.
 
   Decoders and feature builders build themselves from it, so a generic featurizer knows what
   to embed, what to scale and what is a relation, with no per-column code. They copy no
@@ -294,3 +319,375 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 | 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
 | 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off (per seat with `-a`/`-b` if needed); recorded in the RMLOG header. Lands with the other schedule changes in plan step 4a; until then the existing machine/interactive split stands | decided |
 | 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |
+
+## Appendix A: column definitions
+
+The column list T3 codes in `src/state_format/schema.h`; the `SCHEMA` frame is generated from
+that header. Anything changed during implementation is updated here (step-1 exit).
+
+### A.1 Conventions
+
+| Item | Rule |
+|---|---|
+| Storage | little-endian `u8 u16 u32 u64 i8 i16 i32 f32`; rows packed, no padding; `text` = u32 offset into the frame's string pool |
+| String pool | table `strings` (row width 1, one row per byte): UTF-8, each string NUL-terminated; offset 0 is the empty string (the pool starts with a NUL). Each distinct string is stored once, at its first use in table, row, column order, so re-encoding is byte-identical |
+| None values | handle 0; text 0 (empty); card, `index`, `row:` and nullable enum columns: all ones of their width (0xFF, 0xFFFF, …) |
+| Enums | the C++ value (`Step`, `ActionCategory`, `Zone::ZoneValue`, …), string tables in `SCHEMA`; enums that have no C++ type yet are listed in A.7 |
+| Seat pair | type `seat` below = two u8 columns: `<name>` (`enum:seat` = `Zone::Ownership`: 0 none, 1 A, 2 B) and `<name>_rel` (`player-rel`: 0 none, 1 self, 2 opponent; for `omniscient`, self = A). Register 31 |
+| Library position | type `libpos` = `<name>_anchor` u8 `enum:lib_anchor` (top, bottom) + `<name>_pos` u16 `index` (0 = the end card) + `<name>_span` u16 `count` (1 exact, n = one of n from pos, 0 unknown); section 5 |
+| Ability reference | type `abref` = `ab_card` u16 `card` + `ab_index` u16 `index` (row of that card in `card_ability`) + `ab_key` `text` (keyword or keyed-definition key: `Ninjutsu`, `Equip`, `Reconfigure:attach`; empty for a plain script ability). Registers 2, 25 |
+| Parent links | a child row names its parent by handle when the parent has one (`object`, `stack`), else by the parent's row index in the same frame (`row:<table>`) |
+| Masks | bit i = value i of the enum (`mask:color` over `Colors`, `mask:card_type` over the engine's type list, …) |
+
+**New semantic tags** (beyond section 9's list):
+- `index`: a 0-based position or ordinal (library or stack position, ability index, mode), not
+  a quantity;
+- `row:<table>`: a row index into another table of the same frame;
+- `mask:<enum>`: a bitset over an enum.
+
+No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `enum:zone`.
+
+### A.2 Frame layout
+
+| Part | Layout |
+|---|---|
+| Framing | `RMSTATE <nbytes>\n`, then `nbytes` of payload (section 9) |
+| Frame header (24 B) | `magic` u32 (`RMSF`), `version` u16, `kind` u8 (`enum:frame_kind`), `viewer` u8 (`enum:viewer`), `schema_hash` u64, `n_tables` u32, reserved u32 (0) |
+| Table block | header (16 B): `table_id` u16, reserved u16, `row_width` u32, `row_count` u32, reserved u32; then `row_count × row_width` bytes, zero-padded to a multiple of 8 |
+| Order | blocks in ascending table id (so `strings`, id 1, comes first); a table with no rows is omitted |
+| Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
+| Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
+| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `STATE` (snapshot 20–48, events 80–82, knowledge 90–95) |
+
+**Events channel.** One `event` table, one row per event in queue order, with a kind enum and
+the scalar fields of every kind (unused ones are none/0). Per-card parts go in `event_card`,
+per-player parts in `event_player`; both point at their `event` row.
+
+### A.3 `SCHEMA` frame
+
+| Table (id) | Column | Type | Tag | Range / notes |
+|---|---|---|---|---|
+| `schema_table` (2) | `id` | u16 | `index` | table id |
+| | `name` | text | `text` | |
+| | `frame_kind` | u8 | `enum:frame_kind` | |
+| | `row_width` | u32 | `count` | bytes |
+| `schema_column` (3) | `table` | u16 | `index` | table id |
+| | `col` | u16 | `index` | column order |
+| | `name` | text | `text` | |
+| | `storage` | u8 | `enum:storage` | u8 … f32, text |
+| | `offset` | u16 | `count` | byte offset in the row |
+| | `tag` | text | `text` | e.g. `enum:zone`, `row:event` |
+| | `has_range`, `min`, `max` | u8, i64, i64 | `bool`, `signed`, `signed` | |
+| `schema_enum` (4) | `enum` | text | `text` | enum name (`zone`, `step`, …) |
+| | `value` | u16 | `index` | |
+| | `name` | text | `text` | |
+
+### A.4 `CARDS` and `DECKLISTS` frames
+
+| Table (id) | Column | Type | Tag | Range / notes |
+|---|---|---|---|---|
+| `card` (10): one row per face | `card` | u16 | `card` | vocab id (tokens in the token band) |
+| | `face` | u8 | `enum:face` | front, back |
+| | `name`, `uid` | text | `text` | |
+| | `token` | u8 | `bool` | register 24 |
+| | `layout` | u8 | `enum:layout` | normal, transform, modal DFC, split |
+| | `mana_cost` | text | `text` | printed, e.g. `{2}{U}` |
+| | `mana_value` | u8 | `count` | |
+| | `cost_w` … `cost_c`, `cost_generic`, `cost_x` | 8 × u8 | `count` | plain pips; X pips |
+| | `colors` | u8 | `mask:color` | |
+| | `types` | u32 | `mask:card_type` | |
+| | `supertypes` | u8 | `mask:supertype` | |
+| | `power`, `toughness` | i16 | `signed` | printed |
+| | `loyalty` | u8 | `count` | |
+| | `oracle` | text | `text` | `CardData::oracle_text` (register 29) |
+| | `script` | text | `text` | raw script; empty unless requested |
+| `card_subtype` (11) | `card`, `face`, `subtype` | u16, u8, u16 | `card`, `enum:face`, `enum:subtype` | |
+| `card_keyword` (12) | `card`, `face` | u16, u8 | `card`, `enum:face` | |
+| | `kw` | u8 | `enum:keyword` | 0xFF = not in the parser's keyword table |
+| | `text` | text | `text` | the keyword as held, e.g. `Ward:2` |
+| `card_ability` (13) | `card`, `index` | u16, u16 | `card`, `index` | index: per card, script order over both faces (`abref.ab_index`) |
+| | `face` | u8 | `enum:face` | |
+| | `ability_kind` | u8 | `enum:ability_kind` | spell, activated, triggered, static, replacement, chapter, opening hand |
+| | `category` | u8 | `enum:effect_kind` | `effect_kinds.def`; 0xFF for statics and replacements |
+| | `key` | text | `text` | keyword key / keyed definition (register 25) |
+| | `cost` | text | `text` | cost as printed |
+| | `tap` | u8 | `bool` | `{T}` in the cost |
+| | `timing` | u8 | `enum:timing` | any, sorcery speed, instant speed |
+| | `limit` | u8 | `count` | activations per turn; 0 = none |
+| | `line` | text | `text` | script line |
+| `card_pip` (14) | `card`, `face` | u16, u8 | `card`, `enum:face` | hybrid and Phyrexian pips of the printed cost |
+| | `kind` | u8 | `enum:pip_kind` | hybrid, twobrid, Phyrexian |
+| | `colors` | u8 | `mask:color` | |
+| | `generic_alt` | u8 | `count` | twobrid's 2 |
+| `decklist` (15) | `player` | seat | | only the viewer's under `--closed-decklist` |
+| | `name` | text | `text` | deck name (register 23) |
+| | `main`, `side` | u16 | `count` | |
+| `decklist_card` (16) | `player` | seat | | |
+| | `card` | u16 | `card` | |
+| | `main`, `side` | u8 | `count` | registered counts |
+
+### A.5 Snapshot (`STATE` frame)
+
+| Table (id) | Column | Type | Tag | Range / notes |
+|---|---|---|---|---|
+| `header` (20) | `game` | u8 | `count` | 0-based game of the match; version, schema hash and viewer are in the frame header |
+| | `decision` | u32 | `count` | decision number in the game |
+| | `knowledge` | u8 | `enum:knowledge_level` | this viewer's level |
+| `turn` (21) | `turn` | u16 | `count` | |
+| | `step` | u8 | `enum:step` | |
+| | `active`, `priority` | seat | | |
+| | `priority_window` | u8 | `bool` | an ordinary priority window |
+| | `mandatory` | u8 | `enum:mandatory_choice` | |
+| | `attackers_declared`, `blockers_declared` | u8 | `bool` | |
+| | `day_night` | u8 | `enum:day_night` | |
+| | `next_extra_turn` | seat | | none = no extra turn queued |
+| `player` (22): self row first | `player` | seat | | |
+| | `life` | i32 | `signed` | |
+| | `mana_w` … `mana_c` | 6 × u16 | `count` | floating pool |
+| | `hand`, `library`, `graveyard`, `exile`, `sideboard` | 5 × u16 | `count` | zone sizes |
+| | `mulligans`, `to_bottom` | u8 | `count` | London bottoming still owed |
+| | `passed` | u8 | `bool` | pass flag |
+| | `monarch`, `city_blessing` | u8 | `bool` | |
+| | `extra_turns` | u8 | `count` | queued |
+| | `lands_played`, `land_drops_left` | u8 | `count` | register 15 |
+| | `potential_w` … `potential_c`, `potential_total` | 7 × u8 | `count` | mana potential (register 15) |
+| | `spells_turn`, `noncreature_turn`, `instant_sorcery_turn`, `spells_game`, `drawn_turn` | 5 × u16 | `count` | per-turn / per-game counters |
+| | `life_gained_turn`, `life_lost_turn` | u16 | `count` | |
+| | `colors_cast_turn` | u8 | `mask:color` | |
+| | `revolt`, `drew_from_empty`, `companion_used` | u8 | `bool` | |
+| | `match_wins` | u8 | `count` | |
+| `player_counter` (23) | `player` | seat | | |
+| | `kind` | text | `text` | `POISON`, `ENERGY`, … |
+| | `count` | u16 | `count` | |
+| `object` (24) | `handle` | u32 | `handle` | |
+| | `zone` | u8 | `enum:zone` | |
+| | `owner`, `controller` | seat | | |
+| | `pos` | u16 | `index` | stack / graveyard / exile from the top (0 = newest); library position for a card in a window |
+| | `card` | u16 | `card` | 0xFFFF = face down to this viewer |
+| | `token`, `face_down`, `transformed` | u8 | `bool` | register 24 |
+| | `copy_of` | u16 | `card` | card a copy effect copies |
+| | `tapped`, `sick`, `phased_out`, `can_attack` | u8 | `bool` | engine flags (register 15) |
+| | `attacking`, `blocking`, `blocked` | u8 | `bool` | details in `combat` |
+| | `damage` | u16 | `count` | |
+| | `deathtouch_damage` | u8 | `bool` | |
+| | `power`, `toughness` | i16 | `signed` | post-layer |
+| | `types` | u32 | `mask:card_type` | post-layer |
+| | `supertypes` | u8 | `mask:supertype` | |
+| | `colors` | u8 | `mask:color` | `effective_colors` |
+| | `mana_value` | u8 | `count` | |
+| | `attached_to` | u32 | `handle` | |
+| | `timestamp` | u32 | `index` | entered-battlefield order |
+| | `entered_turn`, `cant_be_blocked`, `damage_shielded`, `delayed_subject` | u8 | `bool` | as BQUERY's per-turn statuses |
+| | `activations_turn`, `resolutions_turn` | u8 | `count` | |
+| | `chosen_name` | u16 | `card` | |
+| | `chosen_type` | u16 | `enum:subtype` | 0xFFFF none |
+| | `chosen_color` | u8 | `enum:color` | |
+| | `entered_x` | u16 | `count` | |
+| | `monstrous`, `evoked`, `escaped`, `unearthed`, `cast_from_hand` | u8 | `bool` | |
+| `object_subtype` (25) | `obj`, `subtype` | u32, u16 | `handle`, `enum:subtype` | post-layer |
+| `object_keyword` (26) | `obj` | u32 | `handle` | register 14 |
+| | `kw` | u8 | `enum:keyword` | as `card_keyword` |
+| | `text` | text | `text` | |
+| `object_counter` (27) | `obj` | u32 | `handle` | permanent counters, or a card's in exile |
+| | `kind` | text | `text` | `P1P1`, `LOYALTY`, `TIME`, … |
+| | `count` | u16 | `count` | |
+| `object_ability` (28) | `obj` | u32 | `handle` | |
+| | ability | abref | | |
+| | `granted` | u8 | `bool` | not printed on the object |
+| | `activations_turn` | u8 | `count` | limit state |
+| | `exhausted` | u8 | `bool` | its limit is reached this turn |
+| `object_provenance` (29) | `obj`, `src` | u32 | `handle` | register 1 |
+| | `src_card` | u16 | `card` | when `src` is gone |
+| | `layer` | u8 | `enum:layer` | CR 613 layer / sublayer |
+| | `duration` | u8 | `enum:duration` | |
+| `object_link` (30) | `obj`, `linked` | u32 | `handle` | linked exiled cards |
+| | `kind` | u8 | `enum:link_kind` | exiled with, returnable |
+| `combat` (31) | `attacker` | u32 | `handle` | |
+| | `target_kind` | u8 | `enum:attack_target_kind` | player, planeswalker |
+| | `target_player` | seat | | |
+| | `target` | u32 | `handle` | planeswalker |
+| | `blocker` | u32 | `handle` | 0 = unblocked row |
+| | `order` | u8 | `index` | damage-assignment order |
+| | `assigned` | u16 | `count` | damage assigned so far |
+| `stack` (32) | `handle` | u32 | `handle` | |
+| | `pos` | u16 | `index` | 0 = top |
+| | `kind` | u8 | `enum:stack_kind` | spell, activated, triggered, copy |
+| | `controller` | seat | | |
+| | `source` | u32 | `handle` | an ability's source; 0 if gone |
+| | `source_card` | u16 | `card` | |
+| | ability | abref | | |
+| | `x` | i16 | `signed` | −1 = no X |
+| | `amount` | u16 | `count` | `Ability::amount` |
+| | `kicked`, `replicate` | u8 | `count` | |
+| | `variant` | u16 | `mask:cast_variant` | flashback, evoke, escape, offspring, impending, warp, back face, alt cost, impulse |
+| | `copy`, `cant_be_countered`, `gift_promised` | u8 | `bool` | |
+| | `mana_spent` | u8 | `count` | |
+| | `colors_spent` | u8 | `mask:color` | |
+| | `delayed` | u32 | `index` | `delayed_trigger.seq`; 0 none |
+| `stack_mode` (33) | `stack`, `mode` | u32, u8 | `handle`, `index` | chosen modes |
+| `stack_target` (34) | `stack` | u32 | `handle` | |
+| | `order` | u8 | `index` | announcement order |
+| | `kind` | u8 | `enum:target_kind` | object, player |
+| | `target` | u32 | `handle` | |
+| | `target_player` | seat | | |
+| | `lki` | u16 | `row:lki` | the target left its zone |
+| `delayed_trigger` (35) | `seq` | u32 | `index` | registration order |
+| | `controller` | seat | | |
+| | `state` | u8 | `enum:delayed_state` | waiting, on the stack |
+| | `stack`, `creator` | u32 | `handle` | |
+| | `creator_card` | u16 | `card` | |
+| | `fire` | u8 | `enum:fire_kind` | `DelayedTriggerLink::FireKind` |
+| | `fire_turn` | u16 | `count` | |
+| | `fires_this_turn`, `expires_eot` | u8 | `bool` | |
+| | ability | abref | | |
+| `delayed_subject` (36) | `trigger` | u16 | `row:delayed_trigger` | |
+| | `subject` | u32 | `handle` | |
+| | `subject_card` | u16 | `card` | |
+| | `lki` | u16 | `row:lki` | |
+| `emblem` (37) | `controller` | seat | | |
+| | `source_card` | u16 | `card` | |
+| `player_effect` (38) | `player` | seat | | |
+| | `kind` | u8 | `enum:player_effect_kind` | as BQUERY's player-effect block |
+| | `colors` | u8 | `mask:color` | hexproof-from colours |
+| | `duration` | u8 | `enum:duration` | |
+| | `source_card` | u16 | `card` | |
+| | `filter` | text | `text` | e.g. a flash permission's filter |
+| `play_permission` (39) | `obj` | u32 | `handle` | |
+| | `player` | seat | | who may play it |
+| | `kind` | u8 | `enum:permission_kind` | flashback, escape, cast this turn, impulse, warp, suspend, land from graveyard |
+| | `resource` | u8 | `enum:permission_resource` | mana, energy, life, free |
+| | `amount` | u16 | `count` | |
+| | `expires_turn` | u8 | `bool` | lapses at this turn's cleanup |
+| `shield` (40) | `kind` | u8 | `enum:shield_kind` | combat-damage prevention |
+| | `obj` | u32 | `handle` | |
+| | `as_source`, `as_target` | u8 | `bool` | |
+| `lki` (41) | `card` | u16 | `card` | |
+| | `token` | u8 | `bool` | |
+| | `controller` | seat | | |
+| | `power`, `toughness` | i16 | `signed` | |
+| | `types` | u32 | `mask:card_type` | |
+| | `colors` | u8 | `mask:color` | |
+| | `mana_value` | u8 | `count` | |
+| `reveal` (42) | `handle` | u32 | `handle` | |
+| | `zone` | u8 | `enum:zone` | |
+| | `owner` | seat | | |
+| | `pos` | u16 | `index` | library position from the top |
+| | `card` | u16 | `card` | |
+| | `window` | u8 | `enum:window_kind` | reveal, look |
+| | `to` | seat | | none = all players |
+| `pending` (43) | `tag` | u8 | `enum:pending_tag` | `PendingQuery::Tag` |
+| | `chooser` | seat | | |
+| | `source` | u32 | `handle` | |
+| | `source_card` | u16 | `card` | |
+| | `source_controller` | seat | | |
+| `pending_cost` (44) | `for` | u32 | `handle` | spell or ability paid for |
+| | `for_card` | u16 | `card` | |
+| | `part` | u8 | `enum:cost_part` | mana, alternative, additional, unless, X, activation |
+| | `rem_w` … `rem_c`, `rem_generic`, `rem_x` | 8 × u8 | `count` | remaining plain pips |
+| | `rem_life` | u16 | `count` | |
+| | `paid` | u8 | `count` | mana already paid |
+| `pending_cost_pip` (45) | `cost` | u16 | `row:pending_cost` | remaining non-plain pips |
+| | `kind`, `colors`, `generic_alt` | u8 | `enum:pip_kind`, `mask:color`, `count` | as `card_pip` (plus snow) |
+| `menu` (46): row = action index | `category` | u8 | `enum:action_category` | |
+| | `type` | u8 | `enum:action_type` | |
+| | `source`, `target` | u32 | `handle` | |
+| | `source_card` | u16 | `card` | when `source` has no handle |
+| | `target_player` | seat | | |
+| | ability | abref | | |
+| | `ordinal` | i16 | `signed` | `option_ordinal`; −1 = n/a |
+| | `variant` | u16 | `mask:cast_variant` | plus companion, suspend, cancel |
+| | `card_public` | u8 | `bool` | |
+| | `description` | text | `text` | covered by the leak checks (register 12) |
+| `match` (47) | `game` | u8 | `count` | |
+| | `plays_first` | seat | | this game, or the upcoming one while sideboarding |
+| | `sideboard_phase` | u8 | `bool` | |
+| | `sb_swaps` | u8 | `count` | |
+| | `sb_drift` | i8 | `signed` | |
+| | `closed_decklist` | u8 | `bool` | |
+| `own_deck` (48) | `card` | u16 | `card` | the viewer's current 75 |
+| | `main`, `side` | u8 | `count` | |
+
+### A.6 Events and knowledge (`STATE` frame)
+
+| Table (id) | Column | Type | Tag | Range / notes |
+|---|---|---|---|---|
+| `event` (80) | `seq` | u32 | `index` | section 5 |
+| | `kind` | u8 | `enum:event_kind` | |
+| | `player` | seat | | drawer, looker, searcher, shuffler, starting player, winner (none = draw) |
+| | `zone`, `to_zone` | u8 | `enum:zone` | from / looked / searched zone; destination. 0xFF = `none` (created, ceased) |
+| | `zone_owner`, `to_owner` | seat | | |
+| | `count` | u16 | `count` | cards drawn / looked at / found; batch size |
+| | `range` | libpos | | look, `library_place`, `reorder` |
+| | `order_known` | u8 | `bool` | `library_place`, `reorder` |
+| | `batch` | u16 | `index` | 0 = none |
+| | `to` | seat | | audience of a reveal or look; none = all |
+| | `source` | u32 | `handle` | |
+| | `source_card` | u16 | `card` | |
+| | `game` | u8 | `count` | game events |
+| `event_card` (81) | `event` | u32 | `row:event` | |
+| | `handle_before`, `handle_after` | u32 | `handle` | |
+| | `card` | u16 | `card` | |
+| | `from` | libpos | | from a library |
+| | `to` | libpos | | into a library; `to_pos` 0xFFFF = in a batch |
+| | `face_down`, `token` | u8 | `bool` | token = token or spell copy |
+| `event_player` (82) | `event` | u32 | `row:event` | `game_start`, `game_end`, `match_end` |
+| | `player` | seat | | |
+| | `library`, `sideboard` | u16 | `count` | `game_start` |
+| | `wins` | u8 | `count` | match wins |
+| `k_meta` (90) | `level` | u8 | `enum:knowledge_level` | off, expert |
+| | `exact` | u8 | `bool` | |
+| | `steps` | u32 | `count` | solver steps used |
+| `k_seen` (91) | `player` | seat | | |
+| | `card` | u16 | `card` | |
+| | `game`, `match` | u8 | `count` | copies seen |
+| `k_pool` (92): row = pool id | `owner` | seat | | |
+| | `kind` | u8 | `enum:pool_kind` | hand, library range, sideboard, face-down, set aside |
+| | `size` | u16 | `count` | |
+| | `range` | libpos | | library range |
+| | `obj` | u32 | `handle` | face-down object |
+| `k_pool_card` (93) | `pool` | u16 | `row:k_pool` | rows with max > 0 |
+| | `card` | u16 | `card` | |
+| | `min`, `max` | u8 | `count` | |
+| `k_position` (94) | `owner` | seat | | |
+| | `at` | libpos | | span 1 |
+| | `card` | u16 | `card` | 0xFFFF = not exact |
+| | `pool` | u16 | `row:k_pool` | candidates when not exact |
+| `k_known_hand` (95) | `card` | u16 | `card` | |
+| | `copies` | u8 | `count` | |
+
+### A.7 Enums with no C++ type yet
+
+T3/T4 add these as C++ enums so their string tables are generated like the others.
+
+| Enum | Values |
+|---|---|
+| `frame_kind` | SCHEMA, CARDS, DECKLISTS, STATE |
+| `viewer` | A, B, OMNISCIENT |
+| `storage` | U8, U16, U32, U64, I8, I16, I32, I64, F32, TEXT |
+| `event_kind` | ZONE_MOVE, DRAW, LIBRARY_PLACE, REVEAL_START, REVEAL_END, LOOK, SHUFFLE, REORDER, SEARCH, CAST_FROM_HIDDEN, PLAY_FROM_HIDDEN, FACE_DOWN, FACE_UP, GAME_START, GAME_END, MATCH_END |
+| `lib_anchor` | TOP, BOTTOM |
+| `face` | FRONT, BACK |
+| `layout` | NORMAL, TRANSFORM, MODAL_DFC, SPLIT |
+| `ability_kind` | SPELL, ACTIVATED, TRIGGERED, STATIC, REPLACEMENT, CHAPTER, OPENING_HAND |
+| `timing` | ANY, SORCERY, INSTANT |
+| `pip_kind` | HYBRID, TWOBRID, PHYREXIAN, SNOW |
+| `stack_kind` | SPELL, ACTIVATED, TRIGGERED, COPY |
+| `target_kind` | OBJECT, PLAYER |
+| `attack_target_kind` | PLAYER, PLANESWALKER |
+| `delayed_state` | WAITING, ON_STACK |
+| `window_kind` | REVEAL, LOOK |
+| `cost_part` | MANA, ALTERNATIVE, ADDITIONAL, UNLESS, X, ACTIVATION |
+| `layer` | COPY, CONTROL, TEXT, TYPE, COLOR, ABILITY, PT_CDA, PT_SET, PT_MODIFY, PT_COUNTERS, PT_SWITCH |
+| `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
+| `link_kind` | EXILED_WITH, RETURNABLE |
+| `player_effect_kind`, `permission_kind`, `permission_resource`, `shield_kind`, `cast_variant` | the lists in the table notes above |
+| `knowledge_level` | OFF, EXPERT |
+| `pool_kind` | HAND, LIBRARY_RANGE, SIDEBOARD, FACE_DOWN, SET_ASIDE |
+
+Existing C++ enums used: `Step` (`step`), `ActionCategory` (`action_category`), `ActionType`
+(`action_type`), `Zone::ZoneValue` (`zone`), `Zone::Ownership` (`seat`), `Colors` (`color`),
+`MandatoryChoice` (`mandatory_choice`), `Game::DayNight` (`day_night`), `PendingQuery::Tag`
+(`pending_tag`), `DelayedTriggerLink::FireKind` (`fire_kind`), `EffectKind` (`effect_kind`,
+from `effect_kinds.def`). The type lists `all_types`, `all_subtypes`, `all_supertypes`
+(`src/constants.cpp`) give `card_type`, `subtype`, `supertype`; the parser's keyword table
+(`kKeywordTable`, `src/parse.cpp`) gives `keyword`.
