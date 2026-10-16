@@ -44,7 +44,8 @@ This is a self-contained brief for a session picking up **step 1** of
 - **Do not** delete the engine's knowledge bookkeeping (`KnownLibraryTop`,
   `Zone::identity_known`, the match revealed bits). That is step 3b. In step 1 they keep
   feeding BQUERY and are the reference for the shadow comparison.
-- **Do not** change the decision schedule or menus. The `interchangeable_cards` menu collapse
+- **Do not** change the decision schedule or menus. `auto-mana` default-on (register 32)
+  lands in step 4a, not here. The `interchangeable_cards` menu collapse
   (`src/queries/zones.cpp:123-128`) reads engine memory; leave it alone (step 4a).
 - **Do not** port the scripted agent (step 2), build a C++ gate (step 3), or touch the
   featurizer (step 5).
@@ -148,7 +149,11 @@ tell subagents not to spawn further agents.
     (`src/queries/player_effects.h`), play permissions (`src/queries/zones.h`), LKI
     (`src/queries/lki.h`);
   - the menu from the live `std::vector<LegalAction>`, with handles for source/target;
-  - pending context from `PendingQuery` (`src/pending_query.h`).
+  - pending context from `PendingQuery` (`src/pending_query.h`), plus `pending_cost` during
+    every cost-payment decision (register 33). The remaining cost lives in the payment
+    flows: the interactive payment loop in `src/mana_system.cpp` from about line 1553, the
+    pending-cast state in `src/action_processor.cpp`, and `src/unless_payment.cpp`. Expose it
+    through a query rather than reading those flows' locals.
 - **Once-per-match frames:**
   - `CARDS`: vocab id, name, uid, printed characteristics, `CardData::oracle_text`,
     abilities by reference with a keyword key;

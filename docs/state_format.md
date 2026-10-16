@@ -97,6 +97,7 @@ columns are fixed in the schema (section 9).
 | `lki` | departed objects still referenced | last-known characteristics for a stack or effect reference |
 | `reveal` | one per object in a current window for this viewer | handle, zone, position if in a library, card id, who it is revealed to |
 | `pending` | 0 or 1 | the paused flow (`PendingQuery::Tag`), deciding seat, source handle |
+| `pending_cost` | 0 or 1 during a cost-payment decision (manual mana payment under `--no-auto-mana`, pitch/alternative costs, unless-payments, X choices) | what is being paid for (spell/ability handle and which cost: mana, alternative, unless, additional), the **remaining cost** by pip type (W/U/B/R/G/C, generic, each hybrid and Phyrexian pip, snow, X), and the amount already paid. Child table `pending_cost_pip` for non-plain pips |
 | `menu` | one per legal action | category, action type, source/target handles, ability reference, ordinal, cast-variant flags, card-is-public flag, description. No length cap; one integer answers the decision |
 | `match` | 1 | game number, wins, who played first this game, sideboard phase, own current deck/sideboard during sideboarding |
 | `events` | the drained event queue | section 5 |
@@ -291,3 +292,5 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 | 29 | `CARDS` always carries oracle text, for cards and tokens; text embeddings for learned models are built from it | decided |
 | 30 | Every schema column carries a semantic tag and, where defined, a value range (section 9) | decided |
 | 31 | Every row with an owner/controller/player column also carries it relative to the viewer (self/opponent) | decided |
+| 32 | `auto-mana` is on by default for every consumer; `--no-auto-mana` turns it off (per seat with `-a`/`-b` if needed); recorded in the RMLOG header. Lands with the other schedule changes in plan step 4a; until then the existing machine/interactive split stands | decided |
+| 33 | Every cost-payment decision's frame carries `pending_cost`: what is being paid for and the remaining cost by pip type (section 4) | decided |

@@ -275,19 +275,32 @@ The corpus must stay byte-identical across 3b.
 | Site | What it does | Fate |
 |---|---|---|
 | `state_manager_actions.cpp:104` `machine_masks_conditional_destroy` | hides Fatal Push-style casts with no currently passing target ("NOT a rules gate") | **delete** |
-| `state_manager_actions.cpp:1085`, `mana_system.cpp:1553` | hides ordinary mana abilities at priority; auto-pays costs | → explicit option `auto-mana` |
+| `state_manager_actions.cpp:1085`, `mana_system.cpp:1553` | hides ordinary mana abilities at priority; auto-pays costs | → explicit option `auto-mana`, **on by default for every consumer**; `--no-auto-mana` turns it off |
 | `action_processor.cpp:2201` | auto-resolves hybrid pips | part of `auto-mana` |
 | `game_driver.cpp:1212` | caps sideboard swaps per player | keep as an always-on safety limit |
 | `game_driver.cpp:538`, `cli_output.cpp` guards | output only | fold into the output mode |
 | `name_card_choices.cpp:54` | truncates name-a-card menus to `MAX_ACTIONS` | lift (menus are unbounded) |
 | `queries/zones.cpp:123-128` (`interchangeable_cards`) | keeps two identical library cards apart when one sits at a position the other player knows (engine memory) | redefine on currently explicit information: a card in a live reveal window is distinguishable, a remembered one is not |
 
-- `auto-mana` is recorded in the RMLOG header (`record_header_flags`, `src/cli_args.h`); the
-  scripted agent plays with it on.
+- **`auto-mana` is on by default for everyone:** CLI, scripted agent and machine agents.
+  - With it on, ordinary mana abilities stay hidden at priority and the greedy payer
+    (`auto_pay_mana`) pays costs and resolves hybrid pips. Two kinds stay offered so mana can
+    still be floated: instant-speed sources, and sources targeted by removal on the stack.
+  - `--no-auto-mana` turns it off for the match; it can be per seat (`-a`/`-b`) if needed.
+    With it off, every mana ability is listed at priority and costs are paid through the
+    interactive payment loop, for any consumer.
+  - The setting is recorded in the RMLOG header (`record_header_flags`, `src/cli_args.h`), so
+    the existing corpus (recorded with auto-pay) keeps replaying.
+- **The frame shows what is owed during every cost-payment decision:** the remaining cost by
+  pip type, and what it is paying for (`state_format.md` §4, `pending_cost`). This covers
+  manual payment with `--no-auto-mana`, and also decisions that happen with auto-mana on:
+  pitch and alternative costs, unless-payments, X.
+- **Not adopted for now:** a "pay automatically" first menu choice inside the payment loop.
+  It could be revisited later as another option.
 - After 4a, machine mode means only "speak RMSTATE".
 - The agent's positional menu assumptions (read map §2b) are kept, or changed together with
   the agent.
-- Re-record the corpus with the live agent, and add explore games with `auto-mana` off so
+- Re-record the corpus with the live agent, and add explore games with `--no-auto-mana` so
   manual mana payment is covered.
 
 ### 4b. C++ CLI on the decoder
@@ -435,8 +448,8 @@ Python) without Python. Recording the corpus needs the agent.
 The format's decisions are in `docs/state_format.md` §11; the knowledge store's choices are in
 `docs/knowledge_store.md`.
 
-1. **`auto-mana` defaults** (4a): proposed off for `--machine`, on for the scripted agent and
-   the CLI.
+1. ~~`auto-mana` defaults~~ **Decided:** on by default for everyone; `--no-auto-mana` turns
+   it off.
 2. **`snapshot.cpp`**: proposed kept, tested by the `snapshot` self-check.
 3. **`tools/meta_scraper`**: keep or drop.
 4. **C++ `explore` port** (3a): makes `fuzz` Python-free and fast in-process; otherwise fuzz
