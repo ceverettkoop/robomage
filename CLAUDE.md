@@ -342,6 +342,8 @@ Disruptor Flute, Petrified Hamlet) do **not** offer every card. `build_name_card
 relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source: `CHOOSER_ONLY`
 (one player's whole deck) or `BOTH_PLAYERS` (either player's cards, de-duped — used for
 land-naming), so a land-naming card can still name a land only in the opponent's deck.
+Under `--closed-decklist` (register 11a) the set is instead every vocab card passing `ValidCards$`
+(read from the parse cache, no entities), which needs `--machine-format rmstate` (uncapped menu).
 
 ### Card scripts and parsing
 
@@ -636,6 +638,8 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
 - `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
   JSON, the `--machine-format rmstate` stream vs the dump
+- `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
+  scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),
