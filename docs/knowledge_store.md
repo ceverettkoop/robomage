@@ -317,6 +317,11 @@ As built (T9, `Knowledge::rows`, `src/knowledge/output.cpp`):
   - the opponent's known library top and the decklist revealed bits are not read by the agent
     (`state_format_agent_map.md`), so `position_leak`, `private_look_seen` and
     `harness_preset_seen` change nothing in the port.
+- **As found** (step 2 pass 1, `state_format_agent_map.md` section 7): the corpus and smoke games
+  are identical on both protocols; the differing games of a 300-match sweep are Cabal Therapy name
+  picks after `put_back_leak` (five) and `public_entry_untracked` (one), listed in
+  `train/regression/agent_parity_divergences.json`. The own-top differences (`pending_look`,
+  `deduction`) changed no choice in any game played.
 
 ## 9. Implementation (step 1 T9-T12)
 

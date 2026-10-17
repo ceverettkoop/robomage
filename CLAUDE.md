@@ -624,6 +624,13 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `action_spec.py` — `--play` semantic spec resolver (see Test harness)
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
   arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
+- `rmstate_adapter.py` — the step-2 pass-1 parity adapter: the old observation the scripted agent
+  reads, rebuilt from one seat's RMSTATE frames and `k_*` tables (`SeatAdapter`), and its card
+  knowledge from `CARDS` / `DECKLISTS` (`FrameCardKnowledge`; the agent reads cards through
+  `scripted_agent.use_card_knowledge`)
+- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate` through the
+  adapter; `runner.run_games(machine_format="rmstate")` / `--machine-format rmstate` (observe,
+  the harness) select it, for `rmstate_capable` controllers (scripted tiers, auto, actions:, play:)
 
 **Training (`train/`)**
 - `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
@@ -660,6 +667,9 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
+- `test_agent_parity.py` — tier `agentparity`: the scripted agent on RMSTATE plays the games it plays
+  on BQUERY (card knowledge, corpus and smoke games; listed divergences in
+  `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
 - `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
   JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
 - `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the

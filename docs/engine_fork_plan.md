@@ -200,6 +200,24 @@ the fields of the event it consumes, which is the completeness check on the even
     RMSTATE versus BQUERY;
   - the only exceptions are games where a classified old-vector leak changed what the agent
     saw. Those are re-recorded, each with its classification as the reason.
+  **Status: done.** The adapter is `train/rmstate_adapter.py` (the old observation rebuilt from a
+  seat's frames and `k_*` tables; the card knowledge from `CARDS`, whose raw scripts the engine adds
+  under `--rmstate-card-scripts`, read through the generators' own parsing), driven by
+  `train/rmstate_env.py` under `runner.run_games(machine_format="rmstate")` (`--machine-format
+  rmstate` on observe and the harness) for every `rmstate_capable` controller: the scripted tiers,
+  `auto`, `actions:`, `play:`. The emulation as built is the read map's section 7. The vocab
+  constants are name lookups, checked against each match's `CARDS`. The gate tier `agentparity`
+  (`train/test_agent_parity.py`, `docs/ci.md`) holds the agent's games byte-identical on both
+  protocols (the transcript without its board block, which the RMSTATE run cannot print). Results:
+  all 64 corpus games, every smoke-tier game and a bo3 match per league mirror are identical; in a
+  sweep of 300 bo3 matches six differ, all Cabal Therapy name picks reading the opponent's known
+  hand (five `put_back_leak`, one `public_entry_untracked`), listed in
+  `train/regression/agent_parity_divergences.json` with their re-recorded RMSTATE baselines. The
+  replay corpus itself is unchanged: `make check` still plays it on BQUERY. Format fixes it took:
+  `object.types` reports Creature only while the permanent is one (impending, attached reconfigure),
+  a phased-out creature's own P/T, the narrative flushed ahead of each frame. The RMSTATE path runs
+  at about half the BQUERY decision rate (release: ~310 vs ~630 decisions/s for scripted hard vs
+  hard: the frames and the knowledge sidecar in the engine, and the Python decode and adapter).
 - **Pass 2, simplify.** Replace offset arithmetic with decoded objects, drop the caps, and drop
   numpy if possible. The agent may now use the richer knowledge tables. Re-record the corpus
   with the live agent, saying why.

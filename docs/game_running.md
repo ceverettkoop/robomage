@@ -131,7 +131,11 @@ run_match(agent_a="scripted", agent_b="scripted", *, deck_a=None, deck_b=None,
 - Extra kwargs pass to `run_games`: zone presets (`battlefield_a`, `graveyard_b`, `exile_a`,
   `sideboard_b`, …), `no_shuffle`, `life_a/b`, `log_decisions`, `coverage` (a
   `coverage_report.CoverageAccumulator`), hooks `on_query` / `on_action` / `on_game_end(record)`,
-  and `narrative=False` (engine without its game log; the benchmark path, only sensible quiet).
+  `narrative=False` (engine without its game log; the benchmark path, only sensible quiet), and
+  `machine_format="rmstate"`: the engine speaks RMSTATE (`--machine-format rmstate`) and each
+  decision's observation is rebuilt from the deciding seat's frames by the pass-1 parity adapter
+  (`rmstate_env.py`, `rmstate_adapter.py`); only `rmstate_capable` controllers may play (the scripted
+  tiers, `auto`, `actions:`, `play:`), and the verbose transcript has no board block.
 - Returns `MatchResult`: `wins` / `losses` / `draws` from seat A, `games`, `win_rate`,
   `label_a/b`, and `records` — one `GameRecord` per game (bo1) or match (bo3) with `reward`,
   `decisions`, `capped`, `actions` (every index sent; with `engine_seed`, enough to replay),
@@ -162,7 +166,8 @@ training runs (az-selfplay, az-train, az, az-league); `play.py` is random unless
 - **`train.py observe`** (`run_games`) — any matchup: `--player-a/-b` (default `scripted`),
   `--deck-a` (default `delver`) / `--deck-b` (default: A's deck); game *i* uses `--seed + i`.
   Transcript `--verbose` / compact / `--quiet` (one-line W/L/D only); `--out FILE` writes the
-  transcript to FILE with the summary on stdout; `--max-decisions N` caps each game. Two forms:
+  transcript to FILE with the summary on stdout; `--max-decisions N` caps each game; `--machine-format rmstate` plays over RMSTATE (as
+  `run_games(machine_format=…)`; the harness takes the flag too). Two forms:
   - **fuzz campaign** — `--player-a explore --player-b explore` (or `explore:patient`)
     `--verbose --out FILE`; any draw is a finding (also saved to `draw_<stamp>.txt`).
   - **throughput benchmark** — `--timing` prints games, decisions, wall, games/s, decisions/s,

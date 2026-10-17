@@ -4,6 +4,11 @@ Step-1 companion to [`state_format.md`](state_format.md). It maps every value th
 (`train/scripted_agent.py`) reads today onto what will serve it in RMSTATE. It is the
 completeness checklist for the step-2 port and the specification of the pass-1 parity adapter.
 
+**Status:** step 2 pass 1 is built (section 7): the parity adapter (`train/rmstate_adapter.py`,
+`train/rmstate_env.py`) serves every read below, and the `agentparity` gate tier
+(`train/test_agent_parity.py`, `docs/ci.md`) holds the agent's RMSTATE games byte-identical with its
+BQUERY games, except listed and classified old-vector leaks and quirks.
+
 **Legend for "served by":**
 
 | Prefix | Source |
@@ -192,3 +197,99 @@ Pass 2 removes items 1–3 and 6–7 and reads decoded objects directly.
 3. **Keyword key on ability references** in `M.ability` / `S.object_ability` (e.g. `Ninjutsu`,
    `Equip`, `Reconfigure:attach`), so agents identify keyword-built abilities without counting
    script lines.
+
+## 7. Pass-1 adapter as built (plan step 2)
+
+**Design.** The agent's decision logic is unchanged. `rmstate_env.RMStateNarrativeEnv` runs the
+engine with `--machine-format rmstate --rmstate-card-scripts`; `runner.run_games(machine_format=
+"rmstate")` (`--machine-format rmstate` on `train.py observe` and the harness) selects it. Each seat's
+frames feed that seat's `rmstate_adapter.SeatAdapter`; at each decision the deciding seat's STATE frame
+becomes a vector in the old layout (`env.OBS_SIZE`) holding, at every position the agent reads, the
+value the old vector gave, plus the per-action arrays, descriptions and card-is-public flags of the
+menu. The BQUERY vector is never written in this mode. The agent's card knowledge goes through
+`scripted_agent.use_card_knowledge`: `VocabCardKnowledge` (the generated tables, the scripts on disk,
+the `.dk` files) on BQUERY, `rmstate_adapter.FrameCardKnowledge` (the match's `CARDS` and `DECKLISTS`
+frames) on RMSTATE, installed by `opponents.ScriptedController` before each decision with the deck
+names `DECKLISTS` gives. The vocab constants (`env.py`'s `_*_VOCAB_IDX` / `_*_IDS`, the agent's id
+tables) are name lookups (`_card_id`, `_vid`); on RMSTATE the controller checks once per match that
+the frame names every card the vocab knows with the vocab's id (`card_name_mismatches`).
+
+**Seats and agents.** Both seats share one engine; the stream carries only the deciding seat's frames,
+so each seat's adapter sees its own frames (its knowledge tables, its events) and the self
+perspective is the frame's viewer. Every controller that declares `rmstate_capable` can play: the
+scripted tiers (hard, easy/greedy, explore, explore:patient; random too, though it is not
+deterministic), `auto`, `actions:` and `play:` (a script whose players are capable). Model, search
+and human controllers read the whole vector and are refused (`runner.require_rmstate_capable`).
+
+**Emulation, pinned down** (section 5's list, as built):
+
+1. *Caps and order.* Battlefield: 48 per side by controller; graveyard and exile: 64 per side by
+   owner in `pos` order (newest first); hand: 10; stack: 12 from the top. The old serializer packs the
+   battlefield and the hand by entity id, which the format does not carry (it would tell copies of a
+   card apart by deck position): entity ids run through Player A's list, then B's, then later objects
+   (tokens), and every league list is in name order, so the adapter packs by (token, owner, card name,
+   handle). This is entity order for league decks up to copies of one card; the agent was measured
+   order-insensitive (one choice changed in 18,609 decisions with every hand and battlefield
+   order permuted, 55 bo3 matches).
+2. *Empty slots* are the serializer's empty slot (zeros, the empty card-id sentinel in every id
+   float), also for an object the serializer writes empty: a permanent whose current face has no
+   vocab entry.
+3. *Normalisers* are computed in float32 as the serializer divides (life / 20, P/T and counters
+   / 10, library / 60, turn / 50, …).
+4. *Card ids as the serializer gives them:* a token's band id; a permanent by the name it has now (a
+   transformed card's back face, a copy's copied card: `object.transformed`, `object.copy_of`); a
+   menu action that plays or casts a back face (`variant` BACK_FACE) by that face; a stack ability by
+   its source's face; a trigger with no source of its own (a floating or delayed trigger an effect
+   created: no source, no ability reference into a card's list) as none, where the frame shows its
+   creator; a card entering the battlefield whose permanent is not built yet (a shock land's life
+   payment: no `timestamp`) is no permanent.
+5. *Summoning sickness:* the old flag is `Permanent::has_summoning_sickness`, the raw flag (set as a
+   creature or any token enters, cleared at its controller's untap step); the frame's `sick` is the
+   rule (a creature, haste considered). They differ for a creature with haste, a token and a creature
+   card that is not a creature now (impending); the adapter reads those from the permanent's entry turn
+   (its `zone_move` event, kept per seat) against the start of its controller's most recent turn; a
+   harness preset starts without it.
+6. *Keywords:* the old 16 (`_OBS_KEYWORDS`), by the exact keyword text.
+7. *Knowledge reads:* own and opponent library tops 0–4 from `k_position` rows with an exact card;
+   the opponent's known hand from `k_known_hand` (each card's copies, ten slots, in name order).
+8. *Card knowledge:* `FrameCardKnowledge` reads each card's raw script from `CARDS` with the
+   generators' own parsing, so every cost row, land flag, property column, script line and type line
+   equals the generated tables' (checked over the whole vocab by the tier's `cards` part); the token
+   quirk is kept (a token has no card script, so its type line is '').
+9. *Deck names and the opponent's list* from `DECKLISTS` (the "runs Force of Will" test reads the
+   opponent's registered list); the opponent decklist block from `decklist_card`, the own deck block
+   from `own_deck`.
+10. *Between games* the vector is masked as the BQUERY env masks a sideboarding observation.
+11. *Not rebuilt* (the agent reads none of it): the opponent decklist slots' revealed bit (0), the own
+    live-library block, mana development, log vitals, delayed triggers, player effects, the
+    per-permanent counter and token-name side channels.
+
+**Differences that remain** (field level, from `test_agent_parity.py --lockstep` over the corpus and
+smoke games; none of them reached a decision except the knowledge reads):
+
+| Field | Old vector | Adapter | Why |
+|---|---|---|---|
+| own library top, opponent's known hand | the old memory | `k_position`, `k_known_hand` | the classified divergences of `knowledge_divergences.json` (`knowledge_store.md` §8, §9.7) |
+| zone and controller of a name-a-card choice | the zone of the card the engine picked to stand for the name (it can be in the opponent's hand or a library) | none | an old-vector leak; the frame has no handle for a hidden representative |
+| stack slot "is a spell" of a resolving permanent spell waiting on its entry's choice (Mox Diamond's discard) | 0 (its Spell component is gone) | 1 (`stack.kind` SPELL) | an old-vector quirk: it is still a spell (CR 608.3) |
+| card of a stack target that has left the stack (a countered spell's target spell) | its card | none | a format gap: last-known information is kept for permanents only (`lki` rows); not read by the agent |
+
+Format fixes made for the port: `object.types` has Creature exactly while the permanent is a
+creature (an impending permanent and an attached reconfigure permanent were reported as creatures);
+a phased-out creature's `power` / `toughness` are its own; `CARDS` carries the raw scripts on request
+(`--rmstate-card-scripts`, register 39); a decision's narrative reaches stderr before its frame.
+
+**Parity results.** All 64 replay-corpus games, the 40 smoke-tier games and a bo3 match per league
+mirror are byte-identical through the projection; a sweep of 300 bo3 matches (every ordered league
+pairing, three seeds) found six divergent games, each a Cabal Therapy name pick reading the
+opponent's known hand: five `put_back_leak` (the old vector still listed a card the opponent had put
+back with Brainstorm) and one `public_entry_untracked` (a companion put into hand, known to both
+players). They are listed in `train/regression/agent_parity_divergences.json` and re-recorded. The
+explore, explore:patient and easy tiers are identical on both protocols too.
+
+**For pass 2:** read decoded objects instead of the vector; the caps, the slot order, the empty-slot
+and normaliser emulation and the token type-line quirk go. The structured `CARDS` columns can replace
+the raw scripts (the tier's `cards` part shows what each column must reproduce); `M.ability`'s keyword
+key replaces `_keyword_ability_ordinal`; the summoning-sickness emulation goes once the agent reads
+`object.sick` (the rule); the richer knowledge tables (pools, positions as candidate sets) can serve
+the Ponder / Brainstorm / Doomsday decisions directly.
