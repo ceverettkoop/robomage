@@ -121,6 +121,10 @@ struct LegalAction {
         // index, a cast variant (normal/alt-cost/offspring/...), a top-of-library
         // placement depth, a binary pay/decline, etc. -1 = not applicable.
         int option_ordinal = -1;
+        // The vocab index of the card a NAME_CARD choice names when no object stands for it (a
+        // --closed-decklist candidate, drawn from the whole vocab): the card the state format's
+        // menu row shows. -1 = the choice's source_entity is the card.
+        int named_card = -1;
 
         LegalAction(ActionType t, const std::string &desc)
             : type(t), source_entity(0), target_entity(0), description(desc) {}

@@ -1,0 +1,65 @@
+{
+  "name": "knowledge_divergence_between_games",
+  "why": "shadow divergence between_games (docs/knowledge_store.md \u00a75 game_end, \u00a76): A's Thoughtseize shows B's hand and A's Bolt ends game 1; while the players sideboard, BQUERY still describes the finished game's board, so the old vector keeps listing B's known hand (opp_known_hand) and the known library tops, while the k_* tables of a sideboarding frame describe no game (no pool, position or known-hand rows) and keep only the match memory (k_seen) (CR 100.4a; step 1 T12 shadow comparison)",
+  "format": "bo3",
+  "hand_a": [
+    "Thoughtseize",
+    "Lightning Bolt",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "battlefield_a": [
+    "Swamp",
+    "Mountain"
+  ],
+  "library_a": [
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain",
+    "Mountain"
+  ],
+  "hand_b": [
+    "Ponder",
+    "Daze",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "library_b": [
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "life_b": 3,
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:cast:Thoughtseize",
+    "A:target:Player B",
+    "A:choice:Ponder",
+    "A:cast:Lightning Bolt",
+    "A:target:Player B"
+  ],
+  "max_decisions": 12,
+  "expect_dump": [
+    "^A d=\\d+ g0 t0 known_hand Daze x1$",
+    "^A d=\\d+ g1 sb seen opp Daze game=1 match=1$"
+  ],
+  "expect_dump_not": [
+    "^[AB] d=\\d+ g\\d+ sb (pool|position|known_hand) "
+  ]
+}

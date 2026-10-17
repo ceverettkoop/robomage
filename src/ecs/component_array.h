@@ -10,6 +10,7 @@
 #include <memory>
 #include <type_traits>
 #include <typeinfo>
+#include <vector>
 #include "entity.h"
 // credit https://austinmorlan.com/posts/entity_component_system/
 class IComponentArray {
@@ -66,6 +67,19 @@ class ComponentArray : public IComponentArray {
                 abort();
             }
             return mComponentArray[idx];
+        }
+        // Gives entities[i] the component entities[from[i]] had, by changing which dense slot each
+        // entity refers to: no component is copied or moved, so a reference taken to a component
+        // before still names the same data. Every entity must have a component; `from` is a
+        // permutation of 0 .. entities.size() - 1.
+        void PermuteData(const std::vector<Entity> &entities, const std::vector<size_t> &from) {
+            std::vector<uint32_t> slots(entities.size());
+            for (size_t i = 0; i < entities.size(); ++i) slots[i] = mEntityToIndex[entities[i]];
+            for (size_t i = 0; i < entities.size(); ++i) {
+                assert(slots[from[i]] != NO_INDEX && "Permuting a non-existent component.");
+                mEntityToIndex[entities[i]] = slots[from[i]];
+                mIndexToEntity[slots[from[i]]] = entities[i];
+            }
         }
         void EntityDestroyed(Entity entity) override {
             if (mEntityToIndex[entity] != NO_INDEX) {

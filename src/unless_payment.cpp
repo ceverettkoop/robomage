@@ -13,6 +13,7 @@
 #include "ecs/coordinator.h"
 #include "input_logger.h"
 #include "mana_system.h"
+#include "queries/pending_cost.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "resolution_frame.h"
@@ -108,6 +109,30 @@ bool run_unless_loop(
     Entity decision_source, FrameCtx &ctx, bool &suspended, const UnlessSubject &subject,
     UnlessPayKind kind, const ManaValue *cost_pips) {
     suspended = false;
+
+    // The offer in progress, for the state format's pending_cost (queries/pending_cost.h); it
+    // stays published while an ask is parked.
+    Game::PendingDecisions::CostPayment offer;
+    offer.unless = true;
+    offer.paid_for = paid_for != 0 ? paid_for : decision_source;
+    switch (kind) {
+        case UnlessPayKind::LIFE:
+            offer.life = static_cast<int>(cost);
+            break;
+        case UnlessPayKind::ENERGY:
+            offer.energy = static_cast<int>(cost);
+            break;
+        case UnlessPayKind::DISCARD:
+            offer.discard = static_cast<int>(cost);
+            break;
+        default:
+            if (cost_pips && !cost_pips->empty())
+                offer.remaining = *cost_pips;
+            else
+                for (size_t i = 0; i < cost; i++) offer.remaining.insert(GENERIC);
+            break;
+    }
+    CostPaymentScope offer_scope(offer, &suspended);
 
     if (kind == UnlessPayKind::DISCARD) {
         return run_discard_unless(cost, controller, orderer, decision_source, ctx, suspended, subject);

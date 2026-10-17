@@ -133,6 +133,18 @@ public:
                                       Zone::Ownership owner, Zone::ZoneValue zone);
 
 private:
+    // How move_object reports and finishes a move: `library_depth` sinks a card put on top of a
+    // library below that many cards (put_in_library_at_depth); `draw` reports it as a draw, an
+    // opening-hand or mulligan draw when `opening_draw` (perform_draw).
+    struct MoveOptions {
+            size_t library_depth = 0;
+            bool draw = false;
+            bool opening_draw = false;
+    };
+    // The one zone move behind add_to_zone, put_in_library_at_depth and perform_draw (see
+    // add_to_zone), reported as an observation event (state_format/events.h).
+    void move_object(bool on_bottom, Entity target, Zone::ZoneValue destination, LibraryTopView top_view,
+        bool exile_face_down, const MoveOptions &opts);
     // Close the gap `target` leaves in its ordered zone (library, stack, graveyard, exile) as it
     // leaves, shifting the objects beneath it up one, and drop it from the known-top library cache.
     void close_zone_gap(Entity target);

@@ -57,6 +57,10 @@ class ComponentManager {
         T &GetComponent(Entity entity) {
             return GetComponentArray<T>()->GetData(entity);
         }
+        template <typename T>
+        void PermuteComponents(const std::vector<Entity> &entities, const std::vector<size_t> &from) {
+            GetComponentArray<T>()->PermuteData(entities, from);
+        }
         void EntityDestroyed(Entity entity) {
             for (auto const &component : mComponentArrays) {
                 if (component) component->EntityDestroyed(entity);

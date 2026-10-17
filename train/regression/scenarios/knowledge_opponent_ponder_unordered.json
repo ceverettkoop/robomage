@@ -1,0 +1,73 @@
+{
+  "name": "knowledge_opponent_ponder_unordered",
+  "why": "docs/knowledge_store.md \u00a75 zone_move from a library range / reorder, \u00a77 sharpness: B's Mishra's Bauble shows B that A's top card is Daze (k_position); A's Ponder then looks at its top three and puts them back in an order B does not see, so B knows only that Daze is one of A's top three (a 3-card pool, each position one of its candidates, no exact position), while A knows the new order exactly (CR 701.20e, 401.4; step 1 T12 sharpness)",
+  "hand_a": [
+    "Ponder",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "battlefield_a": [
+    "Island"
+  ],
+  "library_a": [
+    "Daze",
+    "Force of Will",
+    "Lightning Bolt",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island",
+    "Island"
+  ],
+  "hand_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Mishra's Bauble"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:activate:Mishra's Bauble",
+    "B:target:Player A",
+    "A:cast:Ponder",
+    "A:desc:Force of Will",
+    "A:desc:Lightning Bolt"
+  ],
+  "max_decisions": 7,
+  "expect_dump": [
+    "^B d=\\d+ \\S+ \\S+ position opp top0 = Daze$"
+  ],
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ pool opp library top0\\+3 size=3: Daze 1-1, Force of Will 0-1, Island 0-2, Lightning Bolt 0-1$",
+    "^B d=\\d+ \\S+ \\S+ position opp top0 one of: Daze, ",
+    "^A d=\\d+ \\S+ \\S+ position self top0 = Daze$",
+    "^A d=\\d+ \\S+ \\S+ position self top1 = Lightning Bolt$",
+    "^A d=\\d+ \\S+ \\S+ position self top2 = Force of Will$"
+  ],
+  "expect_dump_final_not": [
+    "^B .* position opp top\\d+ = "
+  ]
+}

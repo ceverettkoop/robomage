@@ -35,6 +35,8 @@
 #include "machine_io.h"
 #include "search_server.h"
 #include "snapshot.h"
+#include "state_format/events.h"
+#include "state_format/stream.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -66,6 +68,7 @@ static void pregame_opening_actions(EcsSystems &sys);
 static int pregame_ask(std::vector<LegalAction> &actions);
 static void log_mull_decision(Zone::Ownership owner, bool kept, int mulls);
 static bool reenter_suspended_resolution(EcsSystems &sys);
+static void discard_conceded_game_suspensions();
 static Deck deck_with_presets(const Deck &deck, Zone::Ownership owner);
 
 std::string RESOURCE_DIR;
@@ -106,6 +109,48 @@ bool log_decisions_flag = false;
 // fast-forwarding to the next real decision. Consumes no input and records
 // nothing, so replays and search mirrors are unaffected.
 bool broadcast_steps_mode = false;
+// --trace-visibility: narrate every reveal window as it opens and closes (VISIBILITY: lines,
+// src/queries/visibility.cpp). A debugging aid; off by default, so no output changes.
+bool trace_visibility = false;
+// --trace-handles: print every viewer's handle table at each decision and narrate each handle
+// as it is issued, linked and retired (HANDLES: / HANDLE: lines, src/state_format/handles.cpp).
+// A debugging aid; off by default, so no output changes.
+bool trace_handles = false;
+// --trace-events: narrate every observation event as it is queued, per viewer (EVENT: lines,
+// src/state_format/events.cpp). A debugging aid; off by default, so no output changes.
+bool trace_events = false;
+// --closed-decklist: each seat's state-format frames carry only its own registered list
+// (docs/state_format.md decision 11). Recorded in the RMLOG header.
+bool closed_decklist = false;
+// --rmstate-dump FILE: every viewer's state-format frames are written to FILE at each decision
+// (state_format/dump.h); empty = off.
+std::string rmstate_dump_path;
+// --machine-format rmstate: the deciding seat's RMSTATE frame replaces BQUERY on stdout, and
+// everything else the engine prints goes to stderr (state_format/stream.h).
+bool machine_format_rmstate = false;
+// --rmstate-card-scripts: every CARDS frame carries each card's raw script text in its front-face
+// row's `script` column, and each token's in its row (state_format/encode.cpp); off = empty.
+bool rmstate_card_scripts = false;
+// --state-dump json: every frame --rmstate-dump writes is also rendered as a JSON line into
+// FILE.jsonl, and --rmstate-read prints its stream as JSON lines (state_format/json.h).
+bool state_dump_json = false;
+// --rmstate-read FILE: decode, re-encode and compare an RMSTATE stream instead of playing
+// (state_format/recode.h); empty = off.
+std::string rmstate_read_path;
+// --knowledge-a / --knowledge-b off|expert|expert+belief: each seat's knowledge sidecar level (an
+// rmstate::KnowledgeLevel value: 0 off, 1 expert, 2 expert+belief), which only sets the k_* and b_*
+// tables of that seat's RMSTATE frames (state_format/knowledge_feed.h); play is the same.
+int knowledge_level_a = 1;
+int knowledge_level_b = 1;
+// --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);
+// failures print ERROR: lines. Play, the RNG and BQUERY are the same with or without it.
+bool selfcheck_state = false;
+// --selfcheck-state-sample N: the sampled self-checks (permutation leak, snapshot) start at every
+// Nth decision.
+int selfcheck_state_sample = 8;
+// --selfcheck-knowledge (implies --selfcheck-state): the knowledge sidecar's k_* tables are checked
+// against the true world at every decision (state_format/selfcheck_knowledge.h).
+bool selfcheck_knowledge = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;
@@ -222,6 +267,17 @@ void concede_current_game(Zone::Ownership conceder, bool whole_match) {
     g_concede_unwind_count = 0;
 }
 
+// The conceded game's suspended state (CR 104.3a: the conceder leaves the game
+// at once, so nothing it had in flight continues): the parked query, the
+// resolution frame, every flow continuation that can park one, and an
+// unfinished pregame. The game is over; dropping them lets the decision loop
+// exit with nothing parked.
+static void discard_conceded_game_suspensions() {
+    cur_game.pending = Game::PendingDecisions();
+    cur_game.resolution = ResolutionFrame();
+    cur_game.pregame.stage = Game::PregameState::DONE;
+}
+
 // True while play_single_game's decision loop is running. Blocking fallbacks
 // gate on it: a prompt fired OUTSIDE the loop has no loop top to suspend to,
 // so it must block inline. Since the pregame gate (Batch 13) the whole pregame
@@ -235,6 +291,7 @@ bool in_main_loop() { return g_in_main_loop; }
 // get_input has returned and cleared this, so a restored state never inherits it.
 static bool g_priority_window_open = false;
 bool priority_window_open() { return g_priority_window_open; }
+void set_priority_window_open(bool open) { g_priority_window_open = open; }
 
 // The StateManager the post-restore hook recomputes through; rebound by every
 // init_ecs so the hook always targets the current game's system instance.
@@ -304,7 +361,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // the post-sideboard structs and is refreshed every game.
     deck_state_set_live(Zone::PLAYER_A, deck_a);
     deck_state_set_live(Zone::PLAYER_B, deck_b);
+    // The observation events' queues and seq counters run for the whole match (events.h).
+    ObsEventState obs_events = obs_events_for_next_game();
     cur_game = Game(seed);
+    cur_game.obs_events = std::move(obs_events);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
     if (life_a_override >= 0)
@@ -312,6 +372,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     if (life_b_override >= 0)
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
+    obs_game_start(player_a_goes_first);
 
     // Pre-game section header: mulligans, test-harness fiat setup, and the CR 103.6b
     // opening-hand actions all print under PREGAME, before the first turn header.
@@ -357,6 +418,16 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             concede_reset_unwind();
             return cur_game.winner;
         }
+        // A concession ended the game: whatever decision it was read at (a
+        // parked query, a pregame step, a priority window, a prompt below the
+        // loop that the unwind carried back here), the game's suspended state is
+        // discarded and the loop exits — no parked prompt of the conceded game
+        // is answered or resumed.
+        if (cur_game.ended && concede_unwind_pending()) {
+            discard_conceded_game_suspensions();
+            if (!search_intercept_game_end()) break;
+            continue;
+        }
         // Set by the RESOLUTION dispatch below when a resumed resolution ran to
         // completion inside its direct advance_step call: skip straight to the
         // post-resolution half of the iteration (the post-advance SBE + legal
@@ -394,6 +465,8 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                 // A RESTORE latched during the query unwound it: loop back
                 // WITHOUT storing the answer so the restored state re-emits.
                 if (search_restore_pending() || search_match_restore_pending()) continue;
+                // A concession read here: the loop top discards the parked query.
+                if (concede_unwind_pending()) continue;
                 pq.answer = choice;
                 pq.answered = true;
             }
@@ -620,8 +693,9 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
             // --broadcast-steps: surface this forced pass to the machine driver as
             // a passive BSTATE frame (no stdin read, nothing recorded). Suppressed
             // while a search is simulating (snapshot live) or unwinding a restore —
-            // those lines are hypothetical and must not reach the observer.
-            if (machine_mode && broadcast_steps_mode && !search_restore_pending()
+            // those lines are hypothetical and must not reach the observer. Not under
+            // --machine-format rmstate, whose stdout carries RMSTATE records only.
+            if (machine_mode && broadcast_steps_mode && !machine_format_rmstate && !search_restore_pending()
                 && !search_any_snapshot_live()) {
                 Query q;
                 g_priority_window_open = true;
@@ -650,11 +724,15 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
         int choice = InputLogger::instance().get_input(legal_actions);
         g_priority_window_open = false;
         search_set_loop_safe(false);
+        // A concession read here takes no action; the loop top ends the game's loop.
+        if (concede_unwind_pending()) continue;
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }
     // A real game end must never strand a suspended resolution (plan risk R7):
     // the winner is decided by state-based effects, which never run while a
     // resolution is parked, so an active frame/query here is a protocol bug.
+    // (A concession discards its game's suspended state at the loop top, so it
+    // reaches here with nothing parked too.)
     // Same for a half-finished cast or activation: pending.cast /
     // pending.activation are active only while their query is parked or their
     // run_*_flow is on the stack, never at loop exit. A live pregame stage is
@@ -680,6 +758,13 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // Leave auto-choice mode behind with the game: the between-games sideboard
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
+    obs_game_end(cur_game.winner);
+    // A single game is a whole match (play_bo3_match reports a bo3 match's end).
+    if (match_game_number < 0) {
+        obs_match_end(
+            cur_game.winner, cur_game.winner == Zone::PLAYER_A ? 1 : 0, cur_game.winner == Zone::PLAYER_B ? 1 : 0);
+        rmstate_match_over();
+    }
     return cur_game.winner;
 }
 
@@ -1453,14 +1538,15 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
     }
 
-    match_game_number = -1;
-    ctx.active = false;
     // A conceded match is won by the conceder's opponent regardless of the game
     // tally (which can be level, or even in the conceder's favour).
-    if (g_match_conceded) {
-        return opponent_of(g_match_conceder);
-    }
-    int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
+    const int result = g_match_conceded          ? static_cast<int>(opponent_of(g_match_conceder))
+                       : ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A
+                                                 : Zone::PLAYER_B;
+    obs_match_end(result, ctx.wins_a, ctx.wins_b);
+    rmstate_match_over();
+    match_game_number = -1;
+    ctx.active = false;
     return result;
 }
 

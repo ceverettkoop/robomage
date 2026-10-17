@@ -15,6 +15,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../stable_rng.h"
+#include "../state_format/events.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -159,6 +160,9 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     // Saint Katherine's shuffled pile), so the known-top record keeps them unknown.
     const LibraryTopView top_view =
         ab.def->rest_random_order ? LibraryTopView::NOBODY : LibraryTopView::OWNER;
+    // Cards put into a library together land in an order only their owner chose (or, in a random
+    // order, nobody saw).
+    ObsLibraryBatch batch(owner, ab.def->rest_random_order ? Zone::UNKNOWN : owner);
     size_t moved = 0;
     for (auto entity : to_move) {
         // The shared uncast battlefield entry first: an Aura picks what it enchants, or stays
@@ -185,6 +189,7 @@ HandlerResult change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (ab.def->remember_changed) cur_game.resolution.memory.remembered.push_back(ObjectRef::of(entity));
         moved++;
     }
+    batch.close();
     game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
 
     // Shuffle$ True (Emrakul's death trigger: "shuffle their graveyard into their library"): after

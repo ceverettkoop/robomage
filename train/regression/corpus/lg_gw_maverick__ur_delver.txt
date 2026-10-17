@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Volcanic Island
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -81,14 +67,6 @@
   Player A looks at the top 5 card(s) of their library.
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(6): Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Badgermole Cub
@@ -100,12 +78,6 @@
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self GY: Once Upon a Time
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Play Forest
@@ -123,15 +95,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 6 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -144,16 +107,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 7 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Mishra's Bauble (NEW)
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -165,17 +118,6 @@
   Player B played Polluted Delta
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -185,19 +127,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Forest
-  Stack: Mishra's Bauble (ability, self)
-  Pending: Mishra's Bauble (self)
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -208,19 +137,6 @@
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Polluted Delta (NEW)
-  Opp BF:   Forest
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -233,19 +149,6 @@
   Searching Player B's library:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Opp BF:   Forest
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -263,20 +166,6 @@
   Surveil: looking at Lightning Bolt
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Thundering Falls (T,NEW,res 1)
-  Opp BF:   Forest
-  Stack: Thundering Falls (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Thundering Falls (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Lightning Bolt on top of library  [#0]
    1: Put Lightning Bolt into graveyard
@@ -297,16 +186,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Forest
-  Opp BF:   Thundering Falls (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -317,17 +196,6 @@
   Player A played Savannah
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Forest | Savannah (NEW)
-  Opp BF:   Thundering Falls (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1 | opp drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Badgermole Cub  [#0]
@@ -342,18 +210,6 @@
   Choose target for Badgermole Cub:
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Forest (T) | Savannah (T,NEW)
-  Opp BF:   Thundering Falls (T)
-  Pending: Badgermole Cub (self)
-  Self GY: Once Upon a Time
-  Opp GY:  Polluted Delta, Mishra's Bauble
-  Opp revealed: Polluted Delta, Thundering Falls, Mishra's Bauble
-  This turn: self spells=1 drawn=1 colors=G | opp drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Forest
    1: Savannah
@@ -370,16 +226,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Volcanic Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Thundering Falls
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
@@ -387,19 +233,6 @@
   >> B/B: 1 (Cast Into the Flood Maw)
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Volcanic Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Thundering Falls
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Into the Flood Maw (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Pending: Into the Flood Maw (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  Extras: not_priority_window
   Actions:
    0: Decline: promise a tapped Fish to your opponent  [#0]
    1: Accept: promise a tapped Fish to your opponent  [#1]
@@ -408,19 +241,6 @@
   Choose target for Into the Flood Maw:
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 4)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Volcanic Island | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Thundering Falls
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Into the Flood Maw (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Pending: Into the Flood Maw (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  Extras: not_priority_window
   Actions:
    0: Badgermole Cub
    1: Forest
@@ -435,19 +255,6 @@
   Player B draws Cori-Steel Cutter
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Scalding Tarn, Volcanic Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -457,19 +264,6 @@
   Player B played Scalding Tarn
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Scalding Tarn (NEW) | Thundering Falls (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -482,21 +276,6 @@
   Searching Player B's library:
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Scalding Tarn (ability, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -508,19 +287,6 @@
   Player B puts Volcanic Island to the battlefield
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 51
-  Self BF:  Thundering Falls (T) | Volcanic Island (NEW)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -538,16 +304,6 @@
   PB: Cori-Steel Cutter, Cori-Steel Cutter, Dragon's Rage Channeler, Lightning Bolt, Ponder, Volcanic Island
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time  [#0]
@@ -561,20 +317,6 @@
   Player A looks at the top 5 card(s) of their library.
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(5): Badgermole Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Once Upon a Time (spell, self)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Pending: Once Upon a Time (self)
-  Self GY: Once Upon a Time
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
@@ -588,17 +330,6 @@
   Player A draws Green Sun's Zenith
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -608,18 +339,6 @@
   Player A played Wasteland
 
 --- Decision 26 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -628,20 +347,6 @@
   Choose target for Wasteland:
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 5 | lib 48
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (NEW)
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Thundering Falls
    1: Volcanic Island
@@ -661,17 +366,6 @@
   PB: Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Ponder, Volcanic Island
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Lightning Bolt, Ponder, Volcanic Island | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -680,20 +374,6 @@
   Choose target for Lightning Bolt:
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Ponder, Volcanic Island | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Lightning Bolt (spell, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Lightning Bolt (self)
-  Self GY: Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: not_priority_window
   Actions:
    0: Player A (20 life)
    1: Player B (18 life)
@@ -710,21 +390,6 @@
   Surveil: looking at Volcanic Island
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Ponder, Volcanic Island | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Put Volcanic Island on top of library  [#0]
    1: Put Volcanic Island into graveyard
@@ -735,18 +400,6 @@
   Player B draws Volcanic Island
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Ponder, Volcanic Island, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -756,19 +409,6 @@
   Player B played Volcanic Island
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Ponder, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Volcanic Island (NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -782,21 +422,6 @@
   Surveil: looking at Murktide Regent
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 2) | Volcanic Island (T,NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Murktide Regent on top of library  [#0]
    1: Put Murktide Regent into graveyard
@@ -807,22 +432,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 2) | Volcanic Island (T,NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Ponder (spell, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known top: Murktide Regent, ?, ?, ?, ?
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Murktide Regent  [#2]
    1: Mishra's Bauble  [#2]
@@ -832,44 +441,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 35 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 2) | Volcanic Island (T,NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Ponder (spell, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known top: Mishra's Bauble, Murktide Regent, ?, ?, ?
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Murktide Regent  [#1]
    1: Volcanic Island  [#1]
   >> B/B: 1 (Volcanic Island)
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(3): Cori-Steel Cutter, Cori-Steel Cutter, Volcanic Island | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [1/1] (res 2) | Volcanic Island (T,NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Stack: Ponder (spell, self)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Pending: Ponder (self)
-  Self GY: Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known top: Murktide Regent, Volcanic Island, Mishra's Bauble, ?, ?
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -883,20 +460,6 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Cori-Steel Cutter, Murktide Regent, Volcanic Island | lib 46
-  Opp:   17 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK,res 2) | Volcanic Island (T,NEW) | Volcanic Island (T)
-  Opp BF:   Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@48 (opponent, leaves bf, waiting)
-  Self GY: Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known top: Volcanic Island, Mishra's Bauble, ?, ?, ?
-  Known opp hand: Badgermole Cub, Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=2 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -913,16 +476,6 @@
   PB: Cori-Steel Cutter, Cori-Steel Cutter, Murktide Regent, Volcanic Island
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(6): Badgermole Cub, Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Volcanic Island (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -931,19 +484,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 39 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  14 life | mana: empty | hand(5): Badgermole Cub, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Volcanic Island (T) | Volcanic Island (T)
-  Stack: Swords to Plowshares (spell, self)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Pending: Swords to Plowshares (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  Extras: not_priority_window
   Actions:
    0: Dragon's Rage Channeler
    1: Forest
@@ -959,19 +499,6 @@
   Player A draws Gaea's Cradle
 
 --- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(6): Badgermole Cub, Gaea's Cradle, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   21 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah (T)
-  Opp BF:   Volcanic Island (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Gaea's Cradle
@@ -982,19 +509,6 @@
   Player A played Gaea's Cradle
 
 --- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(5): Badgermole Cub, Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   21 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Gaea's Cradle (NEW) | Savannah (T)
-  Opp BF:   Volcanic Island (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@0 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=3
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Badgermole Cub  [#0]
@@ -1008,20 +522,6 @@
   Choose target for Badgermole Cub:
 
 --- Decision 42 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(4): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   21 life | mana: empty | hand count: 4 | lib 46
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Gaea's Cradle (T,NEW) | Savannah (T)
-  Opp BF:   Volcanic Island (T) | Volcanic Island (T)
-  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WG | opp life_gained=3
-  Extras: self_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Forest
    1: Gaea's Cradle
@@ -1040,20 +540,6 @@
   PB: Cori-Steel Cutter, Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  21 life | mana: empty | hand(5): Cori-Steel Cutter, Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Volcanic Island | Volcanic Island
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Self GY: Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1069,20 +555,6 @@
   Cori-Steel Cutter enters the battlefield
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  21 life | mana: empty | hand(4): Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island | lib 45
-  Opp:   14 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T)
-  Delayed: Badgermole Cub -> Forest@49 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Self GY: Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Mishra's Bauble, ?, ?, ?, ?
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Gaea's Cradle, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1098,18 +570,6 @@
   PB: Cori-Steel Cutter, Murktide Regent, Volcanic Island, Volcanic Island
 
 --- Decision 45 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(5): Green Sun's Zenith, Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1122,21 +582,6 @@
   Choose X value (0-3):
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Stack: Green Sun's Zenith (spell, self)
-  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -1153,21 +598,6 @@
   Searching Player A's library:
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Badgermole Cub [2/2] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Stack: Green Sun's Zenith (spell, self) [X=3]
-  Delayed: Badgermole Cub -> Forest@1 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Fail to find
    1: Badgermole Cub
@@ -1190,20 +620,6 @@
   Choose target for Endurance:
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Endurance (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Ponder, Lightning Bolt, Thundering Falls, Scalding Tarn, Into the Flood Maw, Polluted Delta, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: No target
    1: Player B (21 life)
@@ -1223,17 +639,6 @@
   Player B moves 7 card(s) to the bottom of their library
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(4): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1242,18 +647,6 @@
   Player A played Wasteland
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  14 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah | Wasteland (NEW)
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Thalia, Guardian of Thraben  [#0]
@@ -1268,18 +661,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  14 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T,NEW)
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WG
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Confirm attackers
@@ -1290,18 +671,6 @@
     [attacking] Badgermole Cub [2/2] -> Player B
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  14 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   21 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (SICK,NEW,res 1) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T,NEW)
-  Opp BF:   Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 colors=WG
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1319,17 +688,6 @@
   PB: Cori-Steel Cutter, Mishra's Bauble, Murktide Regent, Volcanic Island
 
 --- Decision 53 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Mishra's Bauble, Murktide Regent, Volcanic Island | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1344,17 +702,6 @@
   Cori-Steel Cutter enters the battlefield
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(3): Mishra's Bauble, Murktide Regent, Volcanic Island | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -1363,18 +710,6 @@
   Player B played Volcanic Island
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Mishra's Bauble, Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Mishra's Bauble  [#0]
@@ -1385,20 +720,6 @@
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Stack: Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Cori-Steel Cutter (Token)  [#0]
    1: Cori-Steel Cutter (Token)  [#1]
@@ -1411,20 +732,6 @@
   Resolving ability (category: Attach)
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter | Cori-Steel Cutter (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [1/1] (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Stack: Cori-Steel Cutter (ability, self) -> Cori-Steel Cutter (ability, self) -> Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1438,20 +745,6 @@
   Resolving ability (category: Attach)
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [1/1] (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Stack: Cori-Steel Cutter (ability, self) -> Mishra's Bauble (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -1463,18 +756,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Mishra's Bauble (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -1483,20 +764,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Mishra's Bauble (NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Stack: Mishra's Bauble (ability, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Mishra's Bauble (self)
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player A (14 life)
    1: Player B (19 life)
@@ -1512,181 +779,21 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
-  Self GY: Mishra's Bauble
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known opp top: Gaddock Teeg, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
    2: Confirm attackers
-  >> B/B: 0 (Monk token [2/2])
---- Narrative ---
-  Monk token attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Monk token [2/2] -> Player A
-
---- Decision 62 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
-  Self GY: Mishra's Bauble
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known opp top: Gaddock Teeg, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Monk token [2/2]
-   1: Confirm attackers
-  >> B/B: 0 (Monk token [2/2])
---- Narrative ---
-  Monk token attacking Player A.
-  --- Declare Attackers (Player B) ---
-    [attacking] Monk token [2/2] -> Player A
-    [attacking] Monk token [2/2] -> Player A
-
---- Decision 63 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(1): Murktide Regent | lib 51
-  Opp:   14 life | mana: empty | hand count: 2 | lib 47
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting) | Mishra's Bauble (self, upkeep, waiting)
-  Self GY: Mishra's Bauble
-  Opp GY:  Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known opp top: Gaddock Teeg, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=2 noncreature=2 drawn=1 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> B/B: 0 (Confirm attackers)
+  >> B/B: 2 (Confirm attackers)
 --- Narrative ---
   Attackers declared:
-    Monk token -> Player A
-    Monk token -> Player A
-  --- Declare Blockers (Player A) ---
-  Attackers:
-    0: Monk token [2/2]
-    1: Monk token [2/2]
-  Your creatures:
-
---- Decision 64 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  14 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   19 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Endurance [3/4]
-   1: Thalia, Guardian of Thraben [2/1]
-   2: Confirm blockers
-  >> A/A: 0 (Endurance [3/4])
---- Narrative ---
-  Select attacker for Endurance to block:
-
---- Decision 65 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  14 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   19 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
-  Pending: Endurance (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Monk token [2/2]
-   1: Monk token [2/2]
-  >> A/A: 0 (Monk token [2/2])
---- Narrative ---
-  Endurance blocking Monk token.
-  --- Declare Blockers (Player A) ---
-  Attackers:
-    0: Monk token [2/2]
-    1: Monk token [2/2]
-  Your creatures:
-    (assigned) Endurance [3/4] blocking Monk token
-
---- Decision 66 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  14 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   19 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (BLK->Monk,SICK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle (T) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (NEW,res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,BLOCKED,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: opp spells=2 noncreature=2 drawn=1 colors=R
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Thalia, Guardian of Thraben [2/1]
-   1: Confirm blockers
-  >> A/A: 1 (Confirm blockers)
---- Narrative ---
-  Blockers declared:
-    Endurance blocking Monk token
-  --- Combat Damage ---
-    Endurance deals 3 damage to Monk token
-    Monk token deals 2 damage to Endurance
-    Monk token deals 2 damage to Player A (now at 12 life)
-  --- End Combat Damage ---
-  Monk token is destroyed (lethal damage)
-  Cori-Steel Cutter becomes unattached
-  Monk (token) is put into the graveyard and ceases to exist.
+    (none)
   -------- TURN 11 (Player A) --------
   Delayed trigger fires.
 --- Turn 11 (Player A) ---
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben
   PB: Murktide Regent
 
---- Decision 67 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   19 life | mana: empty | hand count: 1 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Stack: Mishra's Bauble (ability, opponent)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting) | Mishra's Bauble (opponent, upkeep, on stack #0)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
+--- Decision 62 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1695,19 +802,7 @@
   Resolving ability (category: Draw, amount: 1)
   Player B draws Brainstorm
 
---- Decision 68 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 47
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: opp drawn=1
+--- Decision 63 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1715,37 +810,13 @@
 --- Narrative ---
   Player A draws Gaddock Teeg
 
---- Decision 69 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  12 life | mana: empty | hand(3): Gaddock Teeg, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self drawn=1 | opp drawn=1
+--- Decision 64 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
---- Decision 70 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(3): Gaddock Teeg, Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self drawn=1 | opp drawn=1
+--- Decision 65 ---
   Actions:
    0: Pass priority
    1: Cast Gaddock Teeg  [#0]
@@ -1759,20 +830,7 @@
   Player A activated Forest for 1(G)
   Player A casts Gaddock Teeg
 
---- Decision 71 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: 1G | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Stack: Gaddock Teeg (spell, self)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
+--- Decision 66 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1780,22 +838,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 72 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: 1G | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Stack: Wasteland (ability, self) -> Gaddock Teeg (spell, self)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
-  Extras: not_priority_window
+--- Decision 67 ---
   Actions:
    0: Volcanic Island
    1: Volcanic Island
@@ -1814,20 +857,7 @@
   Gaddock Teeg enters the battlefield
   --- Declare Attackers (Player A) ---
 
---- Decision 73 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 68 ---
   Actions:
    0: Badgermole Cub [2/2]
    1: Endurance [3/4]
@@ -1839,20 +869,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 74 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 69 ---
   Actions:
    0: Endurance [3/4]
    1: Thalia, Guardian of Thraben [2/1]
@@ -1864,20 +881,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Endurance [3/4] -> Player B
 
---- Decision 75 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 70 ---
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -1889,20 +893,7 @@
     [attacking] Endurance [3/4] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 76 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   19 life | mana: empty | hand count: 2 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK,NEW) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG | opp drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 71 ---
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1911,7 +902,22 @@
     Badgermole Cub -> Player B
     Endurance -> Player B
     Thalia, Guardian of Thraben -> Player B
-  No creatures eligible to block.
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Badgermole Cub [2/2]
+    1: Endurance [3/4]
+    2: Thalia, Guardian of Thraben [2/1]
+  Your creatures:
+
+--- Decision 72 ---
+  Actions:
+   0: Monk token [2/2]
+   1: Monk token [2/2]
+   2: Confirm blockers
+  >> B/B: 2 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
   --- First Strike Combat Damage ---
     Thalia, Guardian of Thraben deals 2 damage to Player B (now at 17 life)
   --- End First Strike Combat Damage ---
@@ -1924,18 +930,7 @@
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben
   PB: Brainstorm, Murktide Regent
 
---- Decision 77 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  12 life | mana: empty | hand(2): Brainstorm, Murktide Regent | lib 50
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island | Volcanic Island | Volcanic Island | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
+--- Decision 73 ---
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -1944,7 +939,18 @@
   Player B activated Volcanic Island for 1(U)
   Player B activated Volcanic Island for 1(U)
   Player B casts Brainstorm
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 74 ---
+  Actions:
+   0: Monk token (ProwessBonus)  [#0]
+   1: Monk token (ProwessBonus)  [#1]
+  >> B/B: 0 (Monk token (ProwessBonus))
+--- Narrative ---
   Monk token triggered
+  Monk token triggered
+  Resolving ability (category: ProwessBonus)
+  Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: ProwessBonus)
   Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: Draw, amount: 3)
@@ -1954,22 +960,7 @@
   Resolving ability (category: ChangeZone)
   Player B chooses a card from Player B hand:
 
---- Decision 78 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  12 life | mana: empty | hand(4): Murktide Regent, Unholy Heat, Wasteland, Wasteland | lib 47
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Brainstorm (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Brainstorm (self)
-  Self GY: Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
+--- Decision 75 ---
   Actions:
    0: Murktide Regent
    1: Unholy Heat
@@ -1980,23 +971,7 @@
   Player B puts Wasteland to top of library
   Player B chooses a card from Player B hand:
 
---- Decision 79 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 12)
-  Self:  12 life | mana: empty | hand(3): Murktide Regent, Unholy Heat, Wasteland | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Brainstorm (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Brainstorm (self)
-  Self GY: Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=3 colors=U
-  Extras: not_priority_window
+--- Decision 76 ---
   Actions:
    0: Murktide Regent
    1: Unholy Heat
@@ -2006,20 +981,7 @@
   Player B puts Wasteland to top of library
   Player B draws Wasteland
 
---- Decision 80 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(3): Murktide Regent, Unholy Heat, Wasteland | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
+--- Decision 77 ---
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2027,21 +989,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 81 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(2): Murktide Regent, Unholy Heat | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: self_lands_played=1
+--- Decision 78 ---
   Actions:
    0: Pass priority
    1: Cast Unholy Heat  [#0]
@@ -2052,23 +1000,7 @@
 --- Narrative ---
   Choose target for Unholy Heat:
 
---- Decision 82 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island | Wasteland (NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Unholy Heat (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Unholy Heat (self)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: self_lands_played=1, not_priority_window
+--- Decision 79 ---
   Actions:
    0: Badgermole Cub
    1: Endurance
@@ -2076,87 +1008,53 @@
    3: Gaddock Teeg
    4: Thalia, Guardian of Thraben
    5: Monk token
+   6: Monk token
   >> B/B: 1 (Endurance)
 --- Narrative ---
   Targeting choice 1
   Player B activated Volcanic Island for 1(R)
   Player B activated Wasteland for 1(C)
   Player B casts Unholy Heat targeting Endurance
-  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+  Player B orders 4 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 83 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window
+--- Decision 80 ---
   Actions:
    0: Cori-Steel Cutter (Token)  [#0]
    1: Cori-Steel Cutter (Token)  [#1]
+   2: Monk token (ProwessBonus)  [#2]
+   3: Monk token (ProwessBonus)  [#3]
+  >> B/B: 0 (Cori-Steel Cutter (Token))
+--- Narrative ---
+  Cori-Steel Cutter triggered
+  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 81 ---
+  Actions:
+   0: Cori-Steel Cutter (Token)  [#0]
+   1: Monk token (ProwessBonus)  [#1]
    2: Monk token (ProwessBonus)  [#2]
   >> B/B: 0 (Cori-Steel Cutter (Token))
 --- Narrative ---
   Cori-Steel Cutter triggered
   Player B orders 2 simultaneous triggers (pick which goes on the stack next).
 
---- Decision 84 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] [Trample, Haste] (eq:Cori-Steel Cutter) (res 1)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window
+--- Decision 82 ---
   Actions:
-   0: Cori-Steel Cutter (Token)  [#0]
+   0: Monk token (ProwessBonus)  [#0]
    1: Monk token (ProwessBonus)  [#1]
-  >> B/B: 0 (Cori-Steel Cutter (Token))
+  >> B/B: 0 (Monk token (ProwessBonus))
 --- Narrative ---
-  Cori-Steel Cutter triggered
   Monk token triggered
+  Monk token triggered
+  Resolving ability (category: ProwessBonus)
+  Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: ProwessBonus)
   Prowess: creature gets +1/+1 until end of turn.
   Resolving ability (category: Token)
   Token created: 1/1 Monk
   Resolving ability (category: Attach)
 
---- Decision 85 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [4/4] [Trample, Haste] (eq:Cori-Steel Cutter) (res 2) | Monk [1/1] (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Cori-Steel Cutter (ability, self) -> Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window
+--- Decision 83 ---
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -2169,23 +1067,7 @@
   Token created: 1/1 Monk
   Resolving ability (category: Attach)
 
---- Decision 86 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [4/4] [Trample, Haste] (eq:Cori-Steel Cutter) (res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [1/1] (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Cori-Steel Cutter (ability, self) -> Unholy Heat (spell, self) -> Endurance (opponent, slot 49)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window
+--- Decision 84 ---
   Actions:
    0: Decline: attach Cori-Steel Cutter to Monk token  [#0]
    1: Accept: attach Cori-Steel Cutter to Monk token  [#1]
@@ -2198,21 +1080,20 @@
   Unholy Heat deals 2 damage to Endurance
   --- Declare Attackers (Player B) ---
 
---- Decision 87 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 85 ---
+  Actions:
+   0: Monk token [3/3]
+   1: Monk token [3/3]
+   2: Monk token [2/2]
+   3: Monk token [2/2]
+   4: Confirm attackers
+  >> B/B: 0 (Monk token [3/3])
+--- Narrative ---
+  Monk token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Monk token [3/3] -> Player A
+
+--- Decision 86 ---
   Actions:
    0: Monk token [3/3]
    1: Monk token [2/2]
@@ -2223,22 +1104,9 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [3/3] -> Player A
+    [attacking] Monk token [3/3] -> Player A
 
---- Decision 88 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 87 ---
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -2248,23 +1116,10 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [3/3] -> Player A
+    [attacking] Monk token [3/3] -> Player A
     [attacking] Monk token [2/2] -> Player A
 
---- Decision 89 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 88 ---
   Actions:
    0: Monk token [2/2]
    1: Confirm attackers
@@ -2273,24 +1128,11 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [3/3] -> Player A
+    [attacking] Monk token [3/3] -> Player A
     [attacking] Monk token [2/2] -> Player A
     [attacking] Monk token [2/2] -> Player A
 
---- Decision 90 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  12 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   12 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK,SICK,NEW)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
+--- Decision 89 ---
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2299,27 +1141,16 @@
     Monk token -> Player A
     Monk token -> Player A
     Monk token -> Player A
+    Monk token -> Player A
   --- Declare Blockers (Player A) ---
   Attackers:
     0: Monk token [3/3]
-    1: Monk token [2/2]
+    1: Monk token [3/3]
     2: Monk token [2/2]
+    3: Monk token [2/2]
   Your creatures:
 
---- Decision 91 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  12 life | mana: empty | hand(2): Knight of the Reliquary, Thalia, Guardian of Thraben | lib 46
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4, 2dmg] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (SICK) | Gaea's Cradle | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) (res 1) | Cori-Steel Cutter (->Monk) (res 1) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T,NEW) | Monk [3/3] (T,ATK,res 2) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,SICK,NEW)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=4 colors=UR
-  Extras: opp_lands_played=1, not_priority_window, mandatory_choice=Declare Blk
+--- Decision 90 ---
   Actions:
    0: Gaddock Teeg [2/2]
    1: Confirm blockers
@@ -2328,9 +1159,10 @@
   Blockers declared:
     (none)
   --- Combat Damage ---
-    Monk token deals 3 damage to Player A (now at 9 life)
-    Monk token deals 2 damage to Player A (now at 7 life)
-    Monk token deals 2 damage to Player A (now at 5 life)
+    Monk token deals 3 damage to Player A (now at 11 life)
+    Monk token deals 3 damage to Player A (now at 8 life)
+    Monk token deals 2 damage to Player A (now at 6 life)
+    Monk token deals 2 damage to Player A (now at 4 life)
   --- End Combat Damage ---
   -------- TURN 13 (Player A) --------
   Player A draws Thalia, Guardian of Thraben
@@ -2338,19 +1170,7 @@
   PA: Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Murktide Regent
 
---- Decision 92 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  5 life | mana: empty | hand(3): Knight of the Reliquary, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Savannah | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
+--- Decision 91 ---
   Actions:
    0: Pass priority
    1: Cast Knight of the Reliquary  [#0]
@@ -2366,20 +1186,7 @@
   Knight of the Reliquary gains (always)
   --- Declare Attackers (Player A) ---
 
---- Decision 93 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG
-  Extras: not_priority_window, mandatory_choice=Declare Atk
+--- Decision 92 ---
   Actions:
    0: Badgermole Cub [2/2]
    1: Endurance [3/4]
@@ -2392,20 +1199,7 @@
   --- Declare Attackers (Player A) ---
     [attacking] Badgermole Cub [2/2] -> Player B
 
---- Decision 94 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG
-  Extras: not_priority_window, mandatory_choice=Declare Atk
+--- Decision 93 ---
   Actions:
    0: Endurance [3/4]
    1: Gaddock Teeg [2/2]
@@ -2418,20 +1212,7 @@
     [attacking] Badgermole Cub [2/2] -> Player B
     [attacking] Endurance [3/4] -> Player B
 
---- Decision 95 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG
-  Extras: not_priority_window, mandatory_choice=Declare Atk
+--- Decision 94 ---
   Actions:
    0: Gaddock Teeg [2/2]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2444,20 +1225,7 @@
     [attacking] Endurance [3/4] -> Player B
     [attacking] Gaddock Teeg [2/2] -> Player B
 
---- Decision 96 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (ATK) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG
-  Extras: not_priority_window, mandatory_choice=Declare Atk
+--- Decision 95 ---
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -2470,20 +1238,7 @@
     [attacking] Gaddock Teeg [2/2] -> Player B
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
---- Decision 97 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   12 life | mana: empty | hand count: 1 | lib 48
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (ATK) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK,NEW) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,SICK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp exile:  Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self spells=1 drawn=1 colors=WG
-  Extras: not_priority_window, mandatory_choice=Declare Atk
+--- Decision 96 ---
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2507,19 +1262,7 @@
   PA: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
   PB: Murktide Regent
 
---- Decision 98 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 14)
-  Self:  3 life | mana: empty | hand(1): Murktide Regent | lib 48
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Known top: Wasteland, ?, ?, ?, ?
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
+--- Decision 97 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2527,37 +1270,13 @@
 --- Narrative ---
   Player B draws Wasteland
 
---- Decision 99 ---
-  Priority: Player B (active)
-  Step: Draw (turn 14)
-  Self:  3 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self drawn=1
+--- Decision 98 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
---- Decision 100 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(2): Murktide Regent, Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self drawn=1
+--- Decision 99 ---
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2569,22 +1288,7 @@
 --- Narrative ---
   Choose how many cards to exile via Delve (3-4):
 
---- Decision 101 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(1): Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Murktide Regent (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Murktide Regent (self)
-  Self GY: Unholy Heat, Brainstorm, Volcanic Island, Mishra's Bauble
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self drawn=1
-  Extras: not_priority_window
+--- Decision 100 ---
   Actions:
    0: Exile 3 cards from graveyard (Delve)  [#3]
    1: Exile 4 cards from graveyard (Delve)  [#4]
@@ -2599,19 +1303,7 @@
   Player B exiles Volcanic Island via Delve.
   Player B casts Murktide Regent
 
---- Decision 102 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(1): Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Murktide Regent (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
+--- Decision 101 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2619,21 +1311,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 103 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(1): Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Wasteland (ability, self) -> Murktide Regent (spell, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Opp GY:  Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: not_priority_window
+--- Decision 102 ---
   Actions:
    0: Gaea's Cradle
    1: Savannah
@@ -2647,21 +1325,7 @@
   Player B sacrifices Wasteland
   Player B's Wasteland ability targeting Gaea's Cradle is on the stack
 
---- Decision 104 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 14)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   3 life | mana: empty | hand count: 1 | lib 47
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Gaea's Cradle | Knight of the Reliquary [4/4] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Stack: Wasteland (ability, opponent) -> Gaea's Cradle (self, slot 4) -> Murktide Regent (spell, opponent)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_revolt, opp_passed
+--- Decision 103 ---
   Actions:
    0: Pass priority
    1: Tap Gaea's Cradle for (G)
@@ -2672,20 +1336,7 @@
   Murktide Regent enters the battlefield
   Murktide Regent enters with 2 +1/+1 counter(s) (5/5).
 
---- Decision 105 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(1): Wasteland | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_revolt, opp_revolt
+--- Decision 104 ---
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -2693,20 +1344,7 @@
 --- Narrative ---
   Player B played Wasteland
 
---- Decision 106 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland
-  Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt
+--- Decision 105 ---
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2714,22 +1352,7 @@
 --- Narrative ---
   Choose target for Wasteland:
 
---- Decision 107 ---
-  Priority: Player B (active)
-  Step: First Main (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Wasteland (NEW) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [5/5] (SICK) | Savannah (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Wasteland
-  Opp GY:  Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
+--- Decision 106 ---
   Actions:
    0: Savannah
    1: Volcanic Island
@@ -2745,20 +1368,20 @@
   Savannah is destroyed
   --- Declare Attackers (Player B) ---
 
+--- Decision 107 ---
+  Actions:
+   0: Monk token [1/1]
+   1: Monk token [1/1]
+   2: Monk token [2/2]
+   3: Monk token [2/2]
+   4: Confirm attackers
+  >> B/B: 0 (Monk token [1/1])
+--- Narrative ---
+  Monk token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Monk token [1/1] -> Player A
+
 --- Decision 108 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [1/1]
    1: Monk token [2/2]
@@ -2769,21 +1392,9 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [1/1] -> Player A
+    [attacking] Monk token [1/1] -> Player A
 
 --- Decision 109 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Monk token [2/2]
@@ -2793,22 +1404,10 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [1/1] -> Player A
+    [attacking] Monk token [1/1] -> Player A
     [attacking] Monk token [2/2] -> Player A
 
 --- Decision 110 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Monk token [2/2]
    1: Confirm attackers
@@ -2817,23 +1416,11 @@
   Monk token attacking Player A.
   --- Declare Attackers (Player B) ---
     [attacking] Monk token [1/1] -> Player A
+    [attacking] Monk token [1/1] -> Player A
     [attacking] Monk token [2/2] -> Player A
     [attacking] Monk token [2/2] -> Player A
 
 --- Decision 111 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 14)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   5 life | mana: empty | hand count: 2 | lib 45
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (ATK)
-  Opp BF:   Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Delayed: Badgermole Cub -> Forest@50 (opponent, leaves bf, waiting) | Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: self spells=1 drawn=1 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2842,27 +1429,16 @@
     Monk token -> Player A
     Monk token -> Player A
     Monk token -> Player A
+    Monk token -> Player A
   --- Declare Blockers (Player A) ---
   Attackers:
     0: Monk token [1/1]
-    1: Monk token [2/2]
+    1: Monk token [1/1]
     2: Monk token [2/2]
+    3: Monk token [2/2]
   Your creatures:
 
 --- Decision 112 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Knight of the Reliquary [6/6]
    1: Confirm blockers
@@ -2871,49 +1447,24 @@
   Select attacker for Knight of the Reliquary to block:
 
 --- Decision 113 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Monk token [1/1]
-   1: Monk token [2/2]
+   1: Monk token [1/1]
    2: Monk token [2/2]
-  >> A/A: 1 (Monk token [2/2])
+   3: Monk token [2/2]
+  >> A/A: 2 (Monk token [2/2])
 --- Narrative ---
   Knight of the Reliquary blocking Monk token.
   --- Declare Blockers (Player A) ---
   Attackers:
     0: Monk token [1/1]
-    1: Monk token [2/2]
+    1: Monk token [1/1]
     2: Monk token [2/2]
+    3: Monk token [2/2]
   Your creatures:
     (assigned) Knight of the Reliquary [6/6] blocking Monk token
 
 --- Decision 114 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 14)
-  Self:  5 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (T) | Endurance [3/4] [Reach, Flash] (T) | Forest [2/2] [+1/+1:2] [Haste] (T,DELAYED) | Gaddock Teeg [2/2] (T) | Knight of the Reliquary [6/6] (BLK->Monk,SICK) | Thalia, Guardian of Thraben [2/1] [First Strike] (T)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter (->Monk) | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK,NEW) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T,ATK) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK,BLOCKED) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T,ATK)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)
@@ -2921,371 +1472,13 @@
   Blockers declared:
     Knight of the Reliquary blocking Monk token
   --- Combat Damage ---
-    Monk token deals 1 damage to Player A (now at 4 life)
+    Monk token deals 1 damage to Player A (now at 3 life)
+    Monk token deals 1 damage to Player A (now at 2 life)
     Knight of the Reliquary deals 6 damage to Monk token
     Monk token deals 2 damage to Knight of the Reliquary
-    Monk token deals 2 damage to Player A (now at 2 life)
+    Monk token deals 2 damage to Player A (now at 0 life)
   --- End Combat Damage ---
-  Monk token is destroyed (lethal damage)
-  Cori-Steel Cutter becomes unattached
-  Monk (token) is put into the graveyard and ceases to exist.
-  -------- TURN 15 (Player A) --------
---- Turn 15 (Player A) ---
-  PA: Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
-  PB: (empty)
+  Player A has 0 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
 
---- Decision 115 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 15)
-  Self:  2 life | mana: empty | hand(2): Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 45
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  Actions:
-   0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
---- Narrative ---
-  Player A draws Green Sun's Zenith
-
---- Decision 116 ---
-  Priority: Player A (active)
-  Step: Draw (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
-  >> A/A: 0 (Pass priority)
-
---- Decision 117 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Actions:
-   0: Pass priority
-   1: Activate Knight of the Reliquary (ChangeZone)  [#0]
-  >> A/A: 1 (Activate Knight of the Reliquary (ChangeZone))
-
---- Decision 118 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest [2/2] [+1/+1:2] [Haste] (DELAYED) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Delayed: Badgermole Cub -> Forest@2 (self, leaves bf, waiting) | Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Knight of the Reliquary (self)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: not_priority_window
-  Actions:
-   0: Sacrifice Forest
-  >> A/A: 0 (Sacrifice Forest)
---- Narrative ---
-  Player A sacrifices Forest
-  Player A's Knight of the Reliquary ability is on the stack
-  Player A orders 2 simultaneous triggers (pick which goes on the stack next).
-
---- Decision 119 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Gaddock Teeg [2/2] | Knight of the Reliquary [7/7] (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Forest (self)
-  Self GY: Forest, Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window
-  Actions:
-   0: Delayed trigger  [#0]
-   1: Delayed trigger  [#1]
-  >> A/A: 0 (Delayed trigger)
---- Narrative ---
-  Delayed trigger fires.
-  Delayed trigger fires.
-  Resolving ability (category: ChangeZone)
-  Forest is moved to the battlefield
-  Forest enters tapped.
-  Resolving ability (category: ChangeZone)
-  Resolving ability (category: ChangeZone)
-  Searching Player A's library:
-
---- Decision 120 ---
-  Priority: Player A (active)
-  Step: First Main (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 44
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Stack: Knight of the Reliquary (ability, self) [amt=1]
-  Pending: Knight of the Reliquary (self)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window
-  Actions:
-   0: Fail to find
-   1: Bojuka Bog
-   2: Dryad Arbor
-   3: Horizon Canopy
-   4: Karakas
-   5: Misty Rainforest
-   6: Plains
-   7: Savannah
-   8: Talon Gates of Madara
-   9: Verdant Catacombs
-  10: Wasteland
-  11: Windswept Heath
-  >> A/A: 7 (Savannah)
---- Narrative ---
-  Player A shuffles their library
-  Player A puts Savannah to the battlefield
-  --- Declare Attackers (Player A) ---
-
---- Decision 121 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Badgermole Cub [2/2]
-   1: Endurance [3/4]
-   2: Gaddock Teeg [2/2]
-   3: Thalia, Guardian of Thraben [2/1]
-   4: Confirm attackers
-  >> A/A: 0 (Badgermole Cub [2/2])
---- Narrative ---
-  Badgermole Cub attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Badgermole Cub [2/2] -> Player B
-
---- Decision 122 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Endurance [3/4]
-   1: Gaddock Teeg [2/2]
-   2: Thalia, Guardian of Thraben [2/1]
-   3: Confirm attackers
-  >> A/A: 0 (Endurance [3/4])
---- Narrative ---
-  Endurance attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Badgermole Cub [2/2] -> Player B
-    [attacking] Endurance [3/4] -> Player B
-
---- Decision 123 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Gaddock Teeg [2/2]
-   1: Thalia, Guardian of Thraben [2/1]
-   2: Confirm attackers
-  >> A/A: 0 (Gaddock Teeg [2/2])
---- Narrative ---
-  Gaddock Teeg attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Badgermole Cub [2/2] -> Player B
-    [attacking] Endurance [3/4] -> Player B
-    [attacking] Gaddock Teeg [2/2] -> Player B
-
---- Decision 124 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Thalia, Guardian of Thraben [2/1]
-   1: Confirm attackers
-  >> A/A: 0 (Thalia, Guardian of Thraben [2/1])
---- Narrative ---
-  Thalia, Guardian of Thraben attacking Player B.
-  --- Declare Attackers (Player A) ---
-    [attacking] Badgermole Cub [2/2] -> Player B
-    [attacking] Endurance [3/4] -> Player B
-    [attacking] Gaddock Teeg [2/2] -> Player B
-    [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
-
---- Decision 125 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 15)
-  Self:  2 life | mana: empty | hand(3): Green Sun's Zenith, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 43
-  Opp:   3 life | mana: empty | hand count: 0 | lib 47
-  Self BF:  Badgermole Cub [2/2] (ATK) | Endurance [3/4] [Reach, Flash] (ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK)
-  Opp BF:   Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Self GY: Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Wasteland
-  Opp exile:  Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Dragon's Rage Channeler, Brainstorm, Thundering Falls, Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_revolt, not_priority_window, mandatory_choice=Declare Atk
-  Actions:
-   0: Confirm attackers
-  >> A/A: 0 (Confirm attackers)
---- Narrative ---
-  Attackers declared:
-    Badgermole Cub -> Player B
-    Endurance -> Player B
-    Gaddock Teeg -> Player B
-    Thalia, Guardian of Thraben -> Player B
-  --- Declare Blockers (Player B) ---
-  Attackers:
-    0: Badgermole Cub [2/2]
-    1: Endurance [3/4]
-    2: Gaddock Teeg [2/2]
-    3: Thalia, Guardian of Thraben [2/1]
-  Your creatures:
-
---- Decision 126 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 15)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   2 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: opp drawn=1
-  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Murktide Regent [5/5]
-   1: Confirm blockers
-  >> B/B: 0 (Murktide Regent [5/5])
---- Narrative ---
-  Select attacker for Murktide Regent to block:
-
---- Decision 127 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 15)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   2 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
-  Pending: Murktide Regent (self)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: opp drawn=1
-  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Badgermole Cub [2/2]
-   1: Endurance [3/4]
-   2: Gaddock Teeg [2/2]
-   3: Thalia, Guardian of Thraben [2/1]
-  >> B/B: 1 (Endurance [3/4])
---- Narrative ---
-  Murktide Regent blocking Endurance.
-  --- Declare Blockers (Player B) ---
-  Attackers:
-    0: Badgermole Cub [2/2]
-    1: Endurance [3/4]
-    2: Gaddock Teeg [2/2]
-    3: Thalia, Guardian of Thraben [2/1]
-  Your creatures:
-    (assigned) Murktide Regent [5/5] blocking Endurance
-
---- Decision 128 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 15)
-  Self:  3 life | mana: empty | hand(0): (empty) | lib 47
-  Opp:   2 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Cori-Steel Cutter (->Monk) | Cori-Steel Cutter | Murktide Regent [5/5] [+1/+1:2] [Flying] (BLK->Endurance,SICK) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T) | Monk [1/1] (T) | Monk [2/2] [Trample, Haste] (eq:Cori-Steel Cutter) (T)
-  Opp BF:   Badgermole Cub [2/2] (T,ATK) | Endurance [3/4] [Reach, Flash] (T,ATK,BLOCKED) | Forest (T,NEW) | Gaddock Teeg [2/2] (T,ATK) | Knight of the Reliquary [6/6] (T) | Savannah (NEW) | Thalia, Guardian of Thraben [2/1] [First Strike] (T,ATK)
-  Self GY: Wasteland, Wasteland
-  Opp GY:  Savannah, Gaea's Cradle, Wasteland, Swords to Plowshares, Wasteland, Once Upon a Time, Once Upon a Time
-  Self exile: Volcanic Island, Unholy Heat, Mishra's Bauble, Brainstorm, Dragon's Rage Channeler
-  Opp revealed: Forest, Wasteland, Endurance, Gaea's Cradle, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Badgermole Cub, Gaddock Teeg
-  This turn: opp drawn=1
-  Extras: opp_revolt, not_priority_window, mandatory_choice=Declare Blk
-  Actions:
-   0: Confirm blockers
-  >> B/B: 0 (Confirm blockers)
---- Narrative ---
-  Blockers declared:
-    Murktide Regent blocking Endurance
-  --- First Strike Combat Damage ---
-    Thalia, Guardian of Thraben deals 2 damage to Player B (now at 1 life)
-  --- End First Strike Combat Damage ---
-  --- Combat Damage ---
-    Badgermole Cub deals 2 damage to Player B (now at -1 life)
-    Murktide Regent deals 5 damage to Endurance
-    Endurance deals 3 damage to Murktide Regent
-    Gaddock Teeg deals 2 damage to Player B (now at -3 life)
-  --- End Combat Damage ---
-  Player B has -3 life - Player A wins!
-  GAME_RESULT: 1 Player A wins
-
-=== A/A wins ===
+=== B/B wins ===

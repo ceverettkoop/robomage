@@ -87,7 +87,9 @@ const AbilityDef *keyed_ability_def(const std::string &key,
     static std::unordered_map<std::string, const AbilityDef *> by_key;
     auto it = by_key.find(key);
     if (it != by_key.end()) return it->second;
-    const AbilityDef *d = intern_ability_def(build());
+    AbilityDef built = build();
+    if (built.ref_key.empty()) built.ref_key = key;
+    const AbilityDef *d = intern_ability_def(std::move(built));
     by_key.emplace(key, d);
     return d;
 }

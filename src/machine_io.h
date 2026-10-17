@@ -737,6 +737,11 @@ inline float norm_log_count(int v, double denom) {
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
 void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);
+
+// The vocab ids of every card in the hand of `viewer`'s opponent whose identity the viewer has had
+// revealed (Zone::identity_known), in zoned entity order: GameState::opp_known_hand holds the first
+// MAX_HAND_SLOTS of them. For the shadow comparison (state_format/shadow_knowledge.h).
+std::vector<int> opp_known_hand_cards(Zone::Ownership viewer);
 void populate_query(Query* q, const std::vector<LegalAction>& actions);
 
 // Card vocab index for an action's source entity (or a stack entity): the card's

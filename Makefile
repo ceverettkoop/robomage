@@ -98,7 +98,7 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 
 .DEFAULT_GOAL := all
 
-all: pygen program
+all: pygen program rmknow
 
 # Regenerate ALL codegen on EVERY build. card_costs.py / card_props.py and the C++
 # mirror header src/gen/card_costs_gen.h derive from card-script CONTENT (ManaCost,
@@ -145,14 +145,16 @@ check: all
 
 # Regenerate every derived artifact after an intentional C++ change: provision
 # the card set (codegen reads card scripts), then re-record the replay corpus with
-# the fresh binary. Run this when `make check` reports corpus drift, then commit the
-# results. `all` already regenerates all codegen unconditionally (the `pygen` target),
+# the fresh binary, and the scripted agent's BQUERY-pinned games and re-recorded
+# divergences (train/test_agent_parity.py --record). Run this when `make check`
+# reports corpus drift, then commit the results. `all` already regenerates all codegen unconditionally (the `pygen` target),
 # so provisioning first — which may fetch changed scripts — guarantees the codegen it
 # produces reflects the current card set before the corpus is recorded against it.
 regen:
 	$(PYTHON) tools/forge_fetch/provision_decks.py
 	$(MAKE) all
 	$(PYTHON) train/regression/replay_diff.py record
+	$(PYTHON) train/test_agent_parity.py --record
 
 # Force a clean re-fetch of every Forge card/token script, then VALIDATE the fresh
 # scripts against the COMMITTED replay corpus. Deletes the gitignored local scripts
@@ -239,7 +241,24 @@ actor-syntax: pygen
 			$(filter-out -fno-exceptions,$(CXXFLAGS)) $(PLATFLAGS) || exit 1; \
 	done
 
-.PHONY: all pygen check regen refetch clean actor actor-syntax
+# ── bin/<config>/rmknow — the knowledge sidecar over a recorded RMSTATE stream ──
+# tools/rmknow/ (outside src/, so its main stays out of the engine) linked with ONLY the std-only
+# objects it may see: the RMSTATE decoder and schema and src/knowledge/ (step-1 handoff §3). Part
+# of the default build; `make rmknow` builds it alone.
+RMKNOW_SRCS := $(wildcard tools/rmknow/*.cpp)
+RMKNOW_OBJ := $(patsubst tools/%.cpp,$(ODIR)/tools/%.o,$(RMKNOW_SRCS))
+RMKNOW_LIB_OBJ := $(ODIR)/state_format/decode.o $(ODIR)/state_format/schema.o \
+                  $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(wildcard $(SRCDIR)/knowledge/*.cpp))
+
+$(ODIR)/tools/%.o: tools/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
+
+rmknow: $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ)
+	@mkdir -p $(BINDIR)
+	$(CXX) -o $(BINDIR)/rmknow $(RMKNOW_OBJ) $(RMKNOW_LIB_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
+
+.PHONY: all pygen check regen refetch clean actor actor-syntax rmknow
 
 # Remove BOTH configs' object trees and engine binaries (not just the current
 # CONFIG's), so a plain `make clean` is config-independent — the compile rules
@@ -251,7 +270,7 @@ actor-syntax: pygen
 # relink against libtorch and is gitignored separately).
 clean:
 	rm -rf obj/*
-	rm -f bin/*/$(BINNAME)
+	rm -f bin/*/$(BINNAME) bin/*/rmknow
 
 -include $(DEPS)
 # The actor TUs are filtered out of CXX_SRCS (they only build under `make actor`),
@@ -259,3 +278,4 @@ clean:
 # header they share with the engine (e.g. obs_builder.h) leaves stale actor
 # objects behind and bin/az_actor links two different obs layouts together.
 -include $(ACTOR_OBJ:.o=.d)
+-include $(RMKNOW_OBJ:.o=.d)

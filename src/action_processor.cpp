@@ -34,6 +34,7 @@
 #include "queries/players.h"
 #include "queries/spells.h"
 #include "queries/types.h"
+#include "queries/visibility.h"
 #include "input_logger.h"
 #include "mana_system.h"
 #include "parse.h"
@@ -3401,7 +3402,9 @@ static void proc_miracle_reveal(Game &game, std::shared_ptr<Orderer> orderer) {
     Ability trig(triggered_effect_def("MiracleCast"));
     trig.source = ObjectRef::of(card);
     trig.controller = owner;
-    orderer->push_ability_onto_stack(trig, owner);
+    const Entity trig_entity = orderer->push_ability_onto_stack(trig, owner);
+    // It stays revealed until it leaves the hand or that ability leaves the stack (CR 702.94b).
+    reveal_until_leaves_stack(card, trig_entity);
 }
 
 // See declaration in action_processor.h.

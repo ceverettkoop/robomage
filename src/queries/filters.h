@@ -90,6 +90,8 @@ bool permanent_matches_any(Entity e, const std::string &comma_or_spec,
                            const MatchCtx &ctx = MatchCtx{});
 bool card_matches_any(Entity e, const std::string &comma_or_spec,
                       const MatchCtx &ctx = MatchCtx{});
+// The same over a printed card with no object (card_matches_filter's CardData form).
+bool card_matches_any(const CardData &cd, const std::string &comma_or_spec, const MatchCtx &ctx = MatchCtx{});
 
 // Pull a STATIC numeric mana-value qualifier out of a filter spec into a MatchCtx
 // (e.g. "Card.Colorless+cmcGE7" → ctx.cmc_op = "GE", ctx.cmc_bound = 7). The qualifier

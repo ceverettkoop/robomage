@@ -74,9 +74,9 @@ except ImportError:
     from gym import spaces
 
 try:
-    from card_costs import N_CARD_TYPES
+    from card_costs import N_CARD_TYPES, _VOCAB_NAMES
 except ImportError:
-    from train.card_costs import N_CARD_TYPES
+    from train.card_costs import N_CARD_TYPES, _VOCAB_NAMES
 
 # Deck -> strategic-archetype metadata (stdlib-only module). The matchup's
 # (self archetype x opp archetype) VALUE BUCKET rides in the observation tail so
@@ -896,6 +896,16 @@ def _deck_named(deck, key):
 from cli_spec import REPO_ROOT as _REPO_ROOT, BINARY, BIN_DIR  # noqa: E402
 
 
+# Extra engine flags for every engine this process starts, whitespace-separated (e.g.
+# ROBOMAGE_ENGINE_FLAGS=--trace-visibility). A debugging / gate hook; see docs/ci.md.
+ENGINE_FLAGS_ENV = "ROBOMAGE_ENGINE_FLAGS"
+
+
+def env_engine_flags() -> list:
+    """The engine flags named by $ROBOMAGE_ENGINE_FLAGS (empty when unset)."""
+    return os.environ.get(ENGINE_FLAGS_ENV, "").split()
+
+
 class RoboMageEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
 
@@ -1049,7 +1059,7 @@ class RoboMageEnv(gym.Env):
             cmd += ["--log-decisions"]
         if self._broadcast_steps:
             cmd += ["--broadcast-steps"]
-        cmd += self._extra_engine_flags()
+        cmd += self._extra_engine_flags() + env_engine_flags()
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -1488,92 +1498,103 @@ _BF_START         = _SELF_PERM_START           # 36
 _BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 43
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
+# Card name -> vocab id (card_vocab.h, via the generated cost table's name list): the
+# vocab constants below name the cards they key on instead of spelling bare indices.
+_VOCAB_ID = {name: i for i, name in enumerate(_VOCAB_NAMES) if name}
+
+
+def _card_id(name: str) -> int:
+    """Vocab id of a card by its card_vocab.h name (KeyError if absent)."""
+    return _VOCAB_ID[name]
+
+
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
-_WASTELAND_VOCAB_IDX     = 10
-_AETHER_VIAL_VOCAB_IDX   = 121
+_WASTELAND_VOCAB_IDX     = _card_id("Wasteland")
+_AETHER_VIAL_VOCAB_IDX   = _card_id("Aether Vial")
 # All basic lands in the vocab. Used by the Wasteland gate ("does the opponent
 # have a nonbasic land worth destroying"): a missing entry makes an opposing
 # basic look nonbasic, so Wasteland fires with only its controller's own
 # nonbasics as legal targets and destroys one of them.
-_BASIC_LAND_IDS          = frozenset({0,    # Mountain
-                                      1,    # Forest
-                                      19,   # Island
-                                      44,   # Plains
-                                      62,   # Swamp
-                                      235,  # Snow-Covered Island
-                                      240}) # Wastes
+_BASIC_LAND_IDS          = frozenset({_card_id("Mountain"),
+                                      _card_id("Forest"),
+                                      _card_id("Island"),
+                                      _card_id("Plains"),
+                                      _card_id("Swamp"),
+                                      _card_id("Snow-Covered Island"),
+                                      _card_id("Wastes")})
 # Every counterspell in the vocab: these are only cast with an opponent spell
 # on the stack (a missing entry let the agent counter its OWN spell, the only
 # legal target when nothing else is stacked).
-_COUNTER_SPELL_VOCAB_IDS = frozenset({12,    # Force of Will
-                                      13,    # Daze
-                                      22,    # Counterspell
-                                      72,    # Force of Negation
-                                      206,   # Consign to Memory
-                                      291,   # Flusterstorm
-                                      307,   # Spell Pierce
-                                      321})  # Spell Snare
-_COUNTERSPELL_VOCAB_IDX  = 22
+_COUNTER_SPELL_VOCAB_IDS = frozenset({_card_id("Force of Will"),
+                                      _card_id("Daze"),
+                                      _card_id("Counterspell"),
+                                      _card_id("Force of Negation"),
+                                      _card_id("Consign to Memory"),
+                                      _card_id("Flusterstorm"),
+                                      _card_id("Spell Pierce"),
+                                      _card_id("Spell Snare")})
+_COUNTERSPELL_VOCAB_IDX  = _card_id("Counterspell")
 # Pure cantrips the hard tier lets resolve rather than countering (threat-type
 # triage: a counter spent on the opponent's Ponder is a counter unavailable for
 # their threat; everything NOT in this set — any creature/planeswalker/
 # enchantment at any MV, and any other MV>=2 spell — stays counterable).
-_COUNTER_EXEMPT_CANTRIP_IDS = frozenset({11,    # Ponder
-                                         24,    # Brainstorm
-                                         27,    # Mishra's Bauble
-                                         43,    # Once Upon a Time
-                                         68,    # Consider
-                                         152,   # Preordain
-                                         303,   # Careful Study
-                                         305})  # Otherworldly Gaze
+_COUNTER_EXEMPT_CANTRIP_IDS = frozenset({_card_id("Ponder"),
+                                         _card_id("Brainstorm"),
+                                         _card_id("Mishra's Bauble"),
+                                         _card_id("Once Upon a Time"),
+                                         _card_id("Consider"),
+                                         _card_id("Preordain"),
+                                         _card_id("Careful Study"),
+                                         _card_id("Otherworldly Gaze")})
 # Targeted removal the hard tier holds until a real threat exists — power >= 2,
 # or any NONTOKEN 1-power creature (an unflipped Delver / Dragon's Rage
 # Channeler is a real threat; a 1/1 token is not).
-_TARGETED_REMOVAL_IDS    = frozenset({48,    # Swords to Plowshares
-                                      84,    # Fatal Push
-                                      338})  # Prismatic Ending
+_TARGETED_REMOVAL_IDS    = frozenset({_card_id("Swords to Plowshares"),
+                                      _card_id("Fatal Push"),
+                                      _card_id("Prismatic Ending")})
 # First index of the token band in the card vocab (mirror src/card_vocab.h
 # TOKEN_VOCAB_BASE): perm-slot card ids >= this are token permanents.
 _TOKEN_VOCAB_BASE        = 900
 # Wrath of the Skies: symmetric X sweeper (destroys artifacts/creatures/
 # enchantments with MV <= energy paid) — gated on the board actually favoring it.
-_WRATH_OF_SKIES_VOCAB_IDX = 186
+_WRATH_OF_SKIES_VOCAB_IDX = _card_id("Wrath of the Skies")
 # Death and Taxes: Solitude's ETB exiles a creature, so hard-cast it only with an
 # opponent creature to hit. The One Ring's {T} draws a card per burden counter.
-_SOLITUDE_VOCAB_IDX      = 141
-_THE_ONE_RING_VOCAB_IDX  = 285
+_SOLITUDE_VOCAB_IDX      = _card_id("Solitude")
+_THE_ONE_RING_VOCAB_IDX  = _card_id("The One Ring")
 _BLUE_POOL_IDX           = _SELF_BLOCK_START + _PB_MANA + 1   # self U pool; mana is W/U/B/R/G/C, /10
 
 # Doomsday deck card vocab indices (mirror src/card_vocab.h)
-_DOOMSDAY_VOCAB_IDX      = 53
-_THOUGHTSEIZE_VOCAB_IDX  = 54
-_DARK_RITUAL_VOCAB_IDX   = 55
-_LOTUS_PETAL_VOCAB_IDX   = 56
-_LED_VOCAB_IDX           = 57
-_THASSAS_ORACLE_VOCAB_IDX = 58
-_PERSONAL_TUTOR_VOCAB_IDX = 59
-_STREET_WRAITH_VOCAB_IDX = 60
-_EDGE_OF_AUTUMN_VOCAB_IDX = 61
-_CONSIDER_VOCAB_IDX      = 68
-_DEEP_ANALYSIS_VOCAB_IDX = 70
-_CAVERN_OF_SOULS_VOCAB_IDX = 67
-_DURESS_VOCAB_IDX        = 69
-_PONDER_VOCAB_IDX        = 11
-_FORCE_OF_WILL_VOCAB_IDX = 12
-_DAZE_VOCAB_IDX          = 13
-_BRAINSTORM_VOCAB_IDX    = 24
-_MISHRAS_BAUBLE_VOCAB_IDX = 27
-_ONCE_UPON_A_TIME_VOCAB_IDX = 43
+_DOOMSDAY_VOCAB_IDX      = _card_id("Doomsday")
+_THOUGHTSEIZE_VOCAB_IDX  = _card_id("Thoughtseize")
+_DARK_RITUAL_VOCAB_IDX   = _card_id("Dark Ritual")
+_LOTUS_PETAL_VOCAB_IDX   = _card_id("Lotus Petal")
+_LED_VOCAB_IDX           = _card_id("Lion's Eye Diamond")
+_THASSAS_ORACLE_VOCAB_IDX = _card_id("Thassa's Oracle")
+_PERSONAL_TUTOR_VOCAB_IDX = _card_id("Personal Tutor")
+_STREET_WRAITH_VOCAB_IDX = _card_id("Street Wraith")
+_EDGE_OF_AUTUMN_VOCAB_IDX = _card_id("Edge of Autumn")
+_CONSIDER_VOCAB_IDX      = _card_id("Consider")
+_DEEP_ANALYSIS_VOCAB_IDX = _card_id("Deep Analysis")
+_CAVERN_OF_SOULS_VOCAB_IDX = _card_id("Cavern of Souls")
+_DURESS_VOCAB_IDX        = _card_id("Duress")
+_PONDER_VOCAB_IDX        = _card_id("Ponder")
+_FORCE_OF_WILL_VOCAB_IDX = _card_id("Force of Will")
+_DAZE_VOCAB_IDX          = _card_id("Daze")
+_BRAINSTORM_VOCAB_IDX    = _card_id("Brainstorm")
+_MISHRAS_BAUBLE_VOCAB_IDX = _card_id("Mishra's Bauble")
+_ONCE_UPON_A_TIME_VOCAB_IDX = _card_id("Once Upon a Time")
 
 # Maverick (green/white) deck card vocab indices (mirror src/card_vocab.h)
-_GREEN_SUNS_ZENITH_VOCAB_IDX = 35
-_KEEN_EYED_CURATOR_VOCAB_IDX = 40
+_GREEN_SUNS_ZENITH_VOCAB_IDX = _card_id("Green Sun's Zenith")
+_KEEN_EYED_CURATOR_VOCAB_IDX = _card_id("Keen-Eyed Curator")
 # Untapped creatures that tap for mana (count toward X for Green Sun's Zenith).
-_MANA_DORK_IDS           = frozenset({30, 38, 42})  # Birds(30), Ignoble(38), Noble Hierarch(42)
+_MANA_DORK_IDS           = frozenset({_card_id("Birds of Paradise"), _card_id("Ignoble Hierarch"),
+                                      _card_id("Noble Hierarch")})
 # Lands that do NOT reliably produce mana when untapped, so they shouldn't count
 # toward an affordable X: fetchlands (sacrifice for a land, no mana) and Gaea's
 # Cradle (G per creature — zero with an empty board).
-_UNRELIABLE_LAND_IDS     = frozenset({5, 6, 7, 8, 9, 52, 65, 66, 34})
+_UNRELIABLE_LAND_IDS     = frozenset({_card_id("Scalding Tarn"), _card_id("Flooded Strand"), _card_id("Polluted Delta"), _card_id("Wooded Foothills"), _card_id("Misty Rainforest"), _card_id("Windswept Heath"), _card_id("Bloodstained Mire"), _card_id("Verdant Catacombs"), _card_id("Gaea's Cradle")})
 # Cantrips/digging that let us keep a one-land opening hand (they find more lands)
 _KEEP_ONE_LANDER_IDS     = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
                                       _ONCE_UPON_A_TIME_VOCAB_IDX})
@@ -1588,18 +1609,18 @@ _LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_
                                       _CONSIDER_VOCAB_IDX, _DEEP_ANALYSIS_VOCAB_IDX,
                                       _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
                                       _MISHRAS_BAUBLE_VOCAB_IDX})
-_DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 69, 70})
+_DOOMSDAY_DECK_IDS       = frozenset({_card_id("Doomsday"), _card_id("Thoughtseize"), _card_id("Dark Ritual"), _card_id("Lotus Petal"), _card_id("Lion's Eye Diamond"), _card_id("Thassa's Oracle"), _card_id("Personal Tutor"), _card_id("Street Wraith"), _card_id("Edge of Autumn"), _card_id("Cavern of Souls"), _card_id("Consider"), _card_id("Duress"), _card_id("Deep Analysis")})
 
 # Tron deck card vocab indices (mirror src/card_vocab.h). The three Urza lands
 # each add extra colorless mana once the other two are also controlled (see
 # Count$UrzaLands in src/components/ability.cpp); Planar Nexus is every
 # nonbasic land type via a self-CDA (state_manager_statics.cpp), so a single
 # Planar Nexus supplies whichever of the three types a real piece is missing.
-_URZAS_MINE_VOCAB_IDX        = 274
-_URZAS_POWER_PLANT_VOCAB_IDX = 275
-_URZAS_TOWER_VOCAB_IDX       = 276
-_PLANAR_NEXUS_VOCAB_IDX      = 266
-_EXPEDITION_MAP_VOCAB_IDX    = 246
+_URZAS_MINE_VOCAB_IDX        = _card_id("Urza's Mine")
+_URZAS_POWER_PLANT_VOCAB_IDX = _card_id("Urza's Power Plant")
+_URZAS_TOWER_VOCAB_IDX       = _card_id("Urza's Tower")
+_PLANAR_NEXUS_VOCAB_IDX      = _card_id("Planar Nexus")
+_EXPEDITION_MAP_VOCAB_IDX    = _card_id("Expedition Map")
 _TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 # Karn, the Great Creator wishes an artifact from the sideboard/exile into hand
@@ -1607,17 +1628,17 @@ _TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_
 # opponent permanent into an artifact whose abilities Karn's static shuts off (the
 # hard lock, incl. lands not tapping for mana). Cityscape Leveler is the follow-up
 # beater once the lock (or a lack of Lattice) leaves nothing better to grab.
-_KARN_GREAT_CREATOR_VOCAB_IDX = 280
-_CITYSCAPE_LEVELER_VOCAB_IDX  = 287
-_MYCOSYNTH_LATTICE_VOCAB_IDX  = 290
+_KARN_GREAT_CREATOR_VOCAB_IDX = _card_id("Karn, the Great Creator")
+_CITYSCAPE_LEVELER_VOCAB_IDX  = _card_id("Cityscape Leveler")
+_MYCOSYNTH_LATTICE_VOCAB_IDX  = _card_id("Mycosynth Lattice")
 # Candelabra of Tawnos untaps X target lands; it's a mana engine only when it
 # untaps lands that make MORE THAN ONE mana, so we bias its targets to those.
 # Ancient Tomb ({C}{C}) and Urza's Workshop (metalcraft: {C} per Urza's land)
 # always/often produce >1; the three Urza's tron lands produce {C}{C}{C} each
 # once the set is assembled. Planar Nexus is deliberately excluded — it only
 # ever makes a single mana of any type, so untapping it gains nothing.
-_CANDELABRA_VOCAB_IDX    = 242
-_MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
+_CANDELABRA_VOCAB_IDX    = _card_id("Candelabra of Tawnos")
+_MULTI_MANA_LAND_IDS     = frozenset({_card_id("Ancient Tomb"), _card_id("Urza's Workshop"),
                                       _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 
@@ -1625,13 +1646,13 @@ _MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
 # Animate Dead are the "put a creature card from a graveyard onto the
 # battlefield" spells; the fatties are the creatures those spells exist to
 # cheat out (the deck's discard outlets put them in the graveyard first).
-_REANIMATE_VOCAB_IDX     = 302
-_ANIMATE_DEAD_VOCAB_IDX  = 348
-_CAREFUL_STUDY_VOCAB_IDX = 303
+_REANIMATE_VOCAB_IDX     = _card_id("Reanimate")
+_ANIMATE_DEAD_VOCAB_IDX  = _card_id("Animate Dead")
+_CAREFUL_STUDY_VOCAB_IDX = _card_id("Careful Study")
 _REANIMATION_SPELL_IDS   = frozenset({_REANIMATE_VOCAB_IDX, _ANIMATE_DEAD_VOCAB_IDX})
-_REANIMATION_FATTY_IDS   = frozenset({304,   # Griselbrand
-                                      323,   # Archon of Cruelty
-                                      347})  # Atraxa, Grand Unifier
+_REANIMATION_FATTY_IDS   = frozenset({_card_id("Griselbrand"),
+                                      _card_id("Archon of Cruelty"),
+                                      _card_id("Atraxa, Grand Unifier")})
 
 # Lands deck card vocab indices (mirror src/card_vocab.h). Thespian's Stage
 # copying Dark Depths yields a zero-ice-counter Depths (copy effects don't copy
@@ -1639,22 +1660,22 @@ _REANIMATION_FATTY_IDS   = frozenset({304,   # Griselbrand
 # deck's win condition. Urza's Saga's chapter-II ability builds Construct
 # tokens, and Life from the Loam's dredge recurs Saga/Wasteland from the
 # graveyard every turn.
-_LIFE_FROM_LOAM_VOCAB_IDX   = 90
-_EXPLORATION_VOCAB_IDX      = 311
-_CROP_ROTATION_VOCAB_IDX    = 312
-_URZAS_SAGA_VOCAB_IDX       = 296
-_DARK_DEPTHS_VOCAB_IDX      = 334
-_THESPIANS_STAGE_VOCAB_IDX  = 335
-_TABERNACLE_VOCAB_IDX       = 337  # The Tabernacle at Pendrell Vale
+_LIFE_FROM_LOAM_VOCAB_IDX   = _card_id("Life from the Loam")
+_EXPLORATION_VOCAB_IDX      = _card_id("Exploration")
+_CROP_ROTATION_VOCAB_IDX    = _card_id("Crop Rotation")
+_URZAS_SAGA_VOCAB_IDX       = _card_id("Urza's Saga")
+_DARK_DEPTHS_VOCAB_IDX      = _card_id("Dark Depths")
+_THESPIANS_STAGE_VOCAB_IDX  = _card_id("Thespian's Stage")
+_TABERNACLE_VOCAB_IDX       = _card_id("The Tabernacle at Pendrell Vale")
 # Lands a sacrifice cost should never eat while another option exists — the
 # combo pieces and the irreplaceable utility lands (a Crop Rotation that sacs
 # Dark Depths to fetch Thespian's Stage has defeated itself).
 _SAC_LAST_LAND_IDS = frozenset({_DARK_DEPTHS_VOCAB_IDX, _THESPIANS_STAGE_VOCAB_IDX,
                                 _URZAS_SAGA_VOCAB_IDX, _TABERNACLE_VOCAB_IDX,
-                                39,    # Karakas
-                                316,   # Boseiju, Who Endures
-                                324,   # Blast Zone
-                                343})  # Maze of Ith
+                                _card_id("Karakas"),
+                                _card_id("Boseiju, Who Endures"),
+                                _card_id("Blast Zone"),
+                                _card_id("Maze of Ith")})
 
 _CAT_TOP_LIBRARY = CAT_TOP_LIBRARY  # choose card to put on top of library (Doomsday pile ordering)
 _CAT_SHUFFLE     = CAT_SHUFFLE  # shuffle choice (0 = don't shuffle, 1 = shuffle)

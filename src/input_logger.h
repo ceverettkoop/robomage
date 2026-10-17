@@ -93,6 +93,10 @@ class InputLogger {
     // Persist a committed choice: echo it to the log file (if open). Shared by the
     // machine / auto-pass / CLI input paths.
     void commit_choice(const std::vector<LegalAction>& actions, int choice);
+    // An integer a machine-side source (the in-process provider, an RMSTATE reply) answered with:
+    // a concession sentinel is committed and applied; -1 (confirm) becomes the last slot; any
+    // other value must index `actions`. Returns the choice, committed.
+    int accept_machine_choice(const std::vector<LegalAction>& actions, int choice);
     // get_input over a menu with its interchangeable choices already left out.
     int choose(const std::vector<LegalAction>& actions);
     bool replay_mode = false;

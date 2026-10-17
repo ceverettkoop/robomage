@@ -32,10 +32,11 @@ import numpy as np
 
 import decode
 from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
-                 N_CARD_TYPES, BINARY, _IS_ACTIVE_IDX, _SELF_IS_A_IDX,
-                 ACT_CATS_START, ACT_IDS_START,
+                 BINARY, _IS_ACTIVE_IDX, _SELF_IS_A_IDX,
+                 ACT_CATS_START,
                  _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE, _EXTRAS_PLAYS_FIRST)
 from _enums import _CAT_NAMES, _STEP_NAMES
+from cli_spec import MACHINE_FORMAT_CHOICES
 
 
 class Decision:
@@ -59,11 +60,21 @@ class Decision:
 
     def menu(self):
         if self._menu is None:
-            self._menu = decode.decode_actions_from_obs(
+            decoded = getattr(self.env, "decoded_menu", None)
+            self._menu = decoded() if decoded is not None else decode.decode_actions_from_obs(
                 self.obs, self.num_choices,
                 getattr(self.env, "_action_public", None),
                 descriptions=getattr(self.env, "_action_descriptions", None))
         return self._menu
+
+    def cats(self):
+        """The action categories (ints) of every menu row: the env's when it offers them (an
+        RMSTATE menu is unbounded), else the observation's."""
+        cats = getattr(self.env, "menu_categories", None)
+        if cats is not None:
+            return np.array(cats(), dtype=int)
+        return np.round(self.obs[ACT_CATS_START:ACT_CATS_START + self.num_choices]
+                        * ACTION_CATEGORY_MAX).astype(int)
 
 
 class GameOutcome(NamedTuple):
@@ -174,12 +185,8 @@ def drive_game(env, obs, controller_a, controller_b, *,
             # (cats|ids|ctrl|zone|refs — entity-slot refs appended last, see
             # decode.action_slot_refs); coverage reads only the first two,
             # whose offsets are unchanged.
-            cats = np.round(obs[ACT_CATS_START:ACT_CATS_START + d.num_choices]
-                            * ACTION_CATEGORY_MAX).astype(int)
-            ids = np.rint(obs[ACT_IDS_START:
-                              ACT_IDS_START + d.num_choices]
-                          * N_CARD_TYPES).astype(int)
-            coverage.record(cats.tolist(), ids.tolist(), int(action))
+            menu = d.menu()
+            coverage.record([a["category"] for a in menu], [a["card_idx"] for a in menu], int(action))
 
         if on_action is not None:
             on_action(d, action)
@@ -306,6 +313,22 @@ def _compact_line(decision, player, label, step_name, cats, action):
             f"  choices={len(cats)}  available={all_cats}  -> {action} ({chosen_cat})")
 
 
+# The engine's machine protocols: the BQUERY vector, or RMSTATE frames (rmstate_env.py).
+MACHINE_FORMATS = MACHINE_FORMAT_CHOICES
+
+
+def require_rmstate_capable(*controllers):
+    """Raises ValueError unless every controller declares ``rmstate_capable`` (plays on the
+    RMSTATE env: the scripted tiers read the decoded frame or the pass-1 adapter's vector, the
+    scripts read only the menu)."""
+    for ctrl in controllers:
+        if not getattr(ctrl, "rmstate_capable", False):
+            raise ValueError(
+                f"{getattr(ctrl, 'label', type(ctrl).__name__)!r} cannot play over "
+                "--machine-format rmstate: only the scripted tiers, auto, actions: and play: "
+                "play on RMSTATE frames")
+
+
 def run_games(controller_a, controller_b, *,
               label_a="A", label_b="B",
               binary_path=BINARY, deck_a=None, deck_b=None,
@@ -318,7 +341,7 @@ def run_games(controller_a, controller_b, *,
               life_a=None, life_b=None,
               max_decisions=None, log_decisions=False, coverage=None,
               offer_cancel=False, on_query=None, on_action=None, on_game_end=None,
-              narrative=True):
+              narrative=True, machine_format="bquery"):
     """Run ``n_games`` between two controllers and render the transcript.
 
     ``controller_a``/``controller_b`` are :class:`opponents.Controller` objects;
@@ -347,6 +370,14 @@ def run_games(controller_a, controller_b, *,
     ``narrative=False`` runs the engine without its game log / per-action
     descriptions (the lean path a throughput benchmark wants); only sensible
     with ``transcript="quiet"``, and a draw's saved log is then empty.
+
+    ``machine_format="rmstate"`` runs the engine on the RMSTATE protocol
+    (``rmstate_env.RMStateNarrativeEnv``): the scripted tiers read the
+    deciding seat's decoded frame (``rm_agent``), or with ``view="vector"``
+    (``scripted?view=vector``, ``rmstate_vector``) the old observation the
+    pass-1 parity adapter rebuilds from it; only ``rmstate_capable``
+    controllers may play (the scripted tiers, ``auto``, ``actions:``,
+    ``play:``); its verbose transcript has no board block.
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
     ends with no winner — a drawn game (both players lost at once, CR 104.4a) or
@@ -386,7 +417,16 @@ def run_games(controller_a, controller_b, *,
     # stub; the env class swap is transparent to everything else here.
     needs_search_env = any(getattr(c, "wants_search_env", False)
                            for c in (controller_a, controller_b))
-    if needs_search_env:
+    if machine_format not in MACHINE_FORMATS:
+        raise ValueError(f"unknown machine format {machine_format!r}")
+    env_kwargs = {}
+    if machine_format == "rmstate":
+        require_rmstate_capable(controller_a, controller_b)
+        from rmstate_env import RMStateNarrativeEnv
+        env_cls = RMStateNarrativeEnv
+        env_kwargs["full_vector"] = any(getattr(c, "rmstate_vector", False)
+                                        for c in (controller_a, controller_b))
+    elif needs_search_env:
         from search_env import SearchNarrativeEnv
         env_cls = SearchNarrativeEnv
     else:
@@ -401,7 +441,7 @@ def run_games(controller_a, controller_b, *,
                       sideboard_a=sideboard_a, sideboard_b=sideboard_b,
                       life_a=life_a, life_b=life_b,
                       no_shuffle=no_shuffle, log_decisions=log_decisions,
-                      narrative=narrative, offer_cancel=offer_cancel)
+                      narrative=narrative, offer_cancel=offer_cancel, **env_kwargs)
         # Hand search controllers the live env (per game — a fresh env/process
         # is created for each one). Duck-typed like new_game below.
         for ctrl in (controller_a, controller_b):
@@ -457,8 +497,7 @@ def run_games(controller_a, controller_b, *,
                 obs_ = d.obs
                 player = "A" if d.priority_is_a else "B"
                 active_is_a = (obs_[_IS_ACTIVE_IDX] > 0.5) == d.priority_is_a
-                cats = np.round(obs_[ACT_CATS_START:ACT_CATS_START + d.num_choices]
-                                * ACTION_CATEGORY_MAX).astype(int)
+                cats = d.cats()
                 is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
 
                 known_hand[player] = decode.decode_hand(obs_)
@@ -481,7 +520,7 @@ def run_games(controller_a, controller_b, *,
                 player = "A" if d.priority_is_a else "B"
                 label = label_a if d.priority_is_a else label_b
                 if is_verbose:
-                    gs = decode.decode_game_state(
+                    gs = None if getattr(d.env, "obs_partial", False) else decode.decode_game_state(
                         obs_[:STATE_SIZE],
                         perm_counters=getattr(d.env, "_perm_counters", None),
                         perm_token_names=getattr(d.env, "_perm_token_names", None))
@@ -490,8 +529,7 @@ def run_games(controller_a, controller_b, *,
                     emit(decode.format_chosen_action(f"{label}/{player}", action,
                                                      d.menu()))
                 else:
-                    cats = np.round(obs_[ACT_CATS_START:ACT_CATS_START + d.num_choices]
-                                    * ACTION_CATEGORY_MAX).astype(int)
+                    cats = d.cats()
                     step_name = _STEP_NAMES[int(np.argmax(
                         obs_[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))]
                     emit(_compact_line(d.index, player, label, step_name, cats,

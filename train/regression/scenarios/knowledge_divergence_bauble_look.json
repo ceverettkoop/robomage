@@ -1,0 +1,16 @@
+{
+  "name": "knowledge_divergence_bauble_look",
+  "why": "shadow divergences private_look_seen and known_card_drawn: B's Mishra's Bauble looks at A's top card (Daze), a look only B sees (CR 701.20e); expert counts Daze as seen (k_seen), which the old vector's revealed bits (public reveals only) do not, and when A draws the Daze expert knows it is in A's hand (k_known_hand), which the old vector's opp_known_hand drops at a draw (step 1 T12 shadow comparison)",
+  "hand_a": ["Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Daze", "Force of Will", "Lightning Bolt", "Island", "Island", "Island", "Island", "Island", "Island", "Island"],
+  "hand_b": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "battlefield_b": ["Mishra's Bauble"],
+  "library_b": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "play": ["A:keep", "B:keep", "B:activate:Mishra's Bauble", "B:target:Player A"],
+  "max_decisions": 11,
+  "expect_dump": [
+    "^B d=\\d+ \\S+ \\S+ position opp top0 = Daze$",
+    "^B d=\\d+ \\S+ \\S+ seen opp Daze game=1 match=1$",
+    "^B d=\\d+ \\S+ \\S+ known_hand Daze x1$"
+  ]
+}

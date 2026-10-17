@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   The One Ring
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 73
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -78,12 +64,6 @@
   Player A played Scrubland
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Scrubland (NEW)
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Aether Vial  [#0]
@@ -95,13 +75,6 @@
   Aether Vial enters the battlefield
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Aether Vial (NEW) | Scrubland (T,NEW)
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -112,15 +85,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T,NEW)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -134,13 +98,6 @@
   PB: Brainstorm, Flooded Strand, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring
 
 --- Decision 7 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Brainstorm, Flooded Strand, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -152,15 +109,6 @@
   Player B played Flooded Strand
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Flooded Strand (NEW)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -173,17 +121,6 @@
   Searching Player B's library:
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -196,16 +133,6 @@
   Player B puts Tundra to the battlefield
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(7): Brainstorm, Flooded Strand, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Tundra (NEW)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Self GY: Flooded Strand
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -221,18 +148,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(9): Brainstorm, Flooded Strand, Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 48
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Tundra (T,NEW)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Flooded Strand
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Brainstorm
    1: Flooded Strand
@@ -249,19 +164,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(8): Brainstorm, Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 49
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Tundra (T,NEW)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Flooded Strand
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Brainstorm
    1: Force of Will
@@ -282,32 +184,12 @@
   PB: Brainstorm, Force of Will, Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(5): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial | Scrubland
-  Opp BF:   Tundra (T)
-  Stack: Aether Vial (ability, self)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(5): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial (res 1) | Scrubland
-  Opp BF:   Tundra (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -317,14 +199,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  20 life | mana: empty | hand(5): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Tundra (T)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -333,30 +207,12 @@
   Player A draws Wasteland
 
 --- Decision 16 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(6): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Tundra (T)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 17 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Tundra (T)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -369,16 +225,6 @@
   Player A casts Aether Vial
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   19 life | mana: empty | hand count: 7 | lib 50
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland (T)
-  Opp BF:   Tundra (T)
-  Stack: Aether Vial (spell, self)
-  Opp GY:  Brainstorm, Flooded Strand
-  Opp revealed: Flooded Strand, Tundra, Brainstorm
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -387,18 +233,6 @@
   Player A's Aether Vial ability is on the stack
 
 --- Decision 19 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(7): Brainstorm, Force of Will, Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 72
-  Self BF:  Tundra (T)
-  Opp BF:   Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Stack: Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
-  Self GY: Brainstorm, Flooded Strand
-  Known top: Meticulous Archive, Flooded Strand, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -407,19 +241,6 @@
   Choose target for Force of Will:
 
 --- Decision 20 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Brainstorm, Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 72
-  Self BF:  Tundra (T)
-  Opp BF:   Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Stack: Force of Will (spell, self) -> Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Brainstorm, Flooded Strand
-  Known top: Meticulous Archive, Flooded Strand, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window
   Actions:
    0: Aether Vial
   >> B/B: 0 (Aether Vial)
@@ -427,19 +248,6 @@
   Targeting choice 0
 
 --- Decision 21 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Brainstorm, Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 72
-  Self BF:  Tundra (T)
-  Opp BF:   Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Stack: Force of Will (spell, self) -> Aether Vial (opponent, slot 98) -> Aether Vial (ability, opponent) -> Aether Vial (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Brainstorm, Flooded Strand
-  Known top: Meticulous Archive, Flooded Strand, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1 drawn=1
-  Extras: not_priority_window
   Actions:
    0: Exile Brainstorm
    1: Exile Geist of Saint Traft
@@ -454,20 +262,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Opp BF:   Tundra (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -475,18 +269,6 @@
   Player A fails to find
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T)
-  Opp BF:   Tundra (T)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -496,18 +278,6 @@
   Player A played Wasteland
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Tundra (T)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -516,20 +286,6 @@
   Choose target for Wasteland:
 
 --- Decision 25 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 50
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Tundra (T)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Aether Vial
-  Opp GY:  Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm
-  This turn: self spells=1 noncreature=1 drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Tundra
    1: Scrubland
@@ -549,17 +305,6 @@
   PB: Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(6): Geist of Saint Traft, Meticulous Archive, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Opp BF:   Aether Vial [charge:1] (T) | Scrubland (T)
-  Self GY: Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Meticulous Archive
@@ -574,21 +319,6 @@
   Surveil: looking at Flooded Strand
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Meticulous Archive (T,NEW,res 1)
-  Opp BF:   Aether Vial [charge:1] (T) | Scrubland (T)
-  Stack: Meticulous Archive (ability, self) [amt=1]
-  Pending: Meticulous Archive (self)
-  Self GY: Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Put Flooded Strand on top of library  [#0]
    1: Put Flooded Strand into graveyard
@@ -602,36 +332,12 @@
   PB: Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:1] | Scrubland
-  Opp BF:   Meticulous Archive (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Meticulous Archive (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -641,16 +347,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
 --- Decision 30 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Scrubland
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -659,34 +355,12 @@
   Player A draws Witch Enchanter
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Scrubland
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Scrubland
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -697,18 +371,6 @@
   Player A played Wasteland
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Scrubland | Wasteland (NEW)
-  Opp BF:   Meticulous Archive (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -722,19 +384,6 @@
   Player A casts Orcish Bowmasters
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (res 1) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Orcish Bowmasters (spell, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -745,20 +394,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Stack: Aether Vial (ability, self) -> Orcish Bowmasters (spell, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
    1: Phelia, Exuberant Shepherd
@@ -769,19 +404,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 36 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   18 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Meticulous Archive (T)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (18 life)
    1: Player A (20 life)
@@ -802,17 +424,6 @@
   PB: Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(5): Geist of Saint Traft, Polluted Delta, Swords to Plowshares, The One Ring, Wrath of the Skies | lib 49
-  Opp:   20 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Meticulous Archive
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -821,20 +432,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  17 life | mana: empty | hand(4): Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies | lib 49
-  Opp:   20 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Meticulous Archive
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Phelia, Exuberant Shepherd [2/2] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Swords to Plowshares (spell, self)
-  Pending: Swords to Plowshares (self)
-  Self GY: Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Known top: Flooded Strand, ?, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  Extras: not_priority_window
   Actions:
    0: Orcish Bowmasters
    1: Phelia, Exuberant Shepherd
@@ -851,19 +448,6 @@
   Player B draws Flooded Strand
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(5): Flooded Strand, Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies | lib 48
-  Opp:   22 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=2
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -873,19 +457,6 @@
   Player B played Flooded Strand
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies | lib 48
-  Opp:   22 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Flooded Strand (NEW) | Meticulous Archive (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W | opp life_gained=2
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -898,21 +469,6 @@
   Searching Player B's library:
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  16 life | mana: empty | hand(4): Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies | lib 48
-  Opp:   22 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Meticulous Archive (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W | opp life_gained=2
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -931,18 +487,6 @@
   PB: Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies
 
 --- Decision 42 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  22 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:2] | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -950,20 +494,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 43 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  22 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -973,17 +503,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 3).
 
 --- Decision 44 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  22 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -993,18 +512,6 @@
   Player A draws White Orchid Phantom
 
 --- Decision 45 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  22 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1012,18 +519,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 46 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  22 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Witch-Blessed Meadow
@@ -1034,20 +529,6 @@
   Player A played Witch-Blessed Meadow
 
 --- Decision 47 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  22 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Pending: Witch Enchanter (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: pay 3 life so it enters untapped  [#0]
    1: Accept: pay 3 life so it enters untapped  [#1]
@@ -1056,19 +537,6 @@
   Player A pays 3 life.
 
 --- Decision 48 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Witch-Blessed Meadow (NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self drawn=1 life_lost=3
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -1084,20 +552,6 @@
   Player A casts Pre-War Formalwear
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Stack: Pre-War Formalwear (spell, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=3 colors=W
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1108,21 +562,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Stack: Aether Vial (ability, self) -> Pre-War Formalwear (spell, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=3 colors=W
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -1133,19 +572,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=3 colors=W
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [1/1]
@@ -1157,19 +583,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=3 colors=W
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -1181,19 +594,6 @@
     [attacking] Orc Army token [1/1] -> Player B
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   16 life | mana: empty | hand count: 4 | lib 47
-  Self BF:  Aether Vial [charge:3] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Pre-War Formalwear (NEW) | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T,NEW) | Orc Army [1/1] [+1/+1:1] (ATK)
-  Opp BF:   Meticulous Archive (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Meticulous Archive
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=3 colors=W
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1213,18 +613,6 @@
   PB: Force of Negation, Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(5): Force of Negation, Geist of Saint Traft, Polluted Delta, The One Ring, Wrath of the Skies | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive | Tundra
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Self GY: Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1234,21 +622,6 @@
   Choose X value (0-0):
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(4): Force of Negation, Geist of Saint Traft, Polluted Delta, The One Ring | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive | Tundra
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Wrath of the Skies (spell, self)
-  Pending: Wrath of the Skies (self)
-  Self GY: Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: X = 0  [#0]
   >> B/B: 0 (X = 0)
@@ -1261,21 +634,6 @@
   Resolving ability (category: ChooseNumber)
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(4): Force of Negation, Geist of Saint Traft, Polluted Delta, The One Ring | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (T)
-  Stack: Wrath of the Skies (spell, self)
-  Pending: Wrath of the Skies (self)
-  Self GY: Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: 0  [#0]
   >> B/B: 0 (0)
@@ -1286,19 +644,6 @@
   Orc Army (token) is put into the graveyard and ceases to exist.
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(4): Force of Negation, Geist of Saint Traft, Polluted Delta, The One Ring | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T)
-  Self GY: Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -1307,19 +652,6 @@
   Player B played Polluted Delta
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  14 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive (T) | Polluted Delta (NEW) | Tundra (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T)
-  Self GY: Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=W
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -1332,21 +664,6 @@
   Searching Player B's library:
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  13 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 46
-  Opp:   19 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Meticulous Archive (T) | Tundra (T)
-  Opp BF:   Aether Vial [charge:3] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (T)
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1364,18 +681,6 @@
   PB: Force of Negation, Geist of Saint Traft, The One Ring
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:3] | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | Wasteland | Witch-Blessed Meadow
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1383,20 +688,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:3] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | Wasteland | Witch-Blessed Meadow
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -1406,17 +697,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 4).
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 70
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | Wasteland | Witch-Blessed Meadow
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1426,18 +706,6 @@
   Player A draws White Orchid Phantom
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | Wasteland | Witch-Blessed Meadow
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1445,18 +713,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(2): White Orchid Phantom, White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | Wasteland | Witch-Blessed Meadow
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -1472,19 +728,6 @@
   Player A casts White Orchid Phantom
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | Wasteland | Witch-Blessed Meadow (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Stack: White Orchid Phantom (spell, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1494,21 +737,6 @@
   Choose target for Wasteland:
 
 --- Decision 66 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | Wasteland | Witch-Blessed Meadow (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Stack: Wasteland (ability, self) -> White Orchid Phantom (spell, self)
-  Pending: Wasteland (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: Meticulous Archive
    1: Tundra
@@ -1523,20 +751,6 @@
   Player A's Wasteland ability targeting Meticulous Archive is on the stack
 
 --- Decision 67 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | Witch-Blessed Meadow (T)
-  Opp BF:   Meticulous Archive (T) | Tundra (T) | Tundra
-  Stack: Wasteland (ability, self) -> Meticulous Archive (opponent, slot 48) -> White Orchid Phantom (spell, self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1546,20 +760,6 @@
   Meticulous Archive is destroyed
 
 --- Decision 68 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | Witch-Blessed Meadow (T)
-  Opp BF:   Tundra (T) | Tundra
-  Stack: White Orchid Phantom (spell, self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1569,20 +769,6 @@
   Choose target for White Orchid Phantom:
 
 --- Decision 69 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T)
-  Opp BF:   Tundra (T) | Tundra
-  Pending: White Orchid Phantom (self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: No target
    1: Tundra
@@ -1595,20 +781,6 @@
   White Orchid Phantom triggered
 
 --- Decision 70 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T)
-  Opp BF:   Tundra (T) | Tundra
-  Stack: White Orchid Phantom (ability, self) -> Tundra (opponent, slot 48)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1620,21 +792,6 @@
   Searching Player B's library:
 
 --- Decision 71 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 9)
-  Self:  13 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 45
-  Opp:   19 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Tundra
-  Opp BF:   Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Stack: White Orchid Phantom (ability, opponent) -> Tundra (self)
-  Pending: White Orchid Phantom (opp)
-  Self GY: Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1646,38 +803,12 @@
   Island enters tapped.
 
 --- Decision 72 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 73 ---
-  Priority: Player A (active)
-  Step: Begin Combat (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1686,19 +817,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 74 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Confirm attackers
@@ -1709,19 +827,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 75 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1730,19 +835,6 @@
     Orcish Bowmasters -> Player B
 
 --- Decision 76 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1751,19 +843,6 @@
   No creatures eligible to block.
 
 --- Decision 77 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   13 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1774,76 +853,24 @@
   --- End Combat Damage ---
 
 --- Decision 78 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=1
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 79 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=1
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=1
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 81 ---
-  Priority: Player A (active)
-  Step: End Step (turn 9)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W | opp life_lost=1
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1855,18 +882,6 @@
   PB: Force of Negation, Geist of Saint Traft, The One Ring
 
 --- Decision 82 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 44
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1875,37 +890,12 @@
   Player B draws Tamiyo, Inquisitive Student
 
 --- Decision 83 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 4 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 84 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  12 life | mana: empty | hand(4): Force of Negation, Geist of Saint Traft, Tamiyo, Inquisitive Student, The One Ring | lib 43
-  Opp:   19 life | mana: empty | hand count: 1 | lib 69
-  Self BF:  Island | Tundra
-  Opp BF:   Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -1915,20 +905,6 @@
   Player B casts Tamiyo, Inquisitive Student
 
 --- Decision 85 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tundra
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1937,38 +913,12 @@
   Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 86 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 87 ---
-  Priority: Player A (non-active)
-  Step: Begin Combat (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1977,76 +927,24 @@
   No creatures eligible to attack.
 
 --- Decision 88 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 89 ---
-  Priority: Player A (non-active)
-  Step: End Combat (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 90 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 91 ---
-  Priority: Player A (non-active)
-  Step: End Step (turn 10)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] (T) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2059,38 +957,12 @@
   PB: Force of Negation, Geist of Saint Traft, Tamiyo, Inquisitive Student, The One Ring
 
 --- Decision 92 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 93 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:4] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -2100,17 +972,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 5).
 
 --- Decision 94 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(1): White Orchid Phantom | lib 69
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2119,36 +980,12 @@
   Player A draws Prismatic Vista
 
 --- Decision 95 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  19 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 96 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(2): Prismatic Vista, White Orchid Phantom | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Prismatic Vista
@@ -2161,19 +998,6 @@
   Player A casts White Orchid Phantom
 
 --- Decision 97 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(1): Prismatic Vista | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Stack: White Orchid Phantom (spell, self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2183,20 +1007,6 @@
   Choose target for White Orchid Phantom:
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(1): Prismatic Vista | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Pending: White Orchid Phantom (self)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: No target
    1: Tundra
@@ -2208,39 +1018,12 @@
   White Orchid Phantom triggered
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(1): Prismatic Vista | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Stack: White Orchid Phantom (ability, self) -> Tundra (opponent, slot 50)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 100 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 43
-  Opp:   19 life | mana: empty | hand count: 1 | lib 68
-  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tundra
-  Opp BF:   Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (T)
-  Stack: White Orchid Phantom (ability, opponent) -> Tundra (self, slot 2)
-  Self GY: Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Tap Tundra for (U)
@@ -2253,21 +1036,6 @@
   Searching Player B's library:
 
 --- Decision 101 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 11)
-  Self:  12 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 43
-  Opp:   19 life | mana: empty | hand count: 1 | lib 68
-  Self BF:  Island (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Opp BF:   Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Stack: White Orchid Phantom (ability, opponent) -> Tundra (self)
-  Pending: White Orchid Phantom (opp)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 colors=W
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -2279,19 +1047,6 @@
   Plains enters tapped.
 
 --- Decision 102 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(1): Prismatic Vista | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: opp_revolt
   Actions:
    0: Pass priority
    1: Play Prismatic Vista
@@ -2301,19 +1056,6 @@
   Player A played Prismatic Vista
 
 --- Decision 103 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(0): (empty) | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Prismatic Vista (NEW) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2325,20 +1067,6 @@
   Player A's Prismatic Vista ability is on the stack
 
 --- Decision 104 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Prismatic Vista (ability, self)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2348,21 +1076,6 @@
   Searching Player A's library:
 
 --- Decision 105 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 68
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Stack: Prismatic Vista (ability, self)
-  Pending: Prismatic Vista (self)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -2373,38 +1086,12 @@
   Player A puts Plains to the battlefield
 
 --- Decision 106 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 107 ---
-  Priority: Player A (active)
-  Step: Begin Combat (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2413,19 +1100,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 108 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: White Orchid Phantom [2/2]
@@ -2437,19 +1111,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 109 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Confirm attackers
@@ -2461,19 +1122,6 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
 
 --- Decision 110 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -2483,19 +1131,6 @@
     White Orchid Phantom -> Player B
 
 --- Decision 111 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2508,19 +1143,6 @@
   Your creatures:
 
 --- Decision 112 ---
-  Priority: Player B (non-active)
-  Step: Declare Blk (turn 11)
-  Self:  12 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 42
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Opp BF:   Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: opp spells=1 drawn=1 life_lost=1 colors=W
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm blockers
@@ -2530,19 +1152,6 @@
     (none)
 
 --- Decision 113 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   12 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2553,19 +1162,6 @@
   --- End First Strike Combat Damage ---
 
 --- Decision 114 ---
-  Priority: Player A (active)
-  Step: First Strike Dmg (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   10 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=2
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2576,76 +1172,24 @@
   --- End Combat Damage ---
 
 --- Decision 115 ---
-  Priority: Player A (active)
-  Step: Combat Dmg (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 116 ---
-  Priority: Player A (active)
-  Step: End Combat (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 117 ---
-  Priority: Player A (active)
-  Step: Second Main (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 118 ---
-  Priority: Player A (active)
-  Step: End Step (turn 11)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] (T) | Plains (NEW) | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Plains (T,NEW) | Tamiyo, Inquisitive Student [0/3] [Flying] (SICK)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2657,18 +1201,6 @@
   PB: Force of Negation, Geist of Saint Traft, The One Ring
 
 --- Decision 119 ---
-  Priority: Player A (non-active)
-  Step: Upkeep (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 42
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2677,37 +1209,12 @@
   Player B draws Mystic Sanctuary
 
 --- Decision 120 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 4 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 121 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  9 life | mana: empty | hand(4): Force of Negation, Geist of Saint Traft, Mystic Sanctuary, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mystic Sanctuary
@@ -2717,38 +1224,12 @@
   Mystic Sanctuary enters tapped.
 
 --- Decision 122 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 123 ---
-  Priority: Player A (non-active)
-  Step: Begin Combat (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2757,19 +1238,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 124 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying]
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Tamiyo, Inquisitive Student [0/3]
    1: Confirm attackers
@@ -2780,19 +1248,6 @@
     [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
 
 --- Decision 125 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (ATK)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -2802,20 +1257,6 @@
   Tamiyo, Inquisitive Student triggered
 
 --- Decision 126 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK)
-  Stack: Tamiyo, Inquisitive Student (ability, opponent)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2825,38 +1266,12 @@
   Token created: 0/0 Clue
 
 --- Decision 127 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 128 ---
-  Priority: Player A (non-active)
-  Step: Declare Atk (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2868,19 +1283,6 @@
   Your creatures:
 
 --- Decision 129 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, not_priority_window, mandatory_choice=Declare Blk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Confirm blockers
@@ -2890,38 +1292,12 @@
     (none)
 
 --- Decision 130 ---
-  Priority: Player B (active)
-  Step: Declare Blk (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 131 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -2931,95 +1307,30 @@
   --- End Combat Damage ---
 
 --- Decision 132 ---
-  Priority: Player B (active)
-  Step: Combat Dmg (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 133 ---
-  Priority: Player A (non-active)
-  Step: Combat Dmg (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 134 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 135 ---
-  Priority: Player A (non-active)
-  Step: End Combat (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,ATK,res 1) | Clue (SICK,NEW)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 136 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  9 life | mana: empty | hand(3): Force of Negation, Geist of Saint Traft, The One Ring | lib 41
-  Opp:   18 life | mana: empty | hand count: 0 | lib 67
-  Self BF:  Island | Mystic Sanctuary (T,NEW) | Plains | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1) | Clue (SICK,NEW)
-  Opp BF:   Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Self GY: Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Opp GY:  Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Self exile: Brainstorm
-  Opp exile:  Phelia, Exuberant Shepherd
-  Opp revealed: Wasteland, Plains, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Prismatic Vista, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Clue token (Draw)  [#0]
@@ -3032,20 +1343,6 @@
   Clue (token) is put into the graveyard and ceases to exist.
 
 --- Decision 137 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 3 | lib 41
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Mystic Sanctuary (T,NEW) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1)
-  Stack: Clue (ability, opponent) [amt=1]
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3056,20 +1353,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 138 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Mystic Sanctuary (T,NEW) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=2
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player B (9 life)
    1: Player A (18 life)
@@ -3083,20 +1366,6 @@
   Orcish Bowmasters triggered
 
 --- Decision 139 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   9 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T)
-  Opp BF:   Island (T) | Mystic Sanctuary (T,NEW) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=2
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3108,38 +1377,12 @@
   Amass Orc 1: Player A Army is now 1/1.
 
 --- Decision 140 ---
-  Priority: Player A (non-active)
-  Step: Second Main (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Mystic Sanctuary (T,NEW) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=2 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 141 ---
-  Priority: Player A (non-active)
-  Step: End Step (turn 12)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] (T,res 1) | Plains | Pre-War Formalwear | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow (T) | Orc Army [1/1] [+1/+1:1] (SICK,NEW)
-  Opp BF:   Island (T) | Mystic Sanctuary (T,NEW) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T,res 1)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: opp drawn=2 life_lost=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3152,38 +1395,12 @@
   PB: Force of Negation, Geist of Saint Traft, The One Ring
 
 --- Decision 142 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 143 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:5] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -3193,17 +1410,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 6).
 
 --- Decision 144 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 67
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3212,36 +1418,12 @@
   Player A draws Arid Mesa
 
 --- Decision 145 ---
-  Priority: Player A (active)
-  Step: Draw (turn 13)
-  Self:  18 life | mana: empty | hand(1): Arid Mesa | lib 66
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 146 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  18 life | mana: empty | hand(1): Arid Mesa | lib 66
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Arid Mesa
@@ -3253,19 +1435,6 @@
   Player A played Arid Mesa
 
 --- Decision 147 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  18 life | mana: empty | hand(0): (empty) | lib 66
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Arid Mesa (NEW) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -3279,20 +1448,6 @@
   Player A's Arid Mesa ability is on the stack
 
 --- Decision 148 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 66
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Arid Mesa (ability, self)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3302,21 +1457,6 @@
   Searching Player A's library:
 
 --- Decision 149 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 66
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Arid Mesa (ability, self)
-  Pending: Arid Mesa (self)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Plains
@@ -3328,19 +1468,6 @@
   Player A puts Scrubland to the battlefield
 
 --- Decision 150 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland (NEW) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Companion: pay {3}, put Yorion, Sky Nomad into your hand
@@ -3351,21 +1478,6 @@
   Choose target for Pre-War Formalwear:
 
 --- Decision 151 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains | Pre-War Formalwear | Scrubland (NEW) | Scrubland | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Pre-War Formalwear (ability, self)
-  Pending: Pre-War Formalwear (self)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Orcish Bowmasters
    1: White Orchid Phantom
@@ -3380,20 +1492,6 @@
   Player A's Pre-War Formalwear ability targeting White Orchid Phantom is on the stack
 
 --- Decision 152 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (T) | Pre-War Formalwear | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [2/2] [Flying, First Strike] | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Stack: Pre-War Formalwear (ability, self) -> White Orchid Phantom (self, slot 6)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3404,38 +1502,12 @@
   White Orchid Phantom gains 2/2 Vigilance (always)
 
 --- Decision 153 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 154 ---
-  Priority: Player A (active)
-  Step: Begin Combat (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3444,19 +1516,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 155 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: White Orchid Phantom [4/4]
@@ -3470,19 +1529,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 156 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [4/4]
    1: White Orchid Phantom [2/2]
@@ -3496,19 +1542,6 @@
     [attacking] White Orchid Phantom [4/4] -> Player B
 
 --- Decision 157 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: White Orchid Phantom [2/2]
    1: Orc Army token [1/1]
@@ -3522,19 +1555,6 @@
     [attacking] White Orchid Phantom [2/2] -> Player B
 
 --- Decision 158 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1]
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [1/1]
    1: Confirm attackers
@@ -3548,19 +1568,6 @@
     [attacking] Orc Army token [1/1] -> Player B
 
 --- Decision 159 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (ATK)
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -3572,19 +1579,6 @@
     Orc Army token -> Player B
 
 --- Decision 160 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T,ATK)
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3593,19 +1587,6 @@
   No creatures eligible to block.
 
 --- Decision 161 ---
-  Priority: Player A (active)
-  Step: Declare Blk (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   8 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T,ATK)
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -3617,19 +1598,6 @@
   --- End First Strike Combat Damage ---
 
 --- Decision 162 ---
-  Priority: Player A (active)
-  Step: First Strike Dmg (turn 13)
-  Self:  17 life | mana: empty | hand(0): (empty) | lib 65
-  Opp:   2 life | mana: empty | hand count: 4 | lib 40
-  Self BF:  Aether Vial [charge:6] (res 1) | Orcish Bowmasters [1/1] [Flash] (T,ATK) | Plains (T) | Pre-War Formalwear (->White Orchid Phantom) | Scrubland (T,NEW) | Scrubland (T) | White Orchid Phantom [4/4] [Flying, First Strike, Vigilance] (eq:Pre-War Formalwear) (ATK) | White Orchid Phantom [2/2] [Flying, First Strike] (T,ATK) | Witch-Blessed Meadow | Orc Army [1/1] [+1/+1:1] (T,ATK)
-  Opp BF:   Island (T) | Mystic Sanctuary (T) | Plains (T) | Tamiyo, Inquisitive Student [0/3] [Flying] (T)
-  Self GY: Arid Mesa, Prismatic Vista, Wasteland, Wasteland, Aether Vial
-  Opp GY:  Tundra, Tundra, Meticulous Archive, Polluted Delta, Wrath of the Skies, Flooded Strand, Swords to Plowshares, Tundra, Force of Will, Brainstorm, Flooded Strand
-  Self exile: Phelia, Exuberant Shepherd
-  Opp exile:  Brainstorm
-  Opp revealed: Flooded Strand, Polluted Delta, Force of Will, Tundra, Island, Brainstorm, Plains, Swords to Plowshares, Wrath of the Skies, Mystic Sanctuary, Tamiyo, Inquisitive Student, Meticulous Archive
-  This turn: self drawn=1 life_lost=1 | opp life_lost=6
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]

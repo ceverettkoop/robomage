@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -55,11 +50,6 @@
   Tropical Island
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Force of Will, Lotus Petal, Quantum Riddler, Tamiyo, Inquisitive Student, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -83,11 +73,6 @@
   Tropical Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -97,11 +82,6 @@
   Player A: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -122,11 +102,6 @@
   Tundra
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -136,11 +111,6 @@
   Player B: Choose card to put on library bottom (1 remaining):
 
 --- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Flooded Strand, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1, bottom_remaining=1
   Actions:
    0: Dark Ritual
    1: Doomsday
@@ -157,11 +127,6 @@
   PB: Dark Ritual, Doomsday, Flooded Strand, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -176,14 +141,6 @@
   PB: Dark Ritual, Doomsday, Doomsday, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Dark Ritual, Doomsday, Doomsday, Polluted Delta, Ponder, Teferi, Time Raveler, Tundra | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -193,15 +150,6 @@
   Player B played Polluted Delta
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Dark Ritual, Doomsday, Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Polluted Delta (NEW)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -214,17 +162,6 @@
   Searching Player B's library:
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Dark Ritual, Doomsday, Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -238,16 +175,6 @@
   Player B puts Underground Sea to the battlefield
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Dark Ritual, Doomsday, Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (NEW)
-  Opp BF:   Tropical Island
-  Self GY: Polluted Delta
-  Opp revealed: Tropical Island
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dark Ritual  [#0]
@@ -260,16 +187,6 @@
   Player B adds 3{B}
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: 3B | hand(5): Doomsday, Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Self GY: Dark Ritual, Polluted Delta
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Doomsday  [#0]
@@ -281,18 +198,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Polluted Delta
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Polluted Delta (graveyard)
@@ -326,19 +231,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Polluted Delta
-  Known top: Thassa's Oracle, ?, ?, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Polluted Delta (graveyard)
@@ -371,19 +263,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Polluted Delta
-  Known top: Edge of Autumn, Thassa's Oracle, ?, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Polluted Delta (graveyard)
@@ -415,19 +294,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Polluted Delta
-  Known top: Street Wraith, Edge of Autumn, Thassa's Oracle, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Polluted Delta (graveyard)
@@ -458,19 +324,6 @@
   Searching Player B's graveyard and library:
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self GY: Dark Ritual, Polluted Delta
-  Known top: Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Dark Ritual (graveyard)
    1: Polluted Delta (graveyard)
@@ -554,19 +407,6 @@
   Choose which card goes 5 from top:
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Brainstorm  [#4]
    1: Street Wraith  [#4]
@@ -577,19 +417,6 @@
   Choose which card goes 4 from top:
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Brainstorm  [#3]
    1: Street Wraith  [#3]
@@ -600,19 +427,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, Street Wraith, Edge of Autumn, Thassa's Oracle
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#2]
    1: Edge of Autumn  [#2]
@@ -622,19 +436,6 @@
   Choose which card goes 2 from top:
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Doomsday, Ponder, Teferi, Time Raveler, Tundra | lib 5
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Underground Sea (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Doomsday (spell, self)
-  Pending: Doomsday (self)
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, Street Wraith, Edge of Autumn
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=B
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Street Wraith  [#1]
    1: Edge of Autumn  [#1]
@@ -654,36 +455,12 @@
   PB: Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler, Tundra
 
 --- Decision 22 ---
-  Priority: Player B (active)
-  Step: Draw (turn 4)
-  Self:  9 life | mana: empty | hand(5): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler, Tundra | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(5): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler, Tundra | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tundra
@@ -694,18 +471,6 @@
   Player B played Tundra
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -713,18 +478,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: Begin Combat (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -733,54 +486,18 @@
   No creatures eligible to attack.
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: End Combat (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -788,18 +505,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: End Step (turn 4)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra (NEW) | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -811,17 +516,6 @@
   PB: Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler
 
 --- Decision 30 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -830,35 +524,12 @@
   Player A draws Tamiyo, Inquisitive Student
 
 --- Decision 31 ---
-  Priority: Player B (non-active)
-  Step: Draw (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tropical Island
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tropical Island
-  This turn: opp drawn=1
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   9 life | mana: empty | hand count: 4 | lib 4
-  Self BF:  Tropical Island
-  Opp BF:   Tundra | Underground Sea
-  Opp GY:  Doomsday
-  Opp exile:  Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Opp revealed: Flooded Strand, Polluted Delta, Ponder, Force of Will, Daze, Tundra, Island, Brainstorm, Doomsday, Dark Ritual, Lotus Petal, Lion's Eye Diamond, Undercity Sewers, Underground Sea, Cavern of Souls, Consider, Scrubland, Veil of Summer, Tamiyo, Inquisitive Student, Tropical Island, Teferi, Time Raveler, Quantum Riddler
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -868,19 +539,6 @@
   Player A casts Tamiyo, Inquisitive Student
 
 --- Decision 33 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tropical Island (T)
-  Stack: Tamiyo, Inquisitive Student (spell, opponent)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -889,36 +547,12 @@
   Tamiyo, Inquisitive Student enters the battlefield
 
 --- Decision 34 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 35 ---
-  Priority: Player B (non-active)
-  Step: Begin Combat (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -927,72 +561,24 @@
   No creatures eligible to attack.
 
 --- Decision 36 ---
-  Priority: Player B (non-active)
-  Step: Declare Atk (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 37 ---
-  Priority: Player B (non-active)
-  Step: End Combat (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 38 ---
-  Priority: Player B (non-active)
-  Step: Second Main (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 39 ---
-  Priority: Player B (non-active)
-  Step: End Step (turn 5)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK,NEW) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=U
-  Extras: opp_passed, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1004,17 +590,6 @@
   PB: Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  9 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 4
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Street Wraith, Thassa's Oracle, Brainstorm, Brainstorm, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1023,18 +598,6 @@
   Player B draws Street Wraith
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  9 life | mana: empty | hand(5): Doomsday, Edge of Autumn, Ponder, Street Wraith, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1042,18 +605,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  9 life | mana: empty | hand(5): Doomsday, Edge of Autumn, Ponder, Street Wraith, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -1065,19 +616,6 @@
   Player B activates Street Wraith from hand
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  7 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 3
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Street Wraith (ability, self) [amt=1]
-  Self GY: Street Wraith, Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Thassa's Oracle, Brainstorm, Brainstorm, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1 life_lost=2
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1087,18 +625,6 @@
   Player B draws Thassa's Oracle
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  7 life | mana: empty | hand(5): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler, Thassa's Oracle | lib 2
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra | Underground Sea
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Street Wraith, Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=2 life_lost=2
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -1111,19 +637,6 @@
   Player B casts Thassa's Oracle
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  7 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 2
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Tundra (T) | Underground Sea (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Thassa's Oracle (spell, self)
-  Self GY: Street Wraith, Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=2 life_lost=2 colors=U
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1133,19 +646,6 @@
   Thassa's Oracle triggered
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  7 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 2
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Thassa's Oracle [1/3] (SICK,NEW) | Tundra (T) | Underground Sea (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Thassa's Oracle (ability, self) [amt=1]
-  Self GY: Street Wraith, Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=2 life_lost=2 colors=U
-  Extras: self_mulligans=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Edge of Autumn from hand (Draw)  [#1]
@@ -1155,20 +655,6 @@
   Player B looks at the top 2 card(s) of their library.
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  7 life | mana: empty | hand(4): Doomsday, Edge of Autumn, Ponder, Teferi, Time Raveler | lib 2
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Thassa's Oracle [1/3] (SICK,NEW,res 1) | Tundra (T) | Underground Sea (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Thassa's Oracle (ability, self) [amt=1]
-  Pending: Thassa's Oracle (self)
-  Self GY: Street Wraith, Doomsday
-  Self exile: Veil of Summer, Veil of Summer, Veil of Summer, Underground Sea, Undercity Sewers, Tropical Island, Tropical Island, Teferi, Time Raveler, Teferi, Time Raveler, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Tamiyo, Inquisitive Student, Scrubland, Quantum Riddler, Ponder, Ponder, Ponder, Polluted Delta, Polluted Delta, Lotus Petal, Lotus Petal, Lotus Petal, Lotus Petal, Lion's Eye Diamond, Island, Force of Will, Force of Will, Force of Will, Force of Will, Flooded Strand, Flooded Strand, Flooded Strand, Flooded Strand, Doomsday, Doomsday, Daze, Daze, Daze, Daze, Dark Ritual, Dark Ritual, Dark Ritual, Consider, Cavern of Souls, Brainstorm, Brainstorm, Polluted Delta, Dark Ritual
-  Known top: Brainstorm, Brainstorm, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 drawn=2 life_lost=2 colors=U
-  Extras: not_priority_window, self_mulligans=1, opp_mulligans=1
   Actions:
    0: Put nothing on top of library (rest go to the bottom of library)
    1: Brainstorm

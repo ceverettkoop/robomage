@@ -1,5 +1,8 @@
 #ifndef SNAPSHOT_H
 #define SNAPSHOT_H
+
+#include <string>
+
 // In-process deep-copy snapshot/restore of the complete per-game state
 // (cur_game + ECS + card_db + match revealed arrays), for MCTS search.
 //
@@ -13,10 +16,17 @@
 inline constexpr int N_SNAPSHOT_SLOTS = 4;
 bool snapshot_save(int slot);       // deep copy current state into slot; false on bad slot
 bool snapshot_restore(int slot);    // restore state from slot; false if slot empty/bad
+// snapshot_restore without the post-restore hook: the derived state the hook would re-derive
+// (g_active_statics) is left as it is, for a caller that saved and puts back its own copy (the
+// --selfcheck-state snapshot check, which must see the saved decision exactly as it was).
+bool snapshot_restore_exact(int slot);
 bool snapshot_slot_live(int slot);  // slot holds a snapshot
 bool snapshot_slot_is_match(int slot);      // slot holds a live MATCH-scoped snapshot
 bool snapshot_any_match_scope_live();       // any slot holds a live MATCH-scoped snapshot
 void snapshot_release_all();        // drop all snapshots
+// Debug builds print a [save] / [restore] trace line on stderr for every save and restore; off
+// while `quiet` is set (the --selfcheck-state snapshot check saves and restores at decisions).
+void snapshot_set_quiet(bool quiet);
 
 // Post-restore hook, run at the end of every successful snapshot_restore().
 // The snapshot covers only AUTHORITATIVE state; DERIVED global state
@@ -28,4 +38,11 @@ void snapshot_release_all();        // drop all snapshots
 // world-consistency violation. init_ecs registers apply_continuous_effects
 // here so every restore re-derives the statics at the same choke point.
 void snapshot_set_post_restore_hook(void (*hook)());
+
+// Sidecar state hooks: state kept outside cur_game, the ECS and the match stores that a restored
+// decision must find as it was (the RMSTATE knowledge instances, state_format/knowledge_feed.h,
+// which register them with their first instance). Every snapshot_save calls `save` for a blob the
+// slot keeps, and every restore of that slot calls `restore` with it; a slot saved before the
+// hooks were registered restores an empty blob. Unregistered (the default), nothing is saved.
+void snapshot_set_sidecar_hooks(void (*save)(std::string &blob), void (*restore)(const std::string &blob));
 #endif

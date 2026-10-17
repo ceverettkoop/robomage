@@ -2259,7 +2259,8 @@ def observe(binary_path: str,
             n_games: int = 1, bo3: bool = False,
             seed: int | None = None, verbose: bool = False,
             quiet: bool = False, out: str | None = None,
-            max_decisions: int | None = None, timing: bool = False):
+            max_decisions: int | None = None, timing: bool = False,
+            machine_format: str = "bquery"):
     """Observe one or more games between any pair of agent controllers.
 
     ``player_a``/``player_b`` are ``opponents.make_controller`` specs: "scripted"
@@ -2281,7 +2282,9 @@ def observe(binary_path: str,
     one file per matchup for review; a draw is a finding and is also saved to
     draw_<stamp>.txt). ``timing`` prints the engine throughput line after the
     run; with ``quiet`` too the engine runs without narrative (the lean
-    benchmark path). ``max_decisions`` caps each game/match.
+    benchmark path). ``max_decisions`` caps each game/match. ``machine_format``
+    "rmstate" plays over the RMSTATE protocol through the pass-1 parity adapter
+    (``runner.run_games``).
 
     This is a thin wrapper: the actual game-driving loop lives in
     ``runner.run_games`` (shared with the test harness).
@@ -2315,7 +2318,7 @@ def observe(binary_path: str,
             binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=n_games, bo3=bo3, seed=seed, transcript=transcript,
             max_decisions=max_decisions, on_game_end=records.append,
-            narrative=not (timing and quiet_transcript))
+            narrative=not (timing and quiet_transcript), machine_format=machine_format)
 
     t0 = time.perf_counter()
     if out:
@@ -2532,7 +2535,8 @@ if __name__ == "__main__":
                 deck_a=args.deck_a, deck_b=args.deck_b,
                 n_games=args.games, bo3=is_bo3(args), seed=args.seed,
                 verbose=args.verbose, quiet=args.quiet, out=args.out,
-                max_decisions=args.max_decisions, timing=args.timing)
+                max_decisions=args.max_decisions, timing=args.timing,
+                machine_format=args.machine_format)
     elif args.command == "baseline":
         import az_baseline
         az_baseline.run(args, python_sweep=baseline_sweep,

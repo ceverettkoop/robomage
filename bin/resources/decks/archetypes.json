@@ -3,11 +3,18 @@
     "Deck -> strategic archetype tags. Keys are deck stems relative to",
     "bin/resources/decks/ (no '.dk'), exactly as decks are referenced on the",
     "command line (e.g. 'league/ur_delver'). Values must be one of the",
-    "archetypes listed in train/archetypes.py (ARCHETYPES); an unmapped deck",
+    "archetypes listed in _archetypes below; an unmapped deck",
     "falls back to the 'unknown' bucket, EXCEPT for league roster decks, which",
     "must all be tagged here (train.py league() validates the roster loudly).",
-    "Keys starting with '_' are ignored."
+    "Keys starting with '_' are ignored by the deck mapping.",
+    "_archetypes is the canonical archetype list, in index order (train/archetypes.py",
+    "ARCHETYPES, the engine's METAGAME frame). The index is a persisted contract (checkpoint",
+    "value-head columns, the observation tail): APPEND new archetypes at the end, never reorder.",
+    "Every tagged deck whose .dk file exists and whose cards are all in src/card_vocab.h is a",
+    "reference list of the reference metagame the engine sends in its METAGAME frame",
+    "(docs/state_format.md section 4)."
   ],
+  "_archetypes": ["tempo", "slow_midrange", "control", "burn", "lands", "doomsday", "reanimator"],
 
   "league/ur_delver": "tempo",
   "league/wrb_energy": "tempo",

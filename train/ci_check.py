@@ -84,9 +84,12 @@ fails, so one invocation reports every finding):
           -3, accepted wherever the engine reads a decision): a bo1 concede
           loses for the conceding seat, a bo3 game concede is an ordinary game
           loss the match continues past (sideboard, game 2), a match concede
-          ends the match with MATCH_RESULT naming the opponent, and the
-          sentinel is logged so --replay reproduces the concession
-          (train/test_concede.py). Torch-free; needs bin/robomage; ~0.5s.
+          ends the match with MATCH_RESULT naming the opponent, the
+          sentinel is logged so --replay reproduces the concession, and a
+          concession at a parked query (a mid-resolution put-back, an SBE-pass
+          ETB choice; BQUERY and --machine-format rmstate) ends the game at once
+          with nothing parked left (train/test_concede.py). Torch-free; needs
+          bin/robomage; ~2s.
   scenarios The rules-regression scenarios (train/regression/scenarios/*.json,
           run by train/test_scenarios.py): sculpted bo1 test_harness games,
           each pinning the rules outcome of one fixed engine bug (a narrative
@@ -143,11 +146,64 @@ fails, so one invocation reports every finding):
           (evaluate_batch rows, real-net agreement) self-skip without torch
           (train/test_xw_search.py).
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
-          matches — catches unintended narrative/behavior drift.
+          matches — catches unintended narrative/behavior drift. Played by the
+          RMSTATE driver (rm_driver.py), scripted hard on its frame view.
+  rmstate The RMSTATE state format (train/test_selfcheck_state.py, with
+          train/test_rmstate.py's decode checks): the engine's --selfcheck-state
+          self-checks (roundtrip, scramble and permutation leak checks, names in
+          text, complete, snapshot) over the replay corpus (still byte-identical,
+          with --selfcheck-knowledge too: one errors=0 SELFCHECK-STATE and
+          SELFCHECK-KNOWLEDGE summary per game), a short explore fuzz
+          (bo1 + bo3, face-down exile and name-a-card decks, some games sampled
+          at every decision) and every rules-regression scenario; the Python vs
+          C++ decode comparison on the fuzz games' --rmstate-dump files, the
+          decoders' refusals and --machine-format rmstate sessions (one under
+          --closed-decklist); the name-a-card candidate sets with open and closed
+          decklists; and the include-isolation grep over the knowledge-side
+          sources (decode/schema/json/recode, src/knowledge/). Flags reach the
+          engines through $ROBOMAGE_ENGINE_FLAGS. Needs bin/robomage; ~2.5 min.
+  knowledge The knowledge sidecar (train/test_knowledge.py): rmknow --selftest
+          and --exactness; an explore fuzz (bo1 + bo3 with sideboarding; put-back,
+          tutor, discard, Sylvan Library and face-down exile decks) under
+          --selfcheck-knowledge (every k_* fact of both seats against the engine
+          state's truth, zero tolerance; the knowledge state across snapshot
+          restores); --machine-format rmstate sessions (bo1, bo3, a
+          --closed-decklist bo3) each with a --rmstate-dump: every stream frame
+          equals the dump's for that seat and decision, k_* tables included, and
+          rmknow --isolation recomputes every seat frame's k_* from each writer's
+          own frames byte for byte; rmknow --truth on every dump; archetype
+          inference; the belief layer (expert+belief: structure, calibration
+          sessions, rmknow --belief-exactness). The replay corpus runs under
+          --selfcheck-knowledge in the rmstate tier. Needs bin/robomage and
+          bin/rmknow; ~2 min.
+  agentparity The scripted agent on RMSTATE (train/test_agent_parity.py, plan
+          step 2 pass 1): its card knowledge from a closed-decklist CARDS frame
+          equals the generated tables' on every vocab card; replay-corpus games
+          played over --machine-format rmstate through the parity adapter equal
+          the committed corpus transcripts (board block left out, hand lines
+          sorted); scripted-hard smoke games (two bo3) played on both protocols
+          equal each other; a game listed in
+          regression/agent_parity_divergences.json (a classified old-vector
+          leak or quirk) is compared with its re-recorded RMSTATE baseline.
+          Needs bin/robomage; ~2 min.
+  rmagent The scripted agent's RMSTATE view and the RMSTATE driver
+          (train/test_rm_agent.py, plan step 2): every card the decision rules
+          name is a CARDS card; the card knowledge of a closed-decklist CARDS
+          frame's structured columns (rm_agent.FrameCards) answers as the
+          generated tables do on every vocab card except the listed,
+          rules-correct differences; scripted-hard bo3 matches under
+          --closed-decklist, played by the driver (rm_driver.py), finish; the
+          driver's engine seeds are the gymnasium env's, its hand-line names the
+          vocab's, its verbose bo3 transcripts (hard, explore, explore:patient)
+          equal runner.run_games' on RMSTATE, and concessions score as the
+          engine does. Needs bin/robomage; ~15s.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
-          lines) across the league mirrors + a ring of crosses. Fixed seeds.
-  fuzz    Short random coverage fuzz (the 'explore' agent) over the league
-          mirrors. Fixed seeds on PR (a red run is the diff's fault); the nightly
+          lines) across the league mirrors + a ring of crosses, played by the
+          RMSTATE driver (rm_driver.py; the agent's frame view, rm_agent.py).
+          Fixed seeds.
+  fuzz    Short random coverage fuzz (the 'explore' agent, explore_agent.py)
+          over the league mirrors, played by the RMSTATE driver on its frame view.
+          Fixed seeds on PR (a red run is the diff's fault); the nightly
           workflow rotates the seed and widens to every matchup.
 
 Opt-in tiers (valid for --tier, NOT part of the default run):
@@ -221,7 +277,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import runner
 import missing_cards
-from opponents import make_controller
+import rm_driver
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 _DECKS_ROOT = os.path.join(_REPO_ROOT, "bin", "resources", "decks")
@@ -241,7 +297,8 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", 
              "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
-             "mirror", "xwsearch", "replay", "smoke", "fuzz"]
+             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "smoke",
+             "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -541,9 +598,10 @@ def tier_concede(rep):
     Drives the engine's out-of-band concede sentinels through RoboMageEnv: bo1
     concede loses for the conceding seat, a bo3 game concede leaves the match
     running (sideboard phase, game 2), a match concede ends it with the
-    opponent as MATCH_RESULT winner, and the sentinel is recorded in the
-    decision log so --replay reproduces the concession. Torch-free; needs
-    bin/robomage; well under a second."""
+    opponent as MATCH_RESULT winner, the sentinel is recorded in the
+    decision log so --replay reproduces the concession, and a concession at a
+    parked mid-flow query discards the conceded game's suspended state (BQUERY
+    and --machine-format rmstate). Torch-free; needs bin/robomage; ~2s."""
     r = subprocess.run([sys.executable, "train/test_concede.py"],
                        cwd=_REPO_ROOT, capture_output=True, text=True)
     print(r.stdout, end="", flush=True)
@@ -832,10 +890,68 @@ def tier_replay(rep):
                             "if the behavior change is expected")
 
 
+def tier_rmstate(rep, out_dir):
+    """The state format's self-checks, decoders and include isolation (test_selfcheck_state.py)."""
+    work = os.path.join(out_dir, "rmstate")
+    r = subprocess.run([sys.executable, "train/test_selfcheck_state.py", "--binary", runner.BINARY,
+                        "--out-dir", work], cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_selfcheck_state.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("rmstate", msg)
+        print("  reproduce: train/.venv/bin/python train/test_selfcheck_state.py "
+              "[--part corpus|fuzz|scenarios|decode|isolation]", flush=True)
+
+
+def tier_knowledge(rep, out_dir):
+    """The knowledge sidecar's checks over real games (test_knowledge.py)."""
+    work = os.path.join(out_dir, "knowledge")
+    r = subprocess.run([sys.executable, "train/test_knowledge.py", "--binary", runner.BINARY,
+                        "--out-dir", work], cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_knowledge.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("knowledge", msg)
+        print("  reproduce: train/.venv/bin/python train/test_knowledge.py [--part <part>]", flush=True)
+
+
+def tier_agentparity(rep, out_dir):
+    """The scripted agent on RMSTATE against BQUERY (test_agent_parity.py)."""
+    r = subprocess.run([sys.executable, "train/test_agent_parity.py", "--binary", runner.BINARY],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    with open(os.path.join(out_dir, "agentparity.err"), "w") as f:
+        f.write(r.stderr)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_agent_parity.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("agentparity", msg)
+        print("  reproduce: train/.venv/bin/python train/test_agent_parity.py [--part cards|corpus|smoke] "
+              "[--lockstep GAME]", flush=True)
+
+
+def tier_rmagent(rep, out_dir):
+    """The scripted agent's RMSTATE view (test_rm_agent.py)."""
+    r = subprocess.run([sys.executable, "train/test_rm_agent.py", "--binary", runner.BINARY],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    with open(os.path.join(out_dir, "rmagent.err"), "w") as f:
+        f.write(r.stderr)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_rm_agent.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("rmagent", msg)
+        print("  reproduce: train/.venv/bin/python train/test_rm_agent.py [--part names|cards|closed|driver]",
+              flush=True)
+
+
 def _run_capturing(out_path, run_fn):
-    """Run run_fn() capturing both Python stdout AND the engine subprocess's
-    stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
-    run_fn returns; a raised exception propagates after capture is torn down."""
+    """Run run_fn() capturing both Python stdout AND this process's stderr (fd 2:
+    the driver's copies of the engine's diagnostic lines) into out_path. Returns
+    whatever run_fn returns; a raised exception propagates after capture is torn
+    down."""
     with open(out_path, "w") as fh:
         # Engine stderr goes to a temp file via an fd-2 dup, then is appended to
         # the transcript (fd-level and Python-level writes to one file would race
@@ -866,8 +982,9 @@ def _play_game(task):
     """Play one game of a smoke/fuzz matchup (a process-pool task).
 
     Games are independent — each gets its own engine process, its own seed and
-    fresh controllers — so one task per game plays exactly the games a
-    sequential run_games(n_games=N, seed=S) loop would (game i = seed S+i).
+    fresh agents — so one task per game plays exactly the games a sequential
+    rm_driver.run_games(n_games=N, seed=S) loop would (game i = seed S+i), over
+    --machine-format rmstate (the agents on the seat's decoded frame).
     Runs in its own working directory so the draw_<stamp>.txt log run_games
     writes there is attributed to this game, then moves it into out_dir.
     Returns (wins, losses, draws), the crash message (None if the engine didn't
@@ -881,11 +998,10 @@ def _play_game(task):
     result = {}
 
     def run_fn():
-        result["wld"] = runner.run_games(
-            make_controller(mode), make_controller(mode),
-            label_a=f"A:{mode}", label_b=f"B:{mode}",
-            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed,
-            verbose=True)
+        result["wld"] = rm_driver.run_games(
+            mode, mode, label_a=f"A:{mode}", label_b=f"B:{mode}",
+            binary=runner.BINARY, deck_a=deck_a, deck_b=deck_b, n_games=1,
+            seed=seed, transcript="verbose")
 
     crashed = None
     try:
@@ -932,7 +1048,8 @@ def _write_matchup_transcript(out_path, games, base_seed, mode):
 
 
 def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
-    """Run each matchup as scripted games, classify draws, scan transcripts.
+    """Run each matchup as agent games (the RMSTATE driver), classify draws, scan
+    transcripts.
 
     Matchup k's game i uses seed base_seed + 1000*k + i. Every game is
     independent (own engine process and seed), so all of them run in one
@@ -976,13 +1093,14 @@ def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
 
 
 def tier_smoke(rep, args, out_dir):
-    """Deterministic league smoke with the scripted hard agent."""
+    """Deterministic league smoke with the scripted hard agent, on its RMSTATE frame view."""
     pairs = _matchups(args.matchups or "mirrors+ring")
     _run_matchups(rep, "smoke", pairs, "scripted", args.smoke_games, args.seed, out_dir)
 
 
 def tier_fuzz(rep, args, out_dir):
-    """Short fixed-seed coverage fuzz over league matchups."""
+    """Short fixed-seed coverage fuzz over league matchups, the explore tier on its RMSTATE
+    frame view."""
     pairs = _matchups(args.matchups or "mirrors")
     _run_matchups(rep, "fuzz", pairs, args.mode, args.fuzz_games, args.seed, out_dir)
 
@@ -1205,6 +1323,10 @@ _TIER_FNS = {
     "mirror": lambda rep, args, out_dir: tier_mirror(rep),
     "xwsearch": lambda rep, args, out_dir: tier_xwsearch(rep),
     "replay": lambda rep, args, out_dir: tier_replay(rep),
+    "rmstate": lambda rep, args, out_dir: tier_rmstate(rep, out_dir),
+    "knowledge": lambda rep, args, out_dir: tier_knowledge(rep, out_dir),
+    "agentparity": lambda rep, args, out_dir: tier_agentparity(rep, out_dir),
+    "rmagent": lambda rep, args, out_dir: tier_rmagent(rep, out_dir),
     "smoke": tier_smoke,
     "fuzz": tier_fuzz,
     "actor": lambda rep, args, out_dir: tier_actor(rep),
@@ -1247,13 +1369,17 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "scenarios", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios",
+                  "obsinv",
+                  "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "scenarios", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "rmagent", "scenarios", "obsinv",
+        "snapshot",
+        "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):

@@ -14,6 +14,8 @@
 #include "game_driver.h"
 #include "input_logger.h"
 #include "search_server.h"
+#include "state_format/recode.h"
+#include "state_format/stream.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.2"
@@ -94,6 +96,10 @@ int main(int argc, char const *argv[]) {
     if (search_server_mode && (replay_mode || log_decisions_flag || has_human_player)) {
         fatal_error("--search-server is incompatible with --replay, --log-decisions, and --player");
     }
+
+    // --rmstate-read: an offline stream check; no game is played.
+    if (!rmstate_read_path.empty()) return rmstate_read_stream(rmstate_read_path, state_dump_json);
+    rmstate_outputs_init();
 
     game_loop();
     return 0;

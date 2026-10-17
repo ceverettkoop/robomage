@@ -28,8 +28,7 @@ namespace effects {
 // amassed type, then put the counters on it.
 HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) {
     int n = static_cast<int>(ab.def->amount);
-    const AmassParams *ap = std::get_if<AmassParams>(&ab.def->params);
-    std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
+    std::string subtype = amass_subtype(*ab.def);
 
     Zone::Ownership ctrl = ab.controller;  // "you amass" = the ability's controller (CR 109.5)
 
@@ -44,10 +43,7 @@ HandlerResult amass(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx
     if (army == 0) {
         // No Army: create a 0/0 black <subtype> Army token (token script named
         // "b_0_0_<subtype>_army", matching the existing orc/zombie/sliver scripts).
-        std::string lc = subtype;
-        std::transform(lc.begin(), lc.end(), lc.begin(),
-                       [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
-        Token tok = parse_token_script("b_0_0_" + lc + "_army");
+        Token tok = parse_token_script(amass_army_token_script(subtype));
         if (tok.name.empty()) {
             game_log("Amass: no token script for '%s' army.\n", subtype.c_str());
             return HandlerResult::DONE_RUN_SUBS;
@@ -84,6 +80,17 @@ bool parse_amass(AbilityDef &ab, const std::string &key, const std::string &valu
     if (key == "Type") { effect_params<AmassParams>(ab).subtype = value; return true; }
     if (key == "Num")  { ab.amount = static_cast<size_t>(std::stoi(value)); return true; }
     return false;
+}
+
+std::string amass_army_token_script(const std::string &subtype) {
+    std::string lc = subtype;
+    std::transform(lc.begin(), lc.end(), lc.begin(), [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    return "b_0_0_" + lc + "_army";
+}
+
+std::string amass_subtype(const AbilityDef &def) {
+    const AmassParams *ap = std::get_if<AmassParams>(&def.params);
+    return (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
 }
 
 }  // namespace effects

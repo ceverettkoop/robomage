@@ -24,8 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   add your own `is_phased_out` check at the call site. The only code that reads
   `Permanent::is_phased_out` directly is the phasing subsystem itself (the untap-step
   phase-in/skip in `classes/game.cpp`), the phase-out setter in `effects/effect_phases.cpp`,
-  and the observation serializer in `machine_io.cpp` (which deliberately includes phased-out
-  permanents, flagged).
+  and the observation serializers — `machine_io.cpp` and the state-format encoder
+  `state_format/encode.cpp` — which deliberately include phased-out permanents, flagged.
   Add similar shared accessors (in the `src/queries/` header for their concern) when a new
   entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
@@ -99,7 +99,7 @@ has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one co
 via `train/gen_util.py`, so unchanged outputs force no recompile).
 - **Committed** (derived from tracked sources; the `pygen` CI tier guards only these):
   `train/_enums.py` (C++ headers) and `src/gen/archetypes_gen.h` (`train/archetypes.py` +
-  `bin/resources/decks/archetypes.json`).
+  `bin/resources/decks/archetypes.json`, whose `_archetypes` key is the canonical label list).
 - **Untracked**, rebuilt locally every build: `train/card_costs.py`, `train/card_props.py`,
   `src/gen/card_costs_gen.h` (from gitignored, Forge-fetched card-script content) and
   `train/sb_rules.py` + `src/gen/sb_rules_gen.h` (from `train/sb_dead_rules.json`). A vocab
@@ -342,6 +342,8 @@ Disruptor Flute, Petrified Hamlet) do **not** offer every card. `build_name_card
 relevant deck(s), filtered by `ValidCards$`. `NameCardScope` selects the source: `CHOOSER_ONLY`
 (one player's whole deck) or `BOTH_PLAYERS` (either player's cards, de-duped — used for
 land-naming), so a land-naming card can still name a land only in the opponent's deck.
+Under `--closed-decklist` (register 11a) the set is instead every vocab card passing `ValidCards$`
+(read from the parse cache, no entities), which needs `--machine-format rmstate` (uncapped menu).
 
 ### Card scripts and parsing
 
@@ -431,6 +433,11 @@ state, persisted across the per-game ECS reset; `src/classes/match_state.{h,cpp}
 `--machine`: at each decision the engine prints a `BQUERY` header + binary payload on stdout and
 reads one integer on stdin; other stdout lines are narrative. Emitter: `emit_machine_frame` in
 `src/cli_output.cpp` (layout comment at the top of `src/machine_io.h`).
+`--machine-format rmstate` instead writes the deciding seat's RMSTATE frames (`RMSTATE <nbytes>\n`
++ payload, `docs/state_format.md` §9) as the only stdout output (everything else goes to stderr),
+answered by the same one integer, plus a terminal frame per seat at match end; the default is unchanged.
+Every seat's STATE frame (stream and `--rmstate-dump`) ends with that seat's knowledge-sidecar tables
+(`k_*`, `--knowledge-a/-b off|expert`, default expert; `docs/knowledge_store.md` §9.6).
 ```
 BQUERY: <N> <STATE_SIZE> <MAX_ACTIONS>\n
 float32[STATE_SIZE] state   (priority player's = "self" perspective)
@@ -533,9 +540,42 @@ sections above are not repeated here.
   controller, `Defined$` player), `affected` (the objects / player an effect acts on:
   targets or `Defined$`), `player_resources` (life, energy), `player_effects`, `combat`, `damage`,
   `attachments` (equip), `activation`, `spells`, `zones` (graveyard/exile, play permissions, linked
-  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`
+  exile), `lki` (object identity stamp, last-known info), `entry` (`EntryInfo`), `delayed_triggers`,
+  `visibility` (what a viewer sees: `identity_visible`, reveal windows, `individually_identifiable`,
+  `canonical_object_order`, and `visible_card_id` / `card_identity`, the state format's one
+  identity read), `pending_cost` (the cost being paid at a decision, `CostPaymentScope`)
 - `src/resolution_frame.h`, `src/pending_query.h` — suspension protocol that parks mid-resolution
   decisions (makes every prompt a search root)
+- `src/state_format/handles.{h,cpp}` — per-viewer opaque handle tables (A, B, omniscient) on
+  `Game`: issue, old → new links at zone changes, retirement; `--trace-handles`
+- `src/state_format/schema.{h,cpp}` — the RMSTATE format's single definition (std-only): table/column
+  definitions, the format's enums, the frame writer (debug-checked rows), SCHEMA frame and hash
+- `src/state_format/enum_names.{h,cpp}` — the engine's enums as SCHEMA string tables, type-mask and
+  keyword indices
+- `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
+- `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
+  (and `--state-dump json`'s `FILE.jsonl`)
+- `src/state_format/stream.{h,cpp}` — `--machine-format rmstate` (the deciding seat's frames on
+  stdout) and the per-decision / match-end bookkeeping both frame writers share
+- `src/state_format/decode.{h,cpp}` — RMSTATE bytes → plain structs (std + `schema.h` only): schema
+  from the SCHEMA frame, generic table decode, re-encode, stream record reader
+- `src/state_format/json.{h,cpp}` — `--state-dump json`: a decoded frame as one JSON line;
+  `recode.{h,cpp}` — `--rmstate-read FILE` (decode → re-encode byte check, JSON to stdout)
+- `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
+  shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
+  (match-long `seq`), drained into each STATE frame; `--trace-events`
+- `src/state_format/metagame.{h,cpp}` — the reference metagame (`bin/resources/decks/archetypes.json`:
+  labels and tagged reference lists) the `METAGAME` frame carries, read once per process
+- `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
+  per frame writer (dump, stream, self-check) and seat, fed that writer's frames, appending `k_*` to
+  each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks (`snapshot_set_sidecar_hooks`)
+- `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
+  (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
+  (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
+  `ERROR:` lines, `SELFCHECK-STATE:` summary; `selfcheck_knowledge.{h,cpp}` — `--selfcheck-knowledge`
+  (implies `--selfcheck-state`): every `k_*` fact of both seats against the true world built from
+  the engine state, and the knowledge state across the snapshot check's restore;
+  `SELFCHECK-KNOWLEDGE:` summary
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;
@@ -545,6 +585,19 @@ sections above are not repeated here.
 - `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, actor provider), RMLOG, concede
   sentinels
 - `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
+- `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
+  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
+  METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
+  §10); the shared soundness check `truth.h`; std + `state_format/decode.h`/`schema.h` only;
+  `docs/knowledge_store.md` §9-10)
+- `src/knowledge/belief.{h,cpp}` — the belief layer (level `expert+belief`, `b_list` / `b_archetype`):
+  each reference list's likelihood as the weighted world count of its hypothesis network, the
+  posterior in fixed point (`docs/knowledge_store.md` §10.6)
+- `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
+  (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
+  engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator,
+  `--belief` / `--hide-lists` calibration lines, `--belief-exactness N` vs the weighted enumerator and
+  `generative.h`, the belief model played out directly)
 
 **AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
 Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
@@ -557,7 +610,19 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 **Python core (`train/`)**
 - `env.py` — `RoboMageEnv` / `ModelVsScriptedEnv` / `SelfPlayEnv`; obs offsets; re-exports
   `scripted_action` (back-compat)
-- `scripted_agent.py` — the rule-based `ScriptedAgent` (all `scripted:*` tiers)
+- `scripted_core.py` — the rule-based scripted agent's decisions (`ScriptedCore`, all `scripted:*`
+  tiers) over an abstract view of a decision (card names, engine enum names; no numpy)
+- `scripted_agent.py` — the agent on the BQUERY vector: `VectorView`, `ScriptedAgent.act(obs, n)`,
+  `make_agent`, `scripted_action`, the vocab card knowledge (`use_card_knowledge`)
+- `rm_agent.py` — the agent on RMSTATE (step-2 pass 2): one seat's decoded frames and `k_*` tables
+  as the core's view (`SeatFrames`, `FrameView`), card knowledge from `CARDS`' structured columns
+  (`FrameCards`); the default `scripted` view on `--machine-format rmstate`
+- `explore_agent.py` — the `explore` / `explore:patient` coverage fuzzer's decision rule
+  (`explore_choice`, called by `ScriptedCore`; its rules listed in the docstring for a port)
+- `rm_driver.py` — the stdlib-only agent-game driver on `--machine-format rmstate` (step 2):
+  engine subprocess, frame read, reply write; scripted tiers, explore, `first`, `actions:`;
+  `run_games` / `play_game`, the corpus-format transcripts; its own CLI (`CLI_FLAGS`, registered
+  as `cli_spec.DRIVER_TOOL`); runs the `replay`, `smoke` and `fuzz` tiers (`docs/game_running.md`)
 - `runner.py` — `drive_game` / `run_games` / `run_match` (see `docs/game_running.md`)
 - `opponents.py` — `Controller`, `make_controller` spec grammar, training pools, and THE model-spec
   resolver (`parse_model_spec` / `strip_spec_knobs` → `load_spec_evaluator` / `load_spec_net` /
@@ -566,8 +631,20 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `decode.py` — obs/action decoders shared by every front end (torch-free)
 - `cli_spec.py` — every CLI flag and `Tool`/subcommand definition (stdlib-only)
 - `extractor.py` — `CardGameExtractor` policy trunk; `popart.py` — per-bucket value normalization
-- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`)
+- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`,
+  also the engine's reference metagame source)
 - `action_spec.py` — `--play` semantic spec resolver (see Test harness)
+- `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
+  arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
+- `rmstate_adapter.py` — the step-2 pass-1 parity adapter: the old observation the scripted agent
+  reads, rebuilt from one seat's RMSTATE frames and `k_*` tables (`SeatAdapter`), and its card
+  knowledge from `CARDS` / `DECKLISTS` (`FrameCardKnowledge`; the agent reads cards through
+  `scripted_agent.use_card_knowledge`)
+- `rmstate_env.py` — `RMStateNarrativeEnv`: the engine on `--machine-format rmstate`, each seat's
+  frames into `rm_agent.SeatFrames` and the adapter (whole observation only for
+  `scripted?view=vector`); `runner.run_games(machine_format="rmstate")` / `--machine-format
+  rmstate` (observe, the harness) select it, for `rmstate_capable` controllers (scripted tiers,
+  auto, actions:, play:)
 
 **Training (`train/`)**
 - `train.py` — CLI for PPO (`train`, `league`, `exploiter`, …), `observe`, `baseline`, `curriculum`,
@@ -604,6 +681,22 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   `treerebuild`, `azinspect`, `gui`); its module docstring maps each tier to its `test_*.py`
 - `test_harness.py` — card-behavior harness (see Test harness)
 - `test_scenarios.py` — rules-regression scenarios (`train/regression/scenarios/*.json`, tier `scenarios`)
+- `test_agent_parity.py` — tier `agentparity`: the scripted agent's vector view on RMSTATE plays the
+  games it plays on BQUERY (card knowledge, corpus and smoke games; the light corpus set's BQUERY
+  games frozen in `regression/agent_parity/bquery_corpus/`; listed divergences in
+  `regression/agent_parity_divergences.json`; `--lockstep GAME` attributes one)
+- `test_rm_agent.py` — tier `rmagent`: the agent's RMSTATE frame view (card names, `FrameCards`
+  against the generated tables, `--closed-decklist` games) and the RMSTATE driver (engine seeds,
+  card names, transcripts equal to `runner.run_games`', no RL-stack import, concessions)
+- `test_rmstate.py` — RMSTATE decode checks (`run()`): engine recode byte identity, Python vs C++
+  JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
+- `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
+  scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
+- `test_knowledge.py` — tier `knowledge`: the knowledge sidecar — `rmknow --selftest` / `--exactness`,
+  a fuzz under `--selfcheck-knowledge` (soundness vs the engine state), stream sessions (stream frames
+  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps,
+  archetype-inference sessions (METAGAME coverage, `k_template` / `k_archetype` vs the true lists and
+  the cards seen) (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),

@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Wasteland
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,11 +55,6 @@
   PB: Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland
 
 --- Decision 3 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Once Upon a Time, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -81,14 +66,6 @@
   Player B looks at the top 5 card(s) of their library.
 
 --- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dryad Arbor, Green Sun's Zenith, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
@@ -102,14 +79,6 @@
   Player B puts 4 card(s) on the bottom of their library.
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Fiery Islet, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
   Actions:
    0: Pass priority
    1: Play Fiery Islet
@@ -121,16 +90,6 @@
   Player A played Fiery Islet
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Fiery Islet (NEW)
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Suspend Rift Bolt
@@ -148,15 +107,6 @@
   PB: Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 7 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 51
-  Opp:   19 life | mana: empty | hand count: 5 | lib 53
-  Opp BF:   Fiery Islet (T)
-  Self GY: Once Upon a Time
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Fiery Islet, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Dryad Arbor
@@ -177,19 +127,6 @@
   PB: Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Stack: Rift Bolt (ability, self)
-  Pending: Rift Bolt (self)
-  Opp GY:  Once Upon a Time
-  Self exile: Rift Bolt
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  Extras: not_priority_window
   Actions:
    0: Do not cast Rift Bolt  [#0]
    1: Cast Rift Bolt without paying its mana cost  [#1]
@@ -199,18 +136,6 @@
   Choose target for Rift Bolt:
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 3)
-  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
-  Pending: Rift Bolt (self)
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  Extras: not_priority_window
   Actions:
    0: Player B (20 life)
    1: Player A (19 life)
@@ -224,17 +149,6 @@
   Player A draws Chain Lightning
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(6): Chain Lightning, Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Self GY: Rift Bolt
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -247,20 +161,6 @@
   Choose target for Chain Lightning:
 
 --- Decision 11 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  19 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   17 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Stack: Chain Lightning (spell, self)
-  Pending: Chain Lightning (self)
-  Self GY: Rift Bolt
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=R | opp life_lost=3
-  Extras: not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (19 life)
@@ -277,35 +177,11 @@
   Player B may pay to copy Chain Lightning:
 
 --- Decision 12 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  14 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland | lib 51
-  Opp:   18 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Dryad Arbor [1/1] (SICK)
-  Opp BF:   Fiery Islet (T)
-  Stack: Chain Lightning (spell, opponent) -> self (player)
-  Pending: Chain Lightning (opp)
-  Self GY: Once Upon a Time
-  Opp GY:  Rift Bolt
-  Opp revealed: Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self life_lost=6 | opp spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R
-  Extras: not_priority_window
   Actions:
    0: Don't pay (Chain Lightning is not copied)  [#0]
   >> B/B: 0 (Don't pay (Chain Lightning is not copied))
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(5): Mountain, Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet (T)
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -316,18 +192,6 @@
   Player A played Mountain
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  18 life | mana: empty | hand(4): Mountain, Mountain, Price of Progress, Rift Bolt | lib 52
-  Opp:   14 life | mana: empty | hand count: 7 | lib 51
-  Self BF:  Fiery Islet (T) | Mountain (NEW)
-  Opp BF:   Dryad Arbor [1/1] (SICK)
-  Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Dryad Arbor, Once Upon a Time, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=R | opp life_lost=6
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Suspend Rift Bolt
@@ -343,17 +207,6 @@
   PB: Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(8): Green Sun's Zenith, Keen-Eyed Curator, Misty Rainforest, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1]
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -364,18 +217,6 @@
   Player B played Misty Rainforest
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  14 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1] | Misty Rainforest (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -389,20 +230,6 @@
   Searching Player B's library:
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 50
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1]
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Misty Rainforest (ability, self)
-  Pending: Misty Rainforest (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Forest
@@ -413,18 +240,6 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(7): Green Sun's Zenith, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1] | Savannah (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -438,20 +253,6 @@
   Choose X value (0-1):
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1] | Savannah (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Green Sun's Zenith (spell, self)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -465,20 +266,6 @@
   Searching Player B's library:
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  13 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 3 | lib 52
-  Self BF:  Dryad Arbor [1/1] (T) | Savannah (T,NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T)
-  Stack: Green Sun's Zenith (spell, self) [X=1]
-  Pending: Green Sun's Zenith (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Chain Lightning, Rift Bolt
-  Opp exile:  Rift Bolt [1 ctr]
-  Opp revealed: Mountain, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Birds of Paradise
@@ -496,18 +283,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  18 life | mana: empty | hand(3): Mountain, Mountain, Price of Progress | lib 52
-  Opp:   13 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Fiery Islet | Mountain
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Stack: Rift Bolt (ability, self)
-  Self GY: Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Self exile: Rift Bolt [1 ctr]
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben
   Actions:
    0: Pass priority
    1: Cast Price of Progress  [#0]
@@ -529,21 +304,6 @@
   Resolving ability (category: SuspendCast)
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   9 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Stack: Rift Bolt (ability, self)
-  Pending: Rift Bolt (self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Self exile: Rift Bolt
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
-  Extras: not_priority_window
   Actions:
    0: Do not cast Rift Bolt  [#0]
    1: Cast Rift Bolt without paying its mana cost  [#1]
@@ -553,20 +313,6 @@
   Choose target for Rift Bolt:
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 52
-  Opp:   9 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Stack: Rift Bolt (spell, self) -> Rift Bolt (ability, self)
-  Pending: Rift Bolt (self)
-  Self GY: Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=3 colors=R | opp life_lost=4
-  Extras: not_priority_window
   Actions:
    0: Player B (9 life)
    1: Player A (15 life)
@@ -581,17 +327,6 @@
   Player A draws Exquisite Firecraft
 
 --- Decision 24 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 51
-  Opp:   6 life | mana: empty | hand count: 6 | lib 49
-  Self BF:  Fiery Islet (T) | Mountain (T)
-  Opp BF:   Birds of Paradise [0/1] [Flying] (SICK) | Dryad Arbor [1/1] (T) | Savannah (T)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=3 colors=R | opp life_lost=7
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -606,15 +341,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  6 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -623,32 +349,12 @@
   Player B draws Badgermole Cub
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  6 life | mana: empty | hand(7): Badgermole Cub, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> B/B: 0 (Pass priority)
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(7): Badgermole Cub, Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -665,17 +371,6 @@
   Player B casts Badgermole Cub
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Badgermole Cub (spell, self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -685,18 +380,6 @@
   Choose target for Badgermole Cub:
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Pending: Badgermole Cub (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Dryad Arbor
    1: Savannah
@@ -706,17 +389,6 @@
   Badgermole Cub triggered
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] (T) | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Stack: Badgermole Cub (ability, self) [amt=1] -> Dryad Arbor (self, slot 2)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -726,17 +398,6 @@
   Dryad Arbor becomes a 0/0 creature with haste that's still a land; put 1 +1/+1 counter(s) on it.
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(6): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -746,18 +407,6 @@
   Player B played Wasteland
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  6 life | mana: empty | hand(5): Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 2 | lib 51
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW,res 1) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Scythecat Cub  [#0]
@@ -778,17 +427,6 @@
   PB: Keen-Eyed Curator, Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  15 life | mana: empty | hand(2): Exquisite Firecraft, Mountain | lib 51
-  Opp:   6 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
@@ -797,36 +435,12 @@
   Player A draws Mountain
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Fiery Islet (Draw)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(3): Exquisite Firecraft, Mountain, Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -838,21 +452,6 @@
   Choose target for Exquisite Firecraft:
 
 --- Decision 36 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  15 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   6 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Fiery Islet | Mountain | Mountain
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Stack: Exquisite Firecraft (spell, self)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Pending: Exquisite Firecraft (self)
-  Self GY: Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Player B (6 life)
    1: Player A (15 life)
@@ -872,18 +471,6 @@
   Exquisite Firecraft deals 4 damage to Player B (now at 2 life)
 
 --- Decision 37 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  14 life | mana: empty | hand(2): Mountain, Mountain | lib 50
-  Opp:   2 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Fiery Islet (T) | Mountain (T) | Mountain (T)
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp GY:  Misty Rainforest, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=R | opp life_lost=4
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -898,16 +485,6 @@
   PB: Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  2 life | mana: empty | hand(4): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -917,17 +494,6 @@
   Player B draws Swords to Plowshares
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: Draw (turn 8)
-  Self:  2 life | mana: empty | hand(5): Keen-Eyed Curator, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -936,17 +502,6 @@
   >> B/B: 0 (Pass priority)
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(5): Keen-Eyed Curator, Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Keen-Eyed Curator  [#0]
@@ -962,18 +517,6 @@
   Player B casts Keen-Eyed Curator
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Keen-Eyed Curator (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -984,20 +527,6 @@
   Choose target for Wasteland:
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Wasteland (ability, self) -> Keen-Eyed Curator (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: not_priority_window
   Actions:
    0: Fiery Islet
    1: Dryad Arbor
@@ -1010,19 +539,6 @@
   Player B's Wasteland ability targeting Fiery Islet is on the stack
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Scythecat Cub [2/2] [Trample]
-  Opp BF:   Fiery Islet (T) | Mountain (T) | Mountain (T) | Mountain
-  Stack: Wasteland (ability, self) -> Fiery Islet (opponent, slot 48) -> Keen-Eyed Curator (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1033,19 +549,6 @@
   Fiery Islet is destroyed
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Scythecat Cub [2/2] [Trample]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Stack: Keen-Eyed Curator (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1055,18 +558,6 @@
   Keen-Eyed Curator enters the battlefield
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(4): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah | Scythecat Cub [2/2] [Trample]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1081,19 +572,6 @@
   Player B casts Thalia, Guardian of Thraben
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah | Scythecat Cub [2/2] [Trample]
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Stack: Thalia, Guardian of Thraben (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1104,18 +582,6 @@
   Thalia, Guardian of Thraben enters the battlefield
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]
@@ -1124,20 +590,6 @@
   Choose target for Keen-Eyed Curator:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Stack: Keen-Eyed Curator (ability, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Keen-Eyed Curator (self)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Chain Lightning, Rift Bolt
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Chain Lightning
    1: Exquisite Firecraft
@@ -1157,19 +609,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Scythecat Cub [2/2]
@@ -1181,19 +620,6 @@
     [attacking] Badgermole Cub [2/2] -> Player A
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Scythecat Cub [2/2]
    1: Confirm attackers
@@ -1205,19 +631,6 @@
     [attacking] Scythecat Cub [2/2] -> Player A
 
 --- Decision 51 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   14 life | mana: empty | hand count: 1 | lib 50
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK,NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] (ATK) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW)
-  Opp BF:   Mountain (T) | Mountain (T) | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 drawn=1 colors=WG
-  Extras: self_revolt, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1237,18 +650,6 @@
   PB: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(2): Eidolon of the Great Revel, Mountain | lib 49
-  Opp:   2 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Mountain | Mountain | Mountain
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Chain Lightning
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1261,18 +662,6 @@
   Eidolon of the Great Revel enters the battlefield
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  10 life | mana: empty | hand(1): Mountain | lib 49
-  Opp:   2 life | mana: empty | hand count: 3 | lib 47
-  Self BF:  Eidolon of the Great Revel [2/2] (SICK,NEW) | Mountain (T) | Mountain (T) | Mountain
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] (SICK) | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK)
-  Delayed: Badgermole Cub@48 -> Dryad Arbor@50 (opponent, leaves bf, waiting)
-  Self GY: Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp GY:  Wasteland, Misty Rainforest, Once Upon a Time
-  Self exile: Chain Lightning
-  Opp revealed: Misty Rainforest, Wasteland, Birds of Paradise, Dryad Arbor, Green Sun's Zenith, Keen-Eyed Curator, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 drawn=1 colors=R
   Actions:
    0: Pass priority
    1: Play Mountain
@@ -1286,17 +675,6 @@
   PB: Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben
 
 --- Decision 54 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(3): Swords to Plowshares, Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   10 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain | Mountain
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1307,20 +685,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 55 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   10 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain | Mountain
-  Stack: Swords to Plowshares (spell, self)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Swords to Plowshares (self)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  Extras: not_priority_window
   Actions:
    0: Eidolon of the Great Revel
    1: Badgermole Cub
@@ -1338,19 +702,6 @@
   Eidolon of the Great Revel triggered
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   10 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain | Mountain
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Swords to Plowshares (spell, self) -> Eidolon of the Great Revel (opponent, slot 48)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1360,21 +711,6 @@
   Choose target for Swords to Plowshares:
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: empty | hand(1): Thalia, Guardian of Thraben | lib 47
-  Opp:   10 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (DELAYED) | Keen-Eyed Curator [3/3] | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain | Mountain
-  Stack: Swords to Plowshares (spell, self) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Swords to Plowshares (spell, self) -> Eidolon of the Great Revel (opponent, slot 48)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Pending: Swords to Plowshares (self)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: Eidolon of the Great Revel
    1: Badgermole Cub
@@ -1393,19 +729,6 @@
   Eidolon of the Great Revel triggered
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  2 life | mana: 1G | hand(1): Thalia, Guardian of Thraben | lib 47
-  Opp:   10 life | mana: empty | hand count: 0 | lib 49
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Dryad Arbor [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Keen-Eyed Curator [3/3] | Savannah (T) | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike]
-  Opp BF:   Eidolon of the Great Revel [2/2] (SICK) | Mountain (T) | Mountain (T) | Mountain | Mountain
-  Stack: Eidolon of the Great Revel (ability, opponent) [amt=2] -> Swords to Plowshares (spell, self) -> Eidolon of the Great Revel (opponent, slot 48) -> Eidolon of the Great Revel (ability, opponent) [amt=2] -> Swords to Plowshares (spell, self) -> Eidolon of the Great Revel (opponent, slot 48)
-  Delayed: Badgermole Cub@0 -> Dryad Arbor@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Misty Rainforest, Once Upon a Time
-  Opp GY:  Fiery Islet, Exquisite Firecraft, Rift Bolt, Price of Progress, Rift Bolt
-  Opp exile:  Chain Lightning
-  Opp revealed: Mountain, Price of Progress, Fiery Islet, Eidolon of the Great Revel, Exquisite Firecraft, Chain Lightning, Rift Bolt
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=W
   Actions:
    0: Pass priority
    1: Activate Keen-Eyed Curator (ChangeZone)  [#0]

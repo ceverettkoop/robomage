@@ -1796,10 +1796,12 @@ def format_decision_block(decision_idx, gs, actions):
     Returns a list of lines: a leading blank line, '--- Decision N ---', the
     2-space-indented board state, 'Actions:', then the enumerated legal actions.
     Used by both the test harness and `observe --verbose` so the transcript
-    format is identical across tools.
+    format is identical across tools. ``gs`` None leaves the state dump out (an
+    observation that holds only the RMSTATE adapter's subset, rmstate_env.py).
     """
     lines = ["", f"--- Decision {decision_idx} ---"]
-    lines += [f"  {ln}" for ln in format_state_lines(gs)]
+    if gs is not None:
+        lines += [f"  {ln}" for ln in format_state_lines(gs)]
     lines.append("  Actions:")
     lines += format_action_lines(actions)
     return lines

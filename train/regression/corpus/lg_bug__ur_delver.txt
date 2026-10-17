@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Flow State, Polluted Delta, Polluted Delta, Sheoldred's Edict, Underground Sea, Verdant Catacombs, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -55,11 +50,6 @@
   Volcanic Island
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -76,11 +66,6 @@
   Tropical Island
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -90,11 +75,6 @@
   Player A: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Brainstorm, Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Brainstorm
    1: Fatal Push
@@ -111,11 +91,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Volcanic Island
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Fatal Push, Fatal Push, Force of Will, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 54
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -130,14 +105,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island
 
 --- Decision 6 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Mishra's Bauble, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -150,15 +117,6 @@
   Mishra's Bauble enters the battlefield
 
 --- Decision 7 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Polluted Delta, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble (NEW)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Polluted Delta
@@ -170,15 +128,6 @@
   Player B played Polluted Delta
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Tropical Island
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Mishra's Bauble (PeekAndReveal)  [#0]
@@ -188,17 +137,6 @@
   Choose target for Mishra's Bauble:
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Mishra's Bauble (NEW) | Polluted Delta (NEW)
-  Opp BF:   Tropical Island
-  Stack: Mishra's Bauble (ability, self)
-  Pending: Mishra's Bauble (self)
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (20 life)
@@ -209,17 +147,6 @@
   Player B's Mishra's Bauble ability targeting Player A is on the stack
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Polluted Delta (NEW)
-  Opp BF:   Tropical Island
-  Stack: Mishra's Bauble (ability, self) -> opponent (player)
-  Self GY: Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Polluted Delta (ChangeZone)  [#0]
@@ -232,17 +159,6 @@
   Searching Player B's library:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Opp BF:   Tropical Island
-  Stack: Polluted Delta (ability, self) -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Polluted Delta (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -260,18 +176,6 @@
   Surveil: looking at Wasteland
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 54
-  Self BF:  Thundering Falls (T,NEW,res 1)
-  Opp BF:   Tropical Island
-  Stack: Thundering Falls (ability, self) [amt=1] -> Mishra's Bauble (ability, self) -> opponent (player)
-  Pending: Thundering Falls (self)
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Wasteland on top of library  [#0]
    1: Put Wasteland into graveyard
@@ -295,16 +199,6 @@
   PB: Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Scalding Tarn, Volcanic Island, Wasteland
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(8): Cori-Steel Cutter, Dragon's Rage Channeler, Into the Flood Maw, Ponder, Scalding Tarn, Scalding Tarn, Volcanic Island, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Thundering Falls
-  Opp BF:   Tropical Island
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -320,16 +214,6 @@
   Dragon's Rage Channeler enters the battlefield
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(7): Cori-Steel Cutter, Into the Flood Maw, Ponder, Scalding Tarn, Scalding Tarn, Volcanic Island, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW) | Thundering Falls (T)
-  Opp BF:   Tropical Island
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 drawn=1 colors=R
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -341,16 +225,6 @@
   Player B played Scalding Tarn
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW) | Scalding Tarn (NEW) | Thundering Falls (T)
-  Opp BF:   Tropical Island
-  Self GY: Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 drawn=1 colors=R
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -363,18 +237,6 @@
   Searching Player B's library:
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW) | Thundering Falls (T)
-  Opp BF:   Tropical Island
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 drawn=1 life_lost=1 colors=R
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -386,16 +248,6 @@
   Player B puts Volcanic Island to the battlefield
 
 --- Decision 17 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Into the Flood Maw, Ponder, Scalding Tarn, Volcanic Island, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW) | Thundering Falls (T) | Volcanic Island (NEW)
-  Opp BF:   Tropical Island
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=1 drawn=1 life_lost=1 colors=R
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Ponder  [#0]
@@ -409,18 +261,6 @@
   Surveil: looking at Ponder
 
 --- Decision 18 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW,res 1) | Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Ponder (spell, self)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Ponder on top of library  [#0]
    1: Put Ponder into graveyard
@@ -431,19 +271,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 19 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW,res 1) | Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Ponder  [#2]
    1: Dragon's Rage Channeler  [#2]
@@ -453,38 +280,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 20 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW,res 1) | Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler  [#1]
    1: Lightning Bolt  [#1]
   >> B/B: 0 (Dragon's Rage Channeler)
 
 --- Decision 21 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland | lib 48
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Dragon's Rage Channeler [1/1] (SICK,NEW,res 1) | Thundering Falls (T) | Volcanic Island (T,NEW)
-  Opp BF:   Tropical Island
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Lightning Bolt, Dragon's Rage Channeler, Ponder, ?, ?
-  Opp revealed: Tropical Island
-  This turn: self spells=2 noncreature=1 instant_sorcery=1 drawn=1 life_lost=1 colors=UR
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -500,16 +301,6 @@
   PB: Cori-Steel Cutter, Into the Flood Maw, Scalding Tarn, Volcanic Island, Wasteland
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   18 life | mana: empty | hand count: 6 | lib 47
-  Self BF:  Tropical Island
-  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Thundering Falls (T) | Volcanic Island (T)
-  Opp GY:  Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Tamiyo, Inquisitive Student  [#0]
@@ -525,16 +316,6 @@
   PB: Cori-Steel Cutter, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island, Wasteland
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(6): Cori-Steel Cutter, Into the Flood Maw, Lightning Bolt, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls | Volcanic Island
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Into the Flood Maw  [#0]
@@ -542,18 +323,6 @@
   >> B/B: 1 (Cast Into the Flood Maw)
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls | Volcanic Island
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Into the Flood Maw (spell, self)
-  Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Decline: promise a tapped Fish to your opponent  [#0]
    1: Accept: promise a tapped Fish to your opponent  [#1]
@@ -562,18 +331,6 @@
   Choose target for Into the Flood Maw:
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls | Volcanic Island
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Into the Flood Maw (spell, self)
-  Pending: Into the Flood Maw (self)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tamiyo, Inquisitive Student
   >> B/B: 0 (Tamiyo, Inquisitive Student)
@@ -584,18 +341,6 @@
   Dragon's Rage Channeler triggered
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls (T) | Volcanic Island
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 48)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Lightning Bolt  [#0]
@@ -604,19 +349,6 @@
   Choose target for Lightning Bolt:
 
 --- Decision 27 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] | Thundering Falls (T) | Volcanic Island
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Lightning Bolt (spell, self) -> Dragon's Rage Channeler (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 48)
-  Pending: Lightning Bolt (self)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Player A (20 life)
    1: Player B (18 life)
@@ -633,19 +365,6 @@
   Surveil: looking at Dragon's Rage Channeler
 
 --- Decision 28 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [1/1] (res 1) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Lightning Bolt (spell, self) -> opponent (player) -> Dragon's Rage Channeler (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 48)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=UR
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Dragon's Rage Channeler on top of library  [#0]
    1: Put Dragon's Rage Channeler into graveyard
@@ -659,19 +378,6 @@
   Surveil: looking at Dragon's Rage Channeler
 
 --- Decision 29 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Scalding Tarn, Volcanic Island, Wasteland | lib 47
-  Opp:   17 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Tamiyo, Inquisitive Student [0/3] [Flying] (SICK) | Tropical Island (T)
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Into the Flood Maw (spell, self) -> Tamiyo, Inquisitive Student (opponent, slot 48)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Dragon's Rage Channeler, Ponder, ?, ?, ?
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 colors=UR | opp life_lost=3
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Dragon's Rage Channeler on top of library  [#0]
    1: Put Dragon's Rage Channeler into graveyard
@@ -683,18 +389,6 @@
   Player B draws Dragon's Rage Channeler
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Dragon's Rage Channeler, Scalding Tarn, Volcanic Island, Wasteland | lib 46
-  Opp:   17 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Tropical Island (T)
-  Self GY: Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
-  Known opp hand: Tamiyo, Inquisitive Student
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -705,18 +399,6 @@
   Player B played Scalding Tarn
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Volcanic Island, Wasteland | lib 46
-  Opp:   17 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 2) | Scalding Tarn (NEW) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Tropical Island (T)
-  Self GY: Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
-  Known opp hand: Tamiyo, Inquisitive Student
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -729,20 +411,6 @@
   Searching Player B's library:
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Volcanic Island, Wasteland | lib 46
-  Opp:   17 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T)
-  Opp BF:   Tropical Island (T)
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known top: Ponder, ?, ?, ?, ?
-  Known opp hand: Tamiyo, Inquisitive Student
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Island
@@ -754,17 +422,6 @@
   Player B puts Volcanic Island to the battlefield
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(4): Cori-Steel Cutter, Dragon's Rage Channeler, Volcanic Island, Wasteland | lib 45
-  Opp:   17 life | mana: empty | hand count: 7 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (NEW)
-  Opp BF:   Tropical Island (T)
-  Self GY: Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Known opp hand: Tamiyo, Inquisitive Student
-  Opp revealed: Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR | opp life_lost=3
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Dragon's Rage Channeler  [#0]
@@ -774,17 +431,6 @@
   Player B casts Dragon's Rage Channeler
 
 --- Decision 34 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(7): Fatal Push, Fatal Push, Force of Will, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   17 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Tropical Island (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
-  Stack: Dragon's Rage Channeler (spell, opponent)
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self life_lost=3 | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -793,18 +439,6 @@
   Choose target for Force of Will:
 
 --- Decision 35 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(6): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   17 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Tropical Island (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
-  Stack: Force of Will (spell, self) -> Dragon's Rage Channeler (spell, opponent)
-  Pending: Force of Will (self)
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self life_lost=3 | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
   >> A/A: 0 (Dragon's Rage Channeler)
@@ -812,18 +446,6 @@
   Targeting choice 0
 
 --- Decision 36 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  17 life | mana: empty | hand(6): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Tamiyo, Inquisitive Student, Thoughtseize | lib 52
-  Opp:   17 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Tropical Island (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (res 2) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
-  Stack: Force of Will (spell, self) -> Dragon's Rage Channeler (opponent, slot 97) -> Dragon's Rage Channeler (spell, opponent)
-  Pending: Force of Will (self)
-  Opp GY:  Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self life_lost=3 | opp spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Exile Tamiyo, Inquisitive Student
   >> A/A: 0 (Exile Tamiyo, Inquisitive Student)
@@ -838,18 +460,6 @@
     [attacking] Dragon's Rage Channeler [3/3] -> Player A
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 6)
-  Self:  17 life | mana: empty | hand(3): Cori-Steel Cutter, Volcanic Island, Wasteland | lib 45
-  Opp:   16 life | mana: empty | hand count: 5 | lib 52
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (ATK,res 2) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T,NEW)
-  Opp BF:   Tropical Island (T)
-  Self GY: Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=3 noncreature=2 instant_sorcery=2 drawn=1 life_lost=1 colors=UR | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=4 colors=U
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -867,18 +477,6 @@
   PB: Cori-Steel Cutter, Volcanic Island, Wasteland
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  13 life | mana: empty | hand(6): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize, Tropical Island | lib 51
-  Opp:   17 life | mana: empty | hand count: 3 | lib 45
-  Self BF:  Tropical Island
-  Opp BF:   Dragon's Rage Channeler [3/3] [Flying] (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T)
-  Self GY: Force of Will
-  Opp GY:  Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Tropical Island
@@ -893,18 +491,6 @@
   PB: Cori-Steel Cutter, Force of Will, Volcanic Island, Wasteland
 
 --- Decision 39 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(4): Cori-Steel Cutter, Force of Will, Volcanic Island, Wasteland | lib 44
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] | Thundering Falls | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -921,20 +507,6 @@
   Surveil: looking at Island
 
 --- Decision 40 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Volcanic Island, Wasteland | lib 44
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Cori-Steel Cutter (spell, self)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Put Island on top of library  [#0]
    1: Put Island into graveyard
@@ -944,18 +516,6 @@
   Cori-Steel Cutter enters the battlefield
 
 --- Decision 41 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Volcanic Island, Wasteland | lib 43
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Cori-Steel Cutter (NEW) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Volcanic Island
@@ -965,18 +525,6 @@
   Player B played Volcanic Island
 
 --- Decision 42 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Cori-Steel Cutter (NEW) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island (NEW) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -985,20 +533,6 @@
   Choose target for Cori-Steel Cutter:
 
 --- Decision 43 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Cori-Steel Cutter (NEW) | Dragon's Rage Channeler [3/3] [Flying] (res 1) | Thundering Falls (T) | Volcanic Island (NEW) | Volcanic Island (T) | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Stack: Cori-Steel Cutter (ability, self)
-  Pending: Cori-Steel Cutter (self)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
   >> B/B: 0 (Dragon's Rage Channeler)
@@ -1015,18 +549,6 @@
     [attacking] Dragon's Rage Channeler [4/4] -> Player A
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 8)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   13 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) (NEW) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK,res 1) | Thundering Falls (T) | Volcanic Island (T,NEW) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 drawn=1 colors=R
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1047,18 +569,6 @@
   PB: Force of Will, Mystic Sanctuary, Wasteland
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  17 life | mana: empty | hand(3): Force of Will, Mystic Sanctuary, Wasteland | lib 42
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Mystic Sanctuary
@@ -1070,19 +580,6 @@
   Choose target for Mystic Sanctuary:
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 42
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (NEW) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Pending: Mystic Sanctuary (self)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Into the Flood Maw
    1: Lightning Bolt
@@ -1093,20 +590,6 @@
   Mystic Sanctuary triggered
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 42
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Stack: Mystic Sanctuary (ability, self) -> Into the Flood Maw (self)
-  Pending: Mystic Sanctuary (self)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Into the Flood Maw, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Decline: use Mystic Sanctuary's triggered ability  [#0]
    1: Accept: use Mystic Sanctuary's triggered ability  [#1]
@@ -1116,19 +599,6 @@
   Into the Flood Maw is moved to top of library
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -1139,19 +609,6 @@
     [attacking] Dragon's Rage Channeler [4/4] -> Player A
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   9 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1164,19 +621,6 @@
   --- End Combat Damage ---
 
 --- Decision 50 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 10)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   5 life | mana: empty | hand count: 6 | lib 50
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary (NEW,res 1) | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Tropical Island | Tropical Island
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1 | opp life_lost=4
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -1189,19 +633,6 @@
   PB: Force of Will, Wasteland
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  5 life | mana: empty | hand(7): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Swamp, Thoughtseize | lib 49
-  Opp:   17 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Tropical Island | Tropical Island
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Force of Will
-  Opp GY:  Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Known opp top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Swamp
@@ -1210,19 +641,6 @@
   Player A played Swamp
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  5 life | mana: empty | hand(6): Baleful Strix, Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   17 life | mana: empty | hand count: 2 | lib 43
-  Self BF:  Swamp (NEW) | Tropical Island | Tropical Island
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Force of Will
-  Opp GY:  Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Known opp top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Ponder, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Baleful Strix  [#0]
@@ -1238,20 +656,6 @@
   Player A casts Baleful Strix
 
 --- Decision 53 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(2): Force of Will, Wasteland | lib 43
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T,NEW) | Tropical Island (T) | Tropical Island
-  Stack: Baleful Strix (spell, opponent)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=UB
-  Extras: opp_lands_played=1, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Force of Will  [#0]
@@ -1260,21 +664,6 @@
   Choose target for Force of Will:
 
 --- Decision 54 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(1): Wasteland | lib 43
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T,NEW) | Tropical Island (T) | Tropical Island
-  Stack: Force of Will (spell, self) -> Baleful Strix (spell, opponent)
-  Pending: Force of Will (self)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: opp spells=1 drawn=1 colors=UB
-  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Baleful Strix
   >> B/B: 0 (Baleful Strix)
@@ -1292,21 +681,6 @@
   Surveil: looking at Into the Flood Maw
 
 --- Decision 55 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 11)
-  Self:  17 life | mana: empty | hand(1): Wasteland | lib 43
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T,res 1) | Mystic Sanctuary (T) | Thundering Falls (T) | Volcanic Island (T) | Volcanic Island (T) | Volcanic Island (T)
-  Opp BF:   Swamp (T,NEW) | Tropical Island (T) | Tropical Island
-  Stack: Dragon's Rage Channeler (ability, self) [amt=1] -> Force of Will (spell, self) -> Baleful Strix (opponent, slot 98) -> Baleful Strix (spell, opponent)
-  Pending: Dragon's Rage Channeler (self)
-  Self GY: Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Known top: Into the Flood Maw, ?, ?, ?, ?
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=U | opp spells=1 drawn=1 colors=UB
-  Extras: opp_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Put Into the Flood Maw on top of library  [#0]
    1: Put Into the Flood Maw into graveyard
@@ -1322,18 +696,6 @@
   PB: Into the Flood Maw, Wasteland
 
 --- Decision 56 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  17 life | mana: empty | hand(2): Into the Flood Maw, Wasteland | lib 42
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
-  Self GY: Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1343,18 +705,6 @@
   Player B played Wasteland
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 42
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
-  Self GY: Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -1364,20 +714,6 @@
   Choose target for Wasteland:
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 42
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island | Wasteland (NEW)
-  Opp BF:   Swamp (T) | Tropical Island (T) | Tropical Island
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Tropical Island
    1: Tropical Island
@@ -1396,18 +732,6 @@
   Tropical Island is destroyed
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 12)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 42
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Tropical Island
-  Self GY: Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Tropical Island, Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -1418,18 +742,6 @@
     [attacking] Dragon's Rage Channeler [4/4] -> Player A
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 12)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 42
-  Opp:   5 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (ATK) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Tropical Island
-  Self GY: Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Tropical Island, Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1442,18 +754,6 @@
   --- End Combat Damage ---
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: Second Main (turn 12)
-  Self:  17 life | mana: empty | hand(1): Into the Flood Maw | lib 42
-  Opp:   1 life | mana: empty | hand count: 5 | lib 49
-  Self BF:  Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Opp BF:   Swamp (T) | Tropical Island
-  Self GY: Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Opp GY:  Tropical Island, Baleful Strix, Force of Will
-  Opp exile:  Tamiyo, Inquisitive Student
-  Opp revealed: Force of Will, Swamp, Baleful Strix, Tamiyo, Inquisitive Student, Tropical Island
-  This turn: self drawn=1 | opp life_lost=4
-  Extras: self_lands_played=1, self_revolt, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Cori-Steel Cutter  [#0]
@@ -1465,17 +765,6 @@
   PB: Into the Flood Maw
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  1 life | mana: empty | hand(5): Fatal Push, Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   17 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp | Tropical Island
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Tropical Island, Baleful Strix, Force of Will
-  Opp GY:  Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Force of Will, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Fatal Push  [#0]
@@ -1487,19 +776,6 @@
   Choose target for Fatal Push:
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 13)
-  Self:  1 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 49
-  Opp:   17 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp | Tropical Island
-  Opp BF:   Cori-Steel Cutter (->Dragon's Rage Channeler) | Dragon's Rage Channeler [4/4] [Flying, Trample, Haste] (eq:Cori-Steel Cutter) (T) | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Stack: Fatal Push (spell, self)
-  Pending: Fatal Push (self)
-  Self GY: Tropical Island, Baleful Strix, Force of Will
-  Opp GY:  Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Force of Will, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Dragon's Rage Channeler
   >> A/A: 0 (Dragon's Rage Channeler)
@@ -1513,18 +789,6 @@
   Player A draws Misty Rainforest
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  1 life | mana: empty | hand(5): Fatal Push, Misty Rainforest, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   17 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Swamp (T) | Tropical Island
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Fatal Push, Tropical Island, Baleful Strix, Force of Will
-  Opp GY:  Dragon's Rage Channeler, Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Force of Will, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Misty Rainforest
@@ -1533,18 +797,6 @@
   Player A played Misty Rainforest
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: First Main (turn 13)
-  Self:  1 life | mana: empty | hand(4): Fatal Push, Orcish Bowmasters, Sheoldred's Edict, Thoughtseize | lib 48
-  Opp:   17 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Misty Rainforest (NEW) | Swamp (T) | Tropical Island
-  Opp BF:   Cori-Steel Cutter | Mystic Sanctuary | Thundering Falls | Volcanic Island | Volcanic Island | Volcanic Island
-  Self GY: Fatal Push, Tropical Island, Baleful Strix, Force of Will
-  Opp GY:  Dragon's Rage Channeler, Wasteland, Force of Will, Island, Dragon's Rage Channeler, Scalding Tarn, Lightning Bolt, Ponder, Scalding Tarn, Polluted Delta, Mishra's Bauble
-  Self exile: Tamiyo, Inquisitive Student
-  Opp revealed: Lightning Bolt, Volcanic Island, Scalding Tarn, Polluted Delta, Wasteland, Ponder, Force of Will, Island, Dragon's Rage Channeler, Thundering Falls, Mishra's Bauble, Cori-Steel Cutter, Mystic Sanctuary, Into the Flood Maw
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: self_lands_played=1, opp_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Misty Rainforest (ChangeZone)  [#0]

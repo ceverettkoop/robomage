@@ -1,0 +1,93 @@
+[
+  {
+    "name": "between_games",
+    "kind": ["hand", "top"],
+    "direction": "old_more",
+    "pattern": " sideboarding=1 events=(.*;)?game_end:",
+    "classification": "old-vector quirk",
+    "why": "Between games (sideboarding) BQUERY still describes the finished game's board, so the old vector keeps that game's opp_known_hand and known_top_library_* until the next game's init_ecs; the k_* tables of a sideboarding frame describe no game (no pool, position or known-hand rows; only the match memory, k_seen), since the networks reset at game_start (knowledge_store §5, §6). Not a leak: the facts were known in that game.",
+    "scenario": "knowledge_divergence_between_games"
+  },
+  {
+    "name": "put_back_leak",
+    "kind": "hand",
+    "direction": "old_more",
+    "pattern": " events=(.*;)?zone_move:hand\\.opp>library\\.opp",
+    "classification": "old-vector leak",
+    "why": "The known Brainstorm put-back leak (knowledge_store §7): Zone::identity_known is per physical card, so after the opponent puts unseen cards from a hand back on its library the old vector still lists a known card only if that copy stayed in hand, which tells the viewer which cards went back (CR 401.2, 402.3: the put-back is hidden). Expert reports such a card as in hand or on top (k_pool hand and library rows).",
+    "scenario": "knowledge_divergence_put_back_leak"
+  },
+  {
+    "name": "copy_leak",
+    "kind": "hand",
+    "direction": "old_more",
+    "pattern": " left=[1-9]",
+    "classification": "old-vector leak",
+    "why": "Copies are interchangeable (knowledge_store §5 zone_move from a hand; CR 400.7): when the opponent casts, plays, discards or exiles a copy of a card the viewer knows is in its hand, from a hand that may hold another copy, the viewer cannot tell which copy left. The old vector tracks known-ness per physical copy, so it keeps the known copy listed when another one left, which tells the viewer the hand held a second copy.",
+    "scenario": "knowledge_divergence_copy_leak"
+  },
+  {
+    "name": "position_leak",
+    "kind": "top",
+    "direction": "old_more",
+    "owner": "opp",
+    "pattern": "^(?!.* events=(.*;)?search:).* events=(.*;)?zone_move:library\\.opp>",
+    "classification": "old-vector leak",
+    "why": "When the opponent moves a card out of a range of library positions the viewer cannot tell apart (a rearrange such as Ponder's or Doomsday's, a pick among looked-at cards; the viewer's event says from=top<p>+<n>), the old record (Game::KnownLibraryTop) removes the entry at the card's true position, so the viewer's other known entries keep their true positions. Expert merges the range into one unordered pool (knowledge_store §5; CR 401.4). A frame with a search is excluded: a search pick's range is the engine's to narrow (Doomsday's picks never include the cards it already chose, zone_search.cpp), so a mismatch there is an event bug.",
+    "scenario": "knowledge_opponent_ponder_unordered"
+  },
+  {
+    "name": "pending_look",
+    "kind": "top",
+    "direction": "new_more",
+    "pattern": " events=(.*;)?(look|reveal_start):library\\.(self|opp)@[^;]*$",
+    "classification": "old-vector quirk",
+    "why": "During a look (a search's look at the whole library, CR 701.23a; a scry, surveil, dig or Ponder look, CR 701.20e) the viewer sees the looked-at cards at their positions (a look event, state_format §5), and the frame's decision is taken while it lasts; the old record notes a looked-at card only once the effect puts it back, and never for a search.",
+    "scenario": "knowledge_opponent_ponder_unordered"
+  },
+  {
+    "name": "private_look_seen",
+    "kind": "seen",
+    "direction": "new_more",
+    "pattern": " events=(.*;)?look:library\\.opp@",
+    "classification": "old-vector quirk",
+    "why": "k_seen counts every opponent card the viewer saw (knowledge_store §4.1), including a look only the viewer was shown (Mishra's Bauble, CR 701.20e); the old revealed bits (match_state, mark_card_revealed) are set only by public reveals and public zones.",
+    "scenario": "knowledge_divergence_bauble_look"
+  },
+  {
+    "name": "harness_preset_seen",
+    "kind": "seen",
+    "direction": "new_more",
+    "pattern": " events=(.*;)?zone_move:none\\.->",
+    "classification": "old-vector quirk",
+    "why": "Test-harness zone presets (--battlefield-a/-b, --graveyard-a/-b, …) reach the board as zone_move from none, which k_seen counts; they bypass Orderer::add_to_zone, so the old revealed bits never see them. Harness setups only.",
+    "scenario": "knowledge_section7_put_back_pool"
+  },
+  {
+    "name": "known_card_drawn",
+    "kind": "hand",
+    "direction": "new_more",
+    "pattern": " events=(.*;)?draw:library\\.opp>hand\\.opp",
+    "classification": "old-vector quirk",
+    "why": "A card the viewer knew at the top of the opponent's library (a look such as Mishra's Bauble, a reveal such as Delver of Secrets', or a deduction) is still known when the opponent draws it (knowledge_store §5 draw: a known top card becomes a known card in hand); the old opp_known_hand never carries a draw (Orderer::add_to_zone treats LIBRARY to HAND as hidden).",
+    "scenario": "knowledge_divergence_bauble_look"
+  },
+  {
+    "name": "public_entry_untracked",
+    "kind": "hand",
+    "direction": "new_more",
+    "pattern": " entered=[1-9] .* events=(.*;)?zone_move:sideboard\\.opp>hand\\.opp",
+    "classification": "old-vector quirk",
+    "why": "A companion put into its owner's hand by the companion special action (CR 702.139a, 116.2g) is seen by both players; expert keeps it as a known card in hand, while the old vector marks a card entering a hand as known only when it comes from a public zone.",
+    "scenario": "knowledge_divergence_companion_to_hand"
+  },
+  {
+    "name": "deduction",
+    "kind": ["top", "hand"],
+    "direction": "new_more",
+    "pattern": ".",
+    "classification": "old-vector quirk",
+    "why": "A deduction the old vector does not make (knowledge_store §4): the registered list minus the cards seen leaves a library or hand whose cards are known (every card left there is one card, or a hand reveal pins what a put-back pool holds), or a position known deeper than the old record's five slots moves up. Sound: every k_* fact is checked against the true world at the same decision (--selfcheck-knowledge, zero tolerance), and the sidecar reads only the viewer's leak-checked frames.",
+    "scenario": "knowledge_section7_put_back_pool"
+  }
+]

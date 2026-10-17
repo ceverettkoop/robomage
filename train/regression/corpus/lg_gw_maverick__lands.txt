@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Urza's Saga
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Exploration, Malevolent Rumble, Mox Diamond, Sphere of Resistance, Swords to Plowshares, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -76,11 +66,6 @@
   Thespian's Stage
 
 --- Decision 3 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -90,11 +75,6 @@
   Player B: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Boseiju, Who Endures
    1: Crop Rotation
@@ -111,11 +91,6 @@
   PB: Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(7): Forest, Once Upon a Time, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time (alternate cost)  [#1]
@@ -128,14 +103,6 @@
   Player A looks at the top 5 card(s) of their library.
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 1)
-  Self:  20 life | mana: empty | hand(6): Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Stack: Once Upon a Time (spell, self)
-  Pending: Once Upon a Time (self)
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Badgermole Cub
@@ -147,13 +114,6 @@
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Forest, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self GY: Once Upon a Time
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Forest
@@ -171,16 +131,6 @@
   PB: Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Opp BF:   Forest
-  Opp GY:  Once Upon a Time
-  Known opp hand: Badgermole Cub
-  Opp revealed: Forest, Once Upon a Time, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -198,16 +148,6 @@
   PB: Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(7): Badgermole Cub, Once Upon a Time, Savannah, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Forest
-  Opp BF:   Dark Depths [ice:10]
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -218,16 +158,6 @@
   Player A played Savannah
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Badgermole Cub, Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Forest | Savannah (NEW)
-  Opp BF:   Dark Depths [ice:10]
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Badgermole Cub  [#0]
@@ -242,17 +172,6 @@
   Choose target for Badgermole Cub:
 
 --- Decision 11 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Badgermole Cub [2/2] (SICK,NEW) | Forest (T) | Savannah (T,NEW)
-  Opp BF:   Dark Depths [ice:10]
-  Pending: Badgermole Cub (self)
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Forest
    1: Savannah
@@ -270,17 +189,6 @@
   PB: Crop Rotation, Exploration, Malevolent Rumble, Savannah, Sphere of Resistance, Swords to Plowshares, Thespian's Stage
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Sphere of Resistance, Swords to Plowshares, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Dark Depths [ice:10]
-  Opp BF:   Badgermole Cub [2/2] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T)
-  Delayed: Badgermole Cub@48 -> Forest@49 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time
-  Opp revealed: Forest, Once Upon a Time, Savannah, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -295,16 +203,6 @@
   PB: Crop Rotation, Exploration, Malevolent Rumble, Savannah, Sphere of Resistance, Swords to Plowshares, Thespian's Stage
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(5): Once Upon a Time, Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Once Upon a Time  [#0]
@@ -316,18 +214,6 @@
   Player A casts Once Upon a Time
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Once Upon a Time (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -337,19 +223,6 @@
   Player A looks at the top 5 card(s) of their library.
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 51
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Once Upon a Time (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Pending: Once Upon a Time (self)
-  Self GY: Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Take nothing (rest go to the bottom of library)
    1: Thalia, Guardian of Thraben
@@ -362,17 +235,6 @@
   Player A puts 4 card(s) on the bottom of their library.
 
 --- Decision 16 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(5): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 50
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -381,34 +243,12 @@
   Player A draws Green Sun's Zenith
 
 --- Decision 17 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -420,17 +260,6 @@
   Player A played Wasteland
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Green Sun's Zenith, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Green Sun's Zenith  [#0]
@@ -443,19 +272,6 @@
   Choose X value (0-1):
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Wasteland (NEW)
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Green Sun's Zenith (spell, self)
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: X = 0  [#0]
    1: X = 1  [#1]
@@ -469,19 +285,6 @@
   Searching Player A's library:
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T,NEW)
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Stack: Green Sun's Zenith (spell, self) [X=1]
-  Delayed: Badgermole Cub@0 -> Forest@1 (self, leaves bf, waiting)
-  Pending: Green Sun's Zenith (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Birds of Paradise
@@ -495,17 +298,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T,NEW)
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [2/2]
    1: Confirm attackers
@@ -516,17 +308,6 @@
     [attacking] Badgermole Cub [2/2] -> Player B
 
 --- Decision 23 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 5)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   20 life | mana: empty | hand count: 6 | lib 52
-  Self BF:  Badgermole Cub [2/2] (ATK) | Birds of Paradise [0/1] [Flying] (SICK,NEW) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T,NEW)
-  Opp BF:   Dark Depths [ice:10] | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Dark Depths, Thespian's Stage
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -544,18 +325,6 @@
   PB: Crop Rotation, Exploration, Malevolent Rumble, Savannah, Sphere of Resistance, Swords to Plowshares, The Tabernacle at Pendrell Vale
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(7): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Sphere of Resistance, Swords to Plowshares, The Tabernacle at Pendrell Vale | lib 51
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dark Depths [ice:10] | Thespian's Stage
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -565,18 +334,6 @@
   Player B played Savannah
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(6): Crop Rotation, Exploration, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares, The Tabernacle at Pendrell Vale | lib 51
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dark Depths [ice:10] | Savannah (NEW) | Thespian's Stage
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Crop Rotation  [#0]
@@ -591,18 +348,6 @@
   Exploration enters the battlefield
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  18 life | mana: empty | hand(5): Crop Rotation, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares, The Tabernacle at Pendrell Vale | lib 51
-  Opp:   20 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Dark Depths [ice:10] | Exploration (NEW) | Savannah (T,NEW) | Thespian's Stage
-  Opp BF:   Badgermole Cub [2/2] (T) | Birds of Paradise [0/1] [Flying] (SICK) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Opp GY:  Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play The Tabernacle at Pendrell Vale
@@ -617,17 +362,6 @@
   PB: Crop Rotation, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares, The Tabernacle at Pendrell Vale
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub (Destroy)  [#0]
    1: Birds of Paradise (Destroy)  [#1]
@@ -638,18 +372,6 @@
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Birds of Paradise (Destroy)  [#0]
    1: Forest (Destroy)  [#1]
@@ -659,17 +381,6 @@
   Forest triggered
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -680,18 +391,6 @@
   Player A may pay to prevent Forest from being destroyed:
 
 --- Decision 30 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Forest (self, slot 2) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Birds of Paradise for (W)
    1: Tap Birds of Paradise for (U)
@@ -709,18 +408,6 @@
   Player A tapped Birds of Paradise for {W}
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: 1W, 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Forest (self, slot 2) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -733,17 +420,6 @@
   Player A pays {1} — Forest is not destroyed
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -754,18 +430,6 @@
   Player A may pay to prevent Birds of Paradise from being destroyed:
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Birds of Paradise (self, slot 1) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -778,17 +442,6 @@
   Player A pays {1} — Birds of Paradise is not destroyed
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -799,18 +452,6 @@
   Player A may pay to prevent Badgermole Cub from being destroyed:
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -823,18 +464,6 @@
   Player A tapped Forest for {G}
 
 --- Decision 36 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: 2G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -846,16 +475,6 @@
   Player A pays {1} — Badgermole Cub is not destroyed
 
 --- Decision 37 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: 1G | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 49
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -865,17 +484,6 @@
   Player A draws Scythecat Cub
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -883,17 +491,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 39 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(5): Scythecat Cub, Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -910,17 +507,6 @@
   Scythecat Cub enters the battlefield
 
 --- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Wasteland | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -930,18 +516,6 @@
   Choose target for Scythecat Cub:
 
 --- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Wasteland (T) | Wasteland (NEW)
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -953,18 +527,6 @@
   Scythecat Cub triggered
 
 --- Decision 42 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Wasteland (T) | Wasteland (NEW)
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -973,19 +535,6 @@
   Choose target for Wasteland:
 
 --- Decision 43 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [2/2] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW) | Wasteland (T) | Wasteland (NEW)
-  Opp BF:   Dark Depths [ice:10] | Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Wasteland (ability, self) -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Once Upon a Time, Once Upon a Time
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Dark Depths
    1: Savannah
@@ -1008,18 +557,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 44 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW,res 1) | Wasteland (T)
-  Opp BF:   Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [3/3]
    1: Confirm attackers
@@ -1030,18 +567,6 @@
     [attacking] Badgermole Cub [3/3] -> Player B
 
 --- Decision 45 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   18 life | mana: empty | hand count: 4 | lib 51
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK,NEW,res 1) | Wasteland (T)
-  Opp BF:   Exploration | Savannah (T) | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths
-  Opp revealed: Savannah, Exploration, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1058,18 +583,6 @@
   PB: Crop Rotation, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  15 life | mana: empty | hand(4): Crop Rotation, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Exploration | Savannah | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Dark Depths
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Crop Rotation  [#0]
@@ -1077,20 +590,6 @@
   >> B/B: 1 (Cast Crop Rotation)
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  15 life | mana: empty | hand(3): Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Exploration | Savannah | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Stack: Crop Rotation (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Crop Rotation (self)
-  Self GY: Dark Depths
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Sacrifice Savannah
    1: Sacrifice The Tabernacle at Pendrell Vale
@@ -1104,21 +603,6 @@
   Searching Player B's library:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 8)
-  Self:  15 life | mana: empty | hand(3): Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 48
-  Self BF:  Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Opp BF:   Badgermole Cub [3/3] [+1/+1:1] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah (T) | Scythecat Cub [2/2] [Trample] (SICK) | Wasteland (T)
-  Stack: Crop Rotation (spell, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Crop Rotation (self)
-  Self GY: Savannah, Dark Depths
-  Opp GY:  Wasteland, Once Upon a Time, Once Upon a Time
-  Known opp hand: Thalia, Guardian of Thraben
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Badgermole Cub
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -1150,18 +634,6 @@
   PB: Malevolent Rumble, Sphere of Resistance, Swords to Plowshares
 
 --- Decision 49 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub (Destroy)  [#0]
    1: Birds of Paradise (Destroy)  [#1]
@@ -1173,19 +645,6 @@
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Birds of Paradise (Destroy)  [#0]
    1: Forest (Destroy)  [#1]
@@ -1196,19 +655,6 @@
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Forest (Destroy)  [#0]
    1: Scythecat Cub (Destroy)  [#1]
@@ -1218,18 +664,6 @@
   Scythecat Cub triggered
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1240,19 +674,6 @@
   Player A may pay to prevent Scythecat Cub from being destroyed:
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 4) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Birds of Paradise for (W)
    1: Tap Birds of Paradise for (U)
@@ -1270,19 +691,6 @@
   Player A tapped Birds of Paradise for {W}
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 1W, 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 4) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -1295,18 +703,6 @@
   Player A pays {1} — Scythecat Cub is not destroyed
 
 --- Decision 55 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1317,19 +713,6 @@
   Player A may pay to prevent Forest from being destroyed:
 
 --- Decision 56 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Forest (self, slot 2) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -1342,18 +725,6 @@
   Player A pays {1} — Forest is not destroyed
 
 --- Decision 57 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1364,19 +735,6 @@
   Player A may pay to prevent Birds of Paradise from being destroyed:
 
 --- Decision 58 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Birds of Paradise (self, slot 1) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -1389,19 +747,6 @@
   Player A tapped Forest for {G}
 
 --- Decision 59 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 2G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Birds of Paradise (self, slot 1) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -1413,18 +758,6 @@
   Player A pays {1} — Birds of Paradise is not destroyed
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1435,19 +768,6 @@
   Player A may pay to prevent Badgermole Cub from being destroyed:
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: 1G | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -1459,17 +779,6 @@
   Player A pays {1} — Badgermole Cub is not destroyed
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben | lib 48
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1479,18 +788,6 @@
   Player A draws Windswept Heath
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: Draw (turn 9)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1498,18 +795,6 @@
   >> A/A: 0 (Pass priority)
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(4): Swords to Plowshares, Thalia, Guardian of Thraben, Thalia, Guardian of Thraben, Windswept Heath | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1525,18 +810,6 @@
   Thalia, Guardian of Thraben enters the battlefield
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(3): Swords to Plowshares, Thalia, Guardian of Thraben, Windswept Heath | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Windswept Heath
@@ -1546,19 +819,6 @@
   Choose target for Scythecat Cub:
 
 --- Decision 66 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T) | Windswept Heath (NEW)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -1571,19 +831,6 @@
   Scythecat Cub triggered
 
 --- Decision 67 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T) | Windswept Heath (NEW)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 colors=W
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Windswept Heath (ChangeZone)  [#0]
@@ -1596,20 +843,6 @@
   Searching Player A's library:
 
 --- Decision 68 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 47
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Windswept Heath (self)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Dryad Arbor
@@ -1622,20 +855,6 @@
   Choose target for Scythecat Cub:
 
 --- Decision 69 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [3/3] [+1/+1:1] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub
    1: Birds of Paradise
@@ -1657,18 +876,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 70 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 3) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [5/5]
    1: Scythecat Cub [2/2]
@@ -1680,18 +887,6 @@
     [attacking] Badgermole Cub [5/5] -> Player B
 
 --- Decision 71 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 3) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Scythecat Cub [2/2]
    1: Confirm attackers
@@ -1703,18 +898,6 @@
     [attacking] Scythecat Cub [2/2] -> Player B
 
 --- Decision 72 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   15 life | mana: empty | hand count: 4 | lib 49
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (NEW) | Savannah (T) | Scythecat Cub [2/2] [Trample] (ATK,res 3) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK,NEW) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self spells=1 drawn=1 life_lost=1 colors=W
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1734,18 +917,6 @@
   PB: Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares, Wasteland
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(5): Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares, Wasteland | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Opp BF:   Badgermole Cub [5/5] [+1/+1:3] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -1754,18 +925,6 @@
   Player B played Wasteland
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage | Wasteland (NEW)
-  Opp BF:   Badgermole Cub [5/5] [+1/+1:3] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Self GY: Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -1774,20 +933,6 @@
   Choose target for Wasteland:
 
 --- Decision 75 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  8 life | mana: empty | hand(4): Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares | lib 48
-  Opp:   19 life | mana: empty | hand count: 2 | lib 46
-  Self BF:  Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage | Wasteland (NEW)
-  Opp BF:   Badgermole Cub [5/5] [+1/+1:3] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub@48 -> Forest@50 (opponent, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp revealed: Forest, Wasteland, Birds of Paradise, Green Sun's Zenith, Once Upon a Time, Savannah, Scythecat Cub, Thalia, Guardian of Thraben, Windswept Heath, Badgermole Cub
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Savannah
    1: Savannah
@@ -1803,19 +948,6 @@
   Player B's Wasteland ability targeting Savannah is on the stack
 
 --- Decision 76 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 10)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (T) | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED) | Savannah | Savannah (T) | Scythecat Cub [2/2] [Trample] (T) | Thalia, Guardian of Thraben [2/1] [First Strike] (SICK) | Wasteland (T)
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Wasteland (ability, opponent) -> Savannah (self, slot 3)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: opp drawn=1
-  Extras: opp_lands_played=1, opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Tap Savannah for (G)
@@ -1832,18 +964,6 @@
   PB: Life from the Loam, Malevolent Rumble, Sphere of Resistance, Swords to Plowshares
 
 --- Decision 77 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Badgermole Cub (Destroy)  [#0]
    1: Birds of Paradise (Destroy)  [#1]
@@ -1856,19 +976,6 @@
   Player A orders 4 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 78 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Birds of Paradise (Destroy)  [#0]
    1: Forest (Destroy)  [#1]
@@ -1880,19 +987,6 @@
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 79 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Forest (Destroy)  [#0]
    1: Scythecat Cub (Destroy)  [#1]
@@ -1903,19 +997,6 @@
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 80 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Scythecat Cub (Destroy)  [#0]
    1: Thalia, Guardian of Thraben (Destroy)  [#1]
@@ -1925,18 +1006,6 @@
   Thalia, Guardian of Thraben triggered
 
 --- Decision 81 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Thalia, Guardian of Thraben (ability, self) -> Scythecat Cub (ability, self) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -1947,19 +1016,6 @@
   Player A may pay to prevent Thalia, Guardian of Thraben from being destroyed:
 
 --- Decision 82 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Thalia, Guardian of Thraben (ability, self) -> Thalia, Guardian of Thraben (self, slot 5) -> Scythecat Cub (ability, self) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Thalia, Guardian of Thraben (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Birds of Paradise for (W)
    1: Tap Birds of Paradise for (U)
@@ -1977,19 +1033,6 @@
   Player A tapped Birds of Paradise for {W}
 
 --- Decision 83 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1W, 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Thalia, Guardian of Thraben (ability, self) -> Thalia, Guardian of Thraben (self, slot 5) -> Scythecat Cub (ability, self) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Thalia, Guardian of Thraben (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -2002,18 +1045,6 @@
   Player A pays {1} — Thalia, Guardian of Thraben is not destroyed
 
 --- Decision 84 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2024,19 +1055,6 @@
   Player A may pay to prevent Scythecat Cub from being destroyed:
 
 --- Decision 85 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Scythecat Cub (ability, self) -> Scythecat Cub (self, slot 4) -> Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Scythecat Cub (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -2049,18 +1067,6 @@
   Player A pays {1} — Scythecat Cub is not destroyed
 
 --- Decision 86 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2071,19 +1077,6 @@
   Player A may pay to prevent Forest from being destroyed:
 
 --- Decision 87 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Forest (self, slot 2) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Forest for (G)
    1: Tap Savannah for (G)
@@ -2096,19 +1089,6 @@
   Player A tapped Forest for {G}
 
 --- Decision 88 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 2G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Forest (ability, self) -> Forest (self, slot 2) -> Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Forest (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -2120,18 +1100,6 @@
   Player A pays {1} — Forest is not destroyed
 
 --- Decision 89 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2142,19 +1110,6 @@
   Player A may pay to prevent Birds of Paradise from being destroyed:
 
 --- Decision 90 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Birds of Paradise (ability, self) -> Birds of Paradise (self, slot 1) -> Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Birds of Paradise (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -2166,18 +1121,6 @@
   Player A pays {1} — Birds of Paradise is not destroyed
 
 --- Decision 91 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Swords to Plowshares  [#0]
@@ -2188,19 +1131,6 @@
   Player A may pay to prevent Badgermole Cub from being destroyed:
 
 --- Decision 92 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Savannah for (G)
    1: Tap Savannah for (W)
@@ -2211,19 +1141,6 @@
   Player A tapped Savannah for {G}
 
 --- Decision 93 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: 1G | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Badgermole Cub (ability, self) -> Badgermole Cub (self, slot 0)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Badgermole Cub (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Tap Wasteland for (C)
    1: Pay {1} (Badgermole Cub is not destroyed)  [#1]
@@ -2233,17 +1150,6 @@
   Player A pays {1} — Badgermole Cub is not destroyed
 
 --- Decision 94 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 11)
-  Self:  19 life | mana: empty | hand(2): Swords to Plowshares, Thalia, Guardian of Thraben | lib 46
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2252,36 +1158,12 @@
   Player A draws Keen-Eyed Curator
 
 --- Decision 95 ---
-  Priority: Player A (active)
-  Step: Draw (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
   >> A/A: 0 (Pass priority)
 
 --- Decision 96 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -2290,20 +1172,6 @@
   Choose target for Wasteland:
 
 --- Decision 97 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1) | Wasteland
-  Opp BF:   Dark Depths [ice:10] | Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Stack: Wasteland (ability, self)
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Pending: Wasteland (self)
-  Self GY: Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dark Depths
    1: The Tabernacle at Pendrell Vale
@@ -2320,18 +1188,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 98 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1)
-  Opp BF:   Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths, Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Badgermole Cub [5/5]
    1: Scythecat Cub [2/2]
@@ -2344,18 +1200,6 @@
     [attacking] Badgermole Cub [5/5] -> Player B
 
 --- Decision 99 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1)
-  Opp BF:   Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths, Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Scythecat Cub [2/2]
    1: Thalia, Guardian of Thraben [2/1]
@@ -2368,18 +1212,6 @@
     [attacking] Scythecat Cub [2/2] -> Player B
 
 --- Decision 100 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (ATK,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (res 1)
-  Opp BF:   Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths, Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Thalia, Guardian of Thraben [2/1]
    1: Confirm attackers
@@ -2392,18 +1224,6 @@
     [attacking] Thalia, Guardian of Thraben [2/1] -> Player B
 
 --- Decision 101 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  19 life | mana: empty | hand(3): Keen-Eyed Curator, Swords to Plowshares, Thalia, Guardian of Thraben | lib 45
-  Opp:   8 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Badgermole Cub [5/5] [+1/+1:3] (ATK,res 1) | Birds of Paradise [0/1] [Flying] (T,res 1) | Forest [1/1] [+1/+1:1] [Haste] (T,DELAYED,res 1) | Savannah (T) | Scythecat Cub [2/2] [Trample] (ATK,res 1) | Thalia, Guardian of Thraben [2/1] [First Strike] (ATK,res 1)
-  Opp BF:   Exploration | The Tabernacle at Pendrell Vale | Thespian's Stage
-  Delayed: Badgermole Cub@0 -> Forest@2 (self, leaves bf, waiting)
-  Self GY: Wasteland, Savannah, Windswept Heath, Wasteland, Once Upon a Time, Once Upon a Time
-  Opp GY:  Dark Depths, Wasteland, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Wasteland, Savannah, Exploration, Crop Rotation, Dark Depths, Thespian's Stage, The Tabernacle at Pendrell Vale
-  This turn: self drawn=1
-  Extras: self_revolt, opp_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)

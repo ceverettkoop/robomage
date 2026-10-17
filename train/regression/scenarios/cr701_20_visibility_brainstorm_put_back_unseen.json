@@ -1,0 +1,24 @@
+{
+  "name": "cr701_20_visibility_brainstorm_put_back_unseen",
+  "why": "CR 402.3 / 401.2: Brainstorm draws into its caster's own hand and puts two cards back with no reveal or look, so it opens no reveal window: the opponent never sees the put-back cards, and only the caster's own Ponder then looks at them (step 1 T1 reveal windows, --trace-visibility)",
+  "engine_flags": ["--trace-visibility"],
+  "hand_a": ["Island", "Brainstorm", "Ponder", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Island"],
+  "library_a": ["Lightning Bolt", "Daze", "Force of Will", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Brainstorm", "A:desc:Force of Will", "A:desc:Daze",
+           "A:cast:Ponder"],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A casts Brainstorm",
+    "^Player A draws Force of Will",
+    "^Player A puts Force of Will to top of library",
+    "^Player A puts Daze to top of library",
+    "Player A casts Ponder",
+    "^VISIBILITY: open look Daze in library of A at 0 to A",
+    "^VISIBILITY: open look Force of Will in library of A at 1 to A"
+  ],
+  "expect_count": {"^VISIBILITY: open": 3},
+  "expect_not": ["^VISIBILITY: .* to (B|all) \\("]
+}

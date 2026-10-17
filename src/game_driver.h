@@ -51,6 +51,20 @@ extern bool narrative_mode;
 extern bool bo3_mode;
 extern bool log_decisions_flag;
 extern bool broadcast_steps_mode;
+extern bool trace_visibility;
+extern bool trace_handles;
+extern bool trace_events;
+extern bool closed_decklist;
+extern std::string rmstate_dump_path;
+extern bool machine_format_rmstate;
+extern bool rmstate_card_scripts;
+extern bool state_dump_json;
+extern std::string rmstate_read_path;
+extern int knowledge_level_a;
+extern int knowledge_level_b;
+extern bool selfcheck_state;
+extern int selfcheck_state_sample;
+extern bool selfcheck_knowledge;
 extern std::vector<std::string> battlefield_a_cards;
 extern std::vector<std::string> battlefield_b_cards;
 extern std::vector<std::string> graveyard_a_cards;
@@ -98,6 +112,9 @@ bool in_main_loop();
 // The serializer gates the pass flags and is_priority_window on it, so the two
 // always agree.
 bool priority_window_open();
+// Sets what priority_window_open answers. Only the state-format self-check uses it, to encode a
+// restored snapshot as of the decision it was saved at (state_format/selfcheck.h).
+void set_priority_window_open(bool open);
 
 // ── Concession (CR 104.3a) ──────────────────────────────────────────────────
 // A player may concede at any time; they lose the game immediately. The engine
@@ -113,9 +130,13 @@ bool priority_window_open();
 // COOPERATIVE UNWIND modelled on the search-server RESTORE unwind: the engine
 // cannot unwind the C++ stack (-fno-exceptions), so every get_input below the
 // concede hands back choice 0 — emitting no query, consuming no stdin,
-// committing nothing — until control returns to the main loop, whose
-// already-decided-game check exits it. Those auto-choices run under an ended
-// game (state-based effects early-return, so nothing can change the winner).
+// committing nothing — until control returns to the main loop. Those
+// auto-choices run under an ended game (state-based effects early-return, so
+// nothing can change the winner). A concession read at a loop-level decision (a
+// parked query, a priority window) acts on nothing; at the loop top the
+// conceded game's suspended state — the parked query, the resolution frame,
+// the cast / activation / draw continuations, an unfinished pregame — is
+// discarded and the game's decision loop exits.
 //
 // `whole_match` (the -3 sentinel) additionally latches match_conceded(): the
 // bo3 dispatcher stops after the current game and reports the conceder's

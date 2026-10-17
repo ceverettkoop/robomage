@@ -508,6 +508,17 @@ def format_name(bo3: bool) -> str:
     return FORMAT_BO3 if bo3 else FORMAT_BO1
 
 
+# ── Machine protocol (--machine-format bquery|rmstate) ────────────────────────
+# Which engine protocol a game-running tool drives: the BQUERY state vector, or
+# RMSTATE frames (rmstate_env.py), on which only the scripted tiers (the decoded
+# frame, rm_agent.py; the pass-1 parity adapter's rebuilt vector with
+# `scripted?view=vector`), auto, actions: and play: can play
+# (runner.require_rmstate_capable).
+
+MACHINE_FORMAT_CHOICES = ("bquery", "rmstate")
+DEFAULT_MACHINE_FORMAT = "bquery"
+
+
 # ── Interactive play (play.py and the GUI launcher) ──────────────────────────
 #
 # play.py's flags and the GUI's New Play Session dialog share these defaults
@@ -1031,6 +1042,17 @@ def format_arg(help_extra: str = "") -> Arg:
                help="Match format: bo3 = best-of-three matches (deck swap + "
                     "sideboarding between games), bo1 = single games "
                     f"(default {DEFAULT_FORMAT})" + help_extra)
+
+
+def machine_format_arg() -> Arg:
+    """--machine-format bquery|rmstate: the engine protocol the agents play on."""
+    return Arg("--machine-format", "choice", choices=MACHINE_FORMAT_CHOICES,
+               default=DEFAULT_MACHINE_FORMAT,
+               help="Engine protocol: bquery (the state vector) or rmstate (RMSTATE "
+                    "frames; the scripted tiers read the decoded frame, or with "
+                    "'scripted?view=vector' the pass-1 parity adapter's rebuilt "
+                    "vector; auto, actions: and play: play too; the verbose "
+                    f"transcript has no board block) (default {DEFAULT_MACHINE_FORMAT})")
 
 
 def common_args(binary_default=BINARY):
@@ -1968,6 +1990,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "wall time, games/s, decisions/s, ms/decision). With --quiet "
                  "the engine also runs without narrative — the lean "
                  "benchmark path"),
+        machine_format_arg(),
         *common_args(),
     ]),
     Sub("baseline",
@@ -3042,6 +3065,7 @@ HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
             "between games; the default --max-decisions is 1500 (up to 3 games "
             "+ sideboard decisions) vs 500 for bo1. Sculpted scenarios usually "
             "want --format bo1"),
+        machine_format_arg(),
         Arg("--merge-sideboard", "flag",
             help="Fold each deck's SIDEBOARD: section into its mainboard "
                  "(quantities summed) and run from a merged temp deck with NO "
@@ -3370,8 +3394,33 @@ AZ_INSPECT_TOOL = Tool("az-inspect", "train/az_inspect.py", subs=[
                          help="Top cards listed per unit (default: 6)")),
 ])
 
+# train/rmstate.py: the Python RMSTATE decoder's CLI (docs/state_format.md §9).
+RMSTATE_TOOL = Tool("rmstate", "train/rmstate.py", subs=[
+    Sub("dump", "Print an RMSTATE stream (an engine --rmstate-dump file, or a "
+                "--machine-format rmstate capture) as JSON lines, as the engine's "
+                "--state-dump json renders them",
+        items=[Arg("file", required=True, metavar="FILE",
+                   help="RMSTATE stream to decode (- = stdin)")]),
+])
+
+
+
+def _driver_tool() -> Tool:
+    """train/rm_driver.py: the agent-game driver on RMSTATE (plan step 2). Its flags are the
+    driver's own table (``rm_driver.CLI_FLAGS``, the Arg fields as dicts), so the driver parses
+    without this module; registered here as every other CLI is."""
+    from rm_driver import CLI_FLAGS
+    return Tool("driver", "train/rm_driver.py", flat=True, subs=[
+        Sub("driver", "Play agent games (the scripted tiers, explore, first, actions:) on the "
+                      "RMSTATE protocol with the stdlib-only driver",
+            items=[Arg(**f) for f in CLI_FLAGS]),
+    ])
+
+
+DRIVER_TOOL = _driver_tool()
+
 ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, AZ_INSPECT_TOOL,
-             PLAY_TOOL, HARNESS_TOOL]
+             PLAY_TOOL, HARNESS_TOOL, RMSTATE_TOOL, DRIVER_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────

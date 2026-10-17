@@ -11,6 +11,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/visibility.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 
@@ -57,6 +58,7 @@ HandlerResult rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> ord
 
         game_log("%s looks at the top %zu card(s) of %s library.\n", player_name(ab.controller).c_str(),
                  rt.lib.size(), owner_possessive(ab.controller, owner).c_str());
+        look_at_cards(rt.lib, ab.controller);
         rt.init = true;
     }
     size_t actual = rt.lib.size();

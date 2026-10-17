@@ -1,7 +1,8 @@
 """Deck -> strategic-archetype metadata (Part 0 of the per-deck optimization plan).
 
 Every deck the engine can load is tagged with one of a small number of *strategic
-archetypes* (tempo, control, burn, ...) in ``bin/resources/decks/archetypes.json``.
+archetypes* (tempo, control, burn, ...) in ``bin/resources/decks/archetypes.json``, which also
+holds the canonical archetype list (its ``_archetypes`` key).
 The archetype pair of a matchup — (self archetype, opponent archetype) — indexes a
 "value bucket", which later parts of the plan use to give the critic a per-matchup
 final head so a burn race's value statistics stop fighting a control grind's.
@@ -17,16 +18,25 @@ rather than reordering existing ones.
 import json
 import os
 
-# Strategic archetypes, in their canonical (index) order. APPEND ONLY — see above.
-ARCHETYPES = [
-    "tempo",          # 0
-    "slow_midrange",  # 1
-    "control",        # 2
-    "burn",           # 3
-    "lands",          # 4
-    "doomsday",       # 5
-    "reanimator",     # 6
-]
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DECKS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "decks")
+ARCHETYPES_JSON = os.path.join(DECKS_DIR, "archetypes.json")
+
+
+def _load_archetype_names():
+    """The canonical archetype list: archetypes.json's ``_archetypes`` key, the single source the
+    engine's METAGAME frame reads too. A missing or malformed list is a loud error."""
+    with open(ARCHETYPES_JSON) as f:
+        names = json.load(f).get("_archetypes")
+    if not isinstance(names, list) or not names or not all(isinstance(n, str) and n for n in names) \
+            or len(set(names)) != len(names):
+        raise ValueError(f"{ARCHETYPES_JSON}: '_archetypes' must be a non-empty list of distinct names")
+    return names
+
+
+# Strategic archetypes, in their canonical (index) order: tempo, slow_midrange, control, burn,
+# lands, doomsday, reanimator. APPEND ONLY — see above.
+ARCHETYPES = _load_archetype_names()
 
 # Fallback bucket for any deck not tagged in archetypes.json (ad-hoc / temp decks).
 UNKNOWN = len(ARCHETYPES)
@@ -36,10 +46,6 @@ UNKNOWN_NAME = "unknown"
 # (self archetype x opponent archetype) value buckets they span.
 N_ARCH = UNKNOWN + 1
 N_VALUE_BUCKETS = N_ARCH * N_ARCH
-
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DECKS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "decks")
-ARCHETYPES_JSON = os.path.join(DECKS_DIR, "archetypes.json")
 
 # Deck-spec prefix stripped when a caller hands us a path instead of a stem.
 _DECKS_PREFIX = "resources/decks/"

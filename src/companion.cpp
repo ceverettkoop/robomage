@@ -11,6 +11,7 @@
 #include "ecs/coordinator.h"
 #include "mana_system.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
 #include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -98,6 +99,7 @@ static void setup_companion_for(Zone::Ownership owner, const Deck &deck,
     player.chosen_companion = comp;
     // CR 702.139f: a chosen companion is revealed at game start, so the opponent knows it.
     mark_card_revealed(comp, owner);
+    reveal_continuously(comp);
 }
 
 void setup_companions(const Deck &deck_a, const Deck &deck_b,

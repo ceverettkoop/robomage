@@ -1,0 +1,73 @@
+{
+  "name": "knowledge_sylvan_library_keeps_known_hand",
+  "why": "docs/knowledge_store.md \u00a75 hand_subset drawn_this_turn / \u00a77 sharpness (register 36): B's Cabal Therapy shows A's hand {Force of Will, Daze, Forest x4}; on A's next turn Sylvan Library puts back two cards, which may only be cards drawn this turn, so Force of Will, Daze and the four Forests are still definitely in A's hand and the two put-backs are two of this turn's three draws (CR 701.20a; step 1 T12 sharpness)",
+  "hand_a": [
+    "Force of Will",
+    "Daze",
+    "Ponder",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "battlefield_a": [
+    "Sylvan Library",
+    "Forest"
+  ],
+  "library_a": [
+    "Lightning Bolt",
+    "Brainstorm",
+    "Ponder",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest",
+    "Forest"
+  ],
+  "hand_b": [
+    "Cabal Therapy",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "A:desc:Lightning Bolt",
+    "A:desc:Brainstorm",
+    "A:desc:Put on top",
+    "A:desc:Put on top",
+    "B:cast:Cabal Therapy",
+    "B:target:Player A",
+    "B:choice:Ponder",
+    "A:desc:Lightning Bolt",
+    "A:desc:Brainstorm",
+    "A:desc:Put on top",
+    "A:desc:Put on top"
+  ],
+  "max_decisions": 19,
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ known_hand Force of Will x1$",
+    "^B d=\\d+ \\S+ \\S+ known_hand Daze x1$",
+    "^B d=\\d+ \\S+ \\S+ known_hand Forest x4$",
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=7: Brainstorm 0-1, Daze 1-1, Force of Will 1-1, Forest 4-5, Lightning Bolt 0-1, Ponder 0-1$"
+  ]
+}

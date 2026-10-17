@@ -1,5 +1,6 @@
 #include "cli_args.h"
 
+#include <cstdlib>
 #include <cstring>
 
 #include "cli_output.h"
@@ -33,6 +34,7 @@ struct ParsedOption {
 
 static std::vector<std::string> split_card_list(const std::string &csv);
 static bool is_seat_a(const char *value);
+static int knowledge_level_value(const char *value);
 static const CliOption *find_option(const std::string &name);
 static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
@@ -83,6 +85,11 @@ static const CliOption OPTIONS[] = {
     {"--offer-cancel", nullptr, false, true, [](const char *) { offer_cast_cancel = true; },
         [](DecisionLogHeader &h, const std::string &k) {
             if (offer_cast_cancel) h.add_flag(k);
+        }},
+    // Each seat's state-format frames carry only its own registered decklist (decision 11).
+    {"--closed-decklist", nullptr, false, true, [](const char *) { closed_decklist = true; },
+        [](DecisionLogHeader &h, const std::string &k) {
+            if (closed_decklist) h.add_flag(k);
         }},
 
     // Setup options recorded in their own header fields (DECK_A / DECK_B / SEED)
@@ -135,6 +142,64 @@ static const CliOption OPTIONS[] = {
     // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
     // response expected, nothing recorded).
     {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},
+    // Narrate reveal windows opening and closing (VISIBILITY: lines in the game log).
+    {"--trace-visibility", nullptr, false, false, [](const char *) { trace_visibility = true; }, nullptr},
+    // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
+    // (HANDLES: / HANDLE: lines in the game log).
+    {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
+    // Narrate each observation event as it is queued, per viewer (EVENT: lines in the game log).
+    {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
+    // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
+    {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
+    // The machine protocol's stdout format: bquery (the default) or rmstate (the deciding seat's
+    // RMSTATE frame, state_format/stream.h); either implies --machine.
+    {"--machine-format", nullptr, true, false,
+        [](const char *v) {
+            if (std::strcmp(v, "rmstate") == 0)
+                machine_format_rmstate = true;
+            else if (std::strcmp(v, "bquery") != 0)
+                fatal_error("--machine-format: expected bquery or rmstate, got '" + std::string(v) + "'");
+            machine_mode = true;
+        },
+        nullptr},
+    // Every CARDS frame carries each card's and token's raw script text (its `script` column).
+    {"--rmstate-card-scripts", nullptr, false, false, [](const char *) { rmstate_card_scripts = true; }, nullptr},
+    // Render the RMSTATE frames --rmstate-dump writes (or --rmstate-read reads) as JSON lines.
+    {"--state-dump", nullptr, true, false,
+        [](const char *v) {
+            if (std::strcmp(v, "json") != 0)
+                fatal_error("--state-dump: the only format is json, got '" + std::string(v) + "'");
+            state_dump_json = true;
+        },
+        nullptr},
+    // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
+    {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
+    // Each seat's knowledge sidecar level in its RMSTATE frames (state_format/knowledge_feed.h).
+    // Output only, like the RMSTATE writers: not recorded in the log header, honored in replay.
+    {"--knowledge-a", nullptr, true, false, [](const char *v) { knowledge_level_a = knowledge_level_value(v); },
+        nullptr},
+    {"--knowledge-b", nullptr, true, false, [](const char *v) { knowledge_level_b = knowledge_level_value(v); },
+        nullptr},
+    // Run the state format's self-checks at every decision (state_format/selfcheck.h).
+    {"--selfcheck-state", nullptr, false, false, [](const char *) { selfcheck_state = true; }, nullptr},
+    // Check the knowledge sidecar against the truth at every decision (state_format/selfcheck_knowledge.h);
+    // implies --selfcheck-state, whose knowledge instances it checks.
+    {"--selfcheck-knowledge", nullptr, false, false,
+        [](const char *) {
+            selfcheck_knowledge = true;
+            selfcheck_state = true;
+        },
+        nullptr},
+    // Start the sampled self-checks (permutation leak, snapshot) at every Nth decision.
+    {"--selfcheck-state-sample", nullptr, true, false,
+        [](const char *v) {
+            char *end = nullptr;
+            const long n = std::strtol(v, &end, 10);
+            if (end == v || *end != '\0' || n < 1)
+                fatal_error("--selfcheck-state-sample: expected a positive integer, got '" + std::string(v) + "'");
+            selfcheck_state_sample = static_cast<int>(n);
+        },
+        nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 
@@ -158,6 +223,16 @@ static std::vector<std::string> split_card_list(const std::string &csv) {
 // Seat argument of --player / --log-viewer: "A" or "a" is Player A, anything else Player B.
 static bool is_seat_a(const char *value) {
     return std::strcmp(value, "A") == 0 || std::strcmp(value, "a") == 0;
+}
+
+// The value of --knowledge-a / --knowledge-b: off (0), expert (1) or expert+belief (2); anything
+// else is fatal.
+static int knowledge_level_value(const char *value) {
+    if (std::strcmp(value, "off") == 0) return 0;
+    if (std::strcmp(value, "expert") == 0) return 1;
+    if (std::strcmp(value, "expert+belief") == 0) return 2;
+    fatal_error("--knowledge-a/--knowledge-b: expected off, expert or expert+belief, got '" + std::string(value) + "'");
+    return 0;
 }
 
 static const CliOption *find_option(const std::string &name) {

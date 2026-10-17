@@ -1,0 +1,18 @@
+{
+  "name": "knowledge_own_brainstorm_put_back",
+  "why": "docs/knowledge_store.md §4.1 recall / §7 sharpness: A's Brainstorm draws Lightning Bolt, Daze and Force of Will and A puts back Force of Will, then Daze, so A knows its top two exactly (k_position: Daze on top, Force of Will second); B saw two unknown cards go back and knows neither position, only that each is one of the cards A could have put back (CR 401.2, 402.3; step 1 T12 sharpness)",
+  "hand_a": ["Island", "Brainstorm", "Ponder", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Island"],
+  "library_a": ["Lightning Bolt", "Daze", "Force of Will", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Brainstorm", "A:desc:Force of Will", "A:desc:Daze"],
+  "max_decisions": 9,
+  "expect_dump_final": [
+    "^A d=\\d+ \\S+ \\S+ position self top0 = Daze$",
+    "^A d=\\d+ \\S+ \\S+ position self top1 = Force of Will$",
+    "^B d=\\d+ \\S+ \\S+ position opp top0 one of: .*Daze.*Force of Will",
+    "^B d=\\d+ \\S+ \\S+ position opp top1 one of: .*Daze.*Force of Will"
+  ],
+  "expect_dump_final_not": ["^B .* position opp top[01] = "]
+}

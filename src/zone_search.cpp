@@ -13,7 +13,10 @@
 #include "queries/characteristics.h"
 #include "queries/filters.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
+#include "queries/zones.h"
 #include "resolution_frame.h"
+#include "state_format/events.h"
 #include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -26,6 +29,9 @@ static const char *zone_word(Zone::ZoneValue zone);
 static bool searches_zone(const ZoneSearch &search, Zone::ZoneValue zone);
 static void log_search(const ZoneSearch &search);
 static ActionCategory search_menu_category(const ZoneSearch &search);
+static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
+                                   Zone::Ownership searcher);
+static void report_search(const ZoneSearch &search, Zone::Ownership searcher, Entity found);
 
 // The cards `owner` has in `zone`, in the zone's own order. Graveyard / face-up exile / sideboard
 // ("outside the game") cards are enumerated by Zone owner (Karn, the Great Creator -2: choose an
@@ -108,6 +114,35 @@ static ActionCategory search_menu_category(const ZoneSearch &search) {
     return library ? ActionCategory::SEARCH_LIBRARY : ActionCategory::CHOOSE_CARD;
 }
 
+// CR 701.23a: searching a zone is looking at every card in it, so the searcher sees the searched
+// hidden zones' cards while the search is under way (the resolution, until a shuffle or a move).
+// A search that picks its cards one at a time (exclude_remembered: Doomsday) does not look again at
+// the cards it already chose and put back into the zone: the searcher knows them from putting them
+// there, and the other player can then tell the next pick apart from them (it comes from the cards
+// still looked at, never from the ones already chosen).
+static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
+                                   Zone::Ownership searcher) {
+    const std::vector<ObjectRef> &remembered = cur_game.resolution.memory.remembered;
+    for (auto zone : search.zones) {
+        if (is_public_zone(zone)) continue;
+        std::vector<Entity> looked;
+        for (Entity e : zone_contents(orderer, search.owner, zone))
+            if (!search.exclude_remembered || !refs_contain(remembered, e)) looked.push_back(e);
+        look_at_cards(looked, searcher);
+    }
+}
+
+// A search event per searched hidden zone, once the pick is made (CR 701.23): a library, a
+// sideboard, another player's hand. A pick from the searcher's own hand (a put-back) is no search.
+static void report_search(const ZoneSearch &search, Zone::Ownership searcher, Entity found) {
+    for (auto zone : search.zones) {
+        if (is_public_zone(zone) || zone == Zone::BATTLEFIELD) continue;
+        if (zone == Zone::HAND && search.owner == searcher) continue;
+        const bool here = found != 0 && global_coordinator.GetComponent<Zone>(found).location == zone;
+        obs_search(searcher, zone, search.owner, here ? 1 : 0);
+    }
+}
+
 Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, FrameCtx &ctx,
                     Entity decision_source, bool &suspended) {
     suspended = false;
@@ -119,8 +154,14 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
             if (search_candidate_matches(entity, search)) choices.push_back(entity);
         }
 
+    // The calling handler has seated priority on the searching player.
+    look_at_searched_zones(orderer, search, priority_seat());
+
     // Nothing left to move; return immediately without prompting
-    if (search.mandatory && choices.empty()) return 0;
+    if (search.mandatory && choices.empty()) {
+        report_search(search, priority_seat(), 0);
+        return 0;
+    }
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !search.mandatory || choices.empty();
 
@@ -161,6 +202,7 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     int first = show_fail_to_find ? 1 : 0;
     int idx = choice - first;
-    if (idx >= 0 && idx < static_cast<int>(choices.size())) return choices[static_cast<size_t>(idx)];
-    return 0;
+    const Entity found = idx >= 0 && idx < static_cast<int>(choices.size()) ? choices[static_cast<size_t>(idx)] : 0;
+    report_search(search, chooser, found);
+    return found;
 }

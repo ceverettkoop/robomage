@@ -29,7 +29,8 @@ from _enums import (CAT_PASS_PRIORITY, CAT_SELECT_ATTACKER,
 from cli_spec import DEFAULT_AZ_C_PUCT
 from cli_spec import (DEFAULT_SB_BRANCHES, DEFAULT_SB_WORLDS,
                       DEFAULT_SB_ROLLOUT_TURNS)
-from scripted_agent import ScriptedAgent, make_agent
+from scripted_agent import ScriptedAgent, card_name_mismatches, make_agent, use_card_knowledge
+import rm_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
 # Keep in sync with scripted_agent._PRESETS.
@@ -206,9 +207,16 @@ MATCHUP_MODEL_TOKEN = "random-model"
 
 
 def is_scripted_spec(spec: str) -> bool:
-    """True if ``spec`` names a scripted agent rather than a checkpoint path."""
-    s = (spec or "").strip().lower()
+    """True if ``spec`` names a scripted agent rather than a checkpoint path (a ``?view=`` knob
+    allowed, ``make_controller``)."""
+    s = (spec or "").strip().lower().partition("?")[0]
     return s.startswith("scripted") or s in _SCRIPTED_SUFFIXES
+
+
+# The views a scripted controller can read on --machine-format rmstate (make_controller's
+# ``?view=`` knob): the decoded frame (rm_agent.FrameView, the default) or the pass-1 parity
+# adapter's rebuild of the BQUERY vector (scripted_agent.VectorView).
+SCRIPTED_VIEWS = ("frame", "vector")
 
 
 def matchup_checkpoints(model_deck: Optional[str], opp_deck: Optional[str],
@@ -239,11 +247,31 @@ class Controller(Protocol):
 
 
 class ScriptedController:
-    """Wraps a ScriptedAgent."""
+    """Wraps a ScriptedAgent (the decision core, ``scripted_core``, on the view of its env).
 
-    def __init__(self, agent: ScriptedAgent, label: str = "scripted"):
+    On a BQUERY env the agent reads the vector (``scripted_agent.VectorView``). On an RMSTATE env
+    (``rmstate_env.RMStateNarrativeEnv``) it reads, with ``view="frame"`` (the default), the
+    deciding seat's decoded frame (``rm_agent.FrameView``: card knowledge, deck names and lists
+    from the match's ``CARDS`` / ``DECKLISTS`` / ``METAGAME`` frames); with ``view="vector"`` the
+    pass-1 parity path: the adapter's rebuild of the vector, before each decision the env's card
+    knowledge installed (``scripted_agent.use_card_knowledge``; the vocab tables on any other env)
+    and the deck names the frames give."""
+
+    rmstate_capable = True
+
+    def __init__(self, agent: ScriptedAgent, label: str = "scripted", view: str = "frame"):
+        if view not in SCRIPTED_VIEWS:
+            raise ValueError(f"unknown scripted view {view!r}; valid: {', '.join(SCRIPTED_VIEWS)}")
         self._agent = agent
         self.label = label
+        self.view = view
+        self._env = None
+        self._checked_knowledge = None   # the card knowledge whose names were checked
+
+    @property
+    def rmstate_vector(self) -> bool:
+        """Reads the adapter's whole observation on an RMSTATE env (the pass-1 path)."""
+        return self.view == "vector"
 
     def new_game(self) -> None:
         """Reset the agent's per-game state (EXPLORE novelty set) at game start."""
@@ -253,7 +281,24 @@ class ScriptedController:
         """Push per-seat deck names to the agent (unified deck identification)."""
         self._agent.set_deck_names(deck_a, deck_b)
 
+    def bind_env(self, env) -> None:
+        """The env of the game about to start (runner.run_games)."""
+        self._env = env
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        seat = getattr(self._env, "seat_frames", None)
+        if seat is not None and self.view == "frame":
+            return rm_agent.decide(self._agent, seat, self._env.frame)
+        knowledge = getattr(self._env, "card_knowledge", None)
+        if knowledge is not None and knowledge is not self._checked_knowledge:
+            bad = card_name_mismatches(knowledge)
+            if bad:
+                raise RuntimeError(f"the match's CARDS frame names cards with other ids than the vocab: {bad[:5]}")
+            self._checked_knowledge = knowledge
+        use_card_knowledge(knowledge)
+        if knowledge is not None:
+            names = self._env.deck_names
+            self._agent.set_deck_names(names["A"], names["B"])
         return self._agent.act(obs, num_choices)
 
 
@@ -1120,6 +1165,15 @@ class _ScriptedLine:
     def wants_search_env(self) -> bool:
         return any(getattr(p, "wants_search_env", False) for p in self._players)
 
+    @property
+    def rmstate_capable(self) -> bool:
+        """The script reads only the menu; its players decide the rest."""
+        return all(getattr(p, "rmstate_capable", False) for p in self._players)
+
+    @property
+    def rmstate_vector(self) -> bool:
+        return any(getattr(p, "rmstate_vector", False) for p in self._players)
+
     def set_deck_names(self, deck_a, deck_b):
         self._forward("set_deck_names", deck_a, deck_b)
 
@@ -1283,6 +1337,8 @@ class PlayController(_ScriptedLine):
 class AutoPassController:
     """Always picks action 0 (pass priority / first choice) — the harness default."""
 
+    rmstate_capable = True
+
     def __init__(self, label: str = "Auto"):
         self.label = label
 
@@ -1399,7 +1455,11 @@ def make_controller(spec, *,
     s = spec.strip()
     low = s.lower()
     if is_scripted_spec(s):
-        return ScriptedController(make_agent(s), label=s)
+        base, params = _parse_spec_query(s)
+        unknown = set(params) - {"view"}
+        if unknown:
+            raise ValueError(f"bad scripted spec {spec!r}: unknown knob(s) {sorted(unknown)}")
+        return ScriptedController(make_agent(base), label=s, view=params.get("view", "frame"))
     if low in ("auto", "autopass"):
         return AutoPassController()
     if low == "human":

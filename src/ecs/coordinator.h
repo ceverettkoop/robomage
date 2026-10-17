@@ -77,6 +77,13 @@ class Coordinator {
         ComponentType GetComponentType() {
             return mComponentManager->GetComponentType<T>();
         }
+        // Gives entities[i] the T component entities[from[i]] had, without copying any component
+        // (ComponentArray::PermuteData): for the state format's self-check, which gives hidden
+        // cards other identities for a moment and puts them back.
+        template <typename T>
+        void PermuteComponents(const std::vector<Entity> &entities, const std::vector<size_t> &from) {
+            mComponentManager->PermuteComponents<T>(entities, from);
+        }
 
         template <typename T>
         bool entity_has_component(Entity entity){

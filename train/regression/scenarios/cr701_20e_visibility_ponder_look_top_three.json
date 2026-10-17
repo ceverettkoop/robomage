@@ -1,0 +1,23 @@
+{
+  "name": "cr701_20e_visibility_ponder_look_top_three",
+  "why": "CR 701.20e / 701.20d: Ponder opens a look window for its caster alone on each of the top three cards; each ends as the card is put back (a reordered card stops being looked at) (step 1 T1 reveal windows, --trace-visibility)",
+  "engine_flags": ["--trace-visibility"],
+  "hand_a": ["Island", "Ponder", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Lightning Bolt", "Brainstorm", "Force of Will", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Ponder", "A:desc:Force of Will", "A:desc:Lightning Bolt", "A:desc:Don't shuffle"],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player A looks at the top 3 card\\(s\\) of their library",
+    "^VISIBILITY: open look Lightning Bolt in library of A at 0 to A \\(until resolution end\\)",
+    "^VISIBILITY: open look Brainstorm in library of A at 1 to A",
+    "^VISIBILITY: open look Force of Will in library of A at 2 to A",
+    "^VISIBILITY: close look Force of Will in library of A at 2 to A \\(zone change\\)",
+    "^VISIBILITY: close look Lightning Bolt in library of A at 1 to A \\(zone change\\)",
+    "^VISIBILITY: close look Brainstorm in library of A at 2 to A \\(zone change\\)",
+    "^Player A draws Brainstorm"
+  ],
+  "expect_count": {"^VISIBILITY: open": 3, "^VISIBILITY: close": 3},
+  "expect_not": ["^VISIBILITY: .* to (B|all) \\("]
+}

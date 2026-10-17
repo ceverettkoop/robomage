@@ -58,6 +58,8 @@ class CardFace(NamedTuple):
     front_lines: List[str]
     is_back: bool
     layout: Optional[str]
+    # (front_lines, back_lines) of the whole script (back_lines None for a single face).
+    halves: Optional[tuple] = None
 
 
 def card_uid_stems(name):
@@ -161,8 +163,11 @@ def card_row_lines(face):
     lines."""
     if face.layout != "Split":
         return face.lines
-    with open(face.path) as f:
-        front, back = split_faces(f.read())
+    if face.halves is not None:
+        front, back = face.halves
+    else:
+        with open(face.path) as f:
+            front, back = split_faces(f.read())
     halves = [front, back or []]
     combined = ["ManaCost:" + _combined_mana_cost(
         [script_field(h, "ManaCost") or "no cost" for h in halves])]
@@ -201,13 +206,22 @@ def _script_face(path, back):
     """The front (back=False) or back (back=True) CardFace of the script at
     `path`; None when a back face is asked of a single-faced script."""
     with open(path) as f:
-        front, back_lines = split_faces(f.read())
+        return card_face_from_text(f.read(), back, path)
+
+
+def card_face_from_text(text, back, path=""):
+    """The front (back=False) or back (back=True) CardFace of a script's text
+    (`path` names where it came from, informational); None when a back face is
+    asked of a single-faced script. The RMSTATE card table's raw script column
+    resolves through this, so it reads a card exactly as the codegen does."""
+    front, back_lines = split_faces(text)
     layout = script_field(front, "AlternateMode")
+    halves = (front, back_lines)
     if not back:
-        return CardFace(path, front, front, False, layout)
+        return CardFace(path, front, front, False, layout, halves)
     if back_lines is None:
         return None
-    return CardFace(path, back_lines, front, True, layout)
+    return CardFace(path, back_lines, front, True, layout, halves)
 
 
 def _face_named(face, stem):

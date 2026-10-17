@@ -27,6 +27,7 @@
 #include "queries/battlefield.h"
 #include "queries/characteristics.h"
 #include "queries/filters.h"
+#include "queries/pending_cost.h"
 #include "queries/player_resources.h"
 #include "queries/players.h"
 #include "queries/types.h"
@@ -1561,6 +1562,11 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                              has_improvise);
     }
 
+    // The payment in progress, for the state format's pending_cost (queries/pending_cost.h).
+    Game::PendingDecisions::CostPayment payment;
+    payment.paid_for = paid_for;
+    CostPaymentScope payment_scope(payment);
+
     // Payment loop: prompt player to tap sources or delve until cost is paid
     while (!remaining.empty()) {
         // Check if pool now covers remaining cost (from prior mana activations or delve)
@@ -1625,6 +1631,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         game_log(" remaining):\n");
 
         // The card being paid for is the pending-decision source.
+        payment_scope.set_remaining(remaining, static_cast<int>(cost.size()) - static_cast<int>(remaining.size()));
         int choice;
         {
             PendingDecisionScope pending(paid_for);

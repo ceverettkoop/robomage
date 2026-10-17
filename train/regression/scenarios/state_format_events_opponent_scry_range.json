@@ -1,0 +1,21 @@
+{
+  "name": "state_format_events_opponent_scry_range",
+  "why": "docs/state_format.md §5 library positions: the opponent sees B's scry 2 as a look at B's top two cards and the bottomed card as a pick from cards they cannot tell apart, a range ('a card from top positions 0-1 -> bottom 0'); B sees each card's identity and exact position (CR 701.22a; step 1 T4 observation events, --trace-events)",
+  "engine_flags": ["--trace-events"],
+  "hand_a": ["Mountain"],
+  "library_a": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Island", "Preordain", "Island", "Island", "Island", "Island", "Island"],
+  "battlefield_b": ["Island"],
+  "library_b": ["Swamp", "Daze", "Force of Will", "Ponder", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "play": ["A:keep", "B:keep", "B:play:Island", "B:cast:Preordain", "B:bottom:Daze", "B:top:Force of Will"],
+  "max_decisions": 8,
+  "expect_order": [
+    "^EVENT: A seq=\\d+ t1 look player=B library:B count=2 range=top0\\+2 to=B src=h\\d+ src=Preordain \\[h0>h0 \\? from=top0\\] \\[h0>h0 \\? from=top1\\]$",
+    "^EVENT: B seq=\\d+ t1 look player=B library:B count=2 range=top0\\+2 to=B src=h\\d+ src=Preordain \\[h0>h\\d+ Daze from=top0\\] \\[h0>h\\d+ Force of Will from=top1\\]$",
+    "^EVENT: A seq=\\d+ t1 zone_move library:B -> library:B count=1 src=h\\d+ src=Preordain \\[h0>h0 \\? from=top0\\+2 to=bottom0\\]$",
+    "^EVENT: B seq=\\d+ t1 zone_move library:B -> library:B count=1 src=h\\d+ src=Preordain \\[h\\d+>h0 Daze from=top0 to=bottom0\\]$",
+    "^EVENT: A seq=\\d+ t1 zone_move library:B -> library:B count=1 src=h\\d+ src=Preordain \\[h0>h0 \\? from=top0 to=top0\\]$",
+    "^EVENT: A seq=\\d+ t1 draw player=B library:B -> hand:B count=1 src=h\\d+ src=Preordain \\[h0>h0 \\? from=top0\\]$"
+  ],
+  "expect_not": ["^EVENT: A .*(Daze|Force of Will)"]
+}

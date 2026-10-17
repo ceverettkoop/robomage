@@ -18,6 +18,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../systems/orderer.h"
 #include "../transform.h"
 
@@ -41,6 +42,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (top.empty()) {
             game_log("%s's library is empty — nothing to peek.\n", player_name(peek_owner).c_str());
         } else {
+            look_at_cards(top, ab.controller);
             for (auto e : top) {
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -66,6 +68,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         if (top.empty()) {
             game_log("%s's library is empty — nothing to reveal.\n", player_name(owner).c_str());
         } else {
+            reveal_cards(top);
             for (auto e : top) {
                 cur_game.resolution.memory.imprinted.push_back(ObjectRef::of(e));
                 if (!global_coordinator.entity_has_component<CardData>(e)) continue;
@@ -105,6 +108,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
     if (!ctx.resuming()) {
         game_log_private(ab.controller, "Top card of library: %s\n", top_cd.name.c_str());
         orderer->note_library_card_known(top_card, ab.controller);
+        look_at_card(top_card, ab.controller);
     }
     int reveal_choice = 1;
     if (pp && pp->reveal_optional) {
@@ -123,6 +127,7 @@ HandlerResult peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer, Fra
         game_log("Revealed: %s\n", top_cd.name.c_str());
         // Shown to all players (CR 701.20a): the opponent's belief state records it.
         mark_card_revealed(top_card, ab.controller);
+        reveal_card(top_card);
         bool is_instant_or_sorcery = false;
         for (auto &t : top_cd.types) {
             if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {

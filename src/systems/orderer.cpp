@@ -26,6 +26,9 @@
 #include "../queries/lki.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
+#include "../queries/visibility.h"
+#include "../state_format/events.h"
+#include "../state_format/handles.h"
 #include "../transform.h"
 #include "../components/player.h"
 #include "../components/effect.h"
@@ -100,11 +103,18 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     bool is_spell_copy = global_coordinator.entity_has_component<Spell>(target) &&
                          global_coordinator.GetComponent<Spell>(target).is_copy;
     if (!is_spell_copy) mark_card_revealed(target, controller);
+    obs_object_created(target);
 }
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
                           LibraryTopView top_view, bool exile_face_down) {
+    move_object(on_bottom, target, destination, top_view, exile_face_down, MoveOptions{});
+}
+
+void Orderer::move_object(bool on_bottom, Entity target, Zone::ZoneValue destination, LibraryTopView top_view,
+    bool exile_face_down, const MoveOptions &opts) {
     size_t back = 0;
+    bool destination_occupied = false;  // the owner's destination zone holds another card (bottom placement)
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
     bool with_void_counter = false;
 
@@ -256,6 +266,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
     const bool public_identity = identity_public_leaving(target, origin);
+    // The card's reveal windows end as it leaves (CR 400.7). Whoever could see it in a hidden zone
+    // may keep looking at it if it is being exiled face down (CR 406.3).
+    const HiddenViewers saw_hidden =
+        exile_face_down && destination == Zone::EXILE ? hidden_identity_viewers(target) : HiddenViewers{};
+    // What each viewer sees of the card as it leaves, for the move's observation event (below).
+    const ObsMoveCapture obs_move = obs_begin_move(target);
+    // The object's handles end with it; a viewer who can identify the new object gets its handle
+    // (the old → new link) once it is in place, below.
+    HandleMove handle_move = handles_begin_move(target);
+    close_windows_on_zone_change(target);
     close_zone_gap(target);
 
     if (!on_bottom) {
@@ -291,10 +311,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         } else {
             // placing on bottom: find the current bottom position
             if (cmp_zone.distance_from_top > back) back = cmp_zone.distance_from_top;
+            destination_occupied = true;
         }
     }
 
-    if (on_bottom) target_zone.distance_from_top = back + 1;
+    // On the bottom: one below the current bottom card, or the only card (position 0) of an empty zone.
+    if (on_bottom) target_zone.distance_from_top = destination_occupied ? back + 1 : 0;
     target_zone.location = destination;
 
     // CR 400.7: entering a zone makes this a NEW object. Stamp a globally-unique generation so a
@@ -333,6 +355,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
+    if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
     // A card moving from a PUBLIC zone into hand is watched moving by both players,
     // so its specific identity stays known to the opponent even though the hand is a
@@ -358,6 +381,29 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         !target_zone.is_face_down) {
         mark_card_revealed(target, target_zone.owner);
     }
+    // put_in_library_at_depth: the card put on top sinks below the `library_depth` cards above it,
+    // carrying its known-top entry down with it. A replacement that redirected the move leaves
+    // nothing to sink.
+    if (opts.library_depth > 0 && target_zone.location == Zone::LIBRARY && target_zone.distance_from_top == 0) {
+        size_t sunk_to = 0;
+        for (auto &&other : mEntities) {
+            if (other == target) continue;
+            auto &oz = global_coordinator.GetComponent<Zone>(other);
+            if (oz.location != Zone::LIBRARY || oz.owner != target_zone.owner) continue;
+            if (oz.distance_from_top >= 1 && oz.distance_from_top <= opts.library_depth) {
+                oz.distance_from_top--;
+                sunk_to++;
+            }
+        }
+        target_zone.distance_from_top = sunk_to;
+        cur_game.known_top_library_move(target_zone.owner, 0, static_cast<int>(sunk_to));
+    }
+    handles_end_move(handle_move, target);
+    ObsMoveInfo obs_info;
+    obs_info.draw = opts.draw;
+    obs_info.opening = opts.opening_draw;
+    obs_info.on_bottom = on_bottom;
+    obs_end_move(obs_move, target, handle_move.after_handle, obs_info);
 }
 
 // See declaration in orderer.h.
@@ -403,7 +449,10 @@ bool Orderer::remove_from_stack(Entity target, Zone::ZoneValue destination) {
     if (global_coordinator.entity_has_component<Spell>(target))
         global_coordinator.RemoveComponent<Spell>(target);
     if (!is_card) {
+        // A spell copy ceases to exist (an ability's stack object is reported by nothing).
+        obs_object_ceased(target, is_copy);
         close_zone_gap(target);
+        retire_object_handles(target);
         global_coordinator.DestroyEntity(target);
         return false;
     }
@@ -421,6 +470,9 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
         origin.location != Zone::EXILE)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
                     std::to_string(static_cast<int>(origin.location)));
+    const ObsMoveCapture obs_move = obs_begin_move(card);
+    HandleMove handle_move = handles_begin_move(card);
+    close_windows_on_zone_change(card);
     close_zone_gap(card);
     for (auto &&e : mEntities) {
         if (e == card) continue;
@@ -439,6 +491,8 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
     z.is_face_down = false;
     // A spell on the stack is public (CR 400.2).
     mark_card_revealed(card, z.owner);
+    handles_end_move(handle_move, card);
+    obs_end_move(obs_move, card, handle_move.after_handle, ObsMoveInfo{});
     return origin;
 }
 
@@ -459,6 +513,10 @@ void Orderer::complete_cast_move(Entity card, const Zone &origin) {
 
 // See declaration in orderer.h.
 void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
+    // The card is its old object again (below), but a viewer's handle for that object retired as
+    // it was cast: the card returns as a move, linked from its stack handle.
+    const ObsMoveCapture obs_move = obs_begin_move(card);
+    HandleMove handle_move = handles_begin_move(card);
     close_zone_gap(card);
     // Reopen the card's old slot in its ordered zone (graveyard and exile are per-owner).
     if (origin.location == Zone::GRAVEYARD || origin.location == Zone::EXILE) {
@@ -476,6 +534,8 @@ void Orderer::rewind_cast_move(Entity card, const Zone &origin) {
     // The reversed proposal leaves no trace (CR 733.1): the card is its old object again, and a
     // permission that followed it onto the stack is back on it.
     cur_game.resolved_effects.impulse_cast_permission.follow(card, stack_gen);
+    handles_end_move(handle_move, card);
+    obs_end_move(obs_move, card, handle_move.after_handle, ObsMoveInfo{});
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER
@@ -521,25 +581,13 @@ void Orderer::note_library_card_known(Entity card, Zone::Ownership knower) {
 }
 
 void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
-    add_to_zone(false, card, Zone::LIBRARY);
-    auto &zone = global_coordinator.GetComponent<Zone>(card);
-    // A replacement that redirected or prevented the move leaves nothing to sink.
-    if (zone.location != Zone::LIBRARY || zone.distance_from_top != 0 || depth == 0) return;
-    size_t sunk_to = 0;
-    for (auto &&other : mEntities) {
-        if (other == card) continue;
-        auto &oz = global_coordinator.GetComponent<Zone>(other);
-        if (oz.location != Zone::LIBRARY || oz.owner != zone.owner) continue;
-        if (oz.distance_from_top >= 1 && oz.distance_from_top <= depth) {
-            oz.distance_from_top--;
-            sunk_to++;
-        }
-    }
-    zone.distance_from_top = sunk_to;
-    cur_game.known_top_library_move(zone.owner, 0, static_cast<int>(sunk_to));
+    MoveOptions opts;
+    opts.library_depth = depth;
+    move_object(false, card, Zone::LIBRARY, LibraryTopView::OWNER, false, opts);
 }
 
 void Orderer::shuffle_library(Zone::Ownership owner) {
+    close_windows_on_shuffle(owner);
     auto contents = get_library_contents(owner);
     size_t n = contents.size();
     std::vector<int> placements(n);
@@ -559,6 +607,7 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     // card that is reordered stops being revealed (CR 701.20d).
     cur_game.clear_known_top_library(owner);
     for (auto &&card : contents) cur_game.revealed_in_library.erase(card);
+    obs_shuffle(owner);
 }
 
 extern bool no_shuffle;
@@ -782,7 +831,10 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
     game_log_redacted(player, "%s draws a card\n", player_name(player).c_str());
     // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
     // closes the library gap, and updates the known-top-of-library cache.
-    add_to_zone(false, top, Zone::HAND);
+    MoveOptions draw_opts;
+    draw_opts.draw = true;
+    draw_opts.opening_draw = !fire_draw_event;
+    move_object(false, top, Zone::HAND, LibraryTopView::OWNER, false, draw_opts);
     // Count this card as "drawn this turn" only for a real in-game draw. The opening hand /
     // mulligan draws (draw_hands, fire_draw_event=false) happen during setup, not during a turn
     // (CR 103.5 / 702.94a), so they must not seed cards_drawn_this_turn — otherwise on turn 1 the
@@ -810,6 +862,7 @@ void Orderer::perform_draw(Zone::Ownership player, bool fire_draw_event) {
         // branch). The card is NOT made public and NO cast window opens yet — only on reveal does
         // the card become public and the linked "you may cast it" trigger go on the stack.
         cur_game.pending.miracle_reveal = top;
+        obs_note_miracle_draw(top);
     }
 
     // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
@@ -899,6 +952,7 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         // from it when its Permanent is created, like any entry transformed).
         if (names_back_face(name, coordinator.GetComponent<CardData>(card_id)))
             entry_info(card_id).enters_transformed = true;
+        obs_object_created(card_id);
 
         placed.push_back(card_id);
     }
@@ -921,6 +975,7 @@ std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
         coordinator.AddComponent(card_id, Zone(zone, owner, owner));
+        obs_object_created(card_id);
         placed.push_back(card_id);
     }
 

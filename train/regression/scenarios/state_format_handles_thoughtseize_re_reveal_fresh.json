@@ -1,0 +1,29 @@
+{
+  "name": "state_format_handles_thoughtseize_re_reveal_fresh",
+  "why": "docs/state_format.md §6 / CR 701.20a: the caster's handles for the cards Thoughtseize reveals exist only while the reveal lasts; the discarded card is linked into the graveyard, the rest retire as the window closes, and a second Thoughtseize issues fresh handles, never the retired ones (step 1 T2 handles, --trace-handles)",
+  "engine_flags": ["--trace-handles"],
+  "hand_a": ["Thoughtseize", "Thoughtseize"],
+  "battlefield_a": ["Swamp", "Swamp"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Lightning Bolt", "Grizzly Bears", "Mountain", "Force of Will"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Thoughtseize", "A:target:Player B", "A:choice:Lightning Bolt",
+           "A:cast:Thoughtseize", "A:target:Player B", "A:choice:Grizzly Bears"],
+  "max_decisions": 12,
+  "expect_order": [
+    "^HANDLE: issue A h\\d+ hand:B Force of Will$",
+    "^HANDLE: retire A h\\d+ hand:B Lightning Bolt \\(zone change\\)$",
+    "^HANDLE: link A h\\d+ -> h\\d+ graveyard:B Lightning Bolt$",
+    "^HANDLE: retire A h\\d+ hand:B Force of Will \\(window closed\\)$",
+    "^HANDLES: A (?!.*hand:B)",
+    "^HANDLE: issue A h\\d+ hand:B Force of Will$",
+    "^HANDLE: retire A h\\d+ hand:B Grizzly Bears \\(zone change\\)$",
+    "^HANDLE: retire A h\\d+ hand:B Force of Will \\(window closed\\)$"
+  ],
+  "expect_count": {
+    "^HANDLE: issue A h\\d+ hand:B Force of Will$": 2,
+    "^HANDLE: retire A h\\d+ hand:B Force of Will \\(window closed\\)$": 2
+  },
+  "expect_not": ["^HANDLE: link A h\\d+ -> h\\d+ hand:B"],
+  "expect_unique": ["^HANDLE: (?:issue (A|B) (h\\d+)|link (A|B) h\\d+ -> (h\\d+)) "]
+}

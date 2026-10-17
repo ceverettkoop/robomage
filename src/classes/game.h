@@ -44,6 +44,7 @@ typedef enum Step {
 #include "../mana_system.h"
 #include "../pending_query.h"
 #include "../resolution_frame.h"
+#include "../state_format/events.h"
 #include "colors.h"
 
 struct Deck;
@@ -697,6 +698,23 @@ struct Game {
             // resolves (effect_miracle.cpp, CR 608.2g). Miracle is never offered as a normal
             // priority-menu cast (can_afford_alt returns false for it).
             Entity miracle_reveal = 0;
+            // A cost being paid at a decision that neither the cast nor the activation state
+            // machine holds: the interactive mana payment loop (prompt_mana_payment) and an
+            // unless-cost offer (run_unless_loop, CR 118.12). Set for the span of the payment
+            // (CostPaymentScope, queries/pending_cost.h) and read only by the state format's
+            // pending_cost; nothing in the game decides on it. Value member, so a snapshot of a
+            // parked unless-offer keeps it.
+            struct CostPayment {
+                bool active = false;
+                bool unless = false;  // an unless-cost offered to its payer
+                Entity paid_for = 0;  // the spell or ability (or the resolving ability's source)
+                ManaValue remaining;  // mana still to pay
+                int life = 0;
+                int energy = 0;
+                int discard = 0;  // cards to discard
+                int paid = 0;     // mana paid toward it so far
+            };
+            CostPayment cost_payment;
         };
         PendingDecisions pending;
 
@@ -753,6 +771,57 @@ struct Game {
         // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
         // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
         ObjectSet revealed_in_library;
+        // A reveal window (src/queries/visibility.h): a card in a hidden zone (a library, a hand,
+        // the sideboard, or face down in exile) whose identity `audience` may see right now. A
+        // reveal shows it to all players for as long as the revealing effect needs it (CR
+        // 701.20a), a look only to the looker (CR 701.20e), and a player who looked at a card that
+        // is then exiled face down may keep looking at it until it leaves exile (CR 406.3). Every
+        // window ends when its card changes zones or its library is shuffled (CR 701.20d), and as
+        // its `until` says.
+        struct RevealWindow {
+            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL };
+            enum End : uint8_t {
+                RESOLUTION,    // the resolution in progress (or top-level effect) finishes
+                STACK_OBJECT,  // `stack_object` leaves the stack (CR 701.20a, 702.94b)
+                LEAVES_ZONE,   // only the card leaving its zone (or its pile being shuffled) ends it
+            };
+            ObjectRef card;
+            Zone::Ownership audience = Zone::UNKNOWN;  // the one player shown it; UNKNOWN = all players
+            Kind kind = REVEAL;
+            End until = RESOLUTION;
+            ObjectRef stack_object;
+            // The window opened on a library position every player knows (the top N cards, the
+            // whole library), not on a card picked out by its identity (a search's find after the
+            // shuffle): the other players may know where in the library its card sits.
+            bool position_public = true;
+        };
+        // The open reveal windows, in the order they opened (visibility.cpp keeps them).
+        std::vector<RevealWindow> reveal_windows;
+        // One viewer's handle table (src/state_format/handles.h): the opaque per-viewer id of each
+        // object the viewer can individually identify right now (docs/state_format.md §6). A handle
+        // names one object (CR 400.7: the object a zone change makes is a new one), is retired as
+        // the viewer stops being able to identify it, and is never issued again.
+        struct HandleTable {
+            struct Entry {
+                ObjectRef obj;        // the object, by its exact identity stamp
+                uint32_t handle = 0;  // >= 1
+            };
+            uint32_t next = 1;  // the next handle to issue; 0 is "no handle"
+            // Live handles keyed by entity id, for lookup only: handles.cpp never lets this map's
+            // order decide anything it emits or issues.
+            std::map<Entity, Entry> live;
+        };
+        // Indexed by viewer: [Zone::UNKNOWN] the omniscient viewer, [Zone::PLAYER_A], [Zone::PLAYER_B].
+        HandleTable handle_tables[3];
+        // Decisions of this game the state format has encoded (the RMSTATE header's decision
+        // number, state_format/stream.h); counted only while frames are written. The sideboarding
+        // phase after this game counts its own, from 1 (header.sideboarding).
+        uint32_t state_decisions = 0;
+        uint32_t state_sideboard_decisions = 0;
+        // The observation events channel (src/state_format/events.h): each viewer's queue of events
+        // not yet delivered in a frame, with its match-long seq counter. Carried into the next
+        // game of a bo3 match (obs_events_for_next_game); written only while events are consumed.
+        ObsEventState obs_events;
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

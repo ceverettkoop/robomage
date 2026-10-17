@@ -26,6 +26,7 @@ struct Effect {
             DRAW_ADD,                   // 614.1 — a MODIFYING draw replacement: "if you would draw one or more cards, you draw that many plus K instead" (Quantum Riddler). Applies to the source controller's draws while an optional CheckSVar condition holds; adds draw_add cards to the draw event.
         };
         Kind kind = ENTERS_TAPPED;
+        uint32_t script_line = 0;  // its R: line in the script-line store (script_line_text); 0 = none
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
         // CANT_BE_COUNTERED battlefield form (Hexing Squelcher: "Spells you control can't be
         // countered"). The self form ("This spell can't be countered", applies_to_self_only) is

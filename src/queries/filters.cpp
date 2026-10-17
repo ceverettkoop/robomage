@@ -528,6 +528,12 @@ bool card_matches_any(Entity e, const std::string &comma_or_spec,
     return false;
 }
 
+bool card_matches_any(const CardData &cd, const std::string &comma_or_spec, const MatchCtx &ctx) {
+    for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
+        if (card_matches_filter(cd, alt, ctx)) return true;
+    return false;
+}
+
 void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
     size_t p = 0;
     while (p < spec.size()) {

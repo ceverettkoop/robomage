@@ -102,6 +102,15 @@ struct AbilityDef {
     // it goes away with the keyword. Empty for any other ability.
     std::string derived_from_keyword = "";
 
+    // The card-script line this definition was parsed from, with its line key ("A:SP$ Draw | …",
+    // "T:Mode$ …", "K:Equip:1"); empty for an engine-built definition. Display and the state
+    // format's ability references only (docs/state_format.md register 2).
+    std::string script_line = "";
+    // The key the state format names this definition by (Appendix A.1 abref.ab_key, register 25):
+    // the keyword a keyword-built ability stands for ("Equip", "Ninjutsu", "Reconfigure:unattach"),
+    // or an engine-built definition's keyed_ability_def key; empty for a plain script ability.
+    std::string ref_key = "";
+
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost

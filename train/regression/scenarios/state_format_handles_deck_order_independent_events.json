@@ -1,0 +1,27 @@
+{
+  "name": "state_format_handles_deck_order_independent_events",
+  "why": "docs/state_format.md §5-6: with an event consumer on (--trace-events) handles are issued in event order as well as canonically; the same game built from a decklist in another order must give the viewer that cannot see the reordered cards the identical events (handles included) and handle trace: the opponent's hand listed differently for A, A's for B (step 1 T8)",
+  "engine_flags": ["--trace-handles", "--trace-events"],
+  "hand_a": ["Swamp", "Thoughtseize", "Island", "Duress"],
+  "battlefield_a": ["Swamp", "Island"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Lightning Bolt", "Grizzly Bears", "Mountain", "Force of Will", "Lightning Bolt"],
+  "battlefield_b": ["Mountain", "Grizzly Bears"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Swamp", "A:cast:Thoughtseize", "A:target:Player B", "A:choice:Lightning Bolt",
+           "A:cast:Duress", "A:target:Player B", "A:choice:Lightning Bolt"],
+  "max_decisions": 16,
+  "variants": [
+    {
+      "hand_b": ["Force of Will", "Lightning Bolt", "Mountain", "Lightning Bolt", "Grizzly Bears"],
+      "expect_same": ["^HANDLES: A ", "^HANDLE: \\w+ A ", "^EVENT: A "]
+    },
+    {
+      "hand_a": ["Duress", "Island", "Thoughtseize", "Swamp"],
+      "expect_same": ["^HANDLES: B ", "^HANDLE: \\w+ B ", "^EVENT: B "]
+    }
+  ],
+  "expect": ["^HANDLES: A .*\\[h\\d+ hand:B Force of Will\\]",
+             "^HANDLE: link A h\\d+ -> h\\d+ graveyard:B Lightning Bolt$",
+             "^EVENT: A seq=\\d+ t\\d+ reveal_start .*\\[h0>h\\d+ Force of Will\\]"]
+}

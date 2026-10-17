@@ -1,0 +1,20 @@
+{
+  "name": "state_format_events_miracle_draw_link",
+  "why": "docs/state_format.md register 36 / CR 702.94a: the miracle reveal shows the card as the one just drawn, so its reveal_start links each viewer to the draw event that brought it (that viewer's draw seq, index 0); the opponent saw the draw itself as an unknown card (step 1 T4 observation events, --trace-events)",
+  "engine_flags": ["--trace-events"],
+  "hand_a": ["Plains", "Plains", "Plains", "Plains", "Plains", "Plains", "Plains"],
+  "battlefield_a": ["Plains", "Plains"],
+  "library_a": ["Triumph of Saint Katherine", "Plains", "Plains", "Plains", "Plains", "Plains", "Plains", "Plains",
+                "Plains"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain",
+                "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:desc:for its miracle cost"],
+  "max_decisions": 8,
+  "expect_order": [
+    "^EVENT: B seq=20 t2 draw player=A library:A -> hand:A count=1 \\[h0>h0 \\? from=top0\\]$",
+    "^Player A reveals Triumph of Saint Katherine for its miracle cost",
+    "^EVENT: A seq=\\d+ t2 reveal_start hand:A count=1 to=all \\[h0>h\\d+ Triumph of Saint Katherine draw=20/0\\]$",
+    "^EVENT: B seq=\\d+ t2 reveal_start hand:A count=1 to=all \\[h0>h\\d+ Triumph of Saint Katherine draw=20/0\\]$"
+  ]
+}

@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Scalding Tarn
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Force of Will, Lotus Petal, Ponder, Scalding Tarn | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 73
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -65,10 +55,6 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Force of Will, Lotus Petal, Ponder, Scalding Tarn
 
 --- Decision 3 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Scrubland, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
   Actions:
    0: Pass priority
    1: Play Scrubland
@@ -78,12 +64,6 @@
   Player A played Scrubland
 
 --- Decision 4 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Aether Vial, Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 73
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Self BF:  Scrubland (NEW)
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Aether Vial  [#0]
@@ -94,15 +74,6 @@
   Player A casts Aether Vial
 
 --- Decision 5 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Force of Will, Lotus Petal, Ponder, Scalding Tarn | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T,NEW)
-  Stack: Aether Vial (spell, opponent)
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1
-  Extras: opp_lands_played=1, opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -111,16 +82,6 @@
   Choose target for Force of Will:
 
 --- Decision 6 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Lotus Petal, Ponder, Scalding Tarn | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T,NEW)
-  Stack: Force of Will (spell, self) -> Aether Vial (spell, opponent)
-  Pending: Force of Will (self)
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Aether Vial
   >> B/B: 0 (Aether Vial)
@@ -128,16 +89,6 @@
   Targeting choice 0
 
 --- Decision 7 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Lotus Petal, Ponder, Scalding Tarn | lib 53
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T,NEW)
-  Stack: Force of Will (spell, self) -> Aether Vial (opponent, slot 97) -> Aether Vial (spell, opponent)
-  Pending: Force of Will (self)
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: opp spells=1 noncreature=1
-  Extras: opp_lands_played=1, not_priority_window
   Actions:
    0: Exile Atraxa, Grand Unifier
    1: Exile Ponder
@@ -156,16 +107,6 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Lotus Petal, Ponder, Scalding Tarn
 
 --- Decision 8 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(6): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Lotus Petal, Ponder, Scalding Tarn | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Self GY: Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -177,17 +118,6 @@
   Lotus Petal enters the battlefield
 
 --- Decision 9 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Ponder, Scalding Tarn | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Lotus Petal (NEW)
-  Opp BF:   Scrubland (T)
-  Self GY: Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -203,19 +133,6 @@
   Choose which card goes 3 from top:
 
 --- Decision 10 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Polluted Delta  [#2]
    1: Brainstorm  [#2]
@@ -225,40 +142,12 @@
   Choose which card goes 2 from top:
 
 --- Decision 11 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Brainstorm, ?, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Polluted Delta  [#1]
    1: Bloodstained Mire  [#1]
   >> B/B: 0 (Polluted Delta)
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Stack: Ponder (spell, self)
-  Pending: Ponder (self)
-  Self GY: Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Bloodstained Mire, Polluted Delta, Brainstorm, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=1 colors=U
-  Extras: self_revolt, not_priority_window
   Actions:
    0: Don't shuffle
    1: Shuffle
@@ -268,18 +157,6 @@
   Player B draws Bloodstained Mire
 
 --- Decision 13 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Bloodstained Mire, Flooded Strand, Scalding Tarn | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Self GY: Ponder, Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Polluted Delta, Brainstorm, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_revolt
   Actions:
    0: Pass priority
    1: Play Bloodstained Mire
@@ -290,19 +167,6 @@
   Player B played Bloodstained Mire
 
 --- Decision 14 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  19 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Bloodstained Mire (NEW)
-  Opp BF:   Scrubland (T)
-  Self GY: Ponder, Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Polluted Delta, Brainstorm, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=2 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Activate Bloodstained Mire (ChangeZone)  [#0]
@@ -315,20 +179,6 @@
   Searching Player B's library:
 
 --- Decision 15 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 51
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Opp BF:   Scrubland (T)
-  Stack: Bloodstained Mire (ability, self)
-  Pending: Bloodstained Mire (self)
-  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Polluted Delta, Brainstorm, ?, ?, ?
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Swamp
@@ -345,20 +195,6 @@
   Surveil: looking at Careful Study
 
 --- Decision 16 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn | lib 50
-  Opp:   20 life | mana: empty | hand count: 5 | lib 73
-  Self BF:  Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Scrubland (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=1 drawn=2 life_lost=1 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Careful Study on top of library  [#0]
    1: Put Careful Study into graveyard
@@ -372,17 +208,6 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Flooded Strand, Scalding Tarn
 
 --- Decision 17 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Aether Vial, Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -395,17 +220,6 @@
   Aether Vial enters the battlefield
 
 --- Decision 18 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (NEW) | Scrubland (T)
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -416,18 +230,6 @@
   Player A played Wasteland
 
 --- Decision 19 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -437,19 +239,6 @@
   Player A's Aether Vial ability is on the stack
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -458,20 +247,6 @@
   Choose target for Wasteland:
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T) | Wasteland (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Wasteland (ability, self) -> Aether Vial (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Aether Vial
-  Opp GY:  Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Undercity Sewers
    1: Scrubland
@@ -487,19 +262,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   18 life | mana: empty | hand count: 4 | lib 50
-  Self BF:  Aether Vial (T,NEW) | Scrubland (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 noncreature=1 drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_revolt, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -513,16 +275,6 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Flooded Strand, Scalding Tarn
 
 --- Decision 23 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Flooded Strand, Scalding Tarn | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Self GY: Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Flooded Strand
@@ -532,18 +284,6 @@
   Player B played Flooded Strand
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  18 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Flooded Strand (NEW)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Self GY: Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Flooded Strand (ChangeZone)  [#0]
@@ -556,19 +296,6 @@
   Searching Player B's library:
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 49
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Flooded Strand (ability, self)
-  Pending: Flooded Strand (self)
-  Self GY: Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -585,20 +312,6 @@
   Surveil: looking at Brainstorm
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  17 life | mana: empty | hand(4): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn | lib 48
-  Opp:   20 life | mana: empty | hand count: 4 | lib 72
-  Self BF:  Undercity Sewers (T,NEW,res 1)
-  Opp BF:   Aether Vial (T) | Scrubland (T)
-  Stack: Undercity Sewers (ability, self) [amt=1]
-  Pending: Undercity Sewers (self)
-  Self GY: Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1 life_lost=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Put Brainstorm on top of library  [#0]
    1: Put Brainstorm into graveyard
@@ -612,36 +325,12 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Scalding Tarn
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial | Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial (res 1) | Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -651,16 +340,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 1).
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland | lib 72
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -669,34 +348,12 @@
   Player A draws Witch Enchanter
 
 --- Decision 30 ---
-  Priority: Player A (active)
-  Step: Draw (turn 5)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 31 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(5): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Wasteland, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -707,18 +364,6 @@
   Player A played Wasteland
 
 --- Decision 32 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(4): Orcish Bowmasters, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland | Wasteland (NEW)
-  Opp BF:   Undercity Sewers (T)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self drawn=1
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Cast Orcish Bowmasters  [#0]
@@ -732,19 +377,6 @@
   Player A casts Orcish Bowmasters
 
 --- Decision 33 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (res 1) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Orcish Bowmasters (spell, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -755,20 +387,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 34 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Aether Vial (ability, self) -> Orcish Bowmasters (spell, self)
-  Pending: Aether Vial (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
   >> A/A: 0 (Fail to find)
@@ -778,19 +396,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 35 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   17 life | mana: empty | hand count: 4 | lib 48
-  Self BF:  Aether Vial [charge:1] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (SICK,NEW) | Scrubland (T) | Wasteland (T,NEW)
-  Opp BF:   Undercity Sewers (T)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=B
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Player B (17 life)
    1: Player A (20 life)
@@ -811,17 +416,6 @@
   PB: Archon of Cruelty, Atraxa, Grand Unifier, Brainstorm, Careful Study, Scalding Tarn
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  16 life | mana: empty | hand(5): Archon of Cruelty, Atraxa, Grand Unifier, Brainstorm, Careful Study, Scalding Tarn | lib 47
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Self GY: Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Cast Brainstorm  [#0]
@@ -837,20 +431,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 37 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  16 life | mana: empty | hand(7): Archon of Cruelty, Atraxa, Grand Unifier, Careful Study, Force of Will, Griselbrand, Scalding Tarn, Underground Sea | lib 44
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Archon of Cruelty
    1: Atraxa, Grand Unifier
@@ -865,21 +445,6 @@
   Player B chooses a card from Player B hand:
 
 --- Decision 38 ---
-  Priority: Player B (active)
-  Step: Draw (turn 6)
-  Self:  16 life | mana: empty | hand(6): Atraxa, Grand Unifier, Careful Study, Force of Will, Griselbrand, Scalding Tarn, Underground Sea | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Stack: Brainstorm (spell, self)
-  Pending: Brainstorm (self)
-  Self GY: Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Archon of Cruelty, ?, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Careful Study
@@ -893,19 +458,6 @@
   Player A orders 3 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 39 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Undercity Sewers (T)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -915,19 +467,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 40 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Undercity Sewers (T)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Player B (16 life)
    1: Player A (20 life)
@@ -940,20 +479,6 @@
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 41 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -962,20 +487,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 42 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Player B (16 life)
    1: Player A (20 life)
@@ -988,20 +499,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 43 ---
-  Priority: Player A (non-active)
-  Step: Draw (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   16 life | mana: empty | hand count: 5 | lib 46
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK) | Scrubland (T) | Wasteland (T) | Orc Army [1/1] [+1/+1:1] (SICK)
-  Opp BF:   Undercity Sewers (T)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player) -> Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Bloodstained Mire, Atraxa, Grand Unifier
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=4 colors=U
-  Extras: not_priority_window
   Actions:
    0: Player B (16 life)
    1: Player A (20 life)
@@ -1025,18 +522,6 @@
   Amass Orc 1: Player A Army is now 4/4.
 
 --- Decision 44 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(5): Careful Study, Force of Will, Griselbrand, Scalding Tarn, Underground Sea | lib 46
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=U
   Actions:
    0: Pass priority
    1: Play Scalding Tarn
@@ -1046,19 +531,6 @@
   Player B played Scalding Tarn
 
 --- Decision 45 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  13 life | mana: empty | hand(4): Careful Study, Force of Will, Griselbrand, Underground Sea | lib 46
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Scalding Tarn (NEW) | Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=3 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Scalding Tarn (ChangeZone)  [#0]
@@ -1071,21 +543,6 @@
   Searching Player B's library:
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  12 life | mana: empty | hand(4): Careful Study, Force of Will, Griselbrand, Underground Sea | lib 46
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Stack: Scalding Tarn (ability, self)
-  Pending: Scalding Tarn (self)
-  Self GY: Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Known top: Atraxa, Grand Unifier, Archon of Cruelty, ?, ?, ?
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=4 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1096,18 +553,6 @@
   Player B puts Underground Sea to the battlefield
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  12 life | mana: empty | hand(4): Careful Study, Force of Will, Griselbrand, Underground Sea | lib 45
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (NEW)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Self GY: Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=4 life_lost=4 colors=U
-  Extras: self_lands_played=1, self_revolt
   Actions:
    0: Pass priority
    1: Cast Careful Study  [#0]
@@ -1122,20 +567,6 @@
   Player B chooses a card to discard:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  12 life | mana: empty | hand(5): Atraxa, Grand Unifier, Force of Will, Griselbrand, Ponder, Underground Sea | lib 43
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (T,NEW)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=4 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Atraxa, Grand Unifier
    1: Force of Will
@@ -1148,20 +579,6 @@
   Player B chooses a card to discard:
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  12 life | mana: empty | hand(4): Force of Will, Griselbrand, Ponder, Underground Sea | lib 43
-  Opp:   20 life | mana: empty | hand count: 3 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (T,NEW)
-  Opp BF:   Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Stack: Careful Study (spell, self)
-  Pending: Careful Study (self)
-  Self GY: Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Yorion, Sky Nomad
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=4 colors=U
-  Extras: self_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Force of Will
    1: Griselbrand
@@ -1173,19 +590,6 @@
   Player A orders 2 simultaneous triggers (pick which goes on the stack next).
 
 --- Decision 50 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T,NEW)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=4 colors=U
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Orcish Bowmasters (DealDamage, targeted)  [#0]
    1: Orcish Bowmasters (DealDamage, targeted)  [#1]
@@ -1194,19 +598,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 51 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T,NEW)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=4 colors=U
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player B (12 life)
    1: Player A (20 life)
@@ -1219,20 +610,6 @@
   Choose target for Orcish Bowmasters:
 
 --- Decision 52 ---
-  Priority: Player A (non-active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   12 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:1] (T) | Orcish Bowmasters [1/1] [Flash] (SICK,res 3) | Scrubland (T) | Wasteland (T) | Orc Army [4/4] [+1/+1:4] (SICK)
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T,NEW)
-  Stack: Orcish Bowmasters (ability, self) [amt=1] -> opponent (player)
-  Pending: Orcish Bowmasters (self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: opp spells=2 noncreature=2 instant_sorcery=2 drawn=6 life_lost=4 colors=U
-  Extras: opp_lands_played=1, opp_revolt, not_priority_window
   Actions:
    0: Player B (12 life)
    1: Player A (20 life)
@@ -1258,17 +635,6 @@
   PB: Force of Will, Griselbrand, Ponder, Underground Sea
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(3): Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   10 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland | Wasteland | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
   Actions:
    0: Pass priority
    1: Cast Phelia, Exuberant Shepherd  [#0]
@@ -1281,37 +647,12 @@
   Player A casts Phelia, Exuberant Shepherd
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   10 life | mana: empty | hand count: 3 | lib 43
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Phelia, Exuberant Shepherd (spell, self) -> Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 colors=W
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 55 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  10 life | mana: empty | hand(3): Force of Will, Ponder, Underground Sea | lib 43
-  Opp:   20 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Stack: Phelia, Exuberant Shepherd (spell, opponent) -> Aether Vial (ability, opponent)
-  Self GY: Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: opp spells=1 colors=W
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Cast Force of Will (alternate cost)  [#1]
@@ -1320,20 +661,6 @@
   Choose target for Force of Will:
 
 --- Decision 56 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  10 life | mana: empty | hand(2): Ponder, Underground Sea | lib 43
-  Opp:   20 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Stack: Force of Will (spell, self) -> Phelia, Exuberant Shepherd (spell, opponent) -> Aether Vial (ability, opponent)
-  Pending: Force of Will (self)
-  Self GY: Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: opp spells=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: Phelia, Exuberant Shepherd
   >> B/B: 0 (Phelia, Exuberant Shepherd)
@@ -1341,20 +668,6 @@
   Targeting choice 0
 
 --- Decision 57 ---
-  Priority: Player B (non-active)
-  Step: Upkeep (turn 7)
-  Self:  10 life | mana: empty | hand(2): Ponder, Underground Sea | lib 43
-  Opp:   20 life | mana: empty | hand count: 2 | lib 71
-  Self BF:  Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Stack: Force of Will (spell, self) -> Phelia, Exuberant Shepherd (opponent, slot 97) -> Phelia, Exuberant Shepherd (spell, opponent) -> Aether Vial (ability, opponent)
-  Pending: Force of Will (self)
-  Self GY: Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Wasteland, Aether Vial
-  Self exile: Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, Scrubland, Phelia, Exuberant Shepherd, Yorion, Sky Nomad
-  This turn: opp spells=1 colors=W
-  Extras: not_priority_window
   Actions:
    0: Exile Ponder
   >> B/B: 0 (Exile Ponder)
@@ -1364,19 +677,6 @@
   Player B casts Force of Will targeting Phelia, Exuberant Shepherd
 
 --- Decision 58 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Force of Will (spell, opponent) -> Phelia, Exuberant Shepherd (self, slot 97) -> Phelia, Exuberant Shepherd (spell, self) -> Aether Vial (ability, self)
-  Self GY: Wasteland, Aether Vial
-  Opp GY:  Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1386,39 +686,12 @@
   Phelia, Exuberant Shepherd is countered
 
 --- Decision 59 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:1] | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 60 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:1] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: not_priority_window
   Actions:
    0: Decline: use Aether Vial's triggered ability  [#0]
    1: Accept: use Aether Vial's triggered ability  [#1]
@@ -1428,18 +701,6 @@
   Put 1 CHARGE counter(s) on Aether Vial (now 2).
 
 --- Decision 61 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, Witch Enchanter | lib 71
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: opp_passed
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1448,34 +709,12 @@
   Player A draws White Orchid Phantom
 
 --- Decision 62 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 63 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(3): Pre-War Formalwear, White Orchid Phantom, Witch Enchanter | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
   Actions:
    0: Pass priority
    1: Play Witch-Blessed Meadow
@@ -1485,19 +724,6 @@
   Player A played Witch-Blessed Meadow
 
 --- Decision 64 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Pending: Witch Enchanter (self)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Decline: pay 3 life so it enters untapped  [#0]
    1: Accept: pay 3 life so it enters untapped  [#1]
@@ -1506,18 +732,6 @@
   Player A pays 3 life.
 
 --- Decision 65 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1
   Actions:
    0: Pass priority
    1: Activate Aether Vial (ChangeZone)  [#0]
@@ -1528,20 +742,6 @@
   Player A chooses a card from Player A hand:
 
 --- Decision 66 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(2): Pre-War Formalwear, White Orchid Phantom | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Stack: Aether Vial (ability, self)
-  Pending: Aether Vial (self)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: Fail to find
    1: White Orchid Phantom
@@ -1551,19 +751,6 @@
   Choose target for White Orchid Phantom:
 
 --- Decision 67 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  17 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Undercity Sewers (T) | Underground Sea (T)
-  Pending: White Orchid Phantom (self)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, not_priority_window
   Actions:
    0: No target
    1: Undercity Sewers
@@ -1581,20 +768,6 @@
   Searching Player B's library:
 
 --- Decision 68 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 7)
-  Self:  9 life | mana: empty | hand(1): Underground Sea | lib 43
-  Opp:   17 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Stack: White Orchid Phantom (ability, opponent) -> Undercity Sewers (self)
-  Pending: White Orchid Phantom (opp)
-  Self GY: Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Self exile: Ponder, Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U | opp spells=1 drawn=1 life_lost=3 colors=W
-  Extras: opp_lands_played=1, self_revolt, not_priority_window
   Actions:
    0: Fail to find
    1: Island
@@ -1607,18 +780,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 69 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  17 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Island (T,NEW) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orcish Bowmasters [1/1]
    1: Orc Army token [6/6]
@@ -1630,18 +791,6 @@
     [attacking] Orcish Bowmasters [1/1] -> Player B
 
 --- Decision 70 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  17 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6]
-  Opp BF:   Island (T,NEW) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Orc Army token [6/6]
    1: Confirm attackers
@@ -1653,18 +802,6 @@
     [attacking] Orc Army token [6/6] -> Player B
 
 --- Decision 71 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  17 life | mana: empty | hand(1): Pre-War Formalwear | lib 70
-  Opp:   9 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Aether Vial [charge:2] (T,res 1) | Orcish Bowmasters [1/1] [Flash] (ATK) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK,NEW,res 1) | Witch-Blessed Meadow (NEW) | Orc Army [6/6] [+1/+1:6] (ATK)
-  Opp BF:   Island (T,NEW) | Underground Sea (T)
-  Self GY: Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Opp GY:  Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp exile:  Ponder, Atraxa, Grand Unifier
-  Opp revealed: Scalding Tarn, Flooded Strand, Ponder, Force of Will, Island, Brainstorm, Lotus Petal, Undercity Sewers, Underground Sea, Bloodstained Mire, Careful Study, Griselbrand, Atraxa, Grand Unifier
-  This turn: self spells=1 drawn=1 life_lost=3 colors=W | opp spells=1 noncreature=1 instant_sorcery=1 life_lost=1 colors=U
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1684,17 +821,6 @@
   PB: Thoughtseize, Underground Sea
 
 --- Decision 72 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(2): Thoughtseize, Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6] (T)
-  Self GY: Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Self exile: Ponder, Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
   Actions:
    0: Pass priority
    1: Play Underground Sea
@@ -1704,20 +830,6 @@
   Choose target for Thoughtseize:
 
 --- Decision 73 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(1): Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island | Underground Sea
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Thoughtseize (spell, self)
-  Pending: Thoughtseize (self)
-  Self GY: Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Self exile: Ponder, Atraxa, Grand Unifier
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self drawn=1
-  Extras: not_priority_window
   Actions:
    0: Player A (17 life)
    1: Player B (2 life)
@@ -1732,21 +844,6 @@
   Player B chooses a card to discard:
 
 --- Decision 74 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  2 life | mana: empty | hand(1): Underground Sea | lib 41
-  Opp:   17 life | mana: empty | hand count: 1 | lib 70
-  Self BF:  Island | Underground Sea (T)
-  Opp BF:   Aether Vial [charge:2] (T) | Orcish Bowmasters [1/1] [Flash] (T) | Scrubland (T) | Wasteland (T) | White Orchid Phantom [2/2] [Flying, First Strike] (SICK) | Witch-Blessed Meadow | Orc Army [6/6] [+1/+1:6] (T)
-  Stack: Thoughtseize (spell, self) -> opponent (player)
-  Pending: Thoughtseize (self)
-  Self GY: Undercity Sewers, Force of Will, Careful Study, Griselbrand, Atraxa, Grand Unifier, Scalding Tarn, Brainstorm, Flooded Strand, Undercity Sewers, Bloodstained Mire, Ponder, Lotus Petal, Force of Will
-  Opp GY:  Phelia, Exuberant Shepherd, Wasteland, Aether Vial
-  Self exile: Ponder, Atraxa, Grand Unifier
-  Known opp hand: Pre-War Formalwear
-  Opp revealed: Wasteland, Orcish Bowmasters, Aether Vial, White Orchid Phantom, Scrubland, Phelia, Exuberant Shepherd, Pre-War Formalwear, Witch Enchanter, Yorion, Sky Nomad
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=B
-  Extras: not_priority_window
   Actions:
    0: Pre-War Formalwear
   >> B/B: 0 (Pre-War Formalwear)

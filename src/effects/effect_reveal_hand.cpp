@@ -12,6 +12,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -45,6 +46,7 @@ HandlerResult reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
     }
 
     game_log("%s reveals their hand:\n", player_name(hand_owner).c_str());
+    reveal_cards(hand);
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         game_log("  %s\n", cd.name.c_str());

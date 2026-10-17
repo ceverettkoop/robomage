@@ -1,0 +1,4855 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 675465226
+  ----- MATCH GAME 1 -----
+  -------- PREGAME --------
+  Player A draws Flooded Strand
+  Player A draws Force of Will
+  Player A draws Doomsday
+  Player A draws Dark Ritual
+  Player A draws Daze
+  Player A draws Force of Will
+  Player A draws Dark Ritual
+  Player B draws Voice of Victory
+  Player B draws Swords to Plowshares
+  Player B draws Cabal Therapy
+  Player B draws Ocelot Pride
+  Player B draws Marsh Flats
+  Player B draws Plateau
+  Player B draws Cabal Therapy
+  Player A hand:
+  Dark Ritual
+  Dark Ritual
+  Daze
+  Doomsday
+  Flooded Strand
+  Force of Will
+  Force of Will
+--- Pregame ---
+
+--- Decision 1 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Ponder
+  Player A draws Ponder
+  Player A draws Polluted Delta
+  Player A draws Thassa's Oracle
+  Player A draws Dark Ritual
+  Player A draws Lion's Eye Diamond
+  Player A draws Dark Ritual
+  Player B hand:
+  Cabal Therapy
+  Cabal Therapy
+  Marsh Flats
+  Ocelot Pride
+  Plateau
+  Swords to Plowshares
+  Voice of Victory
+
+--- Decision 2 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  Player A hand:
+  Dark Ritual
+  Dark Ritual
+  Lion's Eye Diamond
+  Polluted Delta
+  Ponder
+  Ponder
+  Thassa's Oracle
+
+--- Decision 3 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 6-card hand.
+  Player A: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Actions:
+   0: Dark Ritual
+   1: Dark Ritual
+   2: Lion's Eye Diamond
+   3: Polluted Delta
+   4: Ponder
+   5: Ponder
+   6: Thassa's Oracle
+  >> A/A: 4 (Ponder)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dark Ritual, Dark Ritual, Lion's Eye Diamond, Polluted Delta, Ponder, Thassa's Oracle
+  PB: Cabal Therapy, Cabal Therapy, Marsh Flats, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 5 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Cast Lion's Eye Diamond  [#0]
+  >> A/A: 2 (Cast Lion's Eye Diamond)
+--- Narrative ---
+  Player A casts Lion's Eye Diamond
+  Lion's Eye Diamond enters the battlefield
+
+--- Decision 6 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 7 ---
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+
+--- Decision 8 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 9 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Tundra
+   5: Undercity Sewers
+   6: Underground Sea
+  >> A/A: 6 (Underground Sea)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Underground Sea to the battlefield
+
+--- Decision 10 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Ponder  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 3 (Cast Ponder)
+--- Narrative ---
+  Player A activated Underground Sea for 1(U)
+  Player A casts Ponder
+
+--- Decision 11 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 12 ---
+  Actions:
+   0: Tundra  [#2]
+   1: Brainstorm  [#2]
+   2: Ponder  [#2]
+  >> A/A: 0 (Tundra)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 13 ---
+  Actions:
+   0: Brainstorm  [#1]
+   1: Ponder  [#1]
+  >> A/A: 0 (Brainstorm)
+
+--- Decision 14 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Ponder
+
+--- Decision 15 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 16 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 17 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 18 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 19 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 20 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 2 (Player B) --------
+--- Turn 2 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Ponder, Thassa's Oracle
+  PB: Cabal Therapy, Cabal Therapy, Marsh Flats, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 21 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Marsh Flats
+
+--- Decision 22 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 23 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Marsh Flats
+   3: Play Plateau
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 24 ---
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+
+--- Decision 25 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 26 ---
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Scrubland
+   6: Shadowy Backstreet
+  >> B/B: 5 (Scrubland)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Scrubland to the battlefield
+
+--- Decision 27 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+   2: Cast Cabal Therapy  [#0]
+   3: Cast Ocelot Pride  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 28 ---
+  Actions:
+   0: Player A (19 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Scrubland for 1(B)
+  Player B casts Cabal Therapy
+
+--- Decision 29 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 30 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 4 (Name card: Force of Will)
+--- Narrative ---
+  Player B names card: Force of Will
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Dark Ritual
+    Dark Ritual
+    Ponder
+    Thassa's Oracle
+  No matching cards to discard.
+
+--- Decision 31 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 32 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 33 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 34 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 35 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 36 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 3 (Player A) --------
+--- Turn 3 (Player A) ---
+  PA: Dark Ritual, Dark Ritual, Ponder, Thassa's Oracle
+  PB: Cabal Therapy, Marsh Flats, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 37 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Tap Lion's Eye Diamond for (W)
+   4: Tap Lion's Eye Diamond for (U)
+   5: Tap Lion's Eye Diamond for (B)
+   6: Tap Lion's Eye Diamond for (R)
+   7: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Brainstorm
+
+--- Decision 38 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player A activated Underground Sea for 1(U)
+  Player A casts Brainstorm
+
+--- Decision 39 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Tundra
+  Player A draws Brainstorm
+  Player A draws Dark Ritual
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 40 ---
+  Actions:
+   0: Brainstorm
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Dark Ritual
+   4: Ponder
+   5: Thassa's Oracle
+   6: Tundra
+  >> A/A: 0 (Brainstorm)
+--- Narrative ---
+  Player A puts Brainstorm to top of library
+  Player A chooses a card from Player A hand:
+
+--- Decision 41 ---
+  Actions:
+   0: Dark Ritual
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Ponder
+   4: Thassa's Oracle
+   5: Tundra
+  >> A/A: 3 (Ponder)
+--- Narrative ---
+  Player A puts Ponder to top of library
+
+--- Decision 42 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 43 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Play Tundra)
+--- Narrative ---
+  Player A played Tundra
+
+--- Decision 44 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 45 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 46 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 47 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 48 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 49 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Dark Ritual, Thassa's Oracle
+  PB: Cabal Therapy, Marsh Flats, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 50 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Goblin Bombardment
+
+--- Decision 51 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 52 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Plateau
+   3: Cast Cabal Therapy  [#0]
+   4: Cast Ocelot Pride  [#0]
+  >> B/B: 3 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 53 ---
+  Actions:
+   0: Player A (19 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Scrubland for 1(B)
+  Player B casts Cabal Therapy
+
+--- Decision 54 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 55 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 4 (Name card: Force of Will)
+--- Narrative ---
+  Player B names card: Force of Will
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Dark Ritual
+    Dark Ritual
+    Dark Ritual
+    Thassa's Oracle
+  No matching cards to discard.
+
+--- Decision 56 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Plateau
+  >> B/B: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player B played Marsh Flats
+
+--- Decision 57 ---
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Marsh Flats
+  Player B's Marsh Flats ability is on the stack
+
+--- Decision 58 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 59 ---
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Scrubland
+   6: Shadowy Backstreet
+  >> B/B: 1 (Badlands)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Badlands to the battlefield
+
+--- Decision 60 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 61 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 62 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 63 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 64 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 65 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Dark Ritual, Dark Ritual, Dark Ritual, Thassa's Oracle
+  PB: Goblin Bombardment, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 66 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ponder
+
+--- Decision 67 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 68 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Ponder  [#0]
+   5: Cast Thassa's Oracle  [#0]
+   6: Tap Lion's Eye Diamond for (W)
+   7: Tap Lion's Eye Diamond for (U)
+   8: Tap Lion's Eye Diamond for (B)
+   9: Tap Lion's Eye Diamond for (R)
+  10: Tap Lion's Eye Diamond for (G)
+  >> A/A: 4 (Cast Ponder)
+--- Narrative ---
+  Player A activated Tundra for 1(U)
+  Player A casts Ponder
+
+--- Decision 69 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 70 ---
+  Actions:
+   0: Brainstorm  [#2]
+   1: Polluted Delta  [#2]
+   2: Daze  [#2]
+  >> A/A: 0 (Brainstorm)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 71 ---
+  Actions:
+   0: Polluted Delta  [#1]
+   1: Daze  [#1]
+  >> A/A: 0 (Polluted Delta)
+
+--- Decision 72 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Daze
+
+--- Decision 73 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 74 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 75 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 76 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 77 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 78 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Dark Ritual, Daze, Thassa's Oracle
+  PB: Goblin Bombardment, Ocelot Pride, Plateau, Swords to Plowshares, Voice of Victory
+
+--- Decision 79 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Ajani, Nacatl Pariah
+
+--- Decision 80 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 81 ---
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Cast Ajani, Nacatl Pariah  [#0]
+   3: Cast Goblin Bombardment  [#0]
+   4: Cast Ocelot Pride  [#0]
+   5: Cast Voice of Victory  [#0]
+  >> B/B: 2 (Cast Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B activated Badlands for 1(R)
+  Player B casts Ajani, Nacatl Pariah
+
+--- Decision 82 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Tap Lion's Eye Diamond for (W)
+   6: Tap Lion's Eye Diamond for (U)
+   7: Tap Lion's Eye Diamond for (B)
+   8: Tap Lion's Eye Diamond for (R)
+   9: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Ajani, Nacatl Pariah enters the battlefield
+  Ajani, Nacatl Pariah triggered
+
+--- Decision 83 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Tap Lion's Eye Diamond for (W)
+   5: Tap Lion's Eye Diamond for (U)
+   6: Tap Lion's Eye Diamond for (B)
+   7: Tap Lion's Eye Diamond for (R)
+   8: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
+
+--- Decision 84 ---
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 2 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 85 ---
+  Actions:
+   0: Player A (19 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 86 ---
+  Actions:
+   0: Sacrifice Ajani, Nacatl Pariah
+   1: Sacrifice Cat Warrior
+  >> B/B: 1 (Sacrifice Cat Warrior)
+--- Narrative ---
+  Player B sacrifices Cat Warrior
+  Player B casts Cabal Therapy
+  Cat Warrior (token) is put into the graveyard and ceases to exist.
+  Ajani, Nacatl Pariah triggered
+
+--- Decision 87 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Tap Lion's Eye Diamond for (W)
+   6: Tap Lion's Eye Diamond for (U)
+   7: Tap Lion's Eye Diamond for (B)
+   8: Tap Lion's Eye Diamond for (R)
+   9: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 88 ---
+  Actions:
+   0: Decline: use Ajani, Nacatl Pariah's triggered ability  [#0]
+   1: Accept: use Ajani, Nacatl Pariah's triggered ability  [#1]
+  >> B/B: 1 (Accept: use Ajani, Nacatl Pariah's triggered ability)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Ajani, Nacatl Pariah is moved to exile
+  Resolving ability (category: ChangeZone)
+  Ajani, Nacatl Pariah is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Ajani, Nacatl Avenger enters transformed.
+
+--- Decision 89 ---
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual  [#0]
+   2: Cast Dark Ritual  [#0]
+   3: Cast Dark Ritual  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Tap Lion's Eye Diamond for (W)
+   6: Tap Lion's Eye Diamond for (U)
+   7: Tap Lion's Eye Diamond for (B)
+   8: Tap Lion's Eye Diamond for (R)
+   9: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 90 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 1 (Name card: Dark Ritual)
+--- Narrative ---
+  Player B names card: Dark Ritual
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Dark Ritual
+    Dark Ritual
+    Dark Ritual
+    Daze
+    Thassa's Oracle
+  Player A discards Dark Ritual
+  Player A discards Dark Ritual
+  Player A discards Dark Ritual
+  Cabal Therapy is exiled (flashback)
+
+--- Decision 91 ---
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   3: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+  >> B/B: 1 (Play Plateau)
+--- Narrative ---
+  Player B played Plateau
+
+--- Decision 92 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   3: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Plateau for 1(W)
+  Player B casts Ocelot Pride
+
+--- Decision 93 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Ocelot Pride enters the battlefield
+
+--- Decision 94 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   3: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 95 ---
+  Actions:
+   0: Player A (19 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 96 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B casts Cabal Therapy
+
+--- Decision 97 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 98 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 2 (Name card: Daze)
+--- Narrative ---
+  Player B names card: Daze
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Daze
+    Thassa's Oracle
+  Player A discards Daze
+  Cabal Therapy is exiled (flashback)
+
+--- Decision 99 ---
+  Actions:
+   0: Pass priority
+   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   2: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+  >> B/B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+--- Narrative ---
+  Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 5)
+  Player B's Ajani, Nacatl Avenger ability is on the stack
+
+--- Decision 100 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounterAll, amount: 1)
+
+--- Decision 101 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 102 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 103 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 104 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 105 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 106 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Thassa's Oracle
+  PB: Goblin Bombardment, Swords to Plowshares, Voice of Victory
+
+--- Decision 107 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Polluted Delta
+
+--- Decision 108 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 109 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Cast Thassa's Oracle  [#0]
+   3: Tap Lion's Eye Diamond for (W)
+   4: Tap Lion's Eye Diamond for (U)
+   5: Tap Lion's Eye Diamond for (B)
+   6: Tap Lion's Eye Diamond for (R)
+   7: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 110 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Activate Polluted Delta (ChangeZone)  [#0]
+   3: Tap Lion's Eye Diamond for (W)
+   4: Tap Lion's Eye Diamond for (U)
+   5: Tap Lion's Eye Diamond for (B)
+   6: Tap Lion's Eye Diamond for (R)
+   7: Tap Lion's Eye Diamond for (G)
+  >> A/A: 2 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+
+--- Decision 111 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 112 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Undercity Sewers
+   5: Underground Sea
+  >> A/A: 5 (Underground Sea)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Underground Sea to the battlefield
+
+--- Decision 113 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 114 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 115 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 116 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 117 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 118 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Thassa's Oracle
+  PB: Goblin Bombardment, Swords to Plowshares, Voice of Victory
+
+--- Decision 119 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Ocelot Pride
+
+--- Decision 120 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 121 ---
+  Actions:
+   0: Pass priority
+   1: Cast Goblin Bombardment  [#0]
+   2: Cast Ocelot Pride  [#0]
+   3: Cast Voice of Victory  [#0]
+   4: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   5: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   6: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+  >> B/B: 1 (Cast Goblin Bombardment)
+--- Narrative ---
+  Player B activated Badlands for 1(R)
+  Player B activated Plateau for 1(R)
+  Player B casts Goblin Bombardment
+
+--- Decision 122 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Goblin Bombardment enters the battlefield
+
+--- Decision 123 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   3: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   4: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+  >> B/B: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player B activated Scrubland for 1(W)
+  Player B casts Ocelot Pride
+
+--- Decision 124 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Ocelot Pride enters the battlefield
+
+--- Decision 125 ---
+  Actions:
+   0: Pass priority
+   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   2: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   3: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   4: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+--- Narrative ---
+  Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 7)
+  Player B's Ajani, Nacatl Avenger ability is on the stack
+
+--- Decision 126 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 127 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounterAll, amount: 1)
+  Put 1 P1P1 counter(s) on Ocelot Pride.
+
+--- Decision 128 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 129 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 130 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 131 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 132 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 133 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 134 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 135 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 136 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 137 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 138 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 139 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Thassa's Oracle
+  PB: Swords to Plowshares, Voice of Victory
+
+--- Decision 140 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 141 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Doomsday
+
+--- Decision 142 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 143 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 144 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 145 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 146 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 147 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 148 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 149 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 150 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 151 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 152 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 153 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 154 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 155 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Doomsday, Thassa's Oracle
+  PB: Swords to Plowshares, Voice of Victory
+
+--- Decision 156 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 157 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Thoughtseize
+
+--- Decision 158 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 159 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 160 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Thoughtseize  [#0]
+   3: Cast Voice of Victory  [#0]
+   4: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   5: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   6: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   7: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 161 ---
+  Actions:
+   0: Player A (18 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Badlands for 1(B)
+  Player B casts Thoughtseize targeting Player A
+
+--- Decision 162 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 163 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Doomsday
+    Thassa's Oracle
+  Player B chooses a card to discard:
+
+--- Decision 164 ---
+  Actions:
+   0: Doomsday
+   1: Thassa's Oracle
+  >> B/B: 0 (Doomsday)
+--- Narrative ---
+  Player A discards Doomsday
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 16)
+
+--- Decision 165 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Voice of Victory  [#0]
+   3: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   4: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   5: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   6: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 2 (Cast Voice of Victory)
+--- Narrative ---
+  Player B activated Plateau for 1(W)
+  Player B activated Scrubland for 1(W)
+  Player B casts Voice of Victory
+
+--- Decision 166 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 167 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Voice of Victory enters the battlefield
+
+--- Decision 168 ---
+  Actions:
+   0: Pass priority
+   1: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   2: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   3: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   4: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+--- Narrative ---
+  Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 9)
+  Player B's Ajani, Nacatl Avenger ability is on the stack
+
+--- Decision 169 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 170 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounterAll, amount: 1)
+  Put 1 P1P1 counter(s) on Ocelot Pride.
+
+--- Decision 171 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 172 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 173 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 174 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 175 ---
+  Actions:
+   0: Ocelot Pride [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Ocelot Pride [3/3])
+--- Narrative ---
+  Ocelot Pride attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ocelot Pride [3/3] -> Player A
+
+--- Decision 176 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ocelot Pride -> Player A
+
+--- Decision 177 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 178 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 179 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 180 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 3 damage to Player A (now at 15 life)
+    Player B gains 3 life (lifelink)
+  --- End First Strike Combat Damage ---
+
+--- Decision 181 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 182 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 183 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 184 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 185 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 186 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 187 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 188 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Ocelot Pride triggered
+
+--- Decision 189 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 190 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+
+--- Decision 191 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 192 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Thassa's Oracle
+  PB: Swords to Plowshares
+
+--- Decision 193 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 194 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ponder
+
+--- Decision 195 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 196 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 197 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Thassa's Oracle  [#0]
+   3: Tap Lion's Eye Diamond for (W)
+   4: Tap Lion's Eye Diamond for (U)
+   5: Tap Lion's Eye Diamond for (B)
+   6: Tap Lion's Eye Diamond for (R)
+   7: Tap Lion's Eye Diamond for (G)
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Tundra for 1(U)
+  Player A casts Ponder
+
+--- Decision 198 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 199 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 200 ---
+  Actions:
+   0: Brainstorm  [#2]
+   1: Veil of Summer  [#2]
+   2: Force of Will  [#2]
+  >> A/A: 0 (Brainstorm)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 201 ---
+  Actions:
+   0: Veil of Summer  [#1]
+   1: Force of Will  [#1]
+  >> A/A: 0 (Veil of Summer)
+
+--- Decision 202 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Force of Will
+
+--- Decision 203 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 204 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 205 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 206 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 207 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 208 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 209 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 210 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 211 ---
+  Actions:
+   0: Pass priority
+   1: Cast Thassa's Oracle  [#0]
+   2: Tap Lion's Eye Diamond for (W)
+   3: Tap Lion's Eye Diamond for (U)
+   4: Tap Lion's Eye Diamond for (B)
+   5: Tap Lion's Eye Diamond for (R)
+   6: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 212 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 213 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 214 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 12 (Player B) --------
+--- Turn 12 (Player B) ---
+  PA: Force of Will, Thassa's Oracle
+  PB: Swords to Plowshares
+
+--- Decision 215 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 216 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Silent Clearing
+
+--- Decision 217 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 218 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 219 ---
+  Actions:
+   0: Pass priority
+   1: Play Silent Clearing
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   4: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   5: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   6: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Play Silent Clearing)
+--- Narrative ---
+  Player B played Silent Clearing
+
+--- Decision 220 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Ajani, Nacatl Avenger [+2] (PutCounterAll)  [#0]
+   3: Activate Ajani, Nacatl Avenger [0] (Token)  [#1]
+   4: Activate Ajani, Nacatl Avenger [-4] (ChooseCard)  [#2]
+   5: Activate Goblin Bombardment (DealDamage)  [#0]
+   6: Activate Silent Clearing (Draw)  [#1]
+  >> B/B: 2 (Activate Ajani, Nacatl Avenger [+2] (PutCounterAll))
+--- Narrative ---
+  Ajani, Nacatl Avenger activates a loyalty ability (+2, loyalty now 11)
+  Player B's Ajani, Nacatl Avenger ability is on the stack
+
+--- Decision 221 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+   3: Activate Silent Clearing (Draw)  [#1]
+  >> B/B: 3 (Activate Silent Clearing (Draw))
+--- Narrative ---
+  Player B activated Badlands for 1(R)
+  Player B sacrifices Silent Clearing
+  Player B's Silent Clearing ability is on the stack
+
+--- Decision 222 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 223 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Voice of Victory
+
+--- Decision 224 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 225 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounterAll, amount: 1)
+  Put 1 P1P1 counter(s) on Ocelot Pride.
+  Put 1 P1P1 counter(s) on Cat.
+
+--- Decision 226 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Voice of Victory  [#0]
+   3: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 2 (Cast Voice of Victory)
+--- Narrative ---
+  Player B activated Plateau for 1(W)
+  Player B activated Scrubland for 1(W)
+  Player B casts Voice of Victory
+
+--- Decision 227 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 228 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Voice of Victory enters the battlefield
+
+--- Decision 229 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 230 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 231 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 232 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 233 ---
+  Actions:
+   0: Ocelot Pride [4/4]
+   1: Voice of Victory [1/3]
+   2: Cat token [2/2]
+   3: Confirm attackers
+  >> B/B: 0 (Ocelot Pride [4/4])
+--- Narrative ---
+  Ocelot Pride attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ocelot Pride [4/4] -> Player A
+
+--- Decision 234 ---
+  Actions:
+   0: Voice of Victory [1/3]
+   1: Cat token [2/2]
+   2: Confirm attackers
+  >> B/B: 0 (Voice of Victory [1/3])
+--- Narrative ---
+  Voice of Victory attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ocelot Pride [4/4] -> Player A
+    [attacking] Voice of Victory [1/3] -> Player A
+
+--- Decision 235 ---
+  Actions:
+   0: Cat token [2/2]
+   1: Confirm attackers
+  >> B/B: 0 (Cat token [2/2])
+--- Narrative ---
+  Cat token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Ocelot Pride [4/4] -> Player A
+    [attacking] Voice of Victory [1/3] -> Player A
+    [attacking] Cat token [2/2] -> Player A
+
+--- Decision 236 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ocelot Pride -> Player A
+    Voice of Victory -> Player A
+    Cat token -> Player A
+  Voice of Victory triggered
+
+--- Decision 237 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 238 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Mobilize)
+  Mobilize 2: Player B creates 2 tapped and attacking 1/1 Warrior(s).
+  Player B gets the city's blessing.
+
+--- Decision 239 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 240 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 241 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 242 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 4 damage to Player A (now at 11 life)
+    Player B gains 4 life (lifelink)
+  --- End First Strike Combat Damage ---
+
+--- Decision 243 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 244 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Voice of Victory deals 1 damage to Player A (now at 10 life)
+    Cat token deals 2 damage to Player A (now at 8 life)
+    Warrior token deals 1 damage to Player A (now at 7 life)
+    Warrior token deals 1 damage to Player A (now at 6 life)
+  --- End Combat Damage ---
+
+--- Decision 245 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 246 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 247 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 248 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 249 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 250 ---
+  Actions:
+   0: Player A (6 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Ocelot Pride
+   4: Voice of Victory
+   5: Voice of Victory
+   6: Cat token
+   7: Warrior token
+   8: Warrior token
+  >> B/B: 0 (Player A (6 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 251 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+   1: Sacrifice Voice of Victory
+   2: Sacrifice Voice of Victory
+   3: Sacrifice Cat
+   4: Sacrifice Warrior
+   5: Sacrifice Warrior
+  >> B/B: 4 (Sacrifice Warrior)
+--- Narrative ---
+  Player B sacrifices Warrior
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+  Warrior (token) is put into the graveyard and ceases to exist.
+
+--- Decision 252 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 253 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 5 life)
+
+--- Decision 254 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 255 ---
+  Actions:
+   0: Player A (5 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Ocelot Pride
+   4: Voice of Victory
+   5: Voice of Victory
+   6: Cat token
+   7: Warrior token
+  >> B/B: 0 (Player A (5 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 256 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+   1: Sacrifice Voice of Victory
+   2: Sacrifice Voice of Victory
+   3: Sacrifice Cat
+   4: Sacrifice Warrior
+  >> B/B: 4 (Sacrifice Warrior)
+--- Narrative ---
+  Player B sacrifices Warrior
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+  Warrior (token) is put into the graveyard and ceases to exist.
+
+--- Decision 257 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 258 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 4 life)
+
+--- Decision 259 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 260 ---
+  Actions:
+   0: Player A (4 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Ocelot Pride
+   4: Voice of Victory
+   5: Voice of Victory
+   6: Cat token
+  >> B/B: 0 (Player A (4 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 261 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+   1: Sacrifice Voice of Victory
+   2: Sacrifice Voice of Victory
+   3: Sacrifice Cat
+  >> B/B: 3 (Sacrifice Cat)
+--- Narrative ---
+  Player B sacrifices Cat
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+  Cat (token) is put into the graveyard and ceases to exist.
+
+--- Decision 262 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 263 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 3 life)
+
+--- Decision 264 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 265 ---
+  Actions:
+   0: Player A (3 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Ocelot Pride
+   4: Voice of Victory
+   5: Voice of Victory
+  >> B/B: 0 (Player A (3 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 266 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+   1: Sacrifice Voice of Victory
+   2: Sacrifice Voice of Victory
+  >> B/B: 1 (Sacrifice Voice of Victory)
+--- Narrative ---
+  Player B sacrifices Voice of Victory
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 267 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 268 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 2 life)
+
+--- Decision 269 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 270 ---
+  Actions:
+   0: Player A (2 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Ocelot Pride
+   4: Voice of Victory
+  >> B/B: 0 (Player A (2 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 271 ---
+  Actions:
+   0: Sacrifice Ocelot Pride
+   1: Sacrifice Voice of Victory
+  >> B/B: 0 (Sacrifice Ocelot Pride)
+--- Narrative ---
+  Player B sacrifices Ocelot Pride
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 272 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 273 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 1 life)
+
+--- Decision 274 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 275 ---
+  Actions:
+   0: Player A (1 life)
+   1: Player B (23 life)
+   2: Ajani, Nacatl Avenger
+   3: Voice of Victory
+  >> B/B: 0 (Player A (1 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 276 ---
+  Actions:
+   0: Sacrifice Voice of Victory
+  >> B/B: 0 (Sacrifice Voice of Victory)
+--- Narrative ---
+  Player B sacrifices Voice of Victory
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 277 ---
+  Actions:
+   0: Pass priority
+   1: Tap Lion's Eye Diamond for (W)
+   2: Tap Lion's Eye Diamond for (U)
+   3: Tap Lion's Eye Diamond for (B)
+   4: Tap Lion's Eye Diamond for (R)
+   5: Tap Lion's Eye Diamond for (G)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 0 life)
+  Player A has 0 life - Player B wins!
+  GAME_RESULT: 1 Player B wins
+  Player A sideboarding (7 in sideboard, 0 swap(s) made):
+
+--- Decision 278 ---
+  Actions:
+   0: Done sideboarding
+   1: Sideboard in: 3x Carpet of Flowers  [#3]
+   2: Sideboard in: 3x Force of Negation  [#3]
+   3: Sideboard in: 1x Grafdigger's Cage  [#1]
+   4: Sideboard in: 1x Jace, Wielder of Mysteries  [#1]
+   5: Sideboard in: 1x Plains  [#1]
+   6: Sideboard in: 3x Prismatic Ending  [#3]
+   7: Sideboard in: 3x Swords to Plowshares  [#3]
+  >> A/A: 0 (Done sideboarding)
+--- Narrative ---
+  Player B sideboarding (10 in sideboard, 0 swap(s) made):
+
+--- Decision 279 ---
+  Actions:
+   0: Done sideboarding
+   1: Sideboard in: 1x Clarion Conqueror  [#1]
+   2: Sideboard in: 2x Containment Priest  [#2]
+   3: Sideboard in: 1x Damping Sphere  [#1]
+   4: Sideboard in: 1x Deafening Silence  [#1]
+   5: Sideboard in: 1x Disruptor Flute  [#1]
+   6: Sideboard in: 4x Leyline of the Void  [#4]
+   7: Sideboard in: 1x Null Rod  [#1]
+   8: Sideboard in: 2x Pyroblast  [#2]
+   9: Sideboard in: 1x Stony Silence  [#1]
+  10: Sideboard in: 1x Wrath of the Skies  [#1]
+  >> B/B: 0 (Done sideboarding)
+--- Narrative ---
+  ----- MATCH GAME 2 -----
+  -------- PREGAME --------
+  Player A draws Veil of Summer
+  Player A draws Doomsday
+  Player A draws Ponder
+  Player A draws Force of Will
+  Player A draws Teferi, Time Raveler
+  Player A draws Polluted Delta
+  Player A draws Polluted Delta
+  Player B draws Orcish Bowmasters
+  Player B draws Shadowy Backstreet
+  Player B draws Amped Raptor
+  Player B draws Swords to Plowshares
+  Player B draws Thoughtseize
+  Player B draws Orcish Bowmasters
+  Player B draws Elegant Parlor
+  Player A hand:
+  Doomsday
+  Force of Will
+  Polluted Delta
+  Polluted Delta
+  Ponder
+  Teferi, Time Raveler
+  Veil of Summer
+
+--- Decision 280 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Street Wraith
+  Player A draws Force of Will
+  Player A draws Polluted Delta
+  Player A draws Daze
+  Player A draws Doomsday
+  Player A draws Underground Sea
+  Player A draws Consider
+  Player B hand:
+  Amped Raptor
+  Elegant Parlor
+  Orcish Bowmasters
+  Orcish Bowmasters
+  Shadowy Backstreet
+  Swords to Plowshares
+  Thoughtseize
+
+--- Decision 281 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  Player A hand:
+  Consider
+  Daze
+  Doomsday
+  Force of Will
+  Polluted Delta
+  Street Wraith
+  Underground Sea
+
+--- Decision 282 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 6-card hand.
+  Player A: Choose card to put on library bottom (1 remaining):
+
+--- Decision 283 ---
+  Actions:
+   0: Consider
+   1: Daze
+   2: Doomsday
+   3: Force of Will
+   4: Polluted Delta
+   5: Street Wraith
+   6: Underground Sea
+  >> A/A: 0 (Consider)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Daze, Doomsday, Force of Will, Polluted Delta, Street Wraith, Underground Sea
+  PB: Amped Raptor, Elegant Parlor, Orcish Bowmasters, Orcish Bowmasters, Shadowy Backstreet, Swords to Plowshares, Thoughtseize
+
+--- Decision 284 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 285 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 286 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Underground Sea
+   3: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 287 ---
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+
+--- Decision 288 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 289 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Tundra
+   5: Undercity Sewers
+   6: Underground Sea
+  >> A/A: 6 (Underground Sea)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Underground Sea to the battlefield
+
+--- Decision 290 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 291 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 292 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 293 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 294 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 295 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 2 (Player B) --------
+--- Turn 2 (Player B) ---
+  PA: Daze, Doomsday, Force of Will, Street Wraith, Underground Sea
+  PB: Amped Raptor, Elegant Parlor, Orcish Bowmasters, Orcish Bowmasters, Shadowy Backstreet, Swords to Plowshares, Thoughtseize
+
+--- Decision 296 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Thoughtseize
+
+--- Decision 297 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 298 ---
+  Actions:
+   0: Pass priority
+   1: Play Elegant Parlor
+   2: Play Shadowy Backstreet
+  >> B/B: 1 (Play Elegant Parlor)
+--- Narrative ---
+  Player B played Elegant Parlor
+  Elegant Parlor enters tapped.
+  Elegant Parlor triggered
+
+--- Decision 299 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Wasteland
+
+--- Decision 300 ---
+  Actions:
+   0: Put Wasteland on top of library  [#0]
+   1: Put Wasteland into graveyard
+  >> B/B: 0 (Put Wasteland on top of library)
+
+--- Decision 301 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 302 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 303 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 304 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 305 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 306 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 3 (Player A) --------
+--- Turn 3 (Player A) ---
+  PA: Daze, Doomsday, Force of Will, Street Wraith, Underground Sea
+  PB: Amped Raptor, Orcish Bowmasters, Orcish Bowmasters, Shadowy Backstreet, Swords to Plowshares, Thoughtseize, Thoughtseize
+
+--- Decision 307 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Veil of Summer
+
+--- Decision 308 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 309 ---
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+   2: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 1 (Play Underground Sea)
+--- Narrative ---
+  Player A played Underground Sea
+
+--- Decision 310 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 311 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 312 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 313 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 314 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 315 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Daze, Doomsday, Force of Will, Street Wraith, Veil of Summer
+  PB: Amped Raptor, Orcish Bowmasters, Orcish Bowmasters, Shadowy Backstreet, Swords to Plowshares, Thoughtseize, Thoughtseize
+
+--- Decision 316 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Wasteland
+
+--- Decision 317 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 318 ---
+  Actions:
+   0: Pass priority
+   1: Play Shadowy Backstreet
+   2: Play Wasteland
+  >> B/B: 1 (Play Shadowy Backstreet)
+--- Narrative ---
+  Player B played Shadowy Backstreet
+  Shadowy Backstreet enters tapped.
+  Shadowy Backstreet triggered
+
+--- Decision 319 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
+
+--- Decision 320 ---
+  Actions:
+   0: Put Thoughtseize on top of library  [#0]
+   1: Put Thoughtseize into graveyard
+  >> B/B: 0 (Put Thoughtseize on top of library)
+
+--- Decision 321 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 322 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 323 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 324 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 325 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 326 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Daze, Doomsday, Force of Will, Street Wraith, Veil of Summer
+  PB: Amped Raptor, Orcish Bowmasters, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Thoughtseize, Wasteland
+
+--- Decision 327 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Daze
+
+--- Decision 328 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 329 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 330 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 331 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 332 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 333 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 334 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Daze, Daze, Doomsday, Force of Will, Street Wraith, Veil of Summer
+  PB: Amped Raptor, Orcish Bowmasters, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Thoughtseize, Wasteland
+
+--- Decision 335 ---
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+   2: Cast Orcish Bowmasters  [#0]
+  >> B/B: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player B activated Shadowy Backstreet for 1(B)
+  Player B activated Elegant Parlor for 1(R)
+  Player B casts Orcish Bowmasters
+
+--- Decision 336 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze  [#0]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Daze  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Cast Force of Will (alternate cost)  [#1]
+   6: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 337 ---
+  Actions:
+   0: Player A (19 life)
+   1: Player B (20 life)
+   2: Orcish Bowmasters
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+
+--- Decision 338 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Orcish Bowmasters deals 1 damage to Player A (now at 18 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 1/1.
+
+--- Decision 339 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Thoughtseize
+
+--- Decision 340 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 341 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 342 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 343 ---
+  Actions:
+   0: Underground Sea
+   1: Underground Sea
+   2: Elegant Parlor
+   3: Shadowy Backstreet
+   4: Wasteland
+  >> B/B: 0 (Underground Sea)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Underground Sea is on the stack
+
+--- Decision 344 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+   2: Tap Underground Sea for (U)
+   3: Tap Underground Sea for (B)
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Underground Sea is destroyed
+
+--- Decision 345 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 346 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 347 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 348 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 349 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 350 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Daze, Daze, Doomsday, Force of Will, Street Wraith, Veil of Summer
+  PB: Amped Raptor, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Thoughtseize, Thoughtseize
+
+--- Decision 351 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ponder
+
+--- Decision 352 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 353 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Underground Sea for 1(U)
+  Player A casts Ponder
+
+--- Decision 354 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+   4: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 355 ---
+  Actions:
+   0: Dark Ritual  [#2]
+   1: Polluted Delta  [#2]
+   2: Veil of Summer  [#2]
+  >> A/A: 0 (Dark Ritual)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 356 ---
+  Actions:
+   0: Polluted Delta  [#1]
+   1: Veil of Summer  [#1]
+  >> A/A: 0 (Polluted Delta)
+
+--- Decision 357 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Veil of Summer
+  Choose target for Orcish Bowmasters:
+
+--- Decision 358 ---
+  Actions:
+   0: Player A (18 life)
+   1: Player B (20 life)
+   2: Orcish Bowmasters
+   3: Orc Army token
+  >> B/B: 0 (Player A (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+
+--- Decision 359 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Orcish Bowmasters deals 1 damage to Player A (now at 17 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 2/2.
+
+--- Decision 360 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 361 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 362 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 363 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 364 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 365 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Daze, Daze, Doomsday, Force of Will, Street Wraith, Veil of Summer, Veil of Summer
+  PB: Amped Raptor, Orcish Bowmasters, Swords to Plowshares, Thoughtseize, Thoughtseize, Thoughtseize
+
+--- Decision 366 ---
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player B activated Shadowy Backstreet for 1(B)
+  Player B activated Elegant Parlor for 1(R)
+  Player B casts Orcish Bowmasters
+
+--- Decision 367 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+   4: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 368 ---
+  Actions:
+   0: Player A (17 life)
+   1: Player B (20 life)
+   2: Orcish Bowmasters
+   3: Orcish Bowmasters
+   4: Orc Army token
+  >> B/B: 0 (Player A (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+
+--- Decision 369 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Orcish Bowmasters deals 1 damage to Player A (now at 16 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player B Army is now 3/3.
+
+--- Decision 370 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Scrubland
+
+--- Decision 371 ---
+  Actions:
+   0: Pass priority
+   1: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 372 ---
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> B/B: 1 (Play Scrubland)
+--- Narrative ---
+  Player B played Scrubland
+
+--- Decision 373 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+   4: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 374 ---
+  Actions:
+   0: Player A (16 life)
+   1: Player B (20 life)
+  >> B/B: 0 (Player A (16 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Scrubland for 1(B)
+  Player B casts Thoughtseize targeting Player A
+
+--- Decision 375 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+   4: Activate Street Wraith from hand (Draw)  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Daze
+    Daze
+    Doomsday
+    Force of Will
+    Street Wraith
+    Veil of Summer
+    Veil of Summer
+  Player B chooses a card to discard:
+
+--- Decision 376 ---
+  Actions:
+   0: Daze
+   1: Daze
+   2: Doomsday
+   3: Force of Will
+   4: Street Wraith
+   5: Veil of Summer
+   6: Veil of Summer
+  >> B/B: 4 (Street Wraith)
+--- Narrative ---
+  Player A discards Street Wraith
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 18)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 377 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [3/3]
+   2: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 378 ---
+  Actions:
+   0: Orc Army token [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Orc Army token [3/3])
+--- Narrative ---
+  Orc Army token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orc Army token [3/3] -> Player A
+
+--- Decision 379 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player A
+    Orc Army token -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player A (now at 15 life)
+    Orc Army token deals 3 damage to Player A (now at 12 life)
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+  Player A draws Polluted Delta
+--- Turn 9 (Player A) ---
+  PA: Daze, Daze, Doomsday, Force of Will, Polluted Delta, Veil of Summer, Veil of Summer
+  PB: Amped Raptor, Swords to Plowshares, Thoughtseize, Thoughtseize
+
+--- Decision 380 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 381 ---
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 382 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Scrubland
+   3: Tropical Island
+   4: Tundra
+   5: Undercity Sewers
+  >> A/A: 5 (Undercity Sewers)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Undercity Sewers to the battlefield
+  Undercity Sewers enters tapped.
+  Undercity Sewers triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Tamiyo, Inquisitive Student
+
+--- Decision 383 ---
+  Actions:
+   0: Put Tamiyo, Inquisitive Student on top of library  [#0]
+   1: Put Tamiyo, Inquisitive Student into graveyard
+  >> A/A: 1 (Put Tamiyo, Inquisitive Student into graveyard)
+--- Narrative ---
+  Player A puts Tamiyo, Inquisitive Student into their graveyard.
+  No creatures eligible to attack.
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Daze, Daze, Doomsday, Force of Will, Veil of Summer, Veil of Summer
+  PB: Amped Raptor, Swords to Plowshares, Thoughtseize, Thoughtseize
+
+--- Decision 384 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Goblin Bombardment
+
+--- Decision 385 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 386 ---
+  Actions:
+   0: Pass priority
+   1: Cast Amped Raptor  [#0]
+   2: Cast Goblin Bombardment  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Thoughtseize  [#0]
+   5: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Amped Raptor)
+--- Narrative ---
+  Player B activated Elegant Parlor for 1(R)
+  Player B activated Scrubland for 1(W)
+  Player B casts Amped Raptor
+
+--- Decision 387 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 388 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Amped Raptor enters the battlefield
+  Amped Raptor triggered
+
+--- Decision 389 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounter, amount: 2)
+  Player B gets 2 ENERGY counter(s) (now 2).
+  Resolving ability (category: DigUntil)
+  Player B reveals Arid Mesa.
+  Player B reveals Arid Mesa.
+  Player B reveals Karakas.
+  Player B reveals Guide of Souls.
+  Player B exiles Guide of Souls.
+  Resolving ability (category: Play)
+  Player B may cast Guide of Souls by paying 1 energy rather than its mana cost.
+
+--- Decision 390 ---
+  Actions:
+   0: Do not cast Guide of Souls  [#0]
+   1: Cast Guide of Souls  [#1]
+  >> B/B: 1 (Cast Guide of Souls)
+--- Narrative ---
+  Player B pays 1 energy
+  Player B casts Guide of Souls
+  Resolving ability (category: Cleanup)
+
+--- Decision 391 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 392 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Guide of Souls enters the battlefield
+
+--- Decision 393 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Thoughtseize  [#0]
+   3: Cast Thoughtseize  [#0]
+  >> B/B: 2 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 394 ---
+  Actions:
+   0: Player A (11 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (11 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Shadowy Backstreet for 1(B)
+  Player B casts Thoughtseize targeting Player A
+
+--- Decision 395 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)  [#1]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Daze
+    Daze
+    Doomsday
+    Force of Will
+    Veil of Summer
+    Veil of Summer
+  Player B chooses a card to discard:
+
+--- Decision 396 ---
+  Actions:
+   0: Daze
+   1: Daze
+   2: Doomsday
+   3: Force of Will
+   4: Veil of Summer
+   5: Veil of Summer
+  >> B/B: 3 (Force of Will)
+--- Narrative ---
+  Player A discards Force of Will
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 16)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 397 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orcish Bowmasters [1/1]
+   2: Orc Army token [3/3]
+   3: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 398 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [3/3]
+   2: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 399 ---
+  Actions:
+   0: Orc Army token [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Orc Army token [3/3])
+--- Narrative ---
+  Orc Army token attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orc Army token [3/3] -> Player A
+
+--- Decision 400 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Orcish Bowmasters -> Player A
+    Orcish Bowmasters -> Player A
+    Orc Army token -> Player A
+  Guide of Souls triggered
+  Resolving ability (category: ImmediateTrigger)
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Orcish Bowmasters deals 1 damage to Player A (now at 10 life)
+    Orcish Bowmasters deals 1 damage to Player A (now at 9 life)
+    Orc Army token deals 3 damage to Player A (now at 6 life)
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Edge of Autumn
+--- Turn 11 (Player A) ---
+  PA: Daze, Daze, Doomsday, Edge of Autumn, Veil of Summer, Veil of Summer
+  PB: Goblin Bombardment, Swords to Plowshares, Thoughtseize
+
+--- Decision 401 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 402 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 403 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 404 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 405 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 406 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 407 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 12 (Player B) --------
+--- Turn 12 (Player B) ---
+  PA: Daze, Daze, Doomsday, Edge of Autumn, Veil of Summer, Veil of Summer
+  PB: Goblin Bombardment, Swords to Plowshares, Thoughtseize
+
+--- Decision 408 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 409 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Cabal Therapy
+
+--- Decision 410 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 411 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 412 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+   2: Cast Goblin Bombardment  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Thoughtseize  [#0]
+  >> B/B: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 413 ---
+  Actions:
+   0: Player A (6 life)
+   1: Player B (16 life)
+  >> B/B: 0 (Player A (6 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Scrubland for 1(B)
+  Player B casts Cabal Therapy
+
+--- Decision 414 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 415 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze  [#0]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Daze  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 416 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 3 (Name card: Doomsday)
+--- Narrative ---
+  Player B names card: Doomsday
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Daze
+    Daze
+    Doomsday
+    Edge of Autumn
+    Veil of Summer
+    Veil of Summer
+  Player A discards Doomsday
+
+--- Decision 417 ---
+  Actions:
+   0: Pass priority
+   1: Cast Goblin Bombardment  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Thoughtseize  [#0]
+   4: Cast Cabal Therapy (flashback)  [#4]
+  >> B/B: 1 (Cast Goblin Bombardment)
+--- Narrative ---
+  Player B activated Elegant Parlor for 1(R)
+  Player B activated Shadowy Backstreet for 1(W)
+  Player B casts Goblin Bombardment
+
+--- Decision 418 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze  [#0]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Daze  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Goblin Bombardment enters the battlefield
+
+--- Decision 419 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+   2: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 420 ---
+  Actions:
+   0: Player A (6 life)
+   1: Player B (16 life)
+  >> B/B: 0 (Player A (6 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 421 ---
+  Actions:
+   0: Sacrifice Amped Raptor
+   1: Sacrifice Guide of Souls
+   2: Sacrifice Orcish Bowmasters
+   3: Sacrifice Orcish Bowmasters
+   4: Sacrifice Orc Army
+  >> B/B: 4 (Sacrifice Orc Army)
+--- Narrative ---
+  Player B sacrifices Orc Army
+  Player B casts Cabal Therapy
+  Orc Army (token) is put into the graveyard and ceases to exist.
+
+--- Decision 422 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 423 ---
+  Actions:
+   0: Pass priority
+   1: Cast Daze  [#0]
+   2: Cast Daze (alternate cost)  [#1]
+   3: Cast Daze  [#0]
+   4: Cast Daze (alternate cost)  [#1]
+   5: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: NameCard)
+  Player B names a card:
+
+--- Decision 424 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Dark Ritual
+   2: Name card: Daze
+   3: Name card: Doomsday
+   4: Name card: Force of Will
+   5: Name card: Lotus Petal
+   6: Name card: Ponder
+   7: Name card: Tamiyo, Inquisitive Student
+   8: Name card: Carpet of Flowers
+   9: Name card: Force of Negation
+  10: Name card: Prismatic Ending
+  11: Name card: Swords to Plowshares
+  12: Name card: Teferi, Time Raveler
+  13: Name card: Veil of Summer
+  14: Name card: Consider
+  15: Name card: Edge of Autumn
+  16: Name card: Grafdigger's Cage
+  17: Name card: Jace, Wielder of Mysteries
+  18: Name card: Lion's Eye Diamond
+  19: Name card: Quantum Riddler
+  20: Name card: Street Wraith
+  21: Name card: Thassa's Oracle
+  >> B/B: 2 (Name card: Daze)
+--- Narrative ---
+  Player B names card: Daze
+  Resolving ability (category: Discard)
+  Player A reveals their hand:
+    Daze
+    Daze
+    Edge of Autumn
+    Veil of Summer
+    Veil of Summer
+  Player A discards Daze
+  Player A discards Daze
+  Cabal Therapy is exiled (flashback)
+
+--- Decision 425 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 426 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 427 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 428 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 429 ---
+  Actions:
+   0: Amped Raptor [2/1]
+   1: Guide of Souls [1/2]
+   2: Orcish Bowmasters [1/1]
+   3: Orcish Bowmasters [1/1]
+   4: Confirm attackers
+  >> B/B: 0 (Amped Raptor [2/1])
+--- Narrative ---
+  Amped Raptor attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Amped Raptor [2/1] -> Player A
+
+--- Decision 430 ---
+  Actions:
+   0: Guide of Souls [1/2]
+   1: Orcish Bowmasters [1/1]
+   2: Orcish Bowmasters [1/1]
+   3: Confirm attackers
+  >> B/B: 0 (Guide of Souls [1/2])
+--- Narrative ---
+  Guide of Souls attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Amped Raptor [2/1] -> Player A
+    [attacking] Guide of Souls [1/2] -> Player A
+
+--- Decision 431 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orcish Bowmasters [1/1]
+   2: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Amped Raptor [2/1] -> Player A
+    [attacking] Guide of Souls [1/2] -> Player A
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 432 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Orcish Bowmasters attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Amped Raptor [2/1] -> Player A
+    [attacking] Guide of Souls [1/2] -> Player A
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+    [attacking] Orcish Bowmasters [1/1] -> Player A
+
+--- Decision 433 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Amped Raptor -> Player A
+    Guide of Souls -> Player A
+    Orcish Bowmasters -> Player A
+    Orcish Bowmasters -> Player A
+  Guide of Souls triggered
+
+--- Decision 434 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 435 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ImmediateTrigger)
+
+--- Decision 436 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 437 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 438 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 439 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- First Strike Combat Damage ---
+    Amped Raptor deals 2 damage to Player A (now at 4 life)
+  --- End First Strike Combat Damage ---
+
+--- Decision 440 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 441 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Guide of Souls deals 1 damage to Player A (now at 3 life)
+    Orcish Bowmasters deals 1 damage to Player A (now at 2 life)
+    Orcish Bowmasters deals 1 damage to Player A (now at 1 life)
+  --- End Combat Damage ---
+
+--- Decision 442 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 443 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 444 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 445 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 446 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 447 ---
+  Actions:
+   0: Player A (1 life)
+   1: Player B (16 life)
+   2: Amped Raptor
+   3: Guide of Souls
+   4: Orcish Bowmasters
+   5: Orcish Bowmasters
+  >> B/B: 0 (Player A (1 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 448 ---
+  Actions:
+   0: Sacrifice Amped Raptor
+   1: Sacrifice Guide of Souls
+   2: Sacrifice Orcish Bowmasters
+   3: Sacrifice Orcish Bowmasters
+  >> B/B: 1 (Sacrifice Guide of Souls)
+--- Narrative ---
+  Player B sacrifices Guide of Souls
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 449 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 450 ---
+  Actions:
+   0: Player A (1 life)
+   1: Player B (16 life)
+   2: Amped Raptor
+   3: Orcish Bowmasters
+   4: Orcish Bowmasters
+  >> B/B: 0 (Player A (1 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 451 ---
+  Actions:
+   0: Sacrifice Amped Raptor
+   1: Sacrifice Orcish Bowmasters
+   2: Sacrifice Orcish Bowmasters
+  >> B/B: 1 (Sacrifice Orcish Bowmasters)
+--- Narrative ---
+  Player B sacrifices Orcish Bowmasters
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 452 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 453 ---
+  Actions:
+   0: Player A (1 life)
+   1: Player B (16 life)
+   2: Amped Raptor
+   3: Orcish Bowmasters
+  >> B/B: 0 (Player A (1 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 454 ---
+  Actions:
+   0: Sacrifice Amped Raptor
+   1: Sacrifice Orcish Bowmasters
+  >> B/B: 1 (Sacrifice Orcish Bowmasters)
+--- Narrative ---
+  Player B sacrifices Orcish Bowmasters
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 455 ---
+  Actions:
+   0: Pass priority
+   1: Activate Goblin Bombardment (DealDamage)  [#0]
+  >> B/B: 1 (Activate Goblin Bombardment (DealDamage))
+--- Narrative ---
+  Choose target for Goblin Bombardment:
+
+--- Decision 456 ---
+  Actions:
+   0: Player A (1 life)
+   1: Player B (16 life)
+   2: Amped Raptor
+  >> B/B: 0 (Player A (1 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 457 ---
+  Actions:
+   0: Sacrifice Amped Raptor
+  >> B/B: 0 (Sacrifice Amped Raptor)
+--- Narrative ---
+  Player B sacrifices Amped Raptor
+  Player B's Goblin Bombardment ability targeting Player A is on the stack
+
+--- Decision 458 ---
+  Actions:
+   0: Pass priority
+   1: Activate Edge of Autumn from hand (Draw)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 1)
+  Goblin Bombardment deals 1 damage to Player A (now at 0 life)
+  Player A has 0 life - Player B wins!
+  GAME_RESULT: 2 Player B wins
+  MATCH_RESULT: Player B wins 0-2
+
+=== B/B wins ===

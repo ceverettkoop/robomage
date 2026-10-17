@@ -1,10 +1,12 @@
 .DS_Store
 lib/libraylib.a
 bin/*/robomage
+bin/*/rmknow
 compile_commands.json
 obj/*.o
 obj/*/*.o
 obj/*/*/*.o
+obj/*/*/*/*.o
 bin/resources/cardsfolder/*/*.txt
 # Codegen derived from gitignored/fetched card-script content — regenerated on every
 # `make` (unconditional pygen target), so it is untracked to keep a machine's stale
@@ -36,6 +38,7 @@ bin/resources/decks/temp/*
 diag_draw_*.txt
 obj/*/*.d
 obj/*/*/*.d
+obj/*/*/*/*.d
 obj/*.d
 train/replays/*
 corpus/

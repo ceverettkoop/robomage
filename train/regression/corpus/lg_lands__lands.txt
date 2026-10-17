@@ -27,11 +27,6 @@
 --- Pregame ---
 
 --- Decision 1 ---
-  Priority: Player A (active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -48,11 +43,6 @@
   Urza's Saga
 
 --- Decision 2 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Exploration, Malevolent Rumble, Mox Diamond, Sphere of Resistance, Swords to Plowshares, Urza's Saga | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window
   Actions:
    0: Keep
    1: Mulligan
@@ -76,11 +66,6 @@
   Thespian's Stage
 
 --- Decision 3 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Keep
    1: Mulligan
@@ -90,11 +75,6 @@
   Player B: Choose card to put on library bottom (1 remaining):
 
 --- Decision 4 ---
-  Priority: Player B (non-active)
-  Step: Untap (turn 1)
-  Self:  20 life | mana: empty | hand(7): Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 7 | lib 53
-  Extras: not_priority_window, self_mulligans=1, bottom_remaining=1
   Actions:
    0: Boseiju, Who Endures
    1: Crop Rotation
@@ -111,11 +91,6 @@
   PB: Boseiju, Who Endures, Crop Rotation, Dark Depths, Exploration, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 5 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(7): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -133,12 +108,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 6 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(6): Dark Depths, Mox Diamond, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -149,15 +118,6 @@
   Player A casts Mox Diamond
 
 --- Decision 7 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(5): Dark Depths, Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Discard Dark Depths (put Mox Diamond onto the battlefield)
    1: Discard Urza's Saga (put Mox Diamond onto the battlefield)
@@ -169,14 +129,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 8 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(4): Mox Diamond, Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Dark Depths
-  This turn: self spells=1 noncreature=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Mox Diamond  [#0]
@@ -186,16 +138,6 @@
   Player A casts Mox Diamond
 
 --- Decision 9 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(3): Skateboard, Urza's Saga, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Mox Diamond (ability, self)
-  Pending: Mox Diamond (self)
-  Self GY: Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Discard Urza's Saga (put Mox Diamond onto the battlefield)
    1: Discard Wasteland (put Mox Diamond onto the battlefield)
@@ -206,14 +148,6 @@
   Mox Diamond enters the battlefield
 
 --- Decision 10 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(2): Skateboard, Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Mox Diamond (NEW) | Mox Diamond (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=2 noncreature=2
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Skateboard  [#0]
@@ -225,15 +159,6 @@
   Choose target for Skateboard:
 
 --- Decision 11 ---
-  Priority: Player A (active)
-  Step: First Main (turn 1)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 53
-  Opp:   20 life | mana: empty | hand count: 6 | lib 54
-  Self BF:  Mox Diamond (T,NEW) | Mox Diamond (NEW) | Skateboard (NEW) | Urza's Saga [lore:1] (NEW,res 1)
-  Pending: Skateboard (self)
-  Self GY: Urza's Saga, Dark Depths
-  This turn: self spells=3 noncreature=3
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1
   Actions:
    0: Mox Diamond
    1: Mox Diamond
@@ -253,15 +178,6 @@
   PB: Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 12 ---
-  Priority: Player B (active)
-  Step: First Main (turn 2)
-  Self:  20 life | mana: empty | hand(7): Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 1 | lib 53
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1]
-  Opp GY:  Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -279,16 +195,6 @@
   PB: Crop Rotation, Dark Depths, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 13 ---
-  Priority: Player A (active)
-  Step: Draw (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:1]
-  Opp BF:   Dark Depths [ice:10]
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Dark Depths
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
@@ -298,17 +204,6 @@
   Urza's Saga chapter 2 triggers.
 
 --- Decision 14 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Dark Depths [ice:10]
-  Stack: Urza's Saga (ability, self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Dark Depths
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Boseiju, Who Endures from hand (Destroy)  [#1]
@@ -317,18 +212,6 @@
   Choose target for this ability:
 
 --- Decision 15 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(2): Boseiju, Who Endures, Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 6 | lib 53
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Dark Depths [ice:10]
-  Stack: Boseiju, Who Endures (ability, self) -> Urza's Saga (ability, self)
-  Pending: Boseiju, Who Endures (self)
-  Self GY: Urza's Saga, Dark Depths
-  Opp revealed: Dark Depths
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Dark Depths
   >> A/A: 0 (Dark Depths)
@@ -344,18 +227,6 @@
   Searching Player B's library:
 
 --- Decision 16 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 53
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Boseiju, Who Endures (ability, opponent) -> Dark Depths (self) -> Urza's Saga (ability, opponent)
-  Pending: Boseiju, Who Endures (opp)
-  Self GY: Dark Depths
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Forest
@@ -366,37 +237,12 @@
   Player B puts Savannah to the battlefield
 
 --- Decision 17 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Savannah (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Urza's Saga (ability, opponent)
-  Self GY: Dark Depths
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Crop Rotation  [#0]
   >> B/B: 1 (Cast Crop Rotation)
 
 --- Decision 18 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Self BF:  Savannah (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Crop Rotation (spell, self) -> Urza's Saga (ability, opponent)
-  Pending: Crop Rotation (self)
-  Self GY: Dark Depths
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: opp drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Sacrifice Savannah
   >> B/B: 0 (Sacrifice Savannah)
@@ -408,18 +254,6 @@
   Searching Player B's library:
 
 --- Decision 19 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 52
-  Opp:   20 life | mana: empty | hand count: 1 | lib 52
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Stack: Crop Rotation (spell, self) -> Urza's Saga (ability, opponent)
-  Pending: Crop Rotation (self)
-  Self GY: Savannah, Dark Depths
-  Opp GY:  Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G | opp drawn=1
-  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -449,17 +283,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 20 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(1): Wasteland | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Crop Rotation, Dark Depths
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: opp_revolt, opp_passed, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Wasteland
@@ -468,17 +291,6 @@
   Player A played Wasteland
 
 --- Decision 21 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Crop Rotation, Dark Depths
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Wasteland (Destroy)  [#1]
@@ -487,19 +299,6 @@
   Choose target for Wasteland:
 
 --- Decision 22 ---
-  Priority: Player A (active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   20 life | mana: empty | hand count: 5 | lib 51
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1) | Wasteland (NEW)
-  Opp BF:   Urza's Saga [lore:1] (NEW,res 1)
-  Stack: Wasteland (ability, self)
-  Pending: Wasteland (self)
-  Self GY: Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Crop Rotation, Dark Depths
-  This turn: self drawn=1 | opp spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_lands_played=1, opp_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Urza's Saga
    1: Urza's Saga
@@ -511,18 +310,6 @@
   Player A's Wasteland ability targeting Urza's Saga is on the stack
 
 --- Decision 23 ---
-  Priority: Player B (non-active)
-  Step: First Main (turn 3)
-  Self:  20 life | mana: empty | hand(5): Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 51
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Urza's Saga [lore:1] (NEW,res 1)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2] (res 1)
-  Stack: Wasteland (ability, opponent) -> Urza's Saga (self, slot 0)
-  Self GY: Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G | opp drawn=1
-  Extras: opp_lands_played=1, self_revolt, opp_revolt, opp_passed, self_mulligans=1
   Actions:
    0: Pass priority
    1: Tap Urza's Saga for (C)
@@ -538,16 +325,6 @@
   PB: Crop Rotation, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage
 
 --- Decision 24 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(6): Crop Rotation, Exploration, Malevolent Rumble, Savannah, Swords to Plowshares, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Savannah
@@ -557,17 +334,6 @@
   Player B played Savannah
 
 --- Decision 25 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(5): Crop Rotation, Exploration, Malevolent Rumble, Swords to Plowshares, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Savannah (NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Crop Rotation  [#0]
@@ -579,17 +345,6 @@
   Exploration enters the battlefield
 
 --- Decision 26 ---
-  Priority: Player B (active)
-  Step: First Main (turn 4)
-  Self:  20 life | mana: empty | hand(4): Crop Rotation, Malevolent Rumble, Swords to Plowshares, Thespian's Stage | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 52
-  Self BF:  Exploration (NEW) | Savannah (T,NEW)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:2]
-  Self GY: Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -603,16 +358,6 @@
   PB: Crop Rotation, Malevolent Rumble, Swords to Plowshares, Thespian's Stage
 
 --- Decision 27 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 5)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 52
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard | Urza's Saga [lore:2]
-  Opp BF:   Exploration | Savannah (T) | Thespian's Stage
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Exploration, Crop Rotation, Dark Depths, Thespian's Stage
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Urza's Saga (Token)  [#1]
@@ -631,19 +376,6 @@
   Searching Player A's library:
 
 --- Decision 28 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 51
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:3] (T,res 1) | Construct [4/4] (SICK,NEW)
-  Opp BF:   Exploration | Savannah (T) | Thespian's Stage
-  Stack: Urza's Saga (ability, self) [amt=1]
-  Pending: Urza's Saga (self)
-  Self GY: Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Exploration, Crop Rotation, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Expedition Map
@@ -657,17 +389,6 @@
   Urza's Saga is sacrificed (final chapter completed).
 
 --- Decision 29 ---
-  Priority: Player A (active)
-  Step: First Main (turn 5)
-  Self:  20 life | mana: empty | hand(1): Dark Depths | lib 50
-  Opp:   20 life | mana: empty | hand count: 3 | lib 50
-  Self BF:  Expedition Map (NEW) | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK,NEW)
-  Opp BF:   Exploration | Savannah (T) | Thespian's Stage
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Urza's Saga, Exploration, Crop Rotation, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Dark Depths
@@ -682,16 +403,6 @@
   PB: Crop Rotation, Malevolent Rumble, Swords to Plowshares
 
 --- Decision 30 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(3): Crop Rotation, Malevolent Rumble, Swords to Plowshares | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Exploration | Savannah | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Crop Rotation  [#0]
@@ -699,18 +410,6 @@
   >> B/B: 1 (Cast Crop Rotation)
 
 --- Decision 31 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Swords to Plowshares | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Exploration | Savannah | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Crop Rotation (spell, self)
-  Pending: Crop Rotation (self)
-  Self GY: Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Sacrifice Savannah
    1: Sacrifice Thespian's Stage
@@ -723,19 +422,6 @@
   Searching Player B's library:
 
 --- Decision 32 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 6)
-  Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Swords to Plowshares | lib 50
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Exploration | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Crop Rotation (spell, self)
-  Pending: Crop Rotation (self)
-  Self GY: Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 colors=G
-  Extras: self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Fail to find
    1: Ancient Tomb
@@ -761,17 +447,6 @@
   Player B draws Boseiju, Who Endures
 
 --- Decision 33 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(3): Boseiju, Who Endures, Malevolent Rumble, Swords to Plowshares | lib 48
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Dark Depths [ice:10] (NEW) | Exploration | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Boseiju, Who Endures
@@ -780,17 +455,6 @@
   Player B played Boseiju, Who Endures
 
 --- Decision 34 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(2): Malevolent Rumble, Swords to Plowshares | lib 48
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Boseiju, Who Endures (NEW) | Dark Depths [ice:10] (NEW) | Exploration | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Malevolent Rumble  [#0]
@@ -807,20 +471,6 @@
   Player B reveals Ancient Tomb from the top of their library.
 
 --- Decision 35 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(1): Swords to Plowshares | lib 48
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Boseiju, Who Endures (T,NEW) | Dark Depths [ice:10] (NEW) | Exploration | Thespian's Stage (T)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Stack: Malevolent Rumble (spell, self)
-  Pending: Malevolent Rumble (self)
-  Self GY: Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known top: Grafdigger's Cage, Exploration, Urza's Saga, Ancient Tomb, ?
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, self_mulligans=1
   Actions:
    0: Take nothing (rest go into the graveyard)
    1: Grafdigger's Cage
@@ -837,17 +487,6 @@
   Token created: 0/1 Eldrazi Spawn
 
 --- Decision 36 ---
-  Priority: Player B (active)
-  Step: First Main (turn 6)
-  Self:  20 life | mana: empty | hand(2): Grafdigger's Cage, Swords to Plowshares | lib 44
-  Opp:   20 life | mana: empty | hand count: 0 | lib 50
-  Self BF:  Boseiju, Who Endures (T,NEW) | Dark Depths [ice:10] (NEW) | Exploration | Thespian's Stage (T) | Eldrazi Spawn [0/1] (SICK,NEW)
-  Opp BF:   Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] (SICK)
-  Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Dark Depths, Mox Diamond
-  This turn: self spells=2 noncreature=2 instant_sorcery=2 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Grafdigger's Cage  [#0]
@@ -865,16 +504,6 @@
   PB: Grafdigger's Cage, Swords to Plowshares
 
 --- Decision 37 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 50
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -883,34 +512,12 @@
   Player A draws Malevolent Rumble
 
 --- Decision 38 ---
-  Priority: Player A (active)
-  Step: Draw (turn 7)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 49
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
   >> A/A: 0 (Pass priority)
 
 --- Decision 39 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(1): Malevolent Rumble | lib 49
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond | Mox Diamond | Skateboard | Construct [5/5]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Malevolent Rumble  [#0]
@@ -929,20 +536,6 @@
   Player A reveals Urza's Saga from the top of their library.
 
 --- Decision 40 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 49
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Stack: Malevolent Rumble (spell, self)
-  Pending: Malevolent Rumble (self)
-  Self GY: Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Known top: Malevolent Rumble, Thespian's Stage, Ancient Tomb, Urza's Saga, ?
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Take nothing (rest go into the graveyard)
    1: Thespian's Stage
@@ -958,17 +551,6 @@
   Token created: 0/1 Eldrazi Spawn
 
 --- Decision 41 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(1): Thespian's Stage | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [5/5] | Eldrazi Spawn [0/1] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Thespian's Stage
@@ -978,17 +560,6 @@
   Player A played Thespian's Stage
 
 --- Decision 42 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Expedition Map | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (NEW) | Construct [5/5] | Eldrazi Spawn [0/1] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Expedition Map (ChangeZone)  [#0]
@@ -1005,19 +576,6 @@
   Searching Player A's library:
 
 --- Decision 43 ---
-  Priority: Player A (active)
-  Step: First Main (turn 7)
-  Self:  20 life | mana: empty | hand(0): (empty) | lib 45
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T,NEW) | Construct [4/4]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Stack: Expedition Map (ability, self) [amt=1]
-  Pending: Expedition Map (self)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Fail to find
    1: Blast Zone
@@ -1041,17 +599,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 44 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(1): Urza's Saga | lib 44
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T,NEW) | Construct [4/4]
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [4/4]
    1: Confirm attackers
@@ -1062,17 +609,6 @@
     [attacking] Construct token [4/4] -> Player B
 
 --- Decision 45 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 7)
-  Self:  20 life | mana: empty | hand(1): Urza's Saga | lib 44
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T,NEW) | Construct [4/4] (ATK)
-  Opp BF:   Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage (T)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)
@@ -1090,18 +626,6 @@
   PB: Ghost Quarter, Swords to Plowshares
 
 --- Decision 46 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(2): Ghost Quarter, Swords to Plowshares | lib 43
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures | Dark Depths [ice:10] | Exploration | Grafdigger's Cage | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T) | Construct [4/4] (T)
-  Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Urza's Saga
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Ghost Quarter
@@ -1110,18 +634,6 @@
   Player B played Ghost Quarter
 
 --- Decision 47 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures | Dark Depths [ice:10] | Exploration | Ghost Quarter (NEW) | Grafdigger's Cage | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T) | Construct [4/4] (T)
-  Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Urza's Saga
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Dark Depths (RemoveCounter)  [#0]
@@ -1132,20 +644,6 @@
   Choose target for Thespian's Stage:
 
 --- Decision 48 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures | Dark Depths [ice:10] | Exploration | Ghost Quarter (NEW) | Grafdigger's Cage | Thespian's Stage
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T) | Construct [4/4] (T)
-  Stack: Thespian's Stage (ability, self)
-  Pending: Thespian's Stage (self)
-  Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Urza's Saga
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Dark Depths
    1: Thespian's Stage
@@ -1164,18 +662,6 @@
   Legend rule: Player B controls 2 copies of Dark Depths; choose one to keep.
 
 --- Decision 49 ---
-  Priority: Player B (active)
-  Step: First Main (turn 8)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   20 life | mana: empty | hand count: 1 | lib 44
-  Self BF:  Boseiju, Who Endures (T) | Dark Depths [ice:10] | Exploration | Ghost Quarter (T,NEW) | Grafdigger's Cage | Dark Depths (T)
-  Opp BF:   Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Thespian's Stage (T) | Construct [4/4] (T)
-  Self GY: Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Known opp hand: Urza's Saga
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, self_mulligans=1
   Actions:
    0: Keep Dark Depths
    1: Keep Dark Depths
@@ -1193,16 +679,6 @@
   PB: Swords to Plowshares
 
 --- Decision 50 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(1): Urza's Saga | lib 44
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Dark Depths [ice:10] | Mox Diamond | Mox Diamond | Skateboard | Thespian's Stage | Construct [4/4]
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Dark Depths (RemoveCounter)  [#0]
@@ -1212,18 +688,6 @@
   Choose target for Thespian's Stage:
 
 --- Decision 51 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(1): Urza's Saga | lib 44
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Dark Depths [ice:10] | Mox Diamond | Mox Diamond | Skateboard | Thespian's Stage | Construct [4/4]
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Thespian's Stage (ability, self)
-  Pending: Thespian's Stage (self)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Boseiju, Who Endures
    1: Ghost Quarter
@@ -1240,16 +704,6 @@
   Legend rule: Player A controls 2 copies of Dark Depths; choose one to keep.
 
 --- Decision 52 ---
-  Priority: Player A (active)
-  Step: Upkeep (turn 9)
-  Self:  20 life | mana: empty | hand(1): Urza's Saga | lib 44
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Dark Depths [ice:10] | Mox Diamond (T) | Mox Diamond (T) | Skateboard | Dark Depths (T) | Construct [4/4]
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  Extras: not_priority_window, opp_mulligans=1
   Actions:
    0: Keep Dark Depths
    1: Keep Dark Depths
@@ -1263,17 +717,6 @@
   Player A draws Sphere of Resistance
 
 --- Decision 53 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(2): Sphere of Resistance, Urza's Saga | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Construct [4/4] | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Urza's Saga
@@ -1286,17 +729,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 54 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [4/4] | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Skateboard  [#0]
@@ -1305,19 +737,6 @@
   Choose target for Skateboard:
 
 --- Decision 55 ---
-  Priority: Player A (active)
-  Step: First Main (turn 9)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard | Urza's Saga [lore:1] (NEW,res 1) | Construct [4/4] | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Skateboard (ability, self)
-  Pending: Skateboard (self)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1
   Actions:
    0: Construct token
    1: Marit Lage token
@@ -1332,17 +751,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 56 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 9)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T,NEW,res 1) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, self_revolt, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [5/4]
    1: Confirm attackers
@@ -1356,16 +764,6 @@
   PB: Swords to Plowshares
 
 --- Decision 57 ---
-  Priority: Player B (active)
-  Step: Upkeep (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 43
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Ghost Quarter (Destroy)  [#1]
@@ -1374,34 +772,12 @@
   Player B draws Life from the Loam
 
 --- Decision 58 ---
-  Priority: Player B (active)
-  Step: Draw (turn 10)
-  Self:  16 life | mana: empty | hand(2): Life from the Loam, Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Activate Ghost Quarter (Destroy)  [#1]
   >> B/B: 0 (Pass priority)
 
 --- Decision 59 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(2): Life from the Loam, Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Cast Life from the Loam  [#0]
@@ -1411,19 +787,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 60 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Done selecting targets
    1: Ancient Tomb
@@ -1437,19 +800,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 61 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Done selecting targets
    1: Ancient Tomb
@@ -1463,19 +813,6 @@
   Choose target for Life from the Loam:
 
 --- Decision 62 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures | Exploration | Ghost Quarter | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Stack: Life from the Loam (spell, self)
-  Pending: Life from the Loam (self)
-  Self GY: Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Urza's Saga, Exploration, Crop Rotation, Savannah, Urza's Saga, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self drawn=1
-  Extras: not_priority_window, self_mulligans=1
   Actions:
    0: Done selecting targets
    1: Ancient Tomb
@@ -1493,17 +830,6 @@
   Urza's Saga is moved to hand
 
 --- Decision 63 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(3): Swords to Plowshares, Urza's Saga, Urza's Saga | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Urza's Saga
@@ -1517,17 +843,6 @@
   Urza's Saga gains an activated ability.
 
 --- Decision 64 ---
-  Priority: Player B (active)
-  Step: First Main (turn 10)
-  Self:  16 life | mana: empty | hand(2): Swords to Plowshares, Urza's Saga | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=1, self_mulligans=1
   Actions:
    0: Pass priority
    1: Play Urza's Saga
@@ -1541,17 +856,6 @@
   --- Declare Attackers (Player B) ---
 
 --- Decision 65 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=2, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Marit Lage token [20/20]
    1: Confirm attackers
@@ -1562,17 +866,6 @@
     [attacking] Marit Lage token [20/20] -> Player A
 
 --- Decision 66 ---
-  Priority: Player B (active)
-  Step: Declare Atk (turn 10)
-  Self:  16 life | mana: empty | hand(1): Swords to Plowshares | lib 42
-  Opp:   20 life | mana: empty | hand count: 1 | lib 43
-  Self BF:  Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible] (ATK)
-  Opp BF:   Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Self GY: Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp GY:  Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp revealed: Wasteland, Ancient Tomb, Expedition Map, Urza's Saga, Skateboard, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage, Mox Diamond
-  This turn: self spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: self_lands_played=2, not_priority_window, self_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> B/B: 0 (Confirm attackers)
@@ -1585,17 +878,6 @@
   Your creatures:
 
 --- Decision 67 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=2, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Marit Lage token [20/20]
    1: Confirm blockers
@@ -1604,18 +886,6 @@
   Select attacker for Marit Lage token to block:
 
 --- Decision 68 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (SICK)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK)
-  Pending: Token (self)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=2, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Marit Lage token [20/20]
   >> A/A: 0 (Marit Lage token [20/20])
@@ -1628,17 +898,6 @@
     (assigned) Marit Lage token [20/20] blocking Marit Lage token
 
 --- Decision 69 ---
-  Priority: Player A (non-active)
-  Step: Declare Blk (turn 10)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 43
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:1] (T) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] (BLK->Token,SICK)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] (NEW,res 1) | Urza's Saga [lore:1] (NEW,res 1) | Marit Lage [20/20] [Flying, Indestructible] (T,ATK,BLOCKED)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: opp spells=1 noncreature=1 instant_sorcery=1 drawn=1 colors=G
-  Extras: opp_lands_played=2, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Blk
   Actions:
    0: Confirm blockers
   >> A/A: 0 (Confirm blockers)
@@ -1660,17 +919,6 @@
   PB: Swords to Plowshares
 
 --- Decision 70 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  20 life | mana: empty | hand(2): Rishadan Port, Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond | Mox Diamond | Skateboard (->Construct) | Urza's Saga [lore:2] (res 1) | Construct [5/4] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible]
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Rishadan Port
@@ -1687,17 +935,6 @@
   Construct token gains (always)
 
 --- Decision 71 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  20 life | mana: empty | hand(2): Rishadan Port, Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] | Construct [5/5] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: opp_mulligans=1
   Actions:
    0: Pass priority
    1: Play Rishadan Port
@@ -1706,17 +943,6 @@
   Player A played Rishadan Port
 
 --- Decision 72 ---
-  Priority: Player A (active)
-  Step: First Main (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Rishadan Port (NEW) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] | Construct [5/5] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, opp_mulligans=1
   Actions:
    0: Pass priority
    1: Equip Skateboard  [#0]
@@ -1725,17 +951,6 @@
   --- Declare Attackers (Player A) ---
 
 --- Decision 73 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Rishadan Port (NEW) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) | Marit Lage [20/20] [Flying, Indestructible] | Construct [5/5] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Construct token [6/5]
    1: Marit Lage token [20/20]
@@ -1747,17 +962,6 @@
     [attacking] Construct token [6/5] -> Player B
 
 --- Decision 74 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Rishadan Port (NEW) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Marit Lage [20/20] [Flying, Indestructible] | Construct [5/5] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Marit Lage token [20/20]
    1: Confirm attackers
@@ -1769,17 +973,6 @@
     [attacking] Marit Lage token [20/20] -> Player B
 
 --- Decision 75 ---
-  Priority: Player A (active)
-  Step: Declare Atk (turn 11)
-  Self:  20 life | mana: empty | hand(1): Sphere of Resistance | lib 42
-  Opp:   16 life | mana: empty | hand count: 1 | lib 42
-  Self BF:  Mox Diamond (T) | Mox Diamond (T) | Rishadan Port (NEW) | Skateboard (->Construct) | Urza's Saga [lore:2] (T,res 1) | Construct [6/5] [Haste] (eq:Skateboard) (ATK) | Marit Lage [20/20] [Flying, Indestructible] (ATK) | Construct [5/5] (SICK,NEW)
-  Opp BF:   Boseiju, Who Endures (T) | Exploration | Ghost Quarter (T) | Grafdigger's Cage | Urza's Saga [lore:1] | Urza's Saga [lore:1] | Marit Lage [20/20] [Flying, Indestructible] (T)
-  Self GY: Thespian's Stage, Dark Depths, Expedition Map, Malevolent Rumble, Urza's Saga, Ancient Tomb, Malevolent Rumble, Urza's Saga, Wasteland, Boseiju, Who Endures, Urza's Saga, Dark Depths
-  Opp GY:  Life from the Loam, Thespian's Stage, Dark Depths, Malevolent Rumble, Ancient Tomb, Exploration, Crop Rotation, Savannah, Crop Rotation, Savannah, Dark Depths
-  Opp revealed: Savannah, Life from the Loam, Grafdigger's Cage, Ancient Tomb, Ghost Quarter, Urza's Saga, Exploration, Crop Rotation, Boseiju, Who Endures, Malevolent Rumble, Dark Depths, Thespian's Stage
-  This turn: self drawn=1
-  Extras: self_lands_played=1, not_priority_window, opp_mulligans=1, mandatory_choice=Declare Atk
   Actions:
    0: Confirm attackers
   >> A/A: 0 (Confirm attackers)

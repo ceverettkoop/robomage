@@ -1,0 +1,22 @@
+{
+  "name": "state_format_events_brainstorm_put_back_hidden",
+  "why": "docs/state_format.md §5 identity references / CR 402.3, 401.2: Brainstorm's put-back is a hidden-to-hidden move with no reveal, so the opponent's events say only that two unknown cards from A's hand went to the top of A's library, while the caster's carry each card's handle, identity and position (step 1 T4 observation events, --trace-events)",
+  "engine_flags": ["--trace-events"],
+  "hand_a": ["Island", "Brainstorm", "Ponder", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Island"],
+  "library_a": ["Lightning Bolt", "Daze", "Force of Will", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Brainstorm", "A:desc:Force of Will", "A:desc:Daze"],
+  "max_decisions": 8,
+  "expect_order": [
+    "^EVENT: B seq=\\d+ t0 cast_from_hidden hand:A -> stack:A count=1 \\[h0>h\\d+ Brainstorm\\]$",
+    "^EVENT: B seq=\\d+ t0 draw player=A library:A -> hand:A count=1 src=h\\d+ src=Brainstorm \\[h0>h0 \\? from=top0\\]$",
+    "^EVENT: A seq=\\d+ t0 zone_move hand:A -> library:A count=1 src=h\\d+ src=Brainstorm \\[h\\d+>h0 Force of Will to=top0\\]$",
+    "^EVENT: B seq=\\d+ t0 zone_move hand:A -> library:A count=1 src=h\\d+ src=Brainstorm \\[h0>h0 \\? to=top0\\]$",
+    "^EVENT: A seq=\\d+ t0 zone_move hand:A -> library:A count=1 src=h\\d+ src=Brainstorm \\[h\\d+>h0 Daze to=top0\\]$",
+    "^EVENT: B seq=\\d+ t0 zone_move hand:A -> library:A count=1 src=h\\d+ src=Brainstorm \\[h0>h0 \\? to=top0\\]$"
+  ],
+  "expect_count": {"^EVENT: B .* zone_move hand:A -> library:A ": 2},
+  "expect_not": ["^EVENT: B .*(Lightning Bolt|Daze|Force of Will)", "^EVENT: B .* (look|reveal_start) "]
+}

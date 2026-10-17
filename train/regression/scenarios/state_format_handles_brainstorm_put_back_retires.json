@@ -1,0 +1,31 @@
+{
+  "name": "state_format_handles_brainstorm_put_back_retires",
+  "why": "docs/state_format.md §6 / CR 400.7: Brainstorm's put-back is a hidden-to-hidden move with no look, so the caster's handles for the two cards retire as they leave the hand and nothing links them into the library; Ponder's look then issues fresh handles, and the opponent never holds one for either (step 1 T2 handles, --trace-handles)",
+  "engine_flags": ["--trace-handles"],
+  "hand_a": ["Island", "Brainstorm", "Ponder", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Island"],
+  "library_a": ["Lightning Bolt", "Daze", "Force of Will", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Brainstorm", "A:desc:Force of Will", "A:desc:Daze",
+           "A:cast:Ponder"],
+  "max_decisions": 10,
+  "expect_order": [
+    "Player A casts Brainstorm",
+    "^Player A draws Force of Will",
+    "^HANDLE: issue A h\\d+ hand:A Force of Will$",
+    "^HANDLE: retire A h\\d+ hand:A Force of Will \\(zone change\\)$",
+    "^Player A puts Force of Will to top of library",
+    "^HANDLE: retire A h\\d+ hand:A Daze \\(zone change\\)$",
+    "^Player A puts Daze to top of library",
+    "Player A casts Ponder",
+    "^HANDLE: issue A h\\d+ library:A@0 Daze$",
+    "^HANDLE: issue A h\\d+ library:A@1 Force of Will$"
+  ],
+  "expect_not": [
+    "^HANDLE: link A h\\d+ -> h\\d+ library:A",
+    "^HANDLE: issue B h\\d+ (hand|library):A",
+    "^HANDLES: B .*(hand|library):A"
+  ],
+  "expect_unique": ["^HANDLE: (?:issue (A|B) (h\\d+)|link (A|B) h\\d+ -> (h\\d+)) "]
+}

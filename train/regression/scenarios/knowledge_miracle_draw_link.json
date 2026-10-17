@@ -1,0 +1,66 @@
+{
+  "name": "knowledge_miracle_draw_link",
+  "why": "docs/knowledge_store.md \u00a75 reveal_start draw link / \u00a77 sharpness (register 36): B's Cabal Therapy shows A's hand with one Triumph of Saint Katherine; A then draws a card B cannot see and reveals a Triumph for its miracle cost, a reveal that names the card just drawn (CR 702.94a), so B knows both Triumphs are in A's hand (a reveal of an unlinked Triumph could be the one already known, leaving one) (step 1 T12 sharpness)",
+  "hand_a": [
+    "Triumph of Saint Katherine",
+    "Ponder",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "battlefield_a": [
+    "Plains",
+    "Plains"
+  ],
+  "library_a": [
+    "Triumph of Saint Katherine",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains",
+    "Plains"
+  ],
+  "hand_b": [
+    "Cabal Therapy",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "battlefield_b": [
+    "Swamp"
+  ],
+  "library_b": [
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp",
+    "Swamp"
+  ],
+  "play": [
+    "A:keep",
+    "B:keep",
+    "B:cast:Cabal Therapy",
+    "B:target:Player A",
+    "B:choice:Ponder",
+    "A:desc:for its miracle cost"
+  ],
+  "max_decisions": 11,
+  "expect_dump": [
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=7: Plains 5-6, Triumph of Saint Katherine 1-2$"
+  ],
+  "expect_dump_final": [
+    "^B d=\\d+ \\S+ \\S+ known_hand Triumph of Saint Katherine x2$",
+    "^B d=\\d+ \\S+ \\S+ pool opp hand size=7: Plains 5-5, Triumph of Saint Katherine 2-2$"
+  ]
+}
