@@ -53,6 +53,7 @@ extern bool log_decisions_flag;
 extern bool broadcast_steps_mode;
 extern bool trace_visibility;
 extern bool trace_handles;
+extern bool trace_events;
 extern bool closed_decklist;
 extern std::string rmstate_dump_path;
 extern std::vector<std::string> battlefield_a_cards;

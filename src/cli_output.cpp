@@ -258,6 +258,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --trace-handles     Print each viewer's handle table at every decision and\n");
     printf("                      narrate handles as they are issued, linked and retired\n");
     printf("                      (HANDLES: / HANDLE: lines in the game log; a debugging aid)\n");
+    printf("  --trace-events      Narrate each observation event as it is queued, per\n");
+    printf("                      viewer (EVENT: lines in the game log; a debugging aid)\n");
     printf("  --rmstate-dump <file>  Write every viewer's (A, B, omniscient) RMSTATE frames\n");
     printf("                      to <file> at each decision (%%p in <file> = the process\n");
     printf("                      id); the normal protocol is unchanged\n");
@@ -273,7 +275,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --replay are ignored with a warning. Output flags\n");
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
     printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
-    printf("                      --rmstate-dump)\n");
+    printf("                      --trace-events, --rmstate-dump)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");

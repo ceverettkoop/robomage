@@ -6,7 +6,8 @@ Status: **step-1a spec, decisions closed** (register in section 11). Companions:
 visibility and reveal windows (`src/queries/visibility.*`), handles
 (`src/state_format/handles.*`), the schema and the encoder for the snapshot and once-per-match
 frames (`src/state_format/schema.*`, `enum_names.*`, `encode.*`) with `--rmstate-dump`
-(`dump.*`). Events, the decoders and the knowledge sidecar are not yet.
+(`dump.*`), and the observation events (`src/state_format/events.*`). The decoders and the
+knowledge sidecar are not yet.
 
 RMSTATE replaces the float state vector (BQUERY). The engine sends it to whoever makes a
 decision: an in-process agent, the C++ CLI, or an external machine agent over `--machine`.
@@ -148,6 +149,9 @@ All of these are actor-side (section 7).
   game-boundary event.
 - Every event carries `seq`: per viewer, 1 at match start, +1 per event, never reset within
   the match. A gap means a lost event; decoders refuse it.
+- Events are recorded only while someone consumes them (a frame writer such as `--rmstate-dump`,
+  or `--trace-events`); otherwise nothing is queued and play, the RNG and BQUERY are the same
+  either way.
 
 Each event carries **only what was explicit to that viewer at that instant**, projected through
 the same visibility rules as the snapshot.
@@ -173,17 +177,17 @@ closes the batch with the range.
 |---|---|
 | every event | `seq`; `turn` (the game turn it happened in); source object of the effect (handle, else card id) where there is one |
 | `zone_move` | one card. From zone/owner, plus its position if from a library, plus its hand subset if from a hand (`drawn_this_turn` when the instruction may only choose among cards drawn this turn, e.g. Sylvan Library's put-back; else `any`); to zone/owner, plus its position (or `batch`) if into a library; handle before/after if identifiable (a face-down public object keeps a handle); card id if identifiable; face-down flag (exiled face down); token/copy flag. Zone `none` = created (token, spell copy, harness preset) or ceased to exist |
-| `draw` | player, count, opening-hand flag (opening-hand and mulligan draws are not draws for "drawn this turn"); per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window |
+| `draw` | player, count, opening-hand flag (opening-hand and mulligan draws are not draws for "drawn this turn"); per card: handle after and card id for the drawer; for another viewer, handle before and card id only if the card was in that viewer's live window. Each card drawn is its own `draw` event (count 1, so a draw link's index is 0), always from top 0 |
 | `library_place` | closes an order-hidden batch: batch, library owner, range (anchor, pos, count), order known (false) |
 | `reveal_start` / `reveal_end` | cards (handles, zone, owner, library positions, card ids), revealed to whom, source effect; per card, a draw link (`seq` of the `draw` event and the card's index in it) when the reveal shows a card as the one just drawn (e.g. Miracle). `reveal_end` also closes a look window. A window that ends because its card moved has no `reveal_end`; the move ends it |
-| `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it |
+| `look` | looker, zone/owner, count; per card: library position; identities and handles only for the looker. A search of another player's hidden zone is also a `look` at all of it. A non-looker gets each card's position when the look is at known positions (the top N, the whole library), and position unknown when the looker picked the card out by identity (a search's find, kept in view after the shuffle) |
 | `shuffle` | library owner |
 | `reorder` | library owner, range (anchor, pos, count), whether this viewer saw the result and, if so, the card at each position. No engine site today: rearrangements (Ponder, scry, surveil) are library → library `zone_move`s |
-| `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle` |
+| `search` | searcher, zone searched (library, sideboard, graveyard, hand), its owner, cards found. The cards that leave follow as `zone_move`s, a shuffle as `shuffle`. Emitted once the pick is made, per searched hidden zone (a library, a sideboard, another player's hand; a pick from the searcher's own hand, such as a put-back, is no search), with the cards found in that zone; the `look` at the searched zone comes first |
 | `cast_from_hidden` / `play_from_hidden` | a `zone_move` (same fields) from a hidden zone to the stack or battlefield; the card becomes identifiable here. A reversed proposal (CR 733.1) returns it with a `zone_move` that keeps its identity |
 | `face_down` / `face_up` | handle; identity at face-up. Exiling face down is a `zone_move` with the face-down flag; `face_down` is a public object turned face down where it is |
 | `game_start` | game number, starting player; per player library and sideboard counts. Emitted after the libraries are built and shuffled (after sideboarding in games 2–3), before the opening draws. Opening hands and mulligans arrive as `draw`, `zone_move` (hand → library, London bottoming to the bottom) and `shuffle` |
-| `game_end` / `match_end` | game number, winner (or draw); match wins per player |
+| `game_end` / `match_end` | game number, winner (or draw); match wins per player. `game_end` is queued when the game's loop ends, after the game's last events; `match_end` after the last `game_end` (a single game is a match of one game) |
 
 **Identity references in events.**
 - An event uses a handle when the viewer can identify the object at that instant.
@@ -196,6 +200,59 @@ closes the batch with the range.
   Brainstorm put-back: two unknown cards from B's hand go to the top of B's library, order
   hidden. The opponent's hand is unordered for the viewer, so the event cannot say *which* hand
   cards went back.
+
+**Implementation** (`src/state_format/events.{h,cpp}`; queues in `Game::obs_events`, one per
+viewer: A, B and omniscient). The engine calls `obs_*` hooks at its choke points: `Orderer`'s
+zone move (`move_object`, behind `add_to_zone`, `put_in_library_at_depth` and `perform_draw`), the
+cast move and its rewind, `shuffle_library`, object creation and cessation, the reveal-window opens
+and closes in `src/queries/visibility.cpp`, `search_zones`, `SetState`'s face turns and the game
+loop's boundaries. Each hook asks the visibility accessors once per viewer and queues that
+viewer's projected `ObsEvent`, which holds only those answers (no entity id). The next STATE frame
+built for the viewer drains its queue into `event` / `event_card` / `event_player`.
+`--trace-events` narrates each event as it is queued (`EVENT:` lines).
+- **Lifetime.** The queues and seq counters are carried over the per-game `Game` reset into the
+  next game of a bo3 match (the first game of a match starts fresh), so events not yet delivered
+  reach the viewer's next frame: a sideboarding frame, or the next game's first frame. Nothing
+  follows the final `game_end` / `match_end`, so they stay queued unless a writer emits a frame at
+  match end.
+- **Zone moves.** A move of a card, token or spell copy (an ability's stack object is not
+  reported). Kind `cast_from_hidden` for a move from a hidden zone (hand, library, sideboard, face
+  down in exile) to the stack, `play_from_hidden` to the battlefield, else `zone_move`; count 1.
+  `handle_before` is the handle the viewer held for the object (0 if none: a handle is never
+  issued just to be retired), `handle_after` the new object's handle for every viewer who can
+  identify it; the card id is given when the viewer saw the identity before or after the move.
+  Zone `none` (0xFF) as the origin: a token (built in its controller's hand zone and moved onto the
+  battlefield), a spell copy created on the stack, a test-harness preset (after `game_start`); as
+  the destination, a token or copy ceasing to exist.
+- **Library positions.** A destination is exact (the instruction says top, bottom or a depth). A
+  source is exact for a viewer who sees the card's identity, and when nobody has a window on the
+  card (a draw, a mill: the instruction names the position). A card in a window another player
+  has is one of the cards in such windows in its library (`library_position_seen_by`,
+  `src/queries/visibility.h`): the span covers their positions, which the viewer knows because
+  those windows opened on known positions and every move since was reported; a card in a window
+  opened on it by identity (`look_at_found_card`) is anywhere. "Anywhere" is anchor top, pos 0,
+  span 0; "not in a library" is anchor 0xFF, pos 0xFFFF, span 0.
+- **Batches.** An instruction that puts several cards into a library in an order some seat did not
+  see opens a batch (`ObsLibraryBatch`): Dig's unchosen rest, `ChangeZoneAll` into a library, and
+  `DigUntil`'s revealed cards. Every seat other than the player who orders them is batched (both
+  seats for a random order); the omniscient viewer never is. For a batched viewer every card the
+  instruction puts into that library carries the batch and no destination, identifiable or not,
+  and the batch's `library_place` gives the range they occupy afterwards.
+- **Reveals.** Each opening call reports its new windows as one `reveal_start` (or `look`) per
+  zone, to every viewer; a window that was already open is not reported again. `reveal_end` is
+  reported, per zone and audience to each viewer the windows were shown to, for windows that end
+  at a resolution's end or a shuffle; one that ends because its card moved or was turned face up
+  has none. `reveal_start` / `look` carry the card's handle in `handle_after`, `reveal_end` in
+  `handle_before`, `face_up` / `face_down` in both.
+- **Source.** The object resolving when the event happens: a spell, or the source of a resolving
+  ability while it is still that object (handle and card id, else its card id only); none outside
+  a resolution.
+- **Turn.** The game's turn counter (`Game::turn_state.turn`): 0 during the pregame and the first
+  turn.
+- `reorder` has no engine site (rearrangements are library → library `zone_move`s), and
+  `face_down` only `SetState`'s `TurnFaceDown`, which no vocab card uses. The search server's
+  determinizer moves hidden cards without events; events are not meant to be consumed under
+  `--search-server`.
 
 ## 6. Handles
 
@@ -683,7 +740,8 @@ computes neither outside its legal-action enumeration.
 
 ### A.6 Events and knowledge (`STATE` frame)
 
-Defined in the schema; the encoder emits none of these tables yet (events: T4, knowledge: T11).
+The encoder emits the event tables (`src/state_format/events.*`, §5); the knowledge tables are
+defined but not emitted yet (T11).
 
 | Table (id) | Column | Type | Tag | Range / notes |
 |---|---|---|---|---|
@@ -692,7 +750,7 @@ Defined in the schema; the encoder emits none of these tables yet (events: T4, k
 | | `player` | seat | | drawer, looker, searcher, shuffler, starting player, winner (none = draw) |
 | | `zone`, `to_zone` | u8 | `enum:zone` | from / looked / searched zone; destination. 0xFF = `none` (created, ceased) |
 | | `zone_owner`, `to_owner` | seat | | |
-| | `count` | u16 | `count` | cards drawn / looked at / found; batch size |
+| | `count` | u16 | `count` | cards drawn (1) / looked at / found; batch size; 1 for a `zone_move` |
 | | `range` | libpos | | look, `library_place`, `reorder` |
 | | `order_known` | u8 | `bool` | `library_place`, `reorder` |
 | | `batch` | u16 | `index` | 0 = none |
@@ -705,10 +763,10 @@ Defined in the schema; the encoder emits none of these tables yet (events: T4, k
 | `event_card` (81) | `event` | u32 | `row:event` | |
 | | `handle_before`, `handle_after` | u32 | `handle` | |
 | | `card` | u16 | `card` | |
-| | `from` | libpos | | from a library |
-| | `to` | libpos | | into a library; `to_pos` 0xFFFF = in a batch |
+| | `from` | libpos | | from a library; for `reveal_start`, `look`, `reveal_end` the card's library position |
+| | `to` | libpos | | into a library; anchor 0xFF, `to_pos` 0xFFFF = none (not into a library, or in a batch: the event's `batch`) |
 | | `face_down`, `token` | u8 | `bool` | token = token or spell copy |
-| | `hand_subset` | u8 | `enum:hand_subset` | `zone_move` from a hand: any, drawn_this_turn |
+| | `hand_subset` | u8 | `enum:hand_subset` | `zone_move` from a hand: any, drawn_this_turn; 0xFF for any other card |
 | | `draw_seq` | u32 | `index` | `reveal_start`: `seq` of the `draw` that brought this card; 0 = none |
 | | `draw_idx` | u16 | `index` | its index among that draw's cards |
 | `event_player` (82) | `event` | u32 | `row:event` | `game_start`, `game_end`, `match_end` |

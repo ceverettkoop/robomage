@@ -19,6 +19,7 @@
 #include "../queries/players.h"
 #include "../queries/visibility.h"
 #include "../stable_rng.h"
+#include "../state_format/events.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 
@@ -317,8 +318,12 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
     bool rest_on_bottom = dig_rest_on_bottom(ab);
-    for (auto e : remaining) {
-        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, top_view);
+    {
+        // Put back in an order only the looker sees (or, in a random order, nobody).
+        ObsLibraryBatch batch(dig_owner, ab.def->rest_random_order ? Zone::UNKNOWN : looker);
+        for (auto e : remaining) {
+            orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY, top_view);
+        }
     }
     game_log("%s puts %zu card(s) on the %s of %s library.\n", actor_name.c_str(), remaining.size(),
              rest_on_bottom ? "bottom" : "top", owner_poss.c_str());

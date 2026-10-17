@@ -137,6 +137,9 @@ static bool description_hides_identity(const Ctx &c, const LegalAction &la);
 static uint16_t cast_variant_mask(const LegalAction &la);
 static void write_match(const Ctx &c);
 static void write_own_deck(const Ctx &c);
+static void write_events(const Ctx &c, const std::vector<ObsEvent> &events);
+static void put_libpos(Row &r, const ObsLibPos &p);
+static uint64_t zone_or_none(int zone);
 static rmstate::Duration effect_duration(bool until_your_next_turn);
 
 // ── Small helpers ─────────────────────────────────────────────────────────────────────────────
@@ -1297,8 +1300,8 @@ std::string encode_decklists_frame(Zone::Ownership viewer) {
     return w.finish();
 }
 
-std::string encode_state_frame(
-    Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider) {
+std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
+    const std::vector<ObsEvent> &events) {
     const Zone::Ownership v = viewer_key(viewer);
     FrameWriter w(FrameKind::STATE, frame_viewer(v), rmstate_schema_hash());
     const Ctx c{v, is_seat(v) ? v : Zone::PLAYER_A, w};
@@ -1372,5 +1375,52 @@ std::string encode_state_frame(
     if (!is_seat(v) || v == decider) write_menu(c, actions);
     write_match(c);
     write_own_deck(c);
+    write_events(c, events);
     return w.finish();
+}
+
+// ── Events (A.6) ──────────────────────────────────────────────────────────────────────────────
+
+static void put_libpos(Row &r, const ObsLibPos &p) {
+    r.u8(p.anchor).u16(p.pos).u16(p.span);
+}
+
+static uint64_t zone_or_none(int zone) {
+    return zone < 0 ? NONE8 : static_cast<uint64_t>(zone);
+}
+
+// The viewer's events in queue order: one event row each, then its cards and players as child rows
+// naming the event's row.
+static void write_events(const Ctx &c, const std::vector<ObsEvent> &events) {
+    for (const ObsEvent &ev : events) {
+        Row r = c.w.row(TableId::EVENT);
+        r.u32(ev.seq).u8(static_cast<uint64_t>(ev.kind));
+        put_seat(r, ev.player, c.self);
+        r.u8(zone_or_none(ev.zone)).u8(zone_or_none(ev.to_zone));
+        put_seat(r, ev.zone_owner, c.self);
+        put_seat(r, ev.to_owner, c.self);
+        r.u16(ev.count);
+        put_libpos(r, ev.range);
+        r.u8(ev.order_known ? 1 : 0).u16(ev.batch);
+        put_seat(r, ev.to, c.self);
+        r.u32(ev.source).u16(card_or_none(ev.source_card)).u16(ev.turn).u8(ev.opening ? 1 : 0).u8(ev.game);
+    }
+    for (size_t i = 0; i < events.size(); ++i) {
+        for (const ObsEventCard &card : events[i].cards) {
+            Row r = c.w.row(TableId::EVENT_CARD);
+            r.u32(i).u32(card.handle_before).u32(card.handle_after).u16(card_or_none(card.card));
+            put_libpos(r, card.from);
+            put_libpos(r, card.to);
+            r.u8(card.face_down ? 1 : 0).u8(card.token ? 1 : 0).u8(card.hand_subset);
+            r.u32(card.draw_seq).u16(card.draw_idx);
+        }
+    }
+    for (size_t i = 0; i < events.size(); ++i) {
+        for (const ObsEventPlayer &p : events[i].players) {
+            Row r = c.w.row(TableId::EVENT_PLAYER);
+            r.u32(i);
+            put_seat(r, p.player, c.self);
+            r.u16(p.library).u16(p.sideboard).u8(p.wins);
+        }
+    }
 }

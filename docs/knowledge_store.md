@@ -133,19 +133,19 @@ enter or leave above them and converts between top and bottom.
 |---|---|
 | `game_start` | new networks: deck node from the root (section 3.2); library pool = the stated library count of units from it; the rest of the main deck is a set-aside pool (test-harness presets, which arrive as `zone_move` from `none`); sideboard pool = the stated sideboard count (games 2–3: the registered 75 split, unknown to the opponent). Hands start empty |
 | `draw` (own) | known cards leave the top of own library one at a time; positions shift; known-position facts move up |
-| `draw` (opponent) | k anonymous units move from the top of their library into the hand pool. A known top card becomes a known card in hand; a card in the viewer's live window arrives with its identity. Unless the opening-hand flag is set, the units also join the hand's **drawn-this-turn** sub-pool for the event's `turn`; a unit leaves it when it leaves the hand, and the sub-pool empties when `turn` advances |
+| `draw` (opponent) | an anonymous unit moves from the top of their library into the hand pool (each card drawn is its own `draw` event). A known top card becomes a known card in hand; a card in the viewer's live window arrives with its identity. Unless the opening-hand flag is set, the units also join the hand's **drawn-this-turn** sub-pool for the event's `turn`; a unit leaves it when it leaves the hand, and the sub-pool empties when `turn` advances |
 | `zone_move` to a public zone | pin the identity on the source pool (at the stated library position or range; e.g. a card cast from hand proves the hand held it), then remove the unit |
 | `zone_move` public → hidden with handle | a unit with known identity enters the destination at the stated position (a bounce to hand: known card in hand) |
 | `zone_move` from a hand with subset `drawn_this_turn` | as the matching rule below, but the unit comes from the hand's drawn-this-turn sub-pool, so the rest of the hand (e.g. cards known from an earlier reveal) is untouched (Sylvan Library) |
 | `zone_move` hidden → hidden, no identity | one anonymous unit leaves the source pool and enters the destination at the stated position (a Brainstorm put-back: the top k of their library are units from the hand pool). From a library range of span > 1, those positions first merge into one unordered pool (the opponent's scry: which looked-at card went where is unknown) |
-| `zone_move` in a batch | as above, but the destination position waits for the batch's `library_place` |
+| `zone_move` in a batch | as above, but the destination position waits for the batch's `library_place`. Every card the instruction put into that library is in the batch for the viewer, identified or not |
 | `zone_move` of a token or copy | no unit; nothing changes |
 | `zone_move` from `none` of a card | a set-aside unit (harness preset) is pinned and placed |
 | `library_place` | the batch's units occupy the stated range; since their order is hidden, the range becomes one unordered pool holding them (known identities pinned as pool contents) |
 | `reveal_start` | pin the identities at the stated zone and positions. A card with a draw link pins the unit that draw brought in, and so the library position it was drawn from (Miracle) |
 | `reveal_end` | nothing to forget: recall keeps the pinned facts; visibility ends but knowledge stays |
 | `look` (by the viewer) | pin identities at positions |
-| `look` (by the opponent) | no identity; marks that the opponent knows those positions (for agents; no constraint) |
+| `look` (by the opponent) | no identity; marks that the opponent knows those positions (for agents; no constraint). A card's position is unknown (span 0) when the opponent looked at it by identity (a search's find after the shuffle) |
 | `reorder` | the reordered range becomes one unordered pool, unless the viewer saw the result (then each position is pinned) |
 | `shuffle` | all positions of that library merge into one unordered remainder pool; position facts are dropped; contents facts are kept |
 | `search` | nothing by itself (a look at the whole zone, when there is one, comes as `look`); the cards leave as `zone_move`s, usually followed by a `shuffle` |

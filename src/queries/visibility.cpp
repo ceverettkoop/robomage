@@ -14,6 +14,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../game_driver.h"
+#include "../state_format/events.h"
 #include "../state_format/handles.h"
 #include "characteristics.h"
 #include "lki.h"
@@ -28,12 +29,14 @@ static bool window_shown_to(const Window &w, Zone::Ownership viewer);
 static bool in_hidden_zone(Entity card);
 static bool sees_without_window(Entity card, Zone::Ownership viewer);
 static bool outlives(Window::End a, Window::End b);
-static void open_window(
-    Entity card, Zone::Ownership audience, Window::Kind kind, Window::End until, Entity stack_object);
+static bool open_window(Entity card, Zone::Ownership audience, Window::Kind kind, Window::End until,
+    Entity stack_object, bool position_public);
+static void open_windows(const std::vector<Entity> &cards, Zone::Ownership audience, Window::Kind kind,
+    Window::End until, Entity stack_object, bool position_public, bool draw_link);
 static std::vector<Entity> canonical_order(std::vector<Entity> cards);
 static bool canonical_before(Entity a, Entity b);
 template <class Pred>
-static void close_windows_if(Pred pred, const char *reason);
+static void close_windows_if(Pred pred, const char *reason, bool report);
 static void trace_window(const char *verb, const Window &w, Entity card, const char *detail);
 static const char *kind_word(Window::Kind kind);
 static const char *end_word(Window::End until);
@@ -89,10 +92,11 @@ static bool outlives(Window::End a, Window::End b) {
     return static_cast<int>(a) > static_cast<int>(b);
 }
 
-static void open_window(
-    Entity card, Zone::Ownership audience, Window::Kind kind, Window::End until, Entity stack_object) {
-    if (card == 0 || !in_hidden_zone(card)) return;
-    if (is_seat(audience) && sees_without_window(card, audience)) return;
+// Opens one window; true when it is new (not already open, possibly extended, nor needed).
+static bool open_window(Entity card, Zone::Ownership audience, Window::Kind kind, Window::End until,
+    Entity stack_object, bool position_public) {
+    if (card == 0 || !in_hidden_zone(card)) return false;
+    if (is_seat(audience) && sees_without_window(card, audience)) return false;
     for (Window &w : cur_game.reveal_windows) {
         if (window_card(w) != card || w.audience != audience) continue;
         if (outlives(until, w.until)) {
@@ -101,7 +105,7 @@ static void open_window(
             w.stack_object = ObjectRef::of(stack_object);
             trace_window("extend", w, card, end_word(until));
         }
-        return;
+        return false;
     }
     Window w;
     w.card = ObjectRef::of(card);
@@ -109,8 +113,20 @@ static void open_window(
     w.kind = kind;
     w.until = until;
     w.stack_object = ObjectRef::of(stack_object);
+    w.position_public = position_public;
     cur_game.reveal_windows.push_back(w);
     trace_window("open", w, card, end_word(until));
+    return true;
+}
+
+// Opens a window on each of `cards` in turn and reports the new ones as one event per zone
+// (`draw_link`: the reveal shows its card as the one just drawn).
+static void open_windows(const std::vector<Entity> &cards, Zone::Ownership audience, Window::Kind kind,
+    Window::End until, Entity stack_object, bool position_public, bool draw_link) {
+    std::vector<Entity> opened;
+    for (Entity card : cards)
+        if (open_window(card, audience, kind, until, stack_object, position_public)) opened.push_back(card);
+    obs_windows_opened(opened, audience, kind == Window::LOOK, position_public, draw_link);
 }
 
 // `cards` in an order every player could derive: a library from the top, other zones by card name
@@ -133,12 +149,22 @@ static bool canonical_before(Entity a, Entity b) {
 }
 
 // Ends every window for which pred(window, card) holds, narrating each with `reason`; a window
-// whose card is no longer that object is dropped on the way.
+// whose card is no longer that object is dropped on the way. With `report`, the windows that end
+// are reported (a reveal_end per zone and audience, state_format/events.h) while still open.
 // A viewer whose handle for a closed window's card depended on that window loses the handle here,
 // as the window closes (state_format/handles.h).
 template <class Pred>
-static void close_windows_if(Pred pred, const char *reason) {
+static void close_windows_if(Pred pred, const char *reason, bool report) {
     std::vector<Window> &windows = cur_game.reveal_windows;
+    std::vector<bool> closing(windows.size(), false);
+    std::vector<ObsClosedWindow> reported;
+    for (size_t i = 0; i < windows.size(); ++i) {
+        const Entity card = window_card(windows[i]);
+        if (card == 0 || !pred(windows[i], card)) continue;
+        closing[i] = true;
+        if (report) reported.push_back(ObsClosedWindow{card, windows[i].audience});
+    }
+    obs_windows_closed(reported);
     std::vector<Entity> closed;
     size_t kept = 0;
     for (size_t i = 0; i < windows.size(); ++i) {
@@ -148,7 +174,7 @@ static void close_windows_if(Pred pred, const char *reason) {
             trace_window("close", w, 0, "gone");
             continue;
         }
-        if (pred(w, card)) {
+        if (closing[i]) {
             trace_window("close", w, card, reason);
             closed.push_back(card);
             continue;
@@ -319,6 +345,35 @@ bool order_visible(Zone::ZoneValue zone, Zone::Ownership /*owner*/, Zone::Owners
     return zone == Zone::STACK || zone == Zone::GRAVEYARD || zone == Zone::EXILE;
 }
 
+LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer) {
+    const Zone &z = global_coordinator.GetComponent<Zone>(card);
+    LibrarySpan exact;
+    exact.pos = z.distance_from_top;
+    if (!is_seat(viewer) || identity_visible(card, viewer)) return exact;
+    bool hidden_window = false;
+    for (const Window &w : cur_game.reveal_windows) {
+        if (window_card(w) != card || window_shown_to(w, viewer)) continue;
+        if (!w.position_public) return LibrarySpan{0, 0};
+        hidden_window = true;
+    }
+    if (!hidden_window) return exact;
+    // The cards in windows hidden from the viewer in this library, that the viewer cannot tell
+    // apart from this one.
+    size_t lo = z.distance_from_top, hi = z.distance_from_top;
+    for (const Window &w : cur_game.reveal_windows) {
+        const Entity other = window_card(w);
+        if (other == 0 || window_shown_to(w, viewer) || !w.position_public) continue;
+        const Zone &oz = global_coordinator.GetComponent<Zone>(other);
+        if (oz.location != Zone::LIBRARY || oz.owner != z.owner || identity_visible(other, viewer)) continue;
+        lo = std::min(lo, oz.distance_from_top);
+        hi = std::max(hi, oz.distance_from_top);
+    }
+    LibrarySpan s;
+    s.pos = lo;
+    s.span = hi - lo + 1;
+    return s;
+}
+
 std::vector<VisibleWindow> reveal_windows_for(Zone::Ownership viewer) {
     std::vector<VisibleWindow> out;
     for (const Window &w : cur_game.reveal_windows) {
@@ -342,27 +397,31 @@ bool in_reveal_window(Entity card, Zone::Ownership viewer) {
 }
 
 void reveal_card(Entity card) {
-    open_window(card, Zone::UNKNOWN, Window::REVEAL, Window::RESOLUTION, 0);
+    open_windows({card}, Zone::UNKNOWN, Window::REVEAL, Window::RESOLUTION, 0, true, false);
 }
 
 void reveal_cards(const std::vector<Entity> &cards) {
-    for (Entity card : canonical_order(cards)) reveal_card(card);
+    open_windows(canonical_order(cards), Zone::UNKNOWN, Window::REVEAL, Window::RESOLUTION, 0, true, false);
 }
 
 void look_at_card(Entity card, Zone::Ownership looker) {
-    if (is_seat(looker)) open_window(card, looker, Window::LOOK, Window::RESOLUTION, 0);
+    if (is_seat(looker)) open_windows({card}, looker, Window::LOOK, Window::RESOLUTION, 0, true, false);
 }
 
 void look_at_cards(const std::vector<Entity> &cards, Zone::Ownership looker) {
-    for (Entity card : canonical_order(cards)) look_at_card(card, looker);
+    if (is_seat(looker)) open_windows(canonical_order(cards), looker, Window::LOOK, Window::RESOLUTION, 0, true, false);
+}
+
+void look_at_found_card(Entity card, Zone::Ownership looker) {
+    if (is_seat(looker)) open_windows({card}, looker, Window::LOOK, Window::RESOLUTION, 0, false, false);
 }
 
 void reveal_until_leaves_stack(Entity card, Entity stack_object) {
-    open_window(card, Zone::UNKNOWN, Window::REVEAL, Window::STACK_OBJECT, stack_object);
+    open_windows({card}, Zone::UNKNOWN, Window::REVEAL, Window::STACK_OBJECT, stack_object, true, true);
 }
 
 void reveal_continuously(Entity card) {
-    open_window(card, Zone::UNKNOWN, Window::CONTINUOUS_REVEAL, Window::LEAVES_ZONE, 0);
+    open_windows({card}, Zone::UNKNOWN, Window::CONTINUOUS_REVEAL, Window::LEAVES_ZONE, 0, true, false);
 }
 
 HiddenViewers hidden_identity_viewers(Entity card) {
@@ -375,17 +434,18 @@ HiddenViewers hidden_identity_viewers(Entity card) {
 
 void close_windows_on_zone_change(Entity card) {
     if (cur_game.reveal_windows.empty()) return;
-    close_windows_if([card](const Window &, Entity e) { return e == card; }, "zone change");
+    close_windows_if([card](const Window &, Entity e) { return e == card; }, "zone change", false);
 }
 
+// Reported by the face-down exile's own zone_move (state_format/events.h), not as a look.
 void open_face_down_windows(Entity card, HiddenViewers saw) {
-    if (saw.a) open_window(card, Zone::PLAYER_A, Window::FACE_DOWN_LOOK, Window::LEAVES_ZONE, 0);
-    if (saw.b) open_window(card, Zone::PLAYER_B, Window::FACE_DOWN_LOOK, Window::LEAVES_ZONE, 0);
+    if (saw.a) open_window(card, Zone::PLAYER_A, Window::FACE_DOWN_LOOK, Window::LEAVES_ZONE, 0, true);
+    if (saw.b) open_window(card, Zone::PLAYER_B, Window::FACE_DOWN_LOOK, Window::LEAVES_ZONE, 0, true);
 }
 
 void close_windows_on_face_up(Entity card) {
     if (cur_game.reveal_windows.empty()) return;
-    close_windows_if([card](const Window &, Entity e) { return e == card; }, "turned face up");
+    close_windows_if([card](const Window &, Entity e) { return e == card; }, "turned face up", false);
 }
 
 void close_windows_on_shuffle(Zone::Ownership owner) {
@@ -395,7 +455,7 @@ void close_windows_on_shuffle(Zone::Ownership owner) {
             const Zone &z = global_coordinator.GetComponent<Zone>(e);
             return z.location == Zone::LIBRARY && z.owner == owner;
         },
-        "shuffle");
+        "shuffle", true);
 }
 
 void close_resolution_windows(Entity resolving) {
@@ -407,7 +467,7 @@ void close_resolution_windows(Entity resolving) {
             const Entity s = w.stack_object.get();
             return s == 0 || s == resolving || global_coordinator.GetComponent<Zone>(s).location != Zone::STACK;
         },
-        "resolution end");
+        "resolution end", true);
 }
 
 // A token's token-band index, keyed by its script stem (display names collide, stems don't).

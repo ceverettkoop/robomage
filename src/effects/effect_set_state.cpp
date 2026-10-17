@@ -10,6 +10,7 @@
 #include "../queries/zones.h"
 #include "../queries/visibility.h"
 #include "../queries/affected.h"
+#include "../state_format/events.h"
 
 extern Coordinator global_coordinator;
 
@@ -41,10 +42,12 @@ static void set_object_state(const Ability &ab, Entity subject) {
             // face-down exile deliberately withheld it).
             mark_card_revealed(subject, z.owner);
             close_windows_on_face_up(subject);
+            obs_face_turned(subject, true);
             game_log("%s is turned face up.\n", entity_name(subject).c_str());
         }
     } else if (ab.def->set_state_mode == "TurnFaceDown") {
         z.is_face_down = true;
+        obs_face_turned(subject, false);
         game_log("%s is turned face down.\n", entity_name(subject).c_str());
     }
 }

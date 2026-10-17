@@ -16,6 +16,7 @@
 #include "../queries/filters.h"
 #include "../queries/visibility.h"
 #include "../stable_rng.h"
+#include "../state_format/events.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -71,6 +72,8 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
     if (!revealed.empty()) {
         if (ab.def->rest_random_order) stable_shuffle(revealed, cur_game.rng.engine);
         bool on_bottom = (revealed_dest == Zone::LIBRARY && ab.def->dig_library_position != 0);
+        // Put into the library in an order only their owner sees (or, in a random order, nobody).
+        ObsLibraryBatch batch(owner, ab.def->rest_random_order ? Zone::UNKNOWN : owner);
         for (Entity card : revealed)
             orderer->add_to_zone(on_bottom, card, revealed_dest);
     }

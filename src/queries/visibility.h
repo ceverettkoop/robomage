@@ -75,6 +75,20 @@ int visible_card_id(Entity entity, Zone::Ownership viewer);
 // a name-a-card menu, a revealed tutor target), whatever zone its representative entity is in.
 int public_card_id(Entity entity);
 
+// Where `viewer` knows the library card `card` sits (docs/state_format.md §5 library positions):
+// `span` consecutive positions from `pos` (from the top) it may be in, 1 = exactly at `pos`, 0 =
+// anywhere. Exact when the viewer can see its identity (or is omniscient) or when nobody has a
+// window on it (a draw, a mill: the instruction names the position). A card in a window another
+// player has (a look the viewer was not shown) is one of the cards in such windows in its library,
+// which the viewer cannot tell apart: the span covers their positions, all known to the viewer
+// since every such window opened on a known position (the top N, the whole library); a card in a
+// window opened on it by identity (look_at_found_card) could be anywhere.
+struct LibrarySpan {
+        size_t pos = 0;
+        size_t span = 1;
+};
+LibrarySpan library_position_seen_by(Entity card, Zone::Ownership viewer);
+
 // One-word names of a zone and a seat for the trace lines (--trace-visibility, --trace-handles).
 const char *trace_zone_word(Zone::ZoneValue zone);
 const char *trace_seat_word(Zone::Ownership seat);
@@ -101,6 +115,8 @@ bool in_reveal_window(Entity card, Zone::Ownership viewer);
 // included); a look a viewer needs no window for (their own hand or sideboard) opens none, and
 // opening a window that is already open changes nothing, so a resumed effect can repeat its
 // calls. Several cards open in zone and position order, so the order says nothing about entity ids.
+// The windows each call opens are reported as one reveal_start or look event per zone
+// (state_format/events.h).
 //
 // A reveal to all players while the current resolution needs it (CR 701.20a).
 void reveal_card(Entity card);
@@ -108,6 +124,10 @@ void reveal_cards(const std::vector<Entity> &cards);
 // A look by `looker` alone while the current resolution needs it (CR 701.20e).
 void look_at_card(Entity card, Zone::Ownership looker);
 void look_at_cards(const std::vector<Entity> &cards, Zone::Ownership looker);
+// A look by `looker` at a library card picked out by its identity rather than its position (a
+// search's find, kept in view after the shuffle that ended the search): the other players do not
+// know where in the library it sits.
+void look_at_found_card(Entity card, Zone::Ownership looker);
 // A reveal that lasts until `stack_object` leaves the stack (CR 701.20a, 702.94b: a miracle card
 // stays revealed until its trigger resolves or otherwise leaves the stack).
 void reveal_until_leaves_stack(Entity card, Entity stack_object);
@@ -115,7 +135,9 @@ void reveal_until_leaves_stack(Entity card, Entity stack_object);
 // game before it begins, CR 702.139a / 103.2b).
 void reveal_continuously(Entity card);
 
-// Closing. A window that ends because its card moved needs no other notice than the move.
+// Closing. A window that ends because its card moved needs no other notice than the move, and one
+// that ends because its card was turned face up none other than that; any other close is reported
+// as a reveal_end event (state_format/events.h).
 //
 // Who sees `card` in a hidden zone right now (a seat whose own hand it is in, or who has a window
 // on it). Called before `card` moves, for the face-down exile rule below.

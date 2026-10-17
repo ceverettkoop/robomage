@@ -7,6 +7,7 @@
 
 #include "../classes/action.h"
 #include "../components/zone.h"
+#include "events.h"
 
 // ── Engine → RMSTATE frames (docs/state_format.md §4, §9, Appendix A) ─────────────────────────
 //
@@ -34,10 +35,11 @@ std::string encode_cards_frame(Zone::Ownership viewer);
 // --closed-decklist).
 std::string encode_decklists_frame(Zone::Ownership viewer);
 
-// The STATE frame for one decision: the snapshot tables, and the menu `actions` when the viewer
-// is the one deciding (`decider`) or omniscient. A menu description that would name a card the
-// viewer cannot see is replaced by a redacted one.
-std::string encode_state_frame(
-    Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider);
+// The STATE frame for one decision: the snapshot tables, the menu `actions` when the viewer is
+// the one deciding (`decider`) or omniscient, and `events`, the viewer's observation events since
+// their previous frame (take_obs_events, state_format/events.h), already projected for them. A
+// menu description that would name a card the viewer cannot see is replaced by a redacted one.
+std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
+    const std::vector<ObsEvent> &events);
 
 #endif /* STATE_FORMAT_ENCODE_H */

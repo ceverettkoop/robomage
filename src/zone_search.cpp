@@ -16,6 +16,7 @@
 #include "queries/visibility.h"
 #include "queries/zones.h"
 #include "resolution_frame.h"
+#include "state_format/events.h"
 #include "systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -30,6 +31,7 @@ static void log_search(const ZoneSearch &search);
 static ActionCategory search_menu_category(const ZoneSearch &search);
 static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
                                    Zone::Ownership searcher);
+static void report_search(const ZoneSearch &search, Zone::Ownership searcher, Entity found);
 
 // The cards `owner` has in `zone`, in the zone's own order. Graveyard / face-up exile / sideboard
 // ("outside the game") cards are enumerated by Zone owner (Karn, the Great Creator -2: choose an
@@ -120,6 +122,17 @@ static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, cons
         if (!is_public_zone(zone)) look_at_cards(zone_contents(orderer, search.owner, zone), searcher);
 }
 
+// A search event per searched hidden zone, once the pick is made (CR 701.23): a library, a
+// sideboard, another player's hand. A pick from the searcher's own hand (a put-back) is no search.
+static void report_search(const ZoneSearch &search, Zone::Ownership searcher, Entity found) {
+    for (auto zone : search.zones) {
+        if (is_public_zone(zone) || zone == Zone::BATTLEFIELD) continue;
+        if (zone == Zone::HAND && search.owner == searcher) continue;
+        const bool here = found != 0 && global_coordinator.GetComponent<Zone>(found).location == zone;
+        obs_search(searcher, zone, search.owner, here ? 1 : 0);
+    }
+}
+
 Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, FrameCtx &ctx,
                     Entity decision_source, bool &suspended) {
     suspended = false;
@@ -135,7 +148,10 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
     look_at_searched_zones(orderer, search, priority_seat());
 
     // Nothing left to move; return immediately without prompting
-    if (search.mandatory && choices.empty()) return 0;
+    if (search.mandatory && choices.empty()) {
+        report_search(search, priority_seat(), 0);
+        return 0;
+    }
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !search.mandatory || choices.empty();
 
@@ -176,6 +192,7 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     int first = show_fail_to_find ? 1 : 0;
     int idx = choice - first;
-    if (idx >= 0 && idx < static_cast<int>(choices.size())) return choices[static_cast<size_t>(idx)];
-    return 0;
+    const Entity found = idx >= 0 && idx < static_cast<int>(choices.size()) ? choices[static_cast<size_t>(idx)] : 0;
+    report_search(search, chooser, found);
+    return found;
 }

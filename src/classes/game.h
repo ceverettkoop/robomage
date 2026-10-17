@@ -44,6 +44,7 @@ typedef enum Step {
 #include "../mana_system.h"
 #include "../pending_query.h"
 #include "../resolution_frame.h"
+#include "../state_format/events.h"
 #include "colors.h"
 
 struct Deck;
@@ -789,6 +790,10 @@ struct Game {
             Kind kind = REVEAL;
             End until = RESOLUTION;
             ObjectRef stack_object;
+            // The window opened on a library position every player knows (the top N cards, the
+            // whole library), not on a card picked out by its identity (a search's find after the
+            // shuffle): the other players may know where in the library its card sits.
+            bool position_public = true;
         };
         // The open reveal windows, in the order they opened (visibility.cpp keeps them).
         std::vector<RevealWindow> reveal_windows;
@@ -811,6 +816,10 @@ struct Game {
         // Decisions of this game the state format has encoded (the RMSTATE header's decision
         // number, state_format/dump.h); counted only while frames are written.
         uint32_t state_decisions = 0;
+        // The observation events channel (src/state_format/events.h): each viewer's queue of events
+        // not yet delivered in a frame, with its match-long seq counter. Carried into the next
+        // game of a bo3 match (obs_events_for_next_game); written only while events are consumed.
+        ObsEventState obs_events;
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

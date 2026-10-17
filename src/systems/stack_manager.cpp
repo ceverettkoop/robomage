@@ -28,6 +28,7 @@
 #include "../saga.h"
 #include "orderer.h"
 #include "../resolution.h"
+#include "../state_format/events.h"
 
 extern Game cur_game;
 
@@ -242,6 +243,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             global_coordinator.RemoveComponent<Spell>(top_entity);
             if (was_copy) {
                 game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
+                obs_object_ceased(top_entity, true);
                 global_coordinator.DestroyEntity(top_entity);
                 return;
             }

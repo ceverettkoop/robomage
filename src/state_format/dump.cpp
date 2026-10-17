@@ -10,6 +10,7 @@
 #include "../game_driver.h"
 #include "../queries/players.h"
 #include "encode.h"
+#include "events.h"
 #include "schema.h"
 
 static FILE *dump_file();
@@ -61,7 +62,7 @@ void rmstate_dump_decision(const std::vector<LegalAction> &actions) {
             write_record(f, encode_cards_frame(viewer));
             write_record(f, encode_decklists_frame(viewer));
         }
-        write_record(f, encode_state_frame(viewer, actions, decider));
+        write_record(f, encode_state_frame(viewer, actions, decider, take_obs_events(viewer)));
     }
     match_frames_written = true;
     std::fflush(f);

@@ -547,6 +547,9 @@ sections above are not repeated here.
   keyword indices
 - `src/state_format/encode.{h,cpp}` — engine → SCHEMA / CARDS / DECKLISTS / STATE frames per viewer
 - `src/state_format/dump.{h,cpp}` — `--rmstate-dump FILE`: every viewer's frames at each decision
+- `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
+  shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
+  (match-long `seq`), drained into each STATE frame; `--trace-events`
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;

@@ -14,6 +14,7 @@
 #include "../input_logger.h"
 #include "../queries/player_resources.h"
 #include "../queries/players.h"
+#include "../state_format/events.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -107,6 +108,8 @@ HandlerResult sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer, Fram
             pay_life(pl, 4);
             game_log("%s pays 4 life (now at %d)\n", player_name(ctrl).c_str(), pl.life_total);
         } else {
+            // Chosen among the cards drawn this turn, which both players can follow (register 36).
+            ObsHandSubsetScope subset(rmstate::HandSubset::DRAWN_THIS_TURN);
             orderer->add_to_zone(false, card, Zone::LIBRARY);
             game_log("%s puts %s on top of library\n", player_name(ctrl).c_str(), cd.name.c_str());
         }

@@ -49,6 +49,7 @@
 #include "continuous_effects.h"
 #include "../effects/effects.h"
 #include "orderer.h"
+#include "../state_format/events.h"
 
 // Forward declaration (defined below): is this Affected$ a general permanent filter
 // (anthem-style class) vs the single-target EquippedBy / Self / no-filter forms? Shared by
@@ -1139,6 +1140,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         Zone::ZoneValue dest = global_coordinator.GetComponent<Zone>(e).location;
         game_log("%s (token) is put into %s and ceases to exist.\n",
                  tok_name, zone_display_name(dest));
+        obs_object_ceased(e, false);
         global_coordinator.DestroyEntity(e);
     }
     game.entering_together.clear();

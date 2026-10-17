@@ -145,6 +145,8 @@ static const CliOption OPTIONS[] = {
     // Print the per-viewer handle tables at each decision and narrate handle issue/link/retire
     // (HANDLES: / HANDLE: lines in the game log).
     {"--trace-handles", nullptr, false, false, [](const char *) { trace_handles = true; }, nullptr},
+    // Narrate each observation event as it is queued, per viewer (EVENT: lines in the game log).
+    {"--trace-events", nullptr, false, false, [](const char *) { trace_events = true; }, nullptr},
     // Write every viewer's state-format frames (RMSTATE records) to a file at each decision.
     {"--rmstate-dump", nullptr, true, false, [](const char *v) { rmstate_dump_path = v; }, nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},

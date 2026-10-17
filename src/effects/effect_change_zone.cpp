@@ -30,6 +30,7 @@
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "../mana_system.h"
+#include "../state_format/events.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 #include "../zone_search.h"
@@ -838,7 +839,7 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
             // The found card stays known to the chooser up to its move, although the shuffle above
             // ended the search's look at it; a card the search reveals is shown to all players
             // before it goes to a hidden zone (CR 701.20a, 701.23e).
-            look_at_card(chosen, chooser);
+            look_at_found_card(chosen, chooser);
             if (reveal && !is_public_zone(ab.def->destination)) reveal_card(chosen);
             // Named before the move, through entity_name: a battlefield pick may be a token,
             // which has no CardData.
@@ -1012,6 +1013,14 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
     size_t cap = matches.size();
     if (!force_all && ab.def->amount_svar.empty() && ab.def->amount > 0)
         cap = std::min(static_cast<size_t>(ab.def->amount), matches.size());
+    for (auto z : zones) {
+        if (z != Zone::LIBRARY && z != Zone::HAND) continue;
+        if (z == Zone::HAND && searched == caster) continue;
+        size_t found_here = 0;
+        for (size_t i = 0; i < cap; i++)
+            if (global_coordinator.GetComponent<Zone>(matches[i]).location == z) ++found_here;
+        obs_search(caster, z, searched, static_cast<int>(found_here));
+    }
 
     const char *dest_str = ab.def->destination == Zone::EXILE       ? "exile"
                            : ab.def->destination == Zone::GRAVEYARD ? "graveyard"

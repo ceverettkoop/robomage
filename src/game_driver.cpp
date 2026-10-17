@@ -35,6 +35,7 @@
 #include "machine_io.h"
 #include "search_server.h"
 #include "snapshot.h"
+#include "state_format/events.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -113,6 +114,9 @@ bool trace_visibility = false;
 // as it is issued, linked and retired (HANDLES: / HANDLE: lines, src/state_format/handles.cpp).
 // A debugging aid; off by default, so no output changes.
 bool trace_handles = false;
+// --trace-events: narrate every observation event as it is queued, per viewer (EVENT: lines,
+// src/state_format/events.cpp). A debugging aid; off by default, so no output changes.
+bool trace_events = false;
 // --closed-decklist: each seat's state-format frames carry only its own registered list
 // (docs/state_format.md decision 11). Recorded in the RMLOG header.
 bool closed_decklist = false;
@@ -317,7 +321,10 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // the post-sideboard structs and is refreshed every game.
     deck_state_set_live(Zone::PLAYER_A, deck_a);
     deck_state_set_live(Zone::PLAYER_B, deck_b);
+    // The observation events' queues and seq counters run for the whole match (events.h).
+    ObsEventState obs_events = obs_events_for_next_game();
     cur_game = Game(seed);
+    cur_game.obs_events = std::move(obs_events);
     cur_game.generate_players(deck_a, deck_b);
     // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
     if (life_a_override >= 0)
@@ -325,6 +332,7 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     if (life_b_override >= 0)
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
+    obs_game_start(player_a_goes_first);
 
     // Pre-game section header: mulligans, test-harness fiat setup, and the CR 103.6b
     // opening-hand actions all print under PREGAME, before the first turn header.
@@ -693,6 +701,11 @@ int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
     // Leave auto-choice mode behind with the game: the between-games sideboard
     // phase and the next game must emit their own queries again.
     concede_reset_unwind();
+    obs_game_end(cur_game.winner);
+    // A single game is a whole match (play_bo3_match reports a bo3 match's end).
+    if (match_game_number < 0)
+        obs_match_end(
+            cur_game.winner, cur_game.winner == Zone::PLAYER_A ? 1 : 0, cur_game.winner == Zone::PLAYER_B ? 1 : 0);
     return cur_game.winner;
 }
 
@@ -1466,14 +1479,14 @@ int play_bo3_match(Deck deck_a, Deck deck_b, unsigned int seed,
         }
     }
 
-    match_game_number = -1;
-    ctx.active = false;
     // A conceded match is won by the conceder's opponent regardless of the game
     // tally (which can be level, or even in the conceder's favour).
-    if (g_match_conceded) {
-        return opponent_of(g_match_conceder);
-    }
-    int result = ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A : Zone::PLAYER_B;
+    const int result = g_match_conceded          ? static_cast<int>(opponent_of(g_match_conceder))
+                       : ctx.wins_a > ctx.wins_b ? Zone::PLAYER_A
+                                                 : Zone::PLAYER_B;
+    obs_match_end(result, ctx.wins_a, ctx.wins_b);
+    match_game_number = -1;
+    ctx.active = false;
     return result;
 }
 
