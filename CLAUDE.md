@@ -99,7 +99,7 @@ has a default tier; `ROBOMAGE_BUILD=debug|release` forces every tool onto one co
 via `train/gen_util.py`, so unchanged outputs force no recompile).
 - **Committed** (derived from tracked sources; the `pygen` CI tier guards only these):
   `train/_enums.py` (C++ headers) and `src/gen/archetypes_gen.h` (`train/archetypes.py` +
-  `bin/resources/decks/archetypes.json`).
+  `bin/resources/decks/archetypes.json`, whose `_archetypes` key is the canonical label list).
 - **Untracked**, rebuilt locally every build: `train/card_costs.py`, `train/card_props.py`,
   `src/gen/card_costs_gen.h` (from gitignored, Forge-fetched card-script content) and
   `train/sb_rules.py` + `src/gen/sb_rules_gen.h` (from `train/sb_dead_rules.json`). A vocab
@@ -564,6 +564,8 @@ sections above are not repeated here.
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
+- `src/state_format/metagame.{h,cpp}` — the reference metagame (`bin/resources/decks/archetypes.json`:
+  labels and tagged reference lists) the `METAGAME` frame carries, read once per process
 - `src/state_format/knowledge_feed.{h,cpp}` — the knowledge sidecar in the engine: one `Knowledge`
   per frame writer (dump, stream, self-check) and seat, fed that writer's frames, appending `k_*` to
   each seat STATE frame; `--knowledge-a/-b`; snapshot sidecar hooks (`snapshot_set_sidecar_hooks`)
@@ -584,8 +586,10 @@ sections above are not repeated here.
   sentinels
 - `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
 - `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
-  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; the shared soundness check
-  `truth.h`; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
+  frames, `k_*` rows; exact solver `solver.h`, compaction `compact.h`; archetype inference over the
+  METAGAME frame's reference lists `templates.h` + `archetype.cpp` (`k_template` / `k_archetype`,
+  §10); the shared soundness check `truth.h`; std + `state_format/decode.h`/`schema.h` only;
+  `docs/knowledge_store.md` §9-10)
 - `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
   (`--viewer A|B`, `--level`, `--text`, `--truth` vs the omniscient frames, `--isolation` vs the
   engine's appended `k_*`, `--stats`, `--selftest`, `--exactness N` vs an independent world enumerator)
@@ -610,7 +614,8 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
 - `decode.py` — obs/action decoders shared by every front end (torch-free)
 - `cli_spec.py` — every CLI flag and `Tool`/subcommand definition (stdlib-only)
 - `extractor.py` — `CardGameExtractor` policy trunk; `popart.py` — per-bucket value normalization
-- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`)
+- `archetypes.py` — deck → archetype / value-bucket metadata (`bin/resources/decks/archetypes.json`,
+  also the engine's reference metagame source)
 - `action_spec.py` — `--play` semantic spec resolver (see Test harness)
 - `rmstate.py` — RMSTATE decoder built from the SCHEMA frame (stream reader, row dicts / numpy
   arrays, the `--state-dump json` renderer); `rmstate.py dump FILE` prints JSON lines
@@ -656,8 +661,9 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
 - `test_knowledge.py` — tier `knowledge`: the knowledge sidecar — `rmknow --selftest` / `--exactness`,
   a fuzz under `--selfcheck-knowledge` (soundness vs the engine state), stream sessions (stream frames
-  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps
-  (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
+  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps,
+  archetype-inference sessions (METAGAME coverage, `k_template` / `k_archetype` vs the true lists and
+  the cards seen) (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),
