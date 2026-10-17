@@ -175,6 +175,16 @@ fails, so one invocation reports every finding):
           sessions, rmknow --belief-exactness). The replay corpus runs under
           --selfcheck-knowledge in the rmstate tier. Needs bin/robomage and
           bin/rmknow; ~2 min.
+  agentparity The scripted agent on RMSTATE (train/test_agent_parity.py, plan
+          step 2 pass 1): its card knowledge from a closed-decklist CARDS frame
+          equals the generated tables' on every vocab card; replay-corpus games
+          played over --machine-format rmstate through the parity adapter equal
+          the committed corpus transcripts (board block left out, hand lines
+          sorted); scripted-hard smoke games (two bo3) played on both protocols
+          equal each other; a game listed in
+          regression/agent_parity_divergences.json (a classified old-vector
+          leak or quirk) is compared with its re-recorded RMSTATE baseline.
+          Needs bin/robomage; ~2 min.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
           lines) across the league mirrors + a ring of crosses. Fixed seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league
@@ -272,7 +282,7 @@ ALL_TIERS = ["pygen", "vocab", "curriculum", "clispec", "gatesprt", "shardrec", 
              "menus", "browser", "modelspec", "concede", "scenarios", "obsinv",
              "actorobs", "pergame", "snapshot", "sbrules", "sbselfplay",
              "plansearch",
-             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "smoke", "fuzz"]
+             "mirror", "xwsearch", "replay", "rmstate", "knowledge", "agentparity", "smoke", "fuzz"]
 
 # Opt-in tiers: valid for --tier but NOT part of the default run. `actor` gates
 # the Phase-D AZ actor (bin/az_actor) — it needs the actor binary + torch, and
@@ -891,6 +901,21 @@ def tier_knowledge(rep, out_dir):
         print("  reproduce: train/.venv/bin/python train/test_knowledge.py [--part <part>]", flush=True)
 
 
+def tier_agentparity(rep, out_dir):
+    """The scripted agent on RMSTATE against BQUERY (test_agent_parity.py)."""
+    r = subprocess.run([sys.executable, "train/test_agent_parity.py", "--binary", runner.BINARY],
+                       cwd=_REPO_ROOT, capture_output=True, text=True)
+    print(r.stdout, end="", flush=True)
+    with open(os.path.join(out_dir, "agentparity.err"), "w") as f:
+        f.write(r.stderr)
+    if r.returncode != 0:
+        fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
+        for msg in fails or [f"test_agent_parity.py exit {r.returncode}:\n{r.stderr}"]:
+            rep.error("agentparity", msg)
+        print("  reproduce: train/.venv/bin/python train/test_agent_parity.py [--part cards|corpus|smoke] "
+              "[--lockstep GAME]", flush=True)
+
+
 def _run_capturing(out_path, run_fn):
     """Run run_fn() capturing both Python stdout AND the engine subprocess's
     stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
@@ -1266,6 +1291,7 @@ _TIER_FNS = {
     "replay": lambda rep, args, out_dir: tier_replay(rep),
     "rmstate": lambda rep, args, out_dir: tier_rmstate(rep, out_dir),
     "knowledge": lambda rep, args, out_dir: tier_knowledge(rep, out_dir),
+    "agentparity": lambda rep, args, out_dir: tier_agentparity(rep, out_dir),
     "smoke": tier_smoke,
     "fuzz": tier_fuzz,
     "actor": lambda rep, args, out_dir: tier_actor(rep),
@@ -1308,13 +1334,15 @@ def main(argv=None):
     os.makedirs(out_dir, exist_ok=True)
 
     # Game tiers need a built binary and provisioned card scripts.
-    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "scenarios", "obsinv", "pergame", "snapshot",
+    game_tiers = {"smoke", "fuzz", "replay", "rmstate", "knowledge", "agentparity", "scenarios", "obsinv",
+                  "pergame", "snapshot",
                   "sbselfplay", "plansearch", "mirror", "analysis",
                   "treerebuild"} & set(tiers)
     if game_tiers and not os.path.exists(runner.BINARY):
         print(f"binary not found at {runner.BINARY} — run `make` first", file=sys.stderr)
         return 2
-    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "scenarios", "obsinv", "snapshot", "sbselfplay",
+    if {"smoke", "fuzz", "vocab", "rmstate", "knowledge", "agentparity", "scenarios", "obsinv", "snapshot",
+        "sbselfplay",
         "plansearch", "mirror", "analysis", "treerebuild"} & set(tiers):
         cards_dir = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
         if not glob.glob(os.path.join(cards_dir, "*", "*.txt")):

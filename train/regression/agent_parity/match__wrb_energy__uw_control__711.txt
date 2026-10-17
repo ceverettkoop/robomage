@@ -1,0 +1,4100 @@
+--- Narrative ---
+  robomage 0.2
+  Using seed: 748748247
+  ----- MATCH GAME 1 -----
+  -------- PREGAME --------
+  Player A draws Arid Mesa
+  Player A draws Ocelot Pride
+  Player A draws Orcish Bowmasters
+  Player A draws Orcish Bowmasters
+  Player A draws Orcish Bowmasters
+  Player A draws Swords to Plowshares
+  Player A draws Thoughtseize
+  Player B draws Swords to Plowshares
+  Player B draws Flow State
+  Player B draws Wasteland
+  Player B draws Tune the Narrative
+  Player B draws Spell Pierce
+  Player B draws The One Ring
+  Player B draws Brainstorm
+  Player A hand:
+  Arid Mesa
+  Ocelot Pride
+  Orcish Bowmasters
+  Orcish Bowmasters
+  Orcish Bowmasters
+  Swords to Plowshares
+  Thoughtseize
+--- Pregame ---
+
+--- Decision 1 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 1 (Mulligan)
+--- Narrative ---
+  Player A mulligans.
+  Player A draws Scrubland
+  Player A draws Guide of Souls
+  Player A draws Amped Raptor
+  Player A draws Silent Clearing
+  Player A draws Arid Mesa
+  Player A draws Ocelot Pride
+  Player A draws Goblin Bombardment
+  Player B hand:
+  Brainstorm
+  Flow State
+  Spell Pierce
+  Swords to Plowshares
+  The One Ring
+  Tune the Narrative
+  Wasteland
+
+--- Decision 2 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  Player A hand:
+  Amped Raptor
+  Arid Mesa
+  Goblin Bombardment
+  Guide of Souls
+  Ocelot Pride
+  Scrubland
+  Silent Clearing
+
+--- Decision 3 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 6-card hand.
+  Player A: Choose card to put on library bottom (1 remaining):
+
+--- Decision 4 ---
+  Actions:
+   0: Amped Raptor
+   1: Arid Mesa
+   2: Goblin Bombardment
+   3: Guide of Souls
+   4: Ocelot Pride
+   5: Scrubland
+   6: Silent Clearing
+  >> A/A: 1 (Arid Mesa)
+--- Narrative ---
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Scrubland, Silent Clearing
+  PB: Brainstorm, Flow State, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland
+
+--- Decision 5 ---
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+   2: Play Silent Clearing
+  >> A/A: 1 (Play Scrubland)
+--- Narrative ---
+  Player A played Scrubland
+
+--- Decision 6 ---
+  Actions:
+   0: Pass priority
+   1: Cast Guide of Souls  [#0]
+   2: Cast Ocelot Pride  [#0]
+  >> A/A: 1 (Cast Guide of Souls)
+--- Narrative ---
+  Player A activated Scrubland for 1(W)
+  Player A casts Guide of Souls
+  Guide of Souls enters the battlefield
+  No creatures eligible to attack.
+  -------- TURN 2 (Player B) --------
+  Player B draws Wasteland
+--- Turn 2 (Player B) ---
+  PA: Amped Raptor, Goblin Bombardment, Guide of Souls, Ocelot Pride, Silent Clearing
+  PB: Brainstorm, Flow State, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland, Wasteland
+
+--- Decision 7 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 8 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 9 ---
+  Actions:
+   0: Scrubland
+   1: Wasteland
+  >> B/B: 0 (Scrubland)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Scrubland is on the stack
+  Resolving ability (category: Destroy)
+  Scrubland is destroyed
+  No creatures eligible to attack.
+  -------- TURN 3 (Player A) --------
+  Player A draws Swords to Plowshares
+--- Turn 3 (Player A) ---
+  PA: Amped Raptor, Goblin Bombardment, Ocelot Pride, Silent Clearing, Swords to Plowshares
+  PB: Brainstorm, Flow State, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland
+
+--- Decision 10 ---
+  Actions:
+   0: Pass priority
+   1: Play Silent Clearing
+  >> A/A: 1 (Play Silent Clearing)
+--- Narrative ---
+  Player A played Silent Clearing
+
+--- Decision 11 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ocelot Pride  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Ocelot Pride)
+--- Narrative ---
+  Player A pays 1 life
+  Player A activated Silent Clearing for 1(W)
+  Player A casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 20)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 1).
+  --- Declare Attackers (Player A) ---
+
+--- Decision 12 ---
+  Actions:
+   0: Guide of Souls [1/2]
+   1: Confirm attackers
+  >> A/A: 0 (Guide of Souls [1/2])
+--- Narrative ---
+  Guide of Souls attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Guide of Souls [1/2] -> Player B
+
+--- Decision 13 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Guide of Souls -> Player B
+  Guide of Souls triggered
+  Resolving ability (category: ImmediateTrigger)
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Guide of Souls deals 1 damage to Player B (now at 19 life)
+  --- End Combat Damage ---
+  Ocelot Pride triggered
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 21)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 2).
+  -------- TURN 4 (Player B) --------
+  Player B draws Meticulous Archive
+--- Turn 4 (Player B) ---
+  PA: Amped Raptor, Goblin Bombardment, Swords to Plowshares
+  PB: Brainstorm, Flow State, Meticulous Archive, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland
+
+--- Decision 14 ---
+  Actions:
+   0: Pass priority
+   1: Play Meticulous Archive
+   2: Play Wasteland
+  >> B/B: 1 (Play Meticulous Archive)
+--- Narrative ---
+  Player B played Meticulous Archive
+  Meticulous Archive enters tapped.
+  Meticulous Archive triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Tundra
+
+--- Decision 15 ---
+  Actions:
+   0: Put Tundra on top of library  [#0]
+   1: Put Tundra into graveyard
+  >> B/B: 0 (Put Tundra on top of library)
+--- Narrative ---
+  No creatures eligible to attack.
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Amped Raptor, Goblin Bombardment, Swords to Plowshares
+  PB: Brainstorm, Flow State, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland
+
+--- Decision 16 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Wasteland
+
+--- Decision 17 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 18 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 19 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Silent Clearing (Draw)  [#1]
+   3: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 2 (Activate Silent Clearing (Draw))
+--- Narrative ---
+  Player A activated Wasteland for 1(C)
+  Player A sacrifices Silent Clearing
+  Player A's Silent Clearing ability is on the stack
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Orcish Bowmasters
+  --- Declare Attackers (Player A) ---
+
+--- Decision 20 ---
+  Actions:
+   0: Guide of Souls [1/2]
+   1: Ocelot Pride [1/1]
+   2: Cat token [1/1]
+   3: Confirm attackers
+  >> A/A: 0 (Guide of Souls [1/2])
+--- Narrative ---
+  Guide of Souls attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Guide of Souls [1/2] -> Player B
+
+--- Decision 21 ---
+  Actions:
+   0: Ocelot Pride [1/1]
+   1: Cat token [1/1]
+   2: Confirm attackers
+  >> A/A: 0 (Ocelot Pride [1/1])
+--- Narrative ---
+  Ocelot Pride attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [1/1] -> Player B
+
+--- Decision 22 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 23 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Guide of Souls -> Player B
+    Ocelot Pride -> Player B
+    Cat token -> Player B
+  Guide of Souls triggered
+  Resolving ability (category: ImmediateTrigger)
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 1 damage to Player B (now at 18 life)
+    Player A gains 1 life (lifelink)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Guide of Souls deals 1 damage to Player B (now at 17 life)
+    Cat token deals 1 damage to Player B (now at 16 life)
+  --- End Combat Damage ---
+  Ocelot Pride triggered
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 23)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 3).
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Amped Raptor, Goblin Bombardment, Orcish Bowmasters, Swords to Plowshares
+  PB: Brainstorm, Flow State, Spell Pierce, Swords to Plowshares, The One Ring, Tune the Narrative, Wasteland
+
+--- Decision 24 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Tune the Narrative  [#0]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Meticulous Archive for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Tundra
+  Player B draws Tundra
+  Player B draws Plains
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 25 ---
+  Actions:
+   0: Flow State
+   1: Plains
+   2: Spell Pierce
+   3: Swords to Plowshares
+   4: The One Ring
+   5: Tundra
+   6: Tundra
+   7: Tune the Narrative
+   8: Wasteland
+  >> B/B: 1 (Plains)
+--- Narrative ---
+  Player B puts Plains to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 26 ---
+  Actions:
+   0: Flow State
+   1: Spell Pierce
+   2: Swords to Plowshares
+   3: The One Ring
+   4: Tundra
+   5: Tundra
+   6: Tune the Narrative
+   7: Wasteland
+  >> B/B: 4 (Tundra)
+--- Narrative ---
+  Player B puts Tundra to top of library
+  Player B draws Tundra
+
+--- Decision 27 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Play Tundra
+   3: Play Wasteland
+  >> B/B: 1 (Play Tundra)
+--- Narrative ---
+  Player B played Tundra
+
+--- Decision 28 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Tune the Narrative  [#0]
+  >> B/B: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 29 ---
+  Actions:
+   0: Guide of Souls
+   1: Ocelot Pride
+   2: Cat token
+   3: Cat token
+  >> B/B: 0 (Guide of Souls)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Tundra for 1(W)
+  Player B casts Swords to Plowshares targeting Guide of Souls
+  Resolving ability (category: ChangeZone)
+  Guide of Souls is moved to exile
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 24)
+  No creatures eligible to attack.
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Amped Raptor, Goblin Bombardment, Orcish Bowmasters, Swords to Plowshares
+  PB: Flow State, Spell Pierce, The One Ring, Tundra, Tune the Narrative, Wasteland
+
+--- Decision 30 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Plateau
+
+--- Decision 31 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 32 ---
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Play Plateau)
+--- Narrative ---
+  Player A played Plateau
+
+--- Decision 33 ---
+  Actions:
+   0: Pass priority
+   1: Cast Amped Raptor  [#0]
+   2: Cast Goblin Bombardment  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Amped Raptor)
+--- Narrative ---
+  Player A activated Plateau for 1(R)
+  Player A activated Wasteland for 1(C)
+  Player A casts Amped Raptor
+  Amped Raptor enters the battlefield
+  Amped Raptor triggered
+  Resolving ability (category: PutCounter, amount: 2)
+  Player A gets 2 ENERGY counter(s) (now 5).
+  Resolving ability (category: DigUntil)
+  Player A reveals Guide of Souls.
+  Player A exiles Guide of Souls.
+  Resolving ability (category: Play)
+  Player A may cast Guide of Souls by paying 1 energy rather than its mana cost.
+
+--- Decision 34 ---
+  Actions:
+   0: Do not cast Guide of Souls  [#0]
+   1: Cast Guide of Souls  [#1]
+  >> A/A: 1 (Cast Guide of Souls)
+--- Narrative ---
+  Player A pays 1 energy
+  Player A casts Guide of Souls
+  Resolving ability (category: Cleanup)
+  Guide of Souls enters the battlefield
+  --- Declare Attackers (Player A) ---
+
+--- Decision 35 ---
+  Actions:
+   0: Ocelot Pride [1/1]
+   1: Cat token [1/1]
+   2: Cat token [1/1]
+   3: Confirm attackers
+  >> A/A: 0 (Ocelot Pride [1/1])
+--- Narrative ---
+  Ocelot Pride attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Ocelot Pride [1/1] -> Player B
+
+--- Decision 36 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Cat token [1/1]
+   2: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Ocelot Pride [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 37 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Ocelot Pride [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 38 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Ocelot Pride -> Player B
+    Cat token -> Player B
+    Cat token -> Player B
+  Guide of Souls triggered
+  Resolving ability (category: ImmediateTrigger)
+
+--- Decision 39 ---
+  Actions:
+   0: Decline: Pay 3 energy  [#0]
+   1: Accept: Pay 3 energy  [#1]
+  >> A/A: 1 (Accept: Pay 3 energy)
+--- Narrative ---
+  Player A pays 3 energy.
+  Choose target for Guide of Souls:
+
+--- Decision 40 ---
+  Actions:
+   0: Ocelot Pride
+   1: Cat token
+   2: Cat token
+  >> A/A: 0 (Ocelot Pride)
+--- Narrative ---
+  Targeting choice 0
+  Guide of Souls reflexive trigger
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounterAll, amount: 2)
+  Put 2 P1P1 counter(s) on Ocelot Pride.
+  Put 1 Flying counter(s) on Ocelot Pride.
+  Resolving ability (category: Animate)
+  Ocelot Pride becomes an Angel in addition to its other types.
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Ocelot Pride deals 3 damage to Player B (now at 13 life)
+    Player A gains 3 life (lifelink)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Cat token deals 1 damage to Player B (now at 12 life)
+    Cat token deals 1 damage to Player B (now at 11 life)
+  --- End Combat Damage ---
+  Ocelot Pride triggered
+  Resolving ability (category: Token)
+  Token created: 1/1 Cat
+  Resolving ability (category: CopyPermanent)
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 28)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 2).
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: Goblin Bombardment, Orcish Bowmasters, Swords to Plowshares
+  PB: Flow State, Spell Pierce, The One Ring, Tundra, Tune the Narrative, Wasteland
+
+--- Decision 41 ---
+  Actions:
+   0: Pass priority
+   1: Cast Tune the Narrative  [#0]
+  >> B/B: 1 (Cast Tune the Narrative)
+--- Narrative ---
+  Player B activated Meticulous Archive for 1(U)
+  Player B casts Tune the Narrative
+
+--- Decision 42 ---
+  Actions:
+   0: Pass priority
+   1: Cast Spell Pierce  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Plains
+  Resolving ability (category: PutCounter, amount: 2)
+  Player B gets 2 ENERGY counter(s) (now 2).
+  Player B draws Tune the Narrative
+
+--- Decision 43 ---
+  Actions:
+   0: Pass priority
+   1: Cast Tune the Narrative  [#0]
+  >> B/B: 1 (Cast Tune the Narrative)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Tune the Narrative
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Spell Snare
+  Resolving ability (category: PutCounter, amount: 2)
+  Player B gets 2 ENERGY counter(s) (now 4).
+
+--- Decision 44 ---
+  Actions:
+   0: Pass priority
+   1: Play Plains
+   2: Play Tundra
+   3: Play Wasteland
+  >> B/B: 1 (Play Plains)
+--- Narrative ---
+  Player B played Plains
+  No creatures eligible to attack.
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Goblin Bombardment, Orcish Bowmasters, Swords to Plowshares
+  PB: Flow State, Plains, Spell Pierce, Spell Snare, The One Ring, Tundra, Wasteland
+
+--- Decision 45 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ajani, Nacatl Pariah
+
+--- Decision 46 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 0 (Pass priority)
+
+--- Decision 47 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ajani, Nacatl Pariah  [#0]
+   2: Cast Goblin Bombardment  [#0]
+   3: Cast Swords to Plowshares  [#0]
+   4: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Cast Ajani, Nacatl Pariah)
+--- Narrative ---
+  Player A activated Plateau for 1(W)
+  Player A activated Wasteland for 1(C)
+  Player A casts Ajani, Nacatl Pariah
+  Ajani, Nacatl Pariah enters the battlefield
+  Player A orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 48 ---
+  Actions:
+   0: Ajani, Nacatl Pariah (Token)  [#0]
+   1: Guide of Souls (GainLife)  [#1]
+  >> A/A: 0 (Ajani, Nacatl Pariah (Token))
+--- Narrative ---
+  Ajani, Nacatl Pariah triggered
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 29)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 3).
+  Resolving ability (category: Token)
+  Token created: 2/1 Cat Warrior
+  Player A gets the city's blessing.
+  Guide of Souls triggered
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 30)
+  Resolving ability (category: PutCounter, amount: 1)
+  Player A gets 1 ENERGY counter(s) (now 4).
+  --- Declare Attackers (Player A) ---
+
+--- Decision 49 ---
+  Actions:
+   0: Amped Raptor [2/1]
+   1: Guide of Souls [1/2]
+   2: Ocelot Pride [3/3]
+   3: Cat token [1/1]
+   4: Cat token [1/1]
+   5: Cat token [1/1]
+   6: Confirm attackers
+  >> A/A: 0 (Amped Raptor [2/1])
+--- Narrative ---
+  Amped Raptor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+
+--- Decision 50 ---
+  Actions:
+   0: Guide of Souls [1/2]
+   1: Ocelot Pride [3/3]
+   2: Cat token [1/1]
+   3: Cat token [1/1]
+   4: Cat token [1/1]
+   5: Confirm attackers
+  >> A/A: 0 (Guide of Souls [1/2])
+--- Narrative ---
+  Guide of Souls attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Guide of Souls [1/2] -> Player B
+
+--- Decision 51 ---
+  Actions:
+   0: Ocelot Pride [3/3]
+   1: Cat token [1/1]
+   2: Cat token [1/1]
+   3: Cat token [1/1]
+   4: Confirm attackers
+  >> A/A: 0 (Ocelot Pride [3/3])
+--- Narrative ---
+  Ocelot Pride attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [3/3] -> Player B
+
+--- Decision 52 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Cat token [1/1]
+   2: Cat token [1/1]
+   3: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [3/3] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 53 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Cat token [1/1]
+   2: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [3/3] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 54 ---
+  Actions:
+   0: Cat token [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Cat token [1/1])
+--- Narrative ---
+  Cat token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Guide of Souls [1/2] -> Player B
+    [attacking] Ocelot Pride [3/3] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+    [attacking] Cat token [1/1] -> Player B
+
+--- Decision 55 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Amped Raptor -> Player B
+    Guide of Souls -> Player B
+    Ocelot Pride -> Player B
+    Cat token -> Player B
+    Cat token -> Player B
+    Cat token -> Player B
+  Guide of Souls triggered
+  Resolving ability (category: ImmediateTrigger)
+
+--- Decision 56 ---
+  Actions:
+   0: Decline: Pay 3 energy  [#0]
+   1: Accept: Pay 3 energy  [#1]
+  >> A/A: 1 (Accept: Pay 3 energy)
+--- Narrative ---
+  Player A pays 3 energy.
+  Choose target for Guide of Souls:
+
+--- Decision 57 ---
+  Actions:
+   0: Amped Raptor
+   1: Guide of Souls
+   2: Ocelot Pride
+   3: Cat token
+   4: Cat token
+   5: Cat token
+  >> A/A: 0 (Amped Raptor)
+--- Narrative ---
+  Targeting choice 0
+  Guide of Souls reflexive trigger
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounterAll, amount: 2)
+  Put 2 P1P1 counter(s) on Amped Raptor.
+  Put 1 Flying counter(s) on Amped Raptor.
+  Resolving ability (category: Animate)
+  Amped Raptor becomes an Angel in addition to its other types.
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Amped Raptor deals 4 damage to Player B (now at 7 life)
+    Ocelot Pride deals 3 damage to Player B (now at 4 life)
+    Player A gains 3 life (lifelink)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Guide of Souls deals 1 damage to Player B (now at 3 life)
+    Cat token deals 1 damage to Player B (now at 2 life)
+    Cat token deals 1 damage to Player B (now at 1 life)
+    Cat token deals 1 damage to Player B (now at 0 life)
+  --- End Combat Damage ---
+  Player B has 0 life - Player A wins!
+  GAME_RESULT: 1 Player A wins
+  Player A sideboarding (10 in sideboard, 0 swap(s) made):
+
+--- Decision 58 ---
+  Actions:
+   0: Done sideboarding
+   1: Sideboard in: 1x Clarion Conqueror  [#1]
+   2: Sideboard in: 2x Containment Priest  [#2]
+   3: Sideboard in: 1x Damping Sphere  [#1]
+   4: Sideboard in: 1x Deafening Silence  [#1]
+   5: Sideboard in: 1x Disruptor Flute  [#1]
+   6: Sideboard in: 4x Leyline of the Void  [#4]
+   7: Sideboard in: 1x Null Rod  [#1]
+   8: Sideboard in: 2x Pyroblast  [#2]
+   9: Sideboard in: 1x Stony Silence  [#1]
+  10: Sideboard in: 1x Wrath of the Skies  [#1]
+  >> A/A: 0 (Done sideboarding)
+--- Narrative ---
+  Player B sideboarding (8 in sideboard, 0 swap(s) made):
+
+--- Decision 59 ---
+  Actions:
+   0: Done sideboarding
+   1: Sideboard in: 4x Consign to Memory  [#4]
+   2: Sideboard in: 2x Containment Priest  [#2]
+   3: Sideboard in: 2x Flusterstorm  [#2]
+   4: Sideboard in: 1x Lavinia, Azorius Renegade  [#1]
+   5: Sideboard in: 2x Prismatic Ending  [#2]
+   6: Sideboard in: 1x Surgical Extraction  [#1]
+   7: Sideboard in: 2x Triumph of Saint Katherine  [#2]
+   8: Sideboard in: 1x Wrath of the Skies  [#1]
+  >> B/B: 0 (Done sideboarding)
+--- Narrative ---
+  ----- MATCH GAME 2 -----
+  -------- PREGAME --------
+  Player A draws Amped Raptor
+  Player A draws Cabal Therapy
+  Player A draws Orcish Bowmasters
+  Player A draws Wasteland
+  Player A draws Ocelot Pride
+  Player A draws Marsh Flats
+  Player A draws Plateau
+  Player B draws Brainstorm
+  Player B draws Lórien Revealed
+  Player B draws Plains
+  Player B draws Swords to Plowshares
+  Player B draws Tundra
+  Player B draws Polluted Delta
+  Player B draws Flooded Strand
+  Player B hand:
+  Brainstorm
+  Flooded Strand
+  Lórien Revealed
+  Plains
+  Polluted Delta
+  Swords to Plowshares
+  Tundra
+
+--- Decision 60 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  Player A hand:
+  Amped Raptor
+  Cabal Therapy
+  Marsh Flats
+  Ocelot Pride
+  Orcish Bowmasters
+  Plateau
+  Wasteland
+
+--- Decision 61 ---
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  -------- TURN 1 (Player B) --------
+--- Turn 1 (Player B) ---
+  PA: Amped Raptor, Cabal Therapy, Marsh Flats, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Brainstorm, Flooded Strand, Lorien Revealed, Plains, Polluted Delta, Swords to Plowshares, Tundra
+
+--- Decision 62 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Play Tundra
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 63 ---
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 64 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Meticulous Archive
+   3: Mystic Sanctuary
+   4: Tundra
+  >> B/B: 2 (Meticulous Archive)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Meticulous Archive to the battlefield
+  Meticulous Archive enters tapped.
+  Meticulous Archive triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player B surveils 1.
+  Surveil: looking at Tamiyo, Inquisitive Student
+
+--- Decision 65 ---
+  Actions:
+   0: Put Tamiyo, Inquisitive Student on top of library  [#0]
+   1: Put Tamiyo, Inquisitive Student into graveyard
+  >> B/B: 0 (Put Tamiyo, Inquisitive Student on top of library)
+--- Narrative ---
+  No creatures eligible to attack.
+  -------- TURN 2 (Player A) --------
+  Player A draws Arid Mesa
+--- Turn 2 (Player A) ---
+  PA: Amped Raptor, Arid Mesa, Cabal Therapy, Marsh Flats, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Brainstorm, Lorien Revealed, Plains, Polluted Delta, Swords to Plowshares, Tundra
+
+--- Decision 66 ---
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+   2: Play Marsh Flats
+   3: Play Plateau
+   4: Play Wasteland
+  >> A/A: 1 (Play Arid Mesa)
+--- Narrative ---
+  Player A played Arid Mesa
+
+--- Decision 67 ---
+  Actions:
+   0: Pass priority
+   1: Activate Arid Mesa (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Arid Mesa (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Arid Mesa
+  Player A's Arid Mesa ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 68 ---
+  Actions:
+   0: Fail to find
+   1: Badlands
+   2: Elegant Parlor
+   3: Plains
+   4: Plateau
+   5: Scrubland
+   6: Shadowy Backstreet
+  >> A/A: 1 (Badlands)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Badlands to the battlefield
+
+--- Decision 69 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy  [#0]
+  >> A/A: 1 (Cast Cabal Therapy)
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 70 ---
+  Actions:
+   0: Player B (19 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Badlands for 1(B)
+  Player A casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player A names a card:
+
+--- Decision 71 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Consign to Memory
+   2: Name card: Flow State
+   3: Name card: Force of Will
+   4: Name card: Ponder
+   5: Name card: Swords to Plowshares
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Wrath of the Skies
+   8: Name card: Containment Priest
+   9: Name card: Flusterstorm
+  10: Name card: Force of Negation
+  11: Name card: Lórien Revealed
+  12: Name card: Murktide Regent
+  13: Name card: Prismatic Ending
+  14: Name card: The One Ring
+  15: Name card: Triumph of Saint Katherine
+  16: Name card: Tune the Narrative
+  17: Name card: Geist of Saint Traft
+  18: Name card: Lavinia, Azorius Renegade
+  19: Name card: Spell Pierce
+  20: Name card: Spell Snare
+  21: Name card: Surgical Extraction
+  22: Name card: Teferi, Time Raveler
+  >> A/A: 3 (Name card: Force of Will)
+--- Narrative ---
+  Player A names card: Force of Will
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Brainstorm
+    Lórien Revealed
+    Plains
+    Polluted Delta
+    Swords to Plowshares
+    Tundra
+  No matching cards to discard.
+  No creatures eligible to attack.
+  -------- TURN 3 (Player B) --------
+--- Turn 3 (Player B) ---
+  PA: Amped Raptor, Marsh Flats, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Brainstorm, Lorien Revealed, Plains, Polluted Delta, Swords to Plowshares, Tundra
+
+--- Decision 72 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Meticulous Archive for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Force of Will
+  Player B draws Brainstorm
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 73 ---
+  Actions:
+   0: Brainstorm
+   1: Force of Will
+   2: Lórien Revealed
+   3: Plains
+   4: Polluted Delta
+   5: Swords to Plowshares
+   6: Tamiyo, Inquisitive Student
+   7: Tundra
+  >> B/B: 3 (Plains)
+--- Narrative ---
+  Player B puts Plains to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 74 ---
+  Actions:
+   0: Brainstorm
+   1: Force of Will
+   2: Lórien Revealed
+   3: Polluted Delta
+   4: Swords to Plowshares
+   5: Tamiyo, Inquisitive Student
+   6: Tundra
+  >> B/B: 2 (Lórien Revealed)
+--- Narrative ---
+  Player B puts Lórien Revealed to top of library
+  Player B draws Lórien Revealed
+
+--- Decision 75 ---
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Tundra
+  >> B/B: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player B played Polluted Delta
+
+--- Decision 76 ---
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)  [#0]
+  >> B/B: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Polluted Delta
+  Player B's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 77 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mystic Sanctuary
+   3: Tundra
+  >> B/B: 3 (Tundra)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Tundra to the battlefield
+
+--- Decision 78 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Brainstorm
+
+--- Decision 79 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Flooded Strand
+  Player B draws Spell Pierce
+  Player B draws Spell Snare
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 80 ---
+  Actions:
+   0: Flooded Strand
+   1: Force of Will
+   2: Lórien Revealed
+   3: Spell Pierce
+   4: Spell Snare
+   5: Swords to Plowshares
+   6: Tamiyo, Inquisitive Student
+   7: Tundra
+  >> B/B: 0 (Flooded Strand)
+--- Narrative ---
+  Player B puts Flooded Strand to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 81 ---
+  Actions:
+   0: Force of Will
+   1: Lórien Revealed
+   2: Spell Pierce
+   3: Spell Snare
+   4: Swords to Plowshares
+   5: Tamiyo, Inquisitive Student
+   6: Tundra
+  >> B/B: 1 (Lórien Revealed)
+--- Narrative ---
+  Player B puts Lórien Revealed to top of library
+  No creatures eligible to attack.
+  -------- TURN 4 (Player A) --------
+  Player A draws Guide of Souls
+--- Turn 4 (Player A) ---
+  PA: Amped Raptor, Guide of Souls, Marsh Flats, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Force of Will, Inquisitive Student, Lorien Revealed, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Tundra
+
+--- Decision 82 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Play Plateau
+   3: Play Wasteland
+  >> A/A: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player A played Marsh Flats
+
+--- Decision 83 ---
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Marsh Flats
+  Player A's Marsh Flats ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 84 ---
+  Actions:
+   0: Fail to find
+   1: Elegant Parlor
+   2: Plains
+   3: Plateau
+   4: Scrubland
+   5: Shadowy Backstreet
+  >> A/A: 1 (Elegant Parlor)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Elegant Parlor to the battlefield
+  Elegant Parlor enters tapped.
+  Elegant Parlor triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Marsh Flats
+
+--- Decision 85 ---
+  Actions:
+   0: Put Marsh Flats on top of library  [#0]
+   1: Put Marsh Flats into graveyard
+  >> A/A: 1 (Put Marsh Flats into graveyard)
+--- Narrative ---
+  Player A puts Marsh Flats into their graveyard.
+  No creatures eligible to attack.
+  -------- TURN 5 (Player B) --------
+  Player B draws Lórien Revealed
+--- Turn 5 (Player B) ---
+  PA: Amped Raptor, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Force of Will, Inquisitive Student, Lorien Revealed, Spell Pierce, Spell Snare, Swords to Plowshares, Tamiyo, Tundra
+
+--- Decision 86 ---
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 87 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 2 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Meticulous Archive for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+
+--- Decision 88 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 2 (Activate Lórien Revealed from hand (ChangeZone))
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B activates Lórien Revealed from hand
+
+--- Decision 89 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 90 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mystic Sanctuary
+   3: Tundra
+  >> B/B: 3 (Tundra)
+--- Narrative ---
+  Player B shuffles their library
+  Player B reveals Tundra and puts it to hand
+
+--- Decision 91 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 92 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Play Tundra
+  >> B/B: 1 (Play Tundra)
+--- Narrative ---
+  Player B played Tundra
+
+--- Decision 93 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 94 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 95 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 96 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 97 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 98 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 6 (Player A) --------
+--- Turn 6 (Player A) ---
+  PA: Amped Raptor, Guide of Souls, Ocelot Pride, Orcish Bowmasters, Plateau, Wasteland
+  PB: Force of Will, Spell Pierce, Spell Snare, Swords to Plowshares, Tundra
+
+--- Decision 99 ---
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+  >> A/A: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player A activated Badlands for 1(B)
+  Player A activated Elegant Parlor for 1(R)
+  Player A casts Orcish Bowmasters
+
+--- Decision 100 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Spell Snare  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 101 ---
+  Actions:
+   0: Orcish Bowmasters
+  >> B/B: 0 (Orcish Bowmasters)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 102 ---
+  Actions:
+   0: Exile Spell Pierce
+   1: Exile Spell Snare
+  >> B/B: 0 (Exile Spell Pierce)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Spell Pierce
+  Player B casts Force of Will targeting Orcish Bowmasters
+
+--- Decision 103 ---
+  Actions:
+   0: Pass priority
+   1: Cast Spell Snare  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Spell Snare)
+--- Narrative ---
+  Choose target for Spell Snare:
+
+--- Decision 104 ---
+  Actions:
+   0: Orcish Bowmasters
+  >> B/B: 0 (Orcish Bowmasters)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Tundra for 1(U)
+  Player B casts Spell Snare targeting Orcish Bowmasters
+  Resolving ability (category: Counter)
+  Orcish Bowmasters is countered
+  Counter fizzles
+  Player A draws Shadowy Backstreet
+
+--- Decision 105 ---
+  Actions:
+   0: Pass priority
+   1: Play Plateau
+   2: Play Shadowy Backstreet
+   3: Play Wasteland
+  >> A/A: 1 (Play Plateau)
+--- Narrative ---
+  Player A played Plateau
+
+--- Decision 106 ---
+  Actions:
+   0: Pass priority
+   1: Cast Guide of Souls  [#0]
+   2: Cast Ocelot Pride  [#0]
+  >> A/A: 1 (Cast Guide of Souls)
+--- Narrative ---
+  Player A activated Plateau for 1(W)
+  Player A casts Guide of Souls
+  Guide of Souls enters the battlefield
+
+--- Decision 107 ---
+  Actions:
+   0: Pass priority
+   1: Cast Cabal Therapy (flashback)  [#4]
+  >> A/A: 1 (Cast Cabal Therapy (flashback))
+--- Narrative ---
+  Choose target for Cabal Therapy:
+
+--- Decision 108 ---
+  Actions:
+   0: Player B (17 life)
+   1: Player A (18 life)
+  >> A/A: 0 (Player B (17 life))
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 109 ---
+  Actions:
+   0: Sacrifice Guide of Souls
+  >> A/A: 0 (Sacrifice Guide of Souls)
+--- Narrative ---
+  Player A sacrifices Guide of Souls
+  Player A casts Cabal Therapy
+  Resolving ability (category: NameCard)
+  Player A names a card:
+
+--- Decision 110 ---
+  Actions:
+   0: Name card: Brainstorm
+   1: Name card: Consign to Memory
+   2: Name card: Flow State
+   3: Name card: Force of Will
+   4: Name card: Ponder
+   5: Name card: Swords to Plowshares
+   6: Name card: Tamiyo, Inquisitive Student
+   7: Name card: Wrath of the Skies
+   8: Name card: Containment Priest
+   9: Name card: Flusterstorm
+  10: Name card: Force of Negation
+  11: Name card: Lórien Revealed
+  12: Name card: Murktide Regent
+  13: Name card: Prismatic Ending
+  14: Name card: The One Ring
+  15: Name card: Triumph of Saint Katherine
+  16: Name card: Tune the Narrative
+  17: Name card: Geist of Saint Traft
+  18: Name card: Lavinia, Azorius Renegade
+  19: Name card: Spell Pierce
+  20: Name card: Spell Snare
+  21: Name card: Surgical Extraction
+  22: Name card: Teferi, Time Raveler
+  >> A/A: 2 (Name card: Flow State)
+--- Narrative ---
+  Player A names card: Flow State
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Swords to Plowshares
+    Tundra
+  No matching cards to discard.
+  Cabal Therapy is exiled (flashback)
+  No creatures eligible to attack.
+  -------- TURN 7 (Player B) --------
+--- Turn 7 (Player B) ---
+  PA: Amped Raptor, Ocelot Pride, Shadowy Backstreet, Wasteland
+  PB: Swords to Plowshares, Tundra
+
+--- Decision 111 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Flow State
+
+--- Decision 112 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 113 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Cast Flow State  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> B/B: 2 (Cast Flow State)
+--- Narrative ---
+  Player B activated Meticulous Archive for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts Flow State
+
+--- Decision 114 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 115 ---
+  Actions:
+   0: Swords to Plowshares
+   1: Flooded Strand
+   2: Force of Will
+  >> B/B: 1 (Flooded Strand)
+
+--- Decision 116 ---
+  Actions:
+   0: Swords to Plowshares
+   1: Force of Will
+  >> B/B: 1 (Force of Will)
+--- Narrative ---
+  Player B puts Flooded Strand into hand.
+  Player B puts Force of Will into hand.
+  Player B puts 1 card(s) on the bottom of their library.
+
+--- Decision 117 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Tundra
+   3: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 118 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Flooded Strand (ChangeZone)  [#0]
+  >> B/B: 2 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+
+--- Decision 119 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 120 ---
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mystic Sanctuary
+   3: Plains
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 121 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 122 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 123 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 124 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 125 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+
+--- Decision 126 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 127 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 128 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 129 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 130 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Activate Clue token (Draw)  [#0]
+  >> B/B: 2 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Ponder
+  -------- TURN 8 (Player A) --------
+  Player A draws Hexing Squelcher
+--- Turn 8 (Player A) ---
+  PA: Amped Raptor, Hexing Squelcher, Ocelot Pride, Shadowy Backstreet, Wasteland
+  PB: Force of Will, Swords to Plowshares, Tundra
+
+--- Decision 131 ---
+  Actions:
+   0: Pass priority
+   1: Play Shadowy Backstreet
+   2: Play Wasteland
+   3: Cast Amped Raptor  [#0]
+   4: Cast Hexing Squelcher  [#0]
+   5: Cast Ocelot Pride  [#0]
+  >> A/A: 3 (Cast Amped Raptor)
+--- Narrative ---
+  Player A activated Badlands for 1(R)
+  Player A activated Elegant Parlor for 1(R)
+  Player A casts Amped Raptor
+
+--- Decision 132 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Choose target for Force of Will:
+
+--- Decision 133 ---
+  Actions:
+   0: Amped Raptor
+  >> B/B: 0 (Amped Raptor)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 134 ---
+  Actions:
+   0: Exile Ponder
+  >> B/B: 0 (Exile Ponder)
+--- Narrative ---
+  Player B pays 1 life
+  Player B exiles Ponder
+  Player B casts Force of Will targeting Amped Raptor
+  Resolving ability (category: Counter)
+  Amped Raptor is countered
+
+--- Decision 135 ---
+  Actions:
+   0: Pass priority
+   1: Play Shadowy Backstreet
+   2: Play Wasteland
+   3: Cast Ocelot Pride  [#0]
+  >> A/A: 3 (Cast Ocelot Pride)
+--- Narrative ---
+  Player A activated Plateau for 1(W)
+  Player A casts Ocelot Pride
+  Ocelot Pride enters the battlefield
+
+--- Decision 136 ---
+  Actions:
+   0: Pass priority
+   1: Play Shadowy Backstreet
+   2: Play Wasteland
+  >> A/A: 1 (Play Shadowy Backstreet)
+--- Narrative ---
+  Player A played Shadowy Backstreet
+  Shadowy Backstreet enters tapped.
+  Shadowy Backstreet triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Player A surveils 1.
+  Surveil: looking at Amped Raptor
+
+--- Decision 137 ---
+  Actions:
+   0: Put Amped Raptor on top of library  [#0]
+   1: Put Amped Raptor into graveyard
+  >> A/A: 0 (Put Amped Raptor on top of library)
+--- Narrative ---
+  No creatures eligible to attack.
+  -------- TURN 9 (Player B) --------
+--- Turn 9 (Player B) ---
+  PA: Hexing Squelcher, Wasteland
+  PB: Swords to Plowshares, Tundra
+
+--- Decision 138 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 139 ---
+  Actions:
+   0: Ocelot Pride
+   1: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Ocelot Pride)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Meticulous Archive for 1(W)
+  Player B casts Swords to Plowshares targeting Ocelot Pride
+  Resolving ability (category: ChangeZone)
+  Ocelot Pride is moved to exile
+  Resolving ability (category: GainLife, amount: 1)
+  Player A gains 1 life (now at 19)
+  Player B draws Wasteland
+
+--- Decision 140 ---
+  Actions:
+   0: Pass priority
+   1: Play Tundra
+   2: Play Wasteland
+  >> B/B: 1 (Play Tundra)
+--- Narrative ---
+  Player B played Tundra
+  --- Declare Attackers (Player B) ---
+
+--- Decision 141 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 142 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+
+--- Decision 143 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 144 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 145 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 146 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 147 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws The One Ring
+  -------- TURN 10 (Player A) --------
+  Player A draws Amped Raptor
+--- Turn 10 (Player A) ---
+  PA: Amped Raptor, Hexing Squelcher, Wasteland
+  PB: Wasteland
+
+--- Decision 148 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Amped Raptor  [#0]
+   3: Cast Hexing Squelcher  [#0]
+  >> A/A: 2 (Cast Amped Raptor)
+--- Narrative ---
+  Player A activated Badlands for 1(R)
+  Player A activated Shadowy Backstreet for 1(W)
+  Player A casts Amped Raptor
+  Amped Raptor enters the battlefield
+  Amped Raptor triggered
+  Resolving ability (category: PutCounter, amount: 2)
+  Player A gets 2 ENERGY counter(s) (now 2).
+  Resolving ability (category: DigUntil)
+  Player A reveals Arid Mesa.
+  Player A reveals Wasteland.
+  Player A reveals Thoughtseize.
+  Player A exiles Thoughtseize.
+  Resolving ability (category: Play)
+  Player A may cast Thoughtseize by paying 1 energy rather than its mana cost.
+
+--- Decision 149 ---
+  Actions:
+   0: Do not cast Thoughtseize  [#0]
+   1: Cast Thoughtseize  [#1]
+  >> A/A: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target for Thoughtseize:
+
+--- Decision 150 ---
+  Actions:
+   0: Player B (15 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (15 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A pays 1 energy
+  Player A casts Thoughtseize targeting Player B
+  Resolving ability (category: Cleanup)
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    The One Ring
+    Wasteland
+  Player A chooses a card to discard:
+
+--- Decision 151 ---
+  Actions:
+   0: The One Ring
+  >> A/A: 0 (The One Ring)
+--- Narrative ---
+  Player B discards The One Ring
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 17)
+
+--- Decision 152 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Hexing Squelcher  [#0]
+  >> A/A: 2 (Cast Hexing Squelcher)
+--- Narrative ---
+  Player A activated Elegant Parlor for 1(R)
+  Player A activated Plateau for 1(R)
+  Player A casts Hexing Squelcher
+  Hexing Squelcher enters the battlefield
+  Creatures gain Ward:PayLife<2> (always)
+
+--- Decision 153 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 154 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 155 ---
+  Actions:
+   0: Meticulous Archive
+   1: Tundra
+   2: Tundra
+   3: Tundra
+   4: Badlands
+   5: Elegant Parlor
+   6: Plateau
+   7: Shadowy Backstreet
+   8: Wasteland
+  >> A/A: 0 (Meticulous Archive)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Meticulous Archive is on the stack
+  Resolving ability (category: Destroy)
+  Meticulous Archive is destroyed
+  No creatures eligible to attack.
+  -------- TURN 11 (Player B) --------
+  Player B draws Brainstorm
+--- Turn 11 (Player B) ---
+  PA: (empty)
+  PB: Brainstorm, Wasteland
+
+--- Decision 156 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Force of Will
+  Player B draws Flow State
+  Player B draws Teferi, Time Raveler
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 157 ---
+  Actions:
+   0: Flow State
+   1: Force of Will
+   2: Teferi, Time Raveler
+   3: Wasteland
+  >> B/B: 3 (Wasteland)
+--- Narrative ---
+  Player B puts Wasteland to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 158 ---
+  Actions:
+   0: Flow State
+   1: Force of Will
+   2: Teferi, Time Raveler
+  >> B/B: 1 (Force of Will)
+--- Narrative ---
+  Player B puts Force of Will to top of library
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Seasoned Scholar enters transformed.
+
+--- Decision 159 ---
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+   2: Cast Teferi, Time Raveler  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> B/B: 1 (Cast Flow State)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts Flow State
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 160 ---
+  Actions:
+   0: Force of Will
+   1: Wasteland
+   2: Tune the Narrative
+  >> B/B: 1 (Wasteland)
+
+--- Decision 161 ---
+  Actions:
+   0: Force of Will
+   1: Tune the Narrative
+  >> B/B: 1 (Tune the Narrative)
+--- Narrative ---
+  Player B puts Wasteland into hand.
+  Player B puts Tune the Narrative into hand.
+  Player B puts 1 card(s) on the bottom of their library.
+
+--- Decision 162 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Tune the Narrative  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> B/B: 2 (Cast Tune the Narrative)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Tune the Narrative
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Wasteland
+  Resolving ability (category: PutCounter, amount: 2)
+  Player B gets 2 ENERGY counter(s) (now 2).
+
+--- Decision 163 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 164 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+
+--- Decision 165 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 166 ---
+  Actions:
+   0: Badlands
+   1: Elegant Parlor
+   2: Plateau
+   3: Shadowy Backstreet
+   4: Tundra
+   5: Tundra
+   6: Tundra
+   7: Wasteland
+  >> B/B: 0 (Badlands)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Badlands is on the stack
+  Resolving ability (category: Destroy)
+  Badlands is destroyed
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+  No creatures eligible to attack.
+  -------- TURN 12 (Player A) --------
+  Player A draws Orcish Bowmasters
+--- Turn 12 (Player A) ---
+  PA: Orcish Bowmasters
+  PB: Teferi, Time Raveler, Wasteland
+
+--- Decision 167 ---
+  Actions:
+   0: Pass priority
+   1: Cast Orcish Bowmasters  [#0]
+  >> A/A: 1 (Cast Orcish Bowmasters)
+--- Narrative ---
+  Player A activated Shadowy Backstreet for 1(B)
+  Player A activated Elegant Parlor for 1(R)
+  Player A casts Orcish Bowmasters
+  Orcish Bowmasters enters the battlefield
+  Choose target for Orcish Bowmasters:
+
+--- Decision 168 ---
+  Actions:
+   0: Player B (15 life)
+   1: Player A (17 life)
+   2: Tamiyo, Seasoned Scholar
+   3: Amped Raptor
+   4: Hexing Squelcher
+   5: Orcish Bowmasters
+  >> A/A: 0 (Player B (15 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Orcish Bowmasters deals 1 damage to Player B (now at 14 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 1/1.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 169 ---
+  Actions:
+   0: Amped Raptor [2/1]
+   1: Hexing Squelcher [2/2]
+   2: Confirm attackers
+  >> A/A: 0 (Amped Raptor [2/1])
+--- Narrative ---
+  Select target for Amped Raptor:
+
+--- Decision 170 ---
+  Actions:
+   0: Player B (14 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 4)
+  >> A/A: 0 (Player B (14 life))
+--- Narrative ---
+  Amped Raptor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+
+--- Decision 171 ---
+  Actions:
+   0: Hexing Squelcher [2/2]
+   1: Confirm attackers
+  >> A/A: 0 (Hexing Squelcher [2/2])
+--- Narrative ---
+  Select target for Hexing Squelcher:
+
+--- Decision 172 ---
+  Actions:
+   0: Player B (14 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 4)
+  >> A/A: 0 (Player B (14 life))
+--- Narrative ---
+  Hexing Squelcher attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Hexing Squelcher [2/2] -> Player B
+
+--- Decision 173 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Amped Raptor -> Player B
+    Hexing Squelcher -> Player B
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 174 ---
+  Actions:
+   0: Floating trigger (Pump)  [#0]
+   1: Floating trigger (Pump)  [#1]
+  >> B/B: 0 (Floating trigger (Pump))
+--- Narrative ---
+  A floating triggered ability triggers.
+  A floating triggered ability triggers.
+  Resolving ability (category: Pump, -1/+0)
+  Hexing Squelcher gets -1/+0 (now 1/2)
+  Resolving ability (category: Pump, -1/+0)
+  Amped Raptor gets -1/+0 (now 1/1)
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Amped Raptor deals 1 damage to Player B (now at 13 life)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Hexing Squelcher deals 1 damage to Player B (now at 12 life)
+  --- End Combat Damage ---
+  -------- TURN 13 (Player B) --------
+  Player B draws Wrath of the Skies
+--- Turn 13 (Player B) ---
+  PA: (empty)
+  PB: Teferi, Time Raveler, Wasteland, Wrath of the Skies
+
+--- Decision 175 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Teferi, Time Raveler  [#0]
+   3: Cast Wrath of the Skies  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+  >> B/B: 2 (Cast Teferi, Time Raveler)
+--- Narrative ---
+  Player B activated Tundra for 1(W)
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts Teferi, Time Raveler
+  Teferi, Time Raveler enters the battlefield
+
+--- Decision 176 ---
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   4: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 177 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   3: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   4: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+   5: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+
+--- Decision 178 ---
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)  [#1]
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target for Wasteland:
+
+--- Decision 179 ---
+  Actions:
+   0: Elegant Parlor
+   1: Plateau
+   2: Shadowy Backstreet
+   3: Tundra
+   4: Tundra
+   5: Tundra
+   6: Wasteland
+  >> B/B: 0 (Elegant Parlor)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Elegant Parlor is on the stack
+  Resolving ability (category: Destroy)
+  Elegant Parlor is destroyed
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 180 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 5)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  No creatures eligible to attack.
+  -------- TURN 14 (Player A) --------
+  Player A draws Arid Mesa
+--- Turn 14 (Player A) ---
+  PA: Arid Mesa
+  PB: Wrath of the Skies
+
+--- Decision 181 ---
+  Actions:
+   0: Pass priority
+   1: Play Arid Mesa
+  >> A/A: 1 (Play Arid Mesa)
+--- Narrative ---
+  Player A played Arid Mesa
+
+--- Decision 182 ---
+  Actions:
+   0: Pass priority
+   1: Activate Arid Mesa (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Arid Mesa (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Arid Mesa
+  Player A's Arid Mesa ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 183 ---
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Plateau
+   3: Scrubland
+  >> A/A: 2 (Plateau)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Plateau to the battlefield
+  --- Declare Attackers (Player A) ---
+
+--- Decision 184 ---
+  Actions:
+   0: Amped Raptor [2/1]
+   1: Hexing Squelcher [2/2]
+   2: Orcish Bowmasters [1/1]
+   3: Orc Army token [1/1]
+   4: Confirm attackers
+  >> A/A: 0 (Amped Raptor [2/1])
+--- Narrative ---
+  Select target for Amped Raptor:
+
+--- Decision 185 ---
+  Actions:
+   0: Player B (12 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 6)
+   2: Teferi, Time Raveler (loyalty 5)
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Amped Raptor attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+
+--- Decision 186 ---
+  Actions:
+   0: Hexing Squelcher [2/2]
+   1: Orcish Bowmasters [1/1]
+   2: Orc Army token [1/1]
+   3: Confirm attackers
+  >> A/A: 0 (Hexing Squelcher [2/2])
+--- Narrative ---
+  Select target for Hexing Squelcher:
+
+--- Decision 187 ---
+  Actions:
+   0: Player B (12 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 6)
+   2: Teferi, Time Raveler (loyalty 5)
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Hexing Squelcher attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Hexing Squelcher [2/2] -> Player B
+
+--- Decision 188 ---
+  Actions:
+   0: Orcish Bowmasters [1/1]
+   1: Orc Army token [1/1]
+   2: Confirm attackers
+  >> A/A: 0 (Orcish Bowmasters [1/1])
+--- Narrative ---
+  Select target for Orcish Bowmasters:
+
+--- Decision 189 ---
+  Actions:
+   0: Player B (12 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 6)
+   2: Teferi, Time Raveler (loyalty 5)
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Orcish Bowmasters attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Hexing Squelcher [2/2] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+
+--- Decision 190 ---
+  Actions:
+   0: Orc Army token [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Orc Army token [1/1])
+--- Narrative ---
+  Select target for Orc Army token:
+
+--- Decision 191 ---
+  Actions:
+   0: Player B (12 life)
+   1: Tamiyo, Seasoned Scholar (loyalty 6)
+   2: Teferi, Time Raveler (loyalty 5)
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Orc Army token attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Amped Raptor [2/1] -> Player B
+    [attacking] Hexing Squelcher [2/2] -> Player B
+    [attacking] Orcish Bowmasters [1/1] -> Player B
+    [attacking] Orc Army token [1/1] -> Player B
+
+--- Decision 192 ---
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Amped Raptor -> Player B
+    Hexing Squelcher -> Player B
+    Orcish Bowmasters -> Player B
+    Orc Army token -> Player B
+  Player B orders 4 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 193 ---
+  Actions:
+   0: Floating trigger (Pump)  [#0]
+   1: Floating trigger (Pump)  [#1]
+   2: Floating trigger (Pump)  [#2]
+   3: Floating trigger (Pump)  [#3]
+  >> B/B: 0 (Floating trigger (Pump))
+--- Narrative ---
+  A floating triggered ability triggers.
+  Player B orders 3 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 194 ---
+  Actions:
+   0: Floating trigger (Pump)  [#0]
+   1: Floating trigger (Pump)  [#1]
+   2: Floating trigger (Pump)  [#2]
+  >> B/B: 0 (Floating trigger (Pump))
+--- Narrative ---
+  A floating triggered ability triggers.
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 195 ---
+  Actions:
+   0: Floating trigger (Pump)  [#0]
+   1: Floating trigger (Pump)  [#1]
+  >> B/B: 0 (Floating trigger (Pump))
+--- Narrative ---
+  A floating triggered ability triggers.
+  A floating triggered ability triggers.
+  Resolving ability (category: Pump, -1/+0)
+  Orc Army token gets -1/+0 (now 0/1)
+  Resolving ability (category: Pump, -1/+0)
+  Orcish Bowmasters gets -1/+0 (now 0/1)
+  Resolving ability (category: Pump, -1/+0)
+  Hexing Squelcher gets -1/+0 (now 1/2)
+  Resolving ability (category: Pump, -1/+0)
+  Amped Raptor gets -1/+0 (now 1/1)
+  No creatures eligible to block.
+  --- First Strike Combat Damage ---
+    Amped Raptor deals 1 damage to Player B (now at 11 life)
+  --- End First Strike Combat Damage ---
+  --- Combat Damage ---
+    Hexing Squelcher deals 1 damage to Player B (now at 10 life)
+  --- End Combat Damage ---
+  -------- TURN 15 (Player B) --------
+  Player B draws Ponder
+--- Turn 15 (Player B) ---
+  PA: (empty)
+  PB: Ponder, Wrath of the Skies
+
+--- Decision 196 ---
+  Actions:
+   0: Pass priority
+   1: Cast Ponder  [#0]
+   2: Cast Wrath of the Skies  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 197 ---
+  Actions:
+   0: Flow State  [#2]
+   1: Tamiyo, Inquisitive Student  [#2]
+   2: The One Ring  [#2]
+  >> B/B: 1 (Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 198 ---
+  Actions:
+   0: Flow State  [#1]
+   1: The One Ring  [#1]
+  >> B/B: 0 (Flow State)
+
+--- Decision 199 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws The One Ring
+  Choose target for Orcish Bowmasters:
+
+--- Decision 200 ---
+  Actions:
+   0: Player B (10 life)
+   1: Player A (16 life)
+   2: Tamiyo, Seasoned Scholar
+   3: Teferi, Time Raveler
+   4: Amped Raptor
+   5: Hexing Squelcher
+   6: Orcish Bowmasters
+   7: Orc Army token
+  >> A/A: 0 (Player B (10 life))
+--- Narrative ---
+  Targeting choice 0
+  Orcish Bowmasters triggered
+  Resolving ability (category: DealDamage, amount: 1)
+  Orcish Bowmasters deals 1 damage to Player B (now at 9 life)
+  Resolving ability (category: Amass)
+  Amass Orc 1: Player A Army is now 2/2.
+
+--- Decision 201 ---
+  Actions:
+   0: Pass priority
+   1: Cast Wrath of the Skies  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   4: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Wrath of the Skies)
+--- Narrative ---
+  Choose X value (0-1):
+
+--- Decision 202 ---
+  Actions:
+   0: X = 0  [#0]
+   1: X = 1  [#1]
+  >> B/B: 1 (X = 1)
+--- Narrative ---
+  Player B chooses X = 1
+  Player B activated Tundra for 1(W)
+  Player B activated Tundra for 1(W)
+  Player B activated Tundra for 1(U)
+  Player B casts Wrath of the Skies
+  Resolving ability (category: PutCounter, amount: 1)
+  Player B gets 1 ENERGY counter(s) (now 3).
+  Resolving ability (category: ChooseNumber)
+
+--- Decision 203 ---
+  Actions:
+   0: 0  [#0]
+   1: 1  [#1]
+   2: 2  [#2]
+   3: 3  [#3]
+  >> B/B: 2 (2)
+--- Narrative ---
+  Player B chooses 2.
+  Resolving ability (category: DestroyAll)
+  Player B pays 2 energy.
+  Amped Raptor is destroyed
+  Hexing Squelcher is destroyed
+  Orcish Bowmasters is destroyed
+  Orc Army token is destroyed
+  Orc Army (token) is put into the graveyard and ceases to exist.
+
+--- Decision 204 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   3: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   4: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 8)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 205 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 6)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  No creatures eligible to attack.
+  -------- TURN 16 (Player A) --------
+  Player A draws Goblin Bombardment
+--- Turn 16 (Player A) ---
+  PA: Goblin Bombardment
+  PB: The One Ring
+
+--- Decision 206 ---
+  Actions:
+   0: Pass priority
+   1: Cast Goblin Bombardment  [#0]
+  >> A/A: 1 (Cast Goblin Bombardment)
+--- Narrative ---
+  Player A activated Plateau for 1(R)
+  Player A activated Plateau for 1(R)
+  Player A casts Goblin Bombardment
+  Goblin Bombardment enters the battlefield
+  No creatures eligible to attack.
+  -------- TURN 17 (Player B) --------
+  Player B draws Flow State
+--- Turn 17 (Player B) ---
+  PA: Goblin Bombardment
+  PB: Flow State, The One Ring
+
+--- Decision 207 ---
+  Actions:
+   0: Pass priority
+   1: Cast Flow State  [#0]
+   2: Cast The One Ring  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Flow State)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts Flow State
+  Resolving ability (category: Dig)
+  Player B looks at the top 3 card(s) of their library.
+
+--- Decision 208 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student
+   1: Island
+  >> B/B: 1 (Island)
+
+--- Decision 209 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B puts Island into hand.
+  Player B puts Tamiyo, Inquisitive Student into hand.
+  Player B puts 1 card(s) on the bottom of their library.
+
+--- Decision 210 ---
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Cast Tamiyo, Inquisitive Student  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 2 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 211 ---
+  Actions:
+   0: Pass priority
+   1: Play Island
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Island)
+--- Narrative ---
+  Player B played Island
+
+--- Decision 212 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   3: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   4: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 10)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 213 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 7)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  No creatures eligible to attack.
+  -------- TURN 18 (Player A) --------
+  Player A draws Plains
+--- Turn 18 (Player A) ---
+  PA: Plains
+  PB: The One Ring
+
+--- Decision 214 ---
+  Actions:
+   0: Pass priority
+   1: Play Plains
+  >> A/A: 1 (Play Plains)
+--- Narrative ---
+  Player A played Plains
+  No creatures eligible to attack.
+  -------- TURN 19 (Player B) --------
+  Player B draws Misty Rainforest
+--- Turn 19 (Player B) ---
+  PA: Plains
+  PB: Misty Rainforest, The One Ring
+
+--- Decision 215 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Cast The One Ring  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 2 (Cast The One Ring)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Island for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts The One Ring
+  The One Ring enters the battlefield
+  The One Ring triggered
+
+--- Decision 216 ---
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> B/B: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player B's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 1).
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Misty Rainforest
+  Resolving ability (category: Pump)
+  Player B gains protection from everything until their next turn.
+
+--- Decision 217 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Misty Rainforest
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Misty Rainforest)
+--- Narrative ---
+  Player B played Misty Rainforest
+
+--- Decision 218 ---
+  Actions:
+   0: Pass priority
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   4: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Misty Rainforest (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Misty Rainforest
+  Player B's Misty Rainforest ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 219 ---
+  Actions:
+   0: Fail to find
+   1: Mystic Sanctuary
+  >> B/B: 1 (Mystic Sanctuary)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Mystic Sanctuary to the battlefield
+  Choose target for Mystic Sanctuary:
+
+--- Decision 220 ---
+  Actions:
+   0: Brainstorm
+   1: Flow State
+   2: Force of Will
+   3: Lórien Revealed
+   4: Ponder
+   5: Spell Snare
+   6: Swords to Plowshares
+   7: Tune the Narrative
+   8: Wrath of the Skies
+  >> B/B: 2 (Force of Will)
+--- Narrative ---
+  Targeting choice 6
+  Mystic Sanctuary triggered
+
+--- Decision 221 ---
+  Actions:
+   0: Decline: use Mystic Sanctuary's triggered ability  [#0]
+   1: Accept: use Mystic Sanctuary's triggered ability  [#1]
+  >> B/B: 1 (Accept: use Mystic Sanctuary's triggered ability)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Force of Will is moved to top of library
+
+--- Decision 222 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   3: Activate Tamiyo, Seasoned Scholar [-7] (Draw)  [#2]
+   4: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 12)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 223 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 8)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  --- Declare Attackers (Player B) ---
+
+--- Decision 224 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student [0/3]
+   1: Confirm attackers
+  >> B/B: 0 (Tamiyo, Inquisitive Student [0/3])
+--- Narrative ---
+  Tamiyo, Inquisitive Student attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Tamiyo, Inquisitive Student [0/3] -> Player A
+
+--- Decision 225 ---
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Tamiyo, Inquisitive Student -> Player A
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: Investigate)
+  Token created: 0/0 Clue
+
+--- Decision 226 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 227 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 228 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 229 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 230 ---
+  Actions:
+   0: Pass priority
+   1: Activate Clue token (Draw)  [#0]
+  >> B/B: 1 (Activate Clue token (Draw))
+--- Narrative ---
+  Player B activated Mystic Sanctuary for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B sacrifices Clue token
+  Player B's Clue ability is on the stack
+  Clue (token) is put into the graveyard and ceases to exist.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Force of Will
+  Tamiyo, Inquisitive Student triggered
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Seasoned Scholar enters transformed.
+  Legend rule: Player B controls 2 copies of Tamiyo, Seasoned Scholar; choose one to keep.
+
+--- Decision 231 ---
+  Actions:
+   0: Keep Tamiyo, Seasoned Scholar
+   1: Keep Tamiyo, Seasoned Scholar
+  >> B/B: 0 (Keep Tamiyo, Seasoned Scholar)
+--- Narrative ---
+  Tamiyo, Seasoned Scholar is put into the graveyard (legend rule)
+
+--- Decision 232 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+  -------- TURN 20 (Player A) --------
+  Player A draws Scrubland
+--- Turn 20 (Player A) ---
+  PA: Scrubland
+  PB: Force of Will, Misty Rainforest
+
+--- Decision 233 ---
+  Actions:
+   0: Pass priority
+   1: Play Scrubland
+  >> A/A: 1 (Play Scrubland)
+--- Narrative ---
+  Player A played Scrubland
+  No creatures eligible to attack.
+  -------- TURN 21 (Player B) --------
+  The One Ring triggered
+--- Turn 21 (Player B) ---
+  PA: Scrubland
+  PB: Force of Will, Misty Rainforest
+
+--- Decision 234 ---
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> B/B: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player B's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 2).
+  Resolving ability (category: Draw, amount: 2)
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Plains
+  Resolving ability (category: LoseLife, amount: 2)
+  Player B loses 2 life (now at 6)
+  Player B draws Ponder
+
+--- Decision 235 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Plains
+   3: Cast Ponder  [#0]
+   4: Cast Tamiyo, Inquisitive Student  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   6: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   7: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   8: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+
+--- Decision 236 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will  [#0]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 237 ---
+  Actions:
+   0: Flooded Strand  [#2]
+   1: Murktide Regent  [#2]
+   2: Force of Will  [#2]
+  >> B/B: 0 (Flooded Strand)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 238 ---
+  Actions:
+   0: Murktide Regent  [#1]
+   1: Force of Will  [#1]
+  >> B/B: 1 (Force of Will)
+
+--- Decision 239 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Murktide Regent
+
+--- Decision 240 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Plains
+   3: Cast Murktide Regent  [#0]
+   4: Cast Tamiyo, Inquisitive Student  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   6: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   7: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   8: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Cast Murktide Regent)
+--- Narrative ---
+  Choose how many cards to exile via Delve (2-5):
+
+--- Decision 241 ---
+  Actions:
+   0: Exile 2 cards from graveyard (Delve)  [#2]
+   1: Exile 3 cards from graveyard (Delve)  [#3]
+   2: Exile 4 cards from graveyard (Delve)  [#4]
+   3: Exile 5 cards from graveyard (Delve)  [#5]
+  >> B/B: 3 (Exile 5 cards from graveyard (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (1 of 5):
+
+--- Decision 242 ---
+  Actions:
+   0: Exile Brainstorm (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lórien Revealed (Delve)
+   5: Exile Meticulous Archive (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Spell Snare (Delve)
+  10: Exile Swords to Plowshares (Delve)
+  11: Exile Tamiyo, Inquisitive Student (Delve)
+  12: Exile The One Ring (Delve)
+  13: Exile Tune the Narrative (Delve)
+  14: Exile Wasteland (Delve)
+  15: Exile Wrath of the Skies (Delve)
+  >> B/B: 0 (Exile Brainstorm (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (2 of 5):
+
+--- Decision 243 ---
+  Actions:
+   0: Exile Brainstorm (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lórien Revealed (Delve)
+   5: Exile Meticulous Archive (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Spell Snare (Delve)
+  10: Exile Swords to Plowshares (Delve)
+  11: Exile Tamiyo, Inquisitive Student (Delve)
+  12: Exile The One Ring (Delve)
+  13: Exile Tune the Narrative (Delve)
+  14: Exile Wasteland (Delve)
+  15: Exile Wrath of the Skies (Delve)
+  >> B/B: 0 (Exile Brainstorm (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (3 of 5):
+
+--- Decision 244 ---
+  Actions:
+   0: Exile Brainstorm (Delve)
+   1: Exile Flooded Strand (Delve)
+   2: Exile Flow State (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lórien Revealed (Delve)
+   5: Exile Meticulous Archive (Delve)
+   6: Exile Misty Rainforest (Delve)
+   7: Exile Polluted Delta (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Spell Snare (Delve)
+  10: Exile Swords to Plowshares (Delve)
+  11: Exile Tamiyo, Inquisitive Student (Delve)
+  12: Exile The One Ring (Delve)
+  13: Exile Tune the Narrative (Delve)
+  14: Exile Wasteland (Delve)
+  15: Exile Wrath of the Skies (Delve)
+  >> B/B: 0 (Exile Brainstorm (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (4 of 5):
+
+--- Decision 245 ---
+  Actions:
+   0: Exile Flooded Strand (Delve)
+   1: Exile Flow State (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Lórien Revealed (Delve)
+   4: Exile Meticulous Archive (Delve)
+   5: Exile Misty Rainforest (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Spell Snare (Delve)
+   9: Exile Swords to Plowshares (Delve)
+  10: Exile Tamiyo, Inquisitive Student (Delve)
+  11: Exile The One Ring (Delve)
+  12: Exile Tune the Narrative (Delve)
+  13: Exile Wasteland (Delve)
+  14: Exile Wrath of the Skies (Delve)
+  >> B/B: 0 (Exile Flooded Strand (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (5 of 5):
+
+--- Decision 246 ---
+  Actions:
+   0: Exile Flooded Strand (Delve)
+   1: Exile Flow State (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Lórien Revealed (Delve)
+   4: Exile Meticulous Archive (Delve)
+   5: Exile Misty Rainforest (Delve)
+   6: Exile Polluted Delta (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Spell Snare (Delve)
+   9: Exile Swords to Plowshares (Delve)
+  10: Exile Tamiyo, Inquisitive Student (Delve)
+  11: Exile The One Ring (Delve)
+  12: Exile Tune the Narrative (Delve)
+  13: Exile Wasteland (Delve)
+  14: Exile Wrath of the Skies (Delve)
+  >> B/B: 0 (Exile Flooded Strand (Delve))
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Mystic Sanctuary for 1(U)
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Brainstorm via Delve.
+  Player B exiles Flooded Strand via Delve.
+  Player B exiles Flooded Strand via Delve.
+  Player B casts Murktide Regent
+
+--- Decision 247 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Murktide Regent enters the battlefield
+  Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
+
+--- Decision 248 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Plains
+   3: Cast Tamiyo, Inquisitive Student  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 249 ---
+  Actions:
+   0: Pass priority
+   1: Play Misty Rainforest
+   2: Play Plains
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Misty Rainforest)
+--- Narrative ---
+  Player B played Misty Rainforest
+
+--- Decision 250 ---
+  Actions:
+   0: Pass priority
+   1: Activate Misty Rainforest (ChangeZone)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   4: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Misty Rainforest (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Misty Rainforest
+  Player B's Misty Rainforest ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 251 ---
+  Actions:
+   0: Fail to find
+  >> B/B: 0 (Fail to find)
+--- Narrative ---
+  Player B shuffles their library
+  Player B fails to find
+
+--- Decision 252 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   3: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   4: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 253 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 9)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  No creatures eligible to attack.
+  -------- TURN 22 (Player A) --------
+  Player A draws Swords to Plowshares
+--- Turn 22 (Player A) ---
+  PA: Swords to Plowshares
+  PB: Force of Will, Plains
+
+--- Decision 254 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+  >> A/A: 1 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 255 ---
+  Actions:
+   0: Murktide Regent
+   1: Tamiyo, Inquisitive Student
+  >> A/A: 0 (Murktide Regent)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Plains for 1(W)
+  Player A casts Swords to Plowshares targeting Murktide Regent
+  Resolving ability (category: ChangeZone)
+  Murktide Regent is moved to exile
+  Resolving ability (category: GainLife, amount: 6)
+  Player B gains 6 life (now at 11)
+  No creatures eligible to attack.
+  -------- TURN 23 (Player B) --------
+  The One Ring triggered
+--- Turn 23 (Player B) ---
+  PA: (empty)
+  PB: Force of Will, Plains
+
+--- Decision 256 ---
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> B/B: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player B's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 3).
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Lórien Revealed
+  Player B draws Polluted Delta
+  Player B draws Brainstorm
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 257 ---
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm  [#0]
+   2: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+
+--- Decision 258 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will  [#0]
+   2: Cast Force of Will (alternate cost)  [#1]
+   3: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Flooded Strand
+  Player B draws Tamiyo, Inquisitive Student
+  Player B draws Force of Negation
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 259 ---
+  Actions:
+   0: Flooded Strand
+   1: Force of Negation
+   2: Force of Will
+   3: Lórien Revealed
+   4: Plains
+   5: Polluted Delta
+   6: Tamiyo, Inquisitive Student
+  >> B/B: 0 (Flooded Strand)
+--- Narrative ---
+  Player B puts Flooded Strand to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 260 ---
+  Actions:
+   0: Force of Negation
+   1: Force of Will
+   2: Lórien Revealed
+   3: Plains
+   4: Polluted Delta
+   5: Tamiyo, Inquisitive Student
+  >> B/B: 3 (Plains)
+--- Narrative ---
+  Player B puts Plains to top of library
+
+--- Decision 261 ---
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Seasoned Scholar enters transformed.
+  Legend rule: Player B controls 2 copies of Tamiyo, Seasoned Scholar; choose one to keep.
+
+--- Decision 262 ---
+  Actions:
+   0: Keep Tamiyo, Seasoned Scholar
+   1: Keep Tamiyo, Seasoned Scholar
+  >> B/B: 0 (Keep Tamiyo, Seasoned Scholar)
+--- Narrative ---
+  Tamiyo, Seasoned Scholar is put into the graveyard (legend rule)
+
+--- Decision 263 ---
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: LoseLife, amount: 3)
+  Player B loses 3 life (now at 8)
+
+--- Decision 264 ---
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Plains
+
+--- Decision 265 ---
+  Actions:
+   0: Pass priority
+   1: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 266 ---
+  Actions:
+   0: Pass priority
+   1: Play Plains
+   2: Play Polluted Delta
+   3: Cast Lórien Revealed  [#0]
+   4: Cast Tamiyo, Inquisitive Student  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+   8: Activate Lórien Revealed from hand (ChangeZone)  [#1]
+  >> B/B: 3 (Cast Lórien Revealed)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B activated Mystic Sanctuary for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B activated Tundra for 1(U)
+  Player B casts Lórien Revealed
+
+--- Decision 267 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Flooded Strand
+  Player B draws Swords to Plowshares
+  Player B draws Swords to Plowshares
+
+--- Decision 268 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 269 ---
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)  [#0]
+   2: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   3: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   4: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 270 ---
+  Actions:
+   0: Fail to find
+  >> B/B: 0 (Fail to find)
+--- Narrative ---
+  Player B shuffles their library
+  Player B fails to find
+
+--- Decision 271 ---
+  Actions:
+   0: Pass priority
+   1: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   3: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 4)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 272 ---
+  Actions:
+   0: Pass priority
+   1: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   2: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 10)
+  Player B's Teferi, Time Raveler ability is on the stack
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+  No creatures eligible to attack.
+  -------- TURN 24 (Player A) --------
+  Player A draws Swords to Plowshares
+  No creatures eligible to attack.
+  -------- TURN 25 (Player B) --------
+  The One Ring triggered
+--- Turn 25 (Player B) ---
+  PA: (empty)
+  PB: Force of Negation, Force of Will, Inquisitive Student, Plains, Polluted Delta, Swords to Plowshares, Swords to Plowshares, Tamiyo
+
+--- Decision 273 ---
+  Actions:
+   0: Pass priority
+   1: Activate The One Ring (PutCounter)  [#0]
+  >> B/B: 1 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player B's The One Ring ability is on the stack
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 4).
+  Resolving ability (category: Draw, amount: 4)
+  Player B draws Wasteland
+  Player B draws Ponder
+  Player B draws Flooded Strand
+  Player B draws Force of Will
+  Resolving ability (category: LoseLife, amount: 4)
+  Player B loses 4 life (now at 3)
+  Player B draws Wrath of the Skies
+
+--- Decision 274 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Play Wasteland
+   5: Cast Ponder  [#0]
+   6: Cast Tamiyo, Inquisitive Student  [#0]
+   7: Cast Wrath of the Skies  [#0]
+   8: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   9: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+  10: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+  11: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 5 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+
+--- Decision 275 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation  [#0]
+   2: Cast Force of Will  [#0]
+   3: Cast Force of Will (alternate cost)  [#1]
+   4: Cast Force of Will  [#0]
+   5: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 276 ---
+  Actions:
+   0: Tune the Narrative  [#2]
+   1: Swords to Plowshares  [#2]
+   2: Geist of Saint Traft  [#2]
+  >> B/B: 0 (Tune the Narrative)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 277 ---
+  Actions:
+   0: Swords to Plowshares  [#1]
+   1: Geist of Saint Traft  [#1]
+  >> B/B: 0 (Swords to Plowshares)
+
+--- Decision 278 ---
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Geist of Saint Traft
+
+--- Decision 279 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Play Wasteland
+   5: Cast Geist of Saint Traft  [#0]
+   6: Cast Tamiyo, Inquisitive Student  [#0]
+   7: Cast Wrath of the Skies  [#0]
+   8: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   9: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+  10: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+  11: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 5 (Cast Geist of Saint Traft)
+--- Narrative ---
+  Player B activated Tundra for 1(W)
+  Player B activated Island for 1(U)
+  Player B activated Mystic Sanctuary for 1(U)
+  Player B casts Geist of Saint Traft
+
+--- Decision 280 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Geist of Saint Traft enters the battlefield
+
+--- Decision 281 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Play Wasteland
+   5: Cast Swords to Plowshares  [#0]
+   6: Cast Swords to Plowshares  [#0]
+   7: Cast Tamiyo, Inquisitive Student  [#0]
+   8: Cast Wrath of the Skies  [#0]
+   9: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+  10: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+  11: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+  12: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 7 (Cast Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Player B activated Tundra for 1(U)
+  Player B casts Tamiyo, Inquisitive Student
+
+--- Decision 282 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+   3: Cast Swords to Plowshares  [#0]
+   4: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Tamiyo, Inquisitive Student enters the battlefield
+
+--- Decision 283 ---
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+   2: Play Plains
+   3: Play Polluted Delta
+   4: Play Wasteland
+   5: Cast Swords to Plowshares  [#0]
+   6: Cast Swords to Plowshares  [#0]
+   7: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   8: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   9: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+  10: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player B played Flooded Strand
+
+--- Decision 284 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Flooded Strand (ChangeZone)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   5: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   6: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   7: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Flooded Strand
+  Player B's Flooded Strand ability is on the stack
+
+--- Decision 285 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 286 ---
+  Actions:
+   0: Fail to find
+  >> B/B: 0 (Fail to find)
+--- Narrative ---
+  Player B shuffles their library
+  Player B fails to find
+
+--- Decision 287 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Tamiyo, Seasoned Scholar [+2] (Effect)  [#0]
+   4: Activate Tamiyo, Seasoned Scholar [-3] (ChangeZone)  [#1]
+   5: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   6: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Activate Tamiyo, Seasoned Scholar [+2] (Effect))
+--- Narrative ---
+  Tamiyo, Seasoned Scholar activates a loyalty ability (+2, loyalty now 6)
+  Player B's Tamiyo, Seasoned Scholar ability is on the stack
+
+--- Decision 288 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Effect)
+  A floating triggered ability is created until your next turn.
+
+--- Decision 289 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate Teferi, Time Raveler [+1] (Effect)  [#0]
+   4: Activate Teferi, Time Raveler [-3] (ChangeZone)  [#1]
+  >> B/B: 3 (Activate Teferi, Time Raveler [+1] (Effect))
+--- Narrative ---
+  Teferi, Time Raveler activates a loyalty ability (+1, loyalty now 11)
+  Player B's Teferi, Time Raveler ability is on the stack
+
+--- Decision 290 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Effect)
+  Player B may cast Sorcery spells as though they had flash until their next turn.
+
+--- Decision 291 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 292 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 293 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 294 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 295 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 296 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Discard to hand size (Player B) ---
+  Hand (9 cards, must discard to 7):
+
+--- Decision 297 ---
+  Actions:
+   0: Force of Negation
+   1: Force of Will
+   2: Force of Will
+   3: Plains
+   4: Polluted Delta
+   5: Swords to Plowshares
+   6: Swords to Plowshares
+   7: Wasteland
+   8: Wrath of the Skies
+  >> B/B: 3 (Plains)
+--- Narrative ---
+  Player B discards Plains.
+  --- Discard to hand size (Player B) ---
+  Hand (8 cards, must discard to 7):
+
+--- Decision 298 ---
+  Actions:
+   0: Force of Negation
+   1: Force of Will
+   2: Force of Will
+   3: Polluted Delta
+   4: Swords to Plowshares
+   5: Swords to Plowshares
+   6: Wasteland
+   7: Wrath of the Skies
+  >> B/B: 7 (Wrath of the Skies)
+--- Narrative ---
+  Player B discards Wrath of the Skies.
+  -------- TURN 26 (Player A) --------
+--- Turn 26 (Player A) ---
+  PA: (empty)
+  PB: Force of Negation, Force of Will, Force of Will, Polluted Delta, Swords to Plowshares, Swords to Plowshares, Wasteland
+
+--- Decision 299 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Marsh Flats
+
+--- Decision 300 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 301 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+   2: Cast Swords to Plowshares  [#0]
+  >> A/A: 2 (Cast Swords to Plowshares)
+--- Narrative ---
+  Choose target for Swords to Plowshares:
+
+--- Decision 302 ---
+  Actions:
+   0: Tamiyo, Inquisitive Student
+  >> A/A: 0 (Tamiyo, Inquisitive Student)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Plains for 1(W)
+  Player A casts Swords to Plowshares targeting Tamiyo, Inquisitive Student
+
+--- Decision 303 ---
+  Actions:
+   0: Pass priority
+   1: Cast Force of Negation (alternate cost)  [#1]
+   2: Cast Force of Will (alternate cost)  [#1]
+   3: Cast Force of Will (alternate cost)  [#1]
+   4: Cast Swords to Plowshares  [#0]
+   5: Cast Swords to Plowshares  [#0]
+  >> B/B: 1 (Cast Force of Negation (alternate cost))
+--- Narrative ---
+  Choose target for Force of Negation:
+
+--- Decision 304 ---
+  Actions:
+   0: Swords to Plowshares
+  >> B/B: 0 (Swords to Plowshares)
+--- Narrative ---
+  Targeting choice 0
+
+--- Decision 305 ---
+  Actions:
+   0: Exile Force of Will
+   1: Exile Force of Will
+  >> B/B: 0 (Exile Force of Will)
+--- Narrative ---
+  Player B exiles Force of Will
+  Player B casts Force of Negation targeting Swords to Plowshares
+
+--- Decision 306 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Counter)
+  Swords to Plowshares is countered
+
+--- Decision 307 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 308 ---
+  Actions:
+   0: Pass priority
+   1: Play Marsh Flats
+  >> A/A: 1 (Play Marsh Flats)
+--- Narrative ---
+  Player A played Marsh Flats
+
+--- Decision 309 ---
+  Actions:
+   0: Pass priority
+   1: Activate Marsh Flats (ChangeZone)  [#0]
+  >> A/A: 1 (Activate Marsh Flats (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Marsh Flats
+  Player A's Marsh Flats ability is on the stack
+
+--- Decision 310 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 311 ---
+  Actions:
+   0: Fail to find
+   1: Scrubland
+  >> A/A: 1 (Scrubland)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Scrubland to the battlefield
+
+--- Decision 312 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 313 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 314 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 315 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 316 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+
+--- Decision 317 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 27 (Player B) --------
+  The One Ring triggered
+--- Turn 27 (Player B) ---
+  PA: (empty)
+  PB: Force of Will, Polluted Delta, Swords to Plowshares, Swords to Plowshares, Wasteland
+
+--- Decision 318 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Activate The One Ring (PutCounter)  [#0]
+  >> B/B: 3 (Activate The One Ring (PutCounter))
+--- Narrative ---
+  Player B's The One Ring ability is on the stack
+
+--- Decision 319 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 BURDEN counter(s) on The One Ring (now 5).
+  Resolving ability (category: Draw, amount: 5)
+  Player B draws Force of Will
+  Player B draws Swords to Plowshares
+  Player B draws Flow State
+  Player B draws Wasteland
+  Player B draws Force of Negation
+  Tamiyo, Inquisitive Student triggered
+
+--- Decision 320 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to exile
+  Resolving ability (category: ChangeZone)
+  Tamiyo, Inquisitive Student is moved to the battlefield
+  Resolving ability (category: Cleanup)
+  Tamiyo, Seasoned Scholar enters transformed.
+  Legend rule: Player B controls 2 copies of Tamiyo, Seasoned Scholar; choose one to keep.
+
+--- Decision 321 ---
+  Actions:
+   0: Keep Tamiyo, Seasoned Scholar
+   1: Keep Tamiyo, Seasoned Scholar
+  >> B/B: 0 (Keep Tamiyo, Seasoned Scholar)
+--- Narrative ---
+  Tamiyo, Seasoned Scholar is put into the graveyard (legend rule)
+
+--- Decision 322 ---
+  Actions:
+   0: Pass priority
+   1: Cast Swords to Plowshares  [#0]
+   2: Cast Swords to Plowshares  [#0]
+   3: Cast Swords to Plowshares  [#0]
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: LoseLife, amount: 5)
+  Player B loses 5 life (now at -3)
+  Player B has -3 life - Player A wins!
+  GAME_RESULT: 2 Player A wins
+  MATCH_RESULT: Player A wins 2-0
+
+=== A/A wins ===
