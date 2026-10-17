@@ -34,7 +34,7 @@ struct ParsedOption {
 
 static std::vector<std::string> split_card_list(const std::string &csv);
 static bool is_seat_a(const char *value);
-static bool knowledge_level_expert(const char *value);
+static int knowledge_level_value(const char *value);
 static const CliOption *find_option(const std::string &name);
 static const CliOption *find_header_option(const std::string &key);
 static std::string header_key(const CliOption &option);
@@ -174,9 +174,9 @@ static const CliOption OPTIONS[] = {
     {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
     // Each seat's knowledge sidecar level in its RMSTATE frames (state_format/knowledge_feed.h).
     // Output only, like the RMSTATE writers: not recorded in the log header, honored in replay.
-    {"--knowledge-a", nullptr, true, false, [](const char *v) { knowledge_expert_a = knowledge_level_expert(v); },
+    {"--knowledge-a", nullptr, true, false, [](const char *v) { knowledge_level_a = knowledge_level_value(v); },
         nullptr},
-    {"--knowledge-b", nullptr, true, false, [](const char *v) { knowledge_expert_b = knowledge_level_expert(v); },
+    {"--knowledge-b", nullptr, true, false, [](const char *v) { knowledge_level_b = knowledge_level_value(v); },
         nullptr},
     // Run the state format's self-checks at every decision (state_format/selfcheck.h).
     {"--selfcheck-state", nullptr, false, false, [](const char *) { selfcheck_state = true; }, nullptr},
@@ -223,12 +223,14 @@ static bool is_seat_a(const char *value) {
     return std::strcmp(value, "A") == 0 || std::strcmp(value, "a") == 0;
 }
 
-// The value of --knowledge-a / --knowledge-b: expert (true) or off (false); anything else is fatal.
-static bool knowledge_level_expert(const char *value) {
-    if (std::strcmp(value, "expert") == 0) return true;
-    if (std::strcmp(value, "off") != 0)
-        fatal_error("--knowledge-a/--knowledge-b: expected off or expert, got '" + std::string(value) + "'");
-    return false;
+// The value of --knowledge-a / --knowledge-b: off (0), expert (1) or expert+belief (2); anything
+// else is fatal.
+static int knowledge_level_value(const char *value) {
+    if (std::strcmp(value, "off") == 0) return 0;
+    if (std::strcmp(value, "expert") == 0) return 1;
+    if (std::strcmp(value, "expert+belief") == 0) return 2;
+    fatal_error("--knowledge-a/--knowledge-b: expected off, expert or expert+belief, got '" + std::string(value) + "'");
+    return 0;
 }
 
 static const CliOption *find_option(const std::string &name) {

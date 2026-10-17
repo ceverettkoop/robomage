@@ -32,7 +32,12 @@
 //   - per player whose registered list is a reference list (equal counts, main and side): that
 //     list's k_template row is consistent, its archetype's k_archetype row possible, and no other
 //     archetype exact; and the k_template rows marked registered are exactly the classification of
-//     the true registered list when the viewer sees it, none otherwise.
+//     the true registered list when the viewer sees it, none otherwise;
+//   - the belief layer's rows (b_list, b_archetype; level expert+belief), which are probabilities,
+//     not facts, so only their structure: per player a list has probability zero exactly when its
+//     k_template row is inconsistent (so the true list, when it is a reference list, has a positive
+//     one), the lists' probabilities sum to PROB_SCALE (zero when no list is consistent), and each
+//     label's is the sum of its lists'.
 // Set-aside pools (test-harness presets not yet created) have no counterpart in the true world.
 
 namespace knowledge {
@@ -52,6 +57,7 @@ struct Truth {
         // (-1: none, or the list is hidden). Unchecked without set_truth_lists.
         std::vector<std::pair<int, int>> reference[2];
         int classified[2] = {-1, -1};
+        std::vector<int> list_archetype;  // per reference list: its label
         bool lists_known = false;
 };
 

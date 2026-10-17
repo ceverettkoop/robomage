@@ -2,7 +2,9 @@
 // templates.h, docs/knowledge_store.md §10).
 
 #include <algorithm>
+#include <climits>
 
+#include "belief.h"
 #include "knowledge.h"
 
 namespace knowledge {
@@ -12,12 +14,16 @@ namespace knowledge {
 static constexpr uint64_t TEMPLATE_BUDGET = 250000;
 // Constraint evaluations the propagation seeding that check may use (still sound past it).
 static constexpr uint64_t PROPAGATION_STEPS = 1000000;
+// Leaves one list's likelihood sweep may visit against one template network before the belief
+// layer uses the copies-seen fallback for it (belief.h).
+static constexpr uint64_t LIKELIHOOD_BUDGET = 200000;
 
-// Whether the opponent's lists are checked against their network: a live game at level expert, a
-// metagame with lists, and the opponent's registered list hidden (--closed-decklist).
+// Whether the opponent's lists are checked against their network: a live game at level expert (or
+// expert+belief), a metagame with lists, and the opponent's registered list hidden
+// (--closed-decklist).
 bool Knowledge::templates_by_network() const {
-    return level_ == rmstate::KnowledgeLevel::EXPERT && viewer_ != NO_SEAT && game_active_ &&
-           !metagame_.lists.empty() && !lists_.present[1 - viewer_];
+    return level_ != rmstate::KnowledgeLevel::OFF && viewer_ != NO_SEAT && game_active_ && !metagame_.lists.empty() &&
+           !lists_.present[1 - viewer_];
 }
 
 size_t Knowledge::opponent_pins() const {
@@ -38,6 +44,9 @@ void Knowledge::save_template_network() {
     tpl_done_.assign(metagame_.lists.size(), 0);
     tpl_consistent_.assign(metagame_.lists.size(), 0);
     tpl_exact_.assign(metagame_.lists.size(), 0);
+    tpl_ll_.assign(metagame_.lists.size(), 0.0);
+    tpl_ll_exact_.assign(metagame_.lists.size(), 0);
+    tpl_seen_ = seen_game_[1 - viewer_];
 }
 
 // Reference list `l` against the template network, once per template network: a function of that
@@ -62,6 +71,7 @@ void Knowledge::check_template(size_t l) {
     const Feasibility f = solver_.feasible(h, store, TEMPLATE_BUDGET);
     tpl_consistent_[l] = f.feasible ? 1 : 0;
     tpl_exact_[l] = f.exact ? 1 : 0;
+    if (belief_on() && f.feasible) check_likelihood(l, h, f.exact);
 }
 
 // Every list the copies seen do not already exclude, against the current template network (each
@@ -81,6 +91,10 @@ void Knowledge::close_templates() {
         check_template(l);
         if (!tpl_consistent_[l]) list_excluded_[l] = 1;
         if (!tpl_exact_[l]) list_unproven_[l] = 1;
+        if (belief_on() && tpl_consistent_[l]) {
+            list_ll_[l] += tpl_ll_[l];
+            if (!tpl_ll_exact_[l]) list_ll_approx_[l] = 1;
+        }
     }
     tpl_active_ = false;
 }
@@ -147,6 +161,103 @@ void Knowledge::template_rows(KRows &out) const {
             out.archetypes.push_back(row);
         }
     }
+}
+
+bool Knowledge::belief_on() const {
+    return level_ == rmstate::KnowledgeLevel::EXPERT_BELIEF;
+}
+
+// The likelihood of list `l` (consistent: `h` is its hypothesis network of the template network,
+// `proven` whether the consistency is): the network's weighted world count, else (past the budget,
+// or a zero count the sound layer did not prove: the belief layer never excludes a list the k_* tables
+// keep) the copies-seen fallback.
+void Knowledge::check_likelihood(size_t l, const Network &h, bool proven) {
+    const Likelihood lk = network_likelihood(h, LIKELIHOOD_BUDGET);
+    if (lk.finished && lk.possible) {
+        tpl_ll_[l] = lk.log_p;
+        tpl_ll_exact_[l] = 1;
+        return;
+    }
+    if (lk.finished && proven)
+        error("belief: reference list " + metagame_.lists[l].name +
+              " has a world, but its hypothesis network's weighted count is zero");
+    tpl_ll_[l] = seen_log_likelihood(metagame_.lists[l], tpl_seen_);
+    tpl_ll_exact_[l] = 0;
+}
+
+// List `l`'s log-likelihood for the hidden opponent over the match: the finished games' and, in a
+// live game, the template network's; `exact` when every one of them is an exact weighted count.
+double Knowledge::list_log_likelihood(size_t l, bool *exact) const {
+    double ll = list_ll_[l];
+    *exact = !list_ll_approx_[l];
+    if (tpl_active_) {
+        ll += tpl_ll_[l];
+        *exact = *exact && tpl_ll_exact_[l];
+    }
+    return ll;
+}
+
+// Player `p`'s log weights over the reference lists, the support (the lists `rows`' k_template rows
+// keep) and per list whether its weight is exact. A list the viewer sees is explicit: the lists equal
+// to it share the probability.
+void Knowledge::belief_weights(int p, const KRows &rows, std::vector<double> *log_w, std::vector<uint8_t> *support,
+    std::vector<uint8_t> *exact) const {
+    const size_t n = metagame_.lists.size();
+    log_w->assign(n, 0.0);
+    support->assign(n, 0);
+    exact->assign(n, 1);
+    for (const KTemplateRow &t : rows.templates)
+        if (t.player == p && t.consistent && t.list < n) (*support)[t.list] = 1;
+    if (lists_.present[p]) return;
+    for (size_t l = 0; l < n; ++l) {
+        if (!(*support)[l]) continue;
+        bool ex = true;
+        (*log_w)[l] = list_log_likelihood(l, &ex);
+        (*exact)[l] = ex ? 1 : 0;
+    }
+}
+
+// b_list and b_archetype: per player (self first), every reference list's posterior, then every
+// label's (the sum of its lists').
+void Knowledge::belief_rows(KRows &out) const {
+    if (!belief_on() || metagame_.lists.empty()) return;
+    const int order[2] = {viewer_, 1 - viewer_};
+    for (int p : order) {
+        std::vector<double> log_w;
+        std::vector<uint8_t> support, exact;
+        belief_weights(p, out, &log_w, &support, &exact);
+        const std::vector<uint32_t> prob = fixed_point_posterior(log_w, support);
+        std::vector<uint64_t> by_label(metagame_.archetypes.size(), 0);
+        for (size_t l = 0; l < metagame_.lists.size(); ++l) {
+            BListRow row;
+            row.player = p;
+            row.list = static_cast<uint16_t>(l);
+            row.prob = prob[l];
+            row.loglik = support[l] ? loglik_column(log_w[l]) : INT32_MIN;
+            row.exact = exact[l] != 0;
+            out.belief_lists.push_back(row);
+            const size_t a = static_cast<size_t>(metagame_.lists[l].archetype);
+            if (a < by_label.size()) by_label[a] += prob[l];
+        }
+        for (size_t a = 0; a < metagame_.archetypes.size(); ++a) {
+            BArchetypeRow row;
+            row.player = p;
+            row.archetype = static_cast<uint8_t>(a);
+            row.prob = static_cast<uint32_t>(by_label[a]);
+            out.belief_archetypes.push_back(row);
+        }
+    }
+}
+
+std::vector<double> Knowledge::belief_posterior(int p) const {
+    if (!belief_on() || metagame_.lists.empty() || viewer_ == NO_SEAT)
+        return std::vector<double>(metagame_.lists.size(), 0.0);
+    KRows rows;
+    template_rows(rows);
+    std::vector<double> log_w;
+    std::vector<uint8_t> support, exact;
+    belief_weights(p, rows, &log_w, &support, &exact);
+    return posterior(log_w, support);
 }
 
 }  // namespace knowledge

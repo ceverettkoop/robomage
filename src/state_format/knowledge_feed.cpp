@@ -55,8 +55,8 @@ static const char *consumer_word(ObsConsumer consumer) {
 }
 
 rmstate::KnowledgeLevel knowledge_level_of(Zone::Ownership viewer) {
-    const bool expert = viewer == Zone::PLAYER_A ? knowledge_expert_a : viewer == Zone::PLAYER_B && knowledge_expert_b;
-    return expert ? rmstate::KnowledgeLevel::EXPERT : rmstate::KnowledgeLevel::OFF;
+    const int level = viewer == Zone::PLAYER_A ? knowledge_level_a : viewer == Zone::PLAYER_B ? knowledge_level_b : 0;
+    return static_cast<rmstate::KnowledgeLevel>(level);
 }
 
 // The writer's instance for the seat, made at its first frame (registering the snapshot hooks

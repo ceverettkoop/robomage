@@ -598,6 +598,22 @@ static void define_knowledge_tables(std::vector<TableDef> &out) {
     col(out.back(), "archetype", Storage::U8, "index");
     col_bool(out.back(), "possible");
     col_bool(out.back(), "exact");
+
+    // The belief layer (knowledge_store §10.6; level expert+belief only): `prob` columns are
+    // probabilities in units of 10^-9 (tag prob), summing to 10^9 per player unless no list is
+    // possible; `loglik` the list's log-likelihood in milli-nats (the i32 minimum: excluded), `exact`
+    // whether it is the network's exact weighted count in every game of the match.
+    add_table(out, TableId::B_LIST, "b_list", FrameKind::STATE);
+    col_seat(out.back(), "player");
+    col(out.back(), "list", Storage::U16, "index");
+    col(out.back(), "prob", Storage::U32, "prob");
+    col(out.back(), "loglik", Storage::I32, "signed");
+    col_bool(out.back(), "exact");
+
+    add_table(out, TableId::B_ARCHETYPE, "b_archetype", FrameKind::STATE);
+    col_seat(out.back(), "player");
+    col(out.back(), "archetype", Storage::U8, "index");
+    col(out.back(), "prob", Storage::U32, "prob");
 }
 
 static void finish_table(TableDef &t) {

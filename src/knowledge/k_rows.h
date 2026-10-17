@@ -12,8 +12,9 @@
 // ── The knowledge tables as rows (docs/knowledge_store.md §6, state_format Appendix A.6) ──────
 //
 // Knowledge::rows() builds these from the model; write_k_tables appends them to a frame being
-// built (tables k_meta … k_archetype, ids 90-97). Seats are player indices (0 = A, 1 = B), written
-// as the seat pair (absolute and relative to the viewer); cards are vocab ids or NO_CARD.
+// built (tables k_meta … k_archetype, ids 90-97, and the belief layer's b_list and b_archetype,
+// 98-99). Seats are player indices (0 = A, 1 = B), written as the seat pair (absolute and relative
+// to the viewer); cards are vocab ids or NO_CARD.
 
 namespace knowledge {
 
@@ -74,6 +75,22 @@ struct KArchetypeRow {
         bool exact = false;     // possible, and every consistent list has it
 };
 
+// The belief layer (belief.h; level expert+belief): one reference list's posterior for one player.
+struct BListRow {
+        int player = NO_SEAT;
+        uint16_t list = 0;
+        uint32_t prob = 0;   // units of 10^-9 (PROB_SCALE)
+        int32_t loglik = 0;  // log-likelihood, milli-nats; INT32_MIN when the list is excluded
+        bool exact = false;  // the likelihood is the exact weighted count in every game of the match
+};
+
+// One archetype label's posterior (the sum of its lists') for one player.
+struct BArchetypeRow {
+        int player = NO_SEAT;
+        uint8_t archetype = 0;
+        uint32_t prob = 0;
+};
+
 struct KRows {
         KMetaRow meta;  // always one row
         std::vector<KSeenRow> seen;
@@ -83,6 +100,8 @@ struct KRows {
         std::vector<KKnownHandRow> known_hand;
         std::vector<KTemplateRow> templates;
         std::vector<KArchetypeRow> archetypes;
+        std::vector<BListRow> belief_lists;
+        std::vector<BArchetypeRow> belief_archetypes;
 };
 
 // Appends `rows` to `w` for viewer seat `viewer`, with `codes` giving the seat enum values.

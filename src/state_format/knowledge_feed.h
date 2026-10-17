@@ -25,9 +25,10 @@ class Knowledge;
 // model follows the seat's events, not the frames they were drained into, so every writer's
 // frame for one seat and decision carries the same k_* tables.
 //
-// Level per seat: --knowledge-a / --knowledge-b off|expert (default expert). At level off the
-// frame carries the k_meta row alone (level off) and the instance reads nothing but the match
-// frames. The level changes no play: only the frames' k_* tables.
+// Level per seat: --knowledge-a / --knowledge-b off|expert|expert+belief (default expert). At level
+// off the frame carries the k_meta row alone (level off) and the instance reads nothing but the
+// match frames; expert+belief adds the belief layer's b_* tables (knowledge/belief.h) after the
+// k_* tables. The level changes no play: only the frames' k_* and b_* tables.
 //
 // Lifetime: the instances live outside Game, for the whole match (match memory persists across
 // the per-game reset; each instance resets its networks itself at game_start), and are made at a

@@ -1,6 +1,7 @@
 #include "knowledge.h"
 
 #include <algorithm>
+#include <cstring>
 
 #include "serial.h"
 
@@ -13,7 +14,7 @@ static constexpr uint64_t PROPAGATION_BUDGET = 4000000;
 // for what it has not settled (still sound; k_meta.exact 0).
 static constexpr uint64_t SOLVER_BUDGET = 1000000;
 static constexpr uint32_t STATE_MAGIC = 0x4E4B4D52u;  // "RMKN"
-static constexpr uint16_t STATE_VERSION = 3;
+static constexpr uint16_t STATE_VERSION = 4;
 
 static const char *zone_word(Zn z);
 static const char *loc_word(Loc l);
@@ -31,6 +32,8 @@ static void put_metagame(std::string &out, const Metagame &m);
 static bool get_metagame(ByteReader &r, Metagame *m);
 static void put_flags(std::string &out, const std::vector<uint8_t> &v);
 static bool get_flags(ByteReader &r, std::vector<uint8_t> *v);
+static void put_doubles(std::string &out, const std::vector<double> &v);
+static bool get_doubles(ByteReader &r, std::vector<double> *v, size_t limit);
 
 Knowledge::Knowledge(rmstate::KnowledgeLevel level) : level_(level) {}
 
@@ -141,6 +144,8 @@ void Knowledge::begin_match(int viewer, const Codes &codes, const Decklists &lis
     game_active_ = false;
     list_excluded_.assign(metagame_.lists.size(), 0);
     list_unproven_.assign(metagame_.lists.size(), 0);
+    list_ll_.assign(metagame_.lists.size(), 0.0);
+    list_ll_approx_.assign(metagame_.lists.size(), 0);
     tpl_active_ = tpl_dirty_ = false;
 }
 
@@ -152,6 +157,11 @@ void Knowledge::begin_metagame(const Metagame &metagame) {
     tpl_done_.assign(metagame_.lists.size(), 0);
     tpl_consistent_.assign(metagame_.lists.size(), 0);
     tpl_exact_.assign(metagame_.lists.size(), 0);
+    tpl_ll_.assign(metagame_.lists.size(), 0.0);
+    tpl_ll_exact_.assign(metagame_.lists.size(), 0);
+    tpl_seen_.clear();
+    list_ll_.assign(metagame_.lists.size(), 0.0);
+    list_ll_approx_.assign(metagame_.lists.size(), 0);
 }
 
 // The model is a function of the events alone: every event is applied and then settled (settle),
@@ -751,6 +761,29 @@ static bool get_flags(ByteReader &r, std::vector<uint8_t> *v) {
     return r.ok;
 }
 
+// Each double as its IEEE-754 bits, so a restore is exact.
+static void put_doubles(std::string &out, const std::vector<double> &v) {
+    put_u32(out, v.size());
+    for (double d : v) {
+        uint64_t bits = 0;
+        std::memcpy(&bits, &d, sizeof bits);
+        put_u64(out, bits);
+    }
+}
+
+static bool get_doubles(ByteReader &r, std::vector<double> *v, size_t limit) {
+    const uint64_t n = r.u32();
+    if (!r.count(n, limit)) return false;
+    v->clear();
+    for (uint64_t i = 0; i < n; ++i) {
+        const uint64_t bits = r.u64();
+        double d = 0;
+        std::memcpy(&d, &bits, sizeof d);
+        v->push_back(d);
+    }
+    return r.ok;
+}
+
 void Knowledge::serialize(std::string &out) const {
     put_u32(out, STATE_MAGIC);
     put_u16(out, STATE_VERSION);
@@ -803,6 +836,11 @@ void Knowledge::serialize(std::string &out) const {
     put_flags(out, tpl_done_);
     put_flags(out, tpl_consistent_);
     put_flags(out, tpl_exact_);
+    put_doubles(out, tpl_ll_);
+    put_flags(out, tpl_ll_exact_);
+    put_seen(out, tpl_seen_);
+    put_doubles(out, list_ll_);
+    put_flags(out, list_ll_approx_);
 }
 
 bool Knowledge::deserialize(const std::string &in) {
@@ -884,9 +922,13 @@ bool Knowledge::deserialize(const std::string &in) {
     if (!tpl_net_.deserialize(in, &at2)) return false;
     ByteReader r3(in, at2);
     if (!get_flags(r3, &tpl_done_) || !get_flags(r3, &tpl_consistent_) || !get_flags(r3, &tpl_exact_)) return false;
+    if (!get_doubles(r3, &tpl_ll_, in.size()) || !get_flags(r3, &tpl_ll_exact_) || !get_seen(r3, &tpl_seen_) ||
+        !get_doubles(r3, &list_ll_, in.size()) || !get_flags(r3, &list_ll_approx_))
+        return false;
     const size_t n = metagame_.lists.size();
     if (list_excluded_.size() != n || list_unproven_.size() != n || tpl_done_.size() != n ||
-        tpl_consistent_.size() != n || tpl_exact_.size() != n)
+        tpl_consistent_.size() != n || tpl_exact_.size() != n || tpl_ll_.size() != n || tpl_ll_exact_.size() != n ||
+        list_ll_.size() != n || list_ll_approx_.size() != n)
         return false;
     return r3.ok && r3.at == in.size();
 }

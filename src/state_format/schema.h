@@ -73,7 +73,7 @@ constexpr uint32_t NONE32 = 0xFFFFFFFFu;
     X(FLASHBACK)                \
     X(EVOKE)                    \
     X(ESCAPE) X(OFFSPRING) X(IMPENDING) X(WARP) X(BACK_FACE) X(ALT_COST) X(IMPULSE) X(COMPANION) X(SUSPEND) X(CANCEL)
-#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT)
+#define RMSTATE_KNOWLEDGE_LEVEL(X) X(OFF) X(EXPERT) X(EXPERT_BELIEF)
 #define RMSTATE_POOL_KIND(X) X(HAND) X(LIBRARY_RANGE) X(SIDEBOARD) X(FACE_DOWN) X(SET_ASIDE)
 
 #define RMSTATE_ENUM_VALUE(name) name,
@@ -158,8 +158,8 @@ enum class PoolKind : uint8_t {
 
 // ── Tables ────────────────────────────────────────────────────────────────────────────────────
 // Ids are grouped by frame kind (Appendix A.2): SCHEMA 2-4, CARDS 10-14, DECKLISTS 15-16, METAGAME
-// 17-19, STATE snapshot 20-48, events 80-82, knowledge 90-97. The strings pool (1) belongs to every
-// frame.
+// 17-19, STATE snapshot 20-48, events 80-82, knowledge 90-97, belief 98-99. The strings pool (1)
+// belongs to every frame.
 enum class TableId : uint16_t {
     STRINGS = 1,
     SCHEMA_TABLE = 2,
@@ -215,6 +215,8 @@ enum class TableId : uint16_t {
     K_KNOWN_HAND = 95,
     K_TEMPLATE = 96,
     K_ARCHETYPE = 97,
+    B_LIST = 98,
+    B_ARCHETYPE = 99,
 };
 
 struct ColumnDef {

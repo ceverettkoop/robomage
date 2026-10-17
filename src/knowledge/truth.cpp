@@ -1,11 +1,14 @@
 #include "truth.h"
 
+#include "belief.h"
+
 namespace knowledge {
 
 static int count_of(const std::map<int, int> &m, int card);
 static bool pool_contents(const KPoolRow &pool, const Truth &truth, std::map<int, int> *out, size_t *start);
 static void violation(TruthCheck *out, const std::string &what);
 static void check_lists(const KRows &rows, const Truth &truth, TruthCheck *out);
+static void check_belief(const KRows &rows, const Truth &truth, TruthCheck *out);
 
 static int count_of(const std::map<int, int> &m, int card) {
     const auto it = m.find(card);
@@ -174,10 +177,13 @@ void check_truth(
                                std::to_string(s.match) + " this match");
     }
     check_lists(rows, truth, out);
+    check_belief(rows, truth, out);
 }
 
 void set_truth_lists(const Metagame &metagame, const Decklists &lists, const bool visible[2], Truth *truth) {
     truth->lists_known = true;
+    truth->list_archetype.clear();
+    for (const MetaList &l : metagame.lists) truth->list_archetype.push_back(l.archetype);
     for (int p = 0; p < 2; ++p) {
         truth->reference[p].clear();
         truth->classified[p] = -1;
@@ -225,6 +231,50 @@ static void check_lists(const KRows &rows, const Truth &truth, TruthCheck *out) 
             violation(out, "player " + who + "'s registered list is classified as list " + std::to_string(registered) +
                                " (" + std::to_string(n_registered) + " row(s)), expected " +
                                std::to_string(truth.classified[p]));
+    }
+}
+
+// The belief rows' structure against the k_template rows of the same frame (the true list, a
+// consistent one, comes out positive).
+static void check_belief(const KRows &rows, const Truth &truth, TruthCheck *out) {
+    if (rows.belief_lists.empty()) return;
+    for (int p = 0; p < 2; ++p) {
+        const std::string who = p == 0 ? "A" : "B";
+        std::map<int, bool> consistent;
+        for (const KTemplateRow &t : rows.templates)
+            if (t.player == p) consistent[t.list] = t.consistent;
+        uint64_t sum = 0;
+        bool any = false;
+        std::map<int, uint64_t> by_label;
+        for (const BListRow &b : rows.belief_lists) {
+            if (b.player != p) continue;
+            ++out->facts;
+            const bool keep = consistent.count(b.list) && consistent[b.list];
+            any = any || keep;
+            sum += b.prob;
+            if (keep != (b.prob > 0))
+                violation(out, "player " + who + "'s reference list " + std::to_string(b.list) + " has belief " +
+                                   std::to_string(b.prob) + (keep ? ", consistent" : ", inconsistent"));
+            if (b.list < truth.list_archetype.size()) by_label[truth.list_archetype[b.list]] += b.prob;
+        }
+        ++out->facts;
+        if (sum != (any ? PROB_SCALE : 0))
+            violation(out, "player " + who + "'s list beliefs sum to " + std::to_string(sum));
+        if (!truth.lists_known || truth.list_archetype.empty()) continue;
+        for (const auto &ref : truth.reference[p]) {
+            ++out->facts;
+            for (const BListRow &b : rows.belief_lists)
+                if (b.player == p && b.list == ref.first && b.prob == 0)
+                    violation(
+                        out, "player " + who + "'s registered list " + std::to_string(ref.first) + " has belief zero");
+        }
+        for (const BArchetypeRow &a : rows.belief_archetypes) {
+            if (a.player != p) continue;
+            ++out->facts;
+            if (a.prob != by_label[a.archetype])
+                violation(out, "player " + who + "'s archetype " + std::to_string(a.archetype) + " has belief " +
+                                   std::to_string(a.prob) + ", its lists " + std::to_string(by_label[a.archetype]));
+        }
     }
 }
 

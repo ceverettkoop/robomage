@@ -61,6 +61,16 @@ void write_k_tables(rmstate::FrameWriter &w, const KRows &rows, const Codes &cod
         seat_pair(r, codes, a.player, viewer);
         r.u8(a.archetype).u8(a.possible ? 1 : 0).u8(a.exact ? 1 : 0);
     }
+    for (const BListRow &b : rows.belief_lists) {
+        rmstate::FrameWriter::Row r = w.row(TableId::B_LIST);
+        seat_pair(r, codes, b.player, viewer);
+        r.u16(b.list).u32(b.prob).i32(b.loglik).u8(b.exact ? 1 : 0);
+    }
+    for (const BArchetypeRow &b : rows.belief_archetypes) {
+        rmstate::FrameWriter::Row r = w.row(TableId::B_ARCHETYPE);
+        seat_pair(r, codes, b.player, viewer);
+        r.u8(b.archetype).u32(b.prob);
+    }
 }
 
 // ── Reading the tables back ───────────────────────────────────────────────────────────────────
@@ -199,6 +209,31 @@ bool read_k_tables(const rmstate::DecodedFrame &frame, const Codes &codes, KRows
             row.possible = cell(t, r, possible) != 0;
             row.exact = cell(t, r, exact) != 0;
             out->archetypes.push_back(row);
+        }
+    }
+    if (const rmstate::DecodedTable *t = table(TableId::B_LIST)) {
+        const int player = column_of(t, "player", &missing), list = column_of(t, "list", &missing),
+                  prob = column_of(t, "prob", &missing), loglik = column_of(t, "loglik", &missing),
+                  exact = column_of(t, "exact", &missing);
+        for (size_t r = 0; r < t->rows.size(); ++r) {
+            BListRow row;
+            row.player = seat_of(codes, cell(t, r, player));
+            row.list = static_cast<uint16_t>(cell(t, r, list));
+            row.prob = static_cast<uint32_t>(cell(t, r, prob));
+            row.loglik = static_cast<int32_t>(static_cast<uint32_t>(cell(t, r, loglik)));
+            row.exact = cell(t, r, exact) != 0;
+            out->belief_lists.push_back(row);
+        }
+    }
+    if (const rmstate::DecodedTable *t = table(TableId::B_ARCHETYPE)) {
+        const int player = column_of(t, "player", &missing), archetype = column_of(t, "archetype", &missing),
+                  prob = column_of(t, "prob", &missing);
+        for (size_t r = 0; r < t->rows.size(); ++r) {
+            BArchetypeRow row;
+            row.player = seat_of(codes, cell(t, r, player));
+            row.archetype = static_cast<uint8_t>(cell(t, r, archetype));
+            row.prob = static_cast<uint32_t>(cell(t, r, prob));
+            out->belief_archetypes.push_back(row);
         }
     }
     if (!missing.empty()) {

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "belief.h"
 #include "knowledge.h"
 
 namespace knowledge {
@@ -195,7 +196,7 @@ void Knowledge::player_rows(int p, KRows &out) const {
 KRows Knowledge::rows() const {
     KRows out;
     out.meta.level = level_;
-    out.meta.exact = level_ == rmstate::KnowledgeLevel::EXPERT && viewer_ != NO_SEAT &&
+    out.meta.exact = level_ != rmstate::KnowledgeLevel::OFF && viewer_ != NO_SEAT &&
                      (!game_active_ || (solved_[0].exact && solved_[1].exact));
     out.meta.steps = static_cast<uint32_t>(std::min<uint64_t>(steps(), 0xFFFFFFFFu));
     if (level_ == rmstate::KnowledgeLevel::OFF || viewer_ == NO_SEAT) return out;
@@ -216,6 +217,7 @@ KRows Knowledge::rows() const {
         }
     }
     template_rows(out);
+    belief_rows(out);
     if (!game_active_) return out;
 
     for (int p : order) player_rows(p, out);
@@ -329,6 +331,12 @@ std::string Knowledge::text() const {
                 labels +=
                     (labels.empty() ? "" : ", ") + metagame_.archetypes[a.archetype] + (a.exact ? " (exact)" : "");
         if (!r.templates.empty()) line += "; lists: " + (lists.empty() ? "none" : lists) + "; archetypes: " + labels;
+        std::string belief;
+        for (const BArchetypeRow &b : r.belief_archetypes)
+            if (b.player == p && b.prob > 0)
+                belief += (belief.empty() ? "" : ", ") + metagame_.archetypes[b.archetype] + " " +
+                          std::to_string(b.prob / (PROB_SCALE / 1000)) + "‰";
+        if (!belief.empty()) line += "; belief: " + belief;
         out += line + "\n";
     }
     return out;

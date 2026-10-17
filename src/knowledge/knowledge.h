@@ -54,6 +54,12 @@
 // root is free apart from the copies seen earlier in the match. Networks reset at game_start;
 // match memory (copies seen per match) persists.
 //
+// The belief layer (level expert+belief; belief.h, knowledge_store §10.6) weighs the lists the sound
+// layer keeps: each list's likelihood is the weighted count of its hypothesis network's worlds,
+// computed with the consistency check on the same template network (so it is a function of the
+// events too); each finished game's likelihood joins the match memory, and the b_* tables are the
+// posterior under a uniform prior over the reference lists.
+//
 // Deterministic: ordered containers only, so the same frames give the same bytes. Errors are
 // returned, never thrown (-fno-exceptions).
 
@@ -121,6 +127,13 @@ class Knowledge {
         // that pinned a card or added a root) while the reference lists are checked against it.
         bool template_network_active() const { return tpl_active_; }
         const Network &template_network() const { return tpl_net_; }
+        // For tools and tests (level expert+belief): the belief layer's posterior over the reference
+        // lists for player `p` (unrounded; the b_list rows are its fixed-point form), all zero when no
+        // list is possible or below that level.
+        std::vector<double> belief_posterior(int p) const;
+        // Reference list `l`'s log-likelihood for the hidden opponent over the match so far (the b_list
+        // loglik column, unrounded) and whether it is exact.
+        double belief_log_likelihood(size_t l, bool *exact) const { return list_log_likelihood(l, exact); }
 
     private:
         // ── frame flow ──
@@ -145,6 +158,13 @@ class Knowledge {
         void list_state(int p, size_t l, const std::vector<std::pair<int, int>> &main,
             const std::vector<std::pair<int, int>> &side, KTemplateRow *row) const;
         void template_rows(KRows &out) const;
+        // ── the belief layer (belief.h) ──
+        bool belief_on() const;
+        void check_likelihood(size_t l, const Network &h, bool proven);
+        double list_log_likelihood(size_t l, bool *exact) const;
+        void belief_weights(int p, const KRows &rows, std::vector<double> *log_w, std::vector<uint8_t> *support,
+            std::vector<uint8_t> *exact) const;
+        void belief_rows(KRows &out) const;
         void error(const std::string &what);
 
         // ── update rules (knowledge_store §5), one per event kind ──
@@ -243,6 +263,15 @@ class Knowledge {
         bool tpl_dirty_ = false;
         Network tpl_net_;
         std::vector<uint8_t> tpl_done_, tpl_consistent_, tpl_exact_;
+        // The belief layer: per reference list, its log-likelihood against the template network and
+        // whether that is the exact weighted count (else the copies-seen fallback), the opponent's
+        // copies seen as of the template network (the fallback's input), and the match memory: the
+        // finished games' summed log-likelihood and whether any of them used the fallback.
+        std::vector<double> tpl_ll_;
+        std::vector<uint8_t> tpl_ll_exact_;
+        std::map<int, uint8_t> tpl_seen_;
+        std::vector<double> list_ll_;
+        std::vector<uint8_t> list_ll_approx_;
         // frame context
         uint8_t frame_game_ = 0;
         uint32_t frame_decision_ = 0;

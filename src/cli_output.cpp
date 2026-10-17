@@ -278,11 +278,12 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (- = stdin), re-encode it and compare the bytes; ERROR:\n");
     printf("                      lines and a summary on stderr, exit status 1 on any\n");
     printf("                      mismatch. With --state-dump json, the JSON lines on stdout\n");
-    printf("  --knowledge-a <off|expert>  --knowledge-b <off|expert>\n");
+    printf("  --knowledge-a <off|expert|expert+belief>  --knowledge-b <...>\n");
     printf("                      That seat's knowledge sidecar in its RMSTATE frames (the\n");
     printf("                      k_* tables: recall and sound deduction from the seat's\n");
-    printf("                      own frames; off = the k_meta row alone). Default expert;\n");
-    printf("                      play is unchanged\n");
+    printf("                      own frames; off = the k_meta row alone; expert+belief\n");
+    printf("                      adds the b_* tables: a posterior over the reference\n");
+    printf("                      lists). Default expert; play is unchanged\n");
     printf("  --selfcheck-state   Check the RMSTATE frames at every decision: decode and\n");
     printf("                      re-encode byte-identical, no hidden identity read (frames\n");
     printf("                      and events rebuilt with hidden cards substituted), complete\n");
