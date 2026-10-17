@@ -654,8 +654,10 @@ Python function and MUST change in lockstep with it (bit-parity: opt-in tier `ac
   JSON, the `--machine-format rmstate` stream vs the dump, knowledge isolation (`--isolation FILE…`)
 - `test_selfcheck_state.py` — tier `rmstate`: `--selfcheck-state` over the corpus, a fuzz and the
   scenarios, the decode checks, and the std-only include isolation of `src/state_format/` decoders
-- `test_knowledge.py` — tier `knowledge`: the knowledge sidecar over real games (stream frames equal
-  the dump's, `k_*` included; `rmknow --isolation` per writer)
+- `test_knowledge.py` — tier `knowledge`: the knowledge sidecar — `rmknow --selftest` / `--exactness`,
+  a fuzz under `--selfcheck-knowledge` (soundness vs the engine state), stream sessions (stream frames
+  equal the dump's, `k_*` included; `rmknow --isolation` per writer), `rmknow --truth` on the dumps
+  (the corpus runs under `--selfcheck-knowledge` in tier `rmstate`)
 - `test_obs_invariants.py` — structural invariants on the raw state vector (tier `obsinv`)
 - `test_model_spec.py` (`modelspec`), `test_curriculum.py` (`curriculum`), `test_shard_record.py`
   (`shardrec`), `test_analysis_session.py` + `test_browse_session.py` (opt-in `analysis`),

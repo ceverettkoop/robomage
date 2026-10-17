@@ -52,7 +52,7 @@ one `train/test_*.py` script, which can be run standalone to reproduce.
 | `xwsearch` | cross-world batched leaf evaluation in the Python search: exact parity vs sequential (`test_xw_search.py`) | torch legs skip without torch |
 | `replay` | the byte-identical replay corpus (`train/regression/replay_diff.py check`): 9 curated delver/doomsday/mav scenarios plus every league pairing and mirror (`lg_<a>__<b>`), 64 transcripts, one frozen seed | any transcript drift |
 | `rmstate` | the RMSTATE state format (`test_selfcheck_state.py`, below): the engine's `--selfcheck-state` checks over the replay corpus, a short explore fuzz and every scenario, with each seat's knowledge sidecar (`k_*` tables) on at level expert; the Python-vs-C++ decode comparison, decoder refusals and `--machine-format rmstate` sessions (`test_rmstate.py`'s parts); name-a-card candidates with open and closed decklists; the knowledge-side include isolation | needs the engine; ~3 min on 4 cores (2.5 min before the knowledge sidecar). Engine stderr in `ci_out/rmstate/` |
-| `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, and `rmknow --isolation` on each writer's frames | needs the engine and `rmknow`; ~40 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
+| `knowledge` | the knowledge sidecar (`test_knowledge.py`, below): `rmknow --selftest` / `--exactness`; an explore fuzz under `--selfcheck-knowledge` (soundness against the engine state, knowledge state across snapshot restores); `--machine-format rmstate` sessions each with a `--rmstate-dump`, stream frames equal to the dump's `k_*` tables included, `rmknow --isolation` on each writer's frames; `rmknow --truth` on every dump. The replay corpus runs under `--selfcheck-knowledge` in the `rmstate` tier | needs the engine and `rmknow`; ~70 s on 4 cores. Engine stderr in `ci_out/knowledge/` |
 | `smoke` | scripted **hard** vs itself over the league mirrors + a ring of crosses (`--smoke-games`, default 2 per matchup) | see classification below |
 | `fuzz` | the `explore` fuzzer (`--mode`) over the league mirrors (`--fuzz-games`, default 8 per matchup) | see classification below |
 
@@ -78,7 +78,7 @@ match ends (`docs/state_format.md` §10). Every seat frame carries its writer's 
 
 | Part | Runs | Fails on |
 |---|---|---|
-| `corpus` | `replay_diff.py check` with `--selfcheck-state` | corpus drift, an `ERROR:` line, a missing summary (one per corpus game) or `errors≠0` |
+| `corpus` | `replay_diff.py check` with `--selfcheck-knowledge` (which implies `--selfcheck-state`; the `knowledge` tier shares these runs) | corpus drift, an `ERROR:` line, a missing summary (one `SELFCHECK-STATE` and one `SELFCHECK-KNOWLEDGE` per corpus game) or `errors≠0` |
 | `fuzz` | 16 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; reanimator for face-down exile, wrb_energy and bw_dnt for Cabal Therapy and Disruptor Flute; four with `--selfcheck-state-sample 1`); two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` summary (one stopped at the 2500-decision cap is scanned only) |
 | `scenarios` | `test_scenarios.py` with `--selfcheck-state --selfcheck-state-sample 1` | any failing scenario (the runner fails on an `ERROR:` line; a scenario stops at its decision cap, so it prints no summary) |
 | `decode` | `test_rmstate.check_dump` / `check_refusals` on the fuzz dumps, `stream_checks` on two `--machine-format rmstate` sessions with the self-checks on (one bo3 under `--closed-decklist`), `check_name_card_candidates` (a Disruptor Flute preset's opening menu: the opponent's registered cards with open decklists, every vocab card under `--closed-decklist`) | any check's failure; a session's `ERROR:` line or missing summary |
@@ -100,13 +100,25 @@ ROBOMAGE_ENGINE_FLAGS="--selfcheck-state --selfcheck-state-sample 1" \
 `train/test_knowledge.py` (`run()` is the tier; `--part` runs one part) keeps each engine's stderr in
 `ci_out/knowledge/` and deletes its dumps and saved streams once checked. Every seat frame of every
 writer carries that writer's knowledge instance's `k_*` tables (`docs/knowledge_store.md` §9.6).
+`--selfcheck-knowledge` (implies `--selfcheck-state`; `src/state_format/selfcheck_knowledge.h`)
+checks, at every decision, every `k_*` fact of both seats against the true world built from the
+engine state, and every knowledge instance's state across the self-check's snapshot restores; a
+failure is an `ERROR: selfcheck-knowledge soundness|snapshot: viewer …, decision …: …` line and each
+engine prints one `SELFCHECK-KNOWLEDGE: decisions=… facts=… errors=N` line at match end. The replay
+corpus runs under it in the `rmstate` tier's corpus part (shared engine runs).
 
 | Part | Runs | Fails on |
 |---|---|---|
-| `isolation` | three `--machine-format rmstate` sessions (`STREAM_GAMES`: ur_delver vs bug bo1, reanimator vs uw_control bo3, bug vs wubg_doomsday bo3 under `--closed-decklist`), each with a `--rmstate-dump` and `--selfcheck-state`; `test_rmstate.check_stream` (every stream frame equals the dump's for that seat and decision, `k_*` tables included; decision numbers unique), then `rmknow --isolation` for both seats on each dump and each saved stream (`test_rmstate.check_knowledge_isolation`) | a frame or event difference, a duplicate decision number, a bo3 session without a sideboarding frame, an isolation difference, an `ERROR:` line or a missing summary |
+| `selftest` | `rmknow --selftest`; `rmknow --exactness 40` (`EXACTNESS_N`) | a failed test or check |
+| `fuzz` | 6 explore-vs-explore games (`FUZZ_GAMES`: bo1 and bo3; ur_delver, bug and uw_control put-backs, wubg_doomsday and reanimator tutors, bug, wrb_energy and reanimator discard, mav's Sylvan Library, reanimator's face-down exile; one with `--selfcheck-state-sample 1`) under `--selfcheck-knowledge`; two write `--rmstate-dump` files | a crash, an `ERROR:` line; a finished game also needs its `errors=0` `SELFCHECK-STATE` and `SELFCHECK-KNOWLEDGE` summaries |
+| `isolation` | three `--machine-format rmstate` sessions (`STREAM_GAMES`: ur_delver vs bug bo1, reanimator vs uw_control bo3, bug vs wubg_doomsday bo3 under `--closed-decklist`), each with a `--rmstate-dump` and `--selfcheck-knowledge`; `test_rmstate.check_stream` (every stream frame equals the dump's for that seat and decision, `k_*` tables included; decision numbers unique), then `rmknow --isolation` for both seats on every dump (the fuzz games' too) and each saved stream (`test_rmstate.check_knowledge_isolation`) | a frame or event difference, a duplicate decision number, a bo3 session without a sideboarding frame, an isolation difference, an `ERROR:` line or a missing summary |
+| `truth` | `rmknow --truth` for both seats on every dump (fuzz and stream sessions): the soundness check against the dump's omniscient frames | a violated fact, a model error, no frame checked |
 
 ```bash
+train/.venv/bin/python train/test_knowledge.py --part fuzz --fuzz-seed 203   # one fuzz game
 train/.venv/bin/python train/test_knowledge.py --part isolation
+# the soundness check on any game: one errors=0 SELFCHECK-KNOWLEDGE line per engine
+ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge train/.venv/bin/python train/regression/replay_diff.py check
 ```
 
 ### Opt-in tiers (valid for `--tier`, not in the default run)
@@ -206,7 +218,9 @@ self-checks in every engine (`src/state_format/selfcheck.h`, `docs/state_format.
 changes no transcript (the replay corpus stays byte-identical under it), failures are `ERROR:`
 lines on the engine's stderr, and each engine prints a `SELFCHECK-STATE: … errors=N` summary
 line on stderr at match end; `--selfcheck-state-sample N` (default 8) sets how often the sampled
-permutation and snapshot checks run. `train/test_rmstate.py` alone plays its own fuzz games and
+permutation and snapshot checks run. `ROBOMAGE_ENGINE_FLAGS=--selfcheck-knowledge` adds the knowledge
+sidecar's soundness check (and implies `--selfcheck-state`): a `SELFCHECK-KNOWLEDGE: … errors=N`
+summary per engine. `train/test_rmstate.py` alone plays its own fuzz games and
 `--machine-format rmstate` sessions (`run()` is the entry point for a gate tier), and checks the
 knowledge isolation on them; `train/test_rmstate.py --isolation FILE… [--knowledge-a off]` runs
 just that on given dumps or saved streams: `bin/<config>/rmknow --isolation --viewer A|B --level

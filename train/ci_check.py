@@ -148,7 +148,8 @@ fails, so one invocation reports every finding):
           train/test_rmstate.py's decode checks): the engine's --selfcheck-state
           self-checks (roundtrip, scramble and permutation leak checks, names in
           text, complete, snapshot) over the replay corpus (still byte-identical,
-          one errors=0 SELFCHECK-STATE summary per game), a short explore fuzz
+          with --selfcheck-knowledge too: one errors=0 SELFCHECK-STATE and
+          SELFCHECK-KNOWLEDGE summary per game), a short explore fuzz
           (bo1 + bo3, face-down exile and name-a-card decks, some games sampled
           at every decision) and every rules-regression scenario; the Python vs
           C++ decode comparison on the fuzz games' --rmstate-dump files, the
@@ -157,12 +158,18 @@ fails, so one invocation reports every finding):
           decklists; and the include-isolation grep over the knowledge-side
           sources (decode/schema/json/recode, src/knowledge/). Flags reach the
           engines through $ROBOMAGE_ENGINE_FLAGS. Needs bin/robomage; ~2.5 min.
-  knowledge The knowledge sidecar (train/test_knowledge.py): --machine-format
-          rmstate sessions (bo1, bo3 with sideboarding, a --closed-decklist bo3)
-          each with a --rmstate-dump: every stream frame equals the dump's for
-          that seat and decision, k_* tables included, and rmknow --isolation
-          recomputes every seat frame's k_* from each writer's own frames byte
-          for byte. Needs bin/robomage and bin/rmknow.
+  knowledge The knowledge sidecar (train/test_knowledge.py): rmknow --selftest
+          and --exactness; an explore fuzz (bo1 + bo3 with sideboarding; put-back,
+          tutor, discard, Sylvan Library and face-down exile decks) under
+          --selfcheck-knowledge (every k_* fact of both seats against the engine
+          state's truth, zero tolerance; the knowledge state across snapshot
+          restores); --machine-format rmstate sessions (bo1, bo3, a
+          --closed-decklist bo3) each with a --rmstate-dump: every stream frame
+          equals the dump's for that seat and decision, k_* tables included, and
+          rmknow --isolation recomputes every seat frame's k_* from each writer's
+          own frames byte for byte; rmknow --truth on every dump. The replay
+          corpus runs under --selfcheck-knowledge in the rmstate tier. Needs
+          bin/robomage and bin/rmknow; ~1 min.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
           lines) across the league mirrors + a ring of crosses. Fixed seeds.
   fuzz    Short random coverage fuzz (the 'explore' agent) over the league

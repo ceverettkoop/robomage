@@ -7,8 +7,11 @@ self-check failure is an ``ERROR:`` line on the engine's stderr, and each engine
 ``SELFCHECK-STATE: … errors=N`` summary line on stderr when its match ends. The tier runs:
 
   1. corpus     the replay corpus (``train/regression/replay_diff.py check``) with the self-checks
-                on: still byte-identical (the self-checks change no transcript), no ``ERROR:``
-                line, and one ``errors=0`` summary per corpus game;
+                on, ``--selfcheck-knowledge`` included (the knowledge sidecar against the truth; the
+                ``knowledge`` tier, ``train/test_knowledge.py``, shares these runs): still
+                byte-identical (the self-checks change no transcript), no ``ERROR:`` line, and one
+                ``errors=0`` ``SELFCHECK-STATE`` and one ``SELFCHECK-KNOWLEDGE`` summary per corpus
+                game;
   2. fuzz       explore-vs-explore games (``runner.run_match``) over league pairs chosen for the
                 state format's hard cases: face-down exile (reanimator), name-a-card menus
                 (wrb_energy's Cabal Therapy, bw_dnt's and wrb_energy's Disruptor Flute), bo1 and
@@ -61,6 +64,9 @@ _REPO_ROOT = os.path.dirname(_TRAIN)
 
 SELFCHECK = ["--selfcheck-state"]
 SELFCHECK_EVERY_DECISION = ["--selfcheck-state", "--selfcheck-state-sample", "1"]
+# The corpus part also checks the knowledge sidecar against the truth (--selfcheck-knowledge, which
+# implies --selfcheck-state): the knowledge tier (train/test_knowledge.py) shares these engine runs.
+SELFCHECK_CORPUS = ["--selfcheck-knowledge"]
 
 # Fuzz games: (deck_a, deck_b, bo3, seed, extra engine flags, write an --rmstate-dump).
 FUZZ_GAMES = [
@@ -107,7 +113,7 @@ STD_HEADERS = {
 
 PARTS = ["corpus", "fuzz", "scenarios", "decode", "isolation"]
 
-_SUMMARY_RE = re.compile(r"^SELFCHECK-STATE: decisions=\d+ .*\berrors=(\d+)\s*$")
+_SUMMARY_RE = re.compile(r"^SELFCHECK-(STATE|KNOWLEDGE): decisions=\d+ .*\berrors=(\d+)\s*$")
 _ERROR_RE = re.compile(r"^(ERROR|FATAL):|Traceback \(most recent call last\)|Segmentation fault|"
                        r"Assertion .* failed|\bAborted\b|core dumped")
 _INCLUDE_RE = re.compile(r'^\s*#\s*include\s*([<"])([^>"]+)[>"]')
@@ -119,11 +125,12 @@ def _flags_env(flags):
     return env
 
 
-def scan_engine_log(path, label, summaries=None):
-    """Failure messages for one captured engine stderr: every ERROR: (or crash) line, and, with
-    `summaries`, that exactly that many SELFCHECK-STATE lines are there, each with errors=0."""
+def scan_engine_log(path, label, summaries=None, kinds=("STATE",)):
+    """Failure messages for one captured engine stderr: every ERROR: (or crash) line and every
+    SELFCHECK-STATE / SELFCHECK-KNOWLEDGE summary without errors=0, and, with `summaries`, that
+    exactly that many summary lines of each of `kinds` are there."""
     fails = []
-    found = 0
+    found = {kind: 0 for kind in kinds}
     with open(path, encoding="utf-8", errors="replace") as fh:
         for n, line in enumerate(fh, 1):
             line = line.rstrip("\n")
@@ -131,11 +138,13 @@ def scan_engine_log(path, label, summaries=None):
                 fails.append(f"{label}: {path}:{n}: {line}")
             m = _SUMMARY_RE.match(line)
             if m:
-                found += 1
-                if m.group(1) != "0":
+                if m.group(1) in found:
+                    found[m.group(1)] += 1
+                if m.group(2) != "0":
                     fails.append(f"{label}: {path}:{n}: {line}")
-    if summaries is not None and found != summaries:
-        fails.append(f"{label}: {found} SELFCHECK-STATE summary line(s) in {path}, expected {summaries}")
+    for kind, count in found.items():
+        if summaries is not None and count != summaries:
+            fails.append(f"{label}: {count} SELFCHECK-{kind} summary line(s) in {path}, expected {summaries}")
     return fails[:20]
 
 
@@ -148,14 +157,15 @@ def check_corpus(out_dir):
     err_path = os.path.join(out_dir, "corpus.err")
     with open(out_path, "w") as out, open(err_path, "w") as err:
         r = subprocess.run([sys.executable, os.path.join(_TRAIN, "regression", "replay_diff.py"), "check"],
-                           cwd=_REPO_ROOT, env=_flags_env(SELFCHECK), stdout=out, stderr=err)
+                           cwd=_REPO_ROOT, env=_flags_env(SELFCHECK_CORPUS), stdout=out, stderr=err)
     fails = []
     if r.returncode != 0:
-        fails.append(f"corpus: the replay corpus drifts with --selfcheck-state on (exit {r.returncode}; "
+        fails.append(f"corpus: the replay corpus drifts with {' '.join(SELFCHECK_CORPUS)} on (exit {r.returncode}; "
                      f"see {out_path})")
-    fails += scan_engine_log(err_path, "corpus", summaries=len(replay_diff.SCENARIOS))
+    fails += scan_engine_log(err_path, "corpus", summaries=len(replay_diff.SCENARIOS), kinds=("STATE", "KNOWLEDGE"))
     if not fails:
-        print(f"  OK   corpus: {len(replay_diff.SCENARIOS)} games byte-identical, self-checks clean", flush=True)
+        print(f"  OK   corpus: {len(replay_diff.SCENARIOS)} games byte-identical, self-checks clean "
+              f"(state and knowledge)", flush=True)
     return fails
 
 

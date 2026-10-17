@@ -5,7 +5,10 @@ implemented** (`src/knowledge/`, `tools/rmknow/`, `src/state_format/knowledge_fe
 the update rules, bound propagation, the per-frame consistency check, the `k_*` rows and
 serialisation (T9), the exact solver, compaction and the enumerator tests (T10), and the engine
 integration: per-seat instances appending `k_*` to every seat frame, the snapshot hook and
-`rmknow --isolation` (T11); section 9 says how. The gate checks (T12) are not yet. It builds on
+`rmknow --isolation` (T11); section 9 says how. Of T12, the cadence-independent model (section
+9.6), `--selfcheck-knowledge` (soundness and the snapshot check, section 9.5) and the `knowledge`
+gate tier (`docs/ci.md`) are built; the shadow comparison and the sharpness scenarios are not yet.
+It builds on
 [`state_format.md`](state_format.md): the engine
 sends only what each viewer explicitly knows right now. This component supplies everything a
 player with **perfect recall and perfect logical inference** would know on top of that, in one
@@ -464,7 +467,9 @@ under `--closed-decklist` it becomes the next game's root lower bounds.
     errors=…` at match end. A reanimator vs uw_control bo3 fuzz match checks 179,079 facts over
     588 decisions. Proved with temporary bugs: a pool's max one too low (10,859 errors), a known
     position reported one place off (12) and a deserialise that dropped one player's copies seen
-    (28 snapshot errors, besides the frame comparison's) were each caught;
+    (28 snapshot errors, besides the frame comparison's) were each caught. Over the replay corpus
+    (the `rmstate` tier's corpus part): 9,382 decisions, 2,493,424 facts, 0 errors; the `knowledge`
+    tier adds a targeted fuzz and three stream sessions (about a million facts more);
   - **`rmknow --truth`** against the same dump's omniscient frames (face-down pools excluded: the
     omniscient handles are not the seat's). On the 168 runs above: 0 errors.
 - **`rmknow --selftest`**: synthetic event streams (`tools/rmknow/selftest.cpp`): the section 7
@@ -578,6 +583,7 @@ sampled at every decision, and the off variants: 0 differences over 14,514 seat 
 release build (most in reanimator vs uw_control bo3: 805 decisions with a dump took 3.3 s at
 expert, 1.7 s at off and 0.8 s with no dump, so about 1 ms per seat frame) and 1.5-9 ms in a debug
 one (22.7 s, 8.5 s, 3.3 s). A dump pays it twice per decision, the stream once per decision of the
-seat, the self-check twice more. The `rmstate` gate tier (corpus and fuzz under the self-check,
-two fuzz dumps, two stream sessions) takes 2 min 40 s on 4 cores, against 2 min 30 s before the
-sidecar was on.
+seat, the self-check twice more. The `rmstate` gate tier (corpus under `--selfcheck-knowledge`,
+fuzz under the self-check, two fuzz dumps, two stream sessions) takes about 3 min 10 s on 4 cores
+(2 min 30 s without the sidecar), the `knowledge` tier about 70 s, and the whole `make check`
+about 7 min.
