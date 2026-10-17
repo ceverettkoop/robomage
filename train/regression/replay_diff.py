@@ -4,10 +4,11 @@
 Plays a fixed set of scripted deck-vs-deck games (the three fully-implemented
 curated decks — delver/doomsday/mav — in every seating, and every league pairing)
 and snapshots the full scripted transcript (every `game_log` line the engine emits
-plus the runner's per-decision markers: the menu as offered and the choice) into
+plus the driver's per-decision markers: the menu as offered and the choice) into
 one file per scenario. The scripted agent (hard, both seats) plays over
-``--machine-format rmstate`` on its RMSTATE frame view (``rm_agent.py``), so the
-transcript has no decoded board block. The scripted agent is a pure function of
+``--machine-format rmstate`` on its RMSTATE frame view (``rm_agent.py``), driven by
+the RMSTATE driver (``rm_driver.py``, its verbose transcript: no decoded board
+block). The scripted agent is a pure function of
 game state and the engine is deterministic given a seed, so an unchanged engine +
 agent + card data reproduces each transcript byte-for-byte. (The agent's BQUERY
 vector view keeps pinned games of its own: ``test_agent_parity.py``.)
@@ -39,11 +40,11 @@ _CORPUS = _HERE / "corpus"
 
 sys.path.insert(0, str(_TRAIN))
 
-# Resolve the engine binary through cli_spec so it honors the per-config build
-# split (bin/<config>/robomage) and ROBOMAGE_BUILD, instead of the retired
+# The driver's default engine binary honors the per-config build split
+# (bin/<config>/robomage) and ROBOMAGE_BUILD, instead of the retired
 # bin/robomage path — otherwise the replay tier can't find the binary and
 # ci_check misreports it as corpus drift.
-from cli_spec import BINARY as _BINARY_STR  # noqa: E402
+from rm_driver import DEFAULT_BINARY as _BINARY_STR  # noqa: E402
 _BINARY = Path(_BINARY_STR)
 
 # Single seed governing the engine RNG for every scenario. Drawn once at random
@@ -83,25 +84,20 @@ for _i, _a in enumerate(LEAGUE_DECKS):
 def _play(deck_a: str, deck_b: str, seed: int) -> str:
     """Drive one scripted deck-vs-deck game and return its full transcript.
 
-    Uses the shared deterministic game loop (runner.run_games) with the scripted
-    (hard) agent on both seats, over --machine-format rmstate. The scripted agent
-    is a pure function of game state and the engine is deterministic given a seed,
-    so an unchanged engine + agent + card data reproduces the transcript
+    Uses the RMSTATE driver (rm_driver.run_games) with the scripted (hard) agent
+    on both seats, over --machine-format rmstate. The scripted agent is a pure
+    function of game state and the engine is deterministic given a seed, so an
+    unchanged engine + agent + card data reproduces the transcript
     byte-for-byte. Libraries shuffle with the seeded RNG (natural games,
     deterministic given the frozen SEED)."""
-    import contextlib
     import io
 
-    import runner  # noqa: E402
-    from opponents import make_controller  # noqa: E402
+    import rm_driver  # noqa: E402
 
     buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        runner.run_games(
-            make_controller("scripted"), make_controller("scripted"),
-            label_a="A", label_b="B", binary_path=str(_BINARY),
-            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed, verbose=True,
-            machine_format="rmstate")
+    rm_driver.run_games("scripted", "scripted", label_a="A", label_b="B",
+                        binary=str(_BINARY), deck_a=deck_a, deck_b=deck_b,
+                        n_games=1, seed=seed, transcript="verbose", out=buf)
     return buf.getvalue()
 
 

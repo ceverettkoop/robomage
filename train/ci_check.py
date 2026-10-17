@@ -146,7 +146,8 @@ fails, so one invocation reports every finding):
           (evaluate_batch rows, real-net agreement) self-skip without torch
           (train/test_xw_search.py).
   replay  The byte-identical replay-diff corpus (delver/doomsday/mav) still
-          matches — catches unintended narrative/behavior drift.
+          matches — catches unintended narrative/behavior drift. Played by the
+          RMSTATE driver (rm_driver.py), scripted hard on its frame view.
   rmstate The RMSTATE state format (train/test_selfcheck_state.py, with
           train/test_rmstate.py's decode checks): the engine's --selfcheck-state
           self-checks (roundtrip, scramble and permutation leak checks, names in
@@ -185,18 +186,24 @@ fails, so one invocation reports every finding):
           regression/agent_parity_divergences.json (a classified old-vector
           leak or quirk) is compared with its re-recorded RMSTATE baseline.
           Needs bin/robomage; ~2 min.
-  rmagent The scripted agent's RMSTATE view (train/test_rm_agent.py, plan step 2
-          pass 2): every card the decision rules name is a CARDS card; the card
-          knowledge of a closed-decklist CARDS frame's structured columns
-          (rm_agent.FrameCards) answers as the generated tables do on every
-          vocab card except the listed, rules-correct differences; scripted-hard
-          bo3 matches under --closed-decklist finish. Needs bin/robomage; ~10s.
+  rmagent The scripted agent's RMSTATE view and the RMSTATE driver
+          (train/test_rm_agent.py, plan step 2): every card the decision rules
+          name is a CARDS card; the card knowledge of a closed-decklist CARDS
+          frame's structured columns (rm_agent.FrameCards) answers as the
+          generated tables do on every vocab card except the listed,
+          rules-correct differences; scripted-hard bo3 matches under
+          --closed-decklist, played by the driver (rm_driver.py), finish; the
+          driver's engine seeds are the gymnasium env's, its hand-line names the
+          vocab's, its verbose bo3 transcripts (hard, explore, explore:patient)
+          equal runner.run_games' on RMSTATE, and concessions score as the
+          engine does. Needs bin/robomage; ~15s.
   smoke   Deterministic league games with the scripted *hard* agent (realistic
-          lines) across the league mirrors + a ring of crosses, played over
-          --machine-format rmstate (the agent's frame view, rm_agent.py). Fixed
-          seeds.
-  fuzz    Short random coverage fuzz (the 'explore' agent) over the league
-          mirrors. Fixed seeds on PR (a red run is the diff's fault); the nightly
+          lines) across the league mirrors + a ring of crosses, played by the
+          RMSTATE driver (rm_driver.py; the agent's frame view, rm_agent.py).
+          Fixed seeds.
+  fuzz    Short random coverage fuzz (the 'explore' agent, explore_agent.py)
+          over the league mirrors, played by the RMSTATE driver on its frame view.
+          Fixed seeds on PR (a red run is the diff's fault); the nightly
           workflow rotates the seed and widens to every matchup.
 
 Opt-in tiers (valid for --tier, NOT part of the default run):
@@ -270,7 +277,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 import runner
 import missing_cards
-from opponents import make_controller
+import rm_driver
 
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 _DECKS_ROOT = os.path.join(_REPO_ROOT, "bin", "resources", "decks")
@@ -936,14 +943,15 @@ def tier_rmagent(rep, out_dir):
         fails = [ln.strip()[len("FAIL "):] for ln in r.stdout.splitlines() if ln.strip().startswith("FAIL ")]
         for msg in fails or [f"test_rm_agent.py exit {r.returncode}:\n{r.stderr}"]:
             rep.error("rmagent", msg)
-        print("  reproduce: train/.venv/bin/python train/test_rm_agent.py [--part names|cards|closed]",
+        print("  reproduce: train/.venv/bin/python train/test_rm_agent.py [--part names|cards|closed|driver]",
               flush=True)
 
 
 def _run_capturing(out_path, run_fn):
-    """Run run_fn() capturing both Python stdout AND the engine subprocess's
-    stderr (fd 2, which NarrativeEnv inherits) into out_path. Returns whatever
-    run_fn returns; a raised exception propagates after capture is torn down."""
+    """Run run_fn() capturing both Python stdout AND this process's stderr (fd 2:
+    the driver's copies of the engine's diagnostic lines) into out_path. Returns
+    whatever run_fn returns; a raised exception propagates after capture is torn
+    down."""
     with open(out_path, "w") as fh:
         # Engine stderr goes to a temp file via an fd-2 dup, then is appended to
         # the transcript (fd-level and Python-level writes to one file would race
@@ -974,14 +982,15 @@ def _play_game(task):
     """Play one game of a smoke/fuzz matchup (a process-pool task).
 
     Games are independent — each gets its own engine process, its own seed and
-    fresh controllers — so one task per game plays exactly the games a
-    sequential run_games(n_games=N, seed=S) loop would (game i = seed S+i).
+    fresh agents — so one task per game plays exactly the games a sequential
+    rm_driver.run_games(n_games=N, seed=S) loop would (game i = seed S+i), over
+    --machine-format rmstate (the agents on the seat's decoded frame).
     Runs in its own working directory so the draw_<stamp>.txt log run_games
     writes there is attributed to this game, then moves it into out_dir.
     Returns (wins, losses, draws), the crash message (None if the engine didn't
     crash) and the path of the game's transcript (Python output plus engine
     stderr), a hidden file in out_dir that _write_matchup_transcript consumes."""
-    tier, deck_a, deck_b, mode, game_idx, seed, out_dir, machine_format = task
+    tier, deck_a, deck_b, mode, game_idx, seed, out_dir = task
     stem = _matchup_stem(tier, deck_a, deck_b)
     game_path = os.path.join(out_dir, f".{stem}_g{game_idx + 1}.txt")
     work_dir = tempfile.mkdtemp(prefix=f".{stem}_g{game_idx + 1}_", dir=out_dir)
@@ -989,11 +998,10 @@ def _play_game(task):
     result = {}
 
     def run_fn():
-        result["wld"] = runner.run_games(
-            make_controller(mode), make_controller(mode),
-            label_a=f"A:{mode}", label_b=f"B:{mode}",
-            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed,
-            verbose=True, machine_format=machine_format)
+        result["wld"] = rm_driver.run_games(
+            mode, mode, label_a=f"A:{mode}", label_b=f"B:{mode}",
+            binary=runner.BINARY, deck_a=deck_a, deck_b=deck_b, n_games=1,
+            seed=seed, transcript="verbose")
 
     crashed = None
     try:
@@ -1039,8 +1047,8 @@ def _write_matchup_transcript(out_path, games, base_seed, mode):
     return (wins, losses, draws), crashes
 
 
-def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir, machine_format="bquery"):
-    """Run each matchup as scripted games (over ``machine_format``), classify draws, scan
+def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir):
+    """Run each matchup as agent games (the RMSTATE driver), classify draws, scan
     transcripts.
 
     Matchup k's game i uses seed base_seed + 1000*k + i. Every game is
@@ -1048,7 +1056,7 @@ def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir, machine_f
     process pool; each matchup's transcript is reassembled in game order and
     the report is made in matchup order."""
     seeds = [base_seed + 1000 * k for k in range(len(pairs))]
-    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir, machine_format)
+    tasks = [(tier, deck_a, deck_b, mode, i, seed + i, out_dir)
              for (deck_a, deck_b), seed in zip(pairs, seeds)
              for i in range(n_games)]
     workers = max(1, min(len(tasks), os.cpu_count() or 4))
@@ -1087,12 +1095,12 @@ def _run_matchups(rep, tier, pairs, mode, n_games, base_seed, out_dir, machine_f
 def tier_smoke(rep, args, out_dir):
     """Deterministic league smoke with the scripted hard agent, on its RMSTATE frame view."""
     pairs = _matchups(args.matchups or "mirrors+ring")
-    _run_matchups(rep, "smoke", pairs, "scripted", args.smoke_games, args.seed, out_dir,
-                  machine_format="rmstate")
+    _run_matchups(rep, "smoke", pairs, "scripted", args.smoke_games, args.seed, out_dir)
 
 
 def tier_fuzz(rep, args, out_dir):
-    """Short fixed-seed coverage fuzz over league matchups."""
+    """Short fixed-seed coverage fuzz over league matchups, the explore tier on its RMSTATE
+    frame view."""
     pairs = _matchups(args.matchups or "mirrors")
     _run_matchups(rep, "fuzz", pairs, args.mode, args.fuzz_games, args.seed, out_dir)
 
