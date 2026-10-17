@@ -575,6 +575,10 @@ sections above are not repeated here.
 - `src/input_logger.cpp` — decision input (machine, `--replay`, CLI, actor provider), RMLOG, concede
   sentinels
 - `src/card_vocab.h` — card name → vocab index (emitted as a normalized id float, not a one-hot)
+- `src/knowledge/` — the knowledge sidecar (`Knowledge`: one seat's recall and deduction from its RMSTATE
+  frames, `k_*` rows; std + `state_format/decode.h`/`schema.h` only; `docs/knowledge_store.md` §9)
+- `tools/rmknow/` — `bin/<config>/rmknow` (part of `make`): the sidecar over a recorded stream
+  (`--viewer A|B`, `--text`, `--truth` vs the omniscient frames, `--selftest`)
 
 **AlphaZero C++ actor (`src/actor/`, `make actor` → `bin/<config>/az_actor`)** — each file is a twin of a
 Python function and MUST change in lockstep with it (bit-parity: opt-in tier `actor`; layout: `actorobs`):
