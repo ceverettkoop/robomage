@@ -14,6 +14,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 
@@ -57,6 +58,7 @@ HandlerResult scry(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx)
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             game_log_private(owner, "Scry: looking at %s\n", cd.name.c_str());
         }
+        look_at_cards(looked, owner);
         rt.remaining = looked;
         rt.init = true;
     }

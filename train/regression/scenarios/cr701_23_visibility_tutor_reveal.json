@@ -1,0 +1,22 @@
+{
+  "name": "cr701_23_visibility_tutor_reveal",
+  "why": "CR 701.23a / 701.20a / 701.20d: Personal Tutor's search is a look at the whole library by the searcher, ended by the shuffle; the found card is then revealed to all players until it moves to the top (step 1 T1 reveal windows, --trace-visibility)",
+  "engine_flags": ["--trace-visibility"],
+  "hand_a": ["Island", "Personal Tutor", "Island", "Island", "Island", "Island", "Island"],
+  "library_a": ["Lightning Bolt", "Swamp", "Ponder", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Island", "A:cast:Personal Tutor", "A:desc:Ponder"],
+  "max_decisions": 7,
+  "expect_order": [
+    "Player A casts Personal Tutor",
+    "^VISIBILITY: open look Ponder in library of A at 2 to A \\(until resolution end\\)",
+    "^VISIBILITY: close look Ponder in library of A at 2 to A \\(shuffle\\)",
+    "^Player A shuffles their library",
+    "^VISIBILITY: open reveal Ponder in library of A at \\d+ to all \\(until resolution end\\)",
+    "^VISIBILITY: close reveal Ponder in library of A at \\d+ to all \\(zone change\\)",
+    "^Player A reveals Ponder and puts it to top of library"
+  ],
+  "expect_count": {"^VISIBILITY: open look .* to A": 9, "^VISIBILITY: close look .* \\(shuffle\\)": 8},
+  "expect_not": ["^VISIBILITY: .* to B \\("]
+}

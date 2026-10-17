@@ -145,6 +145,13 @@ stale cache within a pin only re-fetches the delta.
 2. **Nightly fuzz:** run the `ci_check.py --tier fuzz --matchups all --mode … --fuzz-games …
    --seed …` line from the job summary; the `nightly-fuzz-*` artifact has the transcripts.
 
+**Extra engine flags.** `ROBOMAGE_ENGINE_FLAGS` (whitespace-separated) is appended to the command
+line of every engine a Python `RoboMageEnv` starts (`train/env.py`: the harness, `observe`, the
+scenario runner), e.g. `ROBOMAGE_ENGINE_FLAGS=--trace-visibility` to narrate reveal windows
+(`VISIBILITY:` lines). A scenario passes its own through its `engine_flags` key
+(`test_scenarios.py`). Leave it unset for `make check`: a flag that changes output changes
+transcripts.
+
 ## Intentionally changing behavior
 
 Some tiers pin current behavior, so an **intended** change updates them in the same commit (the

@@ -11,6 +11,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../queries/visibility.h"
 #include "../systems/orderer.h"
 #include "../svar_eval.h"
 
@@ -48,6 +49,7 @@ HandlerResult surveil(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             game_log_private(controller, "Surveil: looking at %s\n", cd.name.c_str());
         }
+        look_at_cards(looked, controller);
         rt.remaining = looked;
         rt.init = true;
     }

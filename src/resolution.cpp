@@ -21,6 +21,7 @@
 #include "queries/lki.h"
 #include "queries/players.h"
 #include "queries/spells.h"
+#include "queries/visibility.h"
 #include "svar_eval.h"
 #include "systems/orderer.h"
 #include "targeting.h"
@@ -227,10 +228,15 @@ static void fizzle(const Ability &ab) {
 // gift loop, charm's chosen modes, repeat_each, immediate/delayed triggers, the
 // mana-system riders) resolves inline exactly as before. A blocking ctx can
 // never suspend, so the discarded status is always DONE. A top-level blocking resolve is one
-// effect, so it gets its own CR 400.7j follow window (a nested one shares the open window).
+// effect, so it gets its own CR 400.7j follow window (a nested one shares the open window), and
+// the cards it revealed or looked at stop being shown when it finishes (CR 701.20a).
 void resolve_ability(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    FollowWindowScope follow_window;
-    (void)resolve_ability(ab, orderer, FrameCtx::blocking());
+    const bool top_level = !follow_window_open();
+    {
+        FollowWindowScope follow_window;
+        (void)resolve_ability(ab, orderer, FrameCtx::blocking());
+    }
+    if (top_level) close_resolution_windows(0);
 }
 
 // resolve() as a staged machine: the body is a phase-tagged fall-through so a

@@ -13,6 +13,8 @@
 #include "queries/characteristics.h"
 #include "queries/filters.h"
 #include "queries/players.h"
+#include "queries/visibility.h"
+#include "queries/zones.h"
 #include "resolution_frame.h"
 #include "systems/orderer.h"
 
@@ -26,6 +28,8 @@ static const char *zone_word(Zone::ZoneValue zone);
 static bool searches_zone(const ZoneSearch &search, Zone::ZoneValue zone);
 static void log_search(const ZoneSearch &search);
 static ActionCategory search_menu_category(const ZoneSearch &search);
+static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
+                                   Zone::Ownership searcher);
 
 // The cards `owner` has in `zone`, in the zone's own order. Graveyard / face-up exile / sideboard
 // ("outside the game") cards are enumerated by Zone owner (Karn, the Great Creator -2: choose an
@@ -108,6 +112,14 @@ static ActionCategory search_menu_category(const ZoneSearch &search) {
     return library ? ActionCategory::SEARCH_LIBRARY : ActionCategory::CHOOSE_CARD;
 }
 
+// CR 701.23a: searching a zone is looking at every card in it, so the searcher sees the searched
+// hidden zones' cards while the search is under way (the resolution, until a shuffle or a move).
+static void look_at_searched_zones(const std::shared_ptr<Orderer> &orderer, const ZoneSearch &search,
+                                   Zone::Ownership searcher) {
+    for (auto zone : search.zones)
+        if (!is_public_zone(zone)) look_at_cards(zone_contents(orderer, search.owner, zone), searcher);
+}
+
 Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, FrameCtx &ctx,
                     Entity decision_source, bool &suspended) {
     suspended = false;
@@ -118,6 +130,9 @@ Entity search_zones(std::shared_ptr<Orderer> orderer, const ZoneSearch &search, 
             if (search.exclude_remembered && refs_contain(remembered, entity)) continue;
             if (search_candidate_matches(entity, search)) choices.push_back(entity);
         }
+
+    // The calling handler has seated priority on the searching player.
+    look_at_searched_zones(orderer, search, priority_seat());
 
     // Nothing left to move; return immediately without prompting
     if (search.mandatory && choices.empty()) return 0;

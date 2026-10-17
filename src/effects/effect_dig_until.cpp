@@ -14,6 +14,7 @@
 #include "../ecs/coordinator.h"
 #include "../queries/entry.h"
 #include "../queries/filters.h"
+#include "../queries/visibility.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -55,6 +56,7 @@ HandlerResult dig_until(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx 
         // Every card this dig passes over is shown to all players (CR 701.20a), wherever it
         // goes next.
         mark_card_revealed(card, owner);
+        reveal_card(card);
         bool matches = ab.def->change_valid.empty() || card_matches_filter(card, ab.def->change_valid);
         if (matches) { found = card; break; }
         revealed.push_back(card);

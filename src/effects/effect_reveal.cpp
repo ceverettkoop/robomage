@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../stable_rng.h"
@@ -53,6 +54,7 @@ HandlerResult reveal(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ct
     // drawn platform-stably (see stable_rng.h).
     Entity chosen = hand[stable_rand_below(cur_game.rng.engine, hand.size())];
     auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+    look_at_card(chosen, ab.controller);
     game_log_private(ab.controller, "%s looks at a random card in %s's hand: %s\n",
         player_name(ab.controller).c_str(), player_name(hand_owner).c_str(), cd.name.c_str());
     return HandlerResult::DONE_RUN_SUBS;

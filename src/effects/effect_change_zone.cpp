@@ -27,6 +27,7 @@
 #include "../queries/filters.h"
 #include "../queries/players.h"
 #include "../queries/types.h"
+#include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
@@ -834,6 +835,11 @@ HandlerResult change_zone(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCt
         }
 
         if (chosen != 0) {
+            // The found card stays known to the chooser up to its move, although the shuffle above
+            // ended the search's look at it; a card the search reveals is shown to all players
+            // before it goes to a hidden zone (CR 701.20a, 701.23e).
+            look_at_card(chosen, chooser);
+            if (reveal && !is_public_zone(ab.def->destination)) reveal_card(chosen);
             // Named before the move, through entity_name: a battlefield pick may be a token,
             // which has no CardData.
             std::string chosen_name = entity_name(chosen);
@@ -991,6 +997,11 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
             if (global_coordinator.GetComponent<CardData>(e).name == name) matches.push_back(e);
         }
     };
+    // CR 701.23a: the searcher looks at every card in the searched hidden zones.
+    for (auto z : zones) {
+        if (z == Zone::LIBRARY) look_at_cards(orderer->get_library_contents(searched), caster);
+        if (z == Zone::HAND) look_at_cards(orderer->get_hand(searched), caster);
+    }
     for (auto z : zones) {
         if (z == Zone::LIBRARY)        { searched_library = true; collect(orderer->get_library_contents(searched)); }
         else if (z == Zone::HAND)      collect(orderer->get_hand(searched));

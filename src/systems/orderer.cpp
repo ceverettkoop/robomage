@@ -26,6 +26,7 @@
 #include "../queries/lki.h"
 #include "../queries/players.h"
 #include "../queries/spells.h"
+#include "../queries/visibility.h"
 #include "../transform.h"
 #include "../components/player.h"
 #include "../components/effect.h"
@@ -256,6 +257,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
     Zone::ZoneValue origin = target_zone.location;
     const bool public_identity = identity_public_leaving(target, origin);
+    // The card's reveal windows end as it leaves (CR 400.7). Whoever could see it in a hidden zone
+    // may keep looking at it if it is being exiled face down (CR 406.3).
+    const HiddenViewers saw_hidden =
+        exile_face_down && destination == Zone::EXILE ? hidden_identity_viewers(target) : HiddenViewers{};
+    close_windows_on_zone_change(target);
     close_zone_gap(target);
 
     if (!on_bottom) {
@@ -333,6 +339,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     // Likewise a face-down exiled card that moves anywhere is no longer that hidden object
     // (CR 708.4). Re-set it below only for a genuine face-down exile (exile_face_down).
     target_zone.is_face_down = (destination == Zone::EXILE && exile_face_down);
+    if (target_zone.is_face_down) open_face_down_windows(target, saw_hidden);
 
     // A card moving from a PUBLIC zone into hand is watched moving by both players,
     // so its specific identity stays known to the opponent even though the hand is a
@@ -421,6 +428,7 @@ Zone Orderer::begin_cast_move(Entity card, Zone::Ownership caster) {
         origin.location != Zone::EXILE)
         fatal_error("begin_cast_move: a card can't be cast from zone " +
                     std::to_string(static_cast<int>(origin.location)));
+    close_windows_on_zone_change(card);
     close_zone_gap(card);
     for (auto &&e : mEntities) {
         if (e == card) continue;
@@ -540,6 +548,7 @@ void Orderer::put_in_library_at_depth(Entity card, size_t depth) {
 }
 
 void Orderer::shuffle_library(Zone::Ownership owner) {
+    close_windows_on_shuffle(owner);
     auto contents = get_library_contents(owner);
     size_t n = contents.size();
     std::vector<int> placements(n);

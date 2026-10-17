@@ -15,6 +15,7 @@
 #include "../input_logger.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../stable_rng.h"
 #include "../systems/orderer.h"
 
@@ -88,6 +89,7 @@ HandlerResult discard(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &c
     // below was armed; a resume must not repeat them. TgtChoose does not reveal the hand.
     if (!ctx.resuming() && !tgt_chooses) {
         game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
+        reveal_cards(hand);
         for (auto e : hand) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             game_log("  %s\n", cd.name.c_str());

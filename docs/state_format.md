@@ -72,11 +72,23 @@ Two-player only (CLAUDE.md scope): "the opponent" is always the other seat.
 - A reveal shows a card to all players for as long as the revealing effect needs it (CR
   701.20a). A look is the same, shown only to the specified player (CR 701.20e).
 - The engine keeps one per-viewer **reveal-window** set. It generalises today's
-  `Game::revealed_in_library` to hands and looks.
+  `Game::revealed_in_library` to hands and looks. Implemented in `src/queries/visibility.{h,cpp}`
+  (`identity_visible`, `order_visible`, `reveal_windows_for`) over `Game::reveal_windows`;
+  `--trace-visibility` narrates each window opening and closing.
 - A window ends when the effect finishes with the card, when the card changes zones, or when
-  its library is shuffled or reordered (CR 701.20d).
+  its library is shuffled or reordered (CR 701.20d). "The effect finishes" is the end of the
+  resolution that opened it (a mid-resolution decision is still inside it), so a card put back
+  in a library by Ponder or a scry stops being looked at as it is put back.
+- A search is a look at every card in the searched hidden zones (CR 701.23a).
+- A miracle card stays revealed until its trigger leaves the stack (CR 701.20a, 702.94b).
 - Continuous reveals (e.g. "play with the top card of your library revealed") are windows that
-  last as long as the effect.
+  last as long as the effect. No card has one today except the chosen companion, revealed
+  outside the game while it stays there.
+- A card exiled face down gets a face-down look window for each player who could see it in its
+  hidden zone just before (its owner's hand, or a look or reveal window). A card exiled face
+  down from a public zone gets none (CR 406.3 covers a card looked at and then exiled). The
+  window ends when the card leaves exile or is turned face up (no engine effect shuffles a
+  pile in exile).
 - The snapshot shows exactly the cards in the viewer's windows.
 
 ## 4. Snapshot
@@ -576,7 +588,8 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `owner` | seat | | |
 | | `pos` | u16 | `index` | library position from the top |
 | | `card` | u16 | `card` | |
-| | `window` | u8 | `enum:window_kind` | reveal, look |
+| | `window` | u8 | `enum:window_kind` | reveal, look, face-down look (CR 406.3), continuous reveal |
+| | `until` | u8 | `enum:window_end` | end of the resolution, its stack object leaving the stack, or only the card leaving its zone |
 | | `to` | seat | | none = all players |
 | `pending` (43) | `tag` | u8 | `enum:pending_tag` | `PendingQuery::Tag` |
 | | `chooser` | seat | | |
@@ -684,7 +697,6 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 | `target_kind` | OBJECT, PLAYER |
 | `attack_target_kind` | PLAYER, PLANESWALKER |
 | `delayed_state` | WAITING, ON_STACK |
-| `window_kind` | REVEAL, LOOK |
 | `cost_part` | MANA, ALTERNATIVE, ADDITIONAL, UNLESS, X, ACTIVATION |
 | `layer` | COPY, CONTROL, TEXT, TYPE, COLOR, ABILITY, PT_CDA, PT_SET, PT_MODIFY, PT_COUNTERS, PT_SWITCH |
 | `duration` | STATIC, END_OF_TURN, UNTIL_YOUR_NEXT_TURN, UNTIL_HOST_LEAVES, PERMANENT |
@@ -696,7 +708,9 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 Existing C++ enums used: `Step` (`step`), `ActionCategory` (`action_category`), `ActionType`
 (`action_type`), `Zone::ZoneValue` (`zone`), `Zone::Ownership` (`seat`), `Colors` (`color`),
 `MandatoryChoice` (`mandatory_choice`), `Game::DayNight` (`day_night`), `PendingQuery::Tag`
-(`pending_tag`), `DelayedTriggerLink::FireKind` (`fire_kind`), `EffectKind` (`effect_kind`,
+(`pending_tag`), `Game::RevealWindow::Kind` (`window_kind`: REVEAL, LOOK, FACE_DOWN_LOOK,
+CONTINUOUS_REVEAL), `Game::RevealWindow::End` (`window_end`: RESOLUTION, STACK_OBJECT,
+LEAVES_ZONE), `DelayedTriggerLink::FireKind` (`fire_kind`), `EffectKind` (`effect_kind`,
 from `effect_kinds.def`). The type lists `all_types`, `all_subtypes`, `all_supertypes`
 (`src/constants.cpp`) give `card_type`, `subtype`, `supertype`; the parser's keyword table
 (`kKeywordTable`, `src/parse.cpp`) gives `keyword`.

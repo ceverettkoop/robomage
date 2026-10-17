@@ -8,6 +8,7 @@
 #include "../ecs/coordinator.h"
 #include "../queries/characteristics.h"
 #include "../queries/zones.h"
+#include "../queries/visibility.h"
 #include "../queries/affected.h"
 
 extern Coordinator global_coordinator;
@@ -39,6 +40,7 @@ static void set_object_state(const Ability &ab, Entity subject) {
             // owner's revealed multi-hot so the belief-state observation now reflects the reveal (the
             // face-down exile deliberately withheld it).
             mark_card_revealed(subject, z.owner);
+            close_windows_on_face_up(subject);
             game_log("%s is turned face up.\n", entity_name(subject).c_str());
         }
     } else if (ab.def->set_state_mode == "TurnFaceDown") {

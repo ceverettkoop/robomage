@@ -135,6 +135,8 @@ static const CliOption OPTIONS[] = {
     // Passive BSTATE frames at forced auto-pass windows (machine mode observers only; no stdin
     // response expected, nothing recorded).
     {"--broadcast-steps", nullptr, false, false, [](const char *) { broadcast_steps_mode = true; }, nullptr},
+    // Narrate reveal windows opening and closing (VISIBILITY: lines in the game log).
+    {"--trace-visibility", nullptr, false, false, [](const char *) { trace_visibility = true; }, nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 

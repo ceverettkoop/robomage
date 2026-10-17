@@ -22,6 +22,8 @@ Scenario keys beyond the harness's own:
   player_a / player_b  the seats' agents once the script runs out (default auto)
   deck_a / deck_b      a deck for a seat with no hand preset
   offer_cancel   true: run with --offer-cancel
+  engine_flags   extra engine flags (a list, e.g. ["--trace-visibility"]), passed to the
+                 engine through $ROBOMAGE_ENGINE_FLAGS (train/env.py)
 
 The narrative is the engine's game log (the harness's "--- Narrative ---"
 blocks) from the first turn banner on (the pregame's opening draws are left
@@ -44,6 +46,7 @@ import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 
+from env import ENGINE_FLAGS_ENV
 from test_harness import SCRIPT_INCOMPLETE
 
 _TRAIN = os.path.dirname(os.path.abspath(__file__))
@@ -61,7 +64,7 @@ _HARNESS_KEYS = {"name", "hand_a", "hand_b", "library_a", "library_b",
                  "life_a", "life_b", "play", "actions", "seed", "max_decisions"}
 _ASSERT_KEYS = {"expect", "expect_not", "expect_order", "expect_count", "expect_menu",
                 "expect_menu_not", "expect_result"}
-_RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel"}
+_RUN_KEYS = {"why", "player_a", "player_b", "deck_a", "deck_b", "offer_cancel", "engine_flags"}
 _KNOWN_KEYS = _HARNESS_KEYS | _ASSERT_KEYS | _RUN_KEYS
 
 _ERROR_RE = re.compile(
@@ -127,6 +130,15 @@ def harness_cmd(scn, path, binary=None):
     if binary:
         cmd += ["--binary", binary]
     return cmd
+
+
+def harness_env(scn):
+    """The environment for one scenario's harness process: ours, plus its engine_flags."""
+    env = dict(os.environ)
+    flags = scn.get("engine_flags", [])
+    if flags:
+        env[ENGINE_FLAGS_ENV] = " ".join([env.get(ENGINE_FLAGS_ENV, "")] + list(flags)).strip()
+    return env
 
 
 def check_output(scn, text):
@@ -199,7 +211,7 @@ def run_one(path, binary=None):
     except (ValueError, re.error, json.JSONDecodeError) as e:
         return name, [f"bad scenario file: {e}"], ""
     try:
-        r = subprocess.run(harness_cmd(scn, path, binary), cwd=_REPO_ROOT,
+        r = subprocess.run(harness_cmd(scn, path, binary), cwd=_REPO_ROOT, env=harness_env(scn),
                            capture_output=True, text=True, timeout=_TIMEOUT_S)
         out = r.stdout + r.stderr
     except subprocess.TimeoutExpired as e:

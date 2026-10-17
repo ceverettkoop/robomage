@@ -1,0 +1,25 @@
+{
+  "name": "cr406_3_visibility_face_down_exile_look",
+  "why": "CR 406.3: The Creation of Avacyn I searches (a look ended by the shuffle) and exiles the found card face down; its searcher keeps a look window on it across turns until chapter II turns it face up, and the opponent gets none (step 1 T1 reveal windows, --trace-visibility)",
+  "engine_flags": ["--trace-visibility"],
+  "hand_a": ["Swamp", "The Creation of Avacyn", "Island", "Island", "Island", "Island", "Island"],
+  "battlefield_a": ["Swamp", "Swamp", "Swamp"],
+  "library_a": ["Lightning Bolt", "Grizzly Bears", "Ponder", "Swamp", "Swamp"],
+  "hand_b": ["Mountain"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:cast:Creation of Avacyn", "A:desc:Grizzly Bears"],
+  "max_decisions": 30,
+  "expect_order": [
+    "The Creation of Avacyn chapter 1 triggers",
+    "^VISIBILITY: open look Grizzly Bears in library of A at 1 to A \\(until resolution end\\)",
+    "^VISIBILITY: close look Grizzly Bears in library of A at 1 to A \\(shuffle\\)",
+    "^VISIBILITY: open look Grizzly Bears in library of A at \\d+ to A",
+    "^VISIBILITY: close look Grizzly Bears in library of A at \\d+ to A \\(zone change\\)",
+    "^VISIBILITY: open face-down-look Grizzly Bears in exile face down of A to A \\(until it leaves its zone\\)",
+    "TURN 2 \\(Player B\\)",
+    "The Creation of Avacyn chapter 2 triggers",
+    "^VISIBILITY: close face-down-look Grizzly Bears in exile of A to A \\(turned face up\\)",
+    "^Grizzly Bears is turned face up"
+  ],
+  "expect_not": ["^VISIBILITY: .* to (B|all) \\("]
+}

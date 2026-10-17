@@ -17,6 +17,7 @@
 #include "../input_logger.h"
 #include "../queries/filters.h"
 #include "../queries/players.h"
+#include "../queries/visibility.h"
 #include "../stable_rng.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
@@ -136,18 +137,21 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
             if (ab.def->change_valid.empty() || card_matches_filter(e, ab.def->change_valid, mctx))
                 matching.push_back(e);
 
-        if (dig_is_blind(ab))
+        if (dig_is_blind(ab)) {
             game_log("%s exiles the top %zu card(s) of %s library face down.\n", actor_name.c_str(),
                      rt.lib.size(), owner_poss.c_str());
-        else
+        } else {
             game_log("%s looks at the top %zu card(s) of %s library.\n", actor_name.c_str(),
                      rt.lib.size(), owner_poss.c_str());
+            look_at_cards(rt.lib, looker);
+        }
 
         // Reveal$ True (Goblin Guide): the looked-at cards are shown to ALL players. Log the
         // reveal publicly (visible to both seats, not redacted) and record it in the belief-state
         // multi-hot so the non-owner's observation carries the revealed identity, regardless of
         // where each card subsequently goes (hand if it matches, else back on top).
         if (ab.def->dig_reveal) {
+            reveal_cards(rt.lib);
             for (auto e : rt.lib) {
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 game_log("%s reveals %s from the top of %s library.\n", actor_name.c_str(), cd.name.c_str(),
@@ -233,7 +237,10 @@ HandlerResult dig(Ability &ab, std::shared_ptr<Orderer> orderer, FrameCtx &ctx) 
     for (Entity chosen : rt.chosen) {
         // A revealed card is recorded in the opponent's belief state before it moves, so it
         // stays known if it lands in a hand (CR 701.20a).
-        if (chosen_revealed) mark_card_revealed(chosen, dig_owner);
+        if (chosen_revealed) {
+            mark_card_revealed(chosen, dig_owner);
+            reveal_card(chosen);
+        }
         if (chosen_dest == Zone::BATTLEFIELD) {
             // An Aura chooses what it enchants as it enters, or stays put without a legal object
             // (CR 303.4f/g) — the shared uncast battlefield entry.

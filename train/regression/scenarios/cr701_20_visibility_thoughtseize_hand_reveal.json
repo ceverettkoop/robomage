@@ -1,0 +1,24 @@
+{
+  "name": "cr701_20_visibility_thoughtseize_hand_reveal",
+  "why": "CR 701.20a: Thoughtseize's hand reveal opens a reveal window to all players on each card of the target's hand; the discarded card's window ends as it moves, the rest when the resolution ends (step 1 T1 reveal windows, --trace-visibility)",
+  "engine_flags": ["--trace-visibility"],
+  "hand_a": ["Swamp", "Thoughtseize"],
+  "library_a": ["Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp", "Swamp"],
+  "hand_b": ["Lightning Bolt", "Grizzly Bears", "Mountain", "Force of Will"],
+  "library_b": ["Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "play": ["A:keep", "B:keep", "A:play:Swamp", "A:cast:Thoughtseize", "A:target:Player B", "A:choice:Lightning Bolt"],
+  "max_decisions": 8,
+  "expect_order": [
+    "Player A casts Thoughtseize targeting Player B",
+    "^VISIBILITY: open reveal Force of Will in hand of B to all \\(until resolution end\\)",
+    "^VISIBILITY: open reveal Lightning Bolt in hand of B to all",
+    "^Player B discards Lightning Bolt",
+    "^VISIBILITY: close reveal Lightning Bolt in hand of B to all \\(zone change\\)",
+    "^VISIBILITY: close reveal Force of Will in hand of B to all \\(resolution end\\)"
+  ],
+  "expect_count": {
+    "^VISIBILITY: open reveal .* in hand of B to all": 7,
+    "^VISIBILITY: close reveal .* in hand of B to all \\(resolution end\\)": 6
+  },
+  "expect_not": ["^VISIBILITY: .* to (A|B) \\("]
+}

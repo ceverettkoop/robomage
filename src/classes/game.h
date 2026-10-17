@@ -753,6 +753,28 @@ struct Game {
         // the opponent there (Zone::identity_known). An entry ends when the card changes zones or
         // its library is shuffled (CR 701.20d), and every entry ends when the resolution finishes.
         ObjectSet revealed_in_library;
+        // A reveal window (src/queries/visibility.h): a card in a hidden zone (a library, a hand,
+        // the sideboard, or face down in exile) whose identity `audience` may see right now. A
+        // reveal shows it to all players for as long as the revealing effect needs it (CR
+        // 701.20a), a look only to the looker (CR 701.20e), and a player who looked at a card that
+        // is then exiled face down may keep looking at it until it leaves exile (CR 406.3). Every
+        // window ends when its card changes zones or its library is shuffled (CR 701.20d), and as
+        // its `until` says.
+        struct RevealWindow {
+            enum Kind : uint8_t { REVEAL, LOOK, FACE_DOWN_LOOK, CONTINUOUS_REVEAL };
+            enum End : uint8_t {
+                RESOLUTION,    // the resolution in progress (or top-level effect) finishes
+                STACK_OBJECT,  // `stack_object` leaves the stack (CR 701.20a, 702.94b)
+                LEAVES_ZONE,   // only the card leaving its zone (or its pile being shuffled) ends it
+            };
+            ObjectRef card;
+            Zone::Ownership audience = Zone::UNKNOWN;  // the one player shown it; UNKNOWN = all players
+            Kind kind = REVEAL;
+            End until = RESOLUTION;
+            ObjectRef stack_object;
+        };
+        // The open reveal windows, in the order they opened (visibility.cpp keeps them).
+        std::vector<RevealWindow> reveal_windows;
         // Play-from-exile permission: a card in EXILE that an effect lets a player play — at
         // priority for as long as the grant lasts (Light Up the Stage, Ugin -11, Dauthi
         // Voidwalker, warp; cleared at cleanup unless it lasts longer), or during a resolution

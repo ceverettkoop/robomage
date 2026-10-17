@@ -22,6 +22,7 @@
 #include "../queries/players.h"
 #include "../queries/spells.h"
 #include "../queries/types.h"
+#include "../queries/visibility.h"
 #include "../input_logger.h"
 #include "../resolution_frame.h"
 #include "../saga.h"
@@ -101,6 +102,7 @@ static void frame_finish() {
     // The revealing effect is over, so the cards it revealed in a library stop being revealed
     // (CR 701.20a).
     cur_game.revealed_in_library.clear();
+    close_resolution_windows(fr.stack_entity);
     // What this resolution remembered and chose (ChooseCard's chosen cards: Ajani's kept
     // permanents, Dauthi Voidwalker's card) ends with it, so it can't leak into a later
     // nonChosenCard filter; the outer remembered set comes back.

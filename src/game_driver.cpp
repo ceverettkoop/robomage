@@ -106,6 +106,9 @@ bool log_decisions_flag = false;
 // fast-forwarding to the next real decision. Consumes no input and records
 // nothing, so replays and search mirrors are unaffected.
 bool broadcast_steps_mode = false;
+// --trace-visibility: narrate every reveal window as it opens and closes (VISIBILITY: lines,
+// src/queries/visibility.cpp). A debugging aid; off by default, so no output changes.
+bool trace_visibility = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;

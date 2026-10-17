@@ -896,6 +896,16 @@ def _deck_named(deck, key):
 from cli_spec import REPO_ROOT as _REPO_ROOT, BINARY, BIN_DIR  # noqa: E402
 
 
+# Extra engine flags for every engine this process starts, whitespace-separated (e.g.
+# ROBOMAGE_ENGINE_FLAGS=--trace-visibility). A debugging / gate hook; see docs/ci.md.
+ENGINE_FLAGS_ENV = "ROBOMAGE_ENGINE_FLAGS"
+
+
+def env_engine_flags() -> list:
+    """The engine flags named by $ROBOMAGE_ENGINE_FLAGS (empty when unset)."""
+    return os.environ.get(ENGINE_FLAGS_ENV, "").split()
+
+
 class RoboMageEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
 
@@ -1049,7 +1059,7 @@ class RoboMageEnv(gym.Env):
             cmd += ["--log-decisions"]
         if self._broadcast_steps:
             cmd += ["--broadcast-steps"]
-        cmd += self._extra_engine_flags()
+        cmd += self._extra_engine_flags() + env_engine_flags()
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
