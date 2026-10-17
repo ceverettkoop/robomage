@@ -431,6 +431,69 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **knowledge:** the sidecar's soundness, exactness, isolation and shadow checks
   (`knowledge_store.md` §7).
 
+**Implementation** (`--selfcheck-state`, `src/state_format/selfcheck.{h,cpp}`). At every decision
+the self-check builds every viewer's STATE frame (A, B, omniscient) from a queue copy of its own
+(`ObsConsumer::SELFCHECK`), so it runs with or without a frame writer; failures print `ERROR:`
+lines (`selfcheck-state <check>: viewer …, decision … (game, turn, step): <first differing table,
+row, card and column>`), and a `SELFCHECK-STATE: decisions=… frames=… events=… permutations=…
+snapshots=… errors=…` summary goes to stderr at match end. Play, the RNG, BQUERY and the
+`--rmstate-dump` bytes are the same with it on. It is off under `--search-server` and for the
+in-process actor.
+- **Hidden, decided independently.** Both leak checks decide what a seat cannot see from the
+  table in section 3 directly (zone, owner, controller, face-down state, and the seat's windows in
+  `Game::reveal_windows`), not through `queries/visibility.h`, so a visibility rule that wrongly
+  shows a card is caught as well as an encoder read that bypasses the rules.
+- **roundtrip:** every frame (and once per match each viewer's `SCHEMA`, `CARDS`, `DECKLISTS`)
+  through `decode_frame` → `encode_frame`.
+- **scramble** (the event-leak check, plus the snapshot at every decision): each seat's frame is
+  encoded a second time inside `ScrambledIdentities`, which gives every card hidden from the seat
+  another identity. The hidden cards' `CardData` are rotated among them (sorted by name, shifted
+  by the largest copy count, so each holds another name's whenever no name has half the copies),
+  by remapping their component slots (`Coordinator::PermuteComponents`: nothing is copied, and a
+  reference held to a component still names the same data); a hidden object without `CardData`
+  gets another id from `card_identity`'s test-mode scrambler. The bytes must match. Every event
+  is built twice the same way as it is constructed (`emit` in `events.cpp`, and the move capture
+  in `obs_begin_move`), and the two builds' rows (`encode_events_frame`) must match. A menu entry's
+  card made public by the choice itself (`card_is_public`) keeps its identity.
+- **permutation** (the snapshot-leak check, sampled every `--selfcheck-state-sample N`th decision,
+  default 8): for each seat, the opponent's hidden hand, library and sideboard cards are dealt at
+  random among those cards' places (zone and library position: entity ids move, as in the search
+  server's determinizer), the seat's own hidden library cards among their positions, and then the
+  identities of all cards hidden from the seat are shuffled per owner (a card in a window shown
+  only to the other player keeps its place but not its identity; a face-down exiled card keeps
+  its place, and the objects that refer to it, with another identity). Every card in a live
+  window keeps its place. Owners, zone sizes, identity stamps and the handle tables stay as they
+  were; the seat's frame must be the same bytes. Everything is put back exactly (saved `Zone`s,
+  the inverse slot permutation, the seat's handle table), without a snapshot restore, so it can
+  run at any decision, including a blocking prompt in the middle of a flow.
+- **complete:** object handles unique and nonzero; every object the viewer can identify has a
+  row, and every object of a public zone (and the seat's own hand and sideboard; everything for
+  the omniscient viewer) is counted per zone and owner against the object rows; the player rows'
+  zone counts against the zones; the reveal table against the viewer's windows; every `handle`
+  column of a snapshot table names an object row (event tables exempt); every `row:` reference in
+  range; the menu has one row per action as offered for the deciding seat and the omniscient
+  viewer, none otherwise.
+- **snapshot** (sampled): at a loop-safe decision outside sideboarding the game is saved
+  (`snapshot_save`, with the continuous-effects registry copied); at the first loop-safe decision
+  at least 3 decisions later the current state is saved, the earlier one restored, every viewer's
+  frame encoded there (its menu, decider, priority-window flag, and the events it drained) and
+  compared with the saved decision's bytes, and the current state restored. Both restores are
+  exact (`snapshot_restore_exact`, registry put back from the copies): the search server's restore
+  re-derives the continuous effects instead, which can change characteristics at a decision where
+  the derived ones lag the state (`docs/rules_deviations.md` 2.3).
+- **Bypasses of `card_identity`.** Three identity reads do not go through `visible_card_id`. The
+  card a `card_is_public` menu choice makes public (`public_card_id`) is safe where the choice
+  itself is public, but the name-a-card menus (Cabal Therapy, Disruptor Flute, Petrified Hamlet)
+  take their candidates from the opponent's owned cards: under open decklists those are the
+  registered list, but under `--closed-decklist` they show the opponent's list (the gap in
+  `docs/rules_deviations.md` 1.2). Captured public ids (last-known information of an object that
+  left the battlefield, a delayed or floating trigger's creator) were public when captured. A
+  zone-less sideboard template card is shown only to the sideboarding player. The menu's
+  `description` strings are built by the engine before the encoder sees them; the encoder
+  redacts an entry whose source or target is hidden, but a description that names some other
+  hidden card would pass both leak checks (the scramble and the permutation change the world, not
+  a string already built).
+
 ## 11. Decision register
 
 | # | Decision | Status |

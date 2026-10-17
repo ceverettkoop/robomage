@@ -18,6 +18,7 @@
 #include "events.h"
 #include "handles.h"
 #include "schema.h"
+#include "selfcheck.h"
 
 static void stream_write(const std::string &payload);
 static void stream_match_frames_once(Zone::Ownership seat);
@@ -52,7 +53,7 @@ Zone::Ownership rmstate_deciding_seat() {
 }
 
 void rmstate_begin_decision() {
-    if (rmstate_dump_path.empty() && !machine_format_rmstate) return;
+    if (rmstate_dump_path.empty() && !machine_format_rmstate && !selfcheck_state_enabled()) return;
     ++cur_game.state_decisions;
     for (Zone::Ownership viewer : {Zone::PLAYER_A, Zone::PLAYER_B, Zone::UNKNOWN}) issue_handles_canonical(viewer);
 }
@@ -96,6 +97,7 @@ int rmstate_stream_exchange(const std::vector<LegalAction> &actions) {
 void rmstate_match_over() {
     if (search_server_mode) return;
     rmstate_dump_match_over();
+    selfcheck_state_match_over();
     if (!machine_format_rmstate) return;
     for (Zone::Ownership seat : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         stream_match_frames_once(seat);

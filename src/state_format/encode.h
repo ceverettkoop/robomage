@@ -44,4 +44,9 @@ std::string encode_decklists_frame(Zone::Ownership viewer);
 std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAction> &actions, Zone::Ownership decider,
     const std::vector<ObsEvent> &events, bool terminal = false);
 
+// A STATE frame holding only `events` as `viewer`'s event tables (no snapshot tables): the rows an
+// event projects to, for comparing two builds of one event (--selfcheck-state). Not a frame any
+// stream carries.
+std::string encode_events_frame(Zone::Ownership viewer, const std::vector<ObsEvent> &events);
+
 #endif /* STATE_FORMAT_ENCODE_H */

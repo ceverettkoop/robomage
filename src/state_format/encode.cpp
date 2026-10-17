@@ -1380,6 +1380,14 @@ std::string encode_state_frame(Zone::Ownership viewer, const std::vector<LegalAc
     return w.finish();
 }
 
+std::string encode_events_frame(Zone::Ownership viewer, const std::vector<ObsEvent> &events) {
+    const Zone::Ownership v = viewer_key(viewer);
+    FrameWriter w(FrameKind::STATE, frame_viewer(v), rmstate_schema_hash());
+    const Ctx c{v, is_seat(v) ? v : Zone::PLAYER_A, w};
+    write_events(c, events);
+    return w.finish();
+}
+
 // ── Events (A.6) ──────────────────────────────────────────────────────────────────────────────
 
 static void put_libpos(Row &r, const ObsLibPos &p) {

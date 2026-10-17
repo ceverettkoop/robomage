@@ -560,6 +560,10 @@ sections above are not repeated here.
 - `src/state_format/events.{h,cpp}` — observation events: the `obs_*` hooks at the zone-move, draw,
   shuffle, reveal-window and game-boundary choke points, per-viewer projected queues on `Game`
   (match-long `seq`), drained into each STATE frame; `--trace-events`
+- `src/state_format/selfcheck.{h,cpp}` — `--selfcheck-state`: per-decision roundtrip, scramble
+  (frames and events rebuilt with hidden identities rotated), complete and, sampled, permutation
+  (hidden zones physically permuted) and snapshot (save → K decisions → exact restore) checks;
+  `ERROR:` lines, `SELFCHECK-STATE:` summary
 - `src/snapshot.cpp`, `src/search_server.cpp` — state snapshot/restore and the `--search-server` MCTS
   protocol
 - `src/machine_io.{h,cpp}` — state-vector layout/constants and `serialize_state`/`populate_query`;

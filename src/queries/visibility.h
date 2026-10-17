@@ -63,6 +63,12 @@ std::vector<Entity> canonical_object_order(std::vector<Entity> objects, Zone::Ow
 // entity hidden from them).
 int card_identity(Entity entity, Zone::Ownership viewer);
 
+// Test mode (--selfcheck-state, state_format/selfcheck.h): while a scrambler is set, card_identity
+// returns scrambler(entity, id) instead of the id it read, so the self-check can substitute a
+// different card id for an entity hidden from the viewer under test. nullptr ends test mode.
+using CardIdentityScrambler = int (*)(Entity entity, int card_id);
+void set_card_identity_scrambler(CardIdentityScrambler scrambler);
+
 // The card id of `entity` as `viewer` sees it: card_identity when identity_visible, else -1. An
 // ability on the stack shows its source's card: the source as it is while it is still that object
 // (visibility applies to it), else the last-known identity it left the battlefield with, which

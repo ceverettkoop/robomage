@@ -59,6 +59,8 @@ extern std::string rmstate_dump_path;
 extern bool machine_format_rmstate;
 extern bool state_dump_json;
 extern std::string rmstate_read_path;
+extern bool selfcheck_state;
+extern int selfcheck_state_sample;
 extern std::vector<std::string> battlefield_a_cards;
 extern std::vector<std::string> battlefield_b_cards;
 extern std::vector<std::string> graveyard_a_cards;
@@ -106,6 +108,9 @@ bool in_main_loop();
 // The serializer gates the pass flags and is_priority_window on it, so the two
 // always agree.
 bool priority_window_open();
+// Sets what priority_window_open answers. Only the state-format self-check uses it, to encode a
+// restored snapshot as of the decision it was saved at (state_format/selfcheck.h).
+void set_priority_window_open(bool open);
 
 // ── Concession (CR 104.3a) ──────────────────────────────────────────────────
 // A player may concede at any time; they lose the game immediately. The engine

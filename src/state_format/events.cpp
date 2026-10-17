@@ -18,6 +18,7 @@
 #include "../queries/visibility.h"
 #include "../queries/zones.h"
 #include "handles.h"
+#include "selfcheck.h"
 
 using rmstate::EventKind;
 using rmstate::LibAnchor;
@@ -39,6 +40,10 @@ static uint16_t clamp16(size_t v);
 static ObsEvent new_event(EventKind kind, Zone::Ownership viewer);
 static void fill_source(ObsEvent &ev, Zone::Ownership viewer);
 static uint32_t push(Zone::Ownership viewer, ObsEvent ev);
+template <class Build>
+static uint32_t emit(Zone::Ownership viewer, Build build);
+static ObsMoveCapture::Seen see_before_move(Entity e, Zone::Ownership viewer);
+static bool same_seen(const ObsMoveCapture::Seen &a, const ObsMoveCapture::Seen &b);
 static ObsEventCard object_card(Entity e, Zone::Ownership viewer, bool issue);
 static void zone_counts(uint16_t library[3], uint16_t sideboard[3]);
 static int game_index();
@@ -60,9 +65,10 @@ static int slot(Zone::Ownership viewer) {
     return HandleMove::slot(viewer);
 }
 
-// Whether a frame writer drains the queues; under --trace-events alone events are only narrated.
+// Whether a frame writer (or the self-check) drains the queues; under --trace-events alone events
+// are only narrated.
 static bool queues_enabled() {
-    return !rmstate_dump_path.empty() || machine_format_rmstate;
+    return !rmstate_dump_path.empty() || machine_format_rmstate || selfcheck_state_enabled();
 }
 
 bool rmstate_events_enabled() {
@@ -153,8 +159,28 @@ static uint32_t push(Zone::Ownership viewer, ObsEvent ev) {
     const uint32_t seq = ev.seq;
     // The stdout stream serves the seats only.
     if (machine_format_rmstate && is_seat(viewer)) q.stream_events.push_back(ev);
+    if (selfcheck_state_enabled()) q.selfcheck_events.push_back(ev);
     if (!rmstate_dump_path.empty()) q.events.push_back(std::move(ev));
     return seq;
+}
+
+// Builds `viewer`'s event with `build` (which reads the game and may issue the viewer's handles,
+// nothing else) and queues it; returns its seq. Under --selfcheck-state a seat's event is built a
+// second time with every identity hidden from the seat substituted (ScrambledIdentities), and the
+// two builds must project to the same rows. The first build has issued every handle the event
+// needs, so the second issues none.
+template <class Build>
+static uint32_t emit(Zone::Ownership viewer, Build build) {
+    ObsEvent ev = build();
+    if (is_seat(viewer) && selfcheck_state_enabled()) {
+        ObsEvent scrambled;
+        {
+            ScrambledIdentities scramble(viewer);
+            scrambled = build();
+        }
+        selfcheck_state_event(viewer, ev, scrambled);
+    }
+    return push(viewer, std::move(ev));
 }
 
 // `e` where it is now, as `viewer` sees it: its handle (in both columns: the event does not move
@@ -190,13 +216,33 @@ ObsMoveCapture obs_begin_move(Entity e) {
     if (z.location == Zone::HAND) cap.hand_subset = cur_game.obs_events.hand_subset;
     for (Zone::Ownership viewer : VIEWERS) {
         ObsMoveCapture::Seen &s = cap.before[slot(viewer)];
-        // Only a handle the viewer holds: one issued now would name nothing they saw before.
-        s.handle = handle_peek(viewer, e);
-        s.visible = identity_visible(e, viewer);
-        if (s.visible) s.card = visible_card_id(e, viewer);
-        if (z.location == Zone::LIBRARY) s.from = position_seen(e, viewer);
+        s = see_before_move(e, viewer);
+        if (!is_seat(viewer) || !selfcheck_state_enabled()) continue;
+        ObsMoveCapture::Seen scrambled;
+        {
+            ScrambledIdentities scramble(viewer);
+            scrambled = see_before_move(e, viewer);
+        }
+        if (!same_seen(s, scrambled))
+            selfcheck_state_mismatch("scramble", viewer, "a zone move's capture of the moving card differs");
     }
     return cap;
+}
+
+// What `viewer` sees of `e` as it starts to move. Only a handle the viewer holds: one issued now
+// would name nothing they saw before.
+static ObsMoveCapture::Seen see_before_move(Entity e, Zone::Ownership viewer) {
+    ObsMoveCapture::Seen s;
+    s.handle = handle_peek(viewer, e);
+    s.visible = identity_visible(e, viewer);
+    if (s.visible) s.card = visible_card_id(e, viewer);
+    if (global_coordinator.GetComponent<Zone>(e).location == Zone::LIBRARY) s.from = position_seen(e, viewer);
+    return s;
+}
+
+static bool same_seen(const ObsMoveCapture::Seen &a, const ObsMoveCapture::Seen &b) {
+    return a.visible == b.visible && a.handle == b.handle && a.card == b.card && a.from.anchor == b.from.anchor &&
+           a.from.pos == b.from.pos && a.from.span == b.from.span;
 }
 
 void obs_end_move(const ObsMoveCapture &cap, Entity e, const uint32_t after_handles[3], const ObsMoveInfo &info) {
@@ -219,33 +265,35 @@ void obs_end_move(const ObsMoveCapture &cap, Entity e, const uint32_t after_hand
     for (Zone::Ownership viewer : VIEWERS) {
         const int s = slot(viewer);
         const ObsMoveCapture::Seen &seen = cap.before[s];
-        ObsEvent ev = new_event(kind, viewer);
-        ev.zone = cap.origin;
-        ev.zone_owner = cap.origin_owner;
-        ev.to_zone = z.location;
-        ev.to_owner = z.owner;
-        ev.count = 1;
-        ObsEventCard c;
-        c.handle_before = seen.handle;
-        c.handle_after = after_handles[s];
-        if (c.handle_after == 0 && individually_identifiable(e, viewer)) c.handle_after = handle_of(viewer, e);
-        c.card = identity_visible(e, viewer) ? visible_card_id(e, viewer) : seen.card;
-        c.from = seen.from;
-        c.face_down = z.location == Zone::EXILE && z.is_face_down;
-        c.token = cap.token;
-        c.hand_subset = cap.hand_subset;
-        if (info.draw) {
-            ev.player = z.owner;
-            ev.opening = info.opening;
-            c.from = at_top(0, 1);
-        } else if (into_library) {
-            if (in_batch && st.batch.batched[s])
-                ev.batch = st.batch.id;
-            else
-                c.to = info.on_bottom ? at_bottom(0, 1) : at_top(z.distance_from_top, 1);
-        }
-        ev.cards.push_back(c);
-        const uint32_t seq = push(viewer, std::move(ev));
+        const uint32_t seq = emit(viewer, [&] {
+            ObsEvent ev = new_event(kind, viewer);
+            ev.zone = cap.origin;
+            ev.zone_owner = cap.origin_owner;
+            ev.to_zone = z.location;
+            ev.to_owner = z.owner;
+            ev.count = 1;
+            ObsEventCard c;
+            c.handle_before = seen.handle;
+            c.handle_after = after_handles[s];
+            if (c.handle_after == 0 && individually_identifiable(e, viewer)) c.handle_after = handle_of(viewer, e);
+            c.card = identity_visible(e, viewer) ? visible_card_id(e, viewer) : seen.card;
+            c.from = seen.from;
+            c.face_down = z.location == Zone::EXILE && z.is_face_down;
+            c.token = cap.token;
+            c.hand_subset = cap.hand_subset;
+            if (info.draw) {
+                ev.player = z.owner;
+                ev.opening = info.opening;
+                c.from = at_top(0, 1);
+            } else if (into_library) {
+                if (in_batch && st.batch.batched[s])
+                    ev.batch = st.batch.id;
+                else
+                    c.to = info.on_bottom ? at_bottom(0, 1) : at_top(z.distance_from_top, 1);
+            }
+            ev.cards.push_back(c);
+            return ev;
+        });
         if (info.draw) st.last_draw_seq[s] = seq;
     }
 }
@@ -254,15 +302,17 @@ void obs_object_created(Entity e) {
     if (!reporting() || !is_card_object(e)) return;
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(EventKind::ZONE_MOVE, viewer);
-        ev.to_zone = z.location;
-        ev.to_owner = z.owner;
-        ev.count = 1;
-        ObsEventCard c = object_card(e, viewer, true);
-        c.handle_before = 0;
-        c.from = ObsLibPos{};
-        ev.cards.push_back(c);
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::ZONE_MOVE, viewer);
+            ev.to_zone = z.location;
+            ev.to_owner = z.owner;
+            ev.count = 1;
+            ObsEventCard c = object_card(e, viewer, true);
+            c.handle_before = 0;
+            c.from = ObsLibPos{};
+            ev.cards.push_back(c);
+            return ev;
+        });
     }
 }
 
@@ -270,16 +320,18 @@ void obs_object_ceased(Entity e, bool spell_copy) {
     if (!reporting() || !is_card_object(e)) return;
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(EventKind::ZONE_MOVE, viewer);
-        ev.zone = z.location;
-        ev.zone_owner = z.owner;
-        ev.count = 1;
-        ObsEventCard c = object_card(e, viewer, false);
-        c.handle_after = 0;
-        c.to = ObsLibPos{};
-        c.token = c.token || spell_copy;
-        ev.cards.push_back(c);
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::ZONE_MOVE, viewer);
+            ev.zone = z.location;
+            ev.zone_owner = z.owner;
+            ev.count = 1;
+            ObsEventCard c = object_card(e, viewer, false);
+            c.handle_after = 0;
+            c.to = ObsLibPos{};
+            c.token = c.token || spell_copy;
+            ev.cards.push_back(c);
+            return ev;
+        });
     }
     retire_object_handles(e);
 }
@@ -287,11 +339,13 @@ void obs_object_ceased(Entity e, bool spell_copy) {
 void obs_shuffle(Zone::Ownership owner) {
     if (!reporting()) return;
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(EventKind::SHUFFLE, viewer);
-        ev.player = owner;
-        ev.zone = Zone::LIBRARY;
-        ev.zone_owner = owner;
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::SHUFFLE, viewer);
+            ev.player = owner;
+            ev.zone = Zone::LIBRARY;
+            ev.zone_owner = owner;
+            return ev;
+        });
     }
 }
 
@@ -299,24 +353,28 @@ void obs_face_turned(Entity e, bool face_up) {
     if (!reporting() || !is_card_object(e)) return;
     const Zone &z = global_coordinator.GetComponent<Zone>(e);
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(face_up ? EventKind::FACE_UP : EventKind::FACE_DOWN, viewer);
-        ev.zone = z.location;
-        ev.zone_owner = z.owner;
-        ev.count = 1;
-        ev.cards.push_back(object_card(e, viewer, true));
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(face_up ? EventKind::FACE_UP : EventKind::FACE_DOWN, viewer);
+            ev.zone = z.location;
+            ev.zone_owner = z.owner;
+            ev.count = 1;
+            ev.cards.push_back(object_card(e, viewer, true));
+            return ev;
+        });
     }
 }
 
 void obs_search(Zone::Ownership searcher, Zone::ZoneValue zone, Zone::Ownership owner, int found) {
     if (!reporting()) return;
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(EventKind::SEARCH, viewer);
-        ev.player = searcher;
-        ev.zone = zone;
-        ev.zone_owner = owner;
-        ev.count = clamp16(static_cast<size_t>(std::max(found, 0)));
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::SEARCH, viewer);
+            ev.player = searcher;
+            ev.zone = zone;
+            ev.zone_owner = owner;
+            ev.count = clamp16(static_cast<size_t>(std::max(found, 0)));
+            return ev;
+        });
     }
 }
 
@@ -359,36 +417,38 @@ void obs_windows_opened(
     for (const std::vector<Entity> &group : group_by(cards, zone_key)) {
         const Zone &gz = global_coordinator.GetComponent<Zone>(group.front());
         for (Zone::Ownership viewer : VIEWERS) {
-            ObsEvent ev = new_event(look ? EventKind::LOOK : EventKind::REVEAL_START, viewer);
-            if (look) ev.player = audience;
-            ev.to = audience;
-            ev.zone = gz.location;
-            ev.zone_owner = gz.owner;
-            ev.count = clamp16(group.size());
-            bool exact = true;
-            size_t lo = SIZE_MAX, hi = 0;
-            for (Entity card : group) {
-                ObsEventCard c = object_card(card, viewer, true);
-                c.handle_before = 0;
-                c.face_down = false;
-                if (gz.location == Zone::LIBRARY) {
-                    const size_t pos = global_coordinator.GetComponent<Zone>(card).distance_from_top;
-                    const bool knows = !is_seat(viewer) || position_public || identity_visible(card, viewer);
-                    c.from = knows ? at_top(pos, 1) : anywhere();
-                    c.to = ObsLibPos{};
-                    exact = exact && knows;
-                    lo = std::min(lo, pos);
-                    hi = std::max(hi, pos);
+            emit(viewer, [&] {
+                ObsEvent ev = new_event(look ? EventKind::LOOK : EventKind::REVEAL_START, viewer);
+                if (look) ev.player = audience;
+                ev.to = audience;
+                ev.zone = gz.location;
+                ev.zone_owner = gz.owner;
+                ev.count = clamp16(group.size());
+                bool exact = true;
+                size_t lo = SIZE_MAX, hi = 0;
+                for (Entity card : group) {
+                    ObsEventCard c = object_card(card, viewer, true);
+                    c.handle_before = 0;
+                    c.face_down = false;
+                    if (gz.location == Zone::LIBRARY) {
+                        const size_t pos = global_coordinator.GetComponent<Zone>(card).distance_from_top;
+                        const bool knows = !is_seat(viewer) || position_public || identity_visible(card, viewer);
+                        c.from = knows ? at_top(pos, 1) : anywhere();
+                        c.to = ObsLibPos{};
+                        exact = exact && knows;
+                        lo = std::min(lo, pos);
+                        hi = std::max(hi, pos);
+                    }
+                    if (draw_link && st.miracle_card == ObjectRef::of(card)) {
+                        c.draw_seq = st.miracle_draw_seq[slot(viewer)];
+                        c.draw_idx = 0;
+                    }
+                    ev.cards.push_back(c);
                 }
-                if (draw_link && st.miracle_card == ObjectRef::of(card)) {
-                    c.draw_seq = st.miracle_draw_seq[slot(viewer)];
-                    c.draw_idx = 0;
-                }
-                ev.cards.push_back(c);
-            }
-            if (gz.location == Zone::LIBRARY)
-                ev.range = exact && hi - lo + 1 == group.size() ? at_top(lo, group.size()) : anywhere();
-            push(viewer, std::move(ev));
+                if (gz.location == Zone::LIBRARY)
+                    ev.range = exact && hi - lo + 1 == group.size() ? at_top(lo, group.size()) : anywhere();
+                return ev;
+            });
         }
     }
 }
@@ -404,20 +464,22 @@ void obs_windows_closed(const std::vector<ObsClosedWindow> &windows) {
         const Zone::Ownership audience = group.front().audience;
         for (Zone::Ownership viewer : VIEWERS) {
             if (is_seat(viewer) && is_seat(audience) && audience != viewer) continue;
-            ObsEvent ev = new_event(EventKind::REVEAL_END, viewer);
-            if (is_seat(audience)) ev.player = audience;
-            ev.to = audience;
-            ev.zone = gz.location;
-            ev.zone_owner = gz.owner;
-            ev.count = clamp16(group.size());
-            for (const ObsClosedWindow &w : group) {
-                ObsEventCard c = object_card(w.card, viewer, false);
-                c.handle_after = 0;
-                c.to = ObsLibPos{};
-                c.face_down = false;
-                ev.cards.push_back(c);
-            }
-            push(viewer, std::move(ev));
+            emit(viewer, [&] {
+                ObsEvent ev = new_event(EventKind::REVEAL_END, viewer);
+                if (is_seat(audience)) ev.player = audience;
+                ev.to = audience;
+                ev.zone = gz.location;
+                ev.zone_owner = gz.owner;
+                ev.count = clamp16(group.size());
+                for (const ObsClosedWindow &w : group) {
+                    ObsEventCard c = object_card(w.card, viewer, false);
+                    c.handle_after = 0;
+                    c.to = ObsLibPos{};
+                    c.face_down = false;
+                    ev.cards.push_back(c);
+                }
+                return ev;
+            });
         }
     }
 }
@@ -468,15 +530,17 @@ void ObsLibraryBatch::close() {
     if (placed == 0) return;
     for (Zone::Ownership viewer : VIEWERS) {
         if (!b.batched[slot(viewer)]) continue;
-        ObsEvent ev = new_event(EventKind::LIBRARY_PLACE, viewer);
-        ev.player = b.library_owner;
-        ev.zone = Zone::LIBRARY;
-        ev.zone_owner = b.library_owner;
-        ev.count = clamp16(placed);
-        ev.batch = b.id;
-        ev.range = b.on_bottom ? at_bottom(lo, placed) : at_top(lo, placed);
-        ev.order_known = false;
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::LIBRARY_PLACE, viewer);
+            ev.player = b.library_owner;
+            ev.zone = Zone::LIBRARY;
+            ev.zone_owner = b.library_owner;
+            ev.count = clamp16(placed);
+            ev.batch = b.id;
+            ev.range = b.on_bottom ? at_bottom(lo, placed) : at_top(lo, placed);
+            ev.order_known = false;
+            return ev;
+        });
     }
 }
 
@@ -524,35 +588,39 @@ void obs_game_start(bool player_a_goes_first) {
     uint16_t library[3], sideboard[3];
     zone_counts(library, sideboard);
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(EventKind::GAME_START, viewer);
-        ev.player = player_a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B;
-        ev.game = static_cast<uint8_t>(game_index());
-        for (Zone::Ownership p : {Zone::PLAYER_A, Zone::PLAYER_B}) {
-            ObsEventPlayer row;
-            row.player = p;
-            row.library = library[p];
-            row.sideboard = sideboard[p];
-            ev.players.push_back(row);
-        }
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(EventKind::GAME_START, viewer);
+            ev.player = player_a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B;
+            ev.game = static_cast<uint8_t>(game_index());
+            for (Zone::Ownership p : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+                ObsEventPlayer row;
+                row.player = p;
+                row.library = library[p];
+                row.sideboard = sideboard[p];
+                ev.players.push_back(row);
+            }
+            return ev;
+        });
     }
 }
 
 // A game_end or match_end: the game, the winner (none for a draw) and the match wins.
 static void push_game_boundary(EventKind kind, int winner, int wins_a, int wins_b) {
     for (Zone::Ownership viewer : VIEWERS) {
-        ObsEvent ev = new_event(kind, viewer);
-        ev.player = winner == Zone::PLAYER_A   ? Zone::PLAYER_A
-                    : winner == Zone::PLAYER_B ? Zone::PLAYER_B
-                                               : Zone::UNKNOWN;
-        ev.game = static_cast<uint8_t>(game_index());
-        for (Zone::Ownership p : {Zone::PLAYER_A, Zone::PLAYER_B}) {
-            ObsEventPlayer row;
-            row.player = p;
-            row.wins = static_cast<uint8_t>(std::max(0, p == Zone::PLAYER_A ? wins_a : wins_b));
-            ev.players.push_back(row);
-        }
-        push(viewer, std::move(ev));
+        emit(viewer, [&] {
+            ObsEvent ev = new_event(kind, viewer);
+            ev.player = winner == Zone::PLAYER_A   ? Zone::PLAYER_A
+                        : winner == Zone::PLAYER_B ? Zone::PLAYER_B
+                                                   : Zone::UNKNOWN;
+            ev.game = static_cast<uint8_t>(game_index());
+            for (Zone::Ownership p : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+                ObsEventPlayer row;
+                row.player = p;
+                row.wins = static_cast<uint8_t>(std::max(0, p == Zone::PLAYER_A ? wins_a : wins_b));
+                ev.players.push_back(row);
+            }
+            return ev;
+        });
     }
 }
 
@@ -573,7 +641,17 @@ void obs_match_end(int winner, int wins_a, int wins_b) {
 std::vector<ObsEvent> take_obs_events(Zone::Ownership viewer, ObsConsumer consumer) {
     ObsEventQueue &q = cur_game.obs_events.queues[slot(viewer)];
     std::vector<ObsEvent> out;
-    out.swap(consumer == ObsConsumer::STREAM ? q.stream_events : q.events);
+    switch (consumer) {
+        case ObsConsumer::DUMP:
+            out.swap(q.events);
+            break;
+        case ObsConsumer::STREAM:
+            out.swap(q.stream_events);
+            break;
+        case ObsConsumer::SELFCHECK:
+            out.swap(q.selfcheck_events);
+            break;
+    }
     return out;
 }
 

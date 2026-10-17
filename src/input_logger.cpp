@@ -21,6 +21,7 @@
 #include "machine_io.h"
 #include "search_server.h"
 #include "state_format/dump.h"
+#include "state_format/selfcheck.h"
 #include "state_format/stream.h"
 #include "state_format/handles.h"
 
@@ -381,11 +382,14 @@ int InputLogger::choose(const std::vector<LegalAction> &actions) {
     if (trace_handles) trace_handle_tables();
 
     // --rmstate-dump: every viewer's state-format frames at this decision (state_format/dump.h),
-    // after the bookkeeping both RMSTATE writers share (state_format/stream.h).
+    // after the bookkeeping both RMSTATE writers share (state_format/stream.h), then the
+    // --selfcheck-state checks of this decision's frames (state_format/selfcheck.h; not for the
+    // in-process actor's decisions).
     // Not while the search server unwinds to a restore: that decision is never made.
     if (!search_restore_pending()) {
         rmstate_begin_decision();
         rmstate_dump_decision(actions);
+        if (!input_provider) selfcheck_state_decision(actions);
     }
 
     if (replay_mode) {

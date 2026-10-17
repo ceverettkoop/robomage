@@ -41,14 +41,16 @@ bool rmstate_stream_enabled();
 Zone::Ownership rmstate_deciding_seat();
 
 // Called as each decision is read (InputLogger::choose), before either writer builds a frame for
-// it: advances the decision number and issues every viewer's handles. No-op unless a writer is on.
+// it: advances the decision number and issues every viewer's handles. No-op unless a writer (or
+// --selfcheck-state, state_format/selfcheck.h) is on.
 void rmstate_begin_decision();
 
 // --machine-format rmstate: writes the deciding seat's frames for this decision (`actions` as
 // offered) and returns the integer read from stdin (-1 at end of input or for an unparseable line).
 int rmstate_stream_exchange(const std::vector<LegalAction> &actions);
 
-// The match is over (after its match_end event): each writer's terminal frames.
+// The match is over (after its match_end event): each writer's terminal frames, and the
+// self-check's.
 void rmstate_match_over();
 
 #endif /* STATE_FORMAT_STREAM_H */

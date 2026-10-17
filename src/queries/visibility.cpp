@@ -507,8 +507,15 @@ static int physical_card_id(Entity e) {
     return last_known_card_id(e);
 }
 
+static CardIdentityScrambler identity_scrambler = nullptr;
+
+void set_card_identity_scrambler(CardIdentityScrambler scrambler) {
+    identity_scrambler = scrambler;
+}
+
 int card_identity(Entity entity, Zone::Ownership /*viewer*/) {
-    return physical_card_id(entity);
+    const int id = physical_card_id(entity);
+    return identity_scrambler ? identity_scrambler(entity, id) : id;
 }
 
 int visible_card_id(Entity entity, Zone::Ownership viewer) {

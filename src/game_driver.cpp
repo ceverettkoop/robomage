@@ -133,6 +133,12 @@ bool state_dump_json = false;
 // --rmstate-read FILE: decode, re-encode and compare an RMSTATE stream instead of playing
 // (state_format/recode.h); empty = off.
 std::string rmstate_read_path;
+// --selfcheck-state: the state format's self-checks run at every decision (state_format/selfcheck.h);
+// failures print ERROR: lines. Play, the RNG and BQUERY are the same with or without it.
+bool selfcheck_state = false;
+// --selfcheck-state-sample N: the sampled self-checks (permutation leak, snapshot) start at every
+// Nth decision.
+int selfcheck_state_sample = 8;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;
@@ -262,6 +268,7 @@ bool in_main_loop() { return g_in_main_loop; }
 // get_input has returned and cleared this, so a restored state never inherits it.
 static bool g_priority_window_open = false;
 bool priority_window_open() { return g_priority_window_open; }
+void set_priority_window_open(bool open) { g_priority_window_open = open; }
 
 // The StateManager the post-restore hook recomputes through; rebound by every
 // init_ecs so the hook always targets the current game's system instance.

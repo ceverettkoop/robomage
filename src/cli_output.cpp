@@ -276,6 +276,14 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      (- = stdin), re-encode it and compare the bytes; ERROR:\n");
     printf("                      lines and a summary on stderr, exit status 1 on any\n");
     printf("                      mismatch. With --state-dump json, the JSON lines on stdout\n");
+    printf("  --selfcheck-state   Check the RMSTATE frames at every decision: decode and\n");
+    printf("                      re-encode byte-identical, no hidden identity read (frames\n");
+    printf("                      and events rebuilt with hidden cards substituted), complete\n");
+    printf("                      tables; sampled: hidden zones permuted, snapshot restore.\n");
+    printf("                      Failures print ERROR: lines; play is unchanged. Off under\n");
+    printf("                      --search-server\n");
+    printf("  --selfcheck-state-sample <n>\n");
+    printf("                      Run the sampled self-checks every <n>th decision (default 8)\n");
     printf("  --search-server     MCTS search protocol (SNAPSHOT/RESTORE/DETERMINIZE/\n");
     printf("                      RELEASE); implies --machine. Incompatible with\n");
     printf("                      --replay, --log-decisions and --player\n");
@@ -288,7 +296,8 @@ void cli_print_help(const char* program, const char* version) {
     printf("                      --replay are ignored with a warning. Output flags\n");
     printf("                      (--machine, --narrative, --player, --log-viewer,\n");
     printf("                      --broadcast-steps, --trace-visibility, --trace-handles,\n");
-    printf("                      --trace-events, --rmstate-dump, --state-dump)\n");
+    printf("                      --trace-events, --rmstate-dump, --state-dump,\n");
+    printf("                      --selfcheck-state)\n");
     printf("                      still apply; --log-decisions has no effect\n");
     printf("\nTest setup (card lists are comma-separated; applied at the start of each game):\n");
     printf("  --battlefield-a <cards>  --battlefield-b <cards>\n");

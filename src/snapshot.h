@@ -13,10 +13,17 @@
 inline constexpr int N_SNAPSHOT_SLOTS = 4;
 bool snapshot_save(int slot);       // deep copy current state into slot; false on bad slot
 bool snapshot_restore(int slot);    // restore state from slot; false if slot empty/bad
+// snapshot_restore without the post-restore hook: the derived state the hook would re-derive
+// (g_active_statics) is left as it is, for a caller that saved and puts back its own copy (the
+// --selfcheck-state snapshot check, which must see the saved decision exactly as it was).
+bool snapshot_restore_exact(int slot);
 bool snapshot_slot_live(int slot);  // slot holds a snapshot
 bool snapshot_slot_is_match(int slot);      // slot holds a live MATCH-scoped snapshot
 bool snapshot_any_match_scope_live();       // any slot holds a live MATCH-scoped snapshot
 void snapshot_release_all();        // drop all snapshots
+// Debug builds print a [save] / [restore] trace line on stderr for every save and restore; off
+// while `quiet` is set (the --selfcheck-state snapshot check saves and restores at decisions).
+void snapshot_set_quiet(bool quiet);
 
 // Post-restore hook, run at the end of every successful snapshot_restore().
 // The snapshot covers only AUTHORITATIVE state; DERIVED global state

@@ -69,11 +69,16 @@ GameSnapshot g_slots[N_SNAPSHOT_SLOTS];
 // derived state after every restore, before a resumed suspended flow reads it.
 void (*g_post_restore_hook)() = nullptr;
 
+// See snapshot_set_quiet (snapshot.h).
+bool g_quiet = false;
+
 static bool valid_slot(int slot);
 
 static bool valid_slot(int slot) { return slot >= 0 && slot < N_SNAPSHOT_SLOTS; }
 
 }  // namespace
+
+static bool restore_slot(int slot);
 
 bool snapshot_save(int slot) {
     if (!valid_slot(slot)) return false;
@@ -107,6 +112,7 @@ bool snapshot_save(int slot) {
 #ifndef NDEBUG
     // Counterpart of the [restore] trace: every save, so an overwritten search
     // slot (a save between a root's sims) is visible in the log.
+    if (g_quiet) return true;
     fprintf(stderr, "[save] slot=%d scope=%s step=%d lifeA=%d lifeB=%d mir=%u\n",
             slot, s.scope == SnapScope::MATCH ? "MATCH" : "GAME",
             static_cast<int>(cur_game.turn_state.step),
@@ -120,6 +126,16 @@ bool snapshot_save(int slot) {
 }
 
 bool snapshot_restore(int slot) {
+    if (!restore_slot(slot)) return false;
+    if (g_post_restore_hook) g_post_restore_hook();
+    return true;
+}
+
+bool snapshot_restore_exact(int slot) {
+    return restore_slot(slot);
+}
+
+static bool restore_slot(int slot) {
     if (!valid_slot(slot)) return false;
     GameSnapshot &s = g_slots[slot];
     if (!s.live) return false;
@@ -149,12 +165,12 @@ bool snapshot_restore(int slot) {
     sideboard_phase = s.sideboard_phase;
     sideboard_phase_player = s.sideboard_phase_player;
     g_sim_seed_salt = s.sim_seed_salt;
-    if (g_post_restore_hook) g_post_restore_hook();
 #ifndef NDEBUG
     // Debug trace for the az_mcts world-consistency hunt: what suspended-flow
     // state each restore hands back to the loop, plus enough authoritative
     // fields (lives, step, miracle flags) to see whether the slot's CONTENT
     // changed between two restores of the same search (an overwritten slot).
+    if (g_quiet) return true;
     fprintf(stderr,
             "[restore] slot=%d pq(tag=%d act=%d ans=%d) pc=%d pa=%d pd=%d res=%d "
             "step=%d lifeA=%d lifeB=%d mir=%u\n",
@@ -176,6 +192,8 @@ bool snapshot_restore(int slot) {
 }
 
 void snapshot_set_post_restore_hook(void (*hook)()) { g_post_restore_hook = hook; }
+
+void snapshot_set_quiet(bool quiet) { g_quiet = quiet; }
 
 bool snapshot_slot_live(int slot) { return valid_slot(slot) && g_slots[slot].live; }
 

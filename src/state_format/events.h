@@ -95,14 +95,16 @@ struct ObsEvent {
 // pace (the dump at every decision, the stdout stream at that viewer's decisions).
 enum class ObsConsumer : uint8_t {
     DUMP,    // --rmstate-dump (state_format/dump.h)
-    STREAM,  // --machine-format rmstate (state_format/stream.h)
+    STREAM,     // --machine-format rmstate (state_format/stream.h)
+    SELFCHECK,  // --selfcheck-state (state_format/selfcheck.h)
 };
 
 // One viewer's queue.
 struct ObsEventQueue {
         uint32_t next_seq = 1;
         std::vector<ObsEvent> events;         // not yet in a --rmstate-dump frame
-        std::vector<ObsEvent> stream_events;  // not yet in a --machine-format rmstate frame (seats only)
+        std::vector<ObsEvent> stream_events;     // not yet in a --machine-format rmstate frame (seats only)
+        std::vector<ObsEvent> selfcheck_events;  // not yet in a --selfcheck-state frame
 };
 
 // The order-hidden batch an instruction is putting cards into a library with (§5): its cards'
@@ -132,8 +134,13 @@ struct ObsEventState {
         uint32_t miracle_draw_seq[3] = {0, 0, 0};
 };
 
-// Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; or
-// --trace-events). Every obs_* hook is a no-op otherwise.
+// Whether anyone consumes events (a frame writer: --rmstate-dump or --machine-format rmstate; the
+// --selfcheck-state frames; or --trace-events). Every obs_* hook is a no-op otherwise.
+//
+// Under --selfcheck-state each seat's event is built twice as it is constructed, the second time
+// in a world where every card hidden from that seat has another identity (ScrambledIdentities,
+// state_format/selfcheck.h), and the two must project to the same rows: a hook that reads a hidden
+// identity, by any route, shows up as an ERROR: line.
 bool rmstate_events_enabled();
 
 // ── Zone moves (Orderer) ─────────────────────────────────────────────────────────────────────

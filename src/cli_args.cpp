@@ -1,5 +1,6 @@
 #include "cli_args.h"
 
+#include <cstdlib>
 #include <cstring>
 
 #include "cli_output.h"
@@ -170,6 +171,18 @@ static const CliOption OPTIONS[] = {
         nullptr},
     // Decode, re-encode and compare an RMSTATE stream instead of playing (state_format/recode.h).
     {"--rmstate-read", nullptr, true, false, [](const char *v) { rmstate_read_path = v; }, nullptr},
+    // Run the state format's self-checks at every decision (state_format/selfcheck.h).
+    {"--selfcheck-state", nullptr, false, false, [](const char *) { selfcheck_state = true; }, nullptr},
+    // Start the sampled self-checks (permutation leak, snapshot) at every Nth decision.
+    {"--selfcheck-state-sample", nullptr, true, false,
+        [](const char *v) {
+            char *end = nullptr;
+            const long n = std::strtol(v, &end, 10);
+            if (end == v || *end != '\0' || n < 1)
+                fatal_error("--selfcheck-state-sample: expected a positive integer, got '" + std::string(v) + "'");
+            selfcheck_state_sample = static_cast<int>(n);
+        },
+        nullptr},
     {"--help", "-h", false, false, nullptr, nullptr},
 };
 

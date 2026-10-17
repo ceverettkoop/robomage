@@ -153,7 +153,12 @@ scenario runner), e.g. `ROBOMAGE_ENGINE_FLAGS=--trace-visibility` to narrate rev
 transcripts. `ROBOMAGE_ENGINE_FLAGS="--rmstate-dump /abs/dir/d_%p.rms --state-dump json"` writes
 every engine's RMSTATE frames (and their JSON lines) beside an unchanged run; check such dumps
 with `train/.venv/bin/python train/test_rmstate.py --dumps /abs/dir/d_*.rms` (engine re-encode byte
-identity, Python vs C++ JSON). `train/test_rmstate.py` alone plays its own fuzz games and
+identity, Python vs C++ JSON). `ROBOMAGE_ENGINE_FLAGS=--selfcheck-state` runs the state format's
+self-checks in every engine (`src/state_format/selfcheck.h`, `docs/state_format.md` §10): it
+changes no transcript (the replay corpus stays byte-identical under it), failures are `ERROR:`
+lines on the engine's stderr, and each engine prints a `SELFCHECK-STATE: … errors=N` summary
+line on stderr at match end; `--selfcheck-state-sample N` (default 8) sets how often the sampled
+permutation and snapshot checks run. `train/test_rmstate.py` alone plays its own fuzz games and
 `--machine-format rmstate` sessions (`run()` is the entry point for a gate tier).
 
 ## Intentionally changing behavior
