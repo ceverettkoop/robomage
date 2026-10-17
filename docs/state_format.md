@@ -127,13 +127,21 @@ child tables.
 
 Sent once per match (not per snapshot):
 
-- `CARDS`: the card table for every implemented card and token in either registered list (the
-  whole vocab under `--closed-decklist`), plus tokens they can make. Each entry has the vocab id,
+- `CARDS`: the card table for every implemented card and token in either registered list or a
+  reference list of `METAGAME` (the whole vocab under `--closed-decklist`), plus tokens they can
+  make. Each entry has the vocab id,
   name, uid, printed characteristics, the **oracle text** (always: `CardData::oracle_text`,
   parsed from the script's `Oracle:` line; token scripts carry one too), an ability list
   (category, costs, timing, script line text) and, optionally, the raw script.
 - `DECKLISTS`: both registered lists with their deck names (only the viewer's own under
   `--closed-decklist`).
+- `METAGAME`: the reference metagame, the same for every viewer and every match (it is public):
+  the archetype labels, in index order (`bin/resources/decks/archetypes.json`'s `_archetypes`, then
+  `unknown`), and every reference list (a deck archetypes.json tags whose `.dk` file exists and
+  whose cards are all implemented, in ascending stem order) with its deck name, archetype and main
+  and side counts per physical card (`src/state_format/metagame.h`). The registered decks are not
+  added to it. CARDS also carries a row for every card of these lists. The knowledge sidecar's
+  archetype inference (`k_template`, `k_archetype`; `knowledge_store.md` §10) reads it.
 
 Not in the snapshot:
 
@@ -338,8 +346,8 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
 - **As built** (`src/state_format/knowledge_feed.h`, `knowledge_store.md` §9.6): every frame
   writer (`--rmstate-dump`, `--machine-format rmstate`, `--selfcheck-state`) has an instance of
   its own per seat, fed exactly the frames that writer builds for the seat (its SCHEMA, CARDS,
-  DECKLISTS, then each STATE frame as encoded), and appends the instance's `k_*` tables (ids
-  90-95, the last blocks of the frame) to each of the seat's STATE frames, terminal frames
+  DECKLISTS, METAGAME, then each STATE frame as encoded), and appends the instance's `k_*` tables (ids
+  90-97, the last blocks of the frame) to each of the seat's STATE frames, terminal frames
   included. The omniscient frames carry none. The model is a function of the seat's events (each
   event is applied and settled on its own; the snapshot is only checked), not of the frames they
   were drained into, so every writer's frame for one seat and decision carries the same `k_*`
@@ -410,8 +418,8 @@ Recall and inference are done by a C++ **knowledge sidecar**, designed in
     list anyway). A `--player` seat's CLI prompt is capped the same way: a debug build stops on
     such a menu there.
   - At each decision the deciding seat (the sideboarding player between games, else the
-    priority holder) gets, the first time it decides in the match, its `SCHEMA`, `CARDS` and
-    `DECKLISTS` frames, then its `STATE` frame with the menu. Its events are those queued for it
+    priority holder) gets, the first time it decides in the match, its `SCHEMA`, `CARDS`,
+    `DECKLISTS` and `METAGAME` frames, then its `STATE` frame with the menu. Its events are those queued for it
     since its previous frame, so a seat that does not decide for a while gets them all in its
     next frame.
   - Menu row *i* is the action reply *i* selects: the menu as offered, after the
@@ -498,7 +506,8 @@ in-process actor.
   table in section 3 directly (zone, owner, controller, face-down state, and the seat's windows in
   `Game::reveal_windows`), not through `queries/visibility.h`, so a visibility rule that wrongly
   shows a card is caught as well as an encoder read that bypasses the rules.
-- **roundtrip:** every frame (and once per match each viewer's `SCHEMA`, `CARDS`, `DECKLISTS`)
+- **roundtrip:** every frame (and once per match each viewer's `SCHEMA`, `CARDS`, `DECKLISTS`,
+  `METAGAME`)
   through `decode_frame` → `encode_frame`.
 - **scramble** (the event-leak check, plus the snapshot at every decision): each seat's frame is
   encoded a second time inside `ScrambledIdentities`, which gives every card hidden from the seat
@@ -605,6 +614,7 @@ in-process actor.
 | 34 | Counter kinds travel as `text` (no engine enum; they are script strings) | decided |
 | 35 | Face-down exiled cards follow CR 406.3: a per-player look window, opened for whoever looked at the card before it was exiled face down or is allowed to look, lasting until the card leaves exile | decided |
 | 36 | Events carry draw provenance: `turn` on every event, an opening-hand flag on `draw`, a hand subset (`drawn_this_turn`) on a `zone_move` out of a hand whose instruction is restricted to cards drawn this turn (Sylvan Library), and a draw link on a `reveal_start` that shows the card just drawn (Miracle). Both restrictions are explicit to both players, so the sidecar may use them | decided |
+| 37 | A reference metagame frame (`METAGAME`, once per match after `DECKLISTS`, the same for every viewer: archetype labels and reference lists from `bin/resources/decks/archetypes.json`) and the archetype tables `k_template` (per player and reference list: consistent, exact, registered) and `k_archetype` (per player and label: possible, exact) in `k_*`. Sound facts only (`knowledge_store.md` §10); a probabilistic layer is a later `b_*` level | decided |
 
 ## Appendix A: column definitions
 
@@ -645,10 +655,10 @@ No `player-abs` or `zone` tag is needed: absolute seats are `enum:seat`, zones `
 | Frame header (24 B) | `magic` u32 (`RMSF`), `version` u16, `kind` u8 (`enum:frame_kind`), `viewer` u8 (`enum:viewer`), `schema_hash` u64, `n_tables` u32, reserved u32 (0) |
 | Table block | header (16 B): `table_id` u16, reserved u16, `row_width` u32, `row_count` u32, reserved u32; then `row_count × row_width` bytes, zero-padded to a multiple of 8 |
 | Order | blocks in ascending table id (so `strings`, id 1, comes first); a table with no rows is omitted; `n_tables` counts the blocks present |
-| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
+| Stream | `--rmstate-dump FILE` writes `RMSTATE <nbytes>\n<payload>` records: per viewer (A, B, omniscient, in that order), at its first decision of the match `SCHEMA`, `CARDS`, `DECKLISTS`, `METAGAME`, then a `STATE` frame at every decision, and at match end a terminal `STATE` frame (`header.terminal`); a seat's `STATE` frames end with its `k_*` tables (section 7). `%p` in FILE is replaced by the process id. `--machine-format rmstate` writes the deciding seat's records on stdout (section 9) |
 | Unknown data | a decoder skips a block whose id it does not know; a known id with another row width is a schema mismatch and is refused |
 | Schema hash | 64-bit FNV-1a over the `SCHEMA` frame's table blocks (header excluded) |
-| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `STATE` (snapshot 20–48, events 80–82, knowledge 90–95) |
+| Frame kinds | `SCHEMA` (ids 2–4), `CARDS` (10–14), `DECKLISTS` (15–16), `METAGAME` (17–19), `STATE` (snapshot 20–48, events 80–82, knowledge 90–97) |
 
 **Events channel.** One `event` table, one row per event in queue order, with a kind enum and
 the scalar fields of every kind (unused ones are none/0). Per-card parts go in `event_card`,
@@ -673,7 +683,7 @@ per-player parts in `event_player`; both point at their `event` row.
 | | `value` | u16 | `index` | |
 | | `name` | text | `text` | |
 
-### A.4 `CARDS` and `DECKLISTS` frames
+### A.4 `CARDS`, `DECKLISTS` and `METAGAME` frames
 
 | Table (id) | Column | Type | Tag | Range / notes |
 |---|---|---|---|---|
@@ -717,9 +727,16 @@ per-player parts in `event_player`; both point at their `event` row.
 | `decklist_card` (16) | `player` | seat | | |
 | | `card` | u16 | `card` | a line naming a double-faced card's back face counts as that card (its front face) |
 | | `main`, `side` | u8 | `count` | registered counts |
+| `meta_archetype` (17): row = archetype id | `name` | text | `text` | `_archetypes` in order, then `unknown` (register 37) |
+| `meta_list` (18): row = list id | `name` | text | `text` | the deck stem (`league/ur_delver`), ascending |
+| | `archetype` | u8 | `row:meta_archetype` | |
+| | `main`, `side` | u16 | `count` | |
+| `meta_list_card` (19) | `list` | u16 | `row:meta_list` | |
+| | `card` | u16 | `card` | physical card id, as in `decklist_card`; ascending per list |
+| | `main`, `side` | u8 | `count` | |
 
-`CARDS` holds every card of both registered lists, in ascending card id, then every registered
-token those cards can make, in ascending card id. Under `--closed-decklist` it holds every vocab
+`CARDS` holds every card of both registered lists and of the METAGAME frame's reference lists, in
+ascending card id, then every registered token those cards can make, in ascending card id. Under `--closed-decklist` it holds every vocab
 card instead (by front face; a back face's own vocab entry is that card's back row), for every
 viewer: the opponent's cards need rows, and listing only the seat's own would show which are the
 opponent's. A card no deck holds is read from the parse cache (`card_data_by_name`,
@@ -976,6 +993,14 @@ encoder's.
 | | `pool` | u16 | `row:k_pool` | candidates when not exact |
 | `k_known_hand` (95) | `card` | u16 | `card` | |
 | | `copies` | u8 | `count` | |
+| `k_template` (96) | `player` | seat | | per player (self first) and reference list, every list |
+| | `list` | u16 | `index` | a `meta_list` row of the METAGAME frame |
+| | `consistent` | u8 | `bool` | the list can be the player's registered list (`knowledge_store.md` §10.2) |
+| | `exact` | u8 | `bool` | `consistent` is proven (0: a search past its budget, reported consistent) |
+| | `registered` | u8 | `bool` | the classification of the player's registered list when the viewer sees it (§10.4) |
+| `k_archetype` (97) | `player` | seat | | per player and label, every label |
+| | `archetype` | u8 | `index` | a `meta_archetype` row |
+| | `possible`, `exact` | u8 | `bool` | some consistent list has the label; every consistent list has it |
 
 ### A.7 Enums with no C++ type yet
 
@@ -983,7 +1008,7 @@ T3/T4 add these as C++ enums so their string tables are generated like the other
 
 | Enum | Values |
 |---|---|
-| `frame_kind` | SCHEMA, CARDS, DECKLISTS, STATE |
+| `frame_kind` | SCHEMA, CARDS, DECKLISTS, STATE, METAGAME |
 | `viewer` | A, B, OMNISCIENT |
 | `storage` | U8, U16, U32, U64, I8, I16, I32, I64, F32, TEXT |
 | `hand_subset` | ANY, DRAWN_THIS_TURN |

@@ -259,8 +259,11 @@ The corpus must stay byte-identical across 3b.
   as a reference for a future search agent.
 - Delete everything in `train/` except the kept agent, driver and decoder (list below). Move
   `train/regression/{scenarios,corpus}` to `tests/`.
-- Delete the `pygen` target and every `gen_*.py`; `src/gen/`; `bin/resources/decks/archetypes.json`;
-  `train/sb_dead_rules.json`.
+- Delete the `pygen` target and every `gen_*.py`; `src/gen/`; `train/sb_dead_rules.json`. **Keep
+  `bin/resources/decks/archetypes.json`**: it is the reference metagame's source (its `_archetypes`
+  label list and deck tags, read by `src/state_format/metagame.cpp` for the `METAGAME` frame and the
+  sidecar's archetype inference, `knowledge_store.md` §10); only the codegen around it goes
+  (`gen_archetypes.py`, `src/gen/archetypes_gen.h`, the BQUERY observation's matchup tail).
 - Delete `src/search_server.{h,cpp}` and its hooks (cooperative unwind and `SEARCHINFO` in
   `input_logger.cpp`, `search_intercept_game_end` / restore handling in `game_driver.cpp`, the
   flag in `cli_args.cpp`). **Keep `src/snapshot.{h,cpp}`** (search agents, undo, analysis;
